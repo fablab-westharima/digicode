@@ -1,0 +1,25 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "esp32-blockly-backend",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-11-21",
+	"observability": {
+		"enabled": true
+	},
+	"vars": {
+		"JWT_SECRET": "esp32-blockly-dev-secret-change-in-production"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "esp32-editor-db",
+			"database_id": "3819690e-f4f8-463a-b421-6e4f903388dc"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "R2",
+			"bucket_name": "esp32-editor-files"
+		}
+	]
+}
