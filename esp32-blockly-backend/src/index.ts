@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import auth from './routes/auth';
 import projects from './routes/projects';
+import compileUsage from './routes/compile-usage';
 
 type Bindings = {
   DB: D1Database;
@@ -33,5 +34,8 @@ app.route('/api/auth', auth);
 
 // プロジェクトルート
 app.route('/api/projects', projects);
+
+// コンパイル使用量ルート
+app.route('/api/compile-usage', compileUsage);
 
 export default app;

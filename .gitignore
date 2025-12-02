@@ -34,3 +34,6 @@ temp/
 # Wrangler
 .wrangler/
 .dev.vars
+
+# Separate repository
+arduino-compile-server/
