@@ -1,5 +1,5 @@
 -- 0001_initial_schema.sql
--- ESP32 Block Editor 初期スキーマ
+-- DigiCode 初期スキーマ
 
 -- 1. users テーブル
 CREATE TABLE IF NOT EXISTS users (

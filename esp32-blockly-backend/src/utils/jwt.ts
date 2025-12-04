@@ -103,3 +103,27 @@ export async function verifyToken(
     return null;
   }
 }
+
+// リフレッシュトークン生成（ランダム文字列）
+export function generateRefreshToken(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+// アクセストークンとリフレッシュトークンのペアを生成
+export async function generateTokenPair(
+  payload: { userId: number; email: string },
+  secret: string
+): Promise<{ accessToken: string; refreshToken: string; expiresIn: number }> {
+  // アクセストークン: 1時間
+  const accessToken = await generateToken(payload, secret, 1 / 24);
+  // リフレッシュトークン: ランダム文字列（DBに保存）
+  const refreshToken = generateRefreshToken();
+
+  return {
+    accessToken,
+    refreshToken,
+    expiresIn: 3600, // 1時間（秒）
+  };
+}

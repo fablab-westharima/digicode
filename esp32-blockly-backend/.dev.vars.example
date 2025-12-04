@@ -1,0 +1,6 @@
+# Local development secrets
+# Copy this file to .dev.vars and fill in your values
+# .dev.vars is gitignored and should NOT be committed
+
+# JWT Secret for authentication (use a strong random string in production)
+JWT_SECRET=your-local-dev-secret-here

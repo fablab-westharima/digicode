@@ -1,11 +1,22 @@
 import { Hono } from 'hono';
-import { generateToken } from '../utils/jwt';
+import { generateTokenPair, generateRefreshToken } from '../utils/jwt';
 import { hashPassword, verifyPassword } from '../utils/password';
 import { authMiddleware } from '../middleware/auth';
+import { sendPasswordResetEmail } from '../services/emailService';
+
+// リフレッシュトークンのハッシュ化（SHA-256）
+async function hashRefreshToken(token: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(token);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 type Bindings = {
   DB: D1Database;
   JWT_SECRET: string;
+  RESEND_API_KEY?: string;
 };
 
 type Variables = {
@@ -23,6 +34,31 @@ function isValidEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
+// パスワード強度バリデーション
+function validatePassword(password: string): { valid: boolean; message: string } {
+  if (password.length < 8) {
+    return { valid: false, message: 'パスワードは8文字以上である必要があります' };
+  }
+
+  if (!/[a-z]/.test(password)) {
+    return { valid: false, message: 'パスワードには小文字を含める必要があります' };
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    return { valid: false, message: 'パスワードには大文字を含める必要があります' };
+  }
+
+  if (!/[0-9]/.test(password)) {
+    return { valid: false, message: 'パスワードには数字を含める必要があります' };
+  }
+
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    return { valid: false, message: 'パスワードには特殊文字（!@#$%^&*など）を含める必要があります' };
+  }
+
+  return { valid: true, message: '' };
+}
+
 // ユーザー登録
 auth.post('/register', async (c) => {
   try {
@@ -38,8 +74,10 @@ auth.post('/register', async (c) => {
       return c.json({ error: '有効なメールアドレスを入力してください' }, 400);
     }
 
-    if (password.length < 8) {
-      return c.json({ error: 'パスワードは8文字以上である必要があります' }, 400);
+    // パスワード強度チェック
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
+      return c.json({ error: passwordValidation.message }, 400);
     }
 
     // メールアドレス重複チェック
@@ -68,14 +106,24 @@ auth.post('/register', async (c) => {
       'INSERT INTO subscriptions (user_id, status, plan_type) VALUES (?, ?, ?)'
     ).bind(userResult.id, 'free', 'free').run();
 
-    // JWTトークン発行
-    const token = await generateToken(
+    // JWTトークンペア発行
+    const tokens = await generateTokenPair(
       { userId: userResult.id, email: userResult.email },
       c.env.JWT_SECRET
     );
 
+    // リフレッシュトークンをDBに保存（ハッシュ化）
+    const tokenHash = await hashRefreshToken(tokens.refreshToken);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(); // 7日後
+
+    await c.env.DB.prepare(
+      'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
+    ).bind(userResult.id, tokenHash, expiresAt).run();
+
     return c.json({
-      token,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      expiresIn: tokens.expiresIn,
       user: {
         id: userResult.id,
         email: userResult.email,
@@ -114,14 +162,24 @@ auth.post('/login', async (c) => {
       return c.json({ error: 'メールアドレスまたはパスワードが正しくありません' }, 401);
     }
 
-    // JWTトークン発行
-    const token = await generateToken(
+    // JWTトークンペア発行
+    const tokens = await generateTokenPair(
       { userId: user.id, email: user.email },
       c.env.JWT_SECRET
     );
 
+    // リフレッシュトークンをDBに保存（ハッシュ化）
+    const tokenHash = await hashRefreshToken(tokens.refreshToken);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(); // 7日後
+
+    await c.env.DB.prepare(
+      'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
+    ).bind(user.id, tokenHash, expiresAt).run();
+
     return c.json({
-      token,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      expiresIn: tokens.expiresIn,
       user: {
         id: user.id,
         email: user.email,
@@ -172,6 +230,284 @@ auth.get('/me', authMiddleware, async (c) => {
   } catch (error) {
     console.error('Get me error:', error);
     return c.json({ error: 'ユーザー情報の取得に失敗しました' }, 500);
+  }
+});
+
+// リフレッシュトークンで新しいアクセストークンを取得
+auth.post('/refresh', async (c) => {
+  try {
+    const body = await c.req.json();
+    const { refreshToken } = body;
+
+    if (!refreshToken) {
+      return c.json({ error: 'リフレッシュトークンが必要です' }, 400);
+    }
+
+    // リフレッシュトークンのハッシュを計算
+    const tokenHash = await hashRefreshToken(refreshToken);
+
+    // DBからトークンを検索
+    const storedToken = await c.env.DB.prepare(`
+      SELECT rt.id, rt.user_id, rt.expires_at, rt.revoked_at, u.email
+      FROM refresh_tokens rt
+      JOIN users u ON rt.user_id = u.id
+      WHERE rt.token_hash = ?
+    `).bind(tokenHash).first<{
+      id: number;
+      user_id: number;
+      expires_at: string;
+      revoked_at: string | null;
+      email: string;
+    }>();
+
+    if (!storedToken) {
+      return c.json({ error: '無効なリフレッシュトークンです' }, 401);
+    }
+
+    // 失効チェック
+    if (storedToken.revoked_at) {
+      return c.json({ error: 'リフレッシュトークンは失効しています' }, 401);
+    }
+
+    // 有効期限チェック
+    if (new Date(storedToken.expires_at) < new Date()) {
+      return c.json({ error: 'リフレッシュトークンの有効期限が切れています' }, 401);
+    }
+
+    // 古いリフレッシュトークンを失効させる（ローテーション）
+    await c.env.DB.prepare(
+      'UPDATE refresh_tokens SET revoked_at = datetime(\'now\') WHERE id = ?'
+    ).bind(storedToken.id).run();
+
+    // 新しいトークンペアを発行
+    const tokens = await generateTokenPair(
+      { userId: storedToken.user_id, email: storedToken.email },
+      c.env.JWT_SECRET
+    );
+
+    // 新しいリフレッシュトークンを保存
+    const newTokenHash = await hashRefreshToken(tokens.refreshToken);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+
+    await c.env.DB.prepare(
+      'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
+    ).bind(storedToken.user_id, newTokenHash, expiresAt).run();
+
+    return c.json({
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      expiresIn: tokens.expiresIn,
+    });
+  } catch (error) {
+    console.error('Token refresh error:', error);
+    return c.json({ error: 'トークン更新に失敗しました' }, 500);
+  }
+});
+
+// ログアウト（リフレッシュトークンを失効）
+auth.post('/logout', async (c) => {
+  try {
+    const body = await c.req.json();
+    const { refreshToken } = body;
+
+    if (refreshToken) {
+      const tokenHash = await hashRefreshToken(refreshToken);
+      await c.env.DB.prepare(
+        'UPDATE refresh_tokens SET revoked_at = datetime(\'now\') WHERE token_hash = ?'
+      ).bind(tokenHash).run();
+    }
+
+    return c.json({ message: 'ログアウトしました' });
+  } catch (error) {
+    console.error('Logout error:', error);
+    return c.json({ error: 'ログアウト処理に失敗しました' }, 500);
+  }
+});
+
+// 全デバイスからログアウト（ユーザーの全リフレッシュトークンを失効）
+auth.post('/logout-all', authMiddleware, async (c) => {
+  try {
+    const { userId } = c.get('user');
+
+    await c.env.DB.prepare(
+      'UPDATE refresh_tokens SET revoked_at = datetime(\'now\') WHERE user_id = ? AND revoked_at IS NULL'
+    ).bind(userId).run();
+
+    return c.json({ message: '全デバイスからログアウトしました' });
+  } catch (error) {
+    console.error('Logout all error:', error);
+    return c.json({ error: 'ログアウト処理に失敗しました' }, 500);
+  }
+});
+
+// セキュアなランダムトークン生成（パスワードリセット用）
+function generateResetToken(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// パスワードリセットトークンのハッシュ化
+async function hashResetToken(token: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(token);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// パスワードリセット申請
+auth.post('/forgot-password', async (c) => {
+  try {
+    const body = await c.req.json();
+    const { email } = body;
+
+    if (!email) {
+      return c.json({ error: 'メールアドレスは必須です' }, 400);
+    }
+
+    if (!isValidEmail(email)) {
+      return c.json({ error: '有効なメールアドレスを入力してください' }, 400);
+    }
+
+    // ユーザー検索
+    const user = await c.env.DB.prepare(
+      'SELECT id, email FROM users WHERE email = ?'
+    ).bind(email).first<{ id: number; email: string }>();
+
+    // セキュリティ: ユーザーが存在しなくても同じレスポンスを返す
+    if (!user) {
+      return c.json({
+        message: 'メールアドレスが登録されている場合、パスワードリセットのメールを送信しました'
+      });
+    }
+
+    // 既存の未使用トークンを無効化
+    await c.env.DB.prepare(
+      'UPDATE password_reset_tokens SET used_at = datetime(\'now\') WHERE user_id = ? AND used_at IS NULL'
+    ).bind(user.id).run();
+
+    // 新しいリセットトークン生成
+    const resetToken = generateResetToken();
+    const tokenHash = await hashResetToken(resetToken);
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1時間有効
+
+    // トークンをDBに保存
+    await c.env.DB.prepare(
+      'INSERT INTO password_reset_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
+    ).bind(user.id, tokenHash, expiresAt).run();
+
+    // 環境判定
+    const isDev = c.req.header('host')?.includes('localhost') ||
+                  c.req.header('host')?.includes('127.0.0.1');
+
+    // メール送信（Resend APIキーが設定されている場合）
+    if (c.env.RESEND_API_KEY) {
+      const emailResult = await sendPasswordResetEmail(
+        c.env.RESEND_API_KEY,
+        user.email,
+        resetToken,
+        isDev
+      );
+
+      if (!emailResult.success) {
+        console.error('Failed to send password reset email:', emailResult.error);
+        // メール送信失敗でもエラーを返さない（セキュリティのため）
+      }
+    } else {
+      // APIキーがない場合は開発モードとしてログ出力
+      console.log(`[DEV] Password reset token for ${email}: ${resetToken}`);
+    }
+
+    // 開発モードかつAPIキーがない場合のみ、レスポンスにトークンを含める
+    if (isDev && !c.env.RESEND_API_KEY) {
+      return c.json({
+        message: 'パスワードリセットトークンを生成しました（開発モード）',
+        resetToken,
+        resetUrl: `http://localhost:5173/reset-password?token=${resetToken}`
+      });
+    }
+
+    return c.json({
+      message: 'メールアドレスが登録されている場合、パスワードリセットのメールを送信しました'
+    });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    return c.json({ error: 'パスワードリセット処理に失敗しました' }, 500);
+  }
+});
+
+// パスワードリセット実行
+auth.post('/reset-password', async (c) => {
+  try {
+    const body = await c.req.json();
+    const { token, password } = body;
+
+    if (!token || !password) {
+      return c.json({ error: 'トークンと新しいパスワードは必須です' }, 400);
+    }
+
+    // パスワード強度チェック
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
+      return c.json({ error: passwordValidation.message }, 400);
+    }
+
+    // トークンのハッシュを計算
+    const tokenHash = await hashResetToken(token);
+
+    // DBからトークンを検索
+    const resetToken = await c.env.DB.prepare(`
+      SELECT prt.id, prt.user_id, prt.expires_at, prt.used_at, u.email
+      FROM password_reset_tokens prt
+      JOIN users u ON prt.user_id = u.id
+      WHERE prt.token_hash = ?
+    `).bind(tokenHash).first<{
+      id: number;
+      user_id: number;
+      expires_at: string;
+      used_at: string | null;
+      email: string;
+    }>();
+
+    if (!resetToken) {
+      return c.json({ error: '無効なリセットトークンです' }, 400);
+    }
+
+    // 使用済みチェック
+    if (resetToken.used_at) {
+      return c.json({ error: 'このリセットトークンは既に使用されています' }, 400);
+    }
+
+    // 有効期限チェック
+    if (new Date(resetToken.expires_at) < new Date()) {
+      return c.json({ error: 'リセットトークンの有効期限が切れています' }, 400);
+    }
+
+    // パスワードをハッシュ化
+    const passwordHash = await hashPassword(password);
+
+    // パスワードを更新
+    await c.env.DB.prepare(
+      'UPDATE users SET password_hash = ? WHERE id = ?'
+    ).bind(passwordHash, resetToken.user_id).run();
+
+    // トークンを使用済みにする
+    await c.env.DB.prepare(
+      'UPDATE password_reset_tokens SET used_at = datetime(\'now\') WHERE id = ?'
+    ).bind(resetToken.id).run();
+
+    // 全リフレッシュトークンを無効化（セキュリティのため）
+    await c.env.DB.prepare(
+      'UPDATE refresh_tokens SET revoked_at = datetime(\'now\') WHERE user_id = ? AND revoked_at IS NULL'
+    ).bind(resetToken.user_id).run();
+
+    return c.json({
+      message: 'パスワードが正常にリセットされました。新しいパスワードでログインしてください。'
+    });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    return c.json({ error: 'パスワードリセットに失敗しました' }, 500);
   }
 });
 

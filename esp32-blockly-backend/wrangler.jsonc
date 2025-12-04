@@ -6,9 +6,10 @@
 	"observability": {
 		"enabled": true
 	},
-	"vars": {
-		"JWT_SECRET": "esp32-blockly-dev-secret-change-in-production"
-	},
+	// Secrets are managed via Cloudflare Secrets (not vars) for security
+	// JWT_SECRET: npx wrangler secret put JWT_SECRET
+	// RESEND_API_KEY: npx wrangler secret put RESEND_API_KEY (for password reset emails)
+	// For local development, add these to .dev.vars file
 	"d1_databases": [
 		{
 			"binding": "DB",
