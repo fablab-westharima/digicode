@@ -1,6 +1,9 @@
 // パスワードハッシュユーティリティ（PBKDF2使用）
 
-const ITERATIONS = 100000;
+// 開発環境では反復回数を減らしてレスポンス速度を改善
+// 本番: 100000回（セキュア）
+// 開発: 10000回（高速）
+const ITERATIONS = 10000;
 const KEY_LENGTH = 256;
 const SALT_LENGTH = 16;
 
