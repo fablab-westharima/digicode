@@ -1,0 +1,19 @@
+# Cloudflare Pages configuration for DigiCode
+
+[env.production]
+name = "digicode-frontend"
+
+[[env.production.routes]]
+pattern = "digicode-frontend.pages.dev"
+
+[build]
+command = "cd esp32-blockly-frontend && npm run build"
+cwd = "."
+watch_paths = ["esp32-blockly-frontend/**/*.{ts,tsx,js,jsx}"]
+
+[build.upload]
+format = "service-worker"
+
+# Frontend configuration
+[env.production.vars]
+FRONTEND_BUILD_DIR = "esp32-blockly-frontend/dist"
