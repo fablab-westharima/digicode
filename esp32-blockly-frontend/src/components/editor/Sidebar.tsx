@@ -6,13 +6,13 @@ import {
   Wifi,
   BookOpen,
   Pin as PinIcon,
-  Settings,
-  Server,
   Upload,
   Radio,
   Code,
   SlidersHorizontal,
-  Cpu
+  Cpu,
+  Usb,
+  Bluetooth
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
@@ -20,12 +20,13 @@ interface SidebarProps {
   onProjectOpen?: () => void;
   onFirmwareWrite?: () => void;
   onOtaUpdate?: () => void;
+  onOtaSetup?: () => void;  // OTA接続設定（統合モーダル）
+  onUsbSetup?: () => void;  // USB有線接続設定
   onWifiSetup?: () => void;
   onApSetup?: () => void;
   onBluetoothSetup?: () => void;
   onPinAssignment?: () => void;
   onCompileServerSettings?: () => void;
-  onSettings?: () => void;
   onDocs?: () => void;
   onCodePreview?: () => void;
   onPidTuning?: () => void;
@@ -43,12 +44,13 @@ export function Sidebar({
   onProjectOpen,
   onFirmwareWrite,
   onOtaUpdate,
+  onOtaSetup,
+  onUsbSetup,
   onWifiSetup,
   onApSetup,
   onBluetoothSetup,
   onPinAssignment,
   onCompileServerSettings,
-  onSettings,
   onDocs,
   onCodePreview,
   onPidTuning,
@@ -81,26 +83,34 @@ export function Sidebar({
       action: onOtaUpdate || (() => {}),
       category: 'firmware'
     },
-    // Device Setup
+    // Connection Settings (接続設定)
     {
-      id: 'wifi-setup',
-      label: t('sidebar.wifiSetup', { defaultValue: 'WiFi設定' }),
-      icon: <Wifi className="w-4 h-4" />,
-      action: onWifiSetup || (() => {}),
-      category: 'device'
+      id: 'usb-setup',
+      label: t('sidebar.usbSetup', { defaultValue: 'USB有線接続' }),
+      icon: <Usb className="w-4 h-4" />,
+      action: onUsbSetup || (() => {}),
+      category: 'connection'
     },
+    {
+      id: 'ota-setup',
+      label: t('sidebar.otaSetup', { defaultValue: 'WiFi-OTA接続設定' }),
+      icon: <Wifi className="w-4 h-4" />,
+      action: onOtaSetup || (() => {}),
+      category: 'connection'
+    },
+    {
+      id: 'bluetooth-setup',
+      label: t('sidebar.bluetoothSetup', { defaultValue: 'Bluetooth接続' }),
+      icon: <Bluetooth className="w-4 h-4" />,
+      action: onBluetoothSetup || (() => {}),
+      category: 'connection'
+    },
+    // Device Setup (デバイス設定)
     {
       id: 'ap-setup',
       label: t('sidebar.apSetup', { defaultValue: 'AP接続' }),
       icon: <Radio className="w-4 h-4" />,
       action: onApSetup || (() => {}),
-      category: 'device'
-    },
-    {
-      id: 'bluetooth-setup',
-      label: t('sidebar.bluetoothSetup', { defaultValue: 'Bluetooth設定' }),
-      icon: <Server className="w-4 h-4" />,
-      action: onBluetoothSetup || (() => {}),
       category: 'device'
     },
     // Tools
@@ -140,14 +150,6 @@ export function Sidebar({
       action: onDocs || (() => {}),
       category: 'docs'
     },
-    // Settings
-    {
-      id: 'settings',
-      label: t('sidebar.settings', { defaultValue: '設定' }),
-      icon: <Settings className="w-4 h-4" />,
-      action: onSettings || (() => {}),
-      category: 'settings'
-    },
   ];
 
   const getCategoryLabel = (category: string) => {
@@ -156,14 +158,14 @@ export function Sidebar({
         return t('sidebar.category.project', { defaultValue: 'プロジェクト' });
       case 'firmware':
         return t('sidebar.category.firmware', { defaultValue: 'ファームウェア' });
+      case 'connection':
+        return t('sidebar.category.connection', { defaultValue: '接続設定' });
       case 'device':
         return t('sidebar.category.device', { defaultValue: 'デバイス設定' });
       case 'tools':
         return t('sidebar.category.tools', { defaultValue: 'ツール' });
       case 'docs':
         return t('sidebar.category.docs', { defaultValue: 'ドキュメント' });
-      case 'settings':
-        return t('sidebar.category.settings', { defaultValue: '設定' });
       default:
         return category;
     }

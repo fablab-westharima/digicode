@@ -27,10 +27,13 @@ import { WifiSetupDialog } from '@/components/wifi/WifiSetupDialog';
 import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstallerDialog';
 import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
+import { OtaSetupDialog } from '@/components/settings/OtaSetupDialog';
+import { UsbSetupDialog } from '@/components/settings/UsbSetupDialog';
 import { HeaderDeviceSelector } from '@/components/device/HeaderDeviceSelector';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
+import { useDeviceStore } from '@/stores/deviceStore';
 import { useBluetoothStore } from '@/stores/bluetoothStore';
 import { useLanguageStore } from '@/stores/languageStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
@@ -68,8 +71,9 @@ export function EditorPage() {
   const [searchParams] = useSearchParams();
   const { currentProject, loadProject, setCurrentProject } = useProjectStore();
   const { status: serialStatus, connect: connectSerial, disconnect: disconnectSerial } = useSerialStore();
-  const { status: wifiStatus, getDeviceUrl } = useWifiStore();
+  const { status: wifiStatus, getDeviceUrl, setHost, setDeviceName, connect: connectWifi } = useWifiStore();
   const { status: bluetoothStatus, connect: connectBluetooth, disconnect: disconnectBluetooth } = useBluetoothStore();
+  const { addDevice } = useDeviceStore();
   const { language, setLanguage } = useLanguageStore();
   const { getSelectedBoard } = useBoardStore();
 
@@ -100,6 +104,8 @@ export function EditorPage() {
   const [firmwareInstallerDialogOpen, setFirmwareInstallerDialogOpen] = useState(false);
   const [pinSettingsDialogOpen, setPinSettingsDialogOpen] = useState(false);
   const [compileServerSettingsDialogOpen, setCompileServerSettingsDialogOpen] = useState(false);
+  const [otaSetupDialogOpen, setOtaSetupDialogOpen] = useState(false);
+  const [usbSetupDialogOpen, setUsbSetupDialogOpen] = useState(false);
   const [flashMethodDialogOpen, setFlashMethodDialogOpen] = useState(false);
   const [compiledBinary, setCompiledBinary] = useState<Blob | null>(null);
   const [codePreviewDialogOpen, setCodePreviewDialogOpen] = useState(false);
@@ -592,6 +598,21 @@ export function EditorPage() {
 
   // デバイス選択後の処理（単体）
   const handleDeviceSelect = async (device: DigiCodeDevice) => {
+    // 1. deviceStoreにデバイスを追加（HeaderDeviceSelectorのリストに表示されるように）
+    addDevice({
+      uuid: device.uuid,
+      name: device.name,
+      ssid: '',
+      lastConnected: new Date().toISOString(),
+      ipAddress: device.ipAddress
+    });
+
+    // 2. wifiStoreにデバイス情報を設定して接続状態にする
+    setHost(device.ipAddress);
+    setDeviceName(device.name);
+    await connectWifi();
+
+    // 3. OTA更新がペンディングの場合は実行
     if (pendingOtaBinary) {
       await handleOtaUpdate(pendingOtaBinary, device.url);
       setPendingOtaBinary(null);
@@ -1187,12 +1208,12 @@ export function EditorPage() {
             onProjectOpen={handleOpen}
             onFirmwareWrite={handleFirmwareWrite}
             onOtaUpdate={() => setDeviceSelectDialogOpen(true)}
-            onWifiSetup={() => setWifiSetupDialogOpen(true)}
+            onOtaSetup={() => setOtaSetupDialogOpen(true)}
+            onUsbSetup={() => setUsbSetupDialogOpen(true)}
             onApSetup={() => setWifiSetupDialogOpen(true)}
             onBluetoothSetup={() => connectBluetooth()}
             onPinAssignment={() => setPinSettingsDialogOpen(true)}
             onCompileServerSettings={() => setCompileServerSettingsDialogOpen(true)}
-            onSettings={() => {}}
             onDocs={() => window.open('/docs', '_blank')}
             onCodePreview={() => setCodePreviewDialogOpen(true)}
             onPidTuning={() => setPidTuningDialogOpen(true)}
@@ -1539,6 +1560,18 @@ export function EditorPage() {
       <CompileServerSettingsDialog
         open={compileServerSettingsDialogOpen}
         onOpenChange={setCompileServerSettingsDialogOpen}
+      />
+
+      {/* OTA接続設定ダイアログ（統合モーダル） */}
+      <OtaSetupDialog
+        open={otaSetupDialogOpen}
+        onOpenChange={setOtaSetupDialogOpen}
+      />
+
+      {/* USB有線接続ダイアログ */}
+      <UsbSetupDialog
+        open={usbSetupDialogOpen}
+        onOpenChange={setUsbSetupDialogOpen}
       />
 
       {/* 生成コードプレビューダイアログ */}
