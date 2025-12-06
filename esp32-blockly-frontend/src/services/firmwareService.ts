@@ -1,0 +1,716 @@
+import { ESPLoader, Transport } from 'esptool-js';
+
+export type FlashStage = 'connecting' | 'erasing' | 'flashing' | 'verifying' | 'complete' | 'error';
+
+export type FlashProgress = {
+  stage: FlashStage;
+  file?: string;
+  percent: number;
+  message: string;
+};
+
+export type ChipInfo = {
+  name: string;
+  mac: string;
+  features: string[];
+};
+
+class FirmwareService {
+  private loader: ESPLoader | null = null;
+  private transport: Transport | null = null;
+  private port: SerialPort | null = null;
+  private logCallback: ((message: string) => void) | null = null;
+
+  /**
+   * Check if Web Serial API is supported
+   */
+  get isSupported(): boolean {
+    return 'serial' in navigator;
+  }
+
+  /**
+   * Set log callback
+   */
+  setLogCallback(callback: (message: string) => void) {
+    this.logCallback = callback;
+  }
+
+  /**
+   * Log message
+   */
+  private log(message: string) {
+    if (this.logCallback) {
+      this.logCallback(message);
+    }
+    console.log('[esptool]', message);
+  }
+
+  /**
+   * Connect to ESP32 device
+   */
+  async connect(
+    onProgress: (progress: FlashProgress) => void
+  ): Promise<ChipInfo | null> {
+    if (!this.isSupported) {
+      onProgress({
+        stage: 'error',
+        percent: 0,
+        message: 'Web Serial APIはこのブラウザでサポートされていません。Chrome または Edge を使用してください。'
+      });
+      return null;
+    }
+
+    try {
+      onProgress({
+        stage: 'connecting',
+        percent: 0,
+        message: 'デバイスを選択してください...'
+      });
+
+      // Web Serial APIでポート選択
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const serial = (navigator as any).serial;
+      this.port = await serial.requestPort({
+        filters: [
+          { usbVendorId: 0x10C4 }, // Silicon Labs CP210x
+          { usbVendorId: 0x1A86 }, // QinHeng Electronics CH340
+          { usbVendorId: 0x0403 }, // FTDI
+          { usbVendorId: 0x303A }, // Espressif USB JTAG/serial
+        ]
+      });
+
+      onProgress({
+        stage: 'connecting',
+        percent: 10,
+        message: 'ポートを開いています...'
+      });
+
+      // Transportを初期化
+      this.transport = new Transport(this.port!, true);
+
+      onProgress({
+        stage: 'connecting',
+        percent: 20,
+        message: 'ESPLoaderを初期化中...'
+      });
+
+      // esptool-js初期化
+      this.loader = new ESPLoader({
+        transport: this.transport,
+        baudrate: 115200,  // 初期接続用（stub flasher起動後は自動的に高速化される）
+        terminal: {
+          clean: () => this.log('[TERMINAL CLEAN]'),
+          writeLine: (text) => this.log(text),
+          write: (text) => this.log(text),
+        },
+        debugLogging: true,
+      });
+
+      onProgress({
+        stage: 'connecting',
+        percent: 30,
+        message: 'ESP32と接続中...'
+      });
+
+      // ESP32と接続・検出
+      const chipName = await this.loader.main();
+
+      onProgress({
+        stage: 'connecting',
+        percent: 40,
+        message: 'チップ情報を取得中...'
+      });
+
+      // chipオブジェクトからMAC addressとfeaturesを取得
+      const macAddr = await this.loader.chip.readMac(this.loader);
+      const features = await this.loader.chip.getChipFeatures(this.loader);
+
+      onProgress({
+        stage: 'connecting',
+        percent: 50,
+        message: `接続成功: ${chipName}`
+      });
+
+      return {
+        name: chipName,
+        mac: macAddr,
+        features: features
+      };
+    } catch (error) {
+      console.error('Connection error:', error);
+      onProgress({
+        stage: 'error',
+        percent: 0,
+        message: `接続エラー: ${(error as Error).message}`
+      });
+      return null;
+    }
+  }
+
+  /**
+   * Flash MicroPython firmware to ESP32
+   */
+  async flashFirmware(
+    onProgress: (progress: FlashProgress) => void
+  ): Promise<boolean> {
+    if (!this.loader) {
+      onProgress({
+        stage: 'error',
+        percent: 0,
+        message: '先に接続してください'
+      });
+      return false;
+    }
+
+    try {
+      // MicroPython統合ファームウェア（bootloader, partition table, アプリケーションが1つに統合）
+      const files = [
+        { name: 'ESP32_GENERIC-20250911-v1.26.1.bin', address: 0x1000 },
+      ];
+
+      onProgress({
+        stage: 'erasing',
+        percent: 10,
+        message: 'ファームウェアファイルを読み込み中...'
+      });
+
+      // 全ファイルを読み込み
+      const fileArray: Array<{ data: string; address: number }> = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const progressPercent = 10 + (i / files.length) * 20;
+
+        onProgress({
+          stage: 'erasing',
+          file: file.name,
+          percent: progressPercent,
+          message: `${file.name} を読み込み中...`
+        });
+
+        const response = await fetch(`/firmware/esp32/${file.name}`);
+        if (!response.ok) {
+          throw new Error(`${file.name} の読み込みに失敗しました (${response.status})`);
+        }
+
+        const arrayBuffer = await response.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+
+        // Uint8ArrayをBase64文字列に変換
+        const binaryString = Array.from(uint8Array)
+          .map(byte => String.fromCharCode(byte))
+          .join('');
+
+        fileArray.push({
+          data: binaryString,
+          address: file.address
+        });
+      }
+
+      onProgress({
+        stage: 'erasing',
+        percent: 30,
+        message: 'フラッシュメモリを消去中...'
+      });
+
+      // MicroPython推奨: フラッシュ全体を消去
+      await this.loader.eraseFlash();
+
+      onProgress({
+        stage: 'flashing',
+        percent: 40,
+        message: '書き込み準備完了'
+      });
+
+      // writeFlashを使用して一括書き込み（公式例に従う）
+      await this.loader.writeFlash({
+        fileArray: fileArray,
+        flashSize: 'keep',
+        flashMode: 'keep',
+        flashFreq: 'keep',
+        eraseAll: false,  // 既に手動で消去済み（公式例に従う）
+        compress: true,  // 公式例に従って圧縮を有効化
+        reportProgress: (fileIndex: number, written: number, total: number) => {
+          const filePercent = 40 + (written / total) * 50;
+          const fileName = files[fileIndex]?.name || 'ファイル';
+          onProgress({
+            stage: 'flashing',
+            file: fileName,
+            percent: filePercent,
+            message: `${fileName} を書き込み中... ${Math.floor((written / total) * 100)}%`
+          });
+        }
+      });
+
+      onProgress({
+        stage: 'verifying',
+        percent: 95,
+        message: 'ESP32をリセット中...'
+      });
+
+      // Hard reset to boot into MicroPython
+      await this.loader.after('hard_reset');
+
+      // 完了
+      onProgress({
+        stage: 'complete',
+        percent: 100,
+        message: '✅ ファームウェアの書き込みが完了しました！ESP32がMicroPythonで起動します。'
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Flash error:', error);
+      onProgress({
+        stage: 'error',
+        percent: 0,
+        message: `書き込みエラー: ${(error as Error).message}`
+      });
+      return false;
+    }
+  }
+
+  /**
+   * Disconnect from ESP32
+   */
+  async disconnect(): Promise<void> {
+    if (this.loader) {
+      try {
+        await this.loader.disconnect();
+      } catch (error) {
+        console.error('Disconnect error:', error);
+      }
+      this.loader = null;
+    }
+    if (this.transport) {
+      try {
+        await this.transport.disconnect();
+      } catch (error) {
+        console.error('Transport disconnect error:', error);
+      }
+      this.transport = null;
+    }
+    this.port = null;
+  }
+
+  /**
+   * Check if firmware files exist
+   */
+  async checkFirmwareFiles(): Promise<{
+    available: boolean;
+    missing: string[];
+  }> {
+    const files = [
+      'ESP32_GENERIC-20250911-v1.26.1.bin',
+    ];
+
+    const missing: string[] = [];
+
+    for (const file of files) {
+      try {
+        const response = await fetch(`/firmware/esp32/${file}`, { method: 'HEAD' });
+        if (!response.ok) {
+          missing.push(file);
+        }
+      } catch {
+        missing.push(file);
+      }
+    }
+
+    return {
+      available: missing.length === 0,
+      missing,
+    };
+  }
+
+  /**
+   * Flash Arduino firmware (compiled from Blockly) to ESP32
+   */
+  async flashArduinoFirmware(
+    binData: ArrayBuffer,
+    onProgress: (progress: FlashProgress) => void
+  ): Promise<boolean> {
+    if (!this.loader) {
+      onProgress({
+        stage: 'error',
+        percent: 0,
+        message: '先に接続してください'
+      });
+      return false;
+    }
+
+    try {
+      onProgress({
+        stage: 'erasing',
+        percent: 10,
+        message: 'ファームウェアを準備中...'
+      });
+
+      // binDataをBase64文字列に変換
+      const uint8Array = new Uint8Array(binData);
+      const binaryString = Array.from(uint8Array)
+        .map(byte => String.fromCharCode(byte))
+        .join('');
+
+      onProgress({
+        stage: 'erasing',
+        percent: 30,
+        message: 'フラッシュメモリを消去中...'
+      });
+
+      // フラッシュ消去
+      await this.loader.eraseFlash();
+
+      onProgress({
+        stage: 'flashing',
+        percent: 40,
+        message: '書き込み準備完了'
+      });
+
+      // Arduino binファイルを0x10000番地に書き込み
+      await this.loader.writeFlash({
+        fileArray: [
+          {
+            data: binaryString,
+            address: 0x10000  // Arduinoアプリケーション開始アドレス
+          }
+        ],
+        flashSize: 'keep',
+        flashMode: 'keep',
+        flashFreq: 'keep',
+        eraseAll: false,
+        compress: true,
+        reportProgress: (_fileIndex: number, written: number, total: number) => {
+          const filePercent = 40 + (written / total) * 50;
+          onProgress({
+            stage: 'flashing',
+            percent: filePercent,
+            message: `書き込み中... ${Math.floor((written / total) * 100)}%`
+          });
+        }
+      });
+
+      onProgress({
+        stage: 'verifying',
+        percent: 95,
+        message: 'ESP32をリセット中...'
+      });
+
+      // Hard reset
+      await this.loader.hardReset();
+
+      onProgress({
+        stage: 'complete',
+        percent: 100,
+        message: '✅ ファームウェアの書き込みが完了しました！'
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Flash Arduino error:', error);
+      onProgress({
+        stage: 'error',
+        percent: 0,
+        message: `書き込みエラー: ${(error as Error).message}`
+      });
+      return false;
+    }
+  }
+
+  /**
+   * mDNSホスト名をIPアドレスに解決
+   * @param hostname mDNSホスト名（例: digicode-robot001.local）
+   */
+  async resolveMdns(hostname: string): Promise<string | null> {
+    try {
+      const compileServerUrl = import.meta.env.VITE_COMPILE_SERVER_URL || 'http://localhost:3001';
+      const response = await fetch(`${compileServerUrl}/api/resolve?hostname=${encodeURIComponent(hostname)}`, {
+        signal: AbortSignal.timeout(5000)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.ip) {
+          console.log(`[mDNS] Resolved ${hostname} -> ${data.ip}`);
+          return data.ip;
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error('[mDNS] Resolution failed:', error);
+      return null;
+    }
+  }
+
+  /**
+   * WiFi経由でOTA更新を実行
+   * @param deviceUrl デバイスのURL
+   * @param binData ファームウェアバイナリ
+   * @param onProgress 進捗コールバック
+   * @param timeoutMs タイムアウト（ミリ秒、デフォルト60秒）
+   */
+  async otaUpdate(
+    deviceUrl: string,
+    binData: Blob,
+    onProgress: (progress: FlashProgress) => void,
+    timeoutMs: number = 60000
+  ): Promise<boolean> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      // .localドメインの場合、バックエンドでmDNS解決
+      let resolvedUrl = deviceUrl;
+      if (deviceUrl.includes('.local')) {
+        onProgress({
+          stage: 'connecting',
+          percent: 0,
+          message: `mDNSでデバイスを検索中...`
+        });
+
+        // URLからホスト名を抽出
+        const url = new URL(deviceUrl);
+        const hostname = url.hostname;
+        const resolvedIp = await this.resolveMdns(hostname);
+
+        if (resolvedIp) {
+          resolvedUrl = `http://${resolvedIp}`;
+          console.log(`[OTA] Using resolved IP: ${resolvedUrl}`);
+        } else {
+          throw new Error(`mDNS解決に失敗: ${hostname}`);
+        }
+      }
+
+      onProgress({
+        stage: 'connecting',
+        percent: 5,
+        message: `${resolvedUrl} に接続中...`
+      });
+
+      // まずデバイスの疎通確認
+      try {
+        const pingResponse = await fetch(resolvedUrl, {
+          signal: AbortSignal.timeout(5000),
+          mode: 'cors'
+        });
+        if (!pingResponse.ok) {
+          throw new Error('デバイスが応答しません');
+        }
+      } catch (_pingError) {
+        throw new Error(`デバイスに接続できません: ${resolvedUrl}`);
+      }
+
+      onProgress({
+        stage: 'connecting',
+        percent: 10,
+        message: 'デバイスに接続しました'
+      });
+
+      // FormDataでバイナリを送信
+      const formData = new FormData();
+      formData.append('firmware', binData, 'firmware.bin');
+
+      onProgress({
+        stage: 'flashing',
+        percent: 20,
+        message: 'ファームウェアをアップロード中...'
+      });
+
+      // XMLHttpRequestを使用して進捗を取得
+      const uploadResult = await new Promise<{ ok: boolean; status: number; text: string }>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+
+        // アップロード進捗
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percent = 20 + (event.loaded / event.total) * 50; // 20% - 70%
+            onProgress({
+              stage: 'flashing',
+              percent: Math.round(percent),
+              message: `アップロード中... ${Math.round((event.loaded / event.total) * 100)}%`
+            });
+          }
+        };
+
+        xhr.onload = () => {
+          resolve({ ok: xhr.status >= 200 && xhr.status < 300, status: xhr.status, text: xhr.responseText });
+        };
+
+        xhr.onerror = () => {
+          reject(new Error('ネットワークエラー'));
+        };
+
+        xhr.ontimeout = () => {
+          reject(new Error(`タイムアウト（${timeoutMs / 1000}秒）`));
+        };
+
+        // AbortControllerのシグナルを監視
+        controller.signal.addEventListener('abort', () => {
+          xhr.abort();
+          reject(new Error(`タイムアウト（${timeoutMs / 1000}秒）`));
+        });
+
+        xhr.open('POST', `${resolvedUrl}/doUpdate`);
+        xhr.timeout = timeoutMs;
+        xhr.send(formData);
+      });
+
+      if (!uploadResult.ok) {
+        throw new Error(`OTA更新に失敗: ${uploadResult.status} ${uploadResult.text}`);
+      }
+
+      onProgress({
+        stage: 'verifying',
+        percent: 75,
+        message: 'アップロード完了、デバイスが再起動中...'
+      });
+
+      // デバイスの再起動を待つ（進捗表示付き）
+      // ESP32のリブート + WiFi再接続 + mDNS再登録に十分な時間を確保
+      const rebootWaitTime = 15000; // 15秒（8秒では不足する場合がある）
+      const rebootSteps = 5;
+      for (let i = 0; i < rebootSteps; i++) {
+        await new Promise(resolve => setTimeout(resolve, rebootWaitTime / rebootSteps));
+        onProgress({
+          stage: 'verifying',
+          percent: 75 + ((i + 1) / rebootSteps) * 20, // 75% - 95%
+          message: `デバイス再起動中... (${i + 1}/${rebootSteps})`
+        });
+      }
+
+      // デバイスが復帰したか確認（複数回リトライ）
+      onProgress({
+        stage: 'verifying',
+        percent: 95,
+        message: 'デバイスの復帰を確認中...'
+      });
+
+      let deviceVerified = false;
+      const maxRetries = 3;
+
+      for (let retry = 0; retry < maxRetries; retry++) {
+        try {
+          await new Promise(resolve => setTimeout(resolve, 2000)); // 2秒待機
+          const verifyResponse = await fetch(resolvedUrl, {
+            signal: AbortSignal.timeout(5000),
+            mode: 'cors'
+          });
+          if (verifyResponse.ok) {
+            deviceVerified = true;
+            break;
+          }
+        } catch {
+          console.log(`[OTA] Device verification attempt ${retry + 1}/${maxRetries} failed`);
+        }
+      }
+
+      if (deviceVerified) {
+        onProgress({
+          stage: 'complete',
+          percent: 100,
+          message: '✓ OTA更新が完了しました！デバイスが正常に再起動しました。'
+        });
+        return true;
+      } else {
+        // デバイスが応答しない場合は警告として表示
+        console.error('[OTA] Device verification failed after all retries');
+        onProgress({
+          stage: 'error',
+          percent: 100,
+          message: '⚠️ アップロードは完了しましたが、デバイスが応答しません。デバイスの電源とWiFi接続を確認してください。'
+        });
+        return false;  // 検証失敗は成功とみなさない
+      }
+    } catch (error) {
+      console.error('OTA update error:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
+      // タイムアウトエラーの判定
+      if (errorMessage.includes('タイムアウト') || errorMessage.includes('abort')) {
+        onProgress({
+          stage: 'error',
+          percent: 0,
+          message: `OTA更新タイムアウト: ${timeoutMs / 1000}秒以内に完了しませんでした。デバイスの電源を確認してください。`
+        });
+      } else {
+        onProgress({
+          stage: 'error',
+          percent: 0,
+          message: `OTA更新エラー: ${errorMessage}`
+        });
+      }
+      return false;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  /**
+   * デバイスのオンライン状態を確認
+   * @param deviceUrl デバイスのURL
+   * @param timeoutMs タイムアウト（ミリ秒）
+   */
+  async checkDeviceOnline(deviceUrl: string, timeoutMs: number = 3000): Promise<boolean> {
+    try {
+      const response = await fetch(deviceUrl, {
+        signal: AbortSignal.timeout(timeoutMs),
+        mode: 'cors'
+      });
+      if (!response.ok) {
+        console.debug(`[Device] Online check failed for ${deviceUrl}: HTTP ${response.status}`);
+      }
+      return response.ok;
+    } catch (error) {
+      console.debug(`[Device] Online check failed for ${deviceUrl}:`, error);
+      return false;
+    }
+  }
+
+  /**
+   * 複数デバイスへの一括OTA更新
+   * @param devices 更新対象デバイスのリスト
+   * @param binData ファームウェアバイナリ
+   * @param onProgress 進捗コールバック（デバイスごと）
+   * @param onBatchProgress 全体進捗コールバック
+   */
+  async batchOtaUpdate(
+    devices: Array<{ url: string; name: string }>,
+    binData: Blob,
+    onProgress: (deviceUrl: string, progress: FlashProgress) => void,
+    onBatchProgress?: (completed: number, total: number, results: Map<string, boolean>) => void
+  ): Promise<Map<string, boolean>> {
+    const results = new Map<string, boolean>();
+    const total = devices.length;
+
+    // 順次更新（並列にすると帯域の問題が発生する可能性があるため）
+    for (let i = 0; i < devices.length; i++) {
+      const device = devices[i];
+
+      try {
+        const success = await this.otaUpdate(
+          device.url,
+          binData,
+          (progress) => onProgress(device.url, progress),
+          60000  // 60秒タイムアウト
+        );
+        results.set(device.url, success);
+      } catch {
+        results.set(device.url, false);
+        onProgress(device.url, {
+          stage: 'error',
+          percent: 0,
+          message: 'OTA更新に失敗しました'
+        });
+      }
+
+      // 全体進捗を通知
+      if (onBatchProgress) {
+        onBatchProgress(i + 1, total, results);
+      }
+    }
+
+    return results;
+  }
+}
+
+export const firmwareService = new FirmwareService();

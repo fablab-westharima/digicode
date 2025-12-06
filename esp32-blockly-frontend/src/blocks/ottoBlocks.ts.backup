@@ -1,0 +1,610 @@
+/*
+ * DigiCodeOtto Blockly Blocks
+ *
+ * Blocks for controlling OTTO-compatible bipedal robots.
+ * Supports both Arduino C++ and MicroPython.
+ */
+
+import * as Blockly from 'blockly';
+import { javascriptGenerator } from 'blockly/javascript';
+import { pythonGenerator } from 'blockly/python';
+import { getOttoPins } from '../utils/pinHelper';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const generator = javascriptGenerator as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const pyGen = pythonGenerator as any;
+
+const OTTO_COLOR = '#FF6B35';  // Orange color for OTTO blocks
+
+// ===== OTTO Initialization =====
+
+Blockly.Blocks['otto_init'] = {
+  init: function() {
+    const pins = getOttoPins();
+    this.appendDummyInput()
+        .appendField('🤖 OTTO初期化')
+        .appendField('左足ピン')
+        .appendField(new Blockly.FieldNumber(pins.leftLeg, 0, 39), 'PIN_LL')
+        .appendField('右足ピン')
+        .appendField(new Blockly.FieldNumber(pins.rightLeg, 0, 39), 'PIN_RL')
+        .appendField('左足首ピン')
+        .appendField(new Blockly.FieldNumber(pins.leftFoot, 0, 39), 'PIN_LF')
+        .appendField('右足首ピン')
+        .appendField(new Blockly.FieldNumber(pins.rightFoot, 0, 39), 'PIN_RF');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('OTTOロボットを初期化します（ピン番号はプリセットから取得）');
+  }
+};
+
+javascriptGenerator.forBlock['otto_init'] = function(block: Blockly.Block) {
+  const pinLL = block.getFieldValue('PIN_LL');
+  const pinRL = block.getFieldValue('PIN_RL');
+  const pinLF = block.getFieldValue('PIN_LF');
+  const pinRF = block.getFieldValue('PIN_RF');
+
+  generator.definitions_['include_otto'] = '#include <DigiCodeOtto.h>';
+  generator.definitions_['otto_instance'] = 'DigiCodeOtto otto;';
+
+  return `  otto.init(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF});\n`;
+};
+
+pythonGenerator.forBlock['otto_init'] = function(block: Blockly.Block) {
+  const pinLL = block.getFieldValue('PIN_LL');
+  const pinRL = block.getFieldValue('PIN_RL');
+  const pinLF = block.getFieldValue('PIN_LF');
+  const pinRF = block.getFieldValue('PIN_RF');
+
+  pyGen.definitions_['import_otto'] = 'from digicode_otto import DigiCodeOtto';
+  pyGen.definitions_['otto_instance'] = 'otto = DigiCodeOtto()';
+
+  return `otto.init(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF})\n`;
+};
+
+// ===== OTTO Home Position =====
+
+Blockly.Blocks['otto_home'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🏠 OTTOホームポジション');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('OTTOを直立姿勢にします');
+  }
+};
+
+javascriptGenerator.forBlock['otto_home'] = function() {
+  return `  otto.home();\n`;
+};
+
+pythonGenerator.forBlock['otto_home'] = function() {
+  return `otto.home()\n`;
+};
+
+// ===== OTTO Walk =====
+
+Blockly.Blocks['otto_walk'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🚶 OTTO歩く')
+        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('歩')
+        .appendField(new Blockly.FieldDropdown([
+          ['前進', '1'],
+          ['後退', '-1']
+        ]), 'DIRECTION')
+        .appendField('速度')
+        .appendField(new Blockly.FieldDropdown([
+          ['普通', '1000'],
+          ['速い', '600'],
+          ['遅い', '1500']
+        ]), 'SPEED');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('OTTOを歩かせます');
+  }
+};
+
+javascriptGenerator.forBlock['otto_walk'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  const direction = block.getFieldValue('DIRECTION');
+  const speed = block.getFieldValue('SPEED');
+
+  return `  otto.walk(${steps}, ${speed}, ${direction});\n`;
+};
+
+pythonGenerator.forBlock['otto_walk'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  const direction = block.getFieldValue('DIRECTION');
+  const speed = block.getFieldValue('SPEED');
+
+  return `otto.walk(${steps}, ${speed}, ${direction})\n`;
+};
+
+// ===== OTTO Turn =====
+
+Blockly.Blocks['otto_turn'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('↻ OTTO回転')
+        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('回')
+        .appendField(new Blockly.FieldDropdown([
+          ['左', '1'],
+          ['右', '-1']
+        ]), 'DIRECTION')
+        .appendField('速度')
+        .appendField(new Blockly.FieldDropdown([
+          ['普通', '1000'],
+          ['速い', '600'],
+          ['遅い', '1500']
+        ]), 'SPEED');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('OTTOを回転させます');
+  }
+};
+
+javascriptGenerator.forBlock['otto_turn'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  const direction = block.getFieldValue('DIRECTION');
+  const speed = block.getFieldValue('SPEED');
+
+  return `  otto.turn(${steps}, ${speed}, ${direction});\n`;
+};
+
+pythonGenerator.forBlock['otto_turn'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  const direction = block.getFieldValue('DIRECTION');
+  const speed = block.getFieldValue('SPEED');
+
+  return `otto.turn(${steps}, ${speed}, ${direction})\n`;
+};
+
+// ===== OTTO Jump =====
+
+Blockly.Blocks['otto_jump'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⬆️ OTTOジャンプ')
+        .appendField(new Blockly.FieldNumber(1, 1, 5), 'STEPS')
+        .appendField('回');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('OTTOをジャンプさせます');
+  }
+};
+
+javascriptGenerator.forBlock['otto_jump'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  return `  otto.jump(${steps}, 500);\n`;
+};
+
+pythonGenerator.forBlock['otto_jump'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  return `otto.jump(${steps}, 500)\n`;
+};
+
+// ===== OTTO Dance =====
+
+Blockly.Blocks['otto_dance'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('💃 OTTOダンス')
+        .appendField(new Blockly.FieldNumber(4, 1, 10), 'STEPS')
+        .appendField('回');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('OTTOをダンスさせます');
+  }
+};
+
+javascriptGenerator.forBlock['otto_dance'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  return `  otto.dance(${steps}, 600);\n`;
+};
+
+pythonGenerator.forBlock['otto_dance'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  return `otto.dance(${steps}, 600)\n`;
+};
+
+// ===== OTTO Swing =====
+
+Blockly.Blocks['otto_swing'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('〜 OTTOスウィング')
+        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('回');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('OTTOを左右に揺らします');
+  }
+};
+
+javascriptGenerator.forBlock['otto_swing'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  return `  otto.swing(${steps}, 1000);\n`;
+};
+
+pythonGenerator.forBlock['otto_swing'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  return `otto.swing(${steps}, 1000)\n`;
+};
+
+// ===== OTTO Bend =====
+
+Blockly.Blocks['otto_bend'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('↔️ OTTO傾ける')
+        .appendField(new Blockly.FieldDropdown([
+          ['左', 'left'],
+          ['右', 'right']
+        ]), 'DIRECTION')
+        .appendField(new Blockly.FieldNumber(1, 1, 5), 'STEPS')
+        .appendField('回');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('OTTOを左右に傾けます');
+  }
+};
+
+javascriptGenerator.forBlock['otto_bend'] = function(block: Blockly.Block) {
+  const direction = block.getFieldValue('DIRECTION');
+  const steps = block.getFieldValue('STEPS');
+
+  if (direction === 'left') {
+    return `  otto.bendLeft(${steps}, 1000);\n`;
+  } else {
+    return `  otto.bendRight(${steps}, 1000);\n`;
+  }
+};
+
+pythonGenerator.forBlock['otto_bend'] = function(block: Blockly.Block) {
+  const direction = block.getFieldValue('DIRECTION');
+  const steps = block.getFieldValue('STEPS');
+
+  if (direction === 'left') {
+    return `otto.bend_left(${steps}, 1000)\n`;
+  } else {
+    return `otto.bend_right(${steps}, 1000)\n`;
+  }
+};
+
+// ===== OTTO Moonwalk =====
+
+Blockly.Blocks['otto_moonwalk'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🕺 OTTOムーンウォーク')
+        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('歩')
+        .appendField(new Blockly.FieldDropdown([
+          ['右', '1'],
+          ['左', '-1']
+        ]), 'DIRECTION');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('OTTOをムーンウォークさせます');
+  }
+};
+
+javascriptGenerator.forBlock['otto_moonwalk'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  const direction = block.getFieldValue('DIRECTION');
+
+  return `  otto.moonwalk(${steps}, 1000, ${direction});\n`;
+};
+
+pythonGenerator.forBlock['otto_moonwalk'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  const direction = block.getFieldValue('DIRECTION');
+
+  return `otto.moonwalk(${steps}, 1000, ${direction})\n`;
+};
+
+// ===== OTTO Gesture (感情表現) =====
+
+Blockly.Blocks['otto_gesture'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('😊 OTTOジェスチャー')
+        .appendField(new Blockly.FieldDropdown([
+          ['ハッピー', 'OttoHappy'],
+          ['超ハッピー', 'OttoSuperHappy'],
+          ['悲しい', 'OttoSad'],
+          ['勝利', 'OttoVictory'],
+          ['怒り', 'OttoAngry'],
+          ['眠い', 'OttoSleeping'],
+          ['イライラ', 'OttoFretful'],
+          ['ラブ', 'OttoLove'],
+          ['困惑', 'OttoConfused'],
+          ['おなら', 'OttoFart'],
+          ['手を振る', 'OttoWave'],
+          ['マジック', 'OttoMagic'],
+          ['失敗', 'OttoFail']
+        ]), 'GESTURE');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('OTTOが感情を動きと音で表現します');
+  }
+};
+
+javascriptGenerator.forBlock['otto_gesture'] = function(block: Blockly.Block) {
+  const gesture = block.getFieldValue('GESTURE');
+  return `  otto.playGesture(${gesture});\n`;
+};
+
+pythonGenerator.forBlock['otto_gesture'] = function(block: Blockly.Block) {
+  const gesture = block.getFieldValue('GESTURE');
+  // Python版は簡易実装
+  const gestureMap: { [key: string]: string } = {
+    'OttoHappy': 'happy',
+    'OttoSuperHappy': 'super_happy',
+    'OttoSad': 'sad',
+    'OttoVictory': 'victory',
+    'OttoAngry': 'angry',
+    'OttoSleeping': 'sleeping',
+    'OttoFretful': 'fretful',
+    'OttoLove': 'love',
+    'OttoConfused': 'confused',
+    'OttoFart': 'fart',
+    'OttoWave': 'wave',
+    'OttoMagic': 'magic',
+    'OttoFail': 'fail'
+  };
+  return `otto.play_gesture("${gestureMap[gesture]}")\n`;
+};
+
+// ===== OTTO Sound (音声) =====
+
+Blockly.Blocks['otto_sound'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🔊 OTTOサウンド')
+        .appendField(new Blockly.FieldDropdown([
+          ['接続音', 'S_connection'],
+          ['切断音', 'S_disconnection'],
+          ['ボタン押下', 'S_buttonPushed'],
+          ['モード1', 'S_mode1'],
+          ['モード2', 'S_mode2'],
+          ['モード3', 'S_mode3'],
+          ['驚き', 'S_surprise'],
+          ['おっと', 'S_OhOoh'],
+          ['おっと2', 'S_OhOoh2'],
+          ['甘え', 'S_cuddly'],
+          ['眠り', 'S_sleeping'],
+          ['ハッピー', 'S_happy'],
+          ['超ハッピー', 'S_superHappy'],
+          ['ハッピー短', 'S_happy_short'],
+          ['悲しい', 'S_sad'],
+          ['困惑', 'S_confused'],
+          ['おなら1', 'S_fart1'],
+          ['おなら2', 'S_fart2'],
+          ['おなら3', 'S_fart3']
+        ]), 'SOUND');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('OTTOが音を鳴らします');
+  }
+};
+
+javascriptGenerator.forBlock['otto_sound'] = function(block: Blockly.Block) {
+  const sound = block.getFieldValue('SOUND');
+  return `  otto.sing(${sound});\n`;
+};
+
+pythonGenerator.forBlock['otto_sound'] = function(block: Blockly.Block) {
+  const sound = block.getFieldValue('SOUND');
+  return `otto.sing("${sound}")\n`;
+};
+
+// ===== OTTO Additional Dance Moves =====
+
+// Crusaito
+Blockly.Blocks['otto_crusaito'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🦵 OTTOクルサイト')
+        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('回')
+        .appendField(new Blockly.FieldDropdown([
+          ['左', '1'],
+          ['右', '-1']
+        ]), 'DIRECTION');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('足をクロスさせながら移動します');
+  }
+};
+
+javascriptGenerator.forBlock['otto_crusaito'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  const direction = block.getFieldValue('DIRECTION');
+  return `  otto.crusaito(${steps}, 1000, 30, ${direction});\n`;
+};
+
+pythonGenerator.forBlock['otto_crusaito'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  const direction = block.getFieldValue('DIRECTION');
+  return `otto.crusaito(${steps}, 1000, 30, ${direction})\n`;
+};
+
+// Flapping
+Blockly.Blocks['otto_flapping'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🦅 OTTOフラッピング')
+        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('回')
+        .appendField(new Blockly.FieldDropdown([
+          ['前', '1'],
+          ['後', '-1']
+        ]), 'DIRECTION');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('羽ばたくような動きをします');
+  }
+};
+
+javascriptGenerator.forBlock['otto_flapping'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  const direction = block.getFieldValue('DIRECTION');
+  return `  otto.flapping(${steps}, 1000, 20, ${direction});\n`;
+};
+
+pythonGenerator.forBlock['otto_flapping'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  const direction = block.getFieldValue('DIRECTION');
+  return `otto.flapping(${steps}, 1000, 20, ${direction})\n`;
+};
+
+// Tiptoe Swing
+Blockly.Blocks['otto_tiptoe_swing'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🩰 OTTOつま先スウィング')
+        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('回');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('つま先立ちで揺れます');
+  }
+};
+
+javascriptGenerator.forBlock['otto_tiptoe_swing'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  return `  otto.tiptoeSwing(${steps}, 1000, 30);\n`;
+};
+
+pythonGenerator.forBlock['otto_tiptoe_swing'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  return `otto.tiptoe_swing(${steps}, 1000, 30)\n`;
+};
+
+// Jitter
+Blockly.Blocks['otto_jitter'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('😰 OTTOジッター')
+        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('回');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('震えるような動きをします');
+  }
+};
+
+javascriptGenerator.forBlock['otto_jitter'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  return `  otto.jitter(${steps}, 500, 15);\n`;
+};
+
+pythonGenerator.forBlock['otto_jitter'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  return `otto.jitter(${steps}, 500, 15)\n`;
+};
+
+// Ascending Turn
+Blockly.Blocks['otto_ascending_turn'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🔄 OTTO上昇ターン')
+        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('回')
+        .appendField(new Blockly.FieldDropdown([
+          ['左', '1'],
+          ['右', '-1']
+        ]), 'DIRECTION');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('上昇しながら回転します');
+  }
+};
+
+javascriptGenerator.forBlock['otto_ascending_turn'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  const direction = block.getFieldValue('DIRECTION');
+  return `  otto.ascendingTurn(${steps}, 1000, 10, ${direction});\n`;
+};
+
+pythonGenerator.forBlock['otto_ascending_turn'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  const direction = block.getFieldValue('DIRECTION');
+  return `otto.ascending_turn(${steps}, 1000, 10, ${direction})\n`;
+};
+
+// Shake Leg
+Blockly.Blocks['otto_shake_leg'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🦿 OTTO足を振る')
+        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('回')
+        .appendField(new Blockly.FieldDropdown([
+          ['左足', '1'],
+          ['右足', '-1']
+        ]), 'DIRECTION');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('足を振ります');
+  }
+};
+
+javascriptGenerator.forBlock['otto_shake_leg'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  const direction = block.getFieldValue('DIRECTION');
+  return `  otto.shakeLeg(${steps}, 1000, ${direction});\n`;
+};
+
+pythonGenerator.forBlock['otto_shake_leg'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  const direction = block.getFieldValue('DIRECTION');
+  return `otto.shake_leg(${steps}, 1000, ${direction})\n`;
+};
+
+// Up Down
+Blockly.Blocks['otto_updown'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⬆️⬇️ OTTOアップダウン')
+        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('回');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(OTTO_COLOR);
+    this.setTooltip('上下に動きます');
+  }
+};
+
+javascriptGenerator.forBlock['otto_updown'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  return `  otto.updown(${steps}, 1000, 30);\n`;
+};
+
+pythonGenerator.forBlock['otto_updown'] = function(block: Blockly.Block) {
+  const steps = block.getFieldValue('STEPS');
+  return `otto.updown(${steps}, 1000, 30)\n`;
+};
+
+export {}; // Make this a module

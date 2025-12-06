@@ -1,0 +1,888 @@
+/*
+ * DigiCode Sensor Blocks
+ *
+ * Blocks for various sensors (ultrasonic, DHT, etc.)
+ * Supports both Arduino C++ and MicroPython.
+ */
+
+import * as Blockly from 'blockly';
+import { javascriptGenerator, Order } from 'blockly/javascript';
+import { pythonGenerator } from 'blockly/python';
+import { getSensorPins } from '../utils/pinHelper';
+
+// 型アサーション用のヘルパー（definitions_やsetups_はprotectedまたは存在しないため）
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const generator = javascriptGenerator as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const pyGen = pythonGenerator as any;
+
+// センサーブロックの色定義（種類ごとに異なる色）
+const SENSOR_COLOR_ULTRASONIC = '#3b82f6';  // Blue - 超音波センサー
+const SENSOR_COLOR_DHT = '#06b6d4';         // Cyan - 温湿度センサー
+const SENSOR_COLOR_DIGITAL = '#f59e0b';     // Amber - デジタルセンサー
+const SENSOR_COLOR_ANALOG = '#10b981';      // Green - アナログセンサー
+const SENSOR_COLOR_DEFAULT = '#FF9800';     // Orange - その他
+
+// ===== Ultrasonic Sensor (HC-SR04) =====
+
+// Ultrasonic Init Block
+Blockly.Blocks['ultrasonic_init'] = {
+  init: function() {
+    const pins = getSensorPins();
+    this.appendDummyInput()
+        .appendField('📏 HC-SR04初期化')
+        .appendField('Trigピン')
+        .appendField(new Blockly.FieldNumber(pins.ultrasonicTrig, 0, 39), 'TRIG_PIN')
+        .appendField('Echoピン')
+        .appendField(new Blockly.FieldNumber(pins.ultrasonicEcho, 0, 39), 'ECHO_PIN');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(SENSOR_COLOR_ULTRASONIC);
+    this.setTooltip('HC-SR04超音波センサーを初期化します（HP Robot ESP32: Trig=GPIO18, Echo=GPIO19 #1）');
+  }
+};
+
+javascriptGenerator.forBlock['ultrasonic_init'] = function(block: Blockly.Block) {
+  const trigPin = block.getFieldValue('TRIG_PIN');
+  const echoPin = block.getFieldValue('ECHO_PIN');
+
+  generator.definitions_['ultrasonic_pins'] =
+    `// Ultrasonic sensor pins\n` +
+    `#define ULTRASONIC_TRIG ${trigPin}\n` +
+    `#define ULTRASONIC_ECHO ${echoPin}`;
+
+  generator.definitions_['ultrasonic_function'] =
+    `// Measure distance with ultrasonic sensor\n` +
+    `float measureDistance() {\n` +
+    `  digitalWrite(ULTRASONIC_TRIG, LOW);\n` +
+    `  delayMicroseconds(2);\n` +
+    `  digitalWrite(ULTRASONIC_TRIG, HIGH);\n` +
+    `  delayMicroseconds(10);\n` +
+    `  digitalWrite(ULTRASONIC_TRIG, LOW);\n` +
+    `  \n` +
+    `  long duration = pulseIn(ULTRASONIC_ECHO, HIGH, 30000);\n` +
+    `  if (duration == 0) return 999.9;\n` +
+    `  float distance = duration * 0.034 / 2;\n` +
+    `  return distance;\n` +
+    `}`;
+
+  return `  pinMode(ULTRASONIC_TRIG, OUTPUT);\n` +
+         `  pinMode(ULTRASONIC_ECHO, INPUT);\n`;
+};
+
+pythonGenerator.forBlock['ultrasonic_init'] = function(block: Blockly.Block) {
+  const trigPin = block.getFieldValue('TRIG_PIN');
+  const echoPin = block.getFieldValue('ECHO_PIN');
+
+  pyGen.definitions_['import_ultrasonic'] = 'from machine import Pin\nimport time';
+  pyGen.definitions_['ultrasonic_pins'] =
+    `# Ultrasonic sensor pins\n` +
+    `ultrasonic_trig = Pin(${trigPin}, Pin.OUT)\n` +
+    `ultrasonic_echo = Pin(${echoPin}, Pin.IN)`;
+
+  pyGen.definitions_['ultrasonic_function'] =
+    `# Measure distance with ultrasonic sensor\n` +
+    `def measure_distance():\n` +
+    `    ultrasonic_trig.value(0)\n` +
+    `    time.sleep_us(2)\n` +
+    `    ultrasonic_trig.value(1)\n` +
+    `    time.sleep_us(10)\n` +
+    `    ultrasonic_trig.value(0)\n` +
+    `    \n` +
+    `    timeout = 30000\n` +
+    `    start = time.ticks_us()\n` +
+    `    while ultrasonic_echo.value() == 0:\n` +
+    `        if time.ticks_diff(time.ticks_us(), start) > timeout:\n` +
+    `            return 999.9\n` +
+    `    pulse_start = time.ticks_us()\n` +
+    `    \n` +
+    `    while ultrasonic_echo.value() == 1:\n` +
+    `        if time.ticks_diff(time.ticks_us(), pulse_start) > timeout:\n` +
+    `            return 999.9\n` +
+    `    pulse_end = time.ticks_us()\n` +
+    `    \n` +
+    `    duration = time.ticks_diff(pulse_end, pulse_start)\n` +
+    `    distance = duration * 0.034 / 2\n` +
+    `    return distance`;
+
+  return '';  // Init doesn't generate runtime code
+};
+
+// Ultrasonic Distance Block (simplified - requires init)
+Blockly.Blocks['ultrasonic_distance'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📏 超音波距離(cm)');
+    this.setOutput(true, 'Number');
+    this.setColour(SENSOR_COLOR_ULTRASONIC);
+    this.setTooltip('HC-SR04超音波センサーで距離を測定します（初期化が必要）');
+  }
+};
+
+javascriptGenerator.forBlock['ultrasonic_distance'] = function() {
+  const code = `measureDistance()`;
+  return [code, Order.FUNCTION_CALL];
+};
+
+pythonGenerator.forBlock['ultrasonic_distance'] = function() {
+  const code = `measure_distance()`;
+  return [code, pyGen.ORDER_FUNCTION_CALL];
+};
+
+// ===== DHT11/DHT22 Temperature & Humidity Sensor =====
+
+Blockly.Blocks['dht_init'] = {
+  init: function() {
+    const pins = getSensorPins();
+    this.appendDummyInput()
+        .appendField('🌡️ DHT初期化')
+        .appendField(new Blockly.FieldDropdown([
+          ['DHT11', 'DHT11'],
+          ['DHT22', 'DHT22']
+        ]), 'TYPE')
+        .appendField('ピン')
+        .appendField(new Blockly.FieldNumber(pins.dht, 0, 39), 'PIN');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(SENSOR_COLOR_DHT);
+    this.setTooltip('DHT11/DHT22温湿度センサーを初期化します');
+  }
+};
+
+javascriptGenerator.forBlock['dht_init'] = function(block: Blockly.Block) {
+  const type = block.getFieldValue('TYPE');
+  const pin = block.getFieldValue('PIN');
+
+  generator.definitions_['include_dht'] = '#include <DHT.h>';
+  generator.definitions_['dht_instance'] =
+    `// DHT sensor\n` +
+    `#define DHT_PIN ${pin}\n` +
+    `#define DHT_TYPE ${type}\n` +
+    `DHT dht(DHT_PIN, DHT_TYPE);`;
+
+  generator.setups_['dht_begin'] = `  dht.begin();`;
+
+  return '';  // Init doesn't generate runtime code
+};
+
+pythonGenerator.forBlock['dht_init'] = function(block: Blockly.Block) {
+  const type = block.getFieldValue('TYPE');
+  const pin = block.getFieldValue('PIN');
+
+  const dhtClass = type === 'DHT11' ? 'DHT11' : 'DHT22';
+
+  pyGen.definitions_['import_dht'] = 'from machine import Pin\nimport dht';
+  pyGen.definitions_['dht_instance'] =
+    `# DHT sensor\n` +
+    `dht_sensor = dht.${dhtClass}(Pin(${pin}))`;
+
+  return '';  // Init doesn't generate runtime code
+};
+
+// ===== Read Temperature =====
+
+Blockly.Blocks['dht_temperature'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🌡️ DHT温度(℃)');
+    this.setOutput(true, 'Number');
+    this.setColour(SENSOR_COLOR_DHT);
+    this.setTooltip('DHT温度を摂氏で読み取ります');
+  }
+};
+
+javascriptGenerator.forBlock['dht_temperature'] = function() {
+  const code = 'dht.readTemperature()';
+  return [code, Order.FUNCTION_CALL];
+};
+
+pythonGenerator.forBlock['dht_temperature'] = function() {
+  if (!pyGen.definitions_['dht_read_function']) {
+    pyGen.definitions_['dht_read_function'] =
+      `# Read DHT sensor\n` +
+      `def read_dht():\n` +
+      `    try:\n` +
+      `        dht_sensor.measure()\n` +
+      `        return True\n` +
+      `    except:\n` +
+      `        return False`;
+  }
+
+  // We need to call measure() before reading
+  const code = '(dht_sensor.temperature() if read_dht() else -999)';
+  return [code, pyGen.ORDER_CONDITIONAL];
+};
+
+// ===== Read Humidity =====
+
+Blockly.Blocks['dht_humidity'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('💧 DHT湿度(%)');
+    this.setOutput(true, 'Number');
+    this.setColour(SENSOR_COLOR_DHT);
+    this.setTooltip('DHT湿度をパーセントで読み取ります');
+  }
+};
+
+javascriptGenerator.forBlock['dht_humidity'] = function() {
+  const code = 'dht.readHumidity()';
+  return [code, Order.FUNCTION_CALL];
+};
+
+pythonGenerator.forBlock['dht_humidity'] = function() {
+  if (!pyGen.definitions_['dht_read_function']) {
+    pyGen.definitions_['dht_read_function'] =
+      `# Read DHT sensor\n` +
+      `def read_dht():\n` +
+      `    try:\n` +
+      `        dht_sensor.measure()\n` +
+      `        return True\n` +
+      `    except:\n` +
+      `        return False`;
+  }
+
+  const code = '(dht_sensor.humidity() if read_dht() else -999)';
+  return [code, pyGen.ORDER_CONDITIONAL];
+};
+
+// ===== RUS-04 Ultrasonic with RGB (HC-SR04 + WS2812B) =====
+
+Blockly.Blocks['otto_ultrasonic_init'] = {
+  init: function() {
+    const pins = getSensorPins();
+    this.appendDummyInput()
+        .appendField('👀 RUS-04初期化')
+        .appendField('Trigピン')
+        .appendField(new Blockly.FieldNumber(pins.ultrasonicTrig, 0, 39), 'TRIG_PIN')
+        .appendField('Echoピン')
+        .appendField(new Blockly.FieldNumber(pins.ultrasonicEcho, 0, 39), 'ECHO_PIN');
+    this.appendDummyInput()
+        .appendField('RGBピン')
+        .appendField(new Blockly.FieldNumber(pins.ultrasonicRgb, 0, 39), 'RGB_PIN')
+        .appendField('LED数')
+        .appendField(new Blockly.FieldNumber(6, 1, 256), 'NUM_LEDS');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(SENSOR_COLOR_ULTRASONIC);
+    this.setTooltip('RUS-04超音波センサー(RGB内蔵)を初期化します。HC-SR04互換+WS2812B LED×6');
+  }
+};
+
+javascriptGenerator.forBlock['otto_ultrasonic_init'] = function(block: Blockly.Block) {
+  const trigPin = block.getFieldValue('TRIG_PIN');
+  const echoPin = block.getFieldValue('ECHO_PIN');
+  const rgbPin = block.getFieldValue('RGB_PIN');
+  const numLeds = block.getFieldValue('NUM_LEDS');
+
+  // Ultrasonic pins
+  generator.definitions_['rus04_ultrasonic_pins'] =
+    `// RUS-04 Ultrasonic sensor pins\n` +
+    `#define RUS04_TRIG ${trigPin}\n` +
+    `#define RUS04_ECHO ${echoPin}`;
+
+  generator.definitions_['rus04_ultrasonic_function'] =
+    `// Measure distance with RUS-04\n` +
+    `float rus04MeasureDistance() {\n` +
+    `  digitalWrite(RUS04_TRIG, LOW);\n` +
+    `  delayMicroseconds(2);\n` +
+    `  digitalWrite(RUS04_TRIG, HIGH);\n` +
+    `  delayMicroseconds(10);\n` +
+    `  digitalWrite(RUS04_TRIG, LOW);\n` +
+    `  \n` +
+    `  long duration = pulseIn(RUS04_ECHO, HIGH, 30000);\n` +
+    `  if (duration == 0) return 999.9;\n` +
+    `  float distance = duration * 0.034 / 2;\n` +
+    `  return distance;\n` +
+    `}`;
+
+  // RGB LED (NeoPixel)
+  generator.definitions_['include_neopixel'] = '#include <Adafruit_NeoPixel.h>';
+  generator.definitions_['rus04_rgb_instance'] =
+    `// RUS-04 RGB LEDs (WS2812B)\n` +
+    `#define RUS04_RGB_PIN ${rgbPin}\n` +
+    `#define RUS04_NUM_LEDS ${numLeds}\n` +
+    `Adafruit_NeoPixel rus04Eyes(RUS04_NUM_LEDS, RUS04_RGB_PIN, NEO_GRB + NEO_KHZ800);`;
+
+  return `  pinMode(RUS04_TRIG, OUTPUT);\n` +
+         `  pinMode(RUS04_ECHO, INPUT);\n` +
+         `  rus04Eyes.begin();\n` +
+         `  rus04Eyes.show();\n`;
+};
+
+pythonGenerator.forBlock['otto_ultrasonic_init'] = function(block: Blockly.Block) {
+  const trigPin = block.getFieldValue('TRIG_PIN');
+  const echoPin = block.getFieldValue('ECHO_PIN');
+  const rgbPin = block.getFieldValue('RGB_PIN');
+  const numLeds = block.getFieldValue('NUM_LEDS');
+
+  pyGen.definitions_['import_ultrasonic'] = 'from machine import Pin\nimport time';
+  pyGen.definitions_['rus04_ultrasonic_pins'] =
+    `# RUS-04 Ultrasonic sensor pins\n` +
+    `rus04_trig = Pin(${trigPin}, Pin.OUT)\n` +
+    `rus04_echo = Pin(${echoPin}, Pin.IN)`;
+
+  pyGen.definitions_['rus04_ultrasonic_function'] =
+    `# Measure distance with RUS-04\n` +
+    `def rus04_measure_distance():\n` +
+    `    rus04_trig.value(0)\n` +
+    `    time.sleep_us(2)\n` +
+    `    rus04_trig.value(1)\n` +
+    `    time.sleep_us(10)\n` +
+    `    rus04_trig.value(0)\n` +
+    `    \n` +
+    `    timeout = 30000\n` +
+    `    start = time.ticks_us()\n` +
+    `    while rus04_echo.value() == 0:\n` +
+    `        if time.ticks_diff(time.ticks_us(), start) > timeout:\n` +
+    `            return 999.9\n` +
+    `    pulse_start = time.ticks_us()\n` +
+    `    \n` +
+    `    while rus04_echo.value() == 1:\n` +
+    `        if time.ticks_diff(time.ticks_us(), pulse_start) > timeout:\n` +
+    `            return 999.9\n` +
+    `    pulse_end = time.ticks_us()\n` +
+    `    \n` +
+    `    duration = time.ticks_diff(pulse_end, pulse_start)\n` +
+    `    distance = duration * 0.034 / 2\n` +
+    `    return distance`;
+
+  pyGen.definitions_['import_neopixel'] = 'from machine import Pin\nfrom neopixel import NeoPixel';
+  pyGen.definitions_['rus04_rgb_instance'] = `rus04_eyes = NeoPixel(Pin(${rgbPin}), ${numLeds})`;
+
+  return '';
+};
+
+// ===== RUS-04 Distance =====
+
+Blockly.Blocks['otto_ultrasonic_distance'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📏 RUS-04距離(cm)');
+    this.setOutput(true, 'Number');
+    this.setColour(SENSOR_COLOR_ULTRASONIC);
+    this.setTooltip('RUS-04超音波センサーで距離を測定します（初期化が必要）');
+  }
+};
+
+javascriptGenerator.forBlock['otto_ultrasonic_distance'] = function() {
+  const code = 'rus04MeasureDistance()';
+  return [code, Order.FUNCTION_CALL];
+};
+
+pythonGenerator.forBlock['otto_ultrasonic_distance'] = function() {
+  const code = 'rus04_measure_distance()';
+  return [code, pyGen.ORDER_FUNCTION_CALL];
+};
+
+// ===== RUS-04 RGB LED両目色設定 =====
+
+Blockly.Blocks['otto_ultrasonic_rgb'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🌈 RUS-04 RGB両目')
+        .appendField('左')
+        .appendField(new Blockly.FieldDropdown([
+          ['赤', 'ff0000'],
+          ['緑', '00ff00'],
+          ['青', '0000ff'],
+          ['黄', 'ffff00'],
+          ['紫', 'ff00ff'],
+          ['水色', '00ffff'],
+          ['白', 'ffffff'],
+          ['消灯', '000000']
+        ]), 'LEFT_COLOR')
+        .appendField('右')
+        .appendField(new Blockly.FieldDropdown([
+          ['赤', 'ff0000'],
+          ['緑', '00ff00'],
+          ['青', '0000ff'],
+          ['黄', 'ffff00'],
+          ['紫', 'ff00ff'],
+          ['水色', '00ffff'],
+          ['白', 'ffffff'],
+          ['消灯', '000000']
+        ]), 'RIGHT_COLOR');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(SENSOR_COLOR_ULTRASONIC);
+    this.setTooltip('RUS-04の目(RGB LED)の色を左右個別に設定します');
+  }
+};
+
+javascriptGenerator.forBlock['otto_ultrasonic_rgb'] = function(block: Blockly.Block) {
+  const leftColor = block.getFieldValue('LEFT_COLOR');
+  const rightColor = block.getFieldValue('RIGHT_COLOR');
+
+  const leftR = parseInt(leftColor.substring(0, 2), 16);
+  const leftG = parseInt(leftColor.substring(2, 4), 16);
+  const leftB = parseInt(leftColor.substring(4, 6), 16);
+
+  const rightR = parseInt(rightColor.substring(0, 2), 16);
+  const rightG = parseInt(rightColor.substring(2, 4), 16);
+  const rightB = parseInt(rightColor.substring(4, 6), 16);
+
+  return `  // Set left eyes (LEDs 0-2)\n` +
+         `  for (int i = 0; i < 3; i++) {\n` +
+         `    rus04Eyes.setPixelColor(i, rus04Eyes.Color(${leftR}, ${leftG}, ${leftB}));\n` +
+         `  }\n` +
+         `  // Set right eyes (LEDs 3-5)\n` +
+         `  for (int i = 3; i < 6; i++) {\n` +
+         `    rus04Eyes.setPixelColor(i, rus04Eyes.Color(${rightR}, ${rightG}, ${rightB}));\n` +
+         `  }\n` +
+         `  rus04Eyes.show();\n`;
+};
+
+pythonGenerator.forBlock['otto_ultrasonic_rgb'] = function(block: Blockly.Block) {
+  const leftColor = block.getFieldValue('LEFT_COLOR');
+  const rightColor = block.getFieldValue('RIGHT_COLOR');
+
+  const leftR = parseInt(leftColor.substring(0, 2), 16);
+  const leftG = parseInt(leftColor.substring(2, 4), 16);
+  const leftB = parseInt(leftColor.substring(4, 6), 16);
+
+  const rightR = parseInt(rightColor.substring(0, 2), 16);
+  const rightG = parseInt(rightColor.substring(2, 4), 16);
+  const rightB = parseInt(rightColor.substring(4, 6), 16);
+
+  return `# Set left eyes (LEDs 0-2)\n` +
+         `for i in range(3):\n` +
+         `    rus04_eyes[i] = (${leftR}, ${leftG}, ${leftB})\n` +
+         `# Set right eyes (LEDs 3-5)\n` +
+         `for i in range(3, 6):\n` +
+         `    rus04_eyes[i] = (${rightR}, ${rightG}, ${rightB})\n` +
+         `rus04_eyes.write()\n`;
+};
+
+// ===== RUS-04 RGB LED左右個別 =====
+
+Blockly.Blocks['otto_ultrasonic_eye'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('👁️ RUS-04 RGB 目')
+        .appendField(new Blockly.FieldDropdown([
+          ['左', 'left'],
+          ['右', 'right']
+        ]), 'EYE')
+        .appendField(new Blockly.FieldDropdown([
+          ['赤', 'ff0000'],
+          ['緑', '00ff00'],
+          ['青', '0000ff'],
+          ['黄', 'ffff00'],
+          ['紫', 'ff00ff'],
+          ['水色', '00ffff'],
+          ['白', 'ffffff'],
+          ['消灯', '000000']
+        ]), 'COLOR');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(SENSOR_COLOR_ULTRASONIC);
+    this.setTooltip('左右の目を個別に設定します');
+  }
+};
+
+javascriptGenerator.forBlock['otto_ultrasonic_eye'] = function(block: Blockly.Block) {
+  const eye = block.getFieldValue('EYE');
+  const color = block.getFieldValue('COLOR');
+
+  const r = parseInt(color.substring(0, 2), 16);
+  const g = parseInt(color.substring(2, 4), 16);
+  const b = parseInt(color.substring(4, 6), 16);
+
+  if (eye === 'left') {
+    return `  // Set left eye (LEDs 0-2)\n` +
+           `  for (int i = 0; i < 3; i++) {\n` +
+           `    rus04Eyes.setPixelColor(i, rus04Eyes.Color(${r}, ${g}, ${b}));\n` +
+           `  }\n` +
+           `  rus04Eyes.show();\n`;
+  } else {
+    return `  // Set right eye (LEDs 3-5)\n` +
+           `  for (int i = 3; i < 6; i++) {\n` +
+           `    rus04Eyes.setPixelColor(i, rus04Eyes.Color(${r}, ${g}, ${b}));\n` +
+           `  }\n` +
+           `  rus04Eyes.show();\n`;
+  }
+};
+
+pythonGenerator.forBlock['otto_ultrasonic_eye'] = function(block: Blockly.Block) {
+  const eye = block.getFieldValue('EYE');
+  const color = block.getFieldValue('COLOR');
+
+  const r = parseInt(color.substring(0, 2), 16);
+  const g = parseInt(color.substring(2, 4), 16);
+  const b = parseInt(color.substring(4, 6), 16);
+
+  if (eye === 'left') {
+    return `# Set left eye (LEDs 0-2)\n` +
+           `for i in range(3):\n` +
+           `    rus04_eyes[i] = (${r}, ${g}, ${b})\n` +
+           `rus04_eyes.write()\n`;
+  } else {
+    return `# Set right eye (LEDs 3-5)\n` +
+           `for i in range(3, 6):\n` +
+           `    rus04_eyes[i] = (${r}, ${g}, ${b})\n` +
+           `rus04_eyes.write()\n`;
+  }
+};
+
+// ===== RUS-04 RGB 両目簡易設定 (same as otto_ultrasonic_rgb) =====
+
+Blockly.Blocks['otto_ultrasonic_both_simple'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('👀 RUS-04 RGB両目')
+        .appendField('左')
+        .appendField(new Blockly.FieldDropdown([
+          ['赤', 'ff0000'],
+          ['緑', '00ff00'],
+          ['青', '0000ff'],
+          ['黄', 'ffff00'],
+          ['紫', 'ff00ff'],
+          ['水色', '00ffff'],
+          ['白', 'ffffff'],
+          ['消灯', '000000']
+        ]), 'LEFT_COLOR')
+        .appendField('右')
+        .appendField(new Blockly.FieldDropdown([
+          ['赤', 'ff0000'],
+          ['緑', '00ff00'],
+          ['青', '0000ff'],
+          ['黄', 'ffff00'],
+          ['紫', 'ff00ff'],
+          ['水色', '00ffff'],
+          ['白', 'ffffff'],
+          ['消灯', '000000']
+        ]), 'RIGHT_COLOR');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(SENSOR_COLOR_ULTRASONIC);
+    this.setTooltip('両目の色をドロップダウンで設定');
+  }
+};
+
+javascriptGenerator.forBlock['otto_ultrasonic_both_simple'] = function(block: Blockly.Block) {
+  const leftColor = block.getFieldValue('LEFT_COLOR');
+  const rightColor = block.getFieldValue('RIGHT_COLOR');
+
+  const leftR = parseInt(leftColor.substring(0, 2), 16);
+  const leftG = parseInt(leftColor.substring(2, 4), 16);
+  const leftB = parseInt(leftColor.substring(4, 6), 16);
+
+  const rightR = parseInt(rightColor.substring(0, 2), 16);
+  const rightG = parseInt(rightColor.substring(2, 4), 16);
+  const rightB = parseInt(rightColor.substring(4, 6), 16);
+
+  return `  // Set left eyes (LEDs 0-2)\n` +
+         `  for (int i = 0; i < 3; i++) {\n` +
+         `    rus04Eyes.setPixelColor(i, rus04Eyes.Color(${leftR}, ${leftG}, ${leftB}));\n` +
+         `  }\n` +
+         `  // Set right eyes (LEDs 3-5)\n` +
+         `  for (int i = 3; i < 6; i++) {\n` +
+         `    rus04Eyes.setPixelColor(i, rus04Eyes.Color(${rightR}, ${rightG}, ${rightB}));\n` +
+         `  }\n` +
+         `  rus04Eyes.show();\n`;
+};
+
+pythonGenerator.forBlock['otto_ultrasonic_both_simple'] = function(block: Blockly.Block) {
+  const leftColor = block.getFieldValue('LEFT_COLOR');
+  const rightColor = block.getFieldValue('RIGHT_COLOR');
+
+  const leftR = parseInt(leftColor.substring(0, 2), 16);
+  const leftG = parseInt(leftColor.substring(2, 4), 16);
+  const leftB = parseInt(leftColor.substring(4, 6), 16);
+
+  const rightR = parseInt(rightColor.substring(0, 2), 16);
+  const rightG = parseInt(rightColor.substring(2, 4), 16);
+  const rightB = parseInt(rightColor.substring(4, 6), 16);
+
+  return `# Set left eyes (LEDs 0-2)\n` +
+         `for i in range(3):\n` +
+         `    rus04_eyes[i] = (${leftR}, ${leftG}, ${leftB})\n` +
+         `# Set right eyes (LEDs 3-5)\n` +
+         `for i in range(3, 6):\n` +
+         `    rus04_eyes[i] = (${rightR}, ${rightG}, ${rightB})\n` +
+         `rus04_eyes.write()\n`;
+};
+
+// ===== RUS-04 RGB 明るさ =====
+
+Blockly.Blocks['otto_ultrasonic_brightness'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('☀️ RUS-04 RGB 明るさ')
+        .appendField(new Blockly.FieldNumber(80, 0, 255), 'BRIGHTNESS')
+        .appendField('(0-255)');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(SENSOR_COLOR_ULTRASONIC);
+    this.setTooltip('目のLEDの明るさを設定（0-255）');
+  }
+};
+
+javascriptGenerator.forBlock['otto_ultrasonic_brightness'] = function(block: Blockly.Block) {
+  const brightness = block.getFieldValue('BRIGHTNESS');
+  return `  rus04Eyes.setBrightness(${brightness});\n` +
+         `  rus04Eyes.show();\n`;
+};
+
+pythonGenerator.forBlock['otto_ultrasonic_brightness'] = function(block: Blockly.Block) {
+  const brightness = block.getFieldValue('BRIGHTNESS');
+  return `# MicroPython NeoPixel doesn't support brightness directly\n` +
+         `# Brightness: ${brightness} - requires color scaling implementation\n`;
+};
+
+// ===== RUS-04 RGB 消灯 =====
+
+Blockly.Blocks['otto_ultrasonic_off'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⬛ RUS-04 RGB 消灯');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(SENSOR_COLOR_ULTRASONIC);
+    this.setTooltip('両目を消灯します');
+  }
+};
+
+javascriptGenerator.forBlock['otto_ultrasonic_off'] = function() {
+  return `  rus04Eyes.clear();\n` +
+         `  rus04Eyes.show();\n`;
+};
+
+pythonGenerator.forBlock['otto_ultrasonic_off'] = function() {
+  return `rus04_eyes.fill((0, 0, 0))\n` +
+         `rus04_eyes.write()\n`;
+};
+
+// ===== Touch Sensor (静電容量式タッチセンサー) =====
+
+Blockly.Blocks['touch_init'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('👆 タッチセンサー初期化')
+        .appendField('ピン')
+        .appendField(new Blockly.FieldNumber(4, 0, 39), 'PIN')
+        .appendField('しきい値')
+        .appendField(new Blockly.FieldNumber(40, 0, 100), 'THRESHOLD');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(SENSOR_COLOR_DIGITAL);
+    this.setTooltip('静電容量式タッチセンサーを初期化します（ESP32タッチピン対応: T0=GPIO4, T2=GPIO2等）');
+  }
+};
+
+javascriptGenerator.forBlock['touch_init'] = function(block: Blockly.Block) {
+  const pin = block.getFieldValue('PIN');
+  const threshold = block.getFieldValue('THRESHOLD');
+
+  generator.definitions_['touch_threshold'] =
+    `// Touch sensor threshold\n` +
+    `#define TOUCH_PIN ${pin}\n` +
+    `#define TOUCH_THRESHOLD ${threshold}`;
+
+  return `  // Touch sensor on pin ${pin} initialized\n`;
+};
+
+pythonGenerator.forBlock['touch_init'] = function(block: Blockly.Block) {
+  const pin = block.getFieldValue('PIN');
+  const threshold = block.getFieldValue('THRESHOLD');
+
+  pyGen.definitions_['import_touch'] = 'from machine import Pin, TouchPad';
+  pyGen.definitions_['touch_instance'] =
+    `# Touch sensor\n` +
+    `touch_sensor = TouchPad(Pin(${pin}))\n` +
+    `touch_threshold = ${threshold}`;
+
+  return '';
+};
+
+// Touch Sensor Read (タッチ検出)
+Blockly.Blocks['touch_read'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('👆 タッチされた？');
+    this.setOutput(true, 'Boolean');
+    this.setColour(SENSOR_COLOR_DIGITAL);
+    this.setTooltip('タッチセンサーがタッチされているかを返します');
+  }
+};
+
+javascriptGenerator.forBlock['touch_read'] = function() {
+  generator.definitions_['touch_read_function'] =
+    `// Read touch sensor\n` +
+    `bool isTouched() {\n` +
+    `  return touchRead(TOUCH_PIN) < TOUCH_THRESHOLD;\n` +
+    `}`;
+
+  const code = 'isTouched()';
+  return [code, Order.FUNCTION_CALL];
+};
+
+pythonGenerator.forBlock['touch_read'] = function() {
+  const code = '(touch_sensor.read() < touch_threshold)';
+  return [code, pyGen.ORDER_COMPARISON];
+};
+
+// Touch Sensor Value (生の値)
+Blockly.Blocks['touch_value'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('👆 タッチセンサー値');
+    this.setOutput(true, 'Number');
+    this.setColour(SENSOR_COLOR_DIGITAL);
+    this.setTooltip('タッチセンサーの生の値を返します（小さいほど強くタッチ）');
+  }
+};
+
+javascriptGenerator.forBlock['touch_value'] = function() {
+  const code = 'touchRead(TOUCH_PIN)';
+  return [code, Order.FUNCTION_CALL];
+};
+
+pythonGenerator.forBlock['touch_value'] = function() {
+  const code = 'touch_sensor.read()';
+  return [code, pyGen.ORDER_FUNCTION_CALL];
+};
+
+// ===== Sound Sensor (サウンドセンサー/マイク) =====
+
+Blockly.Blocks['sound_init'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🎤 サウンドセンサー初期化')
+        .appendField('ピン')
+        .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(SENSOR_COLOR_DIGITAL);
+    this.setTooltip('アナログサウンドセンサー/マイクを初期化します（ADC対応ピン: GPIO32-39）');
+  }
+};
+
+javascriptGenerator.forBlock['sound_init'] = function(block: Blockly.Block) {
+  const pin = block.getFieldValue('PIN');
+
+  generator.definitions_['sound_pin'] =
+    `// Sound sensor pin\n` +
+    `#define SOUND_PIN ${pin}`;
+
+  return `  // Sound sensor on pin ${pin} initialized\n`;
+};
+
+pythonGenerator.forBlock['sound_init'] = function(block: Blockly.Block) {
+  const pin = block.getFieldValue('PIN');
+
+  pyGen.definitions_['import_sound'] = 'from machine import Pin, ADC';
+  pyGen.definitions_['sound_instance'] =
+    `# Sound sensor (ADC)\n` +
+    `sound_sensor = ADC(Pin(${pin}))\n` +
+    `sound_sensor.atten(ADC.ATTN_11DB)`;
+
+  return '';
+};
+
+// Sound Sensor Read (音量レベル)
+Blockly.Blocks['sound_level'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🎤 音量レベル');
+    this.setOutput(true, 'Number');
+    this.setColour(SENSOR_COLOR_DIGITAL);
+    this.setTooltip('サウンドセンサーの音量レベルを返します（0-4095）');
+  }
+};
+
+javascriptGenerator.forBlock['sound_level'] = function() {
+  const code = 'analogRead(SOUND_PIN)';
+  return [code, Order.FUNCTION_CALL];
+};
+
+pythonGenerator.forBlock['sound_level'] = function() {
+  const code = 'sound_sensor.read()';
+  return [code, pyGen.ORDER_FUNCTION_CALL];
+};
+
+// Sound Detected (音検出)
+Blockly.Blocks['sound_detected'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🎤 音が聞こえた？')
+        .appendField('しきい値')
+        .appendField(new Blockly.FieldNumber(1000, 0, 4095), 'THRESHOLD');
+    this.setOutput(true, 'Boolean');
+    this.setColour(SENSOR_COLOR_DIGITAL);
+    this.setTooltip('音がしきい値を超えたかを返します');
+  }
+};
+
+javascriptGenerator.forBlock['sound_detected'] = function(block: Blockly.Block) {
+  const threshold = block.getFieldValue('THRESHOLD');
+  const code = `(analogRead(SOUND_PIN) > ${threshold})`;
+  return [code, Order.RELATIONAL];
+};
+
+pythonGenerator.forBlock['sound_detected'] = function(block: Blockly.Block) {
+  const threshold = block.getFieldValue('THRESHOLD');
+  const code = `(sound_sensor.read() > ${threshold})`;
+  return [code, pyGen.ORDER_COMPARISON];
+};
+
+// ===== Light Sensor (光センサー/CdS) =====
+
+Blockly.Blocks['light_init'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('☀️ 光センサー初期化')
+        .appendField('ピン')
+        .appendField(new Blockly.FieldNumber(35, 0, 39), 'PIN');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(SENSOR_COLOR_DIGITAL);
+    this.setTooltip('光センサー（CdS、フォトレジスター）を初期化します');
+  }
+};
+
+javascriptGenerator.forBlock['light_init'] = function(block: Blockly.Block) {
+  const pin = block.getFieldValue('PIN');
+
+  generator.definitions_['light_pin'] =
+    `// Light sensor pin\n` +
+    `#define LIGHT_PIN ${pin}`;
+
+  return `  // Light sensor on pin ${pin} initialized\n`;
+};
+
+pythonGenerator.forBlock['light_init'] = function(block: Blockly.Block) {
+  const pin = block.getFieldValue('PIN');
+
+  pyGen.definitions_['import_light'] = 'from machine import Pin, ADC';
+  pyGen.definitions_['light_instance'] =
+    `# Light sensor (ADC)\n` +
+    `light_sensor = ADC(Pin(${pin}))\n` +
+    `light_sensor.atten(ADC.ATTN_11DB)`;
+
+  return '';
+};
+
+// Light Level (光量)
+Blockly.Blocks['light_level'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('☀️ 光量レベル');
+    this.setOutput(true, 'Number');
+    this.setColour(SENSOR_COLOR_DIGITAL);
+    this.setTooltip('光センサーの光量レベルを返します（0-4095、大きいほど明るい）');
+  }
+};
+
+javascriptGenerator.forBlock['light_level'] = function() {
+  const code = 'analogRead(LIGHT_PIN)';
+  return [code, Order.FUNCTION_CALL];
+};
+
+pythonGenerator.forBlock['light_level'] = function() {
+  const code = 'light_sensor.read()';
+  return [code, pyGen.ORDER_FUNCTION_CALL];
+};
+
+export {}; // Make this a module

@@ -1,0 +1,29 @@
+{
+  "name": "DigiCode Arduino C++ Firmware",
+  "version": "2.0",
+  "new_install_prompt_erase": true,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "name": "DigiCode競技用（Arduino C++ / 推奨）",
+      "parts": [
+        {
+          "path": "esp32/arduino/bootloader.bin",
+          "offset": 4096
+        },
+        {
+          "path": "esp32/arduino/partitions.bin",
+          "offset": 32768
+        },
+        {
+          "path": "esp32/arduino/boot_app0.bin",
+          "offset": 57344
+        },
+        {
+          "path": "esp32/arduino/digicode-ota.bin",
+          "offset": 65536
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+export interface Device {
+  uuid: string;
+  name: string;
+  ssid: string;
+  lastConnected: string;
+  ipAddress?: string;  // mDNSが動作しない場合に使用
+}
+
+interface DeviceState {
+  devices: Device[];
+  currentDevice: Device | null;
+
+  addDevice: (device: Device) => void;
+  updateDevice: (uuid: string, device: Partial<Device>) => void;
+  removeDevice: (uuid: string) => void;
+  setCurrentDevice: (device: Device | null) => void;
+  getDeviceByUuid: (uuid: string) => Device | undefined;
+}
+
+export const useDeviceStore = create<DeviceState>()(
+  persist(
+    (set, get) => ({
+      devices: [],
+      currentDevice: null,
+
+      addDevice: (device: Device) => {
+        set((state) => {
+          // 既存のデバイスがあれば更新、なければ追加
+          const existingIndex = state.devices.findIndex(d => d.uuid === device.uuid);
+          if (existingIndex >= 0) {
+            const newDevices = [...state.devices];
+            newDevices[existingIndex] = { ...newDevices[existingIndex], ...device };
+            return { devices: newDevices };
+          }
+          return { devices: [...state.devices, device] };
+        });
+      },
+
+      updateDevice: (uuid: string, updates: Partial<Device>) => {
+        set((state) => ({
+          devices: state.devices.map(d =>
+            d.uuid === uuid ? { ...d, ...updates } : d
+          ),
+        }));
+      },
+
+      removeDevice: (uuid: string) => {
+        set((state) => ({
+          devices: state.devices.filter(d => d.uuid !== uuid),
+          currentDevice: state.currentDevice?.uuid === uuid ? null : state.currentDevice,
+        }));
+      },
+
+      setCurrentDevice: (device: Device | null) => {
+        set({ currentDevice: device });
+      },
+
+      getDeviceByUuid: (uuid: string) => {
+        return get().devices.find(d => d.uuid === uuid);
+      },
+    }),
+    {
+      name: 'esp32-devices-storage',
+    }
+  )
+);
