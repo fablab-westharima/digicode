@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Usb, Trash2 } from 'lucide-react';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
+import { compileService } from '@/services/compileService';
 
 interface FirmwareInstallerDialogProps {
   open: boolean;
@@ -26,6 +27,9 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
+  const [isCompiling, setIsCompiling] = useState(false);
+  const [compiledFirmwareUrl, setCompiledFirmwareUrl] = useState<string | null>(null);
+  const [compileError, setCompileError] = useState<string | null>(null);
 
   // callback ref - DOM要素がマウントされたら呼ばれる
   const containerRef = (node: HTMLDivElement | null) => {
@@ -33,6 +37,51 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
       setContainerElement(node);
     }
   };
+
+  // ファームウェアをコンパイル
+  const compileFirmware = async () => {
+    if (firmwareType !== 'arduino') {
+      // MicroPythonは静的ファイルを使用
+      return;
+    }
+
+    setIsCompiling(true);
+    setCompileError(null);
+    console.log('[FirmwareInstaller] Compiling latest firmware from cloud...');
+
+    try {
+      // DigiCodeOTAテンプレートをそのままコンパイル（空のコード）
+      const result = await compileService.compile('', '', '', '', 'esp32:esp32:esp32', 'bin');
+
+      if (!result.success || !result.binary) {
+        throw new Error(result.error || 'Compilation failed');
+      }
+
+      // Blob URLを作成
+      const blobUrl = URL.createObjectURL(result.binary);
+      setCompiledFirmwareUrl(blobUrl);
+      console.log('[FirmwareInstaller] ✓ Firmware compiled successfully');
+    } catch (error) {
+      console.error('[FirmwareInstaller] Compilation error:', error);
+      setCompileError(error instanceof Error ? error.message : 'Unknown compilation error');
+    } finally {
+      setIsCompiling(false);
+    }
+  };
+
+  // ダイアログが開いたときにファームウェアをコンパイル
+  useEffect(() => {
+    if (open && firmwareType === 'arduino') {
+      compileFirmware();
+    }
+
+    // クリーンアップ: Blob URLを解放
+    return () => {
+      if (compiledFirmwareUrl) {
+        URL.revokeObjectURL(compiledFirmwareUrl);
+      }
+    };
+  }, [open, firmwareType]);
 
   // esp-web-toolsを事前ロード
   useEffect(() => {
@@ -55,14 +104,59 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
   useEffect(() => {
     if (!espToolsReady || !containerElement || !open) return;
 
+    // Arduinoの場合は、コンパイル完了を待つ
+    if (firmwareType === 'arduino' && !compiledFirmwareUrl && !compileError) {
+      return;
+    }
+
     const container = containerElement;
 
     // カスタム要素を動的に作成
     const installButton = document.createElement('esp-web-install-button');
-    const manifestPath = firmwareType === 'arduino'
-      ? '/firmware/manifest-arduino.json'
-      : '/firmware/manifest-micropython.json';
-    installButton.setAttribute('manifest', manifestPath);
+
+    let manifestUrl: string;
+
+    if (firmwareType === 'arduino' && compiledFirmwareUrl) {
+      // 動的マニフェストを生成（コンパイルされたファームウェアを使用）
+      const manifest = {
+        name: "DigiCode Arduino C++ Firmware",
+        version: "1.4.0",
+        new_install_prompt_erase: true,
+        builds: [
+          {
+            chipFamily: "ESP32",
+            name: "DigiCode競技用（Arduino C++ / 推奨）",
+            parts: [
+              {
+                path: "/firmware/esp32/arduino/bootloader.bin",
+                offset: 4096
+              },
+              {
+                path: "/firmware/esp32/arduino/partitions.bin",
+                offset: 32768
+              },
+              {
+                path: "/firmware/esp32/arduino/boot_app0.bin",
+                offset: 57344
+              },
+              {
+                path: compiledFirmwareUrl,  // 動的にコンパイルされたファームウェア
+                offset: 65536
+              }
+            ]
+          }
+        ]
+      };
+
+      // マニフェストをJSON Blobに変換してURLを作成
+      const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+      manifestUrl = URL.createObjectURL(manifestBlob);
+    } else {
+      // MicroPythonは静的マニフェストを使用
+      manifestUrl = '/firmware/manifest-micropython.json';
+    }
+
+    installButton.setAttribute('manifest', manifestUrl);
 
     // アクティベートボタン
     const activateButton = document.createElement('button');
@@ -104,7 +198,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
 
     container.innerHTML = '';
     container.appendChild(installButton);
-  }, [espToolsReady, containerElement, firmwareType, open]);
+  }, [espToolsReady, containerElement, firmwareType, open, compiledFirmwareUrl, compileError]);
 
   // ログ追加
   const addLog = (message: string) => {
@@ -313,16 +407,41 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
               </div>
             )}
 
+            {/* コンパイルエラー表示 */}
+            {compileError && firmwareType === 'arduino' && (
+              <div className="bg-[#3d2626] border border-[#da3633] p-4 rounded-lg">
+                <p className="text-[#f85149] text-sm">
+                  <strong>コンパイルエラー:</strong><br />
+                  {compileError}
+                </p>
+              </div>
+            )}
+
+            {/* コンパイル中の表示 */}
+            {isCompiling && firmwareType === 'arduino' && (
+              <div className="flex flex-col items-center gap-3 p-4 bg-[#0D1117] rounded-lg border-2 border-[#58A6F9]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#58A6F9]"></div>
+                <p className="text-[#58A6F9] text-sm">
+                  最新ファームウェアをコンパイル中...<br />
+                  <span className="text-xs text-[#8B949E]">
+                    クラウドサーバー（Ubuntu → Railway フォールバック）
+                  </span>
+                </p>
+              </div>
+            )}
+
             {/* esp-web-toolsのインストールボタン */}
-            {isSupported && (
+            {isSupported && !isCompiling && !compileError && (
               <div className="flex flex-col items-center gap-4 p-4 bg-[#0D1117] rounded-lg border-2 border-dashed border-[#2E333D]" ref={containerRef}>
                 <div className="text-[#8B949E]">{t('common.loading')}</div>
               </div>
             )}
 
-            <p className="text-xs text-[#8B949E] text-center">
-              {t('firmware.step3Desc')}
-            </p>
+            {!isCompiling && !compileError && (
+              <p className="text-xs text-[#8B949E] text-center">
+                {t('firmware.step3Desc')}
+              </p>
+            )}
           </div>
 
           {/* USBドライバー */}

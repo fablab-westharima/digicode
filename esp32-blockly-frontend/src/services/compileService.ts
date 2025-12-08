@@ -25,7 +25,8 @@ export type CompileServerMode = 'cloud' | 'local';
 
 // サーバーURL設定
 const SERVERS = {
-  cloud: 'https://api-compile.digital-fab.jp',
+  ubuntu: 'https://compile.digital-fab.jp',      // Primary: 自宅Ubuntuサーバー
+  railway: 'https://amiable-patience-production-1d47.up.railway.app', // Backup: Railway
   local: 'http://localhost:3001'
 };
 
@@ -34,10 +35,13 @@ const getCompileServerMode = (): CompileServerMode => {
   return (localStorage.getItem('compileServerMode') as CompileServerMode) || 'cloud';
 };
 
-// サーバーURL取得
+// サーバーURL取得（cloudモードの場合はUbuntuを返す）
 const getCompileServerUrl = (): string => {
   const mode = getCompileServerMode();
-  return SERVERS[mode];
+  if (mode === 'cloud') {
+    return SERVERS.ubuntu; // デフォルトはUbuntuサーバー
+  }
+  return SERVERS.local;
 };
 
 // サーバーモード設定
@@ -73,28 +77,97 @@ export const compileService = {
    * @param format - ファイルフォーマット ('bin' | 'uf2'、省略時は 'bin')
    */
   async compile(includes: string, globals: string, setupCode: string, loopCode: string, board?: string, format: 'bin' | 'uf2' = 'bin'): Promise<CompileResult> {
+    const mode = getCompileServerMode();
+
+    // ボードが指定されていない場合はストアから取得
+    const targetBoard = board || useBoardStore.getState().getFqbn();
+
+    // format パラメータをクエリ文字列に追加
+    const formatParam = format === 'uf2' ? '?format=uf2' : '';
+
+    const requestBody = JSON.stringify({
+      includes,
+      globals,
+      setupCode,
+      loopCode,
+      board: targetBoard
+    });
+
+    // cloudモードの場合はUbuntu→Railwayのフォールバック
+    if (mode === 'cloud') {
+      // まずUbuntuサーバーで試行
+      console.log('[Compile] Trying Ubuntu server (primary)...');
+      try {
+        const response = await fetch(`${SERVERS.ubuntu}/api/compile${formatParam}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: requestBody,
+          signal: AbortSignal.timeout(120000) // 120秒タイムアウト
+        });
+
+        if (response.ok) {
+          const binary = await response.blob();
+          console.log('[Compile] ✓ Ubuntu server compilation successful');
+
+          // 使用量カウント
+          const token = localStorage.getItem('accessToken');
+          if (token) {
+            api.compileUsage.increment().catch(console.error);
+          }
+
+          return { success: true, binary };
+        }
+
+        console.warn('[Compile] Ubuntu server returned error, falling back to Railway...');
+      } catch (error) {
+        console.warn('[Compile] Ubuntu server failed, falling back to Railway:', error);
+      }
+
+      // Ubuntuが失敗した場合はRailwayで試行（バックアップ）
+      console.log('[Compile] Trying Railway server (backup)...');
+      try {
+        const response = await fetch(`${SERVERS.railway}/api/compile${formatParam}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: requestBody,
+          signal: AbortSignal.timeout(120000)
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          return {
+            success: false,
+            error: errorData.error || 'Compilation failed on both servers',
+            details: errorData.details || errorData.stderr,
+          };
+        }
+
+        const binary = await response.blob();
+        console.log('[Compile] ✓ Railway server compilation successful (fallback)');
+
+        // 使用量カウント
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+          api.compileUsage.increment().catch(console.error);
+        }
+
+        return { success: true, binary };
+      } catch (error) {
+        return {
+          success: false,
+          error: 'Both Ubuntu and Railway servers are unavailable',
+          details: error instanceof Error ? error.message : 'Unknown error'
+        };
+      }
+    }
+
+    // localモードの場合は通常通り
     try {
       const serverUrl = getCompileServerUrl();
-
-      // ボードが指定されていない場合はストアから取得
-      const targetBoard = board || useBoardStore.getState().getFqbn();
-
-      // format パラメータをクエリ文字列に追加
-      const formatParam = format === 'uf2' ? '?format=uf2' : '';
-
-      // サーバーに分離した形式で送信（DigiCodeOTAテンプレートに挿入される）
       const response = await fetch(`${serverUrl}/api/compile${formatParam}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          includes,
-          globals,
-          setupCode,
-          loopCode,
-          board: targetBoard
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: requestBody,
       });
 
       if (!response.ok) {
@@ -106,21 +179,8 @@ export const compileService = {
         };
       }
 
-      // .binファイルを取得
       const binary = await response.blob();
-
-      // クラウドサーバー使用時、かつ認証済みの場合は使用量をカウント
-      const mode = getCompileServerMode();
-      const token = localStorage.getItem('accessToken');
-      if (mode === 'cloud' && token) {
-        // 非同期でカウント（エラーがあっても無視）
-        api.compileUsage.increment().catch(console.error);
-      }
-
-      return {
-        success: true,
-        binary,
-      };
+      return { success: true, binary };
     } catch (error) {
       return {
         success: false,
