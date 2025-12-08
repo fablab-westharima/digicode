@@ -25,13 +25,13 @@ import {
   Server,
   Wifi,
   Usb,
-  RefreshCw,
   Check,
   ChevronRight,
   ChevronDown,
   Loader2,
   AlertCircle,
   Trash2,
+  RefreshCw,
 } from 'lucide-react';
 import { compileService, type CompileServerMode } from '@/services/compileService';
 import { useWifiStore } from '@/stores/wifiStore';
@@ -61,10 +61,13 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
   // Stores
   const { setHost, setDeviceName: setWifiDeviceName } = useWifiStore();
   const { status: serialStatus, isSupported: serialSupported, connect: connectSerial, disconnect: disconnectSerial, send, output, resetESP32 } = useSerialStore();
-  const { addDevice, devices } = useDeviceStore();
+  const { addDevice, devices, clearDevices } = useDeviceStore();
 
   // Console ref
   const consoleRef = useRef<HTMLDivElement>(null);
+
+  // Auto-check timer ref (複数回のタイマー設定を防ぐ)
+  const autoCheckTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // AP接続関連のState
   const [apSectionExpanded, setApSectionExpanded] = useState(false);
@@ -78,12 +81,14 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
   const [deviceName, setDeviceName] = useState('');
   const [originalDeviceName, setOriginalDeviceName] = useState('');
 
+  // 固定IP情報（表示用のみ）
+  const [staticIp, setStaticIp] = useState('');
+  const [gateway, setGateway] = useState('');
+  const [subnet, setSubnet] = useState('');
+
   // OTA設定関連のState
   const [serverMode, setServerMode] = useState<CompileServerMode>('cloud');
   const [selectedOtaDevice, setSelectedOtaDevice] = useState<DigiCodeDevice | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
-  const [discoveredDevices, setDiscoveredDevices] = useState<DigiCodeDevice[]>([]);
-  const [searchError, setSearchError] = useState<string | null>(null);
 
   // コンソール自動スクロール
   useEffect(() => {
@@ -92,19 +97,94 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
     }
   }, [output]);
 
-  // 初期化
+  // 初期化とクリーンアップ
   useEffect(() => {
     if (open) {
       setServerMode(compileService.getMode());
     }
+    // ダイアログが閉じられる時にタイマーをクリア
+    return () => {
+      if (autoCheckTimerRef.current) {
+        clearTimeout(autoCheckTimerRef.current);
+        autoCheckTimerRef.current = null;
+      }
+    };
   }, [open]);
 
-  // シリアル接続時にWiFi一覧を読み込み
+  // シリアル接続時にWiFi一覧を読み込み、WiFi接続されていれば自動的にIP固定化
   useEffect(() => {
-    if (serialStatus === 'connected' && open && apSectionExpanded) {
+    if (serialStatus === 'connected' && open) {
       const timer = setTimeout(async () => {
         await loadDeviceName();
-        await loadWiFiList();
+        const wifiEntries = await loadWiFiList();
+
+        // WiFi接続が確認できたら自動的にIP固定化（再起動時のIPバッティング回避）
+        const isWifiConnected = wifiEntries.some(w => w.isConnected);
+        if (isWifiConnected) {
+          console.log('[AUTO-IP] WiFi connected detected on serial connection. Auto-fixing IP...');
+
+          // 少し待ってからIP固定化を実行
+          setTimeout(async () => {
+            try {
+              const startIndex = useSerialStore.getState().output.length;
+              await send('USE_CURRENT_IP\n');
+              await new Promise(resolve => setTimeout(resolve, 500));
+
+              // 固定IP情報を取得
+              await send('GET_CONFIG\n');
+              await waitForResponse('OK:UUID=', startIndex, 5000);
+
+              const newOutput = useSerialStore.getState().output.slice(startIndex);
+              let foundIp = '';
+              let foundGateway = '';
+              let foundSubnet = '';
+
+              for (const line of newOutput) {
+                if (line.includes('OK:STATIC_IP=')) {
+                  foundIp = line.split('OK:STATIC_IP=')[1]?.trim() || '';
+                } else if (line.includes('OK:GATEWAY=')) {
+                  foundGateway = line.split('OK:GATEWAY=')[1]?.trim() || '';
+                } else if (line.includes('OK:SUBNET=')) {
+                  foundSubnet = line.split('OK:SUBNET=')[1]?.trim() || '';
+                }
+              }
+
+              if (foundIp) {
+                setStaticIp(foundIp);
+                setGateway(foundGateway);
+                setSubnet(foundSubnet);
+                console.log('[AUTO-IP] Static IP set:', foundIp);
+
+                // デバイスストアを更新
+                const currentOutput = useSerialStore.getState().output;
+                const currentDeviceUuid = [...currentOutput]
+                  .reverse()
+                  .find(line => line.includes('Device UUID:'))
+                  ?.match(/Device UUID:\s*(.+)/)?.[1]?.trim();
+
+                const currentDeviceName = [...currentOutput]
+                  .reverse()
+                  .find(line => line.includes('Device Name:'))
+                  ?.match(/Device Name:\s*(.+)/)?.[1]?.trim();
+
+                if (currentDeviceUuid && currentDeviceName) {
+                  addDevice({
+                    uuid: currentDeviceUuid,
+                    name: currentDeviceName,
+                    ssid: wifiEntries.find(w => w.isConnected)?.ssid || '',
+                    lastConnected: new Date().toISOString(),
+                    ipAddress: foundIp,
+                    gateway: foundGateway,
+                    subnet: foundSubnet,
+                  });
+                  console.log('[AUTO-IP] Device store updated:', currentDeviceUuid, foundIp);
+                }
+              }
+            } catch (error) {
+              console.error('[AUTO-IP] Failed to set static IP:', error);
+            }
+          }, 1000);
+        }
       }, 500);
       return () => clearTimeout(timer);
     } else if (serialStatus !== 'connected') {
@@ -116,12 +196,22 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
       setDeviceName('');
       setOriginalDeviceName('');
     }
-  }, [serialStatus, open, apSectionExpanded]);
+  }, [serialStatus, open]);
 
   // サーバーモード変更
   const handleServerModeChange = (mode: CompileServerMode) => {
     setServerMode(mode);
     compileService.setMode(mode);
+  };
+
+  // ランダムな8桁英数字UUIDを生成
+  const generateRandomUuid = (): string => {
+    const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    let uuid = '';
+    for (let i = 0; i < 8; i++) {
+      uuid += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    return uuid;
   };
 
   // 応答を待つヘルパー関数
@@ -139,8 +229,8 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
   };
 
   // WiFi一覧を読み込み
-  const loadWiFiList = async () => {
-    if (serialStatus !== 'connected') return;
+  const loadWiFiList = async (): Promise<WiFiEntry[]> => {
+    if (serialStatus !== 'connected') return [];
 
     setIsLoadingWifi(true);
     setWifiMessage(t('device.loadingWifi', { defaultValue: 'WiFi設定を読み込み中...' }));
@@ -157,7 +247,10 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
       }
 
       const currentOutput = useSerialStore.getState().output;
-      const wifiLines = currentOutput.filter(line => {
+      // startIndex以降の出力だけを見る（古いWiFiリストを除外）
+      const newOutput = currentOutput.slice(startIndex);
+
+      const wifiLines = newOutput.filter(line => {
         const trimmed = line.trim();
         return /^\[\d+\]/.test(trimmed) && trimmed.includes('(password:');
       });
@@ -191,42 +284,48 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
         } else if (uniqueWifi.length > 0) {
           setSelectedWifi(uniqueWifi[0].ssid);
         }
+        return uniqueWifi;
       } else {
         setWifiList([]);
         setWifiMessage(t('device.noWifiSaved', { defaultValue: '保存済みのWiFiがありません' }));
+        return [];
       }
     } catch (error) {
       console.error('Load WiFi list error:', error);
       setWifiMessage(t('device.loadWifiFailed', { defaultValue: 'WiFi読み込み失敗' }));
+      return [];
     } finally {
       setIsLoadingWifi(false);
     }
   };
 
-  // デバイス名を読み込み
+  // デバイス名と固定IP情報を読み込み
   const loadDeviceName = async () => {
     if (serialStatus !== 'connected') return;
 
     try {
       let foundName = '';
       let foundUuid = '';
+      let foundStaticIp = '';
+      let foundGateway = '';
+      let foundSubnet = '';
+
       for (let i = 0; i < 5; i++) {
         const currentOutput = useSerialStore.getState().output;
 
-        const uuidLine = currentOutput.find(line => line.includes('UUID:'));
+        // 最新のUUID（"Device UUID:" の行）を探す（古いログの影響を避けるため逆順検索）
+        const uuidLine = [...currentOutput].reverse().find(line => line.includes('Device UUID:'));
         if (uuidLine) {
-          const uuidMatch = uuidLine.match(/UUID:\s*(.+)/i);
+          const uuidMatch = uuidLine.match(/Device UUID:\s*(.+)/i);
           if (uuidMatch && uuidMatch[1].trim()) {
             foundUuid = uuidMatch[1].trim();
           }
         }
 
-        const nameLine = currentOutput.find(line =>
-          line.includes('Name:') && !line.includes('Device Name:')
-        ) || currentOutput.find(line => line.includes('Device Name:'));
-
+        // 最新のデバイス名を探す（逆順検索）
+        const nameLine = [...currentOutput].reverse().find(line => line.includes('Device Name:'));
         if (nameLine) {
-          const match = nameLine.match(/Name:\s*(.+)/i);
+          const match = nameLine.match(/Device Name:\s*(.+)/i);
           if (match && match[1].trim()) {
             foundName = match[1].trim();
           }
@@ -236,10 +335,59 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
 
-      if (foundUuid) setDeviceUuid(foundUuid);
+      // UUIDが "robot001" の場合は新しいランダムUUIDを生成して送信
+      if (foundUuid === 'robot001') {
+        const newUuid = generateRandomUuid();
+        console.log(`[UUID] Detected default UUID "robot001", generating new UUID: ${newUuid}`);
+
+        try {
+          await send(`SET_UUID:${newUuid}\n`);
+          await new Promise(resolve => setTimeout(resolve, 200));
+
+          // 送信後、新しいUUIDを状態に反映
+          setDeviceUuid(newUuid);
+
+          // SAVE_CONFIGを送信して永続化
+          await send('SAVE_CONFIG\n');
+          await new Promise(resolve => setTimeout(resolve, 200));
+
+          console.log(`[UUID] Successfully set new UUID: ${newUuid}`);
+        } catch (error) {
+          console.error('[UUID] Failed to set new UUID:', error);
+          // エラーでも既存のUUIDは設定しておく
+          setDeviceUuid(foundUuid);
+        }
+      } else if (foundUuid) {
+        setDeviceUuid(foundUuid);
+      }
+
       if (foundName) {
         setDeviceName(foundName);
         setOriginalDeviceName(foundName);
+      }
+
+      // GET_CONFIGで固定IP情報を取得
+      try {
+        const startIndex = useSerialStore.getState().output.length;
+        await send('GET_CONFIG\n');
+        await waitForResponse('OK:UUID=', startIndex, 3000);
+
+        const newOutput = useSerialStore.getState().output.slice(startIndex);
+        for (const line of newOutput) {
+          if (line.includes('OK:STATIC_IP=')) {
+            foundStaticIp = line.split('OK:STATIC_IP=')[1]?.trim() || '';
+          } else if (line.includes('OK:GATEWAY=')) {
+            foundGateway = line.split('OK:GATEWAY=')[1]?.trim() || '';
+          } else if (line.includes('OK:SUBNET=')) {
+            foundSubnet = line.split('OK:SUBNET=')[1]?.trim() || '';
+          }
+        }
+
+        if (foundStaticIp) setStaticIp(foundStaticIp);
+        if (foundGateway) setGateway(foundGateway);
+        if (foundSubnet) setSubnet(foundSubnet);
+      } catch (error) {
+        console.error('[loadDeviceName] Failed to get static IP config:', error);
       }
     } catch (error) {
       console.error('Load device name error:', error);
@@ -265,7 +413,7 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
     }
   };
 
-  // AP設定を保存
+  // AP設定を保存（DHCP IPを自動的に固定化）
   const handleSaveApSettings = async () => {
     const hasNewWifi = newWifiSsid.trim() && newWifiPassword.trim();
     if (!selectedWifi && !hasNewWifi) {
@@ -277,39 +425,49 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
     try {
       let needsSaveConfig = false;
 
+      // デバイス名を変更
       if (deviceName.trim() && deviceName.trim() !== originalDeviceName) {
         await send(`SET_NAME:${deviceName.trim()}\n`);
         await new Promise(resolve => setTimeout(resolve, 100));
         needsSaveConfig = true;
       }
 
+      // WiFiを追加
       if (hasNewWifi) {
         await send(`ADD_WIFI:${newWifiSsid.trim()},${newWifiPassword.trim()}\n`);
         await new Promise(resolve => setTimeout(resolve, 500));
+        needsSaveConfig = true;
       }
 
+      // 設定を保存
       if (needsSaveConfig) {
         await send(`SAVE_CONFIG\n`);
         await new Promise(resolve => setTimeout(resolve, 500));
       }
 
-      const finalDeviceName = deviceName.trim() || originalDeviceName;
-      const connectedSsid = selectedWifi || newWifiSsid.trim();
-      if (deviceUuid && finalDeviceName) {
-        addDevice({
-          uuid: deviceUuid,
-          name: finalDeviceName,
-          ssid: connectedSsid,
-          lastConnected: new Date().toISOString(),
-        });
-      }
-
+      // ESP32をリセット
       await new Promise(resolve => setTimeout(resolve, 500));
       await resetESP32();
 
       setNewWifiSsid('');
       setNewWifiPassword('');
-      setWifiMessage(t('device.savedAndRestarted', { defaultValue: '設定を保存し、デバイスを再起動しました' }));
+
+      // WiFi接続成功 + 固定IP設定を待つ
+      const autoCheckDelayMs = 10000; // ESP32起動 + WiFi接続完了を待つ
+      setWifiMessage(t('device.savedRestartingForWifi', { defaultValue: `WiFi設定を保存しました。${autoCheckDelayMs / 1000}秒後に接続確認とIP固定化を行います...` }));
+
+      // 既存のタイマーをクリア
+      if (autoCheckTimerRef.current) {
+        clearTimeout(autoCheckTimerRef.current);
+        autoCheckTimerRef.current = null;
+      }
+
+      // WiFi接続確認 + DHCP IP自動固定化
+      autoCheckTimerRef.current = setTimeout(async () => {
+        console.log('[AUTO-CHECK] Auto-checking connection and setting static IP...');
+        await handleCheckConnection();
+        autoCheckTimerRef.current = null;
+      }, autoCheckDelayMs);
     } catch (error) {
       console.error('Save settings error:', error);
       setWifiMessage(t('device.settingsSaveFailed', { defaultValue: '設定の保存に失敗しました' }));
@@ -318,30 +476,112 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
     }
   };
 
-  // デバイス検索
-  const searchDevices = async () => {
-    setIsSearching(true);
-    setSearchError(null);
-    setDiscoveredDevices([]);
-
+  // 接続状態を確認し、WiFi接続成功時は自動的にDHCP IPを固定化
+  const handleCheckConnection = async () => {
+    setIsLoadingWifi(true);
+    setWifiMessage(t('device.checkingConnection', { defaultValue: '接続状態を確認中...' }));
     try {
-      // コンパイルサーバーのmDNS検索機能を使用
-      const serverUrl = compileService.getServerUrl();
-      const response = await fetch(`${serverUrl}/api/discover?timeout=5000`);
+      await loadDeviceName();
+      const wifiEntries = await loadWiFiList();
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.devices && Array.isArray(data.devices)) {
-          setDiscoveredDevices(data.devices);
+      // WiFi接続を確認（loadWiFiListの戻り値から判定）
+      const isWifiConnected = wifiEntries.some(w => w.isConnected);
+
+      console.log('[handleCheckConnection] WiFi entries:', wifiEntries);
+      console.log('[handleCheckConnection] Is WiFi connected:', isWifiConnected);
+
+      if (isWifiConnected) {
+        // 自動的にDHCP IPを固定化
+        setWifiMessage(t('device.settingStaticIp', { defaultValue: 'WiFi接続成功。DHCPで取得したIPを固定化中...' }));
+
+        const startIndex = useSerialStore.getState().output.length;
+        await send('USE_CURRENT_IP\n');
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // 固定IP情報を取得
+        await send('GET_CONFIG\n');
+        await waitForResponse('OK:UUID=', startIndex, 5000);
+
+        const newOutput = useSerialStore.getState().output.slice(startIndex);
+        let foundIp = '';
+        let foundGateway = '';
+        let foundSubnet = '';
+
+        for (const line of newOutput) {
+          if (line.includes('OK:STATIC_IP=')) {
+            foundIp = line.split('OK:STATIC_IP=')[1]?.trim() || '';
+          } else if (line.includes('OK:GATEWAY=')) {
+            foundGateway = line.split('OK:GATEWAY=')[1]?.trim() || '';
+          } else if (line.includes('OK:SUBNET=')) {
+            foundSubnet = line.split('OK:SUBNET=')[1]?.trim() || '';
+          }
+        }
+
+        if (foundIp) {
+          setStaticIp(foundIp);
+          setGateway(foundGateway);
+          setSubnet(foundSubnet);
+
+          // デバイスストアを更新
+          if (deviceUuid && deviceName) {
+            addDevice({
+              uuid: deviceUuid,
+              name: deviceName,
+              ssid: wifiEntries.find(w => w.isConnected)?.ssid || '',
+              lastConnected: new Date().toISOString(),
+              ipAddress: foundIp,
+              gateway: foundGateway,
+              subnet: foundSubnet,
+            });
+          }
+
+          setWifiMessage(t('device.staticIpSet', { ip: foundIp, defaultValue: `固定IP設定完了: ${foundIp}` }));
+        } else {
+          setWifiMessage(t('device.connectionChecked', { defaultValue: '接続状態を更新しました' }));
         }
       } else {
-        setSearchError('デバイス検索に失敗しました');
+        setWifiMessage(t('device.connectionChecked', { defaultValue: '接続状態を更新しました' }));
       }
     } catch (error) {
-      console.error('Device search error:', error);
-      setSearchError('デバイス検索中にエラーが発生しました');
+      console.error('Check connection error:', error);
+      setWifiMessage(t('device.checkConnectionFailed', { defaultValue: '接続状態の確認に失敗しました' }));
     } finally {
-      setIsSearching(false);
+      setIsLoadingWifi(false);
+    }
+  };
+
+  // デバイスリストをクリアして再読み込み
+  const handleRefreshDevices = async () => {
+    if (serialStatus !== 'connected') {
+      alert(t('device.connectFirst', { defaultValue: 'まずUSB接続してください' }));
+      return;
+    }
+
+    if (!confirm(t('device.confirmClearDevices', { defaultValue: 'デバイスリストをクリアして再読み込みしますか？' }))) {
+      return;
+    }
+
+    // デバイスリストをクリア
+    clearDevices();
+    setSelectedOtaDevice(null);
+
+    // 現在のデバイス情報を再読み込み
+    await loadDeviceName();
+    const wifiEntries = await loadWiFiList();
+
+    // WiFi接続されていれば自動的にデバイスを登録
+    const isWifiConnected = wifiEntries.some(w => w.isConnected);
+    if (isWifiConnected && deviceUuid && deviceName && staticIp) {
+      addDevice({
+        uuid: deviceUuid,
+        name: deviceName,
+        ssid: wifiEntries.find(w => w.isConnected)?.ssid || '',
+        lastConnected: new Date().toISOString(),
+        ipAddress: staticIp,
+        gateway: gateway,
+        subnet: subnet,
+      });
+      console.log('[REFRESH] Device list refreshed and current device added');
     }
   };
 
@@ -439,6 +679,32 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
                   </div>
                 </div>
 
+                {/* コンソール出力（USB接続時のみ表示） */}
+                {serialStatus === 'connected' && (
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium">{t('device.console', { defaultValue: 'コンソール' })}</Label>
+                    <div
+                      ref={consoleRef}
+                      className="bg-[#0D1117] border border-gray-700 rounded-lg p-3 h-32 overflow-y-auto font-mono text-xs"
+                    >
+                      {output.length > 0 ? (
+                        output.slice(-50).map((line, index) => (
+                          <div key={index} className={`whitespace-pre-wrap ${
+                            line.includes('ERROR') ? 'text-red-400' :
+                            line.includes('OK:') ? 'text-green-400' :
+                            line.includes('INFO:') ? 'text-blue-400' :
+                            'text-gray-300'
+                          }`}>
+                            {line}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-gray-500">{t('device.waitingForOutput', { defaultValue: '出力を待機中...' })}</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* WiFi設定（USB接続時のみ表示） */}
                 {serialStatus === 'connected' && (
                   <>
@@ -530,6 +796,40 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
                       />
                     </div>
 
+                    {/* 固定IP情報（自動設定） */}
+                    <div className="space-y-2">
+                      <Label className="text-xs font-medium">{t('device.staticIpInfo', { defaultValue: '固定IP情報' })}</Label>
+
+                      {staticIp ? (
+                        <div className="p-3 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+                          <div className="space-y-1 text-xs">
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">{t('device.fixedIp', { defaultValue: '固定IP:' })}</span>
+                              <span className="font-mono font-bold text-green-700 dark:text-green-300">{staticIp}</span>
+                            </div>
+                            {gateway && (
+                              <div className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-400">{t('device.gateway', { defaultValue: 'ゲートウェイ:' })}</span>
+                                <span className="font-mono text-gray-700 dark:text-gray-300">{gateway}</span>
+                              </div>
+                            )}
+                            {subnet && (
+                              <div className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-400">{t('device.subnet', { defaultValue: 'サブネット:' })}</span>
+                                <span className="font-mono text-gray-700 dark:text-gray-300">{subnet}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                            {t('device.staticIpAutoSet', { defaultValue: 'WiFi接続後、DHCPで取得したIPが自動的に固定されます' })}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
                     {/* メッセージ */}
                     {wifiMessage && (
                       <div className="flex items-center gap-2 text-sm text-yellow-600">
@@ -544,7 +844,20 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
                       disabled={isLoadingWifi || (!selectedWifi && !(newWifiSsid.trim() && newWifiPassword.trim()))}
                       className="w-full bg-yellow-600 hover:bg-yellow-700"
                     >
-                      {t('device.saveSettings', { defaultValue: '設定を保存して再起動' })}
+                      {wifiList.some(w => w.isConnected)
+                        ? t('device.saveSettings', { defaultValue: '設定を保存して再起動' })
+                        : t('device.saveWifiAndRestart', { defaultValue: 'WiFi設定を保存して再起動' })}
+                    </Button>
+
+                    {/* 接続確認ボタン */}
+                    <Button
+                      onClick={handleCheckConnection}
+                      disabled={isLoadingWifi}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      <RefreshCw className={`w-4 h-4 mr-2 ${isLoadingWifi ? 'animate-spin' : ''}`} />
+                      {t('device.checkConnection', { defaultValue: '接続状態を確認' })}
                     </Button>
                   </>
                 )}
@@ -607,95 +920,69 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
           {/* Step 2: 書込み先デバイス選択 */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 text-purple-600 text-xs font-bold">2</span>
-                {t('otaSetup.step2.title', { defaultValue: '書込み先デバイス' })}
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 text-purple-600 text-xs font-bold">2</span>
+                  {t('otaSetup.step2.title', { defaultValue: '書込み先デバイス' })}
+                </CardTitle>
+                <Button
+                  onClick={handleRefreshDevices}
+                  disabled={serialStatus !== 'connected'}
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 mr-1" />
+                  {t('device.refreshDevices', { defaultValue: '再読み込み' })}
+                </Button>
+              </div>
               <CardDescription className="text-xs">
-                {t('otaSetup.step2.description', { defaultValue: 'WiFi経由で書き込むデバイスを選択' })}
+                {t('otaSetup.step2.descriptionSaved', { defaultValue: 'AP接続設定で登録したデバイスを選択' })}
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
               <div className="space-y-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={searchDevices}
-                  disabled={isSearching}
-                  className="w-full"
-                >
-                  {isSearching ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {t('otaSetup.searching', { defaultValue: '検索中...' })}
-                    </>
-                  ) : (
-                    <>
-                      <RefreshCw className="w-4 h-4 mr-2" />
-                      {t('otaSetup.searchDevices', { defaultValue: 'デバイスを検索' })}
-                    </>
-                  )}
-                </Button>
-
-                {searchError && (
-                  <div className="flex items-center gap-2 text-sm text-red-500">
-                    <AlertCircle className="w-4 h-4" />
-                    {searchError}
-                  </div>
-                )}
-
-                {discoveredDevices.length > 0 && (
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {discoveredDevices.map((device) => (
-                      <button
-                        key={device.uuid}
-                        onClick={() => handleOtaDeviceSelect(device)}
-                        className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
-                          selectedOtaDevice?.uuid === device.uuid
-                            ? 'border-green-400 bg-green-50 dark:bg-green-950'
-                            : 'border-gray-200 dark:border-gray-700 hover:border-green-300'
-                        }`}
-                      >
-                        <div className="text-left">
-                          <div className="font-medium text-sm">{device.name}</div>
-                          <div className="text-xs text-gray-500">{device.ipAddress}</div>
-                        </div>
-                        {selectedOtaDevice?.uuid === device.uuid && (
-                          <Check className="w-4 h-4 text-green-600" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* 保存済みデバイス */}
-                {devices.length > 0 && discoveredDevices.length === 0 && (
+                {/* 保存済みデバイス一覧 */}
+                {devices.length > 0 ? (
                   <div className="space-y-2">
-                    <div className="text-xs text-gray-500">{t('otaSetup.savedDevices', { defaultValue: '保存済みデバイス' })}</div>
-                    {devices.slice(0, 3).map((device) => (
+                    {devices.map((device) => (
                       <button
                         key={device.uuid}
-                        onClick={() => handleOtaDeviceSelect({
+                        onClick={() => device.ipAddress && handleOtaDeviceSelect({
                           name: device.name,
-                          ipAddress: device.ipAddress || '',
+                          ipAddress: device.ipAddress,
                           uuid: device.uuid,
                           url: `http://${device.ipAddress}`
                         })}
+                        disabled={!device.ipAddress}
                         className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
-                          selectedOtaDevice?.uuid === device.uuid
-                            ? 'border-green-400 bg-green-50 dark:bg-green-950'
-                            : 'border-gray-200 dark:border-gray-700 hover:border-green-300'
+                          !device.ipAddress
+                            ? 'border-yellow-400 bg-yellow-50 dark:bg-yellow-950 opacity-60 cursor-not-allowed'
+                            : selectedOtaDevice?.uuid === device.uuid
+                              ? 'border-green-400 bg-green-50 dark:bg-green-950'
+                              : 'border-gray-200 dark:border-gray-700 hover:border-green-300'
                         }`}
                       >
                         <div className="text-left">
                           <div className="font-medium text-sm">{device.name}</div>
-                          <div className="text-xs text-gray-500">{device.ipAddress}</div>
+                          <div className="text-xs text-gray-500">
+                            {device.ipAddress || t('otaSetup.noStaticIp', { defaultValue: '固定IP未設定（AP接続設定で設定してください）' })}
+                          </div>
                         </div>
-                        {selectedOtaDevice?.uuid === device.uuid && (
+                        {device.ipAddress && selectedOtaDevice?.uuid === device.uuid && (
                           <Check className="w-4 h-4 text-green-600" />
+                        )}
+                        {!device.ipAddress && (
+                          <AlertCircle className="w-4 h-4 text-yellow-500" />
                         )}
                       </button>
                     ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-4 text-sm text-gray-500">
+                    <Wifi className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                    <p>{t('otaSetup.noSavedDevices', { defaultValue: 'デバイスが登録されていません' })}</p>
+                    <p className="text-xs mt-1">{t('otaSetup.registerDeviceHint', { defaultValue: '上の「AP接続設定」でデバイスを登録してください' })}</p>
                   </div>
                 )}
               </div>

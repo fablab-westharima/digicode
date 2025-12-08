@@ -6,7 +6,10 @@ export interface Device {
   name: string;
   ssid: string;
   lastConnected: string;
-  ipAddress?: string;  // mDNSが動作しない場合に使用
+  ipAddress?: string;   // 固定IP（OTA書き込みに使用）
+  gateway?: string;     // ゲートウェイ
+  subnet?: string;      // サブネットマスク
+  createdAt?: string;   // 作成日時
 }
 
 interface DeviceState {
@@ -16,6 +19,7 @@ interface DeviceState {
   addDevice: (device: Device) => void;
   updateDevice: (uuid: string, device: Partial<Device>) => void;
   removeDevice: (uuid: string) => void;
+  clearDevices: () => void;
   setCurrentDevice: (device: Device | null) => void;
   getDeviceByUuid: (uuid: string) => Device | undefined;
 }
@@ -52,6 +56,10 @@ export const useDeviceStore = create<DeviceState>()(
           devices: state.devices.filter(d => d.uuid !== uuid),
           currentDevice: state.currentDevice?.uuid === uuid ? null : state.currentDevice,
         }));
+      },
+
+      clearDevices: () => {
+        set({ devices: [], currentDevice: null });
       },
 
       setCurrentDevice: (device: Device | null) => {

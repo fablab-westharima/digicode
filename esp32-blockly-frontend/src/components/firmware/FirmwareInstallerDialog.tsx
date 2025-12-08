@@ -8,7 +8,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Usb } from 'lucide-react';
+import { Usb, Trash2 } from 'lucide-react';
+import { firmwareService, type FlashProgress } from '@/services/firmwareService';
 
 interface FirmwareInstallerDialogProps {
   open: boolean;
@@ -20,6 +21,11 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
   const [firmwareType, setFirmwareType] = useState<'arduino' | 'micropython'>('arduino');
   const [espToolsReady, setEspToolsReady] = useState(false);
+  const [isErasing, setIsErasing] = useState(false);
+  const [eraseProgress, setEraseProgress] = useState<FlashProgress | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [logs, setLogs] = useState<string[]>([]);
 
   // callback ref - DOM要素がマウントされたら呼ばれる
   const containerRef = (node: HTMLDivElement | null) => {
@@ -35,6 +41,15 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
       setEspToolsReady(true);
     });
   }, [open]);
+
+  // ダイアログが閉じられた時のクリーンアップ
+  useEffect(() => {
+    if (!open && isConnected) {
+      firmwareService.disconnect();
+      setIsConnected(false);
+      setLogs([]);
+    }
+  }, [open, isConnected]);
 
   // ボタン生成
   useEffect(() => {
@@ -90,6 +105,102 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
     container.innerHTML = '';
     container.appendChild(installButton);
   }, [espToolsReady, containerElement, firmwareType, open]);
+
+  // ログ追加
+  const addLog = (message: string) => {
+    setLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${message}`]);
+  };
+
+  // 有線接続
+  const handleConnect = async () => {
+    setIsConnecting(true);
+    setLogs([]);
+    addLog('ESP32との接続を開始...');
+
+    // ログコールバックを設定
+    firmwareService.setLogCallback((msg) => {
+      addLog(msg);
+    });
+
+    try {
+      const chipInfo = await firmwareService.connect((progress) => {
+        addLog(`${progress.message} (${Math.round(progress.percent)}%)`);
+        setEraseProgress(progress);
+      });
+
+      if (!chipInfo) {
+        throw new Error('ESP32に接続できませんでした');
+      }
+
+      addLog(`✅ 接続成功: ${chipInfo.name}`);
+      addLog(`MAC Address: ${chipInfo.mac}`);
+      setIsConnected(true);
+    } catch (error) {
+      console.error('Connection error:', error);
+      addLog(`❌ 接続エラー: ${(error as Error).message}`);
+      setIsConnected(false);
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  // 接続解除
+  const handleDisconnect = async () => {
+    addLog('接続を切断中...');
+    await firmwareService.disconnect();
+    setIsConnected(false);
+    addLog('✅ 接続を切断しました');
+  };
+
+  // Flash全体を消去
+  const handleEraseFlash = async () => {
+    if (!isConnected) {
+      addLog('❌ 先に有線接続してください');
+      return;
+    }
+
+    if (!confirm('Flash全体を消去します。保存されているすべてのデータ（UUID、WiFi設定など）が削除されます。よろしいですか？')) {
+      return;
+    }
+
+    setIsErasing(true);
+    addLog('Flash全体を消去中...');
+
+    try {
+      setEraseProgress({
+        stage: 'erasing',
+        percent: 50,
+        message: 'Flash全体を消去中...'
+      });
+
+      // firmwareServiceのloaderを使って直接消去
+      // @ts-expect-error - private propertyにアクセス
+      if (firmwareService.loader) {
+        // @ts-expect-error - private propertyにアクセス
+        await firmwareService.loader.eraseFlash();
+
+        addLog('✅ Flash消去が完了しました');
+        setEraseProgress({
+          stage: 'complete',
+          percent: 100,
+          message: '✅ Flash消去が完了しました。ESP32をリセットしてください。'
+        });
+      } else {
+        throw new Error('loaderが初期化されていません');
+      }
+    } catch (error) {
+      console.error('Flash erase error:', error);
+      const errorMsg = `消去エラー: ${(error as Error).message}`;
+      addLog(`❌ ${errorMsg}`);
+      setEraseProgress({
+        stage: 'error',
+        percent: 0,
+        message: errorMsg
+      });
+    } finally {
+      setIsErasing(false);
+    }
+  };
 
   // Web Serial APIのサポートチェック
   const isSupported = 'serial' in navigator;
@@ -252,6 +363,89 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
             <p className="text-xs text-[#8B949E] mt-2">
               {t('firmware.usbDriverNote')}
             </p>
+          </div>
+
+          {/* Flash消去（デバッグ用） */}
+          <div className="border-t border-[#2E333D] pt-4 space-y-3">
+            <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
+              <Trash2 className="w-4 h-4 text-[#f85149]" />
+              Flash全体を消去（デバッグ用）
+            </h3>
+            <p className="text-sm text-[#8B949E]">
+              Flash全体を消去すると、保存されているすべてのデータ（UUID、WiFi設定など）が削除され、初期状態に戻ります。
+            </p>
+
+            {/* 有線接続ボタン */}
+            <div className="flex gap-2">
+              {!isConnected ? (
+                <Button
+                  onClick={handleConnect}
+                  disabled={isConnecting || !isSupported}
+                  className="flex-1 bg-[#238636] hover:bg-[#2ea043] text-white"
+                >
+                  <Usb className="w-4 h-4 mr-2" />
+                  {isConnecting ? '接続中...' : 'ESP32に有線接続'}
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleDisconnect}
+                  variant="outline"
+                  className="flex-1 border-[#2E333D] text-[#E6EDF3] hover:bg-[#2E333D]"
+                >
+                  接続解除
+                </Button>
+              )}
+            </div>
+
+            {/* コンソール */}
+            {logs.length > 0 && (
+              <div className="bg-[#0D1117] border border-[#2E333D] rounded-lg p-3 h-48 overflow-y-auto font-mono text-xs">
+                {logs.map((log, index) => (
+                  <div key={index} className={`whitespace-pre-wrap ${
+                    log.includes('❌') || log.includes('ERROR') ? 'text-red-400' :
+                    log.includes('✅') ? 'text-green-400' :
+                    log.includes('INFO') ? 'text-blue-400' : 'text-gray-300'
+                  }`}>{log}</div>
+                ))}
+              </div>
+            )}
+
+            {/* 進捗表示 */}
+            {eraseProgress && (
+              <div className="p-3 rounded-lg bg-[#0D1117] border border-[#2E333D]">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex-1">
+                    <div className="text-xs text-[#8B949E]">{eraseProgress.message}</div>
+                  </div>
+                  <div className="text-xs text-[#58A6F9]">{Math.round(eraseProgress.percent)}%</div>
+                </div>
+                <div className="w-full bg-[#2E333D] rounded-full h-2 overflow-hidden">
+                  <div
+                    className={`h-full transition-all ${
+                      eraseProgress.stage === 'error' ? 'bg-[#f85149]' :
+                      eraseProgress.stage === 'complete' ? 'bg-[#3fb950]' :
+                      'bg-[#58A6F9]'
+                    }`}
+                    style={{ width: `${eraseProgress.percent}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <Button
+              variant="destructive"
+              onClick={handleEraseFlash}
+              disabled={!isConnected || isErasing}
+              className="w-full bg-[#f85149] hover:bg-[#da3633] text-white disabled:opacity-50"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              {isErasing ? 'Flash消去中...' : 'Flash全体を消去'}
+            </Button>
+            {!isConnected && (
+              <p className="text-xs text-[#8B949E] text-center">
+                ※ 先に「ESP32に有線接続」してください
+              </p>
+            )}
           </div>
 
           {/* 閉じるボタン */}
