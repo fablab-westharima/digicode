@@ -404,7 +404,7 @@ class FirmwareService {
       });
 
       // Hard reset
-      await this.loader.hardReset();
+      await this.loader.after('hard_reset');
 
       onProgress({
         stage: 'complete',
@@ -509,7 +509,7 @@ class FirmwareService {
       });
 
       // Hard reset
-      await this.loader.hardReset();
+      await this.loader.after('hard_reset');
 
       onProgress({
         stage: 'complete',
