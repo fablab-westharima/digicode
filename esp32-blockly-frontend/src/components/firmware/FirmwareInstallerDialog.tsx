@@ -32,6 +32,8 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
   const [compileError, setCompileError] = useState<string | null>(null);
   const [isInstalling, setIsInstalling] = useState(false);
   const [installProgress, setInstallProgress] = useState<FlashProgress | null>(null);
+  const [needsManualReset, setNeedsManualReset] = useState(false);
+  const [connectionAttempts, setConnectionAttempts] = useState(0);
 
   // callback ref - DOM要素がマウントされたら呼ばれる
   const containerRef = (node: HTMLDivElement | null) => {
@@ -82,6 +84,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
     }
 
     setIsInstalling(true);
+    setNeedsManualReset(false);
     addLog('ファームウェアのインストールを開始します...');
 
     try {
@@ -103,19 +106,39 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
 
       addLog('✓ すべてのファイルを読み込みました');
 
-      // 2. ESP32に接続
-      addLog('ESP32に接続中...');
+      // 2. ESP32に接続（自動リセットを試行）
+      const attempts = connectionAttempts + 1;
+      setConnectionAttempts(attempts);
+
+      if (attempts === 1) {
+        addLog('ESP32に自動接続を試行中...');
+      } else {
+        addLog(`ESP32に接続中... (試行 ${attempts}回目)`);
+      }
+
       const chipInfo = await firmwareService.connect((progress) => {
         setInstallProgress(progress);
         addLog(`${progress.message} (${Math.round(progress.percent)}%)`);
       });
 
       if (!chipInfo) {
-        throw new Error('ESP32に接続できませんでした');
+        // 接続失敗 - 手動リセットを促す
+        if (attempts === 1) {
+          addLog('⚠️ 自動接続に失敗しました');
+          addLog('📌 手動でESP32を書き込みモードにしてください');
+          setNeedsManualReset(true);
+          setIsInstalling(false);
+          return;
+        } else {
+          throw new Error('ESP32に接続できませんでした。BOOTモードを確認してください。');
+        }
       }
 
+      // 接続成功
       addLog(`✓ 接続成功: ${chipInfo.name} (MAC: ${chipInfo.mac})`);
       setIsConnected(true);
+      setNeedsManualReset(false);
+      setConnectionAttempts(0);
 
       // 3. 完全なファームウェアを書き込み
       addLog('ファームウェアを書き込み中...');
@@ -132,6 +155,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
 
       if (success) {
         addLog('✅ ファームウェアのインストールが完了しました！');
+        setConnectionAttempts(0);
       } else {
         throw new Error('ファームウェアの書き込みに失敗しました');
       }
@@ -459,13 +483,51 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
             {/* Arduino: カスタムINSTALLボタン */}
             {firmwareType === 'arduino' && !isCompiling && !compileError && compiledFirmwareBlob && (
               <div className="flex flex-col items-center gap-4 p-4 bg-[#0D1117] rounded-lg border-2 border-dashed border-[#2E333D]">
-                <Button
-                  onClick={installArduinoFirmware}
-                  disabled={isInstalling || !isSupported}
-                  className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg font-semibold rounded-lg transition-colors disabled:opacity-50"
-                >
-                  {isInstalling ? 'Installing...' : 'INSTALL'}
-                </Button>
+                {/* 手動リセット手順（自動接続失敗時のみ表示） */}
+                {needsManualReset && (
+                  <div className="w-full p-4 bg-[#3d2626] border border-[#da3633] rounded-lg">
+                    <h4 className="text-[#f85149] font-semibold mb-3 flex items-center gap-2">
+                      <span className="text-xl">📌</span>
+                      ESP32を書き込みモードにしてください
+                    </h4>
+                    <ol className="text-sm text-[#E6EDF3] space-y-2 mb-4">
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#58A6F9] font-mono">1.</span>
+                        <span><strong>BOOT</strong>ボタンを押し続ける</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#58A6F9] font-mono">2.</span>
+                        <span><strong>BOOT</strong>を押したまま、<strong>EN</strong>ボタンを押して離す</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#58A6F9] font-mono">3.</span>
+                        <span><strong>BOOT</strong>ボタンを離す</span>
+                      </li>
+                    </ol>
+                    <p className="text-xs text-[#8B949E] mb-3">
+                      ※ ボードによってはBOOTボタンが「IO0」「FLASH」などと表記されている場合があります
+                    </p>
+                    <Button
+                      onClick={installArduinoFirmware}
+                      disabled={isInstalling}
+                      className="w-full bg-[#58A6F9] hover:bg-[#1f6feb] text-white font-semibold"
+                    >
+                      準備完了 - 再試行
+                    </Button>
+                  </div>
+                )}
+
+                {/* 通常のINSTALLボタン */}
+                {!needsManualReset && (
+                  <Button
+                    onClick={installArduinoFirmware}
+                    disabled={isInstalling || !isSupported}
+                    className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg font-semibold rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {isInstalling ? 'Installing...' : 'INSTALL'}
+                  </Button>
+                )}
+
                 {!isSupported && (
                   <p className="text-[#f85149] text-xs text-center">
                     お使いのブラウザはサポートされていません。<br />
