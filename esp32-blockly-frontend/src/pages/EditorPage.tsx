@@ -27,7 +27,6 @@ import { WifiSetupDialog } from '@/components/wifi/WifiSetupDialog';
 import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstallerDialog';
 import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
-import { UsbSetupDialog } from '@/components/settings/UsbSetupDialog';
 import { HeaderDeviceSelector } from '@/components/device/HeaderDeviceSelector';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSerialStore } from '@/stores/serialStore';
@@ -95,7 +94,6 @@ export function EditorPage() {
     percent: 0,
     message: ''
   });
-  const [deviceSelectDialogOpen, setDeviceSelectDialogOpen] = useState(false);
   const [batchSelectDialogOpen, setBatchSelectDialogOpen] = useState(false);
   const [batchUpdateDialogOpen, setBatchUpdateDialogOpen] = useState(false);
   const [batchUpdateDevices, setBatchUpdateDevices] = useState<DigiCodeDevice[]>([]);
@@ -105,7 +103,6 @@ export function EditorPage() {
   const [firmwareInstallerDialogOpen, setFirmwareInstallerDialogOpen] = useState(false);
   const [pinSettingsDialogOpen, setPinSettingsDialogOpen] = useState(false);
   const [compileServerSettingsDialogOpen, setCompileServerSettingsDialogOpen] = useState(false);
-  const [usbSetupDialogOpen, setUsbSetupDialogOpen] = useState(false);
   const [flashMethodDialogOpen, setFlashMethodDialogOpen] = useState(false);
   const [compiledBinary, setCompiledBinary] = useState<Blob | null>(null);
   const [codePreviewDialogOpen, setCodePreviewDialogOpen] = useState(false);
@@ -637,29 +634,6 @@ export function EditorPage() {
     }
   };
 
-  // デバイス選択後の処理（単体）
-  const handleDeviceSelect = async (device: DigiCodeDevice) => {
-    // 1. deviceStoreにデバイスを追加（HeaderDeviceSelectorのリストに表示されるように）
-    addDevice({
-      uuid: device.uuid,
-      name: device.name,
-      ssid: '',
-      lastConnected: new Date().toISOString(),
-      ipAddress: device.ipAddress
-    });
-
-    // 2. wifiStoreにデバイス情報を設定して接続状態にする
-    setHost(device.ipAddress);
-    setDeviceName(device.name);
-    await connectWifi();
-
-    // 3. OTA更新がペンディングの場合は実行
-    if (pendingOtaBinary) {
-      await handleOtaUpdate(pendingOtaBinary, device.url);
-      setPendingOtaBinary(null);
-    }
-  };
-
   // 複数デバイス選択後の処理（一括更新）
   const handleBatchDeviceSelect = (devices: DigiCodeDevice[]) => {
     setBatchUpdateDevices(devices);
@@ -759,9 +733,10 @@ export function EditorPage() {
             await handleOtaUpdate(binary, deviceUrl);
           }
         } else {
-          // デバイス未選択の場合はダイアログで選択（選択後に確認→コンパイル）
-          setPendingOtaBinary(null); // コンパイル前なのでnull
-          setDeviceSelectDialogOpen(true);
+          // デバイス未選択の場合はエラーメッセージを表示
+          setCompileLog(prev => [...prev, '[エラー] デバイスが選択されていません']);
+          setIsCompiling(false);
+          alert('デバイスが選択されていません。ヘッダーメニューの書き込みデバイスからデバイスを選択してください。');
         }
         break;
       }
@@ -1256,8 +1231,6 @@ export function EditorPage() {
           <Sidebar
             onProjectOpen={handleOpen}
             onFirmwareWrite={handleFirmwareWrite}
-            onOtaUpdate={() => setDeviceSelectDialogOpen(true)}
-            onUsbSetup={() => setUsbSetupDialogOpen(true)}
             onApSetup={() => setWifiSetupDialogOpen(true)}
             onBluetoothSetup={() => connectBluetooth()}
             onPinAssignment={() => setPinSettingsDialogOpen(true)}
@@ -1485,13 +1458,6 @@ export function EditorPage() {
         </DialogContent>
       </Dialog>
 
-      {/* デバイス選択ダイアログ（単体） */}
-      <DeviceSelectDialog
-        open={deviceSelectDialogOpen}
-        onOpenChange={setDeviceSelectDialogOpen}
-        onSelect={handleDeviceSelect}
-      />
-
       {/* デバイス選択ダイアログ（複数選択・一括更新用） */}
       <DeviceSelectDialog
         open={batchSelectDialogOpen}
@@ -1671,12 +1637,6 @@ export function EditorPage() {
       <CompileServerSettingsDialog
         open={compileServerSettingsDialogOpen}
         onOpenChange={setCompileServerSettingsDialogOpen}
-      />
-
-      {/* USB有線接続ダイアログ */}
-      <UsbSetupDialog
-        open={usbSetupDialogOpen}
-        onOpenChange={setUsbSetupDialogOpen}
       />
 
       {/* 生成コードプレビューダイアログ */}

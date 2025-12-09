@@ -3,15 +3,12 @@ import { useTranslation } from 'react-i18next';
 import {
   FolderOpen,
   Zap,
-  Wifi,
   BookOpen,
   Pin as PinIcon,
-  Upload,
   Radio,
   Code,
   SlidersHorizontal,
   Cpu,
-  Usb,
   Bluetooth
 } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -19,9 +16,6 @@ import { Button } from '../ui/button';
 interface SidebarProps {
   onProjectOpen?: () => void;
   onFirmwareWrite?: () => void;
-  onOtaUpdate?: () => void;
-  onUsbSetup?: () => void;  // USB有線接続設定
-  onWifiSetup?: () => void;
   onApSetup?: () => void;
   onBluetoothSetup?: () => void;
   onPinAssignment?: () => void;
@@ -42,9 +36,6 @@ interface NavItem {
 export function Sidebar({
   onProjectOpen,
   onFirmwareWrite,
-  onOtaUpdate,
-  onUsbSetup,
-  onWifiSetup,
   onApSetup,
   onBluetoothSetup,
   onPinAssignment,
@@ -66,56 +57,40 @@ export function Sidebar({
       action: onProjectOpen || (() => {}),
       category: 'project'
     },
-    // Firmware
+    // Settings (設定) - 手順の流れに沿った順番
     {
       id: 'firmware-write',
       label: t('sidebar.firmwareWrite', { defaultValue: 'ファームウェア書込み' }),
       icon: <Zap className="w-4 h-4" />,
       action: onFirmwareWrite || (() => {}),
-      category: 'firmware'
-    },
-    {
-      id: 'ota-update',
-      label: t('sidebar.otaUpdate', { defaultValue: 'OTA更新' }),
-      icon: <Upload className="w-4 h-4" />,
-      action: onOtaUpdate || (() => {}),
-      category: 'firmware'
-    },
-    // Connection Settings (接続設定)
-    {
-      id: 'usb-setup',
-      label: t('sidebar.usbSetup', { defaultValue: 'USB有線接続' }),
-      icon: <Usb className="w-4 h-4" />,
-      action: onUsbSetup || (() => {}),
-      category: 'connection'
-    },
-    {
-      id: 'bluetooth-setup',
-      label: t('sidebar.bluetoothSetup', { defaultValue: 'Bluetooth接続' }),
-      icon: <Bluetooth className="w-4 h-4" />,
-      action: onBluetoothSetup || (() => {}),
-      category: 'connection'
-    },
-    // Settings (設定)
-    {
-      id: 'pin-assignment',
-      label: t('sidebar.pinAssignment', { defaultValue: 'ピン配置' }),
-      icon: <PinIcon className="w-4 h-4" />,
-      action: onPinAssignment || (() => {}),
       category: 'settings'
     },
     {
       id: 'compile-server',
-      label: t('sidebar.compileServer', { defaultValue: 'コンパイルサーバー' }),
+      label: t('sidebar.compileServerSelect', { defaultValue: 'コンパイルサーバ選択' }),
       icon: <Cpu className="w-4 h-4" />,
       action: onCompileServerSettings || (() => {}),
       category: 'settings'
     },
     {
       id: 'ap-setup',
-      label: t('sidebar.apSetup', { defaultValue: 'AP接続' }),
+      label: t('sidebar.wirelessLan', { defaultValue: '無線LAN接続' }),
       icon: <Radio className="w-4 h-4" />,
       action: onApSetup || (() => {}),
+      category: 'settings'
+    },
+    {
+      id: 'bluetooth-setup',
+      label: t('sidebar.bluetoothSetup', { defaultValue: 'Bluetooth接続' }),
+      icon: <Bluetooth className="w-4 h-4" />,
+      action: onBluetoothSetup || (() => {}),
+      category: 'settings'
+    },
+    {
+      id: 'pin-assignment',
+      label: t('sidebar.extensions', { defaultValue: '拡張機能' }),
+      icon: <PinIcon className="w-4 h-4" />,
+      action: onPinAssignment || (() => {}),
       category: 'settings'
     },
     // Tools (ツール)
@@ -147,10 +122,6 @@ export function Sidebar({
     switch (category) {
       case 'project':
         return t('sidebar.category.project', { defaultValue: 'プロジェクト' });
-      case 'firmware':
-        return t('sidebar.category.firmware', { defaultValue: 'ファームウェア' });
-      case 'connection':
-        return t('sidebar.category.connection', { defaultValue: '接続設定' });
       case 'settings':
         return t('sidebar.category.settings', { defaultValue: '設定' });
       case 'tools':
@@ -171,7 +142,7 @@ export function Sidebar({
   }, {} as Record<string, NavItem[]>);
 
   // カテゴリの表示順序を定義
-  const categoryOrder = ['project', 'firmware', 'connection', 'settings', 'tools', 'docs'];
+  const categoryOrder = ['project', 'settings', 'tools', 'docs'];
   const orderedCategories = categoryOrder.filter(cat => groupedItems[cat]);
 
   // 表示状態を計算
