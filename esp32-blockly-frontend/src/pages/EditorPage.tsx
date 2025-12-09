@@ -516,11 +516,21 @@ export function EditorPage() {
       // コンパイル実行
       const result = await compileService.compile(includes, globals, setupCode, loopCode, undefined, format);
 
-      if (result.success && result.binary) {
-        // コンパイル成功 - バイナリを保存
+      if (result.success) {
+        // コンパイル成功 - バイナリを取得
+        const binary = result.binary || result.fullPackage?.firmware;
+
+        if (!binary) {
+          addLog('✗ コンパイルエラー: バイナリデータが取得できませんでした');
+          setIsCompiling(false);
+          setStatusBarState('error');
+          setStatusBarMessage('バイナリデータが取得できませんでした');
+          return null;
+        }
+
         addLog('✓ コンパイル成功！');
-        addLog(`バイナリサイズ: ${(result.binary.size / 1024).toFixed(1)} KB`);
-        compiledBinaryRef.current = result.binary;
+        addLog(`バイナリサイズ: ${(binary.size / 1024).toFixed(1)} KB`);
+        compiledBinaryRef.current = binary;
 
         // 使用量を再取得
         refreshUsage();
@@ -530,7 +540,7 @@ export function EditorPage() {
         setStatusBarState('success');
         setStatusBarMessage(t('status.compileSuccess'));
 
-        return result.binary;
+        return binary;
       } else {
         addLog(`✗ コンパイルエラー: ${result.error}`);
         if (result.details) {

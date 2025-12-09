@@ -145,6 +145,10 @@ export const compileService = {
               }
 
               return { success: true, fullPackage };
+            } else {
+              // fullPackageモードでコンパイル失敗
+              console.warn('[Compile] Ubuntu server compilation failed (fullPackage)');
+              // Railwayにフォールバックするため、ここではreturnしない
             }
           } else {
             // 従来のバイナリモード
@@ -207,6 +211,13 @@ export const compileService = {
             }
 
             return { success: true, fullPackage };
+          } else {
+            // fullPackageモードでコンパイル失敗
+            return {
+              success: false,
+              error: json.error || 'Compilation failed on Railway server',
+              details: json.details || json.stderr,
+            };
           }
         } else {
           // 従来のバイナリモード
@@ -269,6 +280,13 @@ export const compileService = {
           };
 
           return { success: true, fullPackage };
+        } else {
+          // fullPackageモードでコンパイル失敗
+          return {
+            success: false,
+            error: json.error || 'Compilation failed on local server',
+            details: json.details || json.stderr,
+          };
         }
       }
 
