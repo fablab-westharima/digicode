@@ -17,6 +17,14 @@ interface FirmwareInstallerDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// ファームウェアパッケージの型（従来のBlob or fullPackage）
+type FirmwarePackage = Blob | {
+  firmware: Blob;
+  bootloader: Blob;
+  partitions: Blob;
+  bootApp0: Blob;
+};
+
 export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstallerDialogProps) {
   const { t } = useTranslation();
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
@@ -28,7 +36,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
   const [isConnecting, setIsConnecting] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [isCompiling, setIsCompiling] = useState(false);
-  const [compiledFirmwareBlob, setCompiledFirmwareBlob] = useState<Blob | null>(null);
+  const [compiledFirmwareBlob, setCompiledFirmwareBlob] = useState<FirmwarePackage | null>(null);
   const [compileError, setCompileError] = useState<string | null>(null);
   const [isInstalling, setIsInstalling] = useState(false);
   const [installProgress, setInstallProgress] = useState<FlashProgress | null>(null);
@@ -58,14 +66,22 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
       // DigiCodeOTAテンプレートをそのままコンパイル（空のコード）
       const result = await compileService.compile('', '', '', '', 'esp32:esp32:esp32', 'bin');
 
-      if (!result.success || !result.binary) {
+      if (!result.success) {
         throw new Error(result.error || 'Compilation failed');
       }
 
-      // BlobをそのままR持
-      setCompiledFirmwareBlob(result.binary);
-      addLog('✅ ファームウェアのコンパイルが完了しました');
-      console.log('[FirmwareInstaller] ✓ Firmware compiled successfully');
+      // fullPackage または binary を保存
+      if (result.fullPackage) {
+        setCompiledFirmwareBlob(result.fullPackage);
+        addLog('✅ 完全なファームウェアパッケージのコンパイルが完了しました');
+        console.log('[FirmwareInstaller] ✓ Full firmware package compiled successfully');
+      } else if (result.binary) {
+        setCompiledFirmwareBlob(result.binary);
+        addLog('✅ ファームウェアのコンパイルが完了しました');
+        console.log('[FirmwareInstaller] ✓ Firmware compiled successfully');
+      } else {
+        throw new Error('Compilation returned neither binary nor fullPackage');
+      }
     } catch (error) {
       console.error('[FirmwareInstaller] Compilation error:', error);
       const errorMsg = error instanceof Error ? error.message : 'Unknown compilation error';
@@ -88,23 +104,41 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
     addLog('ファームウェアのインストールを開始します...');
 
     try {
-      // 1. 静的ファイルを取得
-      addLog('bootloader/partitions/boot_app0 を読み込み中...');
-      const [bootloaderRes, partitionsRes, bootApp0Res] = await Promise.all([
-        fetch('/firmware/esp32/arduino/bootloader.bin'),
-        fetch('/firmware/esp32/arduino/partitions.bin'),
-        fetch('/firmware/esp32/arduino/boot_app0.bin')
-      ]);
+      // 1. ファームウェアファイルを準備
+      let firmwareBlob: Blob;
+      let bootloaderBlob: Blob;
+      let partitionsBlob: Blob;
+      let bootApp0Blob: Blob;
 
-      if (!bootloaderRes.ok || !partitionsRes.ok || !bootApp0Res.ok) {
-        throw new Error('静的ファイルの読み込みに失敗しました');
+      if (compiledFirmwareBlob instanceof Blob) {
+        // 従来モード: 静的ファイルを取得
+        addLog('bootloader/partitions/boot_app0 を読み込み中（従来モード）...');
+        const [bootloaderRes, partitionsRes, bootApp0Res] = await Promise.all([
+          fetch('/firmware/esp32/arduino/bootloader.bin'),
+          fetch('/firmware/esp32/arduino/partitions.bin'),
+          fetch('/firmware/esp32/arduino/boot_app0.bin')
+        ]);
+
+        if (!bootloaderRes.ok || !partitionsRes.ok || !bootApp0Res.ok) {
+          throw new Error('静的ファイルの読み込みに失敗しました');
+        }
+
+        bootloaderBlob = await bootloaderRes.blob();
+        partitionsBlob = await partitionsRes.blob();
+        bootApp0Blob = await bootApp0Res.blob();
+        firmwareBlob = compiledFirmwareBlob;
+
+        addLog('✓ すべてのファイルを読み込みました');
+      } else {
+        // fullPackageモード: コンパイル時に取得した4ファイルを使用
+        addLog('完全なファームウェアパッケージを使用します...');
+        bootloaderBlob = compiledFirmwareBlob.bootloader;
+        partitionsBlob = compiledFirmwareBlob.partitions;
+        bootApp0Blob = compiledFirmwareBlob.bootApp0;
+        firmwareBlob = compiledFirmwareBlob.firmware;
+
+        addLog('✓ バージョン整合性が保証されたファームウェアパッケージを準備');
       }
-
-      const bootloaderBlob = await bootloaderRes.blob();
-      const partitionsBlob = await partitionsRes.blob();
-      const bootApp0Blob = await bootApp0Res.blob();
-
-      addLog('✓ すべてのファイルを読み込みました');
 
       // 2. ESP32に接続（自動リセットを試行）
       const attempts = connectionAttempts + 1;
@@ -146,7 +180,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
         bootloaderBlob,
         partitionsBlob,
         bootApp0Blob,
-        compiledFirmwareBlob,
+        firmwareBlob,
         (progress) => {
           setInstallProgress(progress);
           addLog(`${progress.message} (${Math.round(progress.percent)}%)`);

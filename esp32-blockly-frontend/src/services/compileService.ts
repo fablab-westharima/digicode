@@ -17,6 +17,12 @@ export interface CompileRequest {
 export interface CompileResult {
   success: boolean;
   binary?: Blob;
+  fullPackage?: {
+    firmware: Blob;
+    bootloader: Blob;
+    partitions: Blob;
+    bootApp0: Blob;
+  };
   error?: string;
   details?: string;
 }
@@ -42,6 +48,16 @@ const getCompileServerUrl = (): string => {
     return SERVERS.ubuntu; // デフォルトはUbuntuサーバー
   }
   return SERVERS.local;
+};
+
+// base64文字列をBlobに変換
+const base64ToBlob = (base64: string): Blob => {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return new Blob([bytes], { type: 'application/octet-stream' });
 };
 
 // サーバーモード設定
@@ -82,8 +98,9 @@ export const compileService = {
     // ボードが指定されていない場合はストアから取得
     const targetBoard = board || useBoardStore.getState().getFqbn();
 
-    // format パラメータをクエリ文字列に追加
-    const formatParam = format === 'uf2' ? '?format=uf2' : '';
+    // ESP32の場合はfullPackageモードを使用、それ以外はformatパラメータ
+    const isEsp32 = targetBoard.startsWith('esp32:');
+    const queryParams = isEsp32 ? '?fullPackage=true' : (format === 'uf2' ? '?format=uf2' : '');
 
     const requestBody = JSON.stringify({
       includes,
@@ -98,7 +115,7 @@ export const compileService = {
       // まずUbuntuサーバーで試行
       console.log('[Compile] Trying Ubuntu server (primary)...');
       try {
-        const response = await fetch(`${SERVERS.ubuntu}/api/compile${formatParam}`, {
+        const response = await fetch(`${SERVERS.ubuntu}/api/compile${queryParams}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: requestBody,
@@ -106,16 +123,42 @@ export const compileService = {
         });
 
         if (response.ok) {
-          const binary = await response.blob();
-          console.log('[Compile] ✓ Ubuntu server compilation successful');
+          const contentType = response.headers.get('Content-Type');
 
-          // 使用量カウント
-          const token = localStorage.getItem('accessToken');
-          if (token) {
-            api.compileUsage.increment().catch(console.error);
+          // fullPackageモード（JSON）
+          if (contentType?.includes('application/json')) {
+            const json = await response.json();
+            if (json.success) {
+              console.log('[Compile] ✓ Ubuntu server compilation successful (fullPackage)');
+
+              const fullPackage = {
+                firmware: base64ToBlob(json.firmware),
+                bootloader: base64ToBlob(json.bootloader),
+                partitions: base64ToBlob(json.partitions),
+                bootApp0: base64ToBlob(json.bootApp0)
+              };
+
+              // 使用量カウント
+              const token = localStorage.getItem('accessToken');
+              if (token) {
+                api.compileUsage.increment().catch(console.error);
+              }
+
+              return { success: true, fullPackage };
+            }
+          } else {
+            // 従来のバイナリモード
+            const binary = await response.blob();
+            console.log('[Compile] ✓ Ubuntu server compilation successful');
+
+            // 使用量カウント
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+              api.compileUsage.increment().catch(console.error);
+            }
+
+            return { success: true, binary };
           }
-
-          return { success: true, binary };
         }
 
         console.warn('[Compile] Ubuntu server returned error, falling back to Railway...');
@@ -126,7 +169,7 @@ export const compileService = {
       // Ubuntuが失敗した場合はRailwayで試行（バックアップ）
       console.log('[Compile] Trying Railway server (backup)...');
       try {
-        const response = await fetch(`${SERVERS.railway}/api/compile${formatParam}`, {
+        const response = await fetch(`${SERVERS.railway}/api/compile${queryParams}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: requestBody,
@@ -142,16 +185,47 @@ export const compileService = {
           };
         }
 
-        const binary = await response.blob();
-        console.log('[Compile] ✓ Railway server compilation successful (fallback)');
+        const contentType = response.headers.get('Content-Type');
 
-        // 使用量カウント
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-          api.compileUsage.increment().catch(console.error);
+        // fullPackageモード（JSON）
+        if (contentType?.includes('application/json')) {
+          const json = await response.json();
+          if (json.success) {
+            console.log('[Compile] ✓ Railway server compilation successful (fullPackage, fallback)');
+
+            const fullPackage = {
+              firmware: base64ToBlob(json.firmware),
+              bootloader: base64ToBlob(json.bootloader),
+              partitions: base64ToBlob(json.partitions),
+              bootApp0: base64ToBlob(json.bootApp0)
+            };
+
+            // 使用量カウント
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+              api.compileUsage.increment().catch(console.error);
+            }
+
+            return { success: true, fullPackage };
+          }
+        } else {
+          // 従来のバイナリモード
+          const binary = await response.blob();
+          console.log('[Compile] ✓ Railway server compilation successful (fallback)');
+
+          // 使用量カウント
+          const token = localStorage.getItem('accessToken');
+          if (token) {
+            api.compileUsage.increment().catch(console.error);
+          }
+
+          return { success: true, binary };
         }
 
-        return { success: true, binary };
+        return {
+          success: false,
+          error: 'Compilation failed on both servers',
+        };
       } catch (error) {
         return {
           success: false,
@@ -161,10 +235,10 @@ export const compileService = {
       }
     }
 
-    // localモードの場合は通常通り
+    // localモードの場合
     try {
       const serverUrl = getCompileServerUrl();
-      const response = await fetch(`${serverUrl}/api/compile${formatParam}`, {
+      const response = await fetch(`${serverUrl}/api/compile${queryParams}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: requestBody,
@@ -179,6 +253,26 @@ export const compileService = {
         };
       }
 
+      const contentType = response.headers.get('Content-Type');
+
+      // fullPackageモード（JSON）
+      if (contentType?.includes('application/json')) {
+        const json = await response.json();
+        if (json.success) {
+          console.log('[Compile] ✓ Local server compilation successful (fullPackage)');
+
+          const fullPackage = {
+            firmware: base64ToBlob(json.firmware),
+            bootloader: base64ToBlob(json.bootloader),
+            partitions: base64ToBlob(json.partitions),
+            bootApp0: base64ToBlob(json.bootApp0)
+          };
+
+          return { success: true, fullPackage };
+        }
+      }
+
+      // 従来のバイナリモード
       const binary = await response.blob();
       return { success: true, binary };
     } catch (error) {
