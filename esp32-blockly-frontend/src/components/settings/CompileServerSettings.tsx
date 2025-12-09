@@ -64,7 +64,9 @@ export const CompileServerSettings = () => {
 
   const testConnection = async (target: 'local' | 'cloud') => {
     setTesting(target);
-    const url = compileService.servers[target];
+    const url = target === 'local'
+      ? compileService.servers.local
+      : compileService.servers.primary;
     const connected = await compileService.testConnection(url);
 
     if (target === 'local') {
