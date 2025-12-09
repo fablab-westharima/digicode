@@ -1,4 +1,5 @@
 import { ESPLoader, Transport } from 'esptool-js';
+import { getCompileServerUrl } from '@/config/servers';
 
 export type FlashStage = 'connecting' | 'erasing' | 'flashing' | 'verifying' | 'complete' | 'error';
 
@@ -535,7 +536,7 @@ class FirmwareService {
    */
   async resolveMdns(hostname: string): Promise<string | null> {
     try {
-      const compileServerUrl = import.meta.env.VITE_COMPILE_SERVER_URL || 'http://localhost:3001';
+      const compileServerUrl = getCompileServerUrl();
       const response = await fetch(`${compileServerUrl}/api/resolve?hostname=${encodeURIComponent(hostname)}`, {
         signal: AbortSignal.timeout(5000)
       });

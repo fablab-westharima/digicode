@@ -5,6 +5,13 @@
 
 import { api } from '@/lib/api';
 import { useBoardStore } from '@/stores/boardStore';
+import {
+  COMPILE_SERVERS,
+  getCompileServerMode,
+  setCompileServerMode,
+  getCompileServerUrl,
+  type CompileServerMode
+} from '@/config/servers';
 
 export interface CompileRequest {
   includes: string;
@@ -27,28 +34,7 @@ export interface CompileResult {
   details?: string;
 }
 
-export type CompileServerMode = 'cloud' | 'local';
-
-// サーバーURL設定
-const SERVERS = {
-  ubuntu: 'https://compile.digital-fab.jp',      // Primary: 自宅Ubuntuサーバー
-  railway: 'https://amiable-patience-production-1d47.up.railway.app', // Backup: Railway
-  local: 'http://localhost:3001'
-};
-
-// サーバーモード取得
-const getCompileServerMode = (): CompileServerMode => {
-  return (localStorage.getItem('compileServerMode') as CompileServerMode) || 'cloud';
-};
-
-// サーバーURL取得（cloudモードの場合はUbuntuを返す）
-const getCompileServerUrl = (): string => {
-  const mode = getCompileServerMode();
-  if (mode === 'cloud') {
-    return SERVERS.ubuntu; // デフォルトはUbuntuサーバー
-  }
-  return SERVERS.local;
-};
+export type { CompileServerMode };
 
 // base64文字列をBlobに変換
 const base64ToBlob = (base64: string): Blob => {
@@ -58,11 +44,6 @@ const base64ToBlob = (base64: string): Blob => {
     bytes[i] = binary.charCodeAt(i);
   }
   return new Blob([bytes], { type: 'application/octet-stream' });
-};
-
-// サーバーモード設定
-const setCompileServerMode = (mode: CompileServerMode): void => {
-  localStorage.setItem('compileServerMode', mode);
 };
 
 // 接続テスト
@@ -115,7 +96,7 @@ export const compileService = {
       // まずUbuntuサーバーで試行
       console.log('[Compile] Trying Ubuntu server (primary)...');
       try {
-        const response = await fetch(`${SERVERS.ubuntu}/api/compile${queryParams}`, {
+        const response = await fetch(`${COMPILE_SERVERS.primary}/api/compile${queryParams}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: requestBody,
@@ -173,7 +154,7 @@ export const compileService = {
       // Ubuntuが失敗した場合はRailwayで試行（バックアップ）
       console.log('[Compile] Trying Railway server (backup)...');
       try {
-        const response = await fetch(`${SERVERS.railway}/api/compile${queryParams}`, {
+        const response = await fetch(`${COMPILE_SERVERS.fallback}/api/compile${queryParams}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: requestBody,
