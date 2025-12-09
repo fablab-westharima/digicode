@@ -28,6 +28,7 @@ import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstaller
 import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
 import { UsbPortReleaseDialog } from '@/components/settings/UsbPortReleaseDialog';
+import { UsbDriverDialog } from '@/components/settings/UsbDriverDialog';
 import { HeaderDeviceSelector } from '@/components/device/HeaderDeviceSelector';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSerialStore } from '@/stores/serialStore';
@@ -105,6 +106,7 @@ export function EditorPage() {
   const [pinSettingsDialogOpen, setPinSettingsDialogOpen] = useState(false);
   const [compileServerSettingsDialogOpen, setCompileServerSettingsDialogOpen] = useState(false);
   const [usbPortReleaseDialogOpen, setUsbPortReleaseDialogOpen] = useState(false);
+  const [usbDriverDialogOpen, setUsbDriverDialogOpen] = useState(false);
   const [flashMethodDialogOpen, setFlashMethodDialogOpen] = useState(false);
   const [compiledBinary, setCompiledBinary] = useState<Blob | null>(null);
   const [codePreviewDialogOpen, setCodePreviewDialogOpen] = useState(false);
@@ -1241,6 +1243,7 @@ export function EditorPage() {
             onDocs={() => window.open('/docs', '_blank')}
             onCodePreview={() => setCodePreviewDialogOpen(true)}
             onPidTuning={() => setPidTuningDialogOpen(true)}
+            onUsbDriver={() => setUsbDriverDialogOpen(true)}
           />
 
           {/* メインコンテンツエリア (Blocklyワークスペース) */}
@@ -1646,6 +1649,12 @@ export function EditorPage() {
       <UsbPortReleaseDialog
         open={usbPortReleaseDialogOpen}
         onOpenChange={setUsbPortReleaseDialogOpen}
+      />
+
+      {/* USBドライバーダイアログ */}
+      <UsbDriverDialog
+        open={usbDriverDialogOpen}
+        onOpenChange={setUsbDriverDialogOpen}
       />
 
       {/* 生成コードプレビューダイアログ */}

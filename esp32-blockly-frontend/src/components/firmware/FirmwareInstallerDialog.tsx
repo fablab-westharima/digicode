@@ -608,46 +608,6 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
             )}
           </div>
 
-          {/* USBドライバー */}
-          <div className="border-t border-[#2E333D] pt-4 space-y-2">
-            <h3 className="font-semibold text-sm text-[#E6EDF3]">{t('firmware.usbDriver')}</h3>
-            <p className="text-sm text-[#8B949E]">
-              {t('firmware.usbDriverDesc')}
-            </p>
-            <div className="flex gap-2 flex-wrap">
-              <Button variant="outline" size="sm" asChild className="border-[#2E333D] text-[#E6EDF3] hover:bg-[#2E333D]">
-                <a
-                  href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Windows
-                </a>
-              </Button>
-              <Button variant="outline" size="sm" asChild className="border-[#2E333D] text-[#E6EDF3] hover:bg-[#2E333D]">
-                <a
-                  href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Mac
-                </a>
-              </Button>
-              <Button variant="outline" size="sm" asChild className="border-[#2E333D] text-[#E6EDF3] hover:bg-[#2E333D]">
-                <a
-                  href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Linux
-                </a>
-              </Button>
-            </div>
-            <p className="text-xs text-[#8B949E] mt-2">
-              {t('firmware.usbDriverNote')}
-            </p>
-          </div>
-
           {/* Flash消去（デバッグ用） */}
           <div className="border-t border-[#2E333D] pt-4 space-y-3">
             <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">

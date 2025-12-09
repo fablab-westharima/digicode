@@ -10,7 +10,8 @@ import {
   SlidersHorizontal,
   Cpu,
   Bluetooth,
-  Trash2
+  Trash2,
+  Usb
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
@@ -25,6 +26,7 @@ interface SidebarProps {
   onDocs?: () => void;
   onCodePreview?: () => void;
   onPidTuning?: () => void;
+  onUsbDriver?: () => void;
 }
 
 interface NavItem {
@@ -46,6 +48,7 @@ export function Sidebar({
   onDocs,
   onCodePreview,
   onPidTuning,
+  onUsbDriver,
 }: SidebarProps) {
   const { t } = useTranslation();
   const [isPinned, setIsPinned] = useState(false); // ピン留めなし
@@ -116,6 +119,13 @@ export function Sidebar({
       label: t('sidebar.pidTuning', { defaultValue: 'PIDチューニング' }),
       icon: <SlidersHorizontal className="w-4 h-4" />,
       action: onPidTuning || (() => {}),
+      category: 'tools'
+    },
+    {
+      id: 'usb-driver',
+      label: t('sidebar.usbDriver', { defaultValue: 'USBドライバー' }),
+      icon: <Usb className="w-4 h-4" />,
+      action: onUsbDriver || (() => {}),
       category: 'tools'
     },
     // Documentation
