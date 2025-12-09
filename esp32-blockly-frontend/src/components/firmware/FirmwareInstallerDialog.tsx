@@ -28,8 +28,10 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
   const [isConnecting, setIsConnecting] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [isCompiling, setIsCompiling] = useState(false);
-  const [compiledFirmwareUrl, setCompiledFirmwareUrl] = useState<string | null>(null);
+  const [compiledFirmwareBlob, setCompiledFirmwareBlob] = useState<Blob | null>(null);
   const [compileError, setCompileError] = useState<string | null>(null);
+  const [isInstalling, setIsInstalling] = useState(false);
+  const [installProgress, setInstallProgress] = useState<FlashProgress | null>(null);
 
   // callback ref - DOM要素がマウントされたら呼ばれる
   const containerRef = (node: HTMLDivElement | null) => {
@@ -47,6 +49,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
 
     setIsCompiling(true);
     setCompileError(null);
+    addLog('クラウドから最新ファームウェアをコンパイル中...');
     console.log('[FirmwareInstaller] Compiling latest firmware from cloud...');
 
     try {
@@ -57,15 +60,92 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
         throw new Error(result.error || 'Compilation failed');
       }
 
-      // Blob URLを作成
-      const blobUrl = URL.createObjectURL(result.binary);
-      setCompiledFirmwareUrl(blobUrl);
+      // BlobをそのままR持
+      setCompiledFirmwareBlob(result.binary);
+      addLog('✅ ファームウェアのコンパイルが完了しました');
       console.log('[FirmwareInstaller] ✓ Firmware compiled successfully');
     } catch (error) {
       console.error('[FirmwareInstaller] Compilation error:', error);
-      setCompileError(error instanceof Error ? error.message : 'Unknown compilation error');
+      const errorMsg = error instanceof Error ? error.message : 'Unknown compilation error';
+      setCompileError(errorMsg);
+      addLog(`❌ コンパイルエラー: ${errorMsg}`);
     } finally {
       setIsCompiling(false);
+    }
+  };
+
+  // Arduino完全ファームウェアをインストール
+  const installArduinoFirmware = async () => {
+    if (!compiledFirmwareBlob) {
+      addLog('❌ ファームウェアがコンパイルされていません');
+      return;
+    }
+
+    setIsInstalling(true);
+    addLog('ファームウェアのインストールを開始します...');
+
+    try {
+      // 1. 静的ファイルを取得
+      addLog('bootloader/partitions/boot_app0 を読み込み中...');
+      const [bootloaderRes, partitionsRes, bootApp0Res] = await Promise.all([
+        fetch('/firmware/esp32/arduino/bootloader.bin'),
+        fetch('/firmware/esp32/arduino/partitions.bin'),
+        fetch('/firmware/esp32/arduino/boot_app0.bin')
+      ]);
+
+      if (!bootloaderRes.ok || !partitionsRes.ok || !bootApp0Res.ok) {
+        throw new Error('静的ファイルの読み込みに失敗しました');
+      }
+
+      const bootloaderBlob = await bootloaderRes.blob();
+      const partitionsBlob = await partitionsRes.blob();
+      const bootApp0Blob = await bootApp0Res.blob();
+
+      addLog('✓ すべてのファイルを読み込みました');
+
+      // 2. ESP32に接続
+      addLog('ESP32に接続中...');
+      const chipInfo = await firmwareService.connect((progress) => {
+        setInstallProgress(progress);
+        addLog(`${progress.message} (${Math.round(progress.percent)}%)`);
+      });
+
+      if (!chipInfo) {
+        throw new Error('ESP32に接続できませんでした');
+      }
+
+      addLog(`✓ 接続成功: ${chipInfo.name} (MAC: ${chipInfo.mac})`);
+      setIsConnected(true);
+
+      // 3. 完全なファームウェアを書き込み
+      addLog('ファームウェアを書き込み中...');
+      const success = await firmwareService.flashCompleteArduinoFirmware(
+        bootloaderBlob,
+        partitionsBlob,
+        bootApp0Blob,
+        compiledFirmwareBlob,
+        (progress) => {
+          setInstallProgress(progress);
+          addLog(`${progress.message} (${Math.round(progress.percent)}%)`);
+        }
+      );
+
+      if (success) {
+        addLog('✅ ファームウェアのインストールが完了しました！');
+      } else {
+        throw new Error('ファームウェアの書き込みに失敗しました');
+      }
+    } catch (error) {
+      console.error('[FirmwareInstaller] Installation error:', error);
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      addLog(`❌ インストールエラー: ${errorMsg}`);
+      setInstallProgress({
+        stage: 'error',
+        percent: 0,
+        message: errorMsg
+      });
+    } finally {
+      setIsInstalling(false);
     }
   };
 
@@ -74,22 +154,15 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
     if (open && firmwareType === 'arduino') {
       compileFirmware();
     }
-
-    // クリーンアップ: Blob URLを解放
-    return () => {
-      if (compiledFirmwareUrl) {
-        URL.revokeObjectURL(compiledFirmwareUrl);
-      }
-    };
   }, [open, firmwareType]);
 
-  // esp-web-toolsを事前ロード
+  // esp-web-toolsを事前ロード (MicroPython用のみ)
   useEffect(() => {
-    if (!open) return;
+    if (!open || firmwareType !== 'micropython') return;
     import('esp-web-tools').then(() => {
       setEspToolsReady(true);
     });
-  }, [open]);
+  }, [open, firmwareType]);
 
   // ダイアログが閉じられた時のクリーンアップ
   useEffect(() => {
@@ -100,62 +173,15 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
     }
   }, [open, isConnected]);
 
-  // ボタン生成
+  // esp-web-tools ボタン生成 (MicroPython用のみ)
   useEffect(() => {
-    if (!espToolsReady || !containerElement || !open) return;
-
-    // Arduinoの場合は、コンパイル完了を待つ
-    if (firmwareType === 'arduino' && !compiledFirmwareUrl && !compileError) {
-      return;
-    }
+    if (firmwareType !== 'micropython' || !espToolsReady || !containerElement || !open) return;
 
     const container = containerElement;
 
     // カスタム要素を動的に作成
     const installButton = document.createElement('esp-web-install-button');
-
-    let manifestUrl: string;
-
-    if (firmwareType === 'arduino' && compiledFirmwareUrl) {
-      // 動的マニフェストを生成（コンパイルされたファームウェアを使用）
-      const manifest = {
-        name: "DigiCode Arduino C++ Firmware",
-        version: "1.4.0",
-        new_install_prompt_erase: true,
-        builds: [
-          {
-            chipFamily: "ESP32",
-            name: "DigiCode競技用（Arduino C++ / 推奨）",
-            parts: [
-              {
-                path: "/firmware/esp32/arduino/bootloader.bin",
-                offset: 4096
-              },
-              {
-                path: "/firmware/esp32/arduino/partitions.bin",
-                offset: 32768
-              },
-              {
-                path: "/firmware/esp32/arduino/boot_app0.bin",
-                offset: 57344
-              },
-              {
-                path: compiledFirmwareUrl,  // 動的にコンパイルされたファームウェア
-                offset: 65536
-              }
-            ]
-          }
-        ]
-      };
-
-      // マニフェストをJSON Blobに変換してURLを作成
-      const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-      manifestUrl = URL.createObjectURL(manifestBlob);
-    } else {
-      // MicroPythonは静的マニフェストを使用
-      manifestUrl = '/firmware/manifest-micropython.json';
-    }
-
+    const manifestUrl = '/firmware/manifest-micropython.json';
     installButton.setAttribute('manifest', manifestUrl);
 
     // アクティベートボタン
@@ -198,7 +224,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
 
     container.innerHTML = '';
     container.appendChild(installButton);
-  }, [espToolsReady, containerElement, firmwareType, open, compiledFirmwareUrl, compileError]);
+  }, [espToolsReady, containerElement, firmwareType, open]);
 
   // ログ追加
   const addLog = (message: string) => {
@@ -421,7 +447,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
             {isCompiling && firmwareType === 'arduino' && (
               <div className="flex flex-col items-center gap-3 p-4 bg-[#0D1117] rounded-lg border-2 border-[#58A6F9]">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#58A6F9]"></div>
-                <p className="text-[#58A6F9] text-sm">
+                <p className="text-[#58A6F9] text-sm text-center">
                   最新ファームウェアをコンパイル中...<br />
                   <span className="text-xs text-[#8B949E]">
                     クラウドサーバー（Ubuntu → Railway フォールバック）
@@ -430,16 +456,64 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
               </div>
             )}
 
-            {/* esp-web-toolsのインストールボタン */}
-            {isSupported && !isCompiling && !compileError && (
+            {/* Arduino: カスタムINSTALLボタン */}
+            {firmwareType === 'arduino' && !isCompiling && !compileError && compiledFirmwareBlob && (
+              <div className="flex flex-col items-center gap-4 p-4 bg-[#0D1117] rounded-lg border-2 border-dashed border-[#2E333D]">
+                <Button
+                  onClick={installArduinoFirmware}
+                  disabled={isInstalling || !isSupported}
+                  className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg font-semibold rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {isInstalling ? 'Installing...' : 'INSTALL'}
+                </Button>
+                {!isSupported && (
+                  <p className="text-[#f85149] text-xs text-center">
+                    お使いのブラウザはサポートされていません。<br />
+                    Chrome または Edge をお使いください。
+                  </p>
+                )}
+
+                {/* インストール進捗表示 */}
+                {installProgress && (
+                  <div className="w-full p-3 rounded-lg bg-[#0D1117] border border-[#2E333D]">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex-1">
+                        <div className="text-xs text-[#8B949E]">{installProgress.message}</div>
+                        {installProgress.file && (
+                          <div className="text-xs text-[#58A6F9] mt-1">{installProgress.file}</div>
+                        )}
+                      </div>
+                      <div className="text-xs text-[#58A6F9]">{Math.round(installProgress.percent)}%</div>
+                    </div>
+                    <div className="w-full bg-[#2E333D] rounded-full h-2 overflow-hidden">
+                      <div
+                        className={`h-full transition-all ${
+                          installProgress.stage === 'error' ? 'bg-[#f85149]' :
+                          installProgress.stage === 'complete' ? 'bg-[#3fb950]' :
+                          'bg-[#58A6F9]'
+                        }`}
+                        style={{ width: `${installProgress.percent}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* MicroPython: esp-web-toolsのインストールボタン */}
+            {firmwareType === 'micropython' && isSupported && (
               <div className="flex flex-col items-center gap-4 p-4 bg-[#0D1117] rounded-lg border-2 border-dashed border-[#2E333D]" ref={containerRef}>
                 <div className="text-[#8B949E]">{t('common.loading')}</div>
               </div>
             )}
 
-            {!isCompiling && !compileError && (
+            {/* 説明テキスト */}
+            {!isCompiling && !compileError && (firmwareType === 'micropython' || compiledFirmwareBlob) && (
               <p className="text-xs text-[#8B949E] text-center">
-                {t('firmware.step3Desc')}
+                {firmwareType === 'arduino'
+                  ? 'INSTALLボタンを押してESP32にUSB接続し、最新のv1.4.0ファームウェアを書き込みます。'
+                  : t('firmware.step3Desc')
+                }
               </p>
             )}
           </div>

@@ -324,6 +324,118 @@ class FirmwareService {
   }
 
   /**
+   * Flash complete Arduino firmware (bootloader + partitions + boot_app0 + firmware) to ESP32
+   * Used for firmware installer with cloud-compiled DigiCodeOTA template
+   */
+  async flashCompleteArduinoFirmware(
+    bootloaderBlob: Blob,
+    partitionsBlob: Blob,
+    bootApp0Blob: Blob,
+    firmwareBlob: Blob,
+    onProgress: (progress: FlashProgress) => void
+  ): Promise<boolean> {
+    if (!this.loader) {
+      onProgress({
+        stage: 'error',
+        percent: 0,
+        message: '先に接続してください'
+      });
+      return false;
+    }
+
+    try {
+      onProgress({
+        stage: 'erasing',
+        percent: 5,
+        message: 'ファームウェアを準備中...'
+      });
+
+      // Convert all Blobs to binary strings
+      const bootloaderData = await this.blobToBinaryString(bootloaderBlob);
+      const partitionsData = await this.blobToBinaryString(partitionsBlob);
+      const bootApp0Data = await this.blobToBinaryString(bootApp0Blob);
+      const firmwareData = await this.blobToBinaryString(firmwareBlob);
+
+      onProgress({
+        stage: 'erasing',
+        percent: 20,
+        message: 'フラッシュメモリを消去中...'
+      });
+
+      // Erase flash
+      await this.loader.eraseFlash();
+
+      onProgress({
+        stage: 'flashing',
+        percent: 30,
+        message: '書き込み準備完了'
+      });
+
+      // Write all 4 files to their respective addresses
+      await this.loader.writeFlash({
+        fileArray: [
+          { data: bootloaderData, address: 0x1000 },    // bootloader @ 4096
+          { data: partitionsData, address: 0x8000 },    // partitions @ 32768
+          { data: bootApp0Data, address: 0xE000 },      // boot_app0 @ 57344
+          { data: firmwareData, address: 0x10000 }      // firmware @ 65536
+        ],
+        flashSize: 'keep',
+        flashMode: 'keep',
+        flashFreq: 'keep',
+        eraseAll: false,
+        compress: true,
+        reportProgress: (fileIndex: number, written: number, total: number) => {
+          const filePercent = 30 + (written / total) * 60;
+          const fileNames = ['bootloader', 'partitions', 'boot_app0', 'firmware'];
+          const fileName = fileNames[fileIndex] || 'file';
+          onProgress({
+            stage: 'flashing',
+            file: fileName,
+            percent: filePercent,
+            message: `${fileName} を書き込み中... ${Math.floor((written / total) * 100)}%`
+          });
+        }
+      });
+
+      onProgress({
+        stage: 'verifying',
+        percent: 95,
+        message: 'ESP32をリセット中...'
+      });
+
+      // Hard reset
+      await this.loader.hardReset();
+
+      onProgress({
+        stage: 'complete',
+        percent: 100,
+        message: '✅ ファームウェアの書き込みが完了しました！'
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Flash complete Arduino error:', error);
+      onProgress({
+        stage: 'error',
+        percent: 0,
+        message: `書き込みエラー: ${(error as Error).message}`
+      });
+      return false;
+    }
+  }
+
+  /**
+   * Convert Blob to binary string for esptool-js
+   */
+  private async blobToBinaryString(blob: Blob): Promise<string> {
+    const arrayBuffer = await blob.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    return Array.from(uint8Array)
+      .map(byte => String.fromCharCode(byte))
+      .join('');
+  }
+
+  /**
    * Flash Arduino firmware (compiled from Blockly) to ESP32
    */
   async flashArduinoFirmware(
