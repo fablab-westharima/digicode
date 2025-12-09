@@ -159,10 +159,18 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
 
       if (success) {
         addLog('✅ ファームウェアのインストールが完了しました！');
+        setNeedsManualReset(false); // 成功したらフラグをリセット
       } else {
         // flashCompleteArduinoFirmware()がfalseを返した場合
         // すでにonProgressでエラーメッセージが設定されているので、それを保持
-        addLog('❌ ファームウェアの書き込みに失敗しました（詳細は上記のログを確認）');
+        addLog('❌ ファームウェアの書き込みに失敗しました');
+
+        // エラーメッセージから自動接続失敗を判定
+        const errorMsg = installProgress?.message || '';
+        if (errorMsg.includes('Invalid head of packet') || errorMsg.includes('serial noise')) {
+          addLog('💡 自動接続に失敗しました。手動でBOOTモードに入れてから再試行してください。');
+          setNeedsManualReset(true);
+        }
       }
     } catch (error) {
       console.error('[FirmwareInstaller] Installation error:', error);
@@ -173,6 +181,11 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
         percent: 0,
         message: errorMsg
       });
+
+      // 接続エラーの場合は手動モード表示
+      if (errorMsg.includes('Invalid head of packet') || errorMsg.includes('serial noise')) {
+        setNeedsManualReset(true);
+      }
     } finally {
       setIsInstalling(false);
     }
@@ -187,6 +200,13 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
       setEspToolsReady(true);
     });
   }, [open, firmwareType]);
+
+  // ダイアログが開いた時にneedsManualResetをリセット
+  useEffect(() => {
+    if (open) {
+      setNeedsManualReset(false);
+    }
+  }, [open]);
 
   // ダイアログが閉じられた時のクリーンアップ
   useEffect(() => {
@@ -532,40 +552,52 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                       </p>
                     </div>
 
-                    {/* BOOTボタン操作手順 */}
-                    <div className="w-full p-4 bg-[#2d333b] border-2 border-[#f0883e] rounded-lg">
-                      <h4 className="text-[#f0883e] font-semibold mb-3 flex items-center gap-2">
-                        <span className="text-xl">⚠️</span>
-                        書き込み前の準備（重要）
-                      </h4>
-                      <div className="mb-3 p-3 bg-[#161b22] rounded border border-[#30363d]">
-                        <p className="text-xs text-[#8B949E] mb-2">
-                          <strong className="text-[#E6EDF3]">自動接続を試行します。</strong><br />
-                          失敗した場合は、以下の手順でESP32を書き込みモードにしてください：
+                    {/* 自動接続失敗時のみBOOTボタン操作手順を表示 */}
+                    {needsManualReset && (
+                      <div className="w-full p-4 bg-[#2d333b] border-2 border-[#f0883e] rounded-lg">
+                        <h4 className="text-[#f0883e] font-semibold mb-3 flex items-center gap-2">
+                          <span className="text-xl">⚠️</span>
+                          手動でBOOTモードに入れてください
+                        </h4>
+                        <div className="mb-3 p-3 bg-[#161b22] rounded border border-[#30363d]">
+                          <p className="text-xs text-[#8B949E] mb-2">
+                            <strong className="text-[#E6EDF3]">自動接続に失敗しました。</strong><br />
+                            以下の手順でESP32を書き込みモードにしてから、再試行ボタンを押してください：
+                          </p>
+                        </div>
+                        <ol className="text-sm text-[#E6EDF3] space-y-2 mb-3">
+                          <li className="flex items-start gap-2">
+                            <span className="text-[#f0883e] font-mono font-bold">1.</span>
+                            <span><strong className="text-[#f0883e]">BOOT</strong>ボタンを押し続ける</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-[#f0883e] font-mono font-bold">2.</span>
+                            <span><strong className="text-[#f0883e]">BOOT</strong>を押したまま、<strong className="text-[#f0883e]">EN</strong>ボタンを一瞬押して離す</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-[#f0883e] font-mono font-bold">3.</span>
+                            <span><strong className="text-[#f0883e]">BOOT</strong>ボタンを離す</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-[#f0883e] font-mono font-bold">4.</span>
+                            <span>この状態で下の「再試行」ボタンを押す</span>
+                          </li>
+                        </ol>
+                        <p className="text-xs text-[#8B949E]">
+                          💡 ヒント: ボードによってはBOOTボタンが「IO0」「FLASH」「GPIO0」などと表記されている場合があります
                         </p>
                       </div>
-                      <ol className="text-sm text-[#E6EDF3] space-y-2 mb-3">
-                        <li className="flex items-start gap-2">
-                          <span className="text-[#f0883e] font-mono font-bold">1.</span>
-                          <span><strong className="text-[#f0883e]">BOOT</strong>ボタンを押し続ける</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-[#f0883e] font-mono font-bold">2.</span>
-                          <span><strong className="text-[#f0883e]">BOOT</strong>を押したまま、<strong className="text-[#f0883e]">EN</strong>ボタンを一瞬押して離す</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-[#f0883e] font-mono font-bold">3.</span>
-                          <span><strong className="text-[#f0883e]">BOOT</strong>ボタンを離す</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-[#f0883e] font-mono font-bold">4.</span>
-                          <span>この状態で下の「書き込み開始」ボタンを押す</span>
-                        </li>
-                      </ol>
-                      <p className="text-xs text-[#8B949E]">
-                        💡 ヒント: ボードによってはBOOTボタンが「IO0」「FLASH」「GPIO0」などと表記されている場合があります
-                      </p>
-                    </div>
+                    )}
+
+                    {/* 初回試行時のシンプルな説明 */}
+                    {!needsManualReset && !installProgress && (
+                      <div className="w-full p-3 bg-[#161b22] border border-[#30363d] rounded-lg">
+                        <p className="text-sm text-[#8B949E] text-center">
+                          <strong className="text-[#E6EDF3]">自動接続を試行します。</strong><br />
+                          そのまま「書き込み開始」ボタンを押してください。
+                        </p>
+                      </div>
+                    )}
 
                     {/* 書き込み開始ボタン */}
                     <Button
@@ -573,7 +605,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                       disabled={isInstalling || !isSupported}
                       className="w-full bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg font-semibold rounded-lg transition-colors disabled:opacity-50"
                     >
-                      {isInstalling ? '書き込み中...' : '▶ 書き込み開始'}
+                      {isInstalling ? '書き込み中...' : needsManualReset ? '🔄 再試行' : '▶ 書き込み開始'}
                     </Button>
 
                     {!isSupported && (
