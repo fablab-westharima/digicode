@@ -92,15 +92,19 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
     }
   };
 
-  // Arduino完全ファームウェアをインストール
+  // Arduino完全ファームウェアをインストール（USB接続は事前に完了済み）
   const installArduinoFirmware = async () => {
     if (!compiledFirmwareBlob) {
       addLog('❌ ファームウェアがコンパイルされていません');
       return;
     }
 
+    if (!isConnected) {
+      addLog('❌ USB接続が確立していません');
+      return;
+    }
+
     setIsInstalling(true);
-    setNeedsManualReset(false);
     addLog('ファームウェアのインストールを開始します...');
 
     try {
@@ -140,41 +144,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
         addLog('✓ バージョン整合性が保証されたファームウェアパッケージを準備');
       }
 
-      // 2. ESP32に接続（自動リセットを試行）
-      const attempts = connectionAttempts + 1;
-      setConnectionAttempts(attempts);
-
-      if (attempts === 1) {
-        addLog('ESP32に自動接続を試行中...');
-      } else {
-        addLog(`ESP32に接続中... (試行 ${attempts}回目)`);
-      }
-
-      const chipInfo = await firmwareService.connect((progress) => {
-        setInstallProgress(progress);
-        addLog(`${progress.message} (${Math.round(progress.percent)}%)`);
-      });
-
-      if (!chipInfo) {
-        // 接続失敗 - 手動リセットを促す
-        if (attempts === 1) {
-          addLog('⚠️ 自動接続に失敗しました');
-          addLog('📌 手動でESP32を書き込みモードにしてください');
-          setNeedsManualReset(true);
-          setIsInstalling(false);
-          return;
-        } else {
-          throw new Error('ESP32に接続できませんでした。BOOTモードを確認してください。');
-        }
-      }
-
-      // 接続成功
-      addLog(`✓ 接続成功: ${chipInfo.name} (MAC: ${chipInfo.mac})`);
-      setIsConnected(true);
-      setNeedsManualReset(false);
-      setConnectionAttempts(0);
-
-      // 3. 完全なファームウェアを書き込み
+      // 2. 完全なファームウェアを書き込み（USB接続は既に確立済み）
       addLog('ファームウェアを書き込み中...');
       const success = await firmwareService.flashCompleteArduinoFirmware(
         bootloaderBlob,
@@ -189,7 +159,6 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
 
       if (success) {
         addLog('✅ ファームウェアのインストールが完了しました！');
-        setConnectionAttempts(0);
       } else {
         throw new Error('ファームウェアの書き込みに失敗しました');
       }
@@ -396,28 +365,10 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* USB接続の説明 */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
-              <span className="bg-[#1f6feb] text-[#58A6F9] text-xs font-medium px-2 py-0.5 rounded">Step 1</span>
-              {t('firmware.step1Title')}
-            </h3>
-            <div className="p-4 rounded-lg border-2 border-[#2E333D] bg-[#0D1117]">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[#2E333D]">
-                  <Usb className="w-5 h-5 text-[#79C0FF]" />
-                </div>
-                <p className="text-sm text-[#8B949E]">
-                  {t('firmware.step1Desc')}
-                </p>
-              </div>
-            </div>
-          </div>
-
           {/* ファームウェア選択 */}
           <div className="space-y-3">
             <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
-              <span className="bg-[#1f6feb] text-[#58A6F9] text-xs font-medium px-2 py-0.5 rounded">Step 2</span>
+              <span className="bg-[#1f6feb] text-[#58A6F9] text-xs font-medium px-2 py-0.5 rounded">Step 1</span>
               {t('firmware.step2Title')}
             </h3>
             <div className="space-y-2">
@@ -476,7 +427,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
           {/* ファームウェア書き込み */}
           <div className="space-y-3">
             <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
-              <span className="bg-[#1f6feb] text-[#58A6F9] text-xs font-medium px-2 py-0.5 rounded">Step 3</span>
+              <span className="bg-[#1f6feb] text-[#58A6F9] text-xs font-medium px-2 py-0.5 rounded">Step 2</span>
               {t('firmware.step3Title')}
             </h3>
 
@@ -524,89 +475,117 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                   </p>
                 </div>
 
-                {/* BOOTボタン操作手順（常に表示） */}
-                <div className="w-full p-4 bg-[#2d333b] border-2 border-[#f0883e] rounded-lg">
-                  <h4 className="text-[#f0883e] font-semibold mb-3 flex items-center gap-2">
-                    <span className="text-xl">⚠️</span>
-                    書き込み前の準備（重要）
-                  </h4>
-                  <div className="mb-3 p-3 bg-[#161b22] rounded border border-[#30363d]">
-                    <p className="text-xs text-[#8B949E] mb-2">
-                      <strong className="text-[#E6EDF3]">自動接続を試行します。</strong><br />
-                      失敗した場合は、以下の手順でESP32を書き込みモードにしてください：
-                    </p>
-                  </div>
-                  <ol className="text-sm text-[#E6EDF3] space-y-2 mb-3">
-                    <li className="flex items-start gap-2">
-                      <span className="text-[#f0883e] font-mono font-bold">1.</span>
-                      <span><strong className="text-[#f0883e]">BOOT</strong>ボタンを押し続ける</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-[#f0883e] font-mono font-bold">2.</span>
-                      <span><strong className="text-[#f0883e]">BOOT</strong>を押したまま、<strong className="text-[#f0883e]">EN</strong>ボタンを一瞬押して離す</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-[#f0883e] font-mono font-bold">3.</span>
-                      <span><strong className="text-[#f0883e]">BOOT</strong>ボタンを離す</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-[#f0883e] font-mono font-bold">4.</span>
-                      <span>この状態で下の「書き込み開始」ボタンを押す</span>
-                    </li>
-                  </ol>
-                  <p className="text-xs text-[#8B949E]">
-                    💡 ヒント: ボードによってはBOOTボタンが「IO0」「FLASH」「GPIO0」などと表記されている場合があります
-                  </p>
-                </div>
-
-                {/* 手動リセット失敗時の追加メッセージ */}
-                {needsManualReset && (
-                  <div className="w-full p-3 bg-[#3d2626] border border-[#da3633] rounded-lg">
-                    <p className="text-[#f85149] text-sm text-center font-semibold">
-                      ❌ 自動接続に失敗しました。上記の手順でESP32を書き込みモードにしてから再試行してください。
-                    </p>
-                  </div>
-                )}
-
-                {/* INSTALLボタン */}
-                <Button
-                  onClick={installArduinoFirmware}
-                  disabled={isInstalling || !isSupported}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg font-semibold rounded-lg transition-colors disabled:opacity-50"
-                >
-                  {isInstalling ? '書き込み中...' : needsManualReset ? '✓ 準備完了 - 再試行' : '▶ 書き込み開始'}
-                </Button>
-
-                {!isSupported && (
-                  <p className="text-[#f85149] text-xs text-center">
-                    お使いのブラウザはサポートされていません。<br />
-                    Chrome または Edge をお使いください。
-                  </p>
-                )}
-
-                {/* インストール進捗表示 */}
-                {installProgress && (
-                  <div className="w-full p-3 rounded-lg bg-[#0D1117] border border-[#2E333D]">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex-1">
-                        <div className="text-xs text-[#8B949E]">{installProgress.message}</div>
-                        {installProgress.file && (
-                          <div className="text-xs text-[#58A6F9] mt-1">{installProgress.file}</div>
-                        )}
+                {/* USB接続セクション（未接続の場合） */}
+                {!isConnected && (
+                  <div className="w-full p-4 bg-[#0D1117] border-2 border-[#58A6F9] rounded-lg">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2 rounded-lg bg-[#2E333D]">
+                        <Usb className="w-5 h-5 text-[#79C0FF]" />
                       </div>
-                      <div className="text-xs text-[#58A6F9]">{Math.round(installProgress.percent)}%</div>
+                      <div className="flex-1">
+                        <h4 className="text-[#E6EDF3] font-semibold text-sm">ESP32をUSBケーブルでPCに接続してください</h4>
+                        <p className="text-xs text-[#8B949E] mt-1">
+                          接続後、下のボタンを押してポートを選択してください
+                        </p>
+                      </div>
                     </div>
-                    <div className="w-full bg-[#2E333D] rounded-full h-2 overflow-hidden">
-                      <div
-                        className={`h-full transition-all ${
-                          installProgress.stage === 'error' ? 'bg-[#f85149]' :
-                          installProgress.stage === 'complete' ? 'bg-[#3fb950]' :
-                          'bg-[#58A6F9]'
-                        }`}
-                        style={{ width: `${installProgress.percent}%` }}
-                      />
-                    </div>
+                    <Button
+                      onClick={handleConnect}
+                      disabled={isConnecting}
+                      className="w-full bg-[#238636] hover:bg-[#2ea043] text-white"
+                    >
+                      <Usb className="w-4 h-4 mr-2" />
+                      {isConnecting ? '接続中...' : 'ESP32に有線接続'}
+                    </Button>
                   </div>
+                )}
+
+                {/* USB接続成功後のセクション */}
+                {isConnected && (
+                  <>
+                    {/* 接続成功メッセージ */}
+                    <div className="w-full p-3 bg-[#1a472a] border border-[#2ea043] rounded-lg">
+                      <p className="text-[#2ea043] text-sm text-center font-semibold">
+                        ✅ USB接続が確立しました
+                      </p>
+                    </div>
+
+                    {/* BOOTボタン操作手順 */}
+                    <div className="w-full p-4 bg-[#2d333b] border-2 border-[#f0883e] rounded-lg">
+                      <h4 className="text-[#f0883e] font-semibold mb-3 flex items-center gap-2">
+                        <span className="text-xl">⚠️</span>
+                        書き込み前の準備（重要）
+                      </h4>
+                      <div className="mb-3 p-3 bg-[#161b22] rounded border border-[#30363d]">
+                        <p className="text-xs text-[#8B949E] mb-2">
+                          <strong className="text-[#E6EDF3]">自動接続を試行します。</strong><br />
+                          失敗した場合は、以下の手順でESP32を書き込みモードにしてください：
+                        </p>
+                      </div>
+                      <ol className="text-sm text-[#E6EDF3] space-y-2 mb-3">
+                        <li className="flex items-start gap-2">
+                          <span className="text-[#f0883e] font-mono font-bold">1.</span>
+                          <span><strong className="text-[#f0883e]">BOOT</strong>ボタンを押し続ける</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[#f0883e] font-mono font-bold">2.</span>
+                          <span><strong className="text-[#f0883e]">BOOT</strong>を押したまま、<strong className="text-[#f0883e]">EN</strong>ボタンを一瞬押して離す</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[#f0883e] font-mono font-bold">3.</span>
+                          <span><strong className="text-[#f0883e]">BOOT</strong>ボタンを離す</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[#f0883e] font-mono font-bold">4.</span>
+                          <span>この状態で下の「書き込み開始」ボタンを押す</span>
+                        </li>
+                      </ol>
+                      <p className="text-xs text-[#8B949E]">
+                        💡 ヒント: ボードによってはBOOTボタンが「IO0」「FLASH」「GPIO0」などと表記されている場合があります
+                      </p>
+                    </div>
+
+                    {/* 書き込み開始ボタン */}
+                    <Button
+                      onClick={installArduinoFirmware}
+                      disabled={isInstalling || !isSupported}
+                      className="w-full bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg font-semibold rounded-lg transition-colors disabled:opacity-50"
+                    >
+                      {isInstalling ? '書き込み中...' : '▶ 書き込み開始'}
+                    </Button>
+
+                    {!isSupported && (
+                      <p className="text-[#f85149] text-xs text-center">
+                        お使いのブラウザはサポートされていません。<br />
+                        Chrome または Edge をお使いください。
+                      </p>
+                    )}
+
+                    {/* インストール進捗表示 */}
+                    {installProgress && (
+                      <div className="w-full p-3 rounded-lg bg-[#0D1117] border border-[#2E333D]">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="flex-1">
+                            <div className="text-xs text-[#8B949E]">{installProgress.message}</div>
+                            {installProgress.file && (
+                              <div className="text-xs text-[#58A6F9] mt-1">{installProgress.file}</div>
+                            )}
+                          </div>
+                          <div className="text-xs text-[#58A6F9]">{Math.round(installProgress.percent)}%</div>
+                        </div>
+                        <div className="w-full bg-[#2E333D] rounded-full h-2 overflow-hidden">
+                          <div
+                            className={`h-full transition-all ${
+                              installProgress.stage === 'error' ? 'bg-[#f85149]' :
+                              installProgress.stage === 'complete' ? 'bg-[#3fb950]' :
+                              'bg-[#58A6F9]'
+                            }`}
+                            style={{ width: `${installProgress.percent}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}
