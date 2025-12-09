@@ -286,8 +286,8 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
   };
 
   // 自動的にDHCP IPを固定化
-  const autoSetStaticIp = async () => {
-    if (status !== 'connected') return;
+  const autoSetStaticIp = async (): Promise<{ ip: string; gateway: string; subnet: string } | null> => {
+    if (status !== 'connected') return null;
 
     try {
       const startIndex = useSerialStore.getState().output.length;
@@ -302,7 +302,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
 
       if (!gotResponse) {
         console.warn('GET_CONFIG response timeout');
-        return;
+        return null;
       }
 
       const newOutput = useSerialStore.getState().output.slice(startIndex);
@@ -325,9 +325,12 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
         setGateway(foundGateway);
         setSubnet(foundSubnet);
         console.log('[autoSetStaticIp] Static IP configured:', { foundIp, foundGateway, foundSubnet });
+        return { ip: foundIp, gateway: foundGateway, subnet: foundSubnet };
       }
+      return null;
     } catch (error) {
       console.error('Auto set static IP error:', error);
+      return null;
     }
   };
 
@@ -410,17 +413,9 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
 
       setWifiMessage(t('device.savedRestartingEsp32'));
 
-      // デバイスをdeviceStoreに登録（書込み先デバイスとして使えるように）
+      // デバイス情報を準備（IP固定化後にdeviceStoreに登録）
       const finalDeviceName = deviceName.trim() || originalDeviceName;
       const connectedSsid = selectedWifi || newWifiSsid.trim();
-      if (deviceUuid && finalDeviceName) {
-        addDevice({
-          uuid: deviceUuid,
-          name: finalDeviceName,
-          ssid: connectedSsid,
-          lastConnected: new Date().toISOString(),
-        });
-      }
 
       // ESP32を自動リセット
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -439,7 +434,21 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       const isWifiConnected = wifiEntries.some(w => w.isConnected);
       if (isWifiConnected) {
         setWifiMessage('WiFi接続成功。DHCPで取得したIPを固定化中...');
-        await autoSetStaticIp();
+        const ipInfo = await autoSetStaticIp();
+
+        // IP固定化が成功した場合、デバイスストアを更新
+        if (ipInfo && deviceUuid && finalDeviceName) {
+          addDevice({
+            uuid: deviceUuid,
+            name: finalDeviceName,
+            ssid: connectedSsid,
+            lastConnected: new Date().toISOString(),
+            ipAddress: ipInfo.ip,
+            gateway: ipInfo.gateway,
+            subnet: ipInfo.subnet,
+          });
+          console.log('[handleSaveAndConnect] Device registered with IP:', ipInfo.ip);
+        }
       }
 
       setWifiMessage(t('device.connectionSuccess'));
