@@ -9,7 +9,8 @@ import {
   Code,
   SlidersHorizontal,
   Cpu,
-  Bluetooth
+  Bluetooth,
+  Trash2
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
@@ -18,6 +19,7 @@ interface SidebarProps {
   onFirmwareWrite?: () => void;
   onApSetup?: () => void;
   onBluetoothSetup?: () => void;
+  onUsbPortRelease?: () => void;
   onPinAssignment?: () => void;
   onCompileServerSettings?: () => void;
   onDocs?: () => void;
@@ -38,6 +40,7 @@ export function Sidebar({
   onFirmwareWrite,
   onApSetup,
   onBluetoothSetup,
+  onUsbPortRelease,
   onPinAssignment,
   onCompileServerSettings,
   onDocs,
@@ -84,6 +87,13 @@ export function Sidebar({
       label: t('sidebar.bluetoothSetup', { defaultValue: 'Bluetooth接続' }),
       icon: <Bluetooth className="w-4 h-4" />,
       action: onBluetoothSetup || (() => {}),
+      category: 'settings'
+    },
+    {
+      id: 'usb-port-release',
+      label: t('sidebar.usbPortRelease', { defaultValue: 'USBポート解放' }),
+      icon: <Trash2 className="w-4 h-4" />,
+      action: onUsbPortRelease || (() => {}),
       category: 'settings'
     },
     {

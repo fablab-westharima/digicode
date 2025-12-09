@@ -27,6 +27,7 @@ import { WifiSetupDialog } from '@/components/wifi/WifiSetupDialog';
 import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstallerDialog';
 import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
+import { UsbPortReleaseDialog } from '@/components/settings/UsbPortReleaseDialog';
 import { HeaderDeviceSelector } from '@/components/device/HeaderDeviceSelector';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSerialStore } from '@/stores/serialStore';
@@ -103,6 +104,7 @@ export function EditorPage() {
   const [firmwareInstallerDialogOpen, setFirmwareInstallerDialogOpen] = useState(false);
   const [pinSettingsDialogOpen, setPinSettingsDialogOpen] = useState(false);
   const [compileServerSettingsDialogOpen, setCompileServerSettingsDialogOpen] = useState(false);
+  const [usbPortReleaseDialogOpen, setUsbPortReleaseDialogOpen] = useState(false);
   const [flashMethodDialogOpen, setFlashMethodDialogOpen] = useState(false);
   const [compiledBinary, setCompiledBinary] = useState<Blob | null>(null);
   const [codePreviewDialogOpen, setCodePreviewDialogOpen] = useState(false);
@@ -1233,6 +1235,7 @@ export function EditorPage() {
             onFirmwareWrite={handleFirmwareWrite}
             onApSetup={() => setWifiSetupDialogOpen(true)}
             onBluetoothSetup={() => connectBluetooth()}
+            onUsbPortRelease={() => setUsbPortReleaseDialogOpen(true)}
             onPinAssignment={() => setPinSettingsDialogOpen(true)}
             onCompileServerSettings={() => setCompileServerSettingsDialogOpen(true)}
             onDocs={() => window.open('/docs', '_blank')}
@@ -1637,6 +1640,12 @@ export function EditorPage() {
       <CompileServerSettingsDialog
         open={compileServerSettingsDialogOpen}
         onOpenChange={setCompileServerSettingsDialogOpen}
+      />
+
+      {/* USBポート解放ダイアログ */}
+      <UsbPortReleaseDialog
+        open={usbPortReleaseDialogOpen}
+        onOpenChange={setUsbPortReleaseDialogOpen}
       />
 
       {/* 生成コードプレビューダイアログ */}
