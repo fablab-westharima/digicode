@@ -896,6 +896,139 @@ class FirmwareService {
 
     return results;
   }
+
+  /**
+   * 以前接続したデバイスに自動再接続
+   * ページロード時に呼び出して、以前の接続を復元
+   * @returns 接続成功したらChipInfo、失敗したらnull
+   */
+  async autoReconnect(): Promise<ChipInfo | null> {
+    try {
+      if (!('serial' in navigator)) {
+        console.debug('[AutoReconnect] Web Serial API not supported');
+        return null;
+      }
+
+      // 以前許可されたポートを取得
+      const ports = await navigator.serial.getPorts();
+      if (ports.length === 0) {
+        console.debug('[AutoReconnect] No previously granted ports');
+        return null;
+      }
+
+      // 最初のポートに接続を試みる
+      const port = ports[0];
+      console.log('[AutoReconnect] Attempting to reconnect to previous device...');
+
+      // すでに開いている場合はクローズ
+      if (port.readable || port.writable) {
+        try {
+          await port.close();
+        } catch (error) {
+          console.debug('[AutoReconnect] Port already closed or error closing:', error);
+        }
+      }
+
+      // ポートを開く
+      await port.open({ baudRate: 115200 });
+
+      // Transportを作成
+      this.transport = new Transport(port, true);
+      this.loader = new ESPLoader({
+        transport: this.transport,
+        baudrate: 115200,
+        terminal: {
+          clean: () => {},
+          writeLine: (data: string) => console.log('[ESPLoader]', data),
+          write: (data: string) => console.log('[ESPLoader]', data)
+        }
+      });
+
+      // チップ情報を取得
+      const chipName = await this.loader.main();
+      const macAddr = await this.loader.readMac();
+      const features = await this.loader.getFlashId();
+
+      const chipInfo: ChipInfo = {
+        name: chipName,
+        mac: macAddr,
+        features: [features.toString()]
+      };
+
+      console.log('[AutoReconnect] Successfully reconnected:', chipInfo);
+      return chipInfo;
+    } catch (error) {
+      console.debug('[AutoReconnect] Failed to auto-reconnect:', error);
+      // 失敗してもエラーは投げない（初回接続の場合は正常）
+      return null;
+    }
+  }
+
+  /**
+   * すべてのシリアルポートを強制的に解放
+   * Windowsでポートが解放されない問題への対処
+   */
+  async releaseAllPorts(): Promise<void> {
+    try {
+      if (!('serial' in navigator)) {
+        console.debug('[ReleasePort] Web Serial API not supported');
+        return;
+      }
+
+      // 現在の接続をクローズ
+      if (this.loader) {
+        try {
+          await this.loader.disconnect();
+        } catch (error) {
+          console.debug('[ReleasePort] Error disconnecting loader:', error);
+        }
+        this.loader = null;
+      }
+
+      if (this.transport) {
+        try {
+          await this.transport.disconnect();
+        } catch (error) {
+          console.debug('[ReleasePort] Error disconnecting transport:', error);
+        }
+        this.transport = null;
+      }
+
+      // すべての許可されたポートをクローズ
+      const ports = await navigator.serial.getPorts();
+      console.log(`[ReleasePort] Releasing ${ports.length} port(s)...`);
+
+      for (const port of ports) {
+        try {
+          // ポートが開いている場合のみクローズ
+          if (port.readable || port.writable) {
+            await port.close();
+            console.log('[ReleasePort] Port closed successfully');
+          }
+        } catch (error) {
+          console.debug('[ReleasePort] Error closing port:', error);
+          // エラーは無視して続行
+        }
+      }
+
+      // ポート権限を忘れる（forget()メソッドが利用可能な場合）
+      for (const port of ports) {
+        try {
+          if ('forget' in port && typeof (port as any).forget === 'function') {
+            await (port as any).forget();
+            console.log('[ReleasePort] Port permission forgotten');
+          }
+        } catch (error) {
+          console.debug('[ReleasePort] forget() not supported or error:', error);
+        }
+      }
+
+      console.log('[ReleasePort] All ports released');
+    } catch (error) {
+      console.error('[ReleasePort] Error releasing ports:', error);
+      throw error;
+    }
+  }
 }
 
 export const firmwareService = new FirmwareService();

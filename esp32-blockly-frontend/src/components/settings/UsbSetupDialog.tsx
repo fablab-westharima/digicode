@@ -22,8 +22,10 @@ import {
   AlertCircle,
   Terminal,
   RefreshCw,
+  Trash2,
 } from 'lucide-react';
 import { useSerialStore } from '@/stores/serialStore';
+import { firmwareService } from '@/services/firmwareService';
 
 interface UsbSetupDialogProps {
   open: boolean;
@@ -35,7 +37,23 @@ export function UsbSetupDialog({ open, onOpenChange }: UsbSetupDialogProps) {
   const { status, isSupported, connect, disconnect, output, clearOutput, resetESP32 } = useSerialStore();
 
   const [showConsole, setShowConsole] = useState(true);
+  const [isReleasingPorts, setIsReleasingPorts] = useState(false);
   const consoleRef = useRef<HTMLDivElement>(null);
+
+  // ポート解放処理
+  const handleReleaseAllPorts = async () => {
+    try {
+      setIsReleasingPorts(true);
+      await firmwareService.releaseAllPorts();
+      alert('✓ すべてのポートを解放しました。\nページを再読み込みしてください。');
+      // ページをリロード（状態をクリアするため）
+      window.location.reload();
+    } catch (error) {
+      alert(`✗ ポート解放エラー:\n${error instanceof Error ? error.message : '不明なエラー'}`);
+    } finally {
+      setIsReleasingPorts(false);
+    }
+  };
 
   // コンソール自動スクロール
   useEffect(() => {
@@ -125,6 +143,31 @@ export function UsbSetupDialog({ open, onOpenChange }: UsbSetupDialogProps) {
                     {status === 'connecting' ? t('device.connecting', { defaultValue: '接続中...' }) : t('device.connect', { defaultValue: '接続' })}
                   </Button>
                 )}
+              </div>
+
+              {/* ポート解放ボタン（Windows対策） */}
+              <div className="mt-3 pt-3 border-t border-[#2E333D]">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-[#161B22]">
+                  <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-xs text-[#E6EDF3] font-medium mb-1">
+                      ポートが解放されない場合
+                    </p>
+                    <p className="text-xs text-[#8B949E] mb-2">
+                      Windowsでポートが解放されず接続できない場合、このボタンで強制解放できます。
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleReleaseAllPorts}
+                      disabled={isReleasingPorts}
+                      className="text-xs h-7 text-red-500 hover:text-red-600 border-red-500/30 hover:border-red-500/50"
+                    >
+                      <Trash2 className="w-3 h-3 mr-1" />
+                      {isReleasingPorts ? '解放中...' : 'すべてのポートを解放'}
+                    </Button>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
