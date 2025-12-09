@@ -105,22 +105,29 @@ export function Sidebar({
       action: onBluetoothSetup || (() => {}),
       category: 'connection'
     },
-    // Device Setup (デバイス設定)
-    {
-      id: 'ap-setup',
-      label: t('sidebar.apSetup', { defaultValue: 'AP接続' }),
-      icon: <Radio className="w-4 h-4" />,
-      action: onApSetup || (() => {}),
-      category: 'device'
-    },
-    // Tools
+    // Settings (設定)
     {
       id: 'pin-assignment',
       label: t('sidebar.pinAssignment', { defaultValue: 'ピン配置' }),
       icon: <PinIcon className="w-4 h-4" />,
       action: onPinAssignment || (() => {}),
-      category: 'tools'
+      category: 'settings'
     },
+    {
+      id: 'compile-server',
+      label: t('sidebar.compileServer', { defaultValue: 'コンパイルサーバー' }),
+      icon: <Cpu className="w-4 h-4" />,
+      action: onCompileServerSettings || (() => {}),
+      category: 'settings'
+    },
+    {
+      id: 'ap-setup',
+      label: t('sidebar.apSetup', { defaultValue: 'AP接続' }),
+      icon: <Radio className="w-4 h-4" />,
+      action: onApSetup || (() => {}),
+      category: 'settings'
+    },
+    // Tools (ツール)
     {
       id: 'code-preview',
       label: t('sidebar.codePreview', { defaultValue: '生成コード' }),
@@ -133,13 +140,6 @@ export function Sidebar({
       label: t('sidebar.pidTuning', { defaultValue: 'PIDチューニング' }),
       icon: <SlidersHorizontal className="w-4 h-4" />,
       action: onPidTuning || (() => {}),
-      category: 'tools'
-    },
-    {
-      id: 'compile-server',
-      label: t('sidebar.compileServer', { defaultValue: 'コンパイルサーバー' }),
-      icon: <Cpu className="w-4 h-4" />,
-      action: onCompileServerSettings || (() => {}),
       category: 'tools'
     },
     // Documentation
@@ -160,8 +160,8 @@ export function Sidebar({
         return t('sidebar.category.firmware', { defaultValue: 'ファームウェア' });
       case 'connection':
         return t('sidebar.category.connection', { defaultValue: '接続設定' });
-      case 'device':
-        return t('sidebar.category.device', { defaultValue: 'デバイス設定' });
+      case 'settings':
+        return t('sidebar.category.settings', { defaultValue: '設定' });
       case 'tools':
         return t('sidebar.category.tools', { defaultValue: 'ツール' });
       case 'docs':
@@ -178,6 +178,10 @@ export function Sidebar({
     acc[item.category].push(item);
     return acc;
   }, {} as Record<string, NavItem[]>);
+
+  // カテゴリの表示順序を定義
+  const categoryOrder = ['project', 'firmware', 'connection', 'settings', 'tools', 'docs'];
+  const orderedCategories = categoryOrder.filter(cat => groupedItems[cat]);
 
   // 表示状態を計算
   const shouldShowFull = isPinned || isHovered;
@@ -208,31 +212,34 @@ export function Sidebar({
 
       {/* Navigation Items */}
       <div className="flex-1 overflow-y-auto py-2">
-        {Object.entries(groupedItems).map(([category, items]) => (
-          <div key={category} className="mb-4">
-            {shouldShowFull && (
-              <div className="px-4 py-2 text-xs font-semibold text-[#8B949E] uppercase tracking-wide">
-                {getCategoryLabel(category)}
+        {orderedCategories.map((category) => {
+          const items = groupedItems[category];
+          return (
+            <div key={category} className="mb-4">
+              {shouldShowFull && (
+                <div className="px-4 py-2 text-xs font-semibold text-[#8B949E] uppercase tracking-wide">
+                  {getCategoryLabel(category)}
+                </div>
+              )}
+              <div className="space-y-1 px-2">
+                {items.map((item) => (
+                  <Button
+                    key={item.id}
+                    variant="ghost"
+                    className={`w-full justify-start text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white ${
+                      shouldShowFull ? 'px-3' : 'px-0 justify-center'
+                    }`}
+                    onClick={item.action}
+                    title={!shouldShowFull ? item.label : undefined}
+                  >
+                    <span className={shouldShowFull ? 'mr-3' : ''}>{item.icon}</span>
+                    {shouldShowFull && <span className="text-sm">{item.label}</span>}
+                  </Button>
+                ))}
               </div>
-            )}
-            <div className="space-y-1 px-2">
-              {items.map((item) => (
-                <Button
-                  key={item.id}
-                  variant="ghost"
-                  className={`w-full justify-start text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white ${
-                    shouldShowFull ? 'px-3' : 'px-0 justify-center'
-                  }`}
-                  onClick={item.action}
-                  title={!shouldShowFull ? item.label : undefined}
-                >
-                  <span className={shouldShowFull ? 'mr-3' : ''}>{item.icon}</span>
-                  {shouldShowFull && <span className="text-sm">{item.label}</span>}
-                </Button>
-              ))}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Footer - Collapse hint */}
