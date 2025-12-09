@@ -453,7 +453,8 @@ export function EditorPage() {
   };
 
   // 実際のコンパイル処理（書込み方法選択後に呼ばれる）
-  const executeCompile = async (format: 'bin' | 'uf2' = 'bin'): Promise<Blob | FullPackage | null> => {
+  // OTA/USB書込み用のコンパイル（firmware.binのBlobを返す）
+  const executeCompile = async (format: 'bin' | 'uf2' = 'bin'): Promise<Blob | null> => {
     setIsCompiling(true);
     setCompileLog([]);
     setCompileDialogOpen(true);
@@ -517,11 +518,10 @@ export function EditorPage() {
 
       if (result.success) {
         // コンパイル成功 - fullPackageまたはbinaryを取得
-        // fullPackageがある場合は、4ファイル全部を含むfullPackageを返す
-        // そうでない場合は従来のbinaryを返す
-        const compiledData = result.fullPackage || result.binary;
+        // OTA/USB書込み用にはfirmware.binのBlobを使用
+        const firmwareBinary = result.fullPackage?.firmware || result.binary || null;
 
-        if (!compiledData) {
+        if (!firmwareBinary) {
           addLog('✗ コンパイルエラー: バイナリデータが取得できませんでした');
           setIsCompiling(false);
           setStatusBarState('error');
@@ -529,10 +529,8 @@ export function EditorPage() {
           return null;
         }
 
-        // サイズ表示用にfirmwareのサイズを取得
-        const firmwareSize = result.fullPackage
-          ? result.fullPackage.firmware.size
-          : (result.binary?.size || 0);
+        // サイズ表示
+        const firmwareSize = firmwareBinary.size;
 
         addLog('✓ コンパイル成功！');
         addLog(`バイナリサイズ: ${(firmwareSize / 1024).toFixed(1)} KB`);
@@ -540,8 +538,8 @@ export function EditorPage() {
           addLog('📦 fullPackageモード: 4ファイル（bootloader, partitions, boot_app0, firmware）取得');
         }
 
-        // fullPackageの場合はfirmware.binだけを保存（OTA用）
-        compiledBinaryRef.current = result.fullPackage?.firmware || result.binary || null;
+        // fullPackageの場合もfirmware.binだけを保存（OTA用）
+        compiledBinaryRef.current = firmwareBinary;
 
         // 使用量を再取得
         refreshUsage();
@@ -551,7 +549,9 @@ export function EditorPage() {
         setStatusBarState('success');
         setStatusBarMessage(t('status.compileSuccess'));
 
-        return compiledData;
+        // OTA/USB書込み用にはfirmware.binのBlobを返す
+        // fullPackageモードでもfirmwareだけを返す（OTA updateはfirmware.binのみ必要）
+        return firmwareBinary;
       } else {
         addLog(`✗ コンパイルエラー: ${result.error}`);
         if (result.details) {
