@@ -20,7 +20,6 @@ interface SidebarProps {
   onProjectOpen?: () => void;
   onFirmwareWrite?: () => void;
   onOtaUpdate?: () => void;
-  onOtaSetup?: () => void;  // OTA接続設定（統合モーダル）
   onUsbSetup?: () => void;  // USB有線接続設定
   onWifiSetup?: () => void;
   onApSetup?: () => void;
@@ -44,7 +43,6 @@ export function Sidebar({
   onProjectOpen,
   onFirmwareWrite,
   onOtaUpdate,
-  onOtaSetup,
   onUsbSetup,
   onWifiSetup,
   onApSetup,
@@ -89,13 +87,6 @@ export function Sidebar({
       label: t('sidebar.usbSetup', { defaultValue: 'USB有線接続' }),
       icon: <Usb className="w-4 h-4" />,
       action: onUsbSetup || (() => {}),
-      category: 'connection'
-    },
-    {
-      id: 'ota-setup',
-      label: t('sidebar.otaSetup', { defaultValue: 'WiFi-OTA接続設定' }),
-      icon: <Wifi className="w-4 h-4" />,
-      action: onOtaSetup || (() => {}),
       category: 'connection'
     },
     {

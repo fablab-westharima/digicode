@@ -27,7 +27,6 @@ import { WifiSetupDialog } from '@/components/wifi/WifiSetupDialog';
 import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstallerDialog';
 import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
-import { OtaSetupDialog } from '@/components/settings/OtaSetupDialog';
 import { UsbSetupDialog } from '@/components/settings/UsbSetupDialog';
 import { HeaderDeviceSelector } from '@/components/device/HeaderDeviceSelector';
 import { useProjectStore } from '@/stores/projectStore';
@@ -106,7 +105,6 @@ export function EditorPage() {
   const [firmwareInstallerDialogOpen, setFirmwareInstallerDialogOpen] = useState(false);
   const [pinSettingsDialogOpen, setPinSettingsDialogOpen] = useState(false);
   const [compileServerSettingsDialogOpen, setCompileServerSettingsDialogOpen] = useState(false);
-  const [otaSetupDialogOpen, setOtaSetupDialogOpen] = useState(false);
   const [usbSetupDialogOpen, setUsbSetupDialogOpen] = useState(false);
   const [flashMethodDialogOpen, setFlashMethodDialogOpen] = useState(false);
   const [compiledBinary, setCompiledBinary] = useState<Blob | null>(null);
@@ -1259,7 +1257,6 @@ export function EditorPage() {
             onProjectOpen={handleOpen}
             onFirmwareWrite={handleFirmwareWrite}
             onOtaUpdate={() => setDeviceSelectDialogOpen(true)}
-            onOtaSetup={() => setOtaSetupDialogOpen(true)}
             onUsbSetup={() => setUsbSetupDialogOpen(true)}
             onApSetup={() => setWifiSetupDialogOpen(true)}
             onBluetoothSetup={() => connectBluetooth()}
@@ -1674,12 +1671,6 @@ export function EditorPage() {
       <CompileServerSettingsDialog
         open={compileServerSettingsDialogOpen}
         onOpenChange={setCompileServerSettingsDialogOpen}
-      />
-
-      {/* OTA接続設定ダイアログ（統合モーダル） */}
-      <OtaSetupDialog
-        open={otaSetupDialogOpen}
-        onOpenChange={setOtaSetupDialogOpen}
       />
 
       {/* USB有線接続ダイアログ */}
