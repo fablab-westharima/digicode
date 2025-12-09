@@ -317,5 +317,5 @@ export const compileService = {
   setMode: setCompileServerMode,
   testConnection: testCompileServerConnection,
   getServerUrl: getCompileServerUrl,
-  servers: SERVERS,
+  servers: COMPILE_SERVERS,
 };
