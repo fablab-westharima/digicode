@@ -47,6 +47,11 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
   const [originalDeviceName, setOriginalDeviceName] = useState('');
   const [isLoadingDeviceName, setIsLoadingDeviceName] = useState(false);
 
+  // 固定IP情報（表示用）
+  const [staticIp, setStaticIp] = useState('');
+  const [gateway, setGateway] = useState('');
+  const [subnet, setSubnet] = useState('');
+
   // コンソール自動スクロール
   useEffect(() => {
     if (consoleRef.current) {
@@ -103,8 +108,8 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
   };
 
   // WiFi一覧を読み込み
-  const loadWiFiList = async () => {
-    if (status !== 'connected') return;
+  const loadWiFiList = async (): Promise<WiFiEntry[]> => {
+    if (status !== 'connected') return [];
 
     setIsLoadingWifi(true);
     setWifiMessage(t('device.loadingWifi'));
@@ -122,7 +127,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
         console.log('LIST_WIFI response timeout');
         setWifiMessage(t('device.loadWifiTimeout'));
         setIsLoadingWifi(false);
-        return;
+        return [];
       }
 
       // outputから最新の状態を取得
@@ -166,13 +171,17 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
         } else if (uniqueWifi.length > 0) {
           setSelectedWifi(uniqueWifi[0].ssid);
         }
+
+        return uniqueWifi;
       } else {
         setWifiList([]);
         setWifiMessage(t('device.noWifiSaved'));
+        return [];
       }
     } catch (error) {
       console.error('Load WiFi list error:', error);
       setWifiMessage(t('device.loadWifiFailed'));
+      return [];
     } finally {
       setIsLoadingWifi(false);
     }
@@ -241,10 +250,84 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
         setDeviceName('');
         setOriginalDeviceName('');
       }
+
+      // GET_CONFIGで固定IP情報も取得（WiFi接続済みの場合に表示）
+      const startIndex = useSerialStore.getState().output.length;
+      await send('GET_CONFIG\n');
+      const gotResponse = await waitForResponse('OK:UUID=', startIndex, 3000);
+
+      if (gotResponse) {
+        const newOutput = useSerialStore.getState().output.slice(startIndex);
+        let foundStaticIp = '';
+        let foundGateway = '';
+        let foundSubnet = '';
+
+        for (const line of newOutput) {
+          if (line.includes('OK:STATIC_IP=')) {
+            foundStaticIp = line.split('OK:STATIC_IP=')[1]?.trim() || '';
+          } else if (line.includes('OK:GATEWAY=')) {
+            foundGateway = line.split('OK:GATEWAY=')[1]?.trim() || '';
+          } else if (line.includes('OK:SUBNET=')) {
+            foundSubnet = line.split('OK:SUBNET=')[1]?.trim() || '';
+          }
+        }
+
+        if (foundStaticIp) {
+          setStaticIp(foundStaticIp);
+          setGateway(foundGateway);
+          setSubnet(foundSubnet);
+        }
+      }
     } catch (error) {
       console.error('Load device name error:', error);
     } finally {
       setIsLoadingDeviceName(false);
+    }
+  };
+
+  // 自動的にDHCP IPを固定化
+  const autoSetStaticIp = async () => {
+    if (status !== 'connected') return;
+
+    try {
+      const startIndex = useSerialStore.getState().output.length;
+
+      // USE_CURRENT_IPコマンドでDHCPで取得したIPを固定化
+      await send('USE_CURRENT_IP\n');
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // GET_CONFIGで固定IP情報を取得
+      await send('GET_CONFIG\n');
+      const gotResponse = await waitForResponse('OK:UUID=', startIndex, 5000);
+
+      if (!gotResponse) {
+        console.warn('GET_CONFIG response timeout');
+        return;
+      }
+
+      const newOutput = useSerialStore.getState().output.slice(startIndex);
+      let foundIp = '';
+      let foundGateway = '';
+      let foundSubnet = '';
+
+      for (const line of newOutput) {
+        if (line.includes('OK:STATIC_IP=')) {
+          foundIp = line.split('OK:STATIC_IP=')[1]?.trim() || '';
+        } else if (line.includes('OK:GATEWAY=')) {
+          foundGateway = line.split('OK:GATEWAY=')[1]?.trim() || '';
+        } else if (line.includes('OK:SUBNET=')) {
+          foundSubnet = line.split('OK:SUBNET=')[1]?.trim() || '';
+        }
+      }
+
+      if (foundIp) {
+        setStaticIp(foundIp);
+        setGateway(foundGateway);
+        setSubnet(foundSubnet);
+        console.log('[autoSetStaticIp] Static IP configured:', { foundIp, foundGateway, foundSubnet });
+      }
+    } catch (error) {
+      console.error('Auto set static IP error:', error);
     }
   };
 
@@ -350,7 +433,14 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       // デバイス名とWiFi一覧を再読み込みしてUIを更新
       setWifiMessage(t('device.updatingInfo'));
       await loadDeviceName();
-      await loadWiFiList();
+      const wifiEntries = await loadWiFiList();
+
+      // WiFi接続成功時は自動的にDHCP IPを固定化
+      const isWifiConnected = wifiEntries.some(w => w.isConnected);
+      if (isWifiConnected) {
+        setWifiMessage('WiFi接続成功。DHCPで取得したIPを固定化中...');
+        await autoSetStaticIp();
+      }
 
       setWifiMessage(t('device.connectionSuccess'));
 
@@ -564,17 +654,47 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
                 {isStep3Complete && <Check className="w-4 h-4 text-green-500" />}
                 {originalDeviceName && <span className="text-xs text-[#8B949E]">（{t('device.configured')}）</span>}
               </h3>
-              <div className="p-3 rounded-lg border-2 border-[#2E333D] bg-[#0D1117]">
-                <Input
-                  placeholder={t('device.deviceNamePlaceholder')}
-                  value={deviceName}
-                  onChange={(e) => setDeviceName(e.target.value)}
-                  disabled={isLoadingDeviceName}
-                  className="text-sm h-9 bg-[#161B22] border-[#2E333D] text-[#E6EDF3]"
-                />
-                <p className="text-xs text-[#8B949E] mt-2">
-                  {t('device.deviceNameDesc')}
-                </p>
+              <div className="p-3 rounded-lg border-2 border-[#2E333D] bg-[#0D1117] space-y-3">
+                <div>
+                  <Input
+                    placeholder={t('device.deviceNamePlaceholder')}
+                    value={deviceName}
+                    onChange={(e) => setDeviceName(e.target.value)}
+                    disabled={isLoadingDeviceName}
+                    className="text-sm h-9 bg-[#161B22] border-[#2E333D] text-[#E6EDF3]"
+                  />
+                  <p className="text-xs text-[#8B949E] mt-2">
+                    {t('device.deviceNameDesc')}
+                  </p>
+                </div>
+
+                {/* 固定IP情報の表示 */}
+                {staticIp && (
+                  <div className="pt-3 border-t border-[#2E333D]">
+                    <Label className="text-xs text-[#8B949E] mb-2 block">固定IP設定（確定済み）</Label>
+                    <div className="space-y-1.5 text-xs">
+                      <div className="flex items-center justify-between bg-[#161B22] px-3 py-2 rounded border border-[#2E333D]">
+                        <span className="text-[#8B949E]">Static IP:</span>
+                        <span className="text-[#E6EDF3] font-mono">{staticIp}</span>
+                      </div>
+                      {gateway && (
+                        <div className="flex items-center justify-between bg-[#161B22] px-3 py-2 rounded border border-[#2E333D]">
+                          <span className="text-[#8B949E]">Gateway:</span>
+                          <span className="text-[#E6EDF3] font-mono">{gateway}</span>
+                        </div>
+                      )}
+                      {subnet && (
+                        <div className="flex items-center justify-between bg-[#161B22] px-3 py-2 rounded border border-[#2E333D]">
+                          <span className="text-[#8B949E]">Subnet:</span>
+                          <span className="text-[#E6EDF3] font-mono">{subnet}</span>
+                        </div>
+                      )}
+                      <p className="text-xs text-[#8B949E] mt-2 italic">
+                        💡 再起動時にリセットされ、DHCPで新規取得したIPが自動的に固定化されます
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
