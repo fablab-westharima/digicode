@@ -258,7 +258,20 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
     setWifiMessage('');
 
     try {
+      // 送信前のoutputのインデックスを記録
+      const startIndex = useSerialStore.getState().output.length;
+
       await send(`REMOVE_WIFI:${ssid}\n`);
+
+      // OK:WIFI_REMOVED の応答を待つ（最大5秒）
+      const gotResponse = await waitForResponse('OK:WIFI_REMOVED', startIndex, 5000);
+
+      if (!gotResponse) {
+        console.warn('REMOVE_WIFI response timeout');
+        // タイムアウトしても処理は続行（削除自体は成功している可能性がある）
+      }
+
+      // さらに500ms待機してフラッシュ書き込みを確実に完了させる
       await new Promise(resolve => setTimeout(resolve, 500));
 
       if (selectedWifi === ssid) {
