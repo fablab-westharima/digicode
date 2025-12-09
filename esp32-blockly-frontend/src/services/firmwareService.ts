@@ -1,5 +1,6 @@
 import { ESPLoader, Transport } from 'esptool-js';
 import { getCompileServerUrl } from '@/config/servers';
+import type { FullPackage } from './compileService';
 
 export type FlashStage = 'connecting' | 'erasing' | 'flashing' | 'verifying' | 'complete' | 'error';
 
@@ -438,9 +439,12 @@ class FirmwareService {
 
   /**
    * Flash Arduino firmware (compiled from Blockly) to ESP32
+   *
+   * @param data - ArrayBuffer（従来の単一binファイル）またはFullPackage（4ファイルセット）
+   * @param onProgress - 進捗コールバック
    */
   async flashArduinoFirmware(
-    binData: ArrayBuffer,
+    data: ArrayBuffer | FullPackage,
     onProgress: (progress: FlashProgress) => void
   ): Promise<boolean> {
     if (!this.loader) {
@@ -459,49 +463,117 @@ class FirmwareService {
         message: 'ファームウェアを準備中...'
       });
 
-      // binDataをBase64文字列に変換
-      const uint8Array = new Uint8Array(binData);
-      const binaryString = Array.from(uint8Array)
-        .map(byte => String.fromCharCode(byte))
-        .join('');
+      // FullPackageかArrayBufferかを判定
+      const isFullPackage = !(data instanceof ArrayBuffer);
 
-      onProgress({
-        stage: 'erasing',
-        percent: 30,
-        message: 'フラッシュメモリを消去中...'
-      });
+      if (isFullPackage) {
+        // fullPackageモード: 4ファイル全部書き込み
+        const fullPackage = data as FullPackage;
 
-      // フラッシュ消去
-      await this.loader.eraseFlash();
+        // 各BlobをArrayBufferに変換してbinaryStringに
+        const bootloaderBuffer = await fullPackage.bootloader.arrayBuffer();
+        const bootloaderString = Array.from(new Uint8Array(bootloaderBuffer))
+          .map(byte => String.fromCharCode(byte))
+          .join('');
 
-      onProgress({
-        stage: 'flashing',
-        percent: 40,
-        message: '書き込み準備完了'
-      });
+        const partitionsBuffer = await fullPackage.partitions.arrayBuffer();
+        const partitionsString = Array.from(new Uint8Array(partitionsBuffer))
+          .map(byte => String.fromCharCode(byte))
+          .join('');
 
-      // Arduino binファイルを0x10000番地に書き込み
-      await this.loader.writeFlash({
-        fileArray: [
-          {
-            data: binaryString,
-            address: 0x10000  // Arduinoアプリケーション開始アドレス
+        const bootApp0Buffer = await fullPackage.bootApp0.arrayBuffer();
+        const bootApp0String = Array.from(new Uint8Array(bootApp0Buffer))
+          .map(byte => String.fromCharCode(byte))
+          .join('');
+
+        const firmwareBuffer = await fullPackage.firmware.arrayBuffer();
+        const firmwareString = Array.from(new Uint8Array(firmwareBuffer))
+          .map(byte => String.fromCharCode(byte))
+          .join('');
+
+        onProgress({
+          stage: 'erasing',
+          percent: 30,
+          message: 'フラッシュメモリを消去中...'
+        });
+
+        // フラッシュ消去
+        await this.loader.eraseFlash();
+
+        onProgress({
+          stage: 'flashing',
+          percent: 40,
+          message: '書き込み準備完了'
+        });
+
+        // 4ファイル全部書き込み（ESP32の正しいアドレスマップ）
+        await this.loader.writeFlash({
+          fileArray: [
+            { data: bootloaderString, address: 0x1000 },   // Bootloader
+            { data: partitionsString, address: 0x8000 },   // Partition table
+            { data: bootApp0String, address: 0xe000 },     // Boot app0
+            { data: firmwareString, address: 0x10000 }     // Application firmware
+          ],
+          flashSize: 'keep',
+          flashMode: 'keep',
+          flashFreq: 'keep',
+          eraseAll: false,
+          compress: true,
+          reportProgress: (_fileIndex: number, written: number, total: number) => {
+            const filePercent = 40 + (written / total) * 50;
+            onProgress({
+              stage: 'flashing',
+              percent: filePercent,
+              message: `書き込み中... ${Math.floor((written / total) * 100)}%`
+            });
           }
-        ],
-        flashSize: 'keep',
-        flashMode: 'keep',
-        flashFreq: 'keep',
-        eraseAll: false,
-        compress: true,
-        reportProgress: (_fileIndex: number, written: number, total: number) => {
-          const filePercent = 40 + (written / total) * 50;
-          onProgress({
-            stage: 'flashing',
-            percent: filePercent,
-            message: `書き込み中... ${Math.floor((written / total) * 100)}%`
-          });
-        }
-      });
+        });
+      } else {
+        // 従来モード: 単一binファイルを0x10000番地に書き込み（後方互換性）
+        const arrayBuffer = data as ArrayBuffer;
+        const uint8Array = new Uint8Array(arrayBuffer);
+        const binaryString = Array.from(uint8Array)
+          .map(byte => String.fromCharCode(byte))
+          .join('');
+
+        onProgress({
+          stage: 'erasing',
+          percent: 30,
+          message: 'フラッシュメモリを消去中...'
+        });
+
+        // フラッシュ消去
+        await this.loader.eraseFlash();
+
+        onProgress({
+          stage: 'flashing',
+          percent: 40,
+          message: '書き込み準備完了'
+        });
+
+        // Arduino binファイルを0x10000番地に書き込み
+        await this.loader.writeFlash({
+          fileArray: [
+            {
+              data: binaryString,
+              address: 0x10000  // Arduinoアプリケーション開始アドレス
+            }
+          ],
+          flashSize: 'keep',
+          flashMode: 'keep',
+          flashFreq: 'keep',
+          eraseAll: false,
+          compress: true,
+          reportProgress: (_fileIndex: number, written: number, total: number) => {
+            const filePercent = 40 + (written / total) * 50;
+            onProgress({
+              stage: 'flashing',
+              percent: filePercent,
+              message: `書き込み中... ${Math.floor((written / total) * 100)}%`
+            });
+          }
+        });
+      }
 
       onProgress({
         stage: 'verifying',

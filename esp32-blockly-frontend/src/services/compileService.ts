@@ -21,15 +21,17 @@ export interface CompileRequest {
   board?: string; // FQBN (e.g., 'esp32:esp32:esp32')
 }
 
+export interface FullPackage {
+  firmware: Blob;
+  bootloader: Blob;
+  partitions: Blob;
+  bootApp0: Blob;
+}
+
 export interface CompileResult {
   success: boolean;
   binary?: Blob;
-  fullPackage?: {
-    firmware: Blob;
-    bootloader: Blob;
-    partitions: Blob;
-    bootApp0: Blob;
-  };
+  fullPackage?: FullPackage;
   error?: string;
   details?: string;
 }

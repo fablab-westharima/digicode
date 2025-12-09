@@ -44,7 +44,7 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import type { Project } from '@/stores/projectStore';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { compileService, type CompileServerMode } from '@/services/compileService';
+import { compileService, type CompileServerMode, type FullPackage } from '@/services/compileService';
 import { api } from '@/lib/api';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
 import { Download, Loader2, Zap, SlidersHorizontal, LineChart, Code, Terminal, ChevronUp, ChevronDown, GraduationCap, ChevronDown as ChevronDownIcon, X, FilePlus, FolderOpen, FileCode, Cloud, Server, Usb, Wifi, Bluetooth, Check, Settings2, Pin, BookOpen, Globe } from 'lucide-react';
@@ -90,7 +90,7 @@ export function EditorPage() {
   const [compileDialogOpen, setCompileDialogOpen] = useState(false);
   const [flashDialogOpen, setFlashDialogOpen] = useState(false);
   const [isWaitingForBootMode, setIsWaitingForBootMode] = useState(false);
-  const [pendingFlashBinary, setPendingFlashBinary] = useState<Blob | null>(null);
+  const [pendingFlashBinary, setPendingFlashBinary] = useState<Blob | FullPackage | null>(null);
   const [flashProgress, setFlashProgress] = useState<FlashProgress>({
     stage: 'connecting',
     percent: 0,
@@ -454,7 +454,7 @@ export function EditorPage() {
   };
 
   // 実際のコンパイル処理（書込み方法選択後に呼ばれる）
-  const executeCompile = async (format: 'bin' | 'uf2' = 'bin'): Promise<Blob | null> => {
+  const executeCompile = async (format: 'bin' | 'uf2' = 'bin'): Promise<Blob | FullPackage | null> => {
     setIsCompiling(true);
     setCompileLog([]);
     setCompileDialogOpen(true);
@@ -517,10 +517,12 @@ export function EditorPage() {
       const result = await compileService.compile(includes, globals, setupCode, loopCode, undefined, format);
 
       if (result.success) {
-        // コンパイル成功 - バイナリを取得
-        const binary = result.binary || result.fullPackage?.firmware;
+        // コンパイル成功 - fullPackageまたはbinaryを取得
+        // fullPackageがある場合は、4ファイル全部を含むfullPackageを返す
+        // そうでない場合は従来のbinaryを返す
+        const compiledData = result.fullPackage || result.binary;
 
-        if (!binary) {
+        if (!compiledData) {
           addLog('✗ コンパイルエラー: バイナリデータが取得できませんでした');
           setIsCompiling(false);
           setStatusBarState('error');
@@ -528,9 +530,19 @@ export function EditorPage() {
           return null;
         }
 
+        // サイズ表示用にfirmwareのサイズを取得
+        const firmwareSize = result.fullPackage
+          ? result.fullPackage.firmware.size
+          : (result.binary?.size || 0);
+
         addLog('✓ コンパイル成功！');
-        addLog(`バイナリサイズ: ${(binary.size / 1024).toFixed(1)} KB`);
-        compiledBinaryRef.current = binary;
+        addLog(`バイナリサイズ: ${(firmwareSize / 1024).toFixed(1)} KB`);
+        if (result.fullPackage) {
+          addLog('📦 fullPackageモード: 4ファイル（bootloader, partitions, boot_app0, firmware）取得');
+        }
+
+        // fullPackageの場合はfirmware.binだけを保存（OTA用）
+        compiledBinaryRef.current = result.fullPackage?.firmware || result.binary || null;
 
         // 使用量を再取得
         refreshUsage();
@@ -540,7 +552,7 @@ export function EditorPage() {
         setStatusBarState('success');
         setStatusBarMessage(t('status.compileSuccess'));
 
-        return binary;
+        return compiledData;
       } else {
         addLog(`✗ コンパイルエラー: ${result.error}`);
         if (result.details) {
@@ -561,9 +573,9 @@ export function EditorPage() {
   };
 
   // USB書き込み処理
-  const handleFlash = async (binary: Blob) => {
+  const handleFlash = async (data: Blob | FullPackage) => {
     // BOOT準備画面を表示
-    setPendingFlashBinary(binary);
+    setPendingFlashBinary(data);
     setIsWaitingForBootMode(true);
     setFlashDialogOpen(true);
   };
@@ -582,9 +594,6 @@ export function EditorPage() {
     setStatusBarMessage(t('status.flashingFirmware'));
 
     try {
-      // BlobをArrayBufferに変換
-      const arrayBuffer = await pendingFlashBinary.arrayBuffer();
-
       // ESP32に接続
       const chipInfo = await firmwareService.connect((progress) => {
         setFlashProgress(progress);
@@ -596,8 +605,18 @@ export function EditorPage() {
         return;
       }
 
+      // BlobかFullPackageかを判定して処理
+      let flashData: ArrayBuffer | FullPackage;
+      if (pendingFlashBinary instanceof Blob) {
+        // Blobの場合はArrayBufferに変換
+        flashData = await pendingFlashBinary.arrayBuffer();
+      } else {
+        // FullPackageの場合はそのまま渡す
+        flashData = pendingFlashBinary;
+      }
+
       // 書き込み実行
-      const success = await firmwareService.flashArduinoFirmware(arrayBuffer, (progress) => {
+      const success = await firmwareService.flashArduinoFirmware(flashData, (progress) => {
         setFlashProgress(progress);
       });
 
@@ -756,22 +775,30 @@ export function EditorPage() {
       }
       case 'download-bin': {
         // .binダウンロード: コンパイル→ダウンロード
-        const binary = await executeCompile();
-        if (binary) {
+        const compiledData = await executeCompile();
+        if (compiledData) {
           const filename = currentProject?.title
             ? `${currentProject.title}.bin`
             : 'firmware.bin';
+          // fullPackageの場合はfirmware.binだけを取り出す
+          const binary = compiledData instanceof Blob
+            ? compiledData
+            : (compiledData as FullPackage).firmware;
           compileService.downloadBinary(binary, filename);
         }
         break;
       }
       case 'download-uf2': {
         // .uf2ダウンロード: コンパイル→ダウンロード
-        const binary = await executeCompile('uf2'); // UF2フォーマット指定
-        if (binary) {
+        const compiledData = await executeCompile('uf2'); // UF2フォーマット指定
+        if (compiledData) {
           const filename = currentProject?.title
             ? `${currentProject.title}.uf2`
             : 'firmware.uf2';
+          // fullPackageの場合はfirmware.uf2だけを取り出す（通常UF2はfullPackageにならない）
+          const binary = compiledData instanceof Blob
+            ? compiledData
+            : (compiledData as FullPackage).firmware;
           compileService.downloadBinary(binary, filename);
         }
         break;
