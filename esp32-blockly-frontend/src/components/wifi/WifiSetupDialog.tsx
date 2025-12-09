@@ -441,7 +441,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
 
         // IP固定化が成功した場合、デバイスストアを更新
         if (ipInfo && deviceUuid && finalDeviceName) {
-          addDevice({
+          const deviceData = {
             uuid: deviceUuid,
             name: finalDeviceName,
             ssid: connectedSsid,
@@ -449,8 +449,16 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
             ipAddress: ipInfo.ip,
             gateway: ipInfo.gateway,
             subnet: ipInfo.subnet,
+          };
+          console.log('[handleSaveAndConnect] Adding device to store:', deviceData);
+          addDevice(deviceData);
+          console.log('[handleSaveAndConnect] Device registered successfully');
+        } else {
+          console.warn('[handleSaveAndConnect] Missing data for device registration:', {
+            hasIpInfo: !!ipInfo,
+            deviceUuid,
+            finalDeviceName,
           });
-          console.log('[handleSaveAndConnect] Device registered with IP:', ipInfo.ip);
         }
       }
 

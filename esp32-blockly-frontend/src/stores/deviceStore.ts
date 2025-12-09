@@ -31,14 +31,17 @@ export const useDeviceStore = create<DeviceState>()(
       currentDevice: null,
 
       addDevice: (device: Device) => {
+        console.log('[DeviceStore] addDevice called with:', device);
         set((state) => {
           // 既存のデバイスがあれば更新、なければ追加
           const existingIndex = state.devices.findIndex(d => d.uuid === device.uuid);
           if (existingIndex >= 0) {
             const newDevices = [...state.devices];
             newDevices[existingIndex] = { ...newDevices[existingIndex], ...device };
+            console.log('[DeviceStore] Updated existing device at index', existingIndex, ':', newDevices[existingIndex]);
             return { devices: newDevices };
           }
+          console.log('[DeviceStore] Added new device. Total devices:', state.devices.length + 1);
           return { devices: [...state.devices, device] };
         });
       },
@@ -72,6 +75,10 @@ export const useDeviceStore = create<DeviceState>()(
     }),
     {
       name: 'esp32-devices-storage',
+      version: 1,
+      partialize: (state) => ({
+        devices: state.devices,
+      }),
     }
   )
 );
