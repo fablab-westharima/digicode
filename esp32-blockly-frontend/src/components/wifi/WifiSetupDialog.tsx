@@ -191,8 +191,13 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       for (let i = 0; i < 5; i++) {
         const currentOutput = useSerialStore.getState().output;
 
-        // "UUID: xxx" 形式の行を探す
-        const uuidLine = currentOutput.find(line => line.includes('UUID:'));
+        // 最新の情報を取得するため、逆順で検索
+        const reversedOutput = [...currentOutput].reverse();
+
+        // "Device UUID: xxx" または "UUID: xxx" 形式の行を探す（最新のものを優先）
+        const uuidLine = reversedOutput.find(line =>
+          line.includes('Device UUID:') || line.includes('UUID:')
+        );
         if (uuidLine) {
           const uuidMatch = uuidLine.match(/UUID:\s*(.+)/i);
           if (uuidMatch && uuidMatch[1].trim()) {
@@ -200,15 +205,23 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
           }
         }
 
-        // "Name: xxx" 形式の行を探す（ラインバッファリングにより完全な行が保証される）
-        const nameLine = currentOutput.find(line =>
-          line.includes('Name:') && !line.includes('Device Name:')
-        ) || currentOutput.find(line => line.includes('Device Name:'));
-
-        if (nameLine) {
-          const match = nameLine.match(/Name:\s*(.+)/i);
+        // "Device Name: xxx" を最優先で探す（最新のものを優先）
+        const deviceNameLine = reversedOutput.find(line => line.includes('Device Name:'));
+        if (deviceNameLine) {
+          const match = deviceNameLine.match(/Device Name:\s*(.+)/i);
           if (match && match[1].trim()) {
             foundName = match[1].trim();
+          }
+        } else {
+          // "Device Name:" がなければ "Name: xxx" を探す
+          const nameLine = reversedOutput.find(line =>
+            line.includes('Name:') && !line.includes('Device Name:')
+          );
+          if (nameLine) {
+            const match = nameLine.match(/Name:\s*(.+)/i);
+            if (match && match[1].trim()) {
+              foundName = match[1].trim();
+            }
           }
         }
 
@@ -316,6 +329,17 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       // ESP32を自動リセット
       await new Promise(resolve => setTimeout(resolve, 500));
       await resetESP32();
+
+      // リセット後、ESP32の再起動を待ってからデバイス情報を再読み込み
+      setWifiMessage(t('device.waitingForRestart'));
+      await new Promise(resolve => setTimeout(resolve, 5000)); // 5秒待つ
+
+      // デバイス名とWiFi一覧を再読み込みしてUIを更新
+      setWifiMessage(t('device.updatingInfo'));
+      await loadDeviceName();
+      await loadWiFiList();
+
+      setWifiMessage(t('device.connectionSuccess'));
 
       // 入力をクリア
       setNewWifiSsid('');
