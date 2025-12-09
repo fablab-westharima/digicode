@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Wifi, ChevronDown, Usb, Bluetooth, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -37,16 +38,32 @@ export function HeaderDeviceSelector() {
   const { status: serialStatus } = useSerialStore();
   const { status: bluetoothStatus } = useBluetoothStore();
 
+  // ユーザーが明示的に選択した接続タイプ
+  const [selectedConnectionType, setSelectedConnectionType] = useState<ConnectionType | null>(null);
+
   // 現在選択中のデバイスを判定
   const getSelectedDevice = (): SelectedDevice | null => {
+    // ユーザーが明示的に選択した接続タイプがあれば、それを優先
+    if (selectedConnectionType === 'wifi' && wifiStatus === 'connected' && wifiDeviceName) {
+      return { type: 'wifi', name: wifiDeviceName, id: wifiHost };
+    }
+    if (selectedConnectionType === 'usb' && serialStatus === 'connected') {
+      return { type: 'usb', name: t('editor.deviceSelector.usbConnection'), id: 'usb' };
+    }
+    if (selectedConnectionType === 'bluetooth' && bluetoothStatus === 'connected') {
+      return { type: 'bluetooth', name: t('editor.deviceSelector.bluetoothConnection'), id: 'bluetooth' };
+    }
+
+    // 明示的な選択がない場合は、自動判定
+    // WiFi接続を優先（USB接続は電源供給のみの可能性があるため）
+    if (wifiStatus === 'connected' && wifiDeviceName) {
+      return { type: 'wifi', name: wifiDeviceName, id: wifiHost };
+    }
     if (serialStatus === 'connected') {
       return { type: 'usb', name: t('editor.deviceSelector.usbConnection'), id: 'usb' };
     }
     if (bluetoothStatus === 'connected') {
       return { type: 'bluetooth', name: t('editor.deviceSelector.bluetoothConnection'), id: 'bluetooth' };
-    }
-    if (wifiStatus === 'connected' && wifiDeviceName) {
-      return { type: 'wifi', name: wifiDeviceName, id: wifiHost };
     }
     return null;
   };
@@ -66,6 +83,7 @@ export function HeaderDeviceSelector() {
     setHost(getDeviceHost(device));
     setDeviceName(device.name);
     await connectWifi();
+    setSelectedConnectionType('wifi'); // ユーザーが明示的にWiFiを選択
   };
 
   // 選択解除
@@ -73,6 +91,7 @@ export function HeaderDeviceSelector() {
     if (wifiStatus === 'connected') {
       await disconnectWifi();
     }
+    setSelectedConnectionType(null); // 明示的な選択をクリア
   };
 
   // デバイスリストをリフレッシュ
@@ -144,6 +163,7 @@ export function HeaderDeviceSelector() {
         {/* USB接続中の場合 */}
         {serialStatus === 'connected' && (
           <DropdownMenuItem
+            onClick={() => setSelectedConnectionType('usb')}
             className={selectedDevice?.type === 'usb' ? 'bg-green-50' : ''}
           >
             <Usb className="w-4 h-4 mr-2 text-blue-500" />
@@ -155,6 +175,7 @@ export function HeaderDeviceSelector() {
         {/* Bluetooth接続中の場合 */}
         {bluetoothStatus === 'connected' && (
           <DropdownMenuItem
+            onClick={() => setSelectedConnectionType('bluetooth')}
             className={selectedDevice?.type === 'bluetooth' ? 'bg-green-50' : ''}
           >
             <Bluetooth className="w-4 h-4 mr-2 text-purple-500" />
