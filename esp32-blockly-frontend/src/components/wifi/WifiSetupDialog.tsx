@@ -133,9 +133,12 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       // outputから最新の状態を取得
       const currentOutput = useSerialStore.getState().output;
 
+      // startIndex以降の新しい出力だけを対象にする（古いLIST_WIFI結果を除外）
+      const newOutput = currentOutput.slice(startIndex);
+
       // WiFiエントリを含む行を探す: [数字] SSID (password: xxx)
       // 先頭の空白を許容し、trimして処理
-      const wifiLines = currentOutput.filter(line => {
+      const wifiLines = newOutput.filter(line => {
         const trimmed = line.trim();
         return /^\[\d+\]/.test(trimmed) && trimmed.includes('(password:');
       });
