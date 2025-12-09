@@ -160,7 +160,9 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
       if (success) {
         addLog('✅ ファームウェアのインストールが完了しました！');
       } else {
-        throw new Error('ファームウェアの書き込みに失敗しました');
+        // flashCompleteArduinoFirmware()がfalseを返した場合
+        // すでにonProgressでエラーメッセージが設定されているので、それを保持
+        addLog('❌ ファームウェアの書き込みに失敗しました（詳細は上記のログを確認）');
       }
     } catch (error) {
       console.error('[FirmwareInstaller] Installation error:', error);
@@ -176,12 +178,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
     }
   };
 
-  // ダイアログが開いたときにファームウェアをコンパイル
-  useEffect(() => {
-    if (open && firmwareType === 'arduino') {
-      compileFirmware();
-    }
-  }, [open, firmwareType]);
+  // 自動コンパイルは削除 - ユーザーが明示的にビルドボタンをクリックする必要がある
 
   // esp-web-toolsを事前ロード (MicroPython用のみ)
   useEffect(() => {
@@ -422,6 +419,31 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                 </div>
               </label>
             </div>
+
+            {/* ビルド開始ボタン（Arduino C++の場合のみ） */}
+            {firmwareType === 'arduino' && !isCompiling && !compiledFirmwareBlob && !compileError && (
+              <Button
+                onClick={compileFirmware}
+                className="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-semibold py-3 mt-3"
+              >
+                🚀 ファームウェアをビルド
+              </Button>
+            )}
+
+            {/* ビルド完了後の再ビルドボタン */}
+            {firmwareType === 'arduino' && compiledFirmwareBlob && !isCompiling && (
+              <Button
+                onClick={() => {
+                  setCompiledFirmwareBlob(null);
+                  setCompileError(null);
+                  compileFirmware();
+                }}
+                variant="outline"
+                className="w-full border-[#2E333D] text-[#E6EDF3] hover:bg-[#2E333D] py-2 mt-3"
+              >
+                🔄 再ビルド
+              </Button>
+            )}
           </div>
 
           {/* ファームウェア書き込み */}

@@ -6,7 +6,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
 import {
   Sheet,
@@ -25,8 +24,6 @@ import {
   LogOut,
   User,
   Zap,
-  Cloud,
-  Server,
   Loader2,
   Menu,
 } from 'lucide-react';
@@ -161,29 +158,6 @@ export function LinearToolbar({
                 </div>
               </div>
 
-              {/* サーバー選択 */}
-              {language === 'arduino' && (
-                <div className="space-y-2">
-                  <div className="text-xs text-gray-400 px-2">{t('editor.menu.compileServer')}</div>
-                  <Button
-                    variant={serverMode === 'cloud' ? 'secondary' : 'ghost'}
-                    className="w-full justify-start"
-                    onClick={() => onServerModeChange('cloud')}
-                  >
-                    <Cloud className="w-4 h-4 mr-2" />
-                    {t('editor.menu.cloudServer')}
-                  </Button>
-                  <Button
-                    variant={serverMode === 'local' ? 'secondary' : 'ghost'}
-                    className="w-full justify-start"
-                    onClick={() => onServerModeChange('local')}
-                  >
-                    <Server className="w-4 h-4 mr-2" />
-                    {t('editor.menu.localServer')}
-                  </Button>
-                </div>
-              )}
-
               {/* 表示言語 */}
               <div className="space-y-2">
                 <div className="text-xs text-gray-400 px-2">{t('editor.menu.displayLanguage')}</div>
@@ -220,7 +194,7 @@ export function LinearToolbar({
             ) : (
               <>
                 <Zap className="w-4 h-4" />
-                {!isMobile && <span className="ml-1">{t('editor.compile')}</span>}
+                {!isMobile && <span className="ml-1">書込み</span>}
               </>
             )}
           </Button>
@@ -292,57 +266,31 @@ export function LinearToolbar({
         {/* デバイスセレクタ（親から渡される） */}
         {deviceSelector}
 
-        {/* コンパイルボタン（Arduino C++のみ） */}
+        {/* 書き込みボタン（Arduino C++のみ） */}
         {language === 'arduino' && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                size="sm"
-                disabled={isCompiling}
-                className="bg-orange-600 hover:bg-orange-700 text-white px-3"
-              >
-                {isCompiling ? (
-                  <>
-                    <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                    {t('editor.compiling')}
-                  </>
-                ) : (
-                  <>
-                    <Zap className="w-3 h-3 mr-1" />
-                    {t('editor.compile')}
-                    {serverMode === 'cloud' && compileUsage && (
-                      <span className={`ml-1 text-xs ${compileUsage.isOverLimit ? 'text-red-200' : 'text-orange-200'}`}>
-                        ({compileUsage.count}/{compileUsage.limit})
-                      </span>
-                    )}
-                    <ChevronDown className="w-3 h-3 ml-1" />
-                  </>
+          <Button
+            size="sm"
+            disabled={isCompiling}
+            onClick={onCompile}
+            className="bg-orange-600 hover:bg-orange-700 text-white px-3"
+          >
+            {isCompiling ? (
+              <>
+                <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                {t('editor.compiling')}
+              </>
+            ) : (
+              <>
+                <Zap className="w-3 h-3 mr-1" />
+                書込み
+                {serverMode === 'cloud' && compileUsage && (
+                  <span className={`ml-1 text-xs ${compileUsage.isOverLimit ? 'text-red-200' : 'text-orange-200'}`}>
+                    ({compileUsage.count}/{compileUsage.limit})
+                  </span>
                 )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem onClick={onCompile} disabled={isCompiling} className="font-medium">
-                <Zap className="w-4 h-4 mr-2 text-orange-500" />
-                {t('editor.compileAndFlash')}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <div className="px-2 py-1.5 text-xs text-gray-500">{t('editor.menu.compileServer')}</div>
-              <DropdownMenuCheckboxItem
-                checked={serverMode === 'cloud'}
-                onCheckedChange={() => onServerModeChange('cloud')}
-              >
-                <Cloud className="w-4 h-4 mr-2" />
-                {t('editor.menu.cloudServer')}
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={serverMode === 'local'}
-                onCheckedChange={() => onServerModeChange('local')}
-              >
-                <Server className="w-4 h-4 mr-2" />
-                {t('editor.menu.localServer')}
-              </DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </>
+            )}
+          </Button>
         )}
       </div>
 
