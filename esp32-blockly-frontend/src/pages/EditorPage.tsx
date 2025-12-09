@@ -89,6 +89,8 @@ export function EditorPage() {
   const [compileLog, setCompileLog] = useState<string[]>([]);
   const [compileDialogOpen, setCompileDialogOpen] = useState(false);
   const [flashDialogOpen, setFlashDialogOpen] = useState(false);
+  const [isWaitingForBootMode, setIsWaitingForBootMode] = useState(false);
+  const [pendingFlashBinary, setPendingFlashBinary] = useState<Blob | null>(null);
   const [flashProgress, setFlashProgress] = useState<FlashProgress>({
     stage: 'connecting',
     percent: 0,
@@ -550,8 +552,17 @@ export function EditorPage() {
 
   // USB書き込み処理
   const handleFlash = async (binary: Blob) => {
-    // 進捗ダイアログを開く
+    // BOOT準備画面を表示
+    setPendingFlashBinary(binary);
+    setIsWaitingForBootMode(true);
     setFlashDialogOpen(true);
+  };
+
+  // BOOT準備完了後に実際の書き込みを開始
+  const executeFlash = async () => {
+    if (!pendingFlashBinary) return;
+
+    setIsWaitingForBootMode(false);
     setFlashProgress({
       stage: 'connecting',
       percent: 0,
@@ -562,7 +573,7 @@ export function EditorPage() {
 
     try {
       // BlobをArrayBufferに変換
-      const arrayBuffer = await binary.arrayBuffer();
+      const arrayBuffer = await pendingFlashBinary.arrayBuffer();
 
       // ESP32に接続
       const chipInfo = await firmwareService.connect((progress) => {
@@ -584,14 +595,17 @@ export function EditorPage() {
         // 成功後、少し待ってからダイアログを閉じる
         setTimeout(() => {
           setFlashDialogOpen(false);
+          setPendingFlashBinary(null);
           alert('✓ ファームウェアの書き込みが完了しました！\nESP32が再起動します。');
         }, 2000);
       } else {
         setFlashDialogOpen(false);
+        setPendingFlashBinary(null);
         alert('✗ 書き込みに失敗しました。');
       }
     } catch (error) {
       setFlashDialogOpen(false);
+      setPendingFlashBinary(null);
       alert(`✗ 書き込みエラー:\n${error instanceof Error ? error.message : '不明なエラー'}`);
     }
   };
@@ -1335,40 +1349,103 @@ export function EditorPage() {
       </Dialog>
 
       {/* ファームウェア書き込み進捗ダイアログ */}
-      <Dialog open={flashDialogOpen} onOpenChange={setFlashDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+      <Dialog open={flashDialogOpen} onOpenChange={(open) => {
+        setFlashDialogOpen(open);
+        if (!open) {
+          setIsWaitingForBootMode(false);
+          setPendingFlashBinary(null);
+        }
+      }}>
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>{t('editor.flash.writingToEsp32')}</DialogTitle>
+            <DialogTitle>
+              {isWaitingForBootMode ? '⚠️ 書き込み前の準備' : t('editor.flash.writingToEsp32')}
+            </DialogTitle>
             <DialogDescription>
-              {flashProgress.stage === 'connecting' && t('editor.connecting')}
-              {flashProgress.stage === 'erasing' && t('editor.erasingFlash')}
-              {flashProgress.stage === 'flashing' && t('editor.writing')}
-              {flashProgress.stage === 'verifying' && t('editor.writing')}
-              {flashProgress.stage === 'complete' && t('editor.complete')}
-              {flashProgress.stage === 'error' && t('editor.errorOccurred')}
+              {isWaitingForBootMode ? (
+                'ESP32を書き込みモードにしてください'
+              ) : (
+                <>
+                  {flashProgress.stage === 'connecting' && t('editor.connecting')}
+                  {flashProgress.stage === 'erasing' && t('editor.erasingFlash')}
+                  {flashProgress.stage === 'flashing' && t('editor.writing')}
+                  {flashProgress.stage === 'verifying' && t('editor.writing')}
+                  {flashProgress.stage === 'complete' && t('editor.complete')}
+                  {flashProgress.stage === 'error' && t('editor.errorOccurred')}
+                </>
+              )}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <Progress value={flashProgress.percent} className="w-full" />
-            <div className="text-sm text-center text-muted-foreground">
-              {flashProgress.message}
-            </div>
-            {flashProgress.file && (
-              <div className="text-xs text-center text-muted-foreground">
-                {flashProgress.file}
-              </div>
-            )}
-            <div className="text-center text-lg font-semibold">
-              {Math.floor(flashProgress.percent)}%
-            </div>
-            {flashProgress.stage === 'error' && (
-              <Button
-                onClick={() => setFlashDialogOpen(false)}
-                className="w-full"
-                variant="destructive"
-              >
-                {t('common.close')}
-              </Button>
+            {isWaitingForBootMode ? (
+              /* BOOT操作手順を表示 */
+              <>
+                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-500 rounded-lg">
+                  <h4 className="text-amber-900 dark:text-amber-200 font-semibold mb-3 flex items-center gap-2">
+                    <span className="text-xl">⚠️</span>
+                    ESP32を書き込みモードにする手順
+                  </h4>
+                  <ol className="text-sm text-gray-800 dark:text-gray-200 space-y-2 mb-3">
+                    <li className="flex items-start gap-2">
+                      <span className="text-amber-600 dark:text-amber-400 font-mono font-bold">1.</span>
+                      <span><strong className="text-amber-600 dark:text-amber-400">BOOT</strong>ボタンを押し続ける</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-amber-600 dark:text-amber-400 font-mono font-bold">2.</span>
+                      <span><strong className="text-amber-600 dark:text-amber-400">BOOT</strong>を押したまま、<strong className="text-amber-600 dark:text-amber-400">EN</strong>ボタンを一瞬押して離す</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-amber-600 dark:text-amber-400 font-mono font-bold">3.</span>
+                      <span><strong className="text-amber-600 dark:text-amber-400">BOOT</strong>ボタンを離す</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-amber-600 dark:text-amber-400 font-mono font-bold">4.</span>
+                      <span>この状態で下の「書き込み開始」ボタンを押す</span>
+                    </li>
+                  </ol>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                    💡 ヒント: ボードによってはBOOTボタンが「IO0」「FLASH」「GPIO0」などと表記されている場合があります
+                  </p>
+                </div>
+                <Button
+                  onClick={executeFlash}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3"
+                >
+                  ▶ 準備完了 - 書き込み開始
+                </Button>
+                <Button
+                  onClick={() => setFlashDialogOpen(false)}
+                  variant="outline"
+                  className="w-full"
+                >
+                  キャンセル
+                </Button>
+              </>
+            ) : (
+              /* 書き込み進捗を表示 */
+              <>
+                <Progress value={flashProgress.percent} className="w-full" />
+                <div className="text-sm text-center text-muted-foreground">
+                  {flashProgress.message}
+                </div>
+                {flashProgress.file && (
+                  <div className="text-xs text-center text-muted-foreground">
+                    {flashProgress.file}
+                  </div>
+                )}
+                <div className="text-center text-lg font-semibold">
+                  {Math.floor(flashProgress.percent)}%
+                </div>
+                {flashProgress.stage === 'error' && (
+                  <Button
+                    onClick={() => setFlashDialogOpen(false)}
+                    className="w-full"
+                    variant="destructive"
+                  >
+                    {t('common.close')}
+                  </Button>
+                )}
+              </>
             )}
           </div>
         </DialogContent>

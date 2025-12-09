@@ -517,50 +517,65 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
             {/* Arduino: カスタムINSTALLボタン */}
             {firmwareType === 'arduino' && !isCompiling && !compileError && compiledFirmwareBlob && (
               <div className="flex flex-col items-center gap-4 p-4 bg-[#0D1117] rounded-lg border-2 border-dashed border-[#2E333D]">
-                {/* 手動リセット手順（自動接続失敗時のみ表示） */}
-                {needsManualReset && (
-                  <div className="w-full p-4 bg-[#3d2626] border border-[#da3633] rounded-lg">
-                    <h4 className="text-[#f85149] font-semibold mb-3 flex items-center gap-2">
-                      <span className="text-xl">📌</span>
-                      ESP32を書き込みモードにしてください
-                    </h4>
-                    <ol className="text-sm text-[#E6EDF3] space-y-2 mb-4">
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#58A6F9] font-mono">1.</span>
-                        <span><strong>BOOT</strong>ボタンを押し続ける</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#58A6F9] font-mono">2.</span>
-                        <span><strong>BOOT</strong>を押したまま、<strong>EN</strong>ボタンを押して離す</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#58A6F9] font-mono">3.</span>
-                        <span><strong>BOOT</strong>ボタンを離す</span>
-                      </li>
-                    </ol>
-                    <p className="text-xs text-[#8B949E] mb-3">
-                      ※ ボードによってはBOOTボタンが「IO0」「FLASH」などと表記されている場合があります
+                {/* コンパイル完了メッセージ */}
+                <div className="w-full p-3 bg-[#1a472a] border border-[#2ea043] rounded-lg">
+                  <p className="text-[#2ea043] text-sm text-center font-semibold">
+                    ✅ ファームウェアのコンパイルが完了しました
+                  </p>
+                </div>
+
+                {/* BOOTボタン操作手順（常に表示） */}
+                <div className="w-full p-4 bg-[#2d333b] border-2 border-[#f0883e] rounded-lg">
+                  <h4 className="text-[#f0883e] font-semibold mb-3 flex items-center gap-2">
+                    <span className="text-xl">⚠️</span>
+                    書き込み前の準備（重要）
+                  </h4>
+                  <div className="mb-3 p-3 bg-[#161b22] rounded border border-[#30363d]">
+                    <p className="text-xs text-[#8B949E] mb-2">
+                      <strong className="text-[#E6EDF3]">自動接続を試行します。</strong><br />
+                      失敗した場合は、以下の手順でESP32を書き込みモードにしてください：
                     </p>
-                    <Button
-                      onClick={installArduinoFirmware}
-                      disabled={isInstalling}
-                      className="w-full bg-[#58A6F9] hover:bg-[#1f6feb] text-white font-semibold"
-                    >
-                      準備完了 - 再試行
-                    </Button>
+                  </div>
+                  <ol className="text-sm text-[#E6EDF3] space-y-2 mb-3">
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f0883e] font-mono font-bold">1.</span>
+                      <span><strong className="text-[#f0883e]">BOOT</strong>ボタンを押し続ける</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f0883e] font-mono font-bold">2.</span>
+                      <span><strong className="text-[#f0883e]">BOOT</strong>を押したまま、<strong className="text-[#f0883e]">EN</strong>ボタンを一瞬押して離す</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f0883e] font-mono font-bold">3.</span>
+                      <span><strong className="text-[#f0883e]">BOOT</strong>ボタンを離す</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f0883e] font-mono font-bold">4.</span>
+                      <span>この状態で下の「書き込み開始」ボタンを押す</span>
+                    </li>
+                  </ol>
+                  <p className="text-xs text-[#8B949E]">
+                    💡 ヒント: ボードによってはBOOTボタンが「IO0」「FLASH」「GPIO0」などと表記されている場合があります
+                  </p>
+                </div>
+
+                {/* 手動リセット失敗時の追加メッセージ */}
+                {needsManualReset && (
+                  <div className="w-full p-3 bg-[#3d2626] border border-[#da3633] rounded-lg">
+                    <p className="text-[#f85149] text-sm text-center font-semibold">
+                      ❌ 自動接続に失敗しました。上記の手順でESP32を書き込みモードにしてから再試行してください。
+                    </p>
                   </div>
                 )}
 
-                {/* 通常のINSTALLボタン */}
-                {!needsManualReset && (
-                  <Button
-                    onClick={installArduinoFirmware}
-                    disabled={isInstalling || !isSupported}
-                    className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg font-semibold rounded-lg transition-colors disabled:opacity-50"
-                  >
-                    {isInstalling ? 'Installing...' : 'INSTALL'}
-                  </Button>
-                )}
+                {/* INSTALLボタン */}
+                <Button
+                  onClick={installArduinoFirmware}
+                  disabled={isInstalling || !isSupported}
+                  className="w-full bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg font-semibold rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {isInstalling ? '書き込み中...' : needsManualReset ? '✓ 準備完了 - 再試行' : '▶ 書き込み開始'}
+                </Button>
 
                 {!isSupported && (
                   <p className="text-[#f85149] text-xs text-center">
