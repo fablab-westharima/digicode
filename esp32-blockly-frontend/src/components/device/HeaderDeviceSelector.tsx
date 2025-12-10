@@ -42,6 +42,10 @@ export function HeaderDeviceSelector() {
   // ユーザーが明示的に選択した接続タイプ
   const [selectedConnectionType, setSelectedConnectionType] = useState<ConnectionType | null>(null);
 
+  // デバイスのオンライン状態を保持（デバイス検索結果）
+  // { uuid: true/false } - true: オンライン, false: オフライン, undefined: 未検索
+  const [deviceOnlineStatus, setDeviceOnlineStatus] = useState<Record<string, boolean>>({});
+
   // 現在選択中のデバイスを判定
   const getSelectedDevice = (): SelectedDevice | null => {
     // ユーザーが明示的に選択した接続タイプがあれば、それを優先
@@ -122,9 +126,9 @@ export function HeaderDeviceSelector() {
 
           try {
             // デバイスのHTTPサーバーにアクセス
-            // タイムアウトを短く設定（2秒）
+            // タイムアウトを5秒に設定（ESP32起動後のWiFi接続待ち時間を考慮）
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
 
             const response = await fetch(`http://${device.ipAddress}/`, {
               signal: controller.signal,
@@ -149,13 +153,23 @@ export function HeaderDeviceSelector() {
         })
       );
 
-      // 結果を集計
+      // 結果を集計してオンライン状態を更新
+      const newOnlineStatus: Record<string, boolean> = {};
       const onlineDevices = results.filter(
-        (result) => result.status === 'fulfilled' && result.value.isOnline
+        (result) => {
+          if (result.status === 'fulfilled') {
+            newOnlineStatus[result.value.device.uuid] = result.value.isOnline;
+            return result.value.isOnline;
+          }
+          return false;
+        }
       );
       const offlineDevices = results.filter(
         (result) => result.status === 'fulfilled' && !result.value.isOnline
       );
+
+      // デバイスのオンライン状態を更新
+      setDeviceOnlineStatus(newOnlineStatus);
 
       console.log(`[SEARCH] Search complete: ${onlineDevices.length} online, ${offlineDevices.length} offline`);
 
@@ -228,6 +242,7 @@ export function HeaderDeviceSelector() {
           <DropdownMenuItem onClick={handleConnectUsb}>
             <Usb className="w-4 h-4 mr-2 text-gray-500" />
             USB接続...
+            <div className="ml-auto w-2 h-2 rounded-full bg-gray-400" />
           </DropdownMenuItem>
         )}
 
@@ -250,6 +265,16 @@ export function HeaderDeviceSelector() {
             <div className="px-2 py-1.5 text-xs text-gray-500">{t('editor.deviceSelector.wifiRegisteredDevices')}</div>
             {wifiDevices.map((device) => {
               const isSelected = wifiStatus === 'connected' && wifiHost === getDeviceHost(device);
+              const onlineStatus = deviceOnlineStatus[device.uuid];
+
+              // オンライン状態に基づいて色を決定
+              // true: 緑（オンライン）, false: 赤（オフライン）, undefined: 灰色（未検索）
+              const statusColor = onlineStatus === true
+                ? 'bg-green-500'
+                : onlineStatus === false
+                  ? 'bg-red-500'
+                  : 'bg-gray-400';
+
               return (
                 <DropdownMenuItem
                   key={device.uuid}
@@ -258,9 +283,7 @@ export function HeaderDeviceSelector() {
                 >
                   <Wifi className="w-4 h-4 mr-2 text-green-500" />
                   {device.name}
-                  {isSelected && (
-                    <div className="ml-auto w-2 h-2 rounded-full bg-green-500" />
-                  )}
+                  <div className={`ml-auto w-2 h-2 rounded-full ${statusColor}`} />
                 </DropdownMenuItem>
               );
             })}
