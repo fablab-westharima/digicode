@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Wifi, ChevronDown, Usb, Bluetooth, RefreshCw } from 'lucide-react';
+import { Wifi, ChevronDown, Usb, Bluetooth } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -25,7 +25,7 @@ interface SelectedDevice {
 
 export function HeaderDeviceSelector() {
   const { t } = useTranslation();
-  const { devices: wifiDevices, clearDevices } = useDeviceStore();
+  const { devices: wifiDevices } = useDeviceStore();
   const {
     status: wifiStatus,
     deviceName: wifiDeviceName,
@@ -92,14 +92,6 @@ export function HeaderDeviceSelector() {
       await disconnectWifi();
     }
     setSelectedConnectionType(null); // 明示的な選択をクリア
-  };
-
-  // デバイスリストをリフレッシュ
-  const handleRefreshDevices = () => {
-    if (!confirm(t('device.confirmClearDevices', { defaultValue: 'デバイスリストをクリアして再読み込みしますか？ USB接続してWiFi設定から現在のデバイスを再登録してください。' }))) {
-      return;
-    }
-    clearDevices();
   };
 
   // USB接続を開始
@@ -208,17 +200,6 @@ export function HeaderDeviceSelector() {
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleDeselect} className="text-red-600">
               {t('editor.deviceSelector.deselect')}
-            </DropdownMenuItem>
-          </>
-        )}
-
-        {/* デバイスリストをリフレッシュ */}
-        {wifiDevices.length > 0 && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleRefreshDevices} className="text-blue-600">
-              <RefreshCw className="w-3.5 h-3.5 mr-2" />
-              {t('device.refreshDevices', { defaultValue: '再読み込み' })}
             </DropdownMenuItem>
           </>
         )}
