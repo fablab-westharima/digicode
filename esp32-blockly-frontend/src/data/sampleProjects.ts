@@ -8,7 +8,7 @@ export interface SampleProject {
   title: string;
   description: string;
   category: 'basic' | 'sensor' | 'motor' | 'otto' | 'advanced' | 'competition' | 'iot';
-  language: 'arduino' | 'micropython';
+  language: 'arduino';
   blocklyXml: string;
 }
 

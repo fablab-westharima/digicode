@@ -54,14 +54,7 @@ export function ProjectsPage() {
   };
 
   const getLanguageLabel = (language?: string) => {
-    switch (language) {
-      case 'micropython':
-        return 'MicroPython';
-      case 'arduino':
-        return 'Arduino C++';
-      default:
-        return language || 'MicroPython';
-    }
+    return 'Arduino C++';
   };
 
   return (

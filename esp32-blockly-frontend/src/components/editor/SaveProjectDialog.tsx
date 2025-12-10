@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useProjectStore } from '@/stores/projectStore';
-import { useLanguageStore } from '@/stores/languageStore';
 
 interface SaveProjectDialogProps {
   open: boolean;
@@ -31,7 +30,6 @@ export function SaveProjectDialog({
 }: SaveProjectDialogProps) {
   const { t } = useTranslation();
   const { currentProject, createProject, saveProject, isLoading } = useProjectStore();
-  const { language } = useLanguageStore();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
@@ -63,14 +61,14 @@ export function SaveProjectDialog({
 
     if (currentProject) {
       // 既存プロジェクトの更新
-      success = await saveProject(blocklyXml, generatedCode, language);
+      success = await saveProject(blocklyXml, generatedCode, 'arduino');
     } else {
       // 新規プロジェクトの作成
       const project = await createProject({
         title: title.trim(),
         description: description.trim() || undefined,
         blocklyXml,
-        language,
+        language: 'arduino',
       });
       success = project !== null;
     }

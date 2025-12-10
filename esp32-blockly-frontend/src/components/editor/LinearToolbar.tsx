@@ -30,12 +30,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
-import { useLanguageStore } from '@/stores/languageStore';
 import { useBreakpoint } from '@/hooks/useMediaQuery';
 import { LocaleSelector } from '@/components/common/LocaleSelector';
 import { RobotModeSelector } from '@/components/editor/RobotModeSelector';
 import { BoardSelector } from '@/components/editor/BoardSelector';
-import { LanguageSelector } from '@/components/editor/LanguageSelector';
 import type { CompileServerMode } from '@/services/compileService';
 
 interface LinearToolbarProps {
@@ -47,7 +45,6 @@ interface LinearToolbarProps {
   isSaving?: boolean;
 
   // コンパイル関連
-  language: 'arduino' | 'micropython';
   isCompiling: boolean;
   serverMode: CompileServerMode;
   compileUsage?: { count: number; limit: number; isOverLimit: boolean };
@@ -68,7 +65,6 @@ export function LinearToolbar({
   onSampleProject,
   onSaveProject,
   isSaving = false,
-  language,
   isCompiling,
   serverMode,
   compileUsage,
@@ -80,7 +76,6 @@ export function LinearToolbar({
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
-  const { language: blocklyLang } = useLanguageStore();
   const { isMobile, isMobileOrTablet } = useBreakpoint();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -124,14 +119,6 @@ export function LinearToolbar({
                   <Download className="w-4 h-4 mr-2" />
                   {t('editor.menu.save')}
                 </Button>
-              </div>
-
-              {/* 言語選択 */}
-              <div className="space-y-2">
-                <div className="text-xs text-gray-400 px-2">{t('editor.language')}</div>
-                <div className="px-2">
-                  <LanguageSelector />
-                </div>
               </div>
 
               {/* ロボットモード */}
@@ -182,23 +169,21 @@ export function LinearToolbar({
         <span className="text-sm truncate max-w-[120px]">{projectTitle || t('editor.untitledProject')}</span>
 
         {/* 右側: 書き込みボタン */}
-        {language === 'arduino' && (
-          <Button
-            size="sm"
-            disabled={isCompiling}
-            onClick={onCompile}
-            className="bg-orange-600 hover:bg-orange-700 text-white px-3"
-          >
-            {isCompiling ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <>
-                <Zap className="w-4 h-4" />
-                {!isMobile && <span className="ml-1">書込み</span>}
-              </>
-            )}
-          </Button>
-        )}
+        <Button
+          size="sm"
+          disabled={isCompiling}
+          onClick={onCompile}
+          className="bg-orange-600 hover:bg-orange-700 text-white px-3"
+        >
+          {isCompiling ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <>
+              <Zap className="w-4 h-4" />
+              {!isMobile && <span className="ml-1">書込み</span>}
+            </>
+          )}
+        </Button>
       </div>
     );
   }
@@ -252,11 +237,8 @@ export function LinearToolbar({
         </DropdownMenu>
       </div>
 
-      {/* 中央: 言語セレクタ + ロボットモードセレクタ + ボードセレクタ + デバイスセレクタ + コンパイルボタン */}
+      {/* 中央: ロボットモードセレクタ + ボードセレクタ + デバイスセレクタ + コンパイルボタン */}
       <div className="flex items-center gap-2">
-        {/* 言語セレクタ（Arduino C++ / MicroPython） */}
-        <LanguageSelector />
-
         {/* ロボットモードセレクタ */}
         <RobotModeSelector onModeChange={onRobotModeChange} />
 
@@ -266,32 +248,30 @@ export function LinearToolbar({
         {/* デバイスセレクタ（親から渡される） */}
         {deviceSelector}
 
-        {/* 書き込みボタン（Arduino C++のみ） */}
-        {language === 'arduino' && (
-          <Button
-            size="sm"
-            disabled={isCompiling}
-            onClick={onCompile}
-            className="bg-orange-600 hover:bg-orange-700 text-white px-3"
-          >
-            {isCompiling ? (
-              <>
-                <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                {t('editor.compiling')}
-              </>
-            ) : (
-              <>
-                <Zap className="w-3 h-3 mr-1" />
-                書込み
-                {serverMode === 'cloud' && compileUsage && (
-                  <span className={`ml-1 text-xs ${compileUsage.isOverLimit ? 'text-red-200' : 'text-orange-200'}`}>
-                    ({compileUsage.count}/{compileUsage.limit})
-                  </span>
-                )}
-              </>
-            )}
-          </Button>
-        )}
+        {/* 書き込みボタン */}
+        <Button
+          size="sm"
+          disabled={isCompiling}
+          onClick={onCompile}
+          className="bg-orange-600 hover:bg-orange-700 text-white px-3"
+        >
+          {isCompiling ? (
+            <>
+              <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+              {t('editor.compiling')}
+            </>
+          ) : (
+            <>
+              <Zap className="w-3 h-3 mr-1" />
+              書込み
+              {serverMode === 'cloud' && compileUsage && (
+                <span className={`ml-1 text-xs ${compileUsage.isOverLimit ? 'text-red-200' : 'text-orange-200'}`}>
+                  ({compileUsage.count}/{compileUsage.limit})
+                </span>
+              )}
+            </>
+          )}
+        </Button>
       </div>
 
       {/* 右側: 言語切替、設定、ヘルプ、ユーザーメニュー */}

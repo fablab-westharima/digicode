@@ -1,0 +1,200 @@
+{
+  "main": {
+    "id": "b7201ddc4cf14b6c",
+    "type": "split",
+    "children": [
+      {
+        "id": "41ce24a908aefcb2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3efb2c96c0b317e3",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "prompt/maintenance/07_接続方式分離計画.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "07_接続方式分離計画"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "4d5e0c5d3355b3d4",
+    "type": "split",
+    "children": [
+      {
+        "id": "34961fd0db515503",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8cb90c86d95783be",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "ファイルエクスプローラ"
+            }
+          },
+          {
+            "id": "e06bfa02182a2e2c",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "検索"
+            }
+          },
+          {
+            "id": "2bbd6669fa7838a1",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "ブックマーク"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "43c4a7dec7de4172",
+    "type": "split",
+    "children": [
+      {
+        "id": "a39f22340667e5b0",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "20364a34e6789dd9",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "prompt/maintenance/07_接続方式分離計画.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "07_接続方式分離計画へのバックリンク"
+            }
+          },
+          {
+            "id": "e5ea99c01d00119c",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "prompt/maintenance/07_接続方式分離計画.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "07_接続方式分離計画からのアウトゴーイングリンク"
+            }
+          },
+          {
+            "id": "23e9f2ce5cb225bb",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "タグ"
+            }
+          },
+          {
+            "id": "7284305ed5b7f494",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "prompt/maintenance/07_接続方式分離計画.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "07_接続方式分離計画のアウトライン"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:クイックスイッチャーを開く": false,
+      "graph:グラフビューを開く": false,
+      "canvas:新規キャンバスを作成": false,
+      "daily-notes:今日のデイリーノートを開く": false,
+      "templates:テンプレートを挿入": false,
+      "command-palette:コマンドパレットを開く": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "3efb2c96c0b317e3",
+  "lastOpenFiles": [
+    "prompt/logs/session_state/current_work.md.tmp.12962.1765387099830",
+    "prompt/logs/接続方式分離計画実施/チケット/Phase1.0_MicroPython削除/README.md.tmp.12962.1765386975212",
+    "prompt/logs/接続方式分離計画実施/チケット/Phase1.0_MicroPython削除/README.md.tmp.12962.1765386972130",
+    "prompt/logs/接続方式分離計画実施/チケット/Phase1.0_MicroPython削除/README.md.tmp.12962.1765386966118",
+    "prompt/logs/接続方式分離計画実施/チケット/Phase1.0_MicroPython削除/README.md.tmp.12962.1765386960258",
+    "esp32-blockly-frontend/dist/assets/index-CxdZsJuu.js",
+    "esp32-blockly-frontend/dist/assets/stub_flasher_32h2-DKTWdQO2.js",
+    "esp32-blockly-frontend/dist/assets/stub_flasher_32c61-Dm89Jp02.js",
+    "esp32-blockly-frontend/dist/assets/stub_flasher_32c6-BMffPMCp.js",
+    "esp32-blockly-frontend/dist/assets/stub_flasher_32s3-B0-qH3ON.js",
+    "esp32-blockly-frontend/dist/assets/install-button-BMHd3ukS.js",
+    "prompt/logs/session_state_template/README.md",
+    "prompt/logs/session_state_template/QUICKSTART.md",
+    "prompt/logs/session_state_template/SETUP_PROMPT.md",
+    "prompt/logs/接続方式分離計画実施/チケット/README.md",
+    "prompt/logs/接続方式分離計画実施/チケット/Phase3_BLE実装/README.md",
+    "prompt/logs/接続方式分離計画実施/チケット/Phase2_USB実装/README.md",
+    "prompt/logs/接続方式分離計画実施/チケット/Phase1.1-1.5_OTA専用化/README.md",
+    "prompt/logs/接続方式分離計画実施/チケット/Phase1.0_MicroPython削除/README.md",
+    "prompt/logs/session_state/README.md",
+    "prompt/logs/session_state/decisions_log.md",
+    "prompt/logs/session_state/context_quick_ref.md",
+    "prompt/logs/session_state/current_work.md",
+    "prompt/maintenance/06_DockerHubアップデート手順.md",
+    "prompt/maintenance/07_接続方式分離計画.md"
+  ]
+}

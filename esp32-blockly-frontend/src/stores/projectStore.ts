@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
-import type { CodeLanguage } from './languageStore';
+
+// Arduino C++ のみをサポート
+export type CodeLanguage = 'arduino';
 
 export interface Project {
   id: number;
@@ -60,7 +62,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         description: p.description,
         blocklyXml: p.blockly_xml,
         generatedCode: p.generated_code,
-        language: p.language || 'micropython',
+        language: p.language || 'arduino',
         createdAt: p.created_at,
         updatedAt: p.updated_at,
       }));
@@ -89,7 +91,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         description: p.description,
         blocklyXml: p.blockly_xml,
         generatedCode: p.generated_code,
-        language: p.language || 'micropython',
+        language: p.language || 'arduino',
         createdAt: p.created_at,
         updatedAt: p.updated_at,
       };
@@ -120,7 +122,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         description: p.description,
         blocklyXml: p.blockly_xml,
         generatedCode: p.generated_code,
-        language: p.language || 'micropython',
+        language: p.language || 'arduino',
         createdAt: p.created_at,
         updatedAt: p.updated_at,
       };
@@ -165,7 +167,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         description: p.description,
         blocklyXml: p.blockly_xml,
         generatedCode: p.generated_code,
-        language: p.language || 'micropython',
+        language: p.language || 'arduino',
         createdAt: p.created_at,
         updatedAt: p.updated_at,
       };

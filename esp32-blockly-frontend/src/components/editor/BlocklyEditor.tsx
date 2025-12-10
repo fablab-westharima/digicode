@@ -3,17 +3,14 @@ import * as Blockly from 'blockly';
 import 'blockly/blocks';
 import * as Ja from 'blockly/msg/ja';
 import * as En from 'blockly/msg/en';
-import { pythonGenerator } from 'blockly/python';
 import { javascriptGenerator } from 'blockly/javascript';
 import { useTranslation } from 'react-i18next';
-import { useLanguageStore } from '../../stores/languageStore';
 import { useRobotModeStore } from '../../stores/robotModeStore';
 import { useFavoriteCategoriesStore } from '../../stores/favoriteCategoriesStore';
 import { useBreakpoint } from '../../hooks/useMediaQuery';
 import { digiCodeTheme, digiCodeDarkTheme } from './blocklyTheme';
 import { populateBlocklyMessages } from '@/utils/blocklyMessages';
 import { FavoriteSettingsDialog } from './FavoriteSettingsDialog';
-import '../../blocks/esp32BlocksMicroPython';
 // Old esp32BlocksArduino.ts removed - using arduino/core/esp32Blocks with Blockly.Msg.*
 import '../../blocks/arduino/core/esp32Blocks';
 import '../../blocks/ottoBlocks';
@@ -57,15 +54,7 @@ import '../../blocks/arduino/communication/arduinoHABlocks';
 import '../../blocks/arduino/communication/httpBlocks';
 import '../../blocks/arduino/communication/jsonBlocks';
 import '../../blocks/arduino/communication/otaBlocks';
-// MicroPythonブロック
-import '../../blocks/micropython/core/machineBlocks';
-import '../../blocks/micropython/data/listBlocks';
-import '../../blocks/micropython/robot/mpOttoBlocks';
-import '../../blocks/micropython/robot/mpOttoWheelBlocks';
-import '../../blocks/micropython/robot/mpOttoNinjaBlocks';
-import '../../blocks/micropython/sensor/mpSensorBlocks';
 import { generateToolbox } from './toolboxGenerator';
-import { generateMicroPythonToolbox } from './toolboxMicroPythonGenerator';
 
 // 日本語ロケールを設定
 Blockly.setLocale(Ja);
@@ -87,7 +76,6 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
     const workspaceRef = useRef<Blockly.WorkspaceSvg | null>(null);
     const savedXmlRef = useRef<string>(initialXml || '<xml></xml>');
     const languageChangeSavedRef = useRef<boolean>(false); // 言語変更でXML保存済みフラグ
-    const { language } = useLanguageStore();
     const { mode: robotMode } = useRobotModeStore();
     const { favorites } = useFavoriteCategoriesStore();
     const { isMobile } = useBreakpoint();
@@ -116,10 +104,9 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
       return () => i18n.off('languageChanged', handleLanguageChange);
     }, [i18n]);
 
-    // 言語に応じたツールボックスとジェネレータを選択
-    // 両言語ともロボットモードに応じたツールボックスを使用
-    const currentToolbox = toolboxXml || (language === 'micropython' ? generateMicroPythonToolbox(robotMode) : generateToolbox(robotMode, favorites));
-    const currentGenerator = language === 'micropython' ? pythonGenerator : javascriptGenerator;
+    // Arduino C++専用（ロボットモードに応じたツールボックスを使用）
+    const currentToolbox = toolboxXml || generateToolbox(robotMode, favorites);
+    const currentGenerator = javascriptGenerator;
 
     // ワークスペースからXMLを取得
     const getWorkspaceXml = useCallback(() => {
@@ -140,8 +127,8 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
 
         let code = currentGenerator.workspaceToCode(workspaceRef.current);
 
-        // Arduino C++の場合、setups_の内容をvoid setup()に挿入
-        if (language === 'arduino' && gen.setups_ && Object.keys(gen.setups_).length > 0) {
+        // setups_の内容をvoid setup()に挿入
+        if (gen.setups_ && Object.keys(gen.setups_).length > 0) {
           const setupsCode = Object.values(gen.setups_).join('\n');
           // void setup() { の直後に挿入
           code = code.replace(
@@ -153,9 +140,9 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         return code;
       } catch (error) {
         console.error('Code generation error:', error);
-        return language === 'micropython' ? '# コード生成エラー' : '// コード生成エラー';
+        return '// コード生成エラー';
       }
-    }, [currentGenerator, language]);
+    }, [currentGenerator]);
 
     // ワークスペース変更ハンドラ
     const handleWorkspaceChange = useCallback(() => {
@@ -442,7 +429,7 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         workspaceRef.current = null;
       };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentToolbox, language, robotMode, isMobile, uiLanguage]);
+    }, [currentToolbox, robotMode, isMobile, uiLanguage]);
 
     // リサイズ対応
     useEffect(() => {

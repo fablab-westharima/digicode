@@ -7,7 +7,6 @@ import { CodePreview } from '@/components/editor/CodePreview';
 import { LinearToolbar } from '@/components/editor/LinearToolbar';
 import { StatusBar, type StatusBarState } from '@/components/editor/StatusBar';
 import { Sidebar } from '@/components/editor/Sidebar';
-import { LanguageSelector } from '@/components/editor/LanguageSelector';
 import { RobotModeSelector } from '@/components/editor/RobotModeSelector';
 import { SaveProjectDialog } from '@/components/editor/SaveProjectDialog';
 import { ProjectListDialog } from '@/components/editor/ProjectListDialog';
@@ -35,7 +34,6 @@ import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
 import { useDeviceStore } from '@/stores/deviceStore';
 import { useBluetoothStore } from '@/stores/bluetoothStore';
-import { useLanguageStore } from '@/stores/languageStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { useBoardStore, type FlashMethod } from '@/stores/boardStore';
 import { getTutorialById } from '@/data/tutorials';
@@ -74,7 +72,6 @@ export function EditorPage() {
   const { status: wifiStatus, getDeviceUrl, setHost, setDeviceName, connect: connectWifi } = useWifiStore();
   const { status: bluetoothStatus, connect: connectBluetooth, disconnect: disconnectBluetooth } = useBluetoothStore();
   const { addDevice } = useDeviceStore();
-  const { language, setLanguage } = useLanguageStore();
   const { getSelectedBoard } = useBoardStore();
 
   const [generatedCode, setGeneratedCode] = useState('');
@@ -124,7 +121,6 @@ export function EditorPage() {
   const [statusBarMessage, setStatusBarMessage] = useState<string>('');
   const blocklyEditorRef = useRef<BlocklyEditorRef>(null);
   const compiledBinaryRef = useRef<ArrayBuffer | null>(null);
-  const prevLanguageRef = useRef(language);
   const { isMobile, isMobileOrTablet } = useBreakpoint();
   const { currentTutorial, isActive: isTutorialActive } = useTutorialStore();
   // ブラウザを閉じる/リロード時の確認
@@ -202,10 +198,6 @@ export function EditorPage() {
           if (project) {
             setWorkspaceXml(project.blocklyXml);
             setGeneratedCode(project.generatedCode || '');
-            // 言語を復元
-            if (project.language) {
-              setLanguage(project.language);
-            }
             // BlocklyEditorに反映
             if (blocklyEditorRef.current) {
               blocklyEditorRef.current.loadXml(project.blocklyXml);
@@ -214,23 +206,19 @@ export function EditorPage() {
         });
       }
     }
-  }, [searchParams, loadProject, setLanguage]);
+  }, [searchParams, loadProject]);
 
   // 現在のプロジェクトが変更された時にワークスペースを更新
   useEffect(() => {
     if (currentProject) {
       setWorkspaceXml(currentProject.blocklyXml);
       setGeneratedCode(currentProject.generatedCode || '');
-      // 言語を復元
-      if (currentProject.language) {
-        setLanguage(currentProject.language);
-      }
       // BlocklyEditorに反映
       if (blocklyEditorRef.current) {
         blocklyEditorRef.current.loadXml(currentProject.blocklyXml);
       }
     }
-  }, [currentProject, setLanguage]);
+  }, [currentProject]);
 
   // チュートリアル開始時にサンプルXMLを読み込む
   useEffect(() => {
@@ -244,21 +232,6 @@ export function EditorPage() {
     }
   }, [currentTutorial, isTutorialActive]);
 
-  // 言語変更時にワークスペースをクリア（Arduino C++とMicroPythonのブロックには互換性がないため）
-  useEffect(() => {
-    if (prevLanguageRef.current !== language) {
-      // 確認ダイアログはLanguageSelectorで表示済みなので、ここではクリアのみ実行
-      setWorkspaceXml('<xml></xml>');
-      setGeneratedCode('');
-      if (blocklyEditorRef.current) {
-        blocklyEditorRef.current.loadXml('<xml></xml>');
-      }
-      // 現在のプロジェクトをクリア（新しい言語では使えないため）
-      setCurrentProject(null);
-      navigate('/editor', { replace: true });
-      prevLanguageRef.current = language;
-    }
-  }, [language, navigate, setCurrentProject]);
 
   // ワークスペース変更時
   const handleWorkspaceChange = useCallback((xml: string, code: string) => {
@@ -318,7 +291,7 @@ export function EditorPage() {
     onOpen: () => setOpenDialogOpen(true),
     onNew: handleNew,
     onCompile: () => {
-      if (language === 'arduino' && generatedCode.trim()) {
+      if (generatedCode.trim()) {
         setCompileDialogOpen(true);
       }
     },
@@ -334,8 +307,6 @@ export function EditorPage() {
 
   // サンプルプロジェクト選択
   const handleSampleSelect = (sample: SampleProject) => {
-    // 言語を設定
-    setLanguage(sample.language);
     // XMLを読み込み
     setWorkspaceXml(sample.blocklyXml);
     setIsDirty(false);
@@ -384,12 +355,6 @@ export function EditorPage() {
 
   // コンパイル＆書き込み - WiFiの場合は先に接続確認
   const handleCompile = async () => {
-    // Arduino言語のときのみコンパイル可能
-    if (language !== 'arduino') {
-      alert(t('editor.arduinoOnly'));
-      return;
-    }
-
     if (!generatedCode.trim()) {
       alert(t('editor.noCodeToCompile'));
       return;
@@ -822,14 +787,8 @@ export function EditorPage() {
         <RobotModeSelector />
       </div>
 
-      {/* 言語選択 */}
-      <div className={isMobile ? 'w-full' : 'flex items-center'}>
-        <LanguageSelector />
-      </div>
-
-      {/* コンパイル＆書き込みボタン（Arduino C++のみ） */}
-      {language === 'arduino' && (
-        <Button
+      {/* コンパイル＆書き込みボタン */}
+      <Button
           variant="default"
           size="sm"
           onClick={handleCompile}
@@ -848,7 +807,6 @@ export function EditorPage() {
             </>
           )}
         </Button>
-      )}
 
       {/* USB接続ボタン */}
       <div className="flex items-center gap-1">
@@ -868,9 +826,8 @@ export function EditorPage() {
   // デスクトップ用ツールバーコントロール（メニューバー形式）
   const DesktopToolbarControls = () => (
     <>
-      {/* コンパイル＆書き込みメニュー（Arduino C++のみ） */}
-      {language === 'arduino' && (
-        <DropdownMenu>
+      {/* コンパイル＆書き込みメニュー */}
+      <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="default"
@@ -973,7 +930,6 @@ export function EditorPage() {
             )}
           </DropdownMenuContent>
         </DropdownMenu>
-      )}
 
       {/* 書込み先デバイス選択 */}
       <HeaderDeviceSelector />
@@ -1089,11 +1045,6 @@ export function EditorPage() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <div className="px-2 py-1.5 text-xs text-gray-500">{t('editor.language')}</div>
-          <div className="px-2 pb-2">
-            <LanguageSelector />
-          </div>
-          <DropdownMenuSeparator />
           <div className="px-2 py-1.5 text-xs text-gray-500">{t('editor.menu.mode')}</div>
           <div className="px-2 pb-2">
             <RobotModeSelector />
@@ -1148,12 +1099,10 @@ export function EditorPage() {
               <LineChart className="w-3 h-3 mr-1" />
               {t('editor.bottom.plotter')}
             </TabsTrigger>
-            {language === 'arduino' && (
-              <TabsTrigger value="pid" className="text-xs px-2">
-                <SlidersHorizontal className="w-3 h-3 mr-1" />
-                {t('editor.bottom.pid')}
-              </TabsTrigger>
-            )}
+            <TabsTrigger value="pid" className="text-xs px-2">
+              <SlidersHorizontal className="w-3 h-3 mr-1" />
+              {t('editor.bottom.pid')}
+            </TabsTrigger>
           </TabsList>
         </Tabs>
         <Button
@@ -1172,7 +1121,7 @@ export function EditorPage() {
           {activeBottomTab === 'code' && (
             <CodePreview
               code={generatedCode}
-              language={language === 'micropython' ? 'python' : 'cpp'}
+              language="cpp"
               className="h-full"
             />
           )}
@@ -1182,7 +1131,7 @@ export function EditorPage() {
           {activeBottomTab === 'plotter' && (
             <SerialPlotter className="h-full" />
           )}
-          {activeBottomTab === 'pid' && language === 'arduino' && (
+          {activeBottomTab === 'pid' && (
             <PIDTuningPanel className="h-full overflow-y-auto" />
           )}
         </div>
@@ -1200,7 +1149,6 @@ export function EditorPage() {
         onSampleProject={() => setSampleDialogOpen(true)}
         onSaveProject={handleSave}
         isSaving={false}
-        language={language}
         isCompiling={isCompiling}
         serverMode={serverMode}
         compileUsage={compileUsage}
@@ -1666,38 +1614,36 @@ export function EditorPage() {
               {t('editor.generatedCode')}
             </DialogTitle>
             <DialogDescription>
-              {language === 'micropython' ? 'MicroPython' : 'Arduino C++'} {t('editor.codePreview')}
+              Arduino C++ {t('editor.codePreview')}
             </DialogDescription>
           </DialogHeader>
           <div className="flex-1 overflow-hidden">
             <CodePreview
               code={generatedCode}
-              language={language === 'micropython' ? 'python' : 'cpp'}
+              language="cpp"
               className="h-[60vh]"
             />
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* PIDチューニングダイアログ（Arduino C++のみ） */}
-      {language === 'arduino' && (
-        <Dialog open={pidTuningDialogOpen} onOpenChange={setPidTuningDialogOpen}>
-          <DialogContent className="sm:max-w-2xl max-h-[80vh]">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <SlidersHorizontal className="h-5 w-5" />
-                {t('editor.bottom.pidTuning')}
-              </DialogTitle>
-              <DialogDescription>
-                {t('editor.bottom.pidTuningDesc')}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="overflow-y-auto max-h-[60vh]">
-              <PIDTuningPanel />
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
+      {/* PIDチューニングダイアログ */}
+      <Dialog open={pidTuningDialogOpen} onOpenChange={setPidTuningDialogOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <SlidersHorizontal className="h-5 w-5" />
+              {t('editor.bottom.pidTuning')}
+            </DialogTitle>
+            <DialogDescription>
+              {t('editor.bottom.pidTuningDesc')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="overflow-y-auto max-h-[60vh]">
+            <PIDTuningPanel />
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* チュートリアルオーバーレイ */}
       <TutorialOverlay />
