@@ -28,7 +28,7 @@ interface WiFiEntry {
 export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
   const { t } = useTranslation();
   const { status, isSupported, connect, disconnect, send, output, clearOutput, resetESP32 } = useSerialStore();
-  const { addDevice, removeDevice, clearDevices } = useDeviceStore();
+  const { addDevice, removeDevice } = useDeviceStore();
 
   const [showConsole, setShowConsole] = useState(true);
   const consoleRef = useRef<HTMLDivElement>(null);
@@ -419,54 +419,6 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
     }
   };
 
-  // デバイスリストをクリアして再読み込み
-  const handleRefreshDevices = async () => {
-    if (status !== 'connected') {
-      alert(t('device.connectFirst', { defaultValue: 'まずUSB接続してください' }));
-      return;
-    }
-
-    if (!confirm(t('device.confirmClearDevices', { defaultValue: 'デバイスリストをクリアして再読み込みしますか？ 現在接続中のデバイスのみが再登録されます。' }))) {
-      return;
-    }
-
-    setIsLoadingWifi(true);
-    try {
-      // デバイスリストをクリア
-      clearDevices();
-      console.log('[REFRESH] Device list cleared');
-
-      // 現在のデバイス情報を再読み込み
-      setWifiMessage(t('device.updatingInfo', { defaultValue: 'デバイス情報を更新中...' }));
-      await loadDeviceName();
-      const wifiEntries = await loadWiFiList();
-
-      // WiFi接続されていれば自動的にデバイスを登録
-      const isWifiConnected = wifiEntries.some(w => w.isConnected);
-      if (isWifiConnected && deviceUuid && deviceName && staticIp) {
-        const connectedSsid = wifiEntries.find(w => w.isConnected)?.ssid || '';
-        addDevice({
-          uuid: deviceUuid,
-          name: deviceName,
-          ssid: connectedSsid,
-          lastConnected: new Date().toISOString(),
-          ipAddress: staticIp,
-          gateway: gateway,
-          subnet: subnet,
-        });
-        console.log('[REFRESH] Device list refreshed and current device added');
-        setWifiMessage(t('device.deviceListRefreshed', { defaultValue: 'デバイスリストを更新しました' }));
-      } else {
-        setWifiMessage(t('device.noDeviceToRegister', { defaultValue: 'WiFi接続されていないため、デバイスは登録されませんでした' }));
-      }
-    } catch (error) {
-      console.error('Refresh devices error:', error);
-      setWifiMessage(t('device.refreshFailed', { defaultValue: 'デバイスリスト更新に失敗しました' }));
-    } finally {
-      setIsLoadingWifi(false);
-    }
-  };
-
   // WiFiを削除
   const handleRemoveWiFi = async (ssid: string) => {
     if (!confirm(t('device.confirmDeleteWifi', { ssid }))) {
@@ -843,25 +795,6 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
                         💡 再起動時にリセットされ、DHCPで新規取得したIPが自動的に固定化されます
                       </p>
                     </div>
-                  </div>
-                )}
-
-                {/* デバイスリスト再読み込みボタン */}
-                {staticIp && (
-                  <div className="pt-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleRefreshDevices}
-                      disabled={isLoadingWifi || status !== 'connected'}
-                      className="w-full text-xs"
-                    >
-                      デバイスリストを再読み込み
-                    </Button>
-                    <p className="text-xs text-[#8B949E] mt-1.5">
-                      ※ localStorageのデバイスリストをクリアし、現在接続中のデバイスのみを再登録します
-                    </p>
                   </div>
                 )}
               </div>
