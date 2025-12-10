@@ -75,10 +75,10 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       // デバイス名を先に読み込む（ブートログから取得するため）
       // その後WiFi一覧を取得（コマンド送信が必要）
       const timer = setTimeout(async () => {
-        // デバイス名はブートログにあるので、LIST_WIFI送信前に取得
+        // ESP32の起動完了を待つ（シリアル接続でリセットされるため）
         await loadDeviceName();
         await loadWiFiList();
-      }, 500);
+      }, 3000);
       return () => clearTimeout(timer);
     } else if (status !== 'connected') {
       setWifiList([]);
@@ -191,8 +191,8 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
   };
 
   // デバイス名を読み込み（コンソール出力からパース）
-  const loadDeviceName = async () => {
-    if (status !== 'connected') return;
+  const loadDeviceName = async (): Promise<{ uuid: string; name: string; ip: string; gateway: string; subnet: string; ssid: string } | null> => {
+    if (status !== 'connected') return null;
 
     setIsLoadingDeviceName(true);
 
@@ -200,6 +200,8 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       // リトライ付きでデバイス名とUUIDを検索（ブート完了を待つため）
       let foundName = '';
       let foundUuid = '';
+      let foundSsid = '';
+
       for (let i = 0; i < 5; i++) {
         const currentOutput = useSerialStore.getState().output;
 
@@ -234,6 +236,15 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
             if (match && match[1].trim()) {
               foundName = match[1].trim();
             }
+          }
+        }
+
+        // "SSID: xxx" を探す（WiFi接続情報から）
+        const ssidLine = reversedOutput.find(line => line.includes('SSID:') && !line.includes('Target SSID:'));
+        if (ssidLine) {
+          const match = ssidLine.match(/SSID:\s*(.+)/i);
+          if (match && match[1].trim()) {
+            foundSsid = match[1].trim();
           }
         }
 
@@ -279,10 +290,42 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
           setStaticIp(foundStaticIp);
           setGateway(foundGateway);
           setSubnet(foundSubnet);
+
+          // 固定IP情報があり、デバイス情報も揃っていればデバイスを登録
+          if (foundUuid && foundName && foundSsid) {
+            console.log('[loadDeviceName] Registering device to store:', {
+              uuid: foundUuid,
+              name: foundName,
+              ssid: foundSsid,
+              ipAddress: foundStaticIp,
+            });
+
+            addDevice({
+              uuid: foundUuid,
+              name: foundName,
+              ssid: foundSsid,
+              lastConnected: new Date().toISOString(),
+              ipAddress: foundStaticIp,
+              gateway: foundGateway,
+              subnet: foundSubnet,
+            });
+
+            return {
+              uuid: foundUuid,
+              name: foundName,
+              ip: foundStaticIp,
+              gateway: foundGateway,
+              subnet: foundSubnet,
+              ssid: foundSsid,
+            };
+          }
         }
       }
+
+      return null;
     } catch (error) {
       console.error('Load device name error:', error);
+      return null;
     } finally {
       setIsLoadingDeviceName(false);
     }
