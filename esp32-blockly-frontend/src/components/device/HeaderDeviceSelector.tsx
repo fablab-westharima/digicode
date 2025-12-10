@@ -124,30 +124,52 @@ export function HeaderDeviceSelector() {
         wifiDevices.map(async (device) => {
           console.log(`[SEARCH] Checking device: ${device.name} (${device.ipAddress})`);
 
-          try {
-            // デバイスのHTTPサーバーにアクセス
-            // タイムアウトを5秒に設定（ESP32起動後のWiFi接続待ち時間を考慮）
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000);
+          // リトライロジック: 最大3回試行、1回でも成功すればオンライン
+          const maxRetries = 3;
+          const retryDelay = 2000; // 2秒
+          let isOnline = false;
 
-            const response = await fetch(`http://${device.ipAddress}/`, {
-              signal: controller.signal,
-              mode: 'no-cors', // CORSエラーを回避
-            });
+          for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+              console.log(`[SEARCH] Attempt ${attempt}/${maxRetries} for ${device.name}`);
 
-            clearTimeout(timeoutId);
+              // デバイスのHTTPサーバーにアクセス
+              // タイムアウトを10秒に設定（ESP32起動後のWiFi接続待ち時間を考慮）
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-            // no-corsモードではresponse.okが常にfalseなので、エラーがなければオンラインと判定
-            console.log(`[SEARCH] Device ${device.name} is ONLINE`);
+              const response = await fetch(`http://${device.ipAddress}/`, {
+                signal: controller.signal,
+                mode: 'no-cors', // CORSエラーを回避
+              });
 
-            // デバイス情報を更新（オンライン状態を記録）
-            updateDevice(device.uuid, {
-              lastConnected: new Date().toISOString(),
-            });
+              clearTimeout(timeoutId);
 
+              // no-corsモードではresponse.okが常にfalseなので、エラーがなければオンラインと判定
+              console.log(`[SEARCH] Device ${device.name} is ONLINE (attempt ${attempt})`);
+
+              // デバイス情報を更新（オンライン状態を記録）
+              updateDevice(device.uuid, {
+                lastConnected: new Date().toISOString(),
+              });
+
+              isOnline = true;
+              break; // 成功したらリトライ終了
+            } catch (error) {
+              console.log(`[SEARCH] Attempt ${attempt}/${maxRetries} failed for ${device.name}:`, error);
+
+              // 最後の試行でなければ待機してリトライ
+              if (attempt < maxRetries) {
+                console.log(`[SEARCH] Waiting ${retryDelay}ms before retry...`);
+                await new Promise(resolve => setTimeout(resolve, retryDelay));
+              }
+            }
+          }
+
+          if (isOnline) {
             return { device, isOnline: true };
-          } catch (error) {
-            console.log(`[SEARCH] Device ${device.name} is OFFLINE:`, error);
+          } else {
+            console.log(`[SEARCH] Device ${device.name} is OFFLINE after ${maxRetries} attempts`);
             return { device, isOnline: false };
           }
         })
