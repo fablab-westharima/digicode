@@ -70,6 +70,58 @@ export function DeviceSetupPage() {
     }
   };
 
+  // シリアル出力の待機（タイムアウト付き）
+  const waitForResponse = async (keyword: string, startIndex: number, timeout: number): Promise<boolean> => {
+    const startTime = Date.now();
+    while (Date.now() - startTime < timeout) {
+      const currentOutput = useSerialStore.getState().output;
+      if (currentOutput.slice(startIndex).some(line => line.includes(keyword))) {
+        return true;
+      }
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    return false;
+  };
+
+  // 自動的にDHCP IPを固定化
+  const autoSetStaticIp = async () => {
+    if (status !== 'connected') return;
+
+    try {
+      const startIndex = useSerialStore.getState().output.length;
+
+      // USE_CURRENT_IPコマンドでDHCPで取得したIPを固定化
+      await send('USE_CURRENT_IP\n');
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // GET_CONFIGで固定IP情報を取得
+      await send('GET_CONFIG\n');
+      const gotResponse = await waitForResponse('OK:UUID=', startIndex, 5000);
+
+      if (!gotResponse) {
+        console.warn('[DeviceSetup] GET_CONFIG response timeout');
+        return;
+      }
+
+      const newOutput = useSerialStore.getState().output.slice(startIndex);
+      let foundIp = '';
+
+      for (const line of newOutput) {
+        if (line.includes('OK:STATIC_IP=')) {
+          foundIp = line.split('OK:STATIC_IP=')[1]?.trim() || '';
+          break;
+        }
+      }
+
+      if (foundIp) {
+        console.log('[DeviceSetup] Static IP configured:', foundIp);
+        setWifiMessage(`WiFiを追加し、IPアドレスを固定化しました (${foundIp})`);
+      }
+    } catch (error) {
+      console.error('[DeviceSetup] Auto set static IP error:', error);
+    }
+  };
+
   // WiFi一覧を読み込み
   const loadWiFiList = async () => {
     if (status !== 'connected') return;
@@ -119,7 +171,7 @@ export function DeviceSetupPage() {
     }
 
     setIsLoadingWifi(true);
-    setWifiMessage('');
+    setWifiMessage('WiFiを追加中...');
 
     try {
       await send(`ADD_WIFI:${newWifiSsid},${newWifiPassword}\n`);
@@ -127,10 +179,21 @@ export function DeviceSetupPage() {
 
       setNewWifiSsid('');
       setNewWifiPassword('');
-      setWifiMessage('WiFiを追加しました！');
+      setWifiMessage('WiFiを追加しました。再起動後に接続します...');
 
-      // 一覧を再読み込み
+      // WiFi一覧を再読み込み
       await loadWiFiList();
+
+      // WiFi接続済みの場合は自動的にIPを固定化
+      const currentWifiList = await loadWiFiList();
+      const isConnected = currentWifiList.some(w => w.isConnected);
+
+      if (isConnected) {
+        setWifiMessage('WiFi接続成功。DHCPで取得したIPを固定化中...');
+        await autoSetStaticIp();
+      } else {
+        setWifiMessage('WiFiを追加しました。ESP32を再起動して接続してください。');
+      }
     } catch (error) {
       console.error('Add WiFi error:', error);
       setWifiMessage('WiFiの追加に失敗しました。');
