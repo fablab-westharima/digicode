@@ -76,9 +76,10 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       // その後WiFi一覧を取得（コマンド送信が必要）
       const timer = setTimeout(async () => {
         // ESP32の起動完了を待つ（シリアル接続でリセットされるため）
+        // WiFi接続・固定IP設定完了まで時間がかかるので余裕を持たせる
         await loadDeviceName();
         await loadWiFiList();
-      }, 3000);
+      }, 5000);
       return () => clearTimeout(timer);
     } else if (status !== 'connected') {
       setWifiList([]);
