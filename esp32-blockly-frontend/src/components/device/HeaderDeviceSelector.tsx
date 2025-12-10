@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Wifi, ChevronDown, Usb, Bluetooth } from 'lucide-react';
+import { Wifi, ChevronDown, Usb, Bluetooth, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -25,7 +25,8 @@ interface SelectedDevice {
 
 export function HeaderDeviceSelector() {
   const { t } = useTranslation();
-  const { devices: wifiDevices } = useDeviceStore();
+  const { devices: wifiDevices, updateDevice } = useDeviceStore();
+  const [isSearching, setIsSearching] = useState(false);
   const {
     status: wifiStatus,
     deviceName: wifiDeviceName,
@@ -102,6 +103,78 @@ export function HeaderDeviceSelector() {
     }
     await connectSerial();
     setSelectedConnectionType('usb');
+  };
+
+  // デバイスを検索（localStorageのデバイスのオンライン状態を確認）
+  const handleSearchDevices = async () => {
+    if (wifiDevices.length === 0) {
+      alert('検索するデバイスがありません。WiFi設定からデバイスを登録してください。');
+      return;
+    }
+
+    setIsSearching(true);
+    console.log('[SEARCH] Starting device search...');
+
+    try {
+      const results = await Promise.allSettled(
+        wifiDevices.map(async (device) => {
+          console.log(`[SEARCH] Checking device: ${device.name} (${device.ipAddress})`);
+
+          try {
+            // デバイスのHTTPサーバーにアクセス
+            // タイムアウトを短く設定（2秒）
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+            const response = await fetch(`http://${device.ipAddress}/`, {
+              signal: controller.signal,
+              mode: 'no-cors', // CORSエラーを回避
+            });
+
+            clearTimeout(timeoutId);
+
+            // no-corsモードではresponse.okが常にfalseなので、エラーがなければオンラインと判定
+            console.log(`[SEARCH] Device ${device.name} is ONLINE`);
+
+            // デバイス情報を更新（オンライン状態を記録）
+            updateDevice(device.uuid, {
+              lastConnected: new Date().toISOString(),
+            });
+
+            return { device, isOnline: true };
+          } catch (error) {
+            console.log(`[SEARCH] Device ${device.name} is OFFLINE:`, error);
+            return { device, isOnline: false };
+          }
+        })
+      );
+
+      // 結果を集計
+      const onlineDevices = results.filter(
+        (result) => result.status === 'fulfilled' && result.value.isOnline
+      );
+      const offlineDevices = results.filter(
+        (result) => result.status === 'fulfilled' && !result.value.isOnline
+      );
+
+      console.log(`[SEARCH] Search complete: ${onlineDevices.length} online, ${offlineDevices.length} offline`);
+
+      // 結果を表示
+      if (onlineDevices.length > 0) {
+        const onlineNames = onlineDevices
+          .map((r) => r.status === 'fulfilled' ? r.value.device.name : '')
+          .filter(Boolean)
+          .join(', ');
+        alert(`オンラインデバイス (${onlineDevices.length}台):\n${onlineNames}`);
+      } else {
+        alert('オンラインのデバイスが見つかりませんでした。デバイスが起動しているか、IPアドレスが正しいか確認してください。');
+      }
+    } catch (error) {
+      console.error('[SEARCH] Device search error:', error);
+      alert('デバイス検索中にエラーが発生しました');
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   // 接続アイコンを取得
@@ -200,6 +273,17 @@ export function HeaderDeviceSelector() {
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleDeselect} className="text-red-600">
               {t('editor.deviceSelector.deselect')}
+            </DropdownMenuItem>
+          </>
+        )}
+
+        {/* デバイス検索 */}
+        {wifiDevices.length > 0 && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleSearchDevices} disabled={isSearching} className="text-green-600">
+              <Search className="w-3.5 h-3.5 mr-2" />
+              {isSearching ? 'デバイス検索中...' : 'デバイス検索'}
             </DropdownMenuItem>
           </>
         )}
