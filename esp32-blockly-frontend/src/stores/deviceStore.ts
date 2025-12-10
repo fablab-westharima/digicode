@@ -41,6 +41,16 @@ export const useDeviceStore = create<DeviceState>()(
             console.log('[DeviceStore] Updated existing device at index', existingIndex, ':', newDevices[existingIndex]);
             return { devices: newDevices };
           }
+
+          // 同じ名前で異なるUUIDのデバイスがあれば削除（UUID変更時の重複を防ぐ）
+          const duplicateNameDevices = state.devices.filter(d => d.name === device.name && d.uuid !== device.uuid);
+          if (duplicateNameDevices.length > 0) {
+            console.log('[DeviceStore] Removing duplicate devices with same name:', duplicateNameDevices.map(d => d.uuid));
+            const devicesWithoutDuplicates = state.devices.filter(d => d.name !== device.name || d.uuid === device.uuid);
+            console.log('[DeviceStore] Added new device, removed duplicates. Total devices:', devicesWithoutDuplicates.length + 1);
+            return { devices: [...devicesWithoutDuplicates, device] };
+          }
+
           console.log('[DeviceStore] Added new device. Total devices:', state.devices.length + 1);
           return { devices: [...state.devices, device] };
         });

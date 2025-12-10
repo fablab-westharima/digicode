@@ -28,7 +28,7 @@ interface WiFiEntry {
 export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
   const { t } = useTranslation();
   const { status, isSupported, connect, disconnect, send, output, clearOutput, resetESP32 } = useSerialStore();
-  const { addDevice } = useDeviceStore();
+  const { addDevice, removeDevice } = useDeviceStore();
 
   const [showConsole, setShowConsole] = useState(true);
   const consoleRef = useRef<HTMLDivElement>(null);
@@ -271,6 +271,10 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
         console.log(`[UUID] Detected default UUID "robot001", generating new UUID: ${newUuid}`);
 
         try {
+          // 古いrobot001デバイスがdeviceStoreに存在すれば削除
+          removeDevice('robot001');
+          console.log(`[UUID] Removed old robot001 device from store`);
+
           await send(`SET_UUID:${newUuid}\n`);
           await new Promise(resolve => setTimeout(resolve, 200));
 
@@ -504,7 +508,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
 
       // リセット後、ESP32の再起動を待ってからデバイス情報を再読み込み
       setWifiMessage(t('device.waitingForRestart'));
-      await new Promise(resolve => setTimeout(resolve, 5000)); // 5秒待つ
+      await new Promise(resolve => setTimeout(resolve, 10000)); // 10秒待つ（WiFi接続完了まで）
 
       // デバイス名とWiFi一覧を再読み込みしてUIを更新
       setWifiMessage(t('device.updatingInfo'));
