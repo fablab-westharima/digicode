@@ -108,6 +108,16 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
     return false;
   };
 
+  // ランダムな8桁英数字UUIDを生成
+  const generateRandomUuid = (): string => {
+    const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    let uuid = '';
+    for (let i = 0; i < 8; i++) {
+      uuid += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    return uuid;
+  };
+
   // WiFi一覧を読み込み
   const loadWiFiList = async (): Promise<WiFiEntry[]> => {
     if (status !== 'connected') return [];
@@ -255,9 +265,33 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
 
-      if (foundUuid) {
+      // UUIDが "robot001" の場合は新しいランダムUUIDを生成して送信
+      if (foundUuid === 'robot001') {
+        const newUuid = generateRandomUuid();
+        console.log(`[UUID] Detected default UUID "robot001", generating new UUID: ${newUuid}`);
+
+        try {
+          await send(`SET_UUID:${newUuid}\n`);
+          await new Promise(resolve => setTimeout(resolve, 200));
+
+          // 送信後、新しいUUIDを状態に反映
+          foundUuid = newUuid;
+          setDeviceUuid(newUuid);
+
+          // SAVE_CONFIGを送信して永続化
+          await send('SAVE_CONFIG\n');
+          await new Promise(resolve => setTimeout(resolve, 200));
+
+          console.log(`[UUID] Successfully set new UUID: ${newUuid}`);
+        } catch (error) {
+          console.error('[UUID] Failed to set new UUID:', error);
+          // エラーでも既存のUUIDは設定しておく
+          setDeviceUuid(foundUuid);
+        }
+      } else if (foundUuid) {
         setDeviceUuid(foundUuid);
       }
+
       if (foundName) {
         setDeviceName(foundName);
         setOriginalDeviceName(foundName);
