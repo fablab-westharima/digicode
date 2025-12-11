@@ -9,7 +9,6 @@ import {
   Code,
   SlidersHorizontal,
   Cpu,
-  Bluetooth,
   Trash2,
   Usb
 } from 'lucide-react';
@@ -19,7 +18,6 @@ interface SidebarProps {
   onProjectOpen?: () => void;
   onFirmwareWrite?: () => void;
   onApSetup?: () => void;
-  onBluetoothSetup?: () => void;
   onUsbPortRelease?: () => void;
   onPinAssignment?: () => void;
   onCompileServerSettings?: () => void;
@@ -41,7 +39,6 @@ export function Sidebar({
   onProjectOpen,
   onFirmwareWrite,
   onApSetup,
-  onBluetoothSetup,
   onUsbPortRelease,
   onPinAssignment,
   onCompileServerSettings,
@@ -83,13 +80,6 @@ export function Sidebar({
       label: t('sidebar.wirelessLan', { defaultValue: '無線LAN接続' }),
       icon: <Radio className="w-4 h-4" />,
       action: onApSetup || (() => {}),
-      category: 'settings'
-    },
-    {
-      id: 'bluetooth-setup',
-      label: t('sidebar.bluetoothSetup', { defaultValue: 'Bluetooth接続' }),
-      icon: <Bluetooth className="w-4 h-4" />,
-      action: onBluetoothSetup || (() => {}),
       category: 'settings'
     },
     {

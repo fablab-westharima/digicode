@@ -303,19 +303,20 @@ export function HeaderDeviceSelector() {
       </DropdownMenuContent>
     </DropdownMenu>
 
-      {/* デバイス検索ボタン（常時表示） */}
-      {wifiDevices.length > 0 && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleSearchDevices}
-          disabled={isSearching}
-          className="text-xs px-2 text-green-600 hover:text-green-700 hover:bg-green-50"
-          title="デバイス検索"
-        >
-          <Search className="w-3.5 h-3.5" />
-        </Button>
-      )}
-    </div>
+    {/* デバイス検索ボタン（常時表示） */}
+    {wifiDevices.length > 0 && (
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleSearchDevices}
+        disabled={isSearching}
+        className="text-xs px-2 text-green-600 hover:text-green-700 hover:bg-green-50"
+        title="デバイス検索"
+      >
+        <Search className="w-3.5 h-3.5" />
+        <span className="ml-1">デバイス検索</span>
+      </Button>
+    )}
+  </div>
   );
 }

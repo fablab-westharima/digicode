@@ -27,9 +27,6 @@ type FirmwarePackage = Blob | {
 
 export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstallerDialogProps) {
   const { t } = useTranslation();
-  const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
-  const [firmwareType, setFirmwareType] = useState<'arduino' | 'micropython'>('arduino');
-  const [espToolsReady, setEspToolsReady] = useState(false);
   const [isErasing, setIsErasing] = useState(false);
   const [eraseProgress, setEraseProgress] = useState<FlashProgress | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -43,20 +40,8 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
   const [needsManualReset, setNeedsManualReset] = useState(false);
   const [connectionAttempts, setConnectionAttempts] = useState(0);
 
-  // callback ref - DOM要素がマウントされたら呼ばれる
-  const containerRef = (node: HTMLDivElement | null) => {
-    if (node) {
-      setContainerElement(node);
-    }
-  };
-
   // ファームウェアをコンパイル
   const compileFirmware = async () => {
-    if (firmwareType !== 'arduino') {
-      // MicroPythonは静的ファイルを使用
-      return;
-    }
-
     setIsCompiling(true);
     setCompileError(null);
     addLog('クラウドから最新ファームウェアをコンパイル中...');
@@ -193,14 +178,6 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
 
   // 自動コンパイルは削除 - ユーザーが明示的にビルドボタンをクリックする必要がある
 
-  // esp-web-toolsを事前ロード (MicroPython用のみ)
-  useEffect(() => {
-    if (!open || firmwareType !== 'micropython') return;
-    import('esp-web-tools').then(() => {
-      setEspToolsReady(true);
-    });
-  }, [open, firmwareType]);
-
   // ダイアログが開いた時にneedsManualResetをリセット
   useEffect(() => {
     if (open) {
@@ -216,59 +193,6 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
       setLogs([]);
     }
   }, [open, isConnected]);
-
-  // esp-web-tools ボタン生成 (MicroPython用のみ)
-  useEffect(() => {
-    if (firmwareType !== 'micropython' || !espToolsReady || !containerElement || !open) return;
-
-    const container = containerElement;
-
-    // カスタム要素を動的に作成
-    const installButton = document.createElement('esp-web-install-button');
-    const manifestUrl = '/firmware/manifest-micropython.json';
-    installButton.setAttribute('manifest', manifestUrl);
-
-    // アクティベートボタン
-    const activateButton = document.createElement('button');
-    activateButton.setAttribute('slot', 'activate');
-    activateButton.className = 'bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg font-semibold rounded-lg transition-colors';
-    activateButton.textContent = 'INSTALL';
-    installButton.appendChild(activateButton);
-
-    // 非サポートメッセージ
-    const unsupportedSpan = document.createElement('span');
-    unsupportedSpan.setAttribute('slot', 'unsupported');
-    unsupportedSpan.innerHTML = `
-      <div class="bg-[#3d2626] border border-[#da3633] p-4 rounded-lg text-center">
-        <p class="text-[#f85149] text-sm">
-          お使いのブラウザはサポートされていません。<br/>
-          Chrome または Edge をお使いください。
-        </p>
-      </div>
-    `;
-    installButton.appendChild(unsupportedSpan);
-
-    // 許可されていないメッセージ
-    const notAllowedSpan = document.createElement('span');
-    notAllowedSpan.setAttribute('slot', 'not-allowed');
-    notAllowedSpan.innerHTML = `
-      <div class="bg-[#3d2626] border border-[#da3633] p-4 rounded-lg text-center">
-        <p class="text-[#f85149] text-sm">
-          HTTPSまたはlocalhostでのみ動作します。
-        </p>
-      </div>
-    `;
-    installButton.appendChild(notAllowedSpan);
-
-    // イベントリスナー
-    installButton.addEventListener('state-changed', (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      console.log('ESP Web Tools state:', detail);
-    });
-
-    container.innerHTML = '';
-    container.appendChild(installButton);
-  }, [espToolsReady, containerElement, firmwareType, open]);
 
   // ログ追加
   const addLog = (message: string) => {
@@ -390,21 +314,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
             </h3>
             <div className="space-y-2">
               {/* Arduino C++ */}
-              <label
-                className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                  firmwareType === 'arduino'
-                    ? 'border-[#58A6F9] bg-[#0D1117]'
-                    : 'border-[#2E333D] bg-[#0D1117] hover:border-[#3E434D]'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="firmware"
-                  value="arduino"
-                  checked={firmwareType === 'arduino'}
-                  onChange={(e) => setFirmwareType(e.target.value as 'arduino')}
-                  className="mt-1"
-                />
+              <div className="flex items-start gap-3 p-4 rounded-lg border-2 border-[#58A6F9] bg-[#0D1117]">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-bold">🏆</span>
@@ -412,36 +322,11 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                   </div>
                   <p className="text-xs text-[#8B949E] mt-1">{t('firmware.arduinoDesc')}</p>
                 </div>
-              </label>
-
-              {/* MicroPython */}
-              <label
-                className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                  firmwareType === 'micropython'
-                    ? 'border-[#58A6F9] bg-[#0D1117]'
-                    : 'border-[#2E333D] bg-[#0D1117] hover:border-[#3E434D]'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="firmware"
-                  value="micropython"
-                  checked={firmwareType === 'micropython'}
-                  onChange={(e) => setFirmwareType(e.target.value as 'micropython')}
-                  className="mt-1"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold">📚</span>
-                    <p className="font-semibold text-[#E6EDF3]">{t('firmware.micropythonTitle')}</p>
-                  </div>
-                  <p className="text-xs text-[#8B949E] mt-1">{t('firmware.micropythonDesc')}</p>
-                </div>
-              </label>
+              </div>
             </div>
 
-            {/* ビルド開始ボタン（Arduino C++の場合のみ） */}
-            {firmwareType === 'arduino' && !isCompiling && !compiledFirmwareBlob && !compileError && (
+            {/* ビルド開始ボタン */}
+            {!isCompiling && !compiledFirmwareBlob && !compileError && (
               <Button
                 onClick={compileFirmware}
                 className="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-semibold py-3 mt-3"
@@ -451,7 +336,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
             )}
 
             {/* ビルド完了後の再ビルドボタン */}
-            {firmwareType === 'arduino' && compiledFirmwareBlob && !isCompiling && (
+            {compiledFirmwareBlob && !isCompiling && (
               <Button
                 onClick={() => {
                   setCompiledFirmwareBlob(null);
@@ -485,7 +370,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
             )}
 
             {/* コンパイルエラー表示 */}
-            {compileError && firmwareType === 'arduino' && (
+            {compileError && (
               <div className="bg-[#3d2626] border border-[#da3633] p-4 rounded-lg">
                 <p className="text-[#f85149] text-sm">
                   <strong>コンパイルエラー:</strong><br />
@@ -495,7 +380,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
             )}
 
             {/* コンパイル中の表示 */}
-            {isCompiling && firmwareType === 'arduino' && (
+            {isCompiling && (
               <div className="flex flex-col items-center gap-3 p-4 bg-[#0D1117] rounded-lg border-2 border-[#58A6F9]">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#58A6F9]"></div>
                 <p className="text-[#58A6F9] text-sm text-center">
@@ -507,8 +392,8 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
               </div>
             )}
 
-            {/* Arduino: カスタムINSTALLボタン */}
-            {firmwareType === 'arduino' && !isCompiling && !compileError && compiledFirmwareBlob && (
+            {/* カスタムINSTALLボタン */}
+            {!isCompiling && !compileError && compiledFirmwareBlob && (
               <div className="flex flex-col items-center gap-4 p-4 bg-[#0D1117] rounded-lg border-2 border-dashed border-[#2E333D]">
                 {/* コンパイル完了メッセージ */}
                 <div className="w-full p-3 bg-[#1a472a] border border-[#2ea043] rounded-lg">
@@ -644,20 +529,10 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
               </div>
             )}
 
-            {/* MicroPython: esp-web-toolsのインストールボタン */}
-            {firmwareType === 'micropython' && isSupported && (
-              <div className="flex flex-col items-center gap-4 p-4 bg-[#0D1117] rounded-lg border-2 border-dashed border-[#2E333D]" ref={containerRef}>
-                <div className="text-[#8B949E]">{t('common.loading')}</div>
-              </div>
-            )}
-
             {/* 説明テキスト */}
-            {!isCompiling && !compileError && (firmwareType === 'micropython' || compiledFirmwareBlob) && (
+            {!isCompiling && !compileError && compiledFirmwareBlob && (
               <p className="text-xs text-[#8B949E] text-center">
-                {firmwareType === 'arduino'
-                  ? 'INSTALLボタンを押してESP32にUSB接続し、最新のv1.4.0ファームウェアを書き込みます。'
-                  : t('firmware.step3Desc')
-                }
+                INSTALLボタンを押してESP32にUSB接続し、最新のv1.4.0ファームウェアを書き込みます。
               </p>
             )}
           </div>
