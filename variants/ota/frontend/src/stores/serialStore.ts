@@ -15,6 +15,7 @@ interface SerialState {
   clearOutput: () => void;
   setBaudRate: (baudRate: number) => void;
   resetESP32: () => Promise<void>;
+  forceReleaseAllPorts: () => Promise<number>;
 }
 
 const MAX_OUTPUT_LINES = 1000;
@@ -153,5 +154,15 @@ export const useSerialStore = create<SerialState>((set, get) => ({
     set((state) => ({
       output: [...state.output, '[ESP32をリセットしました]'],
     }));
+  },
+
+  forceReleaseAllPorts: async () => {
+    try {
+      const releasedCount = await serialService.forceReleaseAllPorts();
+      return releasedCount;
+    } catch (error) {
+      console.error('Failed to release USB ports:', error);
+      throw error;
+    }
   },
 }));

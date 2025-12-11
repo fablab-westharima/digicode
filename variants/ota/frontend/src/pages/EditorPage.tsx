@@ -65,7 +65,7 @@ export function EditorPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { currentProject, loadProject, setCurrentProject } = useProjectStore();
-  const { status: serialStatus, connect: connectSerial, disconnect: disconnectSerial } = useSerialStore();
+  const { status: serialStatus, connect: connectSerial, disconnect: disconnectSerial, forceReleaseAllPorts } = useSerialStore();
   const { status: wifiStatus, getDeviceUrl, setHost, setDeviceName, connect: connectWifi } = useWifiStore();
   const { addDevice } = useDeviceStore();
   const { getSelectedBoard } = useBoardStore();
@@ -245,6 +245,21 @@ export function EditorPage() {
   // ファームウェア初期書き込みダイアログを開く
   const handleFirmwareWrite = () => {
     setFirmwareInstallerDialogOpen(true);
+  };
+
+  // USBポート解放
+  const handleUsbPortRelease = async () => {
+    try {
+      const releasedCount = await forceReleaseAllPorts();
+      if (releasedCount > 0) {
+        alert(`${releasedCount}個のUSBポートを解放しました。\n\n接続がうまくいかない場合は、USBケーブルを抜き差ししてから再度接続してください。`);
+      } else {
+        alert('解放する必要のあるUSBポートはありませんでした。\n\n接続がうまくいかない場合は、USBケーブルを抜き差ししてから再度接続してください。');
+      }
+    } catch (error) {
+      console.error('USBポート解放エラー:', error);
+      alert('USBポートの解放中にエラーが発生しました。\n\nブラウザでWeb Serial APIが有効になっているか確認してください。');
+    }
   };
 
   // プロジェクト選択
@@ -1041,11 +1056,13 @@ export function EditorPage() {
             onProjectOpen={handleOpen}
             onFirmwareWrite={handleFirmwareWrite}
             onApSetup={() => setWifiSetupDialogOpen(true)}
+            onUsbPortRelease={handleUsbPortRelease}
             onPinAssignment={() => setPinSettingsDialogOpen(true)}
             onCompileServerSettings={() => setCompileServerSettingsDialogOpen(true)}
             onDocs={() => window.open('/docs', '_blank')}
             onCodePreview={() => setCodePreviewDialogOpen(true)}
             onPidTuning={() => setPidTuningDialogOpen(true)}
+            onUsbDriver={() => window.open('https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers', '_blank')}
           />
 
           {/* メインコンテンツエリア (Blocklyワークスペース) */}

@@ -305,6 +305,51 @@ class SerialService {
       productId: info.usbProductId,
     };
   }
+
+  /**
+   * 全てのUSBシリアルポートを強制的に解放する
+   * Windows環境でポートがロックされたままになる問題を解決
+   */
+  async forceReleaseAllPorts(): Promise<number> {
+    if (!this.isSupported) {
+      throw new Error('Web Serial APIはこのブラウザでサポートされていません');
+    }
+
+    // 現在の接続を切断
+    await this.disconnect();
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const serial = (navigator as any).serial;
+
+      // 以前に接続したことがある全てのポートを取得
+      const ports = await serial.getPorts() as SerialPortType[];
+
+      console.log(`[USBポート解放] ${ports.length}個のポートが見つかりました`);
+
+      // 各ポートを強制的に閉じる
+      let releasedCount = 0;
+      for (const port of ports) {
+        try {
+          // ポートが既に開いているかチェック（readable/writableがnullでない場合）
+          if (port.readable || port.writable) {
+            console.log('[USBポート解放] ポートを閉じています...', port.getInfo());
+            await port.close();
+            releasedCount++;
+          }
+        } catch (error) {
+          // 既に閉じられているポートのエラーは無視
+          console.debug('[USBポート解放] ポートクローズエラー（既に閉じている可能性）:', error);
+        }
+      }
+
+      console.log(`[USBポート解放] ${releasedCount}個のポートを解放しました`);
+      return releasedCount;
+    } catch (error) {
+      console.error('[USBポート解放] エラー:', error);
+      throw error;
+    }
+  }
 }
 
 // シングルトンインスタンス

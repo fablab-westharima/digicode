@@ -196,8 +196,6 @@ export function HeaderDeviceSelector() {
           </Button>
         </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-52">
-        <div className="px-2 py-1.5 text-xs text-gray-500">{t('editor.deviceSelector.writeTargetDevice')}</div>
-
         {/* WiFiデバイス */}
         {wifiDevices.length > 0 ? (
           <>
