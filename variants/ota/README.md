@@ -78,6 +78,20 @@ npm run build
 **UI改善要望:**
 - デバイス検索ボタンの常時表示化（`prompt/logs/ui_feedback/20251211_device_search_button.md`）
 
+**Phase 1.5b完了（2025-12-11）:**
+- ✅ esp32-blockly-frontend/ 削除完了（189ファイル削除、423MB削減）
+- ✅ 最終動作確認（ログイン成功、全機能正常）
+- ✅ variants/ota/frontend/ のみが稼働中
+
+**ディレクトリ構造（Phase 1.5b完了後）:**
+```
+DigiCode/
+├── esp32-blockly-backend/     # バックエンド
+└── variants/
+    └── ota/
+        └── frontend/           # OTA版フロントエンド（唯一のフロントエンド）
+```
+
 ---
 
 ## 特徴
@@ -222,4 +236,4 @@ npm install --legacy-peer-deps
 
 **作成日:** 2025-12-11
 **最終更新:** 2025-12-11
-**状態:** Phase 1.4b完了、Phase 1.5準備中
+**状態:** Phase 1.5b完了、既存システム削除済み
