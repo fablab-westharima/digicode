@@ -1141,7 +1141,10 @@ export function EditorPage() {
 
       {/* コンパイルログダイアログ */}
       <Dialog open={compileDialogOpen} onOpenChange={(open) => !isCompiling && setCompileDialogOpen(open)}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent
+          className="sm:max-w-lg"
+          onInteractOutside={(e) => e.preventDefault()}
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {isCompiling && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -1182,7 +1185,10 @@ export function EditorPage() {
 
       {/* OTA更新進捗ダイアログ */}
       <Dialog open={flashDialogOpen} onOpenChange={setFlashDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent
+          className="sm:max-w-lg"
+          onInteractOutside={(e) => e.preventDefault()}
+        >
           <DialogHeader>
             <DialogTitle>
               {t('editor.flash.writingToEsp32')}

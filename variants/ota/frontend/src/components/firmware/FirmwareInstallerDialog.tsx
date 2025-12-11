@@ -295,7 +295,10 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#161B22] border-[#2E333D]">
+      <DialogContent
+        className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#161B22] border-[#2E333D]"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle className="text-[#58D5D5]">
             {t('firmware.installerTitle')}
