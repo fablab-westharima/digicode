@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Wifi, ChevronDown, Usb, Search } from 'lucide-react';
+import { Wifi, ChevronDown, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,16 +10,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useDeviceStore } from '@/stores/deviceStore';
 import { useWifiStore } from '@/stores/wifiStore';
-import { useSerialStore } from '@/stores/serialStore';
 import { uuidToMdns } from '@/lib/uuid';
 import { useTranslation } from 'react-i18next';
 
-type ConnectionType = 'usb' | 'wifi';
-
 interface SelectedDevice {
-  type: ConnectionType;
   name: string;
-  id: string;  // USBの場合は'usb'、WiFiの場合はuuid
+  id: string;  // WiFiデバイスのuuidまたはホスト
 }
 
 export function HeaderDeviceSelector() {
@@ -35,10 +31,6 @@ export function HeaderDeviceSelector() {
     connect: connectWifi,
     disconnect: disconnectWifi
   } = useWifiStore();
-  const { status: serialStatus, connect: connectSerial, isSupported: isSerialSupported } = useSerialStore();
-
-  // ユーザーが明示的に選択した接続タイプ
-  const [selectedConnectionType, setSelectedConnectionType] = useState<ConnectionType | null>(null);
 
   // デバイスのオンライン状態を保持（デバイス検索結果）
   // { uuid: true/false } - true: オンライン, false: オフライン, undefined: 未検索
@@ -46,21 +38,8 @@ export function HeaderDeviceSelector() {
 
   // 現在選択中のデバイスを判定
   const getSelectedDevice = (): SelectedDevice | null => {
-    // ユーザーが明示的に選択した接続タイプがあれば、それを優先
-    if (selectedConnectionType === 'wifi' && wifiStatus === 'connected' && wifiDeviceName) {
-      return { type: 'wifi', name: wifiDeviceName, id: wifiHost };
-    }
-    if (selectedConnectionType === 'usb' && serialStatus === 'connected') {
-      return { type: 'usb', name: t('editor.deviceSelector.usbConnection'), id: 'usb' };
-    }
-
-    // 明示的な選択がない場合は、自動判定
-    // WiFi接続を優先（USB接続は電源供給のみの可能性があるため）
     if (wifiStatus === 'connected' && wifiDeviceName) {
-      return { type: 'wifi', name: wifiDeviceName, id: wifiHost };
-    }
-    if (serialStatus === 'connected') {
-      return { type: 'usb', name: t('editor.deviceSelector.usbConnection'), id: 'usb' };
+      return { name: wifiDeviceName, id: wifiHost };
     }
     return null;
   };
@@ -80,7 +59,6 @@ export function HeaderDeviceSelector() {
     setHost(getDeviceHost(device));
     setDeviceName(device.name);
     await connectWifi();
-    setSelectedConnectionType('wifi'); // ユーザーが明示的にWiFiを選択
   };
 
   // 選択解除
@@ -88,17 +66,6 @@ export function HeaderDeviceSelector() {
     if (wifiStatus === 'connected') {
       await disconnectWifi();
     }
-    setSelectedConnectionType(null); // 明示的な選択をクリア
-  };
-
-  // USB接続を開始
-  const handleConnectUsb = async () => {
-    if (!isSerialSupported) {
-      alert('このブラウザはWeb Serial APIに対応していません');
-      return;
-    }
-    await connectSerial();
-    setSelectedConnectionType('usb');
   };
 
   // デバイスを検索（localStorageのデバイスのオンライン状態を確認）
@@ -205,16 +172,6 @@ export function HeaderDeviceSelector() {
     }
   };
 
-  // 接続アイコンを取得
-  const getIcon = (type: ConnectionType) => {
-    switch (type) {
-      case 'usb':
-        return <Usb className="w-3 h-3" />;
-      case 'wifi':
-        return <Wifi className="w-3 h-3" />;
-    }
-  };
-
   return (
     <div className="flex items-center gap-1">
       <DropdownMenu>
@@ -229,7 +186,7 @@ export function HeaderDeviceSelector() {
             }`} />
             {selectedDevice ? (
               <>
-                {getIcon(selectedDevice.type)}
+                <Wifi className="w-3 h-3" />
                 <span className="ml-1">{selectedDevice.name}</span>
               </>
             ) : (
@@ -241,28 +198,9 @@ export function HeaderDeviceSelector() {
       <DropdownMenuContent align="start" className="w-52">
         <div className="px-2 py-1.5 text-xs text-gray-500">{t('editor.deviceSelector.writeTargetDevice')}</div>
 
-        {/* USB接続（常時表示） */}
-        {serialStatus === 'connected' ? (
-          <DropdownMenuItem
-            onClick={() => setSelectedConnectionType('usb')}
-            className={selectedDevice?.type === 'usb' ? 'bg-green-50' : ''}
-          >
-            <Usb className="w-4 h-4 mr-2 text-blue-500" />
-            {t('editor.deviceSelector.usbConnection')}
-            <div className="ml-auto w-2 h-2 rounded-full bg-green-500" />
-          </DropdownMenuItem>
-        ) : (
-          <DropdownMenuItem onClick={handleConnectUsb}>
-            <Usb className="w-4 h-4 mr-2 text-gray-500" />
-            USB接続...
-            <div className="ml-auto w-2 h-2 rounded-full bg-gray-400" />
-          </DropdownMenuItem>
-        )}
-
         {/* WiFiデバイス */}
-        {wifiDevices.length > 0 && (
+        {wifiDevices.length > 0 ? (
           <>
-            <DropdownMenuSeparator />
             <div className="px-2 py-1.5 text-xs text-gray-500">{t('editor.deviceSelector.wifiRegisteredDevices')}</div>
             {wifiDevices.map((device) => {
               const isSelected = wifiStatus === 'connected' && wifiHost === getDeviceHost(device);
@@ -280,7 +218,7 @@ export function HeaderDeviceSelector() {
                 <DropdownMenuItem
                   key={device.uuid}
                   onClick={() => handleSelectWifiDevice(device)}
-                  className={isSelected ? 'bg-green-50' : ''}
+                  className={isSelected ? 'bg-green-500/10 text-green-400 font-semibold' : ''}
                 >
                   <Wifi className="w-4 h-4 mr-2 text-green-500" />
                   {device.name}
@@ -289,10 +227,14 @@ export function HeaderDeviceSelector() {
               );
             })}
           </>
+        ) : (
+          <div className="px-2 py-1.5 text-xs text-gray-500">
+            WiFi設定からデバイスを登録してください
+          </div>
         )}
 
         {/* 選択解除（WiFi選択中のみ） */}
-        {selectedDevice?.type === 'wifi' && (
+        {selectedDevice && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleDeselect} className="text-red-600">
