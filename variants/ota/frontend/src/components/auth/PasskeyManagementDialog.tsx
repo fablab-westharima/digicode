@@ -81,7 +81,9 @@ export function PasskeyManagementDialog({ open, onOpenChange }: PasskeyManagemen
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return t('auth.passkey.neverUsed');
-    return new Date(dateString).toLocaleString();
+    // D1 datetime('now') returns UTC time without 'Z' suffix, so we add it
+    const utcDateString = dateString.endsWith('Z') ? dateString : dateString + 'Z';
+    return new Date(utcDateString).toLocaleString();
   };
 
   return (

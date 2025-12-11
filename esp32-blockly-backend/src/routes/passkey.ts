@@ -38,6 +38,47 @@ const ORIGIN = process.env.NODE_ENV === 'production'
 // チャレンジのTTL（5分）
 const CHALLENGE_TTL = 300;
 
+// Cloudflare Workers用のBase64エンコード/デコードヘルパー
+function uint8ArrayToBase64(uint8Array: Uint8Array): string {
+  let binary = '';
+  const len = uint8Array.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(uint8Array[i]);
+  }
+  return btoa(binary);
+}
+
+// 標準base64をUint8Arrayに変換（public_key用）
+function base64ToUint8Array(base64: string): Uint8Array {
+  const binary = atob(base64);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+// base64urlをUint8Arrayに変換（credential_id用）
+function base64urlToUint8Array(base64url: string): Uint8Array {
+  // base64url を標準 base64 に変換
+  let base64Standard = base64url.replace(/-/g, '+').replace(/_/g, '/');
+
+  // パディングを追加
+  const padding = base64Standard.length % 4;
+  if (padding > 0) {
+    base64Standard += '='.repeat(4 - padding);
+  }
+
+  const binary = atob(base64Standard);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
 /**
  * POST /api/auth/passkey/register/options
  * パスキー登録のオプション生成
@@ -72,7 +113,7 @@ passkey.post('/register/options', authMiddleware, async (c) => {
     const options = await generateRegistrationOptions({
       rpName: RP_NAME,
       rpID: RP_ID,
-      userID: userId.toString(),
+      userID: new TextEncoder().encode(userId.toString()),
       userName: email,
       attestationType: 'none',
       excludeCredentials,
@@ -124,17 +165,20 @@ passkey.post('/register/verify', authMiddleware, async (c) => {
       expectedChallenge,
       expectedOrigin: ORIGIN,
       expectedRPID: RP_ID,
+      requireUserVerification: false,
     });
 
     if (!verification.verified || !verification.registrationInfo) {
       return c.json({ error: '検証に失敗しました' }, 400);
     }
 
-    const { credentialID, credentialPublicKey, counter } = verification.registrationInfo;
+    // v13: credential オブジェクトから取得
+    const { credential } = verification.registrationInfo;
+    const { id: credentialIdBase64, publicKey, counter } = credential;
 
     // 認証器情報をデータベースに保存
-    const credentialIdBase64 = Buffer.from(credentialID).toString('base64');
-    const publicKeyBase64 = Buffer.from(credentialPublicKey).toString('base64');
+    // id は既にbase64文字列なのでそのまま使用
+    const publicKeyBase64 = uint8ArrayToBase64(publicKey);
     const transports = body.response.transports
       ? JSON.stringify(body.response.transports)
       : null;
@@ -252,30 +296,60 @@ passkey.post('/login/verify', async (c) => {
 
     // 認証器情報を取得
     const credentialIdBase64 = authResponse.id;
+    console.log('Login: Looking for credential_id:', credentialIdBase64, 'userId:', userId);
+
     const authenticator = await c.env.DB.prepare(
       'SELECT id, credential_id, public_key, counter FROM authenticators WHERE credential_id = ? AND user_id = ?'
     ).bind(credentialIdBase64, userId).first();
+
+    console.log('Login: Found authenticator:', authenticator);
 
     if (!authenticator) {
       return c.json({ error: '認証器が見つかりません' }, 404);
     }
 
-    // Base64デコード
-    const credentialPublicKey = Uint8Array.from(
-      Buffer.from(authenticator.public_key as string, 'base64')
-    );
+    // Base64デコード（デバッグログ追加）
+    console.log('Decoding public_key:', authenticator.public_key);
+    console.log('Decoding credential_id:', credentialIdBase64);
+    console.log('Counter value:', authenticator.counter);
+
+    let credentialPublicKey: Uint8Array;
+    let credentialID: Uint8Array;
+
+    try {
+      credentialPublicKey = base64ToUint8Array(authenticator.public_key as string);
+      console.log('Public key decoded successfully, length:', credentialPublicKey.length);
+    } catch (error) {
+      console.error('Failed to decode public_key:', error);
+      return c.json({ error: '公開鍵のデコードに失敗しました' }, 500);
+    }
+
+    try {
+      credentialID = base64urlToUint8Array(credentialIdBase64);
+      console.log('Credential ID decoded successfully, length:', credentialID.length);
+    } catch (error) {
+      console.error('Failed to decode credential_id:', error);
+      return c.json({ error: '認証情報IDのデコードに失敗しました' }, 500);
+    }
 
     // 認証レスポンスを検証
+    console.log('Calling verifyAuthenticationResponse with:', {
+      credentialIDLength: credentialID.length,
+      credentialPublicKeyLength: credentialPublicKey.length,
+      counter: authenticator.counter as number,
+    });
+
     const verification = await verifyAuthenticationResponse({
       response: authResponse,
       expectedChallenge,
       expectedOrigin: ORIGIN,
       expectedRPID: RP_ID,
-      authenticator: {
-        credentialID: Uint8Array.from(Buffer.from(credentialIdBase64, 'base64')),
-        credentialPublicKey,
+      credential: {
+        id: credentialID,
+        publicKey: credentialPublicKey,
         counter: authenticator.counter as number,
       },
+      requireUserVerification: false,
     });
 
     if (!verification.verified) {
@@ -317,6 +391,54 @@ passkey.post('/login/verify', async (c) => {
   } catch (error) {
     console.error('Error verifying authentication:', error);
     return c.json({ error: 'ログインの検証に失敗しました' }, 500);
+  }
+});
+
+// パスキー一覧取得 (認証済みユーザーのみ)
+passkey.get('/list', authMiddleware, async (c) => {
+  try {
+    const { userId } = c.get('user');
+
+    // ユーザーの全パスキーを取得
+    const passkeys = await c.env.DB.prepare(
+      'SELECT id, device_name AS deviceName, created_at AS createdAt, last_used_at AS lastUsedAt FROM authenticators WHERE user_id = ? ORDER BY created_at DESC'
+    )
+      .bind(userId)
+      .all();
+
+    return c.json({ passkeys: passkeys.results || [] });
+  } catch (error) {
+    console.error('Error fetching passkeys:', error);
+    return c.json({ error: 'パスキーの取得に失敗しました' }, 500);
+  }
+});
+
+// パスキー削除 (認証済みユーザーのみ)
+passkey.delete('/:id', authMiddleware, async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const passkeyId = c.req.param('id');
+
+    // パスキーがユーザーに属していることを確認
+    const passkey = await c.env.DB.prepare(
+      'SELECT id FROM authenticators WHERE id = ? AND user_id = ?'
+    )
+      .bind(passkeyId, userId)
+      .first();
+
+    if (!passkey) {
+      return c.json({ error: 'パスキーが見つかりません' }, 404);
+    }
+
+    // パスキーを削除
+    await c.env.DB.prepare('DELETE FROM authenticators WHERE id = ? AND user_id = ?')
+      .bind(passkeyId, userId)
+      .run();
+
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting passkey:', error);
+    return c.json({ error: 'パスキーの削除に失敗しました' }, 500);
   }
 });
 

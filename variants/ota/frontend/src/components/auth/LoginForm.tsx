@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PasskeyLoginButton } from './PasskeyLoginButton';
+import { useAuthStore } from '@/stores/authStore';
 
 interface LoginFormProps {
   onSubmit: (email: string, password: string) => Promise<void>;
@@ -15,6 +16,7 @@ interface LoginFormProps {
 
 export function LoginForm({ onSubmit, onSwitchToRegister, onForgotPassword, isLoading, error }: LoginFormProps) {
   const { t } = useTranslation();
+  const { checkAuth } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passkeyError, setPasskeyError] = useState<string | null>(null);
@@ -25,9 +27,11 @@ export function LoginForm({ onSubmit, onSwitchToRegister, onForgotPassword, isLo
     await onSubmit(email, password);
   };
 
-  const handlePasskeySuccess = () => {
+  const handlePasskeySuccess = async () => {
     // Tokens are already set by passkeyService.loginWithPasskey()
-    // authStore will automatically detect the change and redirect
+    // Update authStore to trigger authentication state change and redirect
+    setPasskeyError(null);
+    await checkAuth();
     setPasskeyError(null);
   };
 
