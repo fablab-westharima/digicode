@@ -547,7 +547,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
               Flash全体を消去すると、保存されているすべてのデータ（UUID、WiFi設定など）が削除され、初期状態に戻ります。
             </p>
 
-            {/* 有線接続ボタン */}
+            {/* ボタン行 */}
             <div className="flex gap-2">
               {!isConnected ? (
                 <Button
@@ -556,7 +556,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                   className="flex-1 bg-[#238636] hover:bg-[#2ea043] text-white"
                 >
                   <Usb className="w-4 h-4 mr-2" />
-                  {isConnecting ? '接続中...' : 'ESP32に有線接続'}
+                  {isConnecting ? '接続中...' : 'ESP32にUSB接続'}
                 </Button>
               ) : (
                 <Button
@@ -567,7 +567,21 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                   接続解除
                 </Button>
               )}
+              <Button
+                variant="destructive"
+                onClick={handleEraseFlash}
+                disabled={!isConnected || isErasing}
+                className="flex-1 bg-[#f85149] hover:bg-[#da3633] text-white disabled:opacity-50"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                {isErasing ? 'Flash消去中...' : 'Flash全体を消去'}
+              </Button>
             </div>
+            {!isConnected && (
+              <p className="text-xs text-[#8B949E] text-center">
+                ※ 先に「ESP32にUSB接続」してください
+              </p>
+            )}
 
             {/* コンソール */}
             {logs.length > 0 && (
@@ -602,21 +616,6 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                   />
                 </div>
               </div>
-            )}
-
-            <Button
-              variant="destructive"
-              onClick={handleEraseFlash}
-              disabled={!isConnected || isErasing}
-              className="w-full bg-[#f85149] hover:bg-[#da3633] text-white disabled:opacity-50"
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              {isErasing ? 'Flash消去中...' : 'Flash全体を消去'}
-            </Button>
-            {!isConnected && (
-              <p className="text-xs text-[#8B949E] text-center">
-                ※ 先に「ESP32に有線接続」してください
-              </p>
             )}
           </div>
 
