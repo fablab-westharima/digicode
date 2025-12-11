@@ -26,7 +26,6 @@ import {
 import { usePIDTuningStore } from '@/stores/pidTuningStore';
 import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
-import { useBluetoothStore } from '@/stores/bluetoothStore';
 import { Save, RotateCcw, Send, Trash2 } from 'lucide-react';
 
 interface PIDTuningPanelProps {
@@ -44,7 +43,6 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
 
   const { send: serialSend, status: serialStatus } = useSerialStore();
   const { send: wifiSend, status: wifiStatus } = useWifiStore();
-  const { send: bluetoothSend, status: bluetoothStatus } = useBluetoothStore();
 
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [presetName, setPresetName] = useState('');
@@ -52,8 +50,7 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
 
   // Check if any connection is available
   const isConnected = serialStatus === 'connected' ||
-                      wifiStatus === 'connected' ||
-                      bluetoothStatus === 'connected';
+                      wifiStatus === 'connected';
 
   // Send PID parameters to ESP32
   const sendToESP32 = async () => {
@@ -63,8 +60,6 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
       await serialSend(command);
     } else if (wifiStatus === 'connected') {
       await wifiSend(command);
-    } else if (bluetoothStatus === 'connected') {
-      await bluetoothSend(command);
     }
   };
 

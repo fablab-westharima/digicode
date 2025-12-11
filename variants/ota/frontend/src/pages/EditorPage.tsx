@@ -26,14 +26,11 @@ import { WifiSetupDialog } from '@/components/wifi/WifiSetupDialog';
 import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstallerDialog';
 import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
-import { UsbPortReleaseDialog } from '@/components/settings/UsbPortReleaseDialog';
-import { UsbDriverDialog } from '@/components/settings/UsbDriverDialog';
 import { HeaderDeviceSelector } from '@/components/device/HeaderDeviceSelector';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
 import { useDeviceStore } from '@/stores/deviceStore';
-import { useBluetoothStore } from '@/stores/bluetoothStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { useBoardStore, type FlashMethod } from '@/stores/boardStore';
 import { getTutorialById } from '@/data/tutorials';
@@ -45,7 +42,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { compileService, type CompileServerMode, type FullPackage } from '@/services/compileService';
 import { api } from '@/lib/api';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
-import { Download, Loader2, Zap, SlidersHorizontal, LineChart, Code, Terminal, ChevronUp, ChevronDown, GraduationCap, ChevronDown as ChevronDownIcon, X, FilePlus, FolderOpen, FileCode, Cloud, Server, Usb, Wifi, Bluetooth, Check, Settings2, Pin, BookOpen, Globe } from 'lucide-react';
+import { Download, Loader2, Zap, SlidersHorizontal, LineChart, Code, Terminal, ChevronUp, ChevronDown, GraduationCap, ChevronDown as ChevronDownIcon, X, FilePlus, FolderOpen, FileCode, Cloud, Server, Usb, Wifi, Check, Settings2, Pin, BookOpen, Globe } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,7 +67,6 @@ export function EditorPage() {
   const { currentProject, loadProject, setCurrentProject } = useProjectStore();
   const { status: serialStatus, connect: connectSerial, disconnect: disconnectSerial } = useSerialStore();
   const { status: wifiStatus, getDeviceUrl, setHost, setDeviceName, connect: connectWifi } = useWifiStore();
-  const { status: bluetoothStatus, connect: connectBluetooth, disconnect: disconnectBluetooth } = useBluetoothStore();
   const { addDevice } = useDeviceStore();
   const { getSelectedBoard } = useBoardStore();
 
@@ -86,8 +82,6 @@ export function EditorPage() {
   const [compileLog, setCompileLog] = useState<string[]>([]);
   const [compileDialogOpen, setCompileDialogOpen] = useState(false);
   const [flashDialogOpen, setFlashDialogOpen] = useState(false);
-  const [isWaitingForBootMode, setIsWaitingForBootMode] = useState(false);
-  const [pendingFlashBinary, setPendingFlashBinary] = useState<Blob | FullPackage | null>(null);
   const [flashProgress, setFlashProgress] = useState<FlashProgress>({
     stage: 'connecting',
     percent: 0,
@@ -102,8 +96,6 @@ export function EditorPage() {
   const [firmwareInstallerDialogOpen, setFirmwareInstallerDialogOpen] = useState(false);
   const [pinSettingsDialogOpen, setPinSettingsDialogOpen] = useState(false);
   const [compileServerSettingsDialogOpen, setCompileServerSettingsDialogOpen] = useState(false);
-  const [usbPortReleaseDialogOpen, setUsbPortReleaseDialogOpen] = useState(false);
-  const [usbDriverDialogOpen, setUsbDriverDialogOpen] = useState(false);
   const [flashMethodDialogOpen, setFlashMethodDialogOpen] = useState(false);
   const [compiledBinary, setCompiledBinary] = useState<Blob | null>(null);
   const [codePreviewDialogOpen, setCodePreviewDialogOpen] = useState(false);
@@ -536,73 +528,6 @@ export function EditorPage() {
     }
   };
 
-  // USB書き込み処理
-  const handleFlash = async (data: Blob | FullPackage) => {
-    // BOOT準備画面を表示
-    setPendingFlashBinary(data);
-    setIsWaitingForBootMode(true);
-    setFlashDialogOpen(true);
-  };
-
-  // BOOT準備完了後に実際の書き込みを開始
-  const executeFlash = async () => {
-    if (!pendingFlashBinary) return;
-
-    setIsWaitingForBootMode(false);
-    setFlashProgress({
-      stage: 'connecting',
-      percent: 0,
-      message: 'ESP32に接続しています...'
-    });
-    setStatusBarState('uploading');
-    setStatusBarMessage(t('status.flashingFirmware'));
-
-    try {
-      // ESP32に接続
-      const chipInfo = await firmwareService.connect((progress) => {
-        setFlashProgress(progress);
-      });
-
-      if (!chipInfo) {
-        setFlashDialogOpen(false);
-        alert('✗ ESP32への接続に失敗しました。\nデバイスが接続されているか確認してください。');
-        return;
-      }
-
-      // BlobかFullPackageかを判定して処理
-      let flashData: ArrayBuffer | FullPackage;
-      if (pendingFlashBinary instanceof Blob) {
-        // Blobの場合はArrayBufferに変換
-        flashData = await pendingFlashBinary.arrayBuffer();
-      } else {
-        // FullPackageの場合はそのまま渡す
-        flashData = pendingFlashBinary;
-      }
-
-      // 書き込み実行
-      const success = await firmwareService.flashArduinoFirmware(flashData, (progress) => {
-        setFlashProgress(progress);
-      });
-
-      if (success) {
-        // 成功後、少し待ってからダイアログを閉じる
-        setTimeout(() => {
-          setFlashDialogOpen(false);
-          setPendingFlashBinary(null);
-          alert('✓ ファームウェアの書き込みが完了しました！\nESP32が再起動します。');
-        }, 2000);
-      } else {
-        setFlashDialogOpen(false);
-        setPendingFlashBinary(null);
-        alert('✗ 書き込みに失敗しました。');
-      }
-    } catch (error) {
-      setFlashDialogOpen(false);
-      setPendingFlashBinary(null);
-      alert(`✗ 書き込みエラー:\n${error instanceof Error ? error.message : '不明なエラー'}`);
-    }
-  };
-
   // 複数デバイス選択後の処理（一括更新）
   const handleBatchDeviceSelect = (devices: DigiCodeDevice[]) => {
     setBatchUpdateDevices(devices);
@@ -652,7 +577,7 @@ export function EditorPage() {
 
   // 前回の選択を取得
   const getLastFlashMethod = (): FlashMethod => {
-    return (localStorage.getItem('lastFlashMethod') as FlashMethod) || 'usb';
+    return (localStorage.getItem('lastFlashMethod') as FlashMethod) || 'wifi';
   };
 
   // 選択を保存
@@ -666,14 +591,6 @@ export function EditorPage() {
     setFlashMethodDialogOpen(false);
 
     switch (method) {
-      case 'usb': {
-        // USB: コンパイル→書込み
-        const binary = await executeCompile();
-        if (binary) {
-          await handleFlash(binary);
-        }
-        break;
-      }
       case 'wifi': {
         // WiFi: デバイス接続確認→コンパイル→書込み
         if (wifiStatus === 'connected') {
@@ -715,36 +632,6 @@ export function EditorPage() {
         setBatchSelectDialogOpen(true);
         break;
       }
-      case 'download-bin': {
-        // .binダウンロード: コンパイル→ダウンロード
-        const compiledData = await executeCompile();
-        if (compiledData) {
-          const filename = currentProject?.title
-            ? `${currentProject.title}.bin`
-            : 'firmware.bin';
-          // fullPackageの場合はfirmware.binだけを取り出す
-          const binary = compiledData instanceof Blob
-            ? compiledData
-            : (compiledData as FullPackage).firmware;
-          compileService.downloadBinary(binary, filename);
-        }
-        break;
-      }
-      case 'download-uf2': {
-        // .uf2ダウンロード: コンパイル→ダウンロード
-        const compiledData = await executeCompile('uf2'); // UF2フォーマット指定
-        if (compiledData) {
-          const filename = currentProject?.title
-            ? `${currentProject.title}.uf2`
-            : 'firmware.uf2';
-          // fullPackageの場合はfirmware.uf2だけを取り出す（通常UF2はfullPackageにならない）
-          const binary = compiledData instanceof Blob
-            ? compiledData
-            : (compiledData as FullPackage).firmware;
-          compileService.downloadBinary(binary, filename);
-        }
-        break;
-      }
     }
 
     setCompiledBinary(null);
@@ -753,15 +640,15 @@ export function EditorPage() {
   // 接続状態に応じた色（いずれかの接続方式が接続されていれば表示）
   const getConnectionStatusColor = () => {
     // 接続中のものがあればそれを優先
-    if (serialStatus === 'connected' || wifiStatus === 'connected' || bluetoothStatus === 'connected') {
+    if (serialStatus === 'connected' || wifiStatus === 'connected') {
       return 'bg-green-500';
     }
     // 接続試行中
-    if (serialStatus === 'connecting' || wifiStatus === 'connecting' || bluetoothStatus === 'connecting') {
+    if (serialStatus === 'connecting' || wifiStatus === 'connecting') {
       return 'bg-yellow-500 animate-pulse';
     }
     // エラー
-    if (serialStatus === 'error' || wifiStatus === 'error' || bluetoothStatus === 'error') {
+    if (serialStatus === 'error' || wifiStatus === 'error') {
       return 'bg-red-500';
     }
     // 未接続
@@ -944,36 +831,6 @@ export function EditorPage() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <div className="px-2 py-1.5 text-xs text-gray-500">{t('editor.menu.usbConnection')}</div>
-          {serialStatus === 'connected' ? (
-            <DropdownMenuItem onClick={() => disconnectSerial()}>
-              <Usb className="w-4 h-4 mr-2" />
-              {t('editor.menu.usbDisconnect')}
-              <div className="ml-auto w-2 h-2 rounded-full bg-green-500" />
-            </DropdownMenuItem>
-          ) : (
-            <DropdownMenuItem onClick={() => connectSerial()}>
-              <Usb className="w-4 h-4 mr-2" />
-              {t('editor.menu.usbConnect')}
-              <div className="ml-auto w-2 h-2 rounded-full bg-gray-300" />
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuSeparator />
-          <div className="px-2 py-1.5 text-xs text-gray-500">{t('editor.menu.bluetoothConnection')}</div>
-          {bluetoothStatus === 'connected' ? (
-            <DropdownMenuItem onClick={() => disconnectBluetooth()}>
-              <Bluetooth className="w-4 h-4 mr-2" />
-              {t('editor.menu.bluetoothDisconnect')}
-              <div className="ml-auto w-2 h-2 rounded-full bg-green-500" />
-            </DropdownMenuItem>
-          ) : (
-            <DropdownMenuItem onClick={() => connectBluetooth()}>
-              <Bluetooth className="w-4 h-4 mr-2" />
-              {t('editor.menu.bluetoothConnect')}
-              <div className="ml-auto w-2 h-2 rounded-full bg-gray-300" />
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setWifiSetupDialogOpen(true)}>
             <Settings2 className="w-4 h-4 mr-2" />
             {t('editor.menu.wifiRouterConnect')}
@@ -1184,14 +1041,11 @@ export function EditorPage() {
             onProjectOpen={handleOpen}
             onFirmwareWrite={handleFirmwareWrite}
             onApSetup={() => setWifiSetupDialogOpen(true)}
-            onBluetoothSetup={() => connectBluetooth()}
-            onUsbPortRelease={() => setUsbPortReleaseDialogOpen(true)}
             onPinAssignment={() => setPinSettingsDialogOpen(true)}
             onCompileServerSettings={() => setCompileServerSettingsDialogOpen(true)}
             onDocs={() => window.open('/docs', '_blank')}
             onCodePreview={() => setCodePreviewDialogOpen(true)}
             onPidTuning={() => setPidTuningDialogOpen(true)}
-            onUsbDriver={() => setUsbDriverDialogOpen(true)}
           />
 
           {/* メインコンテンツエリア (Blocklyワークスペース) */}
@@ -1309,104 +1163,43 @@ export function EditorPage() {
         </DialogContent>
       </Dialog>
 
-      {/* ファームウェア書き込み進捗ダイアログ */}
-      <Dialog open={flashDialogOpen} onOpenChange={(open) => {
-        setFlashDialogOpen(open);
-        if (!open) {
-          setIsWaitingForBootMode(false);
-          setPendingFlashBinary(null);
-        }
-      }}>
+      {/* OTA更新進捗ダイアログ */}
+      <Dialog open={flashDialogOpen} onOpenChange={setFlashDialogOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              {isWaitingForBootMode ? '⚠️ 書き込み前の準備' : t('editor.flash.writingToEsp32')}
+              {t('editor.flash.writingToEsp32')}
             </DialogTitle>
             <DialogDescription>
-              {isWaitingForBootMode ? (
-                'ESP32を書き込みモードにしてください'
-              ) : (
-                <>
-                  {flashProgress.stage === 'connecting' && t('editor.connecting')}
-                  {flashProgress.stage === 'erasing' && t('editor.erasingFlash')}
-                  {flashProgress.stage === 'flashing' && t('editor.writing')}
-                  {flashProgress.stage === 'verifying' && t('editor.writing')}
-                  {flashProgress.stage === 'complete' && t('editor.complete')}
-                  {flashProgress.stage === 'error' && t('editor.errorOccurred')}
-                </>
-              )}
+              {flashProgress.stage === 'connecting' && t('editor.connecting')}
+              {flashProgress.stage === 'erasing' && t('editor.erasingFlash')}
+              {flashProgress.stage === 'flashing' && t('editor.writing')}
+              {flashProgress.stage === 'verifying' && t('editor.writing')}
+              {flashProgress.stage === 'complete' && t('editor.complete')}
+              {flashProgress.stage === 'error' && t('editor.errorOccurred')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            {isWaitingForBootMode ? (
-              /* BOOT操作手順を表示 */
-              <>
-                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-500 rounded-lg">
-                  <h4 className="text-amber-900 dark:text-amber-200 font-semibold mb-3 flex items-center gap-2">
-                    <span className="text-xl">⚠️</span>
-                    ESP32を書き込みモードにする手順
-                  </h4>
-                  <ol className="text-sm text-gray-800 dark:text-gray-200 space-y-2 mb-3">
-                    <li className="flex items-start gap-2">
-                      <span className="text-amber-600 dark:text-amber-400 font-mono font-bold">1.</span>
-                      <span><strong className="text-amber-600 dark:text-amber-400">BOOT</strong>ボタンを押し続ける</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-amber-600 dark:text-amber-400 font-mono font-bold">2.</span>
-                      <span><strong className="text-amber-600 dark:text-amber-400">BOOT</strong>を押したまま、<strong className="text-amber-600 dark:text-amber-400">EN</strong>ボタンを一瞬押して離す</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-amber-600 dark:text-amber-400 font-mono font-bold">3.</span>
-                      <span><strong className="text-amber-600 dark:text-amber-400">BOOT</strong>ボタンを離す</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-amber-600 dark:text-amber-400 font-mono font-bold">4.</span>
-                      <span>この状態で下の「書き込み開始」ボタンを押す</span>
-                    </li>
-                  </ol>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    💡 ヒント: ボードによってはBOOTボタンが「IO0」「FLASH」「GPIO0」などと表記されている場合があります
-                  </p>
-                </div>
-                <Button
-                  onClick={executeFlash}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3"
-                >
-                  ▶ 準備完了 - 書き込み開始
-                </Button>
-                <Button
-                  onClick={() => setFlashDialogOpen(false)}
-                  variant="outline"
-                  className="w-full"
-                >
-                  キャンセル
-                </Button>
-              </>
-            ) : (
-              /* 書き込み進捗を表示 */
-              <>
-                <Progress value={flashProgress.percent} className="w-full" />
-                <div className="text-sm text-center text-muted-foreground">
-                  {flashProgress.message}
-                </div>
-                {flashProgress.file && (
-                  <div className="text-xs text-center text-muted-foreground">
-                    {flashProgress.file}
-                  </div>
-                )}
-                <div className="text-center text-lg font-semibold">
-                  {Math.floor(flashProgress.percent)}%
-                </div>
-                {flashProgress.stage === 'error' && (
-                  <Button
-                    onClick={() => setFlashDialogOpen(false)}
-                    className="w-full"
-                    variant="destructive"
-                  >
-                    {t('common.close')}
-                  </Button>
-                )}
-              </>
+            <Progress value={flashProgress.percent} className="w-full" />
+            <div className="text-sm text-center text-muted-foreground">
+              {flashProgress.message}
+            </div>
+            {flashProgress.file && (
+              <div className="text-xs text-center text-muted-foreground">
+                {flashProgress.file}
+              </div>
+            )}
+            <div className="text-center text-lg font-semibold">
+              {Math.floor(flashProgress.percent)}%
+            </div>
+            {flashProgress.stage === 'error' && (
+              <Button
+                onClick={() => setFlashDialogOpen(false)}
+                className="w-full"
+                variant="destructive"
+              >
+                {t('common.close')}
+              </Button>
             )}
           </div>
         </DialogContent>
@@ -1452,27 +1245,6 @@ export function EditorPage() {
 
               return (
                 <>
-                  {/* USB書き込み */}
-                  {supportedMethods.includes('usb') && (
-                    <button
-                      onClick={() => handleFlashMethodSelect('usb')}
-                      className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-300 dark:hover:border-blue-700 ${
-                        getLastFlashMethod() === 'usb' ? 'border-blue-400 dark:border-blue-600 bg-blue-50 dark:bg-blue-950' : 'border-gray-200 dark:border-gray-700'
-                      }`}
-                    >
-                      <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                        <Usb className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <div className="text-left flex-1">
-                        <div className="font-medium text-gray-900 dark:text-gray-100">{t('editor.flash.usb')}</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">{t('editor.flash.usbDesc')}</div>
-                      </div>
-                      {getLastFlashMethod() === 'usb' && (
-                        <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900 px-2 py-0.5 rounded">{t('editor.flash.previous')}</span>
-                      )}
-                    </button>
-                  )}
-
                   {/* WiFi OTA */}
                   {supportedMethods.includes('wifi') && (
                     <button
@@ -1514,48 +1286,6 @@ export function EditorPage() {
                           )}
                         </button>
                       )}
-
-                      {/* .binファイルダウンロード */}
-                      {supportedMethods.includes('download-bin') && (
-                        <button
-                          onClick={() => handleFlashMethodSelect('download-bin')}
-                          className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all hover:bg-gray-100 dark:hover:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 ${
-                            getLastFlashMethod() === 'download-bin' ? 'border-gray-400 dark:border-gray-600 bg-gray-100 dark:bg-gray-800' : 'border-gray-200 dark:border-gray-700'
-                          }`}
-                        >
-                          <div className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg">
-                            <Download className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                          </div>
-                          <div className="text-left flex-1">
-                            <div className="font-medium text-gray-900 dark:text-gray-100">.binファイルをダウンロード</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">バイナリファイルをダウンロード</div>
-                          </div>
-                          {getLastFlashMethod() === 'download-bin' && (
-                            <span className="text-xs text-gray-600 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded">{t('editor.flash.previous')}</span>
-                          )}
-                        </button>
-                      )}
-
-                      {/* .uf2ファイルダウンロード */}
-                      {supportedMethods.includes('download-uf2') && (
-                        <button
-                          onClick={() => handleFlashMethodSelect('download-uf2')}
-                          className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all hover:bg-green-50 dark:hover:bg-green-950 hover:border-green-300 dark:hover:border-green-700 ${
-                            getLastFlashMethod() === 'download-uf2' ? 'border-green-400 dark:border-green-600 bg-green-50 dark:bg-green-950' : 'border-gray-200 dark:border-gray-700'
-                          }`}
-                        >
-                          <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-                            <Download className="w-5 h-5 text-green-600 dark:text-green-400" />
-                          </div>
-                          <div className="text-left flex-1">
-                            <div className="font-medium text-gray-900 dark:text-gray-100">.uf2ファイルをダウンロード</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">RP2040用 (BOOTSEL モード)</div>
-                          </div>
-                          {getLastFlashMethod() === 'download-uf2' && (
-                            <span className="text-xs text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900 px-2 py-0.5 rounded">{t('editor.flash.previous')}</span>
-                          )}
-                        </button>
-                      )}
                 </>
               );
             })()}
@@ -1591,18 +1321,6 @@ export function EditorPage() {
       <CompileServerSettingsDialog
         open={compileServerSettingsDialogOpen}
         onOpenChange={setCompileServerSettingsDialogOpen}
-      />
-
-      {/* USBポート解放ダイアログ */}
-      <UsbPortReleaseDialog
-        open={usbPortReleaseDialogOpen}
-        onOpenChange={setUsbPortReleaseDialogOpen}
-      />
-
-      {/* USBドライバーダイアログ */}
-      <UsbDriverDialog
-        open={usbDriverDialogOpen}
-        onOpenChange={setUsbDriverDialogOpen}
       />
 
       {/* 生成コードプレビューダイアログ */}
@@ -1655,8 +1373,8 @@ export function EditorPage() {
         message={statusBarMessage}
         binarySize={compiledBinary?.size}
         deviceInfo={{
-          connected: wifiStatus === 'connected' || serialStatus === 'connected' || bluetoothStatus === 'connected',
-          name: wifiStatus === 'connected' ? 'WiFi Device' : serialStatus === 'connected' ? 'USB Device' : bluetoothStatus === 'connected' ? 'BT Device' : undefined,
+          connected: wifiStatus === 'connected' || serialStatus === 'connected',
+          name: wifiStatus === 'connected' ? 'WiFi Device' : serialStatus === 'connected' ? 'USB Device' : undefined,
         }}
       />
     </div>

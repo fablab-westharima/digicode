@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
-import { useBluetoothStore } from '@/stores/bluetoothStore';
 
 interface SerialMonitorProps {
   className?: string;
@@ -12,7 +11,6 @@ interface SerialMonitorProps {
 export function SerialMonitor({ className }: SerialMonitorProps) {
   const { output: serialOutput, send: serialSend, clearOutput: serialClear, status: serialStatus } = useSerialStore();
   const { output: wifiOutput, send: wifiSend, clearOutput: wifiClear, status: wifiStatus } = useWifiStore();
-  const { output: bluetoothOutput, send: bluetoothSend, clearOutput: bluetoothClear, status: bluetoothStatus } = useBluetoothStore();
 
   const [inputValue, setInputValue] = useState('');
   const [autoScroll, setAutoScroll] = useState(true);
@@ -27,16 +25,12 @@ export function SerialMonitor({ className }: SerialMonitorProps) {
     if (wifiStatus === 'connected' && wifiOutput.length > 0) {
       combined.push(...wifiOutput);
     }
-    if (bluetoothStatus === 'connected' && bluetoothOutput.length > 0) {
-      combined.push(...bluetoothOutput);
-    }
     return combined;
-  }, [serialOutput, wifiOutput, bluetoothOutput, serialStatus, wifiStatus, bluetoothStatus]);
+  }, [serialOutput, wifiOutput, serialStatus, wifiStatus]);
 
   // 接続状態（いずれかが接続されているか）
   const status = serialStatus === 'connected' ? 'connected' :
                  wifiStatus === 'connected' ? 'connected' :
-                 bluetoothStatus === 'connected' ? 'connected' :
                  'disconnected';
 
   // 自動スクロール
@@ -53,8 +47,6 @@ export function SerialMonitor({ className }: SerialMonitorProps) {
         await serialSend(inputValue);
       } else if (wifiStatus === 'connected') {
         await wifiSend(inputValue);
-      } else if (bluetoothStatus === 'connected') {
-        await bluetoothSend(inputValue);
       }
       setInputValue('');
     }
@@ -64,7 +56,6 @@ export function SerialMonitor({ className }: SerialMonitorProps) {
     // 全ての出力をクリア
     serialClear();
     wifiClear();
-    bluetoothClear();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

@@ -18,7 +18,6 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
-import { useBluetoothStore } from '@/stores/bluetoothStore';
 import { Pause, Play, Trash2, Download } from 'lucide-react';
 
 interface DataPoint {
@@ -50,7 +49,6 @@ interface SerialPlotterProps {
 export function SerialPlotter({ className }: SerialPlotterProps) {
   const { output: serialOutput, status: serialStatus } = useSerialStore();
   const { output: wifiOutput, status: wifiStatus } = useWifiStore();
-  const { output: bluetoothOutput, status: bluetoothStatus } = useBluetoothStore();
 
   const [data, setData] = useState<DataPoint[]>([]);
   const [channels, setChannels] = useState<ChannelConfig[]>([]);
@@ -59,7 +57,7 @@ export function SerialPlotter({ className }: SerialPlotterProps) {
   const [yMin, setYMin] = useState<number | undefined>(undefined);
   const [yMax, setYMax] = useState<number | undefined>(undefined);
 
-  const lastProcessedIndexRef = useRef({ serial: 0, wifi: 0, bluetooth: 0 });
+  const lastProcessedIndexRef = useRef({ serial: 0, wifi: 0 });
   const startTimeRef = useRef<number>(Date.now());
 
   // Parse serial output for numeric values
@@ -128,7 +126,7 @@ export function SerialPlotter({ className }: SerialPlotterProps) {
   useEffect(() => {
     if (isPaused) return;
 
-    const processOutput = (output: string[], source: 'serial' | 'wifi' | 'bluetooth') => {
+    const processOutput = (output: string[], source: 'serial' | 'wifi') => {
       const lastIndex = lastProcessedIndexRef.current[source];
       if (output.length <= lastIndex) return;
 
@@ -181,16 +179,13 @@ export function SerialPlotter({ className }: SerialPlotterProps) {
     if (wifiStatus === 'connected') {
       processOutput(wifiOutput, 'wifi');
     }
-    if (bluetoothStatus === 'connected') {
-      processOutput(bluetoothOutput, 'bluetooth');
-    }
-  }, [serialOutput, wifiOutput, bluetoothOutput, serialStatus, wifiStatus, bluetoothStatus, isPaused, maxPoints, parseDataLine]);
+  }, [serialOutput, wifiOutput, serialStatus, wifiStatus, isPaused, maxPoints, parseDataLine]);
 
   // Clear data
   const clearData = () => {
     setData([]);
     startTimeRef.current = Date.now();
-    lastProcessedIndexRef.current = { serial: 0, wifi: 0, bluetooth: 0 };
+    lastProcessedIndexRef.current = { serial: 0, wifi: 0 };
   };
 
   // Export data as CSV
@@ -230,8 +225,7 @@ export function SerialPlotter({ className }: SerialPlotterProps) {
 
   // Connection status
   const isConnected = serialStatus === 'connected' ||
-                      wifiStatus === 'connected' ||
-                      bluetoothStatus === 'connected';
+                      wifiStatus === 'connected';
 
   return (
     <div className={`flex flex-col bg-white border rounded-lg overflow-hidden ${className}`}>

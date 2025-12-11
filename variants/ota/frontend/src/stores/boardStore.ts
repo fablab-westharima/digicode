@@ -2,104 +2,40 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 /**
- * 書き込み方法の種類
+ * 書き込み方法の種類 (OTA版)
+ * OTA版ではWiFi経由のプログラム書き込みのみサポート
  */
-export type FlashMethod = 'usb' | 'wifi' | 'wifi-batch' | 'download-bin' | 'download-uf2';
+export type FlashMethod = 'wifi' | 'wifi-batch';
 
 /**
- * 対応ボード定義
+ * 対応ボード定義 (OTA版)
+ * OTA版ではESP32シリーズのみサポート
  */
 export interface BoardDefinition {
   id: string;
   name: string;
   fqbn: string;
   description: string;
-  category: 'generic' | 'm5stack' | 'xiao' | 'arduino' | 'esp8266' | 'rp2040';
+  category: 'generic' | 'm5stack' | 'xiao';
   supportsOta: boolean; // OTA（無線）書き込み対応
   supportedFlashMethods: FlashMethod[]; // 対応する書き込み方法
 }
 
 /**
- * カテゴリ表示名
+ * カテゴリ表示名 (OTA版)
+ * OTA版ではESP32対応カテゴリのみ
  */
 export const CATEGORY_LABELS: Record<BoardDefinition['category'], string> = {
   generic: '汎用 ESP32',
   m5stack: 'M5Stack シリーズ',
   xiao: 'Seeed Xiao シリーズ',
-  arduino: 'Arduino',
-  esp8266: 'ESP8266',
-  rp2040: 'Raspberry Pi / RP2040',
 };
 
 /**
- * 対応ボード一覧
+ * 対応ボード一覧 (OTA版)
+ * OTA版ではESP32シリーズのみサポート（WiFi OTA書き込み対応）
  */
 export const SUPPORTED_BOARDS: BoardDefinition[] = [
-  // Arduino
-  {
-    id: 'arduino-uno',
-    name: 'Arduino Uno',
-    fqbn: 'arduino:avr:uno',
-    description: 'ATmega328P、有線のみ',
-    category: 'arduino',
-    supportsOta: false,
-    supportedFlashMethods: ['usb', 'download-bin'],
-  },
-  {
-    id: 'arduino-nano',
-    name: 'Arduino Nano',
-    fqbn: 'arduino:avr:nano',
-    description: 'ATmega328P、有線のみ',
-    category: 'arduino',
-    supportsOta: false,
-    supportedFlashMethods: ['usb', 'download-bin'],
-  },
-  {
-    id: 'arduino-nano-old',
-    name: 'Arduino Nano (Old Bootloader)',
-    fqbn: 'arduino:avr:nano:cpu=atmega328old',
-    description: 'ATmega328P (旧ブートローダー)、有線のみ',
-    category: 'arduino',
-    supportsOta: false,
-    supportedFlashMethods: ['usb', 'download-bin'],
-  },
-  {
-    id: 'arduino-mega',
-    name: 'Arduino Mega 2560',
-    fqbn: 'arduino:avr:mega',
-    description: 'ATmega2560、有線のみ',
-    category: 'arduino',
-    supportsOta: false,
-    supportedFlashMethods: ['usb', 'download-bin'],
-  },
-  // ESP8266
-  {
-    id: 'esp8266-generic',
-    name: 'ESP8266 Generic',
-    fqbn: 'esp8266:esp8266:generic',
-    description: 'WiFi対応、OTA可',
-    category: 'esp8266',
-    supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
-  },
-  {
-    id: 'nodemcu',
-    name: 'NodeMCU 1.0 (ESP-12E)',
-    fqbn: 'esp8266:esp8266:nodemcuv2',
-    description: 'WiFi対応、OTA可',
-    category: 'esp8266',
-    supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
-  },
-  {
-    id: 'wemos-d1-mini',
-    name: 'WEMOS D1 Mini',
-    fqbn: 'esp8266:esp8266:d1_mini',
-    description: 'WiFi対応、OTA可',
-    category: 'esp8266',
-    supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
-  },
   // 汎用 ESP32（メーカー不問）
   {
     id: 'esp32-generic',
@@ -108,7 +44,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: 'ESP32-WROOM等、OTA可',
     category: 'generic',
     supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
+    supportedFlashMethods: ['wifi', 'wifi-batch'],
   },
   {
     id: 'esp32-s3-generic',
@@ -117,7 +53,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: 'USB OTG、カメラ対応、OTA可',
     category: 'generic',
     supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
+    supportedFlashMethods: ['wifi', 'wifi-batch'],
   },
   {
     id: 'esp32-c3-generic',
@@ -126,7 +62,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: 'RISC-V、省電力、OTA可',
     category: 'generic',
     supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
+    supportedFlashMethods: ['wifi', 'wifi-batch'],
   },
   {
     id: 'esp32-c6-generic',
@@ -135,7 +71,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: 'WiFi 6、Thread/Zigbee、OTA可',
     category: 'generic',
     supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
+    supportedFlashMethods: ['wifi', 'wifi-batch'],
   },
   // M5Stackシリーズ
   {
@@ -145,7 +81,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '2.0インチ画面、ボタン3個、OTA可',
     category: 'm5stack',
     supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
+    supportedFlashMethods: ['wifi', 'wifi-batch'],
   },
   {
     id: 'm5stickc-plus',
@@ -154,7 +90,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '1.14インチ画面、IMU搭載、OTA可',
     category: 'm5stack',
     supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
+    supportedFlashMethods: ['wifi', 'wifi-batch'],
   },
   {
     id: 'atom-lite',
@@ -163,7 +99,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '24x24mm、RGB LED、OTA可',
     category: 'm5stack',
     supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
+    supportedFlashMethods: ['wifi', 'wifi-batch'],
   },
   {
     id: 'atom-matrix',
@@ -172,7 +108,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '24x24mm、5x5 LED、IMU、OTA可',
     category: 'm5stack',
     supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
+    supportedFlashMethods: ['wifi', 'wifi-batch'],
   },
   {
     id: 'm5stamp-pico',
@@ -181,7 +117,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '超小型スタンプ型、OTA可',
     category: 'm5stack',
     supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
+    supportedFlashMethods: ['wifi', 'wifi-batch'],
   },
   {
     id: 'm5stamp-c3',
@@ -190,7 +126,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: 'C3搭載スタンプ型、OTA可',
     category: 'm5stack',
     supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
+    supportedFlashMethods: ['wifi', 'wifi-batch'],
   },
   // Seeed Xiaoシリーズ
   {
@@ -200,7 +136,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '21x17.5mm、RISC-V、OTA可',
     category: 'xiao',
     supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
+    supportedFlashMethods: ['wifi', 'wifi-batch'],
   },
   {
     id: 'xiao-esp32s3',
@@ -209,7 +145,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '21x17.5mm、カメラ対応、OTA可',
     category: 'xiao',
     supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
+    supportedFlashMethods: ['wifi', 'wifi-batch'],
   },
   {
     id: 'xiao-esp32c6',
@@ -218,53 +154,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '21x17.5mm、WiFi 6、OTA可',
     category: 'xiao',
     supportsOta: true,
-    supportedFlashMethods: ['usb', 'wifi', 'wifi-batch', 'download-bin'],
-  },
-  // RP2040シリーズ
-  {
-    id: 'raspberry-pi-pico',
-    name: 'Raspberry Pi Pico',
-    fqbn: 'rp2040:rp2040:rpipico',
-    description: 'RP2040、264KB RAM、USB書き込み',
-    category: 'rp2040',
-    supportsOta: false,
-    supportedFlashMethods: ['download-uf2'],
-  },
-  {
-    id: 'raspberry-pi-pico-w',
-    name: 'Raspberry Pi Pico W',
-    fqbn: 'rp2040:rp2040:rpipicow',
-    description: 'RP2040 + WiFi、USB書き込み',
-    category: 'rp2040',
-    supportsOta: false,
-    supportedFlashMethods: ['download-uf2'],
-  },
-  {
-    id: 'xiao-rp2040',
-    name: 'XIAO RP2040',
-    fqbn: 'rp2040:rp2040:seeed_xiao_rp2040',
-    description: '21x17.5mm、小型、USB書き込み',
-    category: 'rp2040',
-    supportsOta: false,
-    supportedFlashMethods: ['download-uf2'],
-  },
-  {
-    id: 'adafruit-kb2040',
-    name: 'Adafruit KB2040',
-    fqbn: 'rp2040:rp2040:adafruit_kb2040',
-    description: 'Pro Micro互換、USB書き込み',
-    category: 'rp2040',
-    supportsOta: false,
-    supportedFlashMethods: ['download-uf2'],
-  },
-  {
-    id: 'arduino-nano-rp2040-connect',
-    name: 'Arduino Nano RP2040 Connect',
-    fqbn: 'arduino:mbed_nano:nanorp2040connect',
-    description: 'WiFi/BLE搭載、Arduino公式、USB書き込み',
-    category: 'rp2040',
-    supportsOta: false,
-    supportedFlashMethods: ['download-uf2'],
+    supportedFlashMethods: ['wifi', 'wifi-batch'],
   },
 ];
 

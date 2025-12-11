@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Wifi, ChevronDown, Usb, Bluetooth, Search } from 'lucide-react';
+import { Wifi, ChevronDown, Usb, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,16 +11,15 @@ import {
 import { useDeviceStore } from '@/stores/deviceStore';
 import { useWifiStore } from '@/stores/wifiStore';
 import { useSerialStore } from '@/stores/serialStore';
-import { useBluetoothStore } from '@/stores/bluetoothStore';
 import { uuidToMdns } from '@/lib/uuid';
 import { useTranslation } from 'react-i18next';
 
-type ConnectionType = 'usb' | 'wifi' | 'bluetooth';
+type ConnectionType = 'usb' | 'wifi';
 
 interface SelectedDevice {
   type: ConnectionType;
   name: string;
-  id: string;  // USB/Bluetoothの場合は'usb'/'bluetooth'、WiFiの場合はuuid
+  id: string;  // USBの場合は'usb'、WiFiの場合はuuid
 }
 
 export function HeaderDeviceSelector() {
@@ -37,7 +36,6 @@ export function HeaderDeviceSelector() {
     disconnect: disconnectWifi
   } = useWifiStore();
   const { status: serialStatus, connect: connectSerial, isSupported: isSerialSupported } = useSerialStore();
-  const { status: bluetoothStatus } = useBluetoothStore();
 
   // ユーザーが明示的に選択した接続タイプ
   const [selectedConnectionType, setSelectedConnectionType] = useState<ConnectionType | null>(null);
@@ -55,9 +53,6 @@ export function HeaderDeviceSelector() {
     if (selectedConnectionType === 'usb' && serialStatus === 'connected') {
       return { type: 'usb', name: t('editor.deviceSelector.usbConnection'), id: 'usb' };
     }
-    if (selectedConnectionType === 'bluetooth' && bluetoothStatus === 'connected') {
-      return { type: 'bluetooth', name: t('editor.deviceSelector.bluetoothConnection'), id: 'bluetooth' };
-    }
 
     // 明示的な選択がない場合は、自動判定
     // WiFi接続を優先（USB接続は電源供給のみの可能性があるため）
@@ -66,9 +61,6 @@ export function HeaderDeviceSelector() {
     }
     if (serialStatus === 'connected') {
       return { type: 'usb', name: t('editor.deviceSelector.usbConnection'), id: 'usb' };
-    }
-    if (bluetoothStatus === 'connected') {
-      return { type: 'bluetooth', name: t('editor.deviceSelector.bluetoothConnection'), id: 'bluetooth' };
     }
     return null;
   };
@@ -220,8 +212,6 @@ export function HeaderDeviceSelector() {
         return <Usb className="w-3 h-3" />;
       case 'wifi':
         return <Wifi className="w-3 h-3" />;
-      case 'bluetooth':
-        return <Bluetooth className="w-3 h-3" />;
     }
   };
 
@@ -265,18 +255,6 @@ export function HeaderDeviceSelector() {
             <Usb className="w-4 h-4 mr-2 text-gray-500" />
             USB接続...
             <div className="ml-auto w-2 h-2 rounded-full bg-gray-400" />
-          </DropdownMenuItem>
-        )}
-
-        {/* Bluetooth接続中の場合 */}
-        {bluetoothStatus === 'connected' && (
-          <DropdownMenuItem
-            onClick={() => setSelectedConnectionType('bluetooth')}
-            className={selectedDevice?.type === 'bluetooth' ? 'bg-green-50' : ''}
-          >
-            <Bluetooth className="w-4 h-4 mr-2 text-purple-500" />
-            {t('editor.deviceSelector.bluetoothConnection')}
-            <div className="ml-auto w-2 h-2 rounded-full bg-green-500" />
           </DropdownMenuItem>
         )}
 
