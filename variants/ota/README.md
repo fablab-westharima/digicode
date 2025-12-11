@@ -64,12 +64,19 @@ npm run build
 - ✅ npm run dev: 成功（開発サーバー起動）
 - ✅ React アプリケーション表示
 
-**未確認事項（Phase 1.5aで確認予定）:**
-- バックエンドとの接続
-- ログイン機能
-- プロジェクト保存/読込
-- コンパイル機能
-- 実際のOTA書込み
+**Phase 1.5a完了（2025-12-11）:**
+- ✅ バックエンド環境構築（esp32-blockly-backend）
+  - npm install: 171パッケージ、脆弱性0件
+  - D1データベースマイグレーション適用（7ファイル）
+  - .dev.vars作成（JWT_SECRET設定）
+  - wrangler dev起動成功（port 8787）
+- ✅ ログイン機能: 新規登録・ログイン成功
+- ✅ プロジェクト保存/読込: DB連携正常
+- ✅ コンパイル機能: Ubuntu server成功、.binダウンロード
+- ✅ OTA書込み: ESP32への書込み成功、実機動作確認済み
+
+**UI改善要望:**
+- デバイス検索ボタンの常時表示化（`prompt/logs/ui_feedback/20251211_device_search_button.md`）
 
 ---
 
