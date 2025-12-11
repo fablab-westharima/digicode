@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import auth from './routes/auth';
-import passkey from './routes/passkey';
 import projects from './routes/projects';
 import compileUsage from './routes/compile-usage';
 import subscriptions from './routes/subscriptions';
@@ -12,7 +11,6 @@ type Bindings = {
   DB: D1Database;
   R2: R2Bucket;
   JWT_SECRET: string;
-  PASSKEY_CHALLENGES: KVNamespace;
   CORS_ORIGINS?: string; // Optional: comma-separated list of additional origins
   SQUARE_ACCESS_TOKEN?: string;
   SQUARE_LOCATION_ID?: string;
@@ -84,9 +82,6 @@ app.use('/api/webhooks/*', rateLimitPresets.webhook);
 
 // 認証ルート
 app.route('/api/auth', auth);
-
-// パスキー認証ルート（/api/auth/passkeyで登録）
-app.route('/api/auth/passkey', passkey);
 
 // プロジェクトルート
 app.route('/api/projects', projects);

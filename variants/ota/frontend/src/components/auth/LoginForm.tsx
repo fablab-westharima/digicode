@@ -3,8 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { PasskeyLoginButton } from './PasskeyLoginButton';
-import { useAuthStore } from '@/stores/authStore';
 
 interface LoginFormProps {
   onSubmit: (email: string, password: string) => Promise<void>;
@@ -16,27 +14,12 @@ interface LoginFormProps {
 
 export function LoginForm({ onSubmit, onSwitchToRegister, onForgotPassword, isLoading, error }: LoginFormProps) {
   const { t } = useTranslation();
-  const { checkAuth } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [passkeyError, setPasskeyError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setPasskeyError(null);
     await onSubmit(email, password);
-  };
-
-  const handlePasskeySuccess = async () => {
-    // Tokens are already set by passkeyService.loginWithPasskey()
-    // Update authStore to trigger authentication state change and redirect
-    setPasskeyError(null);
-    await checkAuth();
-    setPasskeyError(null);
-  };
-
-  const handlePasskeyError = (error: string) => {
-    setPasskeyError(error);
   };
 
   return (
@@ -73,32 +56,9 @@ export function LoginForm({ onSubmit, onSwitchToRegister, onForgotPassword, isLo
         </div>
       )}
 
-      {passkeyError && (
-        <div className="text-sm text-red-500 bg-red-50 p-3 rounded-md">
-          {passkeyError}
-        </div>
-      )}
-
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? t('auth.loggingIn') : t('auth.login')}
       </Button>
-
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            {t('auth.passkey.orDivider')}
-          </span>
-        </div>
-      </div>
-
-      <PasskeyLoginButton
-        email={email}
-        onSuccess={handlePasskeySuccess}
-        onError={handlePasskeyError}
-      />
 
       {onForgotPassword && (
         <div className="text-center">

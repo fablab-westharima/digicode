@@ -27,7 +27,6 @@ import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstaller
 import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
 import { HeaderDeviceSelector } from '@/components/device/HeaderDeviceSelector';
-import { PasskeyManagementDialog } from '@/components/auth/PasskeyManagementDialog';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
@@ -43,7 +42,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { compileService, type CompileServerMode, type FullPackage } from '@/services/compileService';
 import { api } from '@/lib/api';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
-import { Download, Loader2, Zap, SlidersHorizontal, LineChart, Code, Terminal, ChevronUp, ChevronDown, GraduationCap, ChevronDown as ChevronDownIcon, X, FilePlus, FolderOpen, FileCode, Cloud, Server, Usb, Wifi, Check, Settings2, Pin, BookOpen, Globe, Fingerprint } from 'lucide-react';
+import { Download, Loader2, Zap, SlidersHorizontal, LineChart, Code, Terminal, ChevronUp, ChevronDown, GraduationCap, ChevronDown as ChevronDownIcon, X, FilePlus, FolderOpen, FileCode, Cloud, Server, Usb, Wifi, Check, Settings2, Pin, BookOpen, Globe } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -99,7 +98,6 @@ export function EditorPage() {
   const [compileServerSettingsDialogOpen, setCompileServerSettingsDialogOpen] = useState(false);
   const [flashMethodDialogOpen, setFlashMethodDialogOpen] = useState(false);
   const [compiledBinary, setCompiledBinary] = useState<Blob | null>(null);
-  const [passkeyManagementDialogOpen, setPasskeyManagementDialogOpen] = useState(false);
   const [codePreviewDialogOpen, setCodePreviewDialogOpen] = useState(false);
   const [pidTuningDialogOpen, setPidTuningDialogOpen] = useState(false);
   const [bottomPanelExpanded, setBottomPanelExpanded] = useState(false);
@@ -933,11 +931,6 @@ export function EditorPage() {
           <div className="px-2 pb-2">
             <LocaleSelector />
           </div>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setPasskeyManagementDialogOpen(true)}>
-            <Fingerprint className="w-4 h-4 mr-2" />
-            {t('editor.menu.passkeyManagement')}
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -1066,7 +1059,6 @@ export function EditorPage() {
             onUsbPortRelease={handleUsbPortRelease}
             onPinAssignment={() => setPinSettingsDialogOpen(true)}
             onCompileServerSettings={() => setCompileServerSettingsDialogOpen(true)}
-            onPasskeyManagement={() => setPasskeyManagementDialogOpen(true)}
             onDocs={() => window.open('/docs', '_blank')}
             onCodePreview={() => setCodePreviewDialogOpen(true)}
             onPidTuning={() => setPidTuningDialogOpen(true)}
@@ -1352,12 +1344,6 @@ export function EditorPage() {
       <CompileServerSettingsDialog
         open={compileServerSettingsDialogOpen}
         onOpenChange={setCompileServerSettingsDialogOpen}
-      />
-
-      {/* パスキー管理ダイアログ */}
-      <PasskeyManagementDialog
-        open={passkeyManagementDialogOpen}
-        onOpenChange={setPasskeyManagementDialogOpen}
       />
 
       {/* 生成コードプレビューダイアログ */}
