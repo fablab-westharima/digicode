@@ -242,45 +242,15 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
 
   // Flash全体を消去
   const handleEraseFlash = async () => {
+    if (!isConnected) {
+      addLog('❌ 先に有線接続してください');
+      return;
+    }
+
     if (!confirm('Flash全体を消去します。保存されているすべてのデータ（UUID、WiFi設定など）が削除されます。よろしいですか？')) {
       return;
     }
 
-    // 接続されていなければ先に接続
-    if (!isConnected) {
-      setIsConnecting(true);
-      setLogs([]);
-      addLog('Flash消去のため、ESP32との接続を開始...');
-
-      // ログコールバックを設定
-      firmwareService.setLogCallback((msg) => {
-        addLog(msg);
-      });
-
-      try {
-        const chipInfo = await firmwareService.connect((progress) => {
-          addLog(`${progress.message} (${Math.round(progress.percent)}%)`);
-          setEraseProgress(progress);
-        });
-
-        if (!chipInfo) {
-          throw new Error('ESP32に接続できませんでした');
-        }
-
-        addLog(`✅ 接続成功: ${chipInfo.name}`);
-        addLog(`MAC Address: ${chipInfo.mac}`);
-        setIsConnected(true);
-      } catch (error) {
-        console.error('Connection error:', error);
-        addLog(`❌ 接続エラー: ${(error as Error).message}`);
-        setIsConnecting(false);
-        return; // 接続失敗したら消去しない
-      } finally {
-        setIsConnecting(false);
-      }
-    }
-
-    // 消去実行
     setIsErasing(true);
     addLog('Flash全体を消去中...');
 
@@ -637,12 +607,17 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
             <Button
               variant="destructive"
               onClick={handleEraseFlash}
-              disabled={isErasing || isConnecting}
+              disabled={!isConnected || isErasing}
               className="w-full bg-[#f85149] hover:bg-[#da3633] text-white disabled:opacity-50"
             >
               <Trash2 className="w-4 h-4 mr-2" />
-              {isErasing ? 'Flash消去中...' : isConnecting ? '接続中...' : 'Flash全体を消去'}
+              {isErasing ? 'Flash消去中...' : 'Flash全体を消去'}
             </Button>
+            {!isConnected && (
+              <p className="text-xs text-[#8B949E] text-center">
+                ※ 先に「ESP32に有線接続」してください
+              </p>
+            )}
           </div>
 
           {/* 閉じるボタン */}
