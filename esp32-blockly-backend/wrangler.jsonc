@@ -22,5 +22,13 @@
 			"binding": "R2",
 			"bucket_name": "esp32-editor-files"
 		}
+	],
+	// KV Namespace for storing WebAuthn challenges (temporary, TTL-based)
+	// Created: 2025-12-11 with 'npx wrangler kv namespace create passkey-challenges'
+	"kv_namespaces": [
+		{
+			"binding": "PASSKEY_CHALLENGES",
+			"id": "99e3e0a813f04028bc48219e524ec352"
+		}
 	]
 }
