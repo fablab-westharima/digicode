@@ -56,7 +56,30 @@
     "sendComplete": "送信完了",
     "resetEmailSent": "メールアドレスが登録されている場合、パスワードリセットの案内メールを送信しました。メールをご確認ください。",
     "enterRegisteredEmail": "登録済みのメールアドレスを入力してください。パスワードリセットのリンクをお送りします。",
-    "sending": "送信中..."
+    "sending": "送信中...",
+    "passkey": {
+      "loginWithPasskey": "パスキーでログイン",
+      "loggingInWithPasskey": "パスキーでログイン中...",
+      "registerPasskey": "パスキーを登録",
+      "registeringPasskey": "パスキーを登録中...",
+      "managePasskeys": "パスキー管理",
+      "passkeyList": "登録済みパスキー",
+      "deviceName": "デバイス名",
+      "createdAt": "登録日時",
+      "lastUsedAt": "最終使用日時",
+      "neverUsed": "未使用",
+      "noPasskeys": "パスキーが登録されていません",
+      "registerNewPasskey": "新しいパスキーを登録",
+      "deletePasskey": "パスキーを削除",
+      "confirmDelete": "このパスキーを削除しますか？",
+      "registerSuccess": "パスキーを登録しました",
+      "registerError": "パスキーの登録に失敗しました",
+      "deleteSuccess": "パスキーを削除しました",
+      "deleteError": "パスキーの削除に失敗しました",
+      "loginError": "パスキーでのログインに失敗しました",
+      "notSupported": "お使いのブラウザはパスキー認証に対応していません",
+      "orDivider": "または"
+    }
   },
   "home": {
     "title": "DigiCode",

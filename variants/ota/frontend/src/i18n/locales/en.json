@@ -48,7 +48,30 @@
     "sendComplete": "Sent",
     "resetEmailSent": "If the email address is registered, a password reset email has been sent. Please check your email.",
     "enterRegisteredEmail": "Please enter your registered email address. We will send you a password reset link.",
-    "sending": "Sending..."
+    "sending": "Sending...",
+    "passkey": {
+      "loginWithPasskey": "Sign in with Passkey",
+      "loggingInWithPasskey": "Signing in with passkey...",
+      "registerPasskey": "Register Passkey",
+      "registeringPasskey": "Registering passkey...",
+      "managePasskeys": "Manage Passkeys",
+      "passkeyList": "Registered Passkeys",
+      "deviceName": "Device Name",
+      "createdAt": "Registered",
+      "lastUsedAt": "Last Used",
+      "neverUsed": "Never Used",
+      "noPasskeys": "No passkeys registered",
+      "registerNewPasskey": "Register New Passkey",
+      "deletePasskey": "Delete Passkey",
+      "confirmDelete": "Are you sure you want to delete this passkey?",
+      "registerSuccess": "Passkey registered successfully",
+      "registerError": "Failed to register passkey",
+      "deleteSuccess": "Passkey deleted successfully",
+      "deleteError": "Failed to delete passkey",
+      "loginError": "Failed to sign in with passkey",
+      "notSupported": "Your browser does not support passkey authentication",
+      "orDivider": "or"
+    }
   },
   "home": {
     "title": "DigiCode",
