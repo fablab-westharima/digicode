@@ -151,7 +151,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                     className={`p-4 border rounded-lg cursor-pointer transition-colors ${
                       currentPreset.id === preset.id
                         ? 'bg-green-50 border-green-500'
-                        : 'hover:bg-gray-50'
+                        : 'hover:bg-gray-500/10'
                     }`}
                     onClick={() => setCurrentPreset(preset.id)}
                   >
@@ -451,7 +451,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                           className={`p-3 rounded-lg border text-center transition-colors ${
                             editingPreset.servoConfig.servoType === '180'
                               ? 'bg-green-100 border-green-500 text-green-700'
-                              : 'bg-white hover:bg-gray-50'
+                              : 'bg-white hover:bg-gray-500/10'
                           }`}
                           onClick={() => handleServoTypeChange('180')}
                           disabled={isViewMode}
@@ -464,7 +464,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                           className={`p-3 rounded-lg border text-center transition-colors ${
                             editingPreset.servoConfig.servoType === '270'
                               ? 'bg-green-100 border-green-500 text-green-700'
-                              : 'bg-white hover:bg-gray-50'
+                              : 'bg-white hover:bg-gray-500/10'
                           }`}
                           onClick={() => handleServoTypeChange('270')}
                           disabled={isViewMode}
@@ -477,7 +477,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                           className={`p-3 rounded-lg border text-center transition-colors ${
                             editingPreset.servoConfig.servoType === '360'
                               ? 'bg-green-100 border-green-500 text-green-700'
-                              : 'bg-white hover:bg-gray-50'
+                              : 'bg-white hover:bg-gray-500/10'
                           }`}
                           onClick={() => handleServoTypeChange('360')}
                           disabled={isViewMode}

@@ -116,7 +116,7 @@ export function TutorialSelectDialog({ open, onOpenChange }: TutorialSelectDialo
                             onClick={() => handleStartTutorial(tutorial.id)}
                             className={cn(
                               "ml-4",
-                              isCompleted && "bg-gray-400 hover:bg-gray-500"
+                              isCompleted && "bg-gray-400 hover:bg-gray-500/100"
                             )}
                           >
                             <Play className="w-3 h-3 mr-1" />

@@ -231,6 +231,21 @@ export function HeaderDeviceSelector() {
           </div>
         )}
 
+        {/* デバイス検索（WiFiデバイスがある場合のみ） */}
+        {wifiDevices.length > 0 && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={handleSearchDevices}
+              disabled={isSearching}
+              className="text-green-600 hover:text-green-700"
+            >
+              <Search className="w-4 h-4 mr-2" />
+              {isSearching ? '検索中...' : 'デバイス検索'}
+            </DropdownMenuItem>
+          </>
+        )}
+
         {/* 選択解除（WiFi選択中のみ） */}
         {selectedDevice && (
           <>
@@ -242,21 +257,6 @@ export function HeaderDeviceSelector() {
         )}
       </DropdownMenuContent>
     </DropdownMenu>
-
-    {/* デバイス検索ボタン（常時表示） */}
-    {wifiDevices.length > 0 && (
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handleSearchDevices}
-        disabled={isSearching}
-        className="text-xs px-2 text-green-600 hover:text-green-700 hover:bg-green-50"
-        title="デバイス検索"
-      >
-        <Search className="w-3.5 h-3.5" />
-        <span className="ml-1">デバイス検索</span>
-      </Button>
-    )}
   </div>
   );
 }

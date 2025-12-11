@@ -87,7 +87,7 @@ export function ProjectListDialog({
               {projects.map((project) => (
                 <div
                   key={project.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-500/10 cursor-pointer"
                   onClick={() => handleSelect(project.id)}
                 >
                   <div className="flex-1 min-w-0">
@@ -104,7 +104,7 @@ export function ProjectListDialog({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="ml-2 text-red-500 hover:text-red-700 hover:bg-red-50"
+                    className="ml-2 text-red-500 hover:text-red-700 hover:bg-red-500/10"
                     onClick={(e) => handleDelete(e, project.id)}
                   >
                     {t('common.delete')}

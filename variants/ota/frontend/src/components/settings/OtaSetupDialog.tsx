@@ -620,7 +620,7 @@ export function OtaSetupDialog({ open, onOpenChange }: OtaSetupDialogProps) {
           {/* Step 0: AP接続設定（折りたたみ可能） */}
           <Card className="border-yellow-200 dark:border-yellow-800">
             <CardHeader
-              className="pb-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-lg"
+              className="pb-3 cursor-pointer hover:bg-gray-500/10 dark:hover:bg-gray-800 rounded-t-lg"
               onClick={() => setApSectionExpanded(!apSectionExpanded)}
             >
               <CardTitle className="text-sm flex items-center justify-between">

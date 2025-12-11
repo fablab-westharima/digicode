@@ -116,7 +116,7 @@ export const CompileServerSettings = () => {
       <CardContent className="space-y-4">
         <RadioGroup value={mode} onValueChange={(v) => handleModeChange(v as CompileServerMode)}>
           {/* クラウドサーバー */}
-          <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-gray-50 transition-colors">
+          <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-gray-500/10 transition-colors">
             <RadioGroupItem value="cloud" id="cloud" className="mt-1" />
             <div className="flex-1">
               <Label htmlFor="cloud" className="flex items-center gap-2 cursor-pointer font-medium">
@@ -144,7 +144,7 @@ export const CompileServerSettings = () => {
           </div>
 
           {/* ローカルサーバー */}
-          <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-gray-50 transition-colors">
+          <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-gray-500/10 transition-colors">
             <RadioGroupItem value="local" id="local" className="mt-1" />
             <div className="flex-1">
               <Label htmlFor="local" className="flex items-center gap-2 cursor-pointer font-medium">
@@ -188,7 +188,7 @@ export const CompileServerSettings = () => {
         {/* 現在の設定表示 */}
         <div className="pt-2 border-t">
           <p className="text-sm text-gray-600">
-            {t('settings.currentServer')}: <code className="bg-gray-100 px-2 py-0.5 rounded text-xs">{compileService.getServerUrl()}</code>
+            {t('settings.currentServer')}: <code className="bg-gray-500/10 text-gray-300 px-2 py-0.5 rounded text-xs">{compileService.getServerUrl()}</code>
           </p>
         </div>
 
