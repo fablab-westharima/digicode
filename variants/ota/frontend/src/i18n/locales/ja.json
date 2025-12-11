@@ -40,7 +40,15 @@
     "registerError": "登録に失敗しました",
     "passwordMismatch": "パスワードが一致しません",
     "passwordMinLength": "パスワードは8文字以上で入力してください",
-    "passwordRequirements": "パスワードは8文字以上で、大文字・小文字・数字・特殊文字を含む必要があります",
+    "passwordRequirements": "パスワードの要件:",
+    "passwordRequirementsNotMet": "パスワードが要件を満たしていません",
+    "req": {
+      "minLength": "8文字以上",
+      "lowercase": "小文字 (a-z) を含む",
+      "uppercase": "大文字 (A-Z) を含む",
+      "number": "数字 (0-9) を含む",
+      "special": "特殊文字 (!@#$%^&* など) を含む"
+    },
     "noAccount": "アカウントをお持ちでない方は",
     "hasAccount": "既にアカウントをお持ちの方は",
     "resetSendFailed": "パスワードリセットの送信に失敗しました",
