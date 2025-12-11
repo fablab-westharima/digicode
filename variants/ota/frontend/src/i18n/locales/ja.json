@@ -2366,7 +2366,7 @@
     "step1Title": "USB接続",
     "step1Desc": "ESP32をUSBケーブルでPCに接続してください",
     "step2Title": "ファームウェアを選択",
-    "arduinoTitle": "DigiCode OTAファームウェア（推奨）",
+    "arduinoTitle": "DigiCode OTAファームウェア",
     "arduinoDesc": "Arduino C++ / OTA対応",
     "micropythonTitle": "入門用",
     "micropythonDesc": "MicroPython / OTTO教材など",
