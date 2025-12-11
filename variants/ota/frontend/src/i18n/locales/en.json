@@ -234,7 +234,8 @@
       "displayLanguage": "Display Language",
       "mode": "Mode",
       "compileTargetBoard": "Compile Target Board",
-      "tutorial": "Tutorial"
+      "tutorial": "Tutorial",
+      "passkeyManagement": "Passkey Management"
     },
     "board": {
       "wiredOnly": "Wired Only",
@@ -477,6 +478,19 @@
     "theme": "Theme",
     "light": "Light",
     "dark": "Dark"
+  },
+  "sidebar": {
+    "projects": "Projects",
+    "firmwareWrite": "Firmware Write",
+    "compileServerSelect": "Compile Server Settings",
+    "wirelessLan": "Wireless LAN",
+    "usbPortRelease": "USB Port Release",
+    "extensions": "Extensions",
+    "passkeyManagement": "Passkey Management",
+    "codePreview": "Generated Code",
+    "pidTuning": "PID Tuning",
+    "usbDriver": "USB Driver",
+    "document": "Document"
   },
   "tutorial": {
     "selectTutorial": "Select Tutorial",

@@ -245,7 +245,8 @@
       "displayLanguage": "表示言語",
       "mode": "モード",
       "compileTargetBoard": "コンパイル対象ボード",
-      "tutorial": "チュートリアル"
+      "tutorial": "チュートリアル",
+      "passkeyManagement": "パスキー管理"
     },
     "board": {
       "wiredOnly": "有線のみ",
@@ -488,6 +489,19 @@
     "theme": "テーマ",
     "light": "ライト",
     "dark": "ダーク"
+  },
+  "sidebar": {
+    "projects": "プロジェクト",
+    "firmwareWrite": "ファームウェア書込",
+    "compileServerSelect": "コンパイルサーバ設定",
+    "wirelessLan": "無線LAN接続",
+    "usbPortRelease": "USBポート解放",
+    "extensions": "拡張機能",
+    "passkeyManagement": "パスキー管理",
+    "codePreview": "生成コード",
+    "pidTuning": "PIDチューニング",
+    "usbDriver": "USBドライバー",
+    "document": "ドキュメント"
   },
   "tutorial": {
     "selectTutorial": "チュートリアルを選択",

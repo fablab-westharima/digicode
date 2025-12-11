@@ -10,7 +10,8 @@ import {
   SlidersHorizontal,
   Cpu,
   Trash2,
-  Usb
+  Usb,
+  Fingerprint
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
@@ -21,6 +22,7 @@ interface SidebarProps {
   onUsbPortRelease?: () => void;
   onPinAssignment?: () => void;
   onCompileServerSettings?: () => void;
+  onPasskeyManagement?: () => void;
   onDocs?: () => void;
   onCodePreview?: () => void;
   onPidTuning?: () => void;
@@ -42,6 +44,7 @@ export function Sidebar({
   onUsbPortRelease,
   onPinAssignment,
   onCompileServerSettings,
+  onPasskeyManagement,
   onDocs,
   onCodePreview,
   onPidTuning,
@@ -94,6 +97,13 @@ export function Sidebar({
       label: t('sidebar.extensions', { defaultValue: '拡張機能' }),
       icon: <PinIcon className="w-4 h-4" />,
       action: onPinAssignment || (() => {}),
+      category: 'settings'
+    },
+    {
+      id: 'passkey-management',
+      label: t('sidebar.passkeyManagement', { defaultValue: 'パスキー管理' }),
+      icon: <Fingerprint className="w-4 h-4" />,
+      action: onPasskeyManagement || (() => {}),
       category: 'settings'
     },
     // Tools (ツール)
