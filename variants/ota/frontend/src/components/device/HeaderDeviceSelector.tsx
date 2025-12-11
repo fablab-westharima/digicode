@@ -216,27 +216,28 @@ export function HeaderDeviceSelector() {
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className={`text-xs px-2 ${selectedDevice ? 'text-green-600' : ''}`}
-        >
-          <div className={`w-2 h-2 rounded-full mr-1 ${
-            selectedDevice ? 'bg-green-500' : 'bg-gray-300'
-          }`} />
-          {selectedDevice ? (
-            <>
-              {getIcon(selectedDevice.type)}
-              <span className="ml-1">{selectedDevice.name}</span>
-            </>
-          ) : (
-            t('editor.deviceSelector.writeTarget')
-          )}
-          <ChevronDown className="w-3 h-3 ml-1" />
-        </Button>
-      </DropdownMenuTrigger>
+    <div className="flex items-center gap-1">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`text-xs px-2 ${selectedDevice ? 'text-green-600' : ''}`}
+          >
+            <div className={`w-2 h-2 rounded-full mr-1 ${
+              selectedDevice ? 'bg-green-500' : 'bg-gray-300'
+            }`} />
+            {selectedDevice ? (
+              <>
+                {getIcon(selectedDevice.type)}
+                <span className="ml-1">{selectedDevice.name}</span>
+              </>
+            ) : (
+              t('editor.deviceSelector.writeTarget')
+            )}
+            <ChevronDown className="w-3 h-3 ml-1" />
+          </Button>
+        </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-52">
         <div className="px-2 py-1.5 text-xs text-gray-500">{t('editor.deviceSelector.writeTargetDevice')}</div>
 
@@ -299,18 +300,22 @@ export function HeaderDeviceSelector() {
             </DropdownMenuItem>
           </>
         )}
-
-        {/* デバイス検索 */}
-        {wifiDevices.length > 0 && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSearchDevices} disabled={isSearching} className="text-green-600">
-              <Search className="w-3.5 h-3.5 mr-2" />
-              {isSearching ? 'デバイス検索中...' : 'デバイス検索'}
-            </DropdownMenuItem>
-          </>
-        )}
       </DropdownMenuContent>
     </DropdownMenu>
+
+      {/* デバイス検索ボタン（常時表示） */}
+      {wifiDevices.length > 0 && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleSearchDevices}
+          disabled={isSearching}
+          className="text-xs px-2 text-green-600 hover:text-green-700 hover:bg-green-50"
+          title="デバイス検索"
+        >
+          <Search className="w-3.5 h-3.5" />
+        </Button>
+      )}
+    </div>
   );
 }
