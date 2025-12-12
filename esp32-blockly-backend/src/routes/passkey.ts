@@ -259,11 +259,21 @@ app.post('/login/options', async (c) => {
 
     const options = await generateAuthenticationOptions({
       rpID: rpId,
-      allowCredentials: authenticators.results.map((auth: any) => ({
-        id: auth.credential_id,
-        type: 'public-key',
-        transports: auth.transports ? JSON.parse(auth.transports) : undefined,
-      })),
+      allowCredentials: authenticators.results.map((auth: any) => {
+        // transportsからhybridを除外（QRコード表示を防ぐ）
+        let transports = auth.transports ? JSON.parse(auth.transports) : undefined;
+        if (transports && Array.isArray(transports)) {
+          transports = transports.filter((t: string) => t !== 'hybrid');
+          if (transports.length === 0) {
+            transports = ['internal']; // フォールバック
+          }
+        }
+        return {
+          id: auth.credential_id,
+          type: 'public-key',
+          transports,
+        };
+      }),
       userVerification: 'preferred',
       timeout: 60000,
     });
