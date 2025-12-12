@@ -114,8 +114,7 @@ app.post('/register/options', authMiddleware, async (c) => {
       userDisplayName: user.email,
       attestationType: 'none',
       authenticatorSelection: {
-        authenticatorAttachment: 'platform',
-        requireResidentKey: false,
+        residentKey: 'preferred',
         userVerification: 'preferred',
       },
       excludeCredentials: existingAuthenticators.results.map((auth: any) => ({
@@ -194,6 +193,12 @@ app.post('/register/verify', authMiddleware, async (c) => {
     const credentialIDBase64 = uint8ArrayToBase64url(registeredCredential.id);
     const publicKeyBase64 = uint8ArrayToBase64url(registeredCredential.publicKey);
 
+    // transportsからhybridを除外（QRコード表示を防ぐ）
+    let transports = registeredCredential.transports;
+    if (transports && Array.isArray(transports)) {
+      transports = transports.filter((t: string) => t !== 'hybrid');
+    }
+
     // DBに保存
     const result = await c.env.DB.prepare(
       `INSERT INTO authenticators (
@@ -205,8 +210,8 @@ app.post('/register/verify', authMiddleware, async (c) => {
         credentialIDBase64,
         publicKeyBase64,
         registeredCredential.counter,
-        registeredCredential.transports
-          ? JSON.stringify(registeredCredential.transports)
+        transports && transports.length > 0
+          ? JSON.stringify(transports)
           : null,
         deviceName || null
       )
@@ -257,26 +262,23 @@ app.post('/login/options', async (c) => {
       return c.json({ error: 'パスキーが登録されていません' }, 404);
     }
 
+    console.log('[Passkey Login] User ID:', userId);
+    console.log('[Passkey Login] RP_ID:', rpId);
+    console.log('[Passkey Login] Origin:', origin);
+    console.log('[Passkey Login] Authenticators:', JSON.stringify(authenticators.results));
+
     const options = await generateAuthenticationOptions({
       rpID: rpId,
-      allowCredentials: authenticators.results.map((auth: any) => {
-        // transportsからhybridを除外（QRコード表示を防ぐ）
-        let transports = auth.transports ? JSON.parse(auth.transports) : undefined;
-        if (transports && Array.isArray(transports)) {
-          transports = transports.filter((t: string) => t !== 'hybrid');
-          if (transports.length === 0) {
-            transports = ['internal']; // フォールバック
-          }
-        }
-        return {
-          id: auth.credential_id,
-          type: 'public-key',
-          transports,
-        };
-      }),
+      allowCredentials: authenticators.results.map((auth: any) => ({
+        id: auth.credential_id,
+        type: 'public-key',
+        transports: auth.transports ? JSON.parse(auth.transports) : undefined,
+      })),
       userVerification: 'preferred',
       timeout: 60000,
     });
+
+    console.log('[Passkey Login] Generated options:', JSON.stringify(options));
 
     // ChallengeをKVに5分間保存
     await c.env.WEBAUTHN_CHALLENGES.put(

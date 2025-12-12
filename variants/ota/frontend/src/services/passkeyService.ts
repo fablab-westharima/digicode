@@ -51,7 +51,7 @@ export async function registerPasskey(deviceName?: string): Promise<number> {
   // Step 2: ブラウザのWebAuthn APIで認証器を登録
   let credential: RegistrationResponseJSON;
   try {
-    credential = await startRegistration(options);
+    credential = await startRegistration({ optionsJSON: options });
   } catch (error) {
     if (error instanceof Error && error.name === 'NotAllowedError') {
       throw new Error('パスキー登録がキャンセルされました');
@@ -111,7 +111,7 @@ export async function authenticateWithPasskey(email: string): Promise<{
   // Step 2: ブラウザのWebAuthn APIで認証
   let credential: AuthenticationResponseJSON;
   try {
-    credential = await startAuthentication(options);
+    credential = await startAuthentication({ optionsJSON: options });
   } catch (error) {
     if (error instanceof Error && error.name === 'NotAllowedError') {
       throw new Error('パスキー認証がキャンセルされました');
