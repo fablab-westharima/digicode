@@ -32,7 +32,7 @@ export async function sendPasswordResetEmail(
 
   try {
     const { error } = await resend.emails.send({
-      from: 'DigiCode <noreply@digicode.app>', // ドメイン認証後に変更
+      from: 'DigiCode <noreply@fablab-westharima.jp>',
       to: [to],
       subject: '【DigiCode】パスワードリセットのご案内',
       html: generatePasswordResetEmailHtml(resetUrl),
@@ -147,7 +147,7 @@ export async function sendVerificationEmail(
 
   try {
     const { error } = await resend.emails.send({
-      from: 'DigiCode <noreply@digicode.app>',
+      from: 'DigiCode <noreply@fablab-westharima.jp>',
       to: [to],
       subject: '【DigiCode】メールアドレスの確認',
       html: generateVerificationEmailHtml(verificationUrl),
@@ -262,7 +262,7 @@ export async function sendRecoveryEmail(
 
   try {
     const { error } = await resend.emails.send({
-      from: 'DigiCode <noreply@digicode.app>',
+      from: 'DigiCode <noreply@fablab-westharima.jp>',
       to: [to],
       subject: '【DigiCode】アカウントリカバリー',
       html: generateRecoveryEmailHtml(recoveryUrl),
