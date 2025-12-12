@@ -28,13 +28,29 @@ const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 // WebAuthn設定
 const RP_NAME = 'DigiCode';
-const RP_ID = 'digicode.pages.dev'; // 本番ドメイン
-// 開発環境の場合はlocalhostも許可する必要があるが、ここでは本番を優先
+
+// RP_IDを動的に取得する関数
+function getRpId(origin: string | undefined): string {
+  if (!origin) return 'digicode-frontend.pages.dev';
+
+  const url = new URL(origin);
+  const hostname = url.hostname;
+
+  // localhost判定
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'localhost';
+  }
+
+  // 本番環境
+  return 'digicode-frontend.pages.dev';
+}
 
 // パスキー登録オプション生成
 app.post('/register/options', authMiddleware, async (c) => {
   try {
     const user = c.get('user');
+    const origin = c.req.header('origin');
+    const rpId = getRpId(origin);
 
     // ユーザーの既存パスキーを取得
     const existingAuthenticators = await c.env.DB.prepare(
@@ -45,7 +61,7 @@ app.post('/register/options', authMiddleware, async (c) => {
 
     const options = await generateRegistrationOptions({
       rpName: RP_NAME,
-      rpID: RP_ID,
+      rpID: rpId,
       userID: user.userId.toString(),
       userName: user.email,
       userDisplayName: user.email,
@@ -84,6 +100,8 @@ app.post('/register/options', authMiddleware, async (c) => {
 app.post('/register/verify', authMiddleware, async (c) => {
   try {
     const user = c.get('user');
+    const origin = c.req.header('origin');
+    const rpId = getRpId(origin);
     const body = await c.req.json();
     const { credential, deviceName } = body as {
       credential: RegistrationResponseJSON;
@@ -106,8 +124,8 @@ app.post('/register/verify', authMiddleware, async (c) => {
     const verification = await verifyRegistrationResponse({
       response: credential,
       expectedChallenge,
-      expectedOrigin: `https://${RP_ID}`,
-      expectedRPID: RP_ID,
+      expectedOrigin: origin || `https://${rpId}`,
+      expectedRPID: rpId,
       requireUserVerification: false,
     });
 
@@ -155,6 +173,8 @@ app.post('/register/verify', authMiddleware, async (c) => {
 // パスキー認証オプション生成
 app.post('/login/options', async (c) => {
   try {
+    const origin = c.req.header('origin');
+    const rpId = getRpId(origin);
     const { email } = await c.req.json();
 
     if (!email) {
@@ -186,7 +206,7 @@ app.post('/login/options', async (c) => {
     }
 
     const options = await generateAuthenticationOptions({
-      rpID: RP_ID,
+      rpID: rpId,
       allowCredentials: authenticators.results.map((auth: any) => ({
         id: auth.credential_id,
         type: 'public-key',
@@ -216,6 +236,8 @@ app.post('/login/options', async (c) => {
 // パスキー認証検証
 app.post('/login/verify', async (c) => {
   try {
+    const origin = c.req.header('origin');
+    const rpId = getRpId(origin);
     const body = await c.req.json();
     const { email, credential } = body as {
       email: string;
@@ -283,8 +305,8 @@ app.post('/login/verify', async (c) => {
     const verification = await verifyAuthenticationResponse({
       response: credential,
       expectedChallenge,
-      expectedOrigin: `https://${RP_ID}`,
-      expectedRPID: RP_ID,
+      expectedOrigin: origin || `https://${rpId}`,
+      expectedRPID: rpId,
       authenticator: {
         credentialID: Buffer.from(credentialIDBase64, 'base64url'),
         credentialPublicKey: publicKeyBuffer,
