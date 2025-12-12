@@ -870,4 +870,64 @@ auth.post('/recovery/verify', async (c) => {
   }
 });
 
+// アカウント削除
+auth.delete('/account', authMiddleware, async (c) => {
+  try {
+    const { userId } = c.get('user');
+
+    // トランザクション的に削除
+    // 1. パスキーを全て削除
+    await c.env.DB.prepare(
+      'DELETE FROM authenticators WHERE user_id = ?'
+    ).bind(userId).run();
+
+    // 2. リフレッシュトークンを全て削除
+    await c.env.DB.prepare(
+      'DELETE FROM refresh_tokens WHERE user_id = ?'
+    ).bind(userId).run();
+
+    // 3. パスワードリセットトークンを削除
+    await c.env.DB.prepare(
+      'DELETE FROM password_reset_tokens WHERE user_id = ?'
+    ).bind(userId).run();
+
+    // 4. メール確認トークンを削除
+    await c.env.DB.prepare(
+      'DELETE FROM email_verification_tokens WHERE user_id = ?'
+    ).bind(userId).run();
+
+    // 5. リカバリートークンを削除
+    await c.env.DB.prepare(
+      'DELETE FROM recovery_tokens WHERE user_id = ?'
+    ).bind(userId).run();
+
+    // 6. プロジェクトを全て削除
+    await c.env.DB.prepare(
+      'DELETE FROM projects WHERE user_id = ?'
+    ).bind(userId).run();
+
+    // 7. コンパイル使用量履歴を削除
+    await c.env.DB.prepare(
+      'DELETE FROM compile_usage WHERE user_id = ?'
+    ).bind(userId).run();
+
+    // 8. サブスクリプションを削除
+    await c.env.DB.prepare(
+      'DELETE FROM subscriptions WHERE user_id = ?'
+    ).bind(userId).run();
+
+    // 9. 最後にユーザー自身を削除
+    await c.env.DB.prepare(
+      'DELETE FROM users WHERE id = ?'
+    ).bind(userId).run();
+
+    return c.json({
+      message: 'アカウントを削除しました。ご利用ありがとうございました。'
+    });
+  } catch (error) {
+    console.error('Account deletion error:', error);
+    return c.json({ error: 'アカウント削除に失敗しました' }, 500);
+  }
+});
+
 export default auth;

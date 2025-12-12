@@ -27,6 +27,8 @@ import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstaller
 import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
 import { HeaderDeviceSelector } from '@/components/device/HeaderDeviceSelector';
+import { PasskeyManagementDialog } from '@/components/auth/PasskeyManagementDialog';
+import { AccountDeleteDialog } from '@/components/auth/AccountDeleteDialog';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
@@ -100,6 +102,8 @@ export function EditorPage() {
   const [compiledBinary, setCompiledBinary] = useState<Blob | null>(null);
   const [codePreviewDialogOpen, setCodePreviewDialogOpen] = useState(false);
   const [pidTuningDialogOpen, setPidTuningDialogOpen] = useState(false);
+  const [passkeyRegisterDialogOpen, setPasskeyRegisterDialogOpen] = useState(false);
+  const [accountDeleteDialogOpen, setAccountDeleteDialogOpen] = useState(false);
   const [bottomPanelExpanded, setBottomPanelExpanded] = useState(false);
   const [serverMode, setServerMode] = useState<CompileServerMode>('cloud');
   const [compileUsage, setCompileUsage] = useState<{
@@ -260,6 +264,26 @@ export function EditorPage() {
       console.error('USBポート解放エラー:', error);
       alert('USBポートの解放中にエラーが発生しました。\n\nブラウザでWeb Serial APIが有効になっているか確認してください。');
     }
+  };
+
+  // ログアウト
+  const handleLogout = () => {
+    if (confirm('ログアウトしますか？')) {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('tokenExpiresAt');
+      navigate('/auth');
+    }
+  };
+
+  // パスキー登録ダイアログを開く
+  const handlePasskeyRegister = () => {
+    setPasskeyRegisterDialogOpen(true);
+  };
+
+  // アカウント削除ダイアログを開く
+  const handleAccountDelete = () => {
+    setAccountDeleteDialogOpen(true);
   };
 
   // プロジェクト選択
@@ -1063,6 +1087,9 @@ export function EditorPage() {
             onCodePreview={() => setCodePreviewDialogOpen(true)}
             onPidTuning={() => setPidTuningDialogOpen(true)}
             onUsbDriver={() => window.open('https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers', '_blank')}
+            onLogout={handleLogout}
+            onPasskeyRegister={handlePasskeyRegister}
+            onAccountDelete={handleAccountDelete}
           />
 
           {/* メインコンテンツエリア (Blocklyワークスペース) */}
@@ -1389,6 +1416,17 @@ export function EditorPage() {
       {/* チュートリアルオーバーレイ */}
       <TutorialOverlay />
 
+      {/* パスキー管理ダイアログ */}
+      <PasskeyManagementDialog
+        open={passkeyRegisterDialogOpen}
+        onOpenChange={setPasskeyRegisterDialogOpen}
+      />
+
+      {/* アカウント削除ダイアログ */}
+      <AccountDeleteDialog
+        open={accountDeleteDialogOpen}
+        onOpenChange={setAccountDeleteDialogOpen}
+      />
 
       {/* ステータスバー */}
       <StatusBar

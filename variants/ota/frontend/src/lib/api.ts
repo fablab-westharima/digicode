@@ -153,6 +153,12 @@ export const api = {
       });
       return response;
     },
+
+    deleteAccount: async () => {
+      return fetchWithAuth('/api/auth/account', {
+        method: 'DELETE',
+      });
+    },
   },
 
   // プロジェクト

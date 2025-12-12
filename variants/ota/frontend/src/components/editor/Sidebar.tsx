@@ -10,7 +10,10 @@ import {
   SlidersHorizontal,
   Cpu,
   Trash2,
-  Usb
+  Usb,
+  LogOut,
+  Key,
+  UserX
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
@@ -25,6 +28,9 @@ interface SidebarProps {
   onCodePreview?: () => void;
   onPidTuning?: () => void;
   onUsbDriver?: () => void;
+  onLogout?: () => void;
+  onPasskeyRegister?: () => void;
+  onAccountDelete?: () => void;
 }
 
 interface NavItem {
@@ -46,6 +52,9 @@ export function Sidebar({
   onCodePreview,
   onPidTuning,
   onUsbDriver,
+  onLogout,
+  onPasskeyRegister,
+  onAccountDelete,
 }: SidebarProps) {
   const { t } = useTranslation();
   const [isPinned, setIsPinned] = useState(false); // ピン留めなし
@@ -126,6 +135,28 @@ export function Sidebar({
       action: onDocs || (() => {}),
       category: 'docs'
     },
+    // Account Settings
+    {
+      id: 'logout',
+      label: t('sidebar.logout', { defaultValue: 'ログアウト' }),
+      icon: <LogOut className="w-4 h-4" />,
+      action: onLogout || (() => {}),
+      category: 'account'
+    },
+    {
+      id: 'passkey-register',
+      label: t('sidebar.passkeyRegister', { defaultValue: 'パスキーを登録' }),
+      icon: <Key className="w-4 h-4" />,
+      action: onPasskeyRegister || (() => {}),
+      category: 'account'
+    },
+    {
+      id: 'account-delete',
+      label: t('sidebar.accountDelete', { defaultValue: 'アカウント削除' }),
+      icon: <UserX className="w-4 h-4" />,
+      action: onAccountDelete || (() => {}),
+      category: 'account'
+    },
   ];
 
   const getCategoryLabel = (category: string) => {
@@ -138,6 +169,8 @@ export function Sidebar({
         return t('sidebar.category.tools', { defaultValue: 'ツール' });
       case 'docs':
         return t('sidebar.category.docs', { defaultValue: 'ドキュメント' });
+      case 'account':
+        return t('sidebar.category.account', { defaultValue: 'アカウント設定' });
       default:
         return category;
     }
@@ -152,7 +185,7 @@ export function Sidebar({
   }, {} as Record<string, NavItem[]>);
 
   // カテゴリの表示順序を定義
-  const categoryOrder = ['project', 'settings', 'tools', 'docs'];
+  const categoryOrder = ['project', 'settings', 'tools', 'docs', 'account'];
   const orderedCategories = categoryOrder.filter(cat => groupedItems[cat]);
 
   // 表示状態を計算
