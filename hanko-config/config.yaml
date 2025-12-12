@@ -3,7 +3,11 @@ server:
     address: ":8080"
 
 database:
-  database: postgresql://postgres:[POSTGRES_PASSWORD_REDACTED]@postgres.railway.internal:5432/railway
+  host: postgres.railway.internal
+  port: 5432
+  database: railway
+  user: postgres
+  password: [POSTGRES_PASSWORD_REDACTED]
 
 webauthn:
   relying_party:
