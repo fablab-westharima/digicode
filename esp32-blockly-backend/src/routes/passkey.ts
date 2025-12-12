@@ -45,12 +45,53 @@ function getRpId(origin: string | undefined): string {
   return 'digicode-frontend.pages.dev';
 }
 
+// Uint8ArrayをBase64URL文字列に変換（Cloudflare Workers用）
+function uint8ArrayToBase64url(uint8Array: Uint8Array): string {
+  // バイナリ文字列に変換
+  let binaryString = '';
+  for (let i = 0; i < uint8Array.length; i++) {
+    binaryString += String.fromCharCode(uint8Array[i]);
+  }
+
+  // Base64エンコード
+  const base64 = btoa(binaryString);
+
+  // Base64URLに変換（+を-に、/を_に、=を削除）
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+// Base64URL文字列をUint8Arrayに変換（Cloudflare Workers用）
+function base64urlToUint8Array(base64url: string): Uint8Array {
+  // Base64URLをBase64に変換（-を+に、_を/に）
+  let base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+
+  // パディング追加
+  while (base64.length % 4 !== 0) {
+    base64 += '=';
+  }
+
+  // Base64デコード
+  const binaryString = atob(base64);
+
+  // Uint8Arrayに変換
+  const uint8Array = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    uint8Array[i] = binaryString.charCodeAt(i);
+  }
+
+  return uint8Array;
+}
+
 // パスキー登録オプション生成
 app.post('/register/options', authMiddleware, async (c) => {
   try {
     const user = c.get('user');
     const origin = c.req.header('origin');
     const rpId = getRpId(origin);
+
+    console.log('[Passkey Register] User:', user.userId, user.email);
+    console.log('[Passkey Register] Origin:', origin);
+    console.log('[Passkey Register] RP_ID:', rpId);
 
     // ユーザーの既存パスキーを取得
     const existingAuthenticators = await c.env.DB.prepare(
@@ -59,10 +100,16 @@ app.post('/register/options', authMiddleware, async (c) => {
       .bind(user.userId)
       .all();
 
+    console.log('[Passkey Register] Existing authenticators:', existingAuthenticators.results.length);
+
+    // userIDをUint8Arrayに変換（Cloudflare WorkersではBufferが使えないのでTextEncoderを使用）
+    const userIdString = user.userId.toString();
+    const userIdUint8Array = new TextEncoder().encode(userIdString);
+
     const options = await generateRegistrationOptions({
       rpName: RP_NAME,
       rpID: rpId,
-      userID: user.userId.toString(),
+      userID: userIdUint8Array,
       userName: user.email,
       userDisplayName: user.email,
       attestationType: 'none',
@@ -79,6 +126,8 @@ app.post('/register/options', authMiddleware, async (c) => {
       timeout: 60000,
     });
 
+    console.log('[Passkey Register] Generated options challenge:', options.challenge.substring(0, 20) + '...');
+
     // ChallengeをKVに5分間保存
     await c.env.WEBAUTHN_CHALLENGES.put(
       `${user.userId}:register`,
@@ -86,11 +135,15 @@ app.post('/register/options', authMiddleware, async (c) => {
       { expirationTtl: 300 }
     );
 
+    console.log('[Passkey Register] Challenge saved to KV');
+
     return c.json(options);
   } catch (error) {
-    console.error('Error generating registration options:', error);
+    console.error('[Passkey Register] Error generating registration options:', error);
+    console.error('[Passkey Register] Error details:', error instanceof Error ? error.message : String(error));
+    console.error('[Passkey Register] Error stack:', error instanceof Error ? error.stack : 'N/A');
     return c.json(
-      { error: 'パスキー登録オプションの生成に失敗しました' },
+      { error: 'パスキー登録オプションの生成に失敗しました', details: error instanceof Error ? error.message : String(error) },
       500
     );
   }
@@ -133,14 +186,13 @@ app.post('/register/verify', authMiddleware, async (c) => {
       return c.json({ error: 'パスキーの検証に失敗しました' }, 400);
     }
 
-    const { credentialID, credentialPublicKey, counter } =
-      verification.registrationInfo;
+    // v13では registrationInfo.credential の下にデータがある
+    const { credential: registeredCredential } = verification.registrationInfo;
+    console.log('[Passkey Register] registeredCredential:', registeredCredential);
 
-    // credentialIDをBase64URLエンコード
-    const credentialIDBase64 = Buffer.from(credentialID).toString('base64url');
-    const publicKeyBase64 = Buffer.from(credentialPublicKey).toString(
-      'base64url'
-    );
+    // credentialIDをBase64URLエンコード（Cloudflare Workers対応）
+    const credentialIDBase64 = uint8ArrayToBase64url(registeredCredential.id);
+    const publicKeyBase64 = uint8ArrayToBase64url(registeredCredential.publicKey);
 
     // DBに保存
     const result = await c.env.DB.prepare(
@@ -152,9 +204,9 @@ app.post('/register/verify', authMiddleware, async (c) => {
         user.userId,
         credentialIDBase64,
         publicKeyBase64,
-        counter,
-        credential.response.transports
-          ? JSON.stringify(credential.response.transports)
+        registeredCredential.counter,
+        registeredCredential.transports
+          ? JSON.stringify(registeredCredential.transports)
           : null,
         deviceName || null
       )
@@ -296,10 +348,9 @@ app.post('/login/verify', async (c) => {
       return c.json({ error: 'パスキーが見つかりません' }, 404);
     }
 
-    const publicKeyBuffer = Buffer.from(
-      authenticator.public_key as string,
-      'base64url'
-    );
+    // Base64URLからUint8Arrayに変換（Cloudflare Workers対応）
+    const publicKeyBuffer = base64urlToUint8Array(authenticator.public_key as string);
+    const credentialIDBuffer = base64urlToUint8Array(credentialIDBase64);
 
     // 検証
     const verification = await verifyAuthenticationResponse({
@@ -308,7 +359,7 @@ app.post('/login/verify', async (c) => {
       expectedOrigin: origin || `https://${rpId}`,
       expectedRPID: rpId,
       authenticator: {
-        credentialID: Buffer.from(credentialIDBase64, 'base64url'),
+        credentialID: credentialIDBuffer,
         credentialPublicKey: publicKeyBuffer,
         counter: authenticator.counter as number,
       },
