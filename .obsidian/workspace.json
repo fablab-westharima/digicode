@@ -171,6 +171,7 @@
   },
   "active": "3efb2c96c0b317e3",
   "lastOpenFiles": [
+    "prompt/logs/session_state/current_work.md.tmp.22426.1765510605508",
     "esp32-blockly-backend/migrations/0010_add_recovery_tokens.sql",
     "esp32-blockly-backend/migrations/0009_add_email_verification.sql",
     "esp32-blockly-backend/migrations/0008_add_authenticators.sql",
@@ -195,7 +196,6 @@
     "prompt/logs/session_state/current_work.md.tmp.91538.1765477398806",
     "prompt/logs/session_state/current_work.md.tmp.91538.1765477393925",
     "prompt/logs/接続方式分離計画実施/チケット/Phase1.7_Hanko実装変更/README.md",
-    "prompt/logs/接続方式分離計画実施/チケット/Phase1.7_Hanko実装変更",
     "variants/ota/frontend/node_modules/@testing-library/dom/node_modules/dom-accessibility-api/README.md",
     "variants/ota/frontend/node_modules/@testing-library/dom/node_modules/dom-accessibility-api/LICENSE.md",
     "variants/ota/frontend/node_modules/@testing-library/dom/node_modules/aria-query/README.md",

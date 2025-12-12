@@ -22,5 +22,11 @@
 			"binding": "R2",
 			"bucket_name": "esp32-editor-files"
 		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "WEBAUTHN_CHALLENGES",
+			"id": "c44460f3263542d8a1826904e49e02a4"
+		}
 	]
 }

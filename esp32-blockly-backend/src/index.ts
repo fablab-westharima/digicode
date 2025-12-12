@@ -10,6 +10,7 @@ import { rateLimitPresets } from './middleware/rateLimit';
 type Bindings = {
   DB: D1Database;
   R2: R2Bucket;
+  WEBAUTHN_CHALLENGES: KVNamespace;
   JWT_SECRET: string;
   CORS_ORIGINS?: string; // Optional: comma-separated list of additional origins
   SQUARE_ACCESS_TOKEN?: string;
@@ -94,5 +95,35 @@ app.route('/api/subscriptions', subscriptions);
 
 // Webhookルート（Square決済連携）
 app.route('/api/webhooks', webhooks);
+
+// KVテストエンドポイント（Phase 1.6.2検証用、本番前に削除）
+app.get('/api/test/kv', async (c) => {
+  try {
+    const testKey = 'test-key';
+    const testValue = 'test-value-' + Date.now();
+
+    // KVに書き込み
+    await c.env.WEBAUTHN_CHALLENGES.put(testKey, testValue, { expirationTtl: 60 });
+
+    // KVから読み込み
+    const retrievedValue = await c.env.WEBAUTHN_CHALLENGES.get(testKey);
+
+    // KVから削除
+    await c.env.WEBAUTHN_CHALLENGES.delete(testKey);
+
+    return c.json({
+      success: true,
+      message: 'KV access test successful',
+      written: testValue,
+      retrieved: retrievedValue,
+      match: testValue === retrievedValue
+    });
+  } catch (error) {
+    return c.json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }, 500);
+  }
+});
 
 export default app;
