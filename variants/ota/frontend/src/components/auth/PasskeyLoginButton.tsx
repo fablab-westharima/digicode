@@ -48,19 +48,23 @@ export function PasskeyLoginButton({ onSuccess, onError }: PasskeyLoginButtonPro
 
   if (!showEmailInput) {
     return (
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
+      <div className="mt-4 space-y-4">
+        {/* セパレーター */}
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center pointer-events-none">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">
+              {t('auth.or', 'または')}
+            </span>
+          </div>
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            {t('auth.or', 'または')}
-          </span>
-        </div>
+        {/* ボタン */}
         <Button
           type="button"
           variant="outline"
-          className="w-full mt-4"
+          className="w-full"
           onClick={() => setShowEmailInput(true)}
         >
           <Fingerprint className="mr-2 h-4 w-4" />
