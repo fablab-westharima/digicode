@@ -8,8 +8,7 @@ database:
   database: railway
   user: postgres
   password: [POSTGRES_PASSWORD_REDACTED]
-  migrations:
-    auto: true
+  dialect: postgres
 
 webauthn:
   relying_party:
@@ -21,7 +20,7 @@ webauthn:
 
 secrets:
   keys:
-    - $(openssl rand -base64 32)
+    - RRd4AlsTy2iQ412bxYhl93Hb2mAJdSH+RYL7QIHhyLc=
 
 session:
   lifespan: 12h
