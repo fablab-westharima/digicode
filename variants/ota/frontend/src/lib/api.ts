@@ -1,5 +1,8 @@
 // API client for DigiCode
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8787';
+// Cloudflare Pagesでは環境変数が使えないため、hostnameで判定
+const API_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+  ? 'http://localhost:8787'
+  : 'https://esp32-blockly-backend.kazunari-takeda.workers.dev';
 
 // トークン取得
 function getAccessToken(): string | null {
