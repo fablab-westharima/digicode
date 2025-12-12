@@ -8,6 +8,8 @@ database:
   database: railway
   user: postgres
   password: [POSTGRES_PASSWORD_REDACTED]
+  migrations:
+    auto: true
 
 webauthn:
   relying_party:
