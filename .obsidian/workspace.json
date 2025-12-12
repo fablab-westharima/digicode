@@ -171,17 +171,20 @@
   },
   "active": "3efb2c96c0b317e3",
   "lastOpenFiles": [
+    "variants/ota/frontend/dist/assets/index-Dsey2uth.js",
+    "variants/ota/frontend/dist/assets/install-dialog-DwUqID9t.js",
+    "variants/ota/frontend/dist/assets/styles-CsUu9h9K.js",
+    "variants/ota/frontend/dist/assets/index-DR6vYj28.js",
+    "variants/ota/frontend/dist/assets/install-button-5jevd47O.js",
+    "prompt/image/スクリーンショット 2025-12-12 19.23.23.png",
+    "prompt/image/スクリーンショット 2025-12-12 19.23.28.png",
+    "prompt/image/スクリーンショット 2025-12-12 19.21.54.png",
     "variants/ota/frontend/dist/assets/index-BuanhZKa.js",
     "variants/ota/frontend/dist/assets/install-dialog-Dgoo9PBZ.js",
     "variants/ota/frontend/dist/assets/styles-CzBDZc-w.js",
     "variants/ota/frontend/dist/assets/index-B6seqwUc.js",
     "variants/ota/frontend/dist/assets/stub_flasher_32h2-DKTWdQO2.js",
     "variants/ota/frontend/dist/assets/stub_flasher_32c61-Dm89Jp02.js",
-    "variants/ota/frontend/dist/assets/stub_flasher_32c6-BMffPMCp.js",
-    "variants/ota/frontend/dist/assets/stub_flasher_32c2-B8dsLG7-.js",
-    "variants/ota/frontend/dist/assets/stub_flasher_32-DIlGCCSz.js",
-    "variants/ota/frontend/dist/assets/rom-Caghk6Eh.js",
-    "variants/ota/frontend/dist/assets/esp32-BhDgbdPM.js",
     "prompt/image/スクリーンショット 2025-12-12 17.58.39.png",
     "esp32-blockly-backend/node_modules/@simplewebauthn/server/README.md",
     "esp32-blockly-backend/node_modules/@simplewebauthn/server/LICENSE.md",
@@ -213,9 +216,6 @@
     "prompt/image/スクリーンショット 2025-12-12 11.04.26.png",
     "prompt/image/スクリーンショット 2025-12-12 11.03.00.png",
     "prompt/image/スクリーンショット 2025-12-12 10.59.25.png",
-    "prompt/image/スクリーンショット 2025-12-12 10.55.48.png",
-    "prompt/image/スクリーンショット 2025-12-12 10.54.18.png",
-    "prompt/image/スクリーンショット 2025-12-12 10.52.26.png",
-    "prompt/image/スクリーンショット 2025-12-12 10.50.37.png"
+    "prompt/image/スクリーンショット 2025-12-12 10.55.48.png"
   ]
 }

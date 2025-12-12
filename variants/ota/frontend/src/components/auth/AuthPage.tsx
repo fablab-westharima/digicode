@@ -30,6 +30,13 @@ export function AuthPage({
   const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('[AuthPage] Component mounted');
+    return () => {
+      console.log('[AuthPage] Component unmounted');
+    };
+  }, []);
+
+  useEffect(() => {
     console.log('[AuthPage] registeredEmail changed:', registeredEmail);
   }, [registeredEmail]);
 
@@ -40,6 +47,7 @@ export function AuthPage({
       console.log('[AuthPage] onRegister completed successfully');
       setRegisteredEmail(email);
       console.log('[AuthPage] setRegisteredEmail called', { email });
+      console.log('[AuthPage] registeredEmail value right after setState:', registeredEmail);
     } catch (error) {
       console.error('[AuthPage] handleRegister error:', error);
       throw error;
