@@ -11,6 +11,8 @@ import { PinSettingsPage } from '@/pages/PinSettingsPage';
 import { CompileServerSettingsPage } from '@/pages/CompileServerSettingsPage';
 import { ProjectsPage } from '@/pages/ProjectsPage';
 import { ResetPasswordPage } from '@/pages/ResetPasswordPage';
+import { VerifyEmailPage } from '@/pages/VerifyEmailPage';
+import { RecoveryPage } from '@/pages/RecoveryPage';
 import { initBlocklyMessages } from '@/utils/blocklyMessages';
 
 // モバイルデバイス検出フック
@@ -132,6 +134,8 @@ function App() {
       <Routes>
         <Route path="/auth" element={<AuthRoute />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
+        <Route path="/recovery/:token" element={<RecoveryPage />} />
         <Route path="/firmware" element={<FirmwareInstaller />} />
         <Route path="/device-setup" element={<DeviceSetupPage />} />
         <Route

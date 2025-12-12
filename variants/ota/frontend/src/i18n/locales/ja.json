@@ -10,7 +10,9 @@
     "success": "成功",
     "confirm": "確認",
     "yes": "はい",
-    "no": "いいえ"
+    "no": "いいえ",
+    "optional": "省略可",
+    "goToHome": "ホームへ"
   },
   "nav": {
     "home": "ホーム",
@@ -57,6 +59,9 @@
     "resetEmailSent": "メールアドレスが登録されている場合、パスワードリセットの案内メールを送信しました。メールをご確認ください。",
     "enterRegisteredEmail": "登録済みのメールアドレスを入力してください。パスワードリセットのリンクをお送りします。",
     "sending": "送信中...",
+    "emailRequired": "メールアドレスを入力してください",
+    "or": "または",
+    "passkeyLoginFailed": "パスキーログインに失敗しました",
     "passkey": {
       "loginWithPasskey": "パスキーでログイン",
       "loggingInWithPasskey": "パスキーでログイン中...",
@@ -77,8 +82,55 @@
       "deleteSuccess": "パスキーを削除しました",
       "deleteError": "パスキーの削除に失敗しました",
       "loginError": "パスキーでのログインに失敗しました",
-      "notSupported": "お使いのブラウザはパスキー認証に対応していません",
-      "orDivider": "または"
+      "notSupported": "お使いのブラウザはパスキーをサポートていません",
+      "orDivider": "または",
+      "registerDesc": "このデバイスにパスキーを登録すると、次回からパスワードなしでログインできます。",
+      "registerFailed": "パスキーの登録に失敗しました",
+      "deviceNamePlaceholder": "例: MacBook Pro",
+      "manageDesc": "登録済みのパスキーを管理します。不要なパスキーは削除できます。",
+      "unnamedDevice": "名前なし",
+      "loadFailed": "パスキー一覧の取得に失敗しました",
+      "deleteFailed": "パスキーの削除に失敗しました",
+      "deleteConfirmTitle": "パスキーを削除しますか？",
+      "deleteConfirmDesc": "このパスキーを削除すると、このデバイスではパスキーでログインできなくなります。"
+    },
+    "verification": {
+      "title": "メールアドレスの確認",
+      "description": "確認メールを送信しました",
+      "emailSentTo": "以下のメールアドレスに確認メールを送信しました：",
+      "instruction1": "メール内のリンクをクリックして、アカウントを有効化してください。",
+      "instruction2": "メールが届かない場合は、迷惑メールフォルダをご確認ください。",
+      "resend": "確認メールを再送信",
+      "resendFailed": "確認メールの再送信に失敗しました",
+      "resendSuccess": "確認メールを再送信しました",
+      "verifying": "メールアドレスを確認中...",
+      "successTitle": "メール確認完了",
+      "successDesc": "メールアドレスが確認されました",
+      "canLoginNow": "ログインしてご利用ください。",
+      "errorTitle": "メール確認エラー",
+      "errorInstruction": "リンクが無効または期限切れの可能性があります。",
+      "invalidToken": "無効な確認リンクです",
+      "failed": "メール確認に失敗しました"
+    },
+    "recovery": {
+      "requestTitle": "アカウントリカバリー",
+      "requestDesc": "パスキーにアクセスできない場合、メールアドレスでアカウントを復旧できます",
+      "requestFailed": "リカバリー申請に失敗しました",
+      "requestSuccessTitle": "リカバリーメール送信完了",
+      "requestSuccessDesc": "リカバリー用のリンクをメールで送信しました",
+      "emailSentTo": "以下のメールアドレスにリカバリーリンクを送信しました：",
+      "instruction1": "メール内のリンクをクリックしてアカウントを復旧してください。",
+      "instruction2": "リンクの有効期限は1時間です。",
+      "sendLink": "リカバリーリンクを送信",
+      "recovering": "アカウントを復旧中...",
+      "successTitle": "リカバリー完了",
+      "successDesc": "アカウントが復旧され、ログインしました",
+      "redirecting": "{count}秒後に自動的にホームページに移動します",
+      "registerPasskeyRecommendation": "セキュリティのため、新しいパスキーを登録することをお勧めします。",
+      "errorTitle": "リカバリーエラー",
+      "errorInstruction": "リンクが無効または期限切れの可能性があります。",
+      "invalidToken": "無効なリカバリーリンクです",
+      "failed": "アカウントリカバリーに失敗しました"
     }
   },
   "home": {

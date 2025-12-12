@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LoginForm } from './LoginForm';
 import { RegisterForm } from './RegisterForm';
 import { ForgotPasswordForm } from './ForgotPasswordForm';
+import { EmailVerificationWaiting } from './EmailVerificationWaiting';
 import { LocaleSelector } from '@/components/common/LocaleSelector';
 
 interface AuthPageProps {
@@ -26,6 +27,24 @@ export function AuthPage({
 }: AuthPageProps) {
   const { t } = useTranslation();
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
+
+  const handleRegister = async (email: string, password: string) => {
+    await onRegister(email, password);
+    setRegisteredEmail(email);
+  };
+
+  if (registeredEmail) {
+    return (
+      <EmailVerificationWaiting
+        email={registeredEmail}
+        onBackToLogin={() => {
+          setRegisteredEmail(null);
+          onTabChange('login');
+        }}
+      />
+    );
+  }
 
   if (showForgotPassword) {
     return (
@@ -77,7 +96,7 @@ export function AuthPage({
             </TabsContent>
             <TabsContent value="register" className="mt-4">
               <RegisterForm
-                onSubmit={onRegister}
+                onSubmit={handleRegister}
                 onSwitchToLogin={() => onTabChange('login')}
                 isLoading={isLoading}
                 error={activeTab === 'register' ? error : null}

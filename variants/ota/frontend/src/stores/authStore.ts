@@ -63,11 +63,9 @@ export const useAuthStore = create<AuthState>((set) => ({
         throw new Error(data.error || '登録に失敗しました');
       }
 
-      setTokens(data.accessToken, data.refreshToken, data.expiresIn);
+      // Phase 1.6.5: 登録後は即座にログインせず、メール確認を待つ
+      // トークンは保存しない
       set({
-        user: data.user,
-        accessToken: data.accessToken,
-        isAuthenticated: true,
         isLoading: false,
       });
     } catch (error) {
