@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import auth from './routes/auth';
+import passkey from './routes/passkey';
 import projects from './routes/projects';
 import compileUsage from './routes/compile-usage';
 import subscriptions from './routes/subscriptions';
@@ -83,6 +84,9 @@ app.use('/api/webhooks/*', rateLimitPresets.webhook);
 
 // 認証ルート
 app.route('/api/auth', auth);
+
+// パスキールート
+app.route('/api/auth/passkey', passkey);
 
 // プロジェクトルート
 app.route('/api/projects', projects);

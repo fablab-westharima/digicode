@@ -2,7 +2,11 @@ import { Hono } from 'hono';
 import { generateTokenPair, generateRefreshToken } from '../utils/jwt';
 import { hashPassword, verifyPassword } from '../utils/password';
 import { authMiddleware } from '../middleware/auth';
-import { sendPasswordResetEmail } from '../services/emailService';
+import {
+  sendPasswordResetEmail,
+  sendVerificationEmail,
+  sendRecoveryEmail,
+} from '../services/emailService';
 
 // リフレッシュトークンのハッシュ化（SHA-256）
 async function hashRefreshToken(token: string): Promise<string> {
@@ -106,24 +110,51 @@ auth.post('/register', async (c) => {
       'INSERT INTO subscriptions (user_id, status, plan_type) VALUES (?, ?, ?)'
     ).bind(userResult.id, 'free', 'free').run();
 
-    // JWTトークンペア発行
-    const tokens = await generateTokenPair(
-      { userId: userResult.id, email: userResult.email },
-      c.env.JWT_SECRET
-    );
+    // メール確認トークン生成
+    const verificationToken = generateResetToken(); // 同じ関数を再利用
+    const tokenHash = await hashResetToken(verificationToken);
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24時間有効
 
-    // リフレッシュトークンをDBに保存（ハッシュ化）
-    const tokenHash = await hashRefreshToken(tokens.refreshToken);
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(); // 7日後
-
+    // トークンをDBに保存
     await c.env.DB.prepare(
-      'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
+      'INSERT INTO email_verification_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
     ).bind(userResult.id, tokenHash, expiresAt).run();
 
+    // 環境判定
+    const isDev = c.req.header('host')?.includes('localhost') ||
+                  c.req.header('host')?.includes('127.0.0.1');
+
+    // メール送信
+    if (c.env.RESEND_API_KEY) {
+      const emailResult = await sendVerificationEmail(
+        c.env.RESEND_API_KEY,
+        userResult.email,
+        verificationToken,
+        isDev
+      );
+
+      if (!emailResult.success) {
+        console.error('Failed to send verification email:', emailResult.error);
+      }
+    } else {
+      console.log(`[DEV] Verification token for ${email}: ${verificationToken}`);
+    }
+
+    // 開発モードかつAPIキーがない場合のみ、レスポンスにトークンを含める
+    if (isDev && !c.env.RESEND_API_KEY) {
+      return c.json({
+        message: 'アカウントを作成しました。メールアドレスを確認してください。',
+        verificationToken,
+        verificationUrl: `http://localhost:5173/verify-email/${verificationToken}`,
+        user: {
+          id: userResult.id,
+          email: userResult.email,
+        },
+      }, 201);
+    }
+
     return c.json({
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-      expiresIn: tokens.expiresIn,
+      message: 'アカウントを作成しました。確認メールを送信しましたので、メールアドレスを確認してください。',
       user: {
         id: userResult.id,
         email: userResult.email,
@@ -148,11 +179,33 @@ auth.post('/login', async (c) => {
 
     // ユーザー検索
     const user = await c.env.DB.prepare(
-      'SELECT id, email, password_hash FROM users WHERE email = ?'
-    ).bind(email).first<{ id: number; email: string; password_hash: string }>();
+      'SELECT id, email, password_hash, email_verified, passkey_only FROM users WHERE email = ?'
+    ).bind(email).first<{
+      id: number;
+      email: string;
+      password_hash: string;
+      email_verified: number;
+      passkey_only: number;
+    }>();
 
     if (!user) {
       return c.json({ error: 'メールアドレスまたはパスワードが正しくありません' }, 401);
+    }
+
+    // メール確認チェック
+    if (!user.email_verified) {
+      return c.json({
+        error: 'メールアドレスが確認されていません。確認メールをご確認ください。',
+        needsVerification: true
+      }, 403);
+    }
+
+    // パスキーのみモードチェック
+    if (user.passkey_only) {
+      return c.json({
+        error: 'このアカウントはパスキーのみでログイン可能です。パスキーでログインしてください。',
+        passkeyOnly: true
+      }, 403);
     }
 
     // パスワード検証
@@ -508,6 +561,312 @@ auth.post('/reset-password', async (c) => {
   } catch (error) {
     console.error('Reset password error:', error);
     return c.json({ error: 'パスワードリセットに失敗しました' }, 500);
+  }
+});
+
+// メール確認メール再送
+auth.post('/verify-email/send', async (c) => {
+  try {
+    const body = await c.req.json();
+    const { email } = body;
+
+    if (!email) {
+      return c.json({ error: 'メールアドレスは必須です' }, 400);
+    }
+
+    // ユーザー検索
+    const user = await c.env.DB.prepare(
+      'SELECT id, email, email_verified FROM users WHERE email = ?'
+    ).bind(email).first<{ id: number; email: string; email_verified: number }>();
+
+    // セキュリティ: ユーザーが存在しなくても同じレスポンスを返す
+    if (!user) {
+      return c.json({
+        message: 'メールアドレスが登録されている場合、確認メールを送信しました'
+      });
+    }
+
+    // 既に確認済みの場合
+    if (user.email_verified) {
+      return c.json({
+        message: 'このメールアドレスは既に確認済みです'
+      });
+    }
+
+    // 既存の未使用トークンを無効化
+    await c.env.DB.prepare(
+      'UPDATE email_verification_tokens SET used_at = datetime(\'now\') WHERE user_id = ? AND used_at IS NULL'
+    ).bind(user.id).run();
+
+    // 新しい確認トークン生成
+    const verificationToken = generateResetToken();
+    const tokenHash = await hashResetToken(verificationToken);
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24時間有効
+
+    // トークンをDBに保存
+    await c.env.DB.prepare(
+      'INSERT INTO email_verification_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
+    ).bind(user.id, tokenHash, expiresAt).run();
+
+    // 環境判定
+    const isDev = c.req.header('host')?.includes('localhost') ||
+                  c.req.header('host')?.includes('127.0.0.1');
+
+    // メール送信
+    if (c.env.RESEND_API_KEY) {
+      const emailResult = await sendVerificationEmail(
+        c.env.RESEND_API_KEY,
+        user.email,
+        verificationToken,
+        isDev
+      );
+
+      if (!emailResult.success) {
+        console.error('Failed to send verification email:', emailResult.error);
+      }
+    } else {
+      console.log(`[DEV] Verification token for ${email}: ${verificationToken}`);
+    }
+
+    // 開発モードかつAPIキーがない場合のみ、レスポンスにトークンを含める
+    if (isDev && !c.env.RESEND_API_KEY) {
+      return c.json({
+        message: '確認メールを送信しました（開発モード）',
+        verificationToken,
+        verificationUrl: `http://localhost:5173/verify-email/${verificationToken}`
+      });
+    }
+
+    return c.json({
+      message: 'メールアドレスが登録されている場合、確認メールを送信しました'
+    });
+  } catch (error) {
+    console.error('Verification email send error:', error);
+    return c.json({ error: '確認メール送信に失敗しました' }, 500);
+  }
+});
+
+// メール確認実行
+auth.post('/verify-email/:token', async (c) => {
+  try {
+    const token = c.req.param('token');
+
+    if (!token) {
+      return c.json({ error: 'トークンは必須です' }, 400);
+    }
+
+    // トークンのハッシュを計算
+    const tokenHash = await hashResetToken(token);
+
+    // DBからトークンを検索
+    const verificationToken = await c.env.DB.prepare(`
+      SELECT evt.id, evt.user_id, evt.expires_at, evt.used_at, u.email, u.email_verified
+      FROM email_verification_tokens evt
+      JOIN users u ON evt.user_id = u.id
+      WHERE evt.token_hash = ?
+    `).bind(tokenHash).first<{
+      id: number;
+      user_id: number;
+      expires_at: string;
+      used_at: string | null;
+      email: string;
+      email_verified: number;
+    }>();
+
+    if (!verificationToken) {
+      return c.json({ error: '無効な確認トークンです' }, 400);
+    }
+
+    // 使用済みチェック
+    if (verificationToken.used_at) {
+      return c.json({ error: 'この確認トークンは既に使用されています' }, 400);
+    }
+
+    // 有効期限チェック
+    if (new Date(verificationToken.expires_at) < new Date()) {
+      return c.json({ error: '確認トークンの有効期限が切れています' }, 400);
+    }
+
+    // 既に確認済みの場合
+    if (verificationToken.email_verified) {
+      return c.json({
+        verified: true,
+        message: 'このメールアドレスは既に確認済みです'
+      });
+    }
+
+    // メールアドレスを確認済みにする
+    await c.env.DB.prepare(
+      'UPDATE users SET email_verified = 1, email_verified_at = datetime(\'now\') WHERE id = ?'
+    ).bind(verificationToken.user_id).run();
+
+    // トークンを使用済みにする
+    await c.env.DB.prepare(
+      'UPDATE email_verification_tokens SET used_at = datetime(\'now\') WHERE id = ?'
+    ).bind(verificationToken.id).run();
+
+    return c.json({
+      verified: true,
+      message: 'メールアドレスが確認されました。ログインできます。'
+    });
+  } catch (error) {
+    console.error('Email verification error:', error);
+    return c.json({ error: 'メール確認に失敗しました' }, 500);
+  }
+});
+
+// リカバリー申請
+auth.post('/recovery/request', async (c) => {
+  try {
+    const body = await c.req.json();
+    const { email } = body;
+
+    if (!email) {
+      return c.json({ error: 'メールアドレスは必須です' }, 400);
+    }
+
+    if (!isValidEmail(email)) {
+      return c.json({ error: '有効なメールアドレスを入力してください' }, 400);
+    }
+
+    // ユーザー検索
+    const user = await c.env.DB.prepare(
+      'SELECT id, email FROM users WHERE email = ?'
+    ).bind(email).first<{ id: number; email: string }>();
+
+    // セキュリティ: ユーザーが存在しなくても同じレスポンスを返す
+    if (!user) {
+      return c.json({
+        message: 'メールアドレスが登録されている場合、リカバリーメールを送信しました'
+      });
+    }
+
+    // 既存の未使用トークンを無効化
+    await c.env.DB.prepare(
+      'UPDATE recovery_tokens SET used_at = datetime(\'now\') WHERE user_id = ? AND used_at IS NULL'
+    ).bind(user.id).run();
+
+    // 新しいリカバリートークン生成
+    const recoveryToken = generateResetToken();
+    const tokenHash = await hashResetToken(recoveryToken);
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1時間有効
+
+    // トークンをDBに保存
+    await c.env.DB.prepare(
+      'INSERT INTO recovery_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
+    ).bind(user.id, tokenHash, expiresAt).run();
+
+    // 環境判定
+    const isDev = c.req.header('host')?.includes('localhost') ||
+                  c.req.header('host')?.includes('127.0.0.1');
+
+    // メール送信
+    if (c.env.RESEND_API_KEY) {
+      const emailResult = await sendRecoveryEmail(
+        c.env.RESEND_API_KEY,
+        user.email,
+        recoveryToken,
+        isDev
+      );
+
+      if (!emailResult.success) {
+        console.error('Failed to send recovery email:', emailResult.error);
+      }
+    } else {
+      console.log(`[DEV] Recovery token for ${email}: ${recoveryToken}`);
+    }
+
+    // 開発モードかつAPIキーがない場合のみ、レスポンスにトークンを含める
+    if (isDev && !c.env.RESEND_API_KEY) {
+      return c.json({
+        message: 'リカバリートークンを生成しました（開発モード）',
+        recoveryToken,
+        recoveryUrl: `http://localhost:5173/recovery/${recoveryToken}`
+      });
+    }
+
+    return c.json({
+      message: 'メールアドレスが登録されている場合、リカバリーメールを送信しました'
+    });
+  } catch (error) {
+    console.error('Recovery request error:', error);
+    return c.json({ error: 'リカバリー申請に失敗しました' }, 500);
+  }
+});
+
+// リカバリー実行
+auth.post('/recovery/verify', async (c) => {
+  try {
+    const body = await c.req.json();
+    const { token } = body;
+
+    if (!token) {
+      return c.json({ error: 'トークンは必須です' }, 400);
+    }
+
+    // トークンのハッシュを計算
+    const tokenHash = await hashResetToken(token);
+
+    // DBからトークンを検索
+    const recoveryToken = await c.env.DB.prepare(`
+      SELECT rt.id, rt.user_id, rt.expires_at, rt.used_at, u.email
+      FROM recovery_tokens rt
+      JOIN users u ON rt.user_id = u.id
+      WHERE rt.token_hash = ?
+    `).bind(tokenHash).first<{
+      id: number;
+      user_id: number;
+      expires_at: string;
+      used_at: string | null;
+      email: string;
+    }>();
+
+    if (!recoveryToken) {
+      return c.json({ error: '無効なリカバリートークンです' }, 400);
+    }
+
+    // 使用済みチェック
+    if (recoveryToken.used_at) {
+      return c.json({ error: 'このリカバリートークンは既に使用されています' }, 400);
+    }
+
+    // 有効期限チェック
+    if (new Date(recoveryToken.expires_at) < new Date()) {
+      return c.json({ error: 'リカバリートークンの有効期限が切れています' }, 400);
+    }
+
+    // トークンを使用済みにする
+    await c.env.DB.prepare(
+      'UPDATE recovery_tokens SET used_at = datetime(\'now\') WHERE id = ?'
+    ).bind(recoveryToken.id).run();
+
+    // JWTトークンペア発行
+    const tokens = await generateTokenPair(
+      { userId: recoveryToken.user_id, email: recoveryToken.email },
+      c.env.JWT_SECRET
+    );
+
+    // リフレッシュトークンをDBに保存（ハッシュ化）
+    const newTokenHash = await hashRefreshToken(tokens.refreshToken);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(); // 7日後
+
+    await c.env.DB.prepare(
+      'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
+    ).bind(recoveryToken.user_id, newTokenHash, expiresAt).run();
+
+    return c.json({
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      expiresIn: tokens.expiresIn,
+      user: {
+        id: recoveryToken.user_id,
+        email: recoveryToken.email,
+      },
+      message: 'ログインしました。新しいパスキーを登録してください。'
+    });
+  } catch (error) {
+    console.error('Recovery verify error:', error);
+    return c.json({ error: 'リカバリーに失敗しました' }, 500);
   }
 });
 

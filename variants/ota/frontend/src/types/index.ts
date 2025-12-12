@@ -7,6 +7,9 @@ export interface User {
   updatedAt: string;
 }
 
+// 認証関連の型
+export * from './auth';
+
 export interface Project {
   id: number;
   userId: number;
