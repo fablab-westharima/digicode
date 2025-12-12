@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LoginForm } from './LoginForm';
 import { RegisterForm } from './RegisterForm';
 import { ForgotPasswordForm } from './ForgotPasswordForm';
-import { EmailVerificationWaiting } from './EmailVerificationWaiting';
 import { LocaleSelector } from '@/components/common/LocaleSelector';
 
 interface AuthPageProps {
@@ -27,44 +26,6 @@ export function AuthPage({
 }: AuthPageProps) {
   const { t } = useTranslation();
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
-
-  useEffect(() => {
-    console.log('[AuthPage] Component mounted');
-    return () => {
-      console.log('[AuthPage] Component unmounted');
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log('[AuthPage] registeredEmail changed:', registeredEmail);
-  }, [registeredEmail]);
-
-  const handleRegister = async (email: string, password: string) => {
-    console.log('[AuthPage] handleRegister started', { email });
-    try {
-      await onRegister(email, password);
-      console.log('[AuthPage] onRegister completed successfully');
-      setRegisteredEmail(email);
-      console.log('[AuthPage] setRegisteredEmail called', { email });
-      console.log('[AuthPage] registeredEmail value right after setState:', registeredEmail);
-    } catch (error) {
-      console.error('[AuthPage] handleRegister error:', error);
-      throw error;
-    }
-  };
-
-  if (registeredEmail) {
-    return (
-      <EmailVerificationWaiting
-        email={registeredEmail}
-        onBackToLogin={() => {
-          setRegisteredEmail(null);
-          onTabChange('login');
-        }}
-      />
-    );
-  }
 
   if (showForgotPassword) {
     return (
@@ -116,7 +77,7 @@ export function AuthPage({
             </TabsContent>
             <TabsContent value="register" className="mt-4">
               <RegisterForm
-                onSubmit={handleRegister}
+                onSubmit={onRegister}
                 onSwitchToLogin={() => onTabChange('login')}
                 isLoading={isLoading}
                 error={activeTab === 'register' ? error : null}

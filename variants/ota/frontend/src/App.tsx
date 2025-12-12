@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { AuthPage } from '@/components/auth/AuthPage';
+import { EmailVerificationWaiting } from '@/components/auth/EmailVerificationWaiting';
 import { MobileWarning } from '@/components/MobileWarning';
 import { EditorPage } from '@/pages/EditorPage';
 import { FirmwareInstaller } from '@/pages/FirmwareInstaller';
@@ -59,6 +60,7 @@ function AuthRoute() {
   const { isAuthenticated, isLoading, login, register, error, clearError } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
 
   useEffect(() => {
     clearError();
@@ -92,10 +94,24 @@ function AuthRoute() {
     setIsSubmitting(true);
     try {
       await register(email, password);
+      setRegisteredEmail(email);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // メール確認待ち画面を表示
+  if (registeredEmail) {
+    return (
+      <EmailVerificationWaiting
+        email={registeredEmail}
+        onBackToLogin={() => {
+          setRegisteredEmail(null);
+          setActiveTab('login');
+        }}
+      />
+    );
+  }
 
   return (
     <AuthPage
