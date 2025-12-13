@@ -30,7 +30,7 @@ export function AuthPage({
       <div className="absolute top-4 right-4">
         <LocaleSelector />
       </div>
-      <Card className="w-full max-w-md bg-[#161B22] border-[#2E333D]">
+      <Card className="w-full max-w-lg bg-[#161B22] border-[#2E333D]">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl text-[#E6EDF3]">{t('home.title')}</CardTitle>
           <CardDescription className="text-[#8B949E]">
@@ -42,7 +42,7 @@ export function AuthPage({
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="login">{t('auth.login')}</TabsTrigger>
               <TabsTrigger value="register">{t('auth.register')}</TabsTrigger>
-              <TabsTrigger value="recovery">{t('auth.recovery', '復旧')}</TabsTrigger>
+              <TabsTrigger value="recovery">復旧</TabsTrigger>
             </TabsList>
             <TabsContent value="login" className="mt-4">
               <LoginForm
