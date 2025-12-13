@@ -8,23 +8,18 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Fingerprint, Trash2, Plus, Loader2 } from 'lucide-react';
+import { Fingerprint, Trash2, Plus, Loader2, AlertTriangle, Shield, KeyRound } from 'lucide-react';
 import {
   listPasskeys,
   deletePasskey,
   isPasskeySupported,
+  setPasskeyOnlyMode,
+  generateRecoveryCodes,
+  getRecoveryCodesCount,
+  regenerateRecoveryCodes,
 } from '@/services/passkeyService';
 import { PasskeyRegisterDialog } from './PasskeyRegisterDialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { RecoveryCodesDisplay } from './RecoveryCodesDisplay';
 
 interface PasskeyManagementDialogProps {
   open: boolean;
@@ -49,6 +44,12 @@ export function PasskeyManagementDialog({
   const [showRegisterDialog, setShowRegisterDialog] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [passkeyOnlyMode, setPasskeyOnlyModeState] = useState(false);
+  const [isTogglingMode, setIsTogglingMode] = useState(false);
+  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
+  const [recoveryCodesCount, setRecoveryCodesCount] = useState<number>(0);
+  const [showRecoveryCodesDisplay, setShowRecoveryCodesDisplay] = useState(false);
+  const [isGeneratingCodes, setIsGeneratingCodes] = useState(false);
 
   const supported = isPasskeySupported();
 
@@ -59,6 +60,22 @@ export function PasskeyManagementDialog({
     try {
       const result = await listPasskeys();
       setPasskeys(result);
+
+      // パスキーのみモードの状態を取得（userオブジェクトから）
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        setPasskeyOnlyModeState(user.passkeyOnly === 1);
+      }
+
+      // リカバリーコード数を取得
+      try {
+        const count = await getRecoveryCodesCount();
+        setRecoveryCodesCount(count);
+      } catch {
+        // リカバリーコード数取得エラーは無視（未実装の可能性）
+        setRecoveryCodesCount(0);
+      }
     } catch (error) {
       setError(
         error instanceof Error
@@ -95,6 +112,81 @@ export function PasskeyManagementDialog({
     }
   };
 
+  const handleTogglePasskeyOnly = async () => {
+    if (passkeys.length === 0) {
+      return;
+    }
+
+    setIsTogglingMode(true);
+    setError(null);
+
+    try {
+      const newMode = !passkeyOnlyMode;
+      await setPasskeyOnlyMode(newMode);
+      setPasskeyOnlyModeState(newMode);
+
+      // localStorageのuserオブジェクトも更新
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        user.passkeyOnly = newMode ? 1 : 0;
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : t('auth.passkey.setOnlyModeFailed', 'パスキーのみモードの設定に失敗しました')
+      );
+    } finally {
+      setIsTogglingMode(false);
+    }
+  };
+
+  const handleGenerateRecoveryCodes = async () => {
+    setIsGeneratingCodes(true);
+    setError(null);
+
+    try {
+      const codes = await generateRecoveryCodes();
+      setRecoveryCodes(codes);
+      setShowRecoveryCodesDisplay(true);
+      await loadPasskeys(); // リカバリーコード数を更新
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'リカバリーコードの生成に失敗しました'
+      );
+    } finally {
+      setIsGeneratingCodes(false);
+    }
+  };
+
+  const handleRegenerateRecoveryCodes = async () => {
+    if (!confirm('既存のリカバリーコードは全て無効になります。新しいコードを生成しますか？')) {
+      return;
+    }
+
+    setIsGeneratingCodes(true);
+    setError(null);
+
+    try {
+      const codes = await regenerateRecoveryCodes();
+      setRecoveryCodes(codes);
+      setShowRecoveryCodesDisplay(true);
+      await loadPasskeys(); // リカバリーコード数を更新
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'リカバリーコードの再生成に失敗しました'
+      );
+    } finally {
+      setIsGeneratingCodes(false);
+    }
+  };
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) {
       return t('auth.passkey.neverUsed', '未使用');
@@ -111,7 +203,7 @@ export function PasskeyManagementDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[600px]" onInteractOutside={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Fingerprint className="h-5 w-5" />
@@ -130,8 +222,47 @@ export function PasskeyManagementDialog({
           {supported && (
             <div className="space-y-4">
               {error && (
-                <div className="text-sm text-red-500 bg-red-50 p-3 rounded-md">
+                <div className="text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/30 p-3 rounded-md">
                   {error}
+                </div>
+              )}
+
+              {/* 削除確認UI（インライン表示） */}
+              {deleteConfirm !== null && (
+                <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-4 mb-4">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="font-medium text-red-800 dark:text-red-200">
+                        {t('auth.passkey.deleteConfirmTitle', 'パスキーを削除しますか？')}
+                      </p>
+                      <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                        {t(
+                          'auth.passkey.deleteConfirmDesc',
+                          'このパスキーを削除すると、このデバイスではパスキーでログインできなくなります。'
+                        )}
+                      </p>
+                      <div className="flex gap-2 mt-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setDeleteConfirm(null)}
+                          disabled={isDeleting}
+                        >
+                          {t('common.cancel', 'キャンセル')}
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDelete(deleteConfirm)}
+                          disabled={isDeleting}
+                        >
+                          {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          {t('common.delete', '削除')}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -149,7 +280,9 @@ export function PasskeyManagementDialog({
                   {passkeys.map((passkey) => (
                     <div
                       key={passkey.id}
-                      className="flex items-center justify-between p-3 rounded-lg border bg-card"
+                      className={`flex items-center justify-between p-3 rounded-lg border ${
+                        deleteConfirm === passkey.id ? 'border-red-300 bg-red-50' : 'bg-card'
+                      }`}
                     >
                       <div className="flex-1">
                         <div className="font-medium">
@@ -170,7 +303,7 @@ export function PasskeyManagementDialog({
                         variant="ghost"
                         size="sm"
                         onClick={() => setDeleteConfirm(passkey.id)}
-                        disabled={isDeleting}
+                        disabled={isDeleting || deleteConfirm !== null}
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>
@@ -187,6 +320,100 @@ export function PasskeyManagementDialog({
                 <Plus className="mr-2 h-4 w-4" />
                 {t('auth.passkey.registerNewPasskey', '新しいパスキーを登録')}
               </Button>
+
+              {/* パスキーのみモード設定 */}
+              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <h4 className="font-medium text-blue-900 dark:text-blue-100">
+                      {t('auth.passkey.passkeyOnlyMode', 'パスキーのみでログイン')}
+                    </h4>
+                    <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                      {t('auth.passkey.passkeyOnlyModeDesc', 'パスワードログインを無効化し、パスキーのみでログインします。セキュリティが大幅に向上します。')}
+                    </p>
+                    <div className="mt-3">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={passkeyOnlyMode}
+                          onChange={handleTogglePasskeyOnly}
+                          disabled={passkeys.length === 0 || isTogglingMode}
+                          className="w-4 h-4 cursor-pointer"
+                        />
+                        <span className="text-sm font-medium">
+                          {t('auth.passkey.enablePasskeyOnlyMode', 'パスキーのみモードを有効化')}
+                        </span>
+                      </label>
+                      {passkeys.length === 0 && (
+                        <p className="text-xs text-red-600 mt-2">
+                          {t('auth.passkey.passkeyOnlyModeRequirement', '※パスキーを最低1つ登録してから有効化してください')}
+                        </p>
+                      )}
+                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                        {t('auth.passkey.recoveryNote', '※パスキーを失った場合は、リカバリーコードまたはメールで復旧できます')}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* リカバリーコード管理 */}
+              <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <KeyRound className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <h4 className="font-medium text-green-900 dark:text-green-100">
+                      リカバリーコード
+                    </h4>
+                    <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                      パスキーを失った場合に使用できる緊急用コードです。各コードは1回のみ使用可能です。
+                    </p>
+
+                    {recoveryCodesCount > 0 ? (
+                      <div className="mt-3">
+                        <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                          残り有効コード: {recoveryCodesCount} / 10
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleRegenerateRecoveryCodes}
+                          disabled={isGeneratingCodes}
+                          className="mt-2"
+                        >
+                          {isGeneratingCodes && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          新しいコードを再生成
+                        </Button>
+                        <p className="text-xs text-green-600 dark:text-green-400 mt-2">
+                          ※再生成すると既存のコードは全て無効になります
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="mt-3">
+                        <p className="text-sm text-orange-600 font-medium">
+                          ⚠️ リカバリーコードが生成されていません
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleGenerateRecoveryCodes}
+                          disabled={isGeneratingCodes || passkeys.length === 0}
+                          className="mt-2"
+                        >
+                          {isGeneratingCodes && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          リカバリーコードを生成
+                        </Button>
+                        {passkeys.length === 0 && (
+                          <p className="text-xs text-red-600 mt-2">
+                            ※パスキーを最低1つ登録してから生成してください
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -206,34 +433,11 @@ export function PasskeyManagementDialog({
         onSuccess={loadPasskeys}
       />
 
-      <AlertDialog open={deleteConfirm !== null} onOpenChange={() => setDeleteConfirm(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {t('auth.passkey.deleteConfirmTitle', 'パスキーを削除しますか？')}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {t(
-                'auth.passkey.deleteConfirmDesc',
-                'このパスキーを削除すると、このデバイスではパスキーでログインできなくなります。'
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>
-              {t('common.cancel', 'キャンセル')}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
-              disabled={isDeleting}
-              className="bg-red-500 hover:bg-red-600"
-            >
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('common.delete', '削除')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <RecoveryCodesDisplay
+        open={showRecoveryCodesDisplay}
+        onOpenChange={setShowRecoveryCodesDisplay}
+        codes={recoveryCodes}
+      />
     </>
   );
 }

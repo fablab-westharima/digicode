@@ -90,7 +90,7 @@ export function AccountDeleteDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px]" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-red-600">
             <UserX className="h-5 w-5" />
@@ -103,10 +103,10 @@ export function AccountDeleteDialog({
 
         <div className="space-y-4 py-4">
           {/* 警告メッセージ */}
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-4">
             <div className="flex gap-3">
-              <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-red-800 space-y-2">
+              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-red-800 dark:text-red-200 space-y-2">
                 <p className="font-semibold">以下のデータが完全に削除されます：</p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
                   <li>すべてのプロジェクト</li>
@@ -122,7 +122,7 @@ export function AccountDeleteDialog({
           </div>
 
           {error && (
-            <div className="text-sm text-red-500 bg-red-50 p-3 rounded-md">
+            <div className="text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/30 p-3 rounded-md">
               {error}
             </div>
           )}
