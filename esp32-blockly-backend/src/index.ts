@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import auth from './routes/auth';
 import passkey from './routes/passkey';
+import recoveryCodes from './routes/recovery-codes';
 import projects from './routes/projects';
 import compileUsage from './routes/compile-usage';
 import subscriptions from './routes/subscriptions';
@@ -87,6 +88,9 @@ app.route('/api/auth', auth);
 
 // パスキールート
 app.route('/api/auth/passkey', passkey);
+
+// リカバリーコードルート
+app.route('/api/auth/recovery-codes', recoveryCodes);
 
 // プロジェクトルート
 app.route('/api/projects', projects);

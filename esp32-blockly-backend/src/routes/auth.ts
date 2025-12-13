@@ -236,11 +236,37 @@ auth.post('/login', async (c) => {
       user: {
         id: user.id,
         email: user.email,
+        passkeyOnly: user.passkey_only,
       },
     });
   } catch (error) {
     console.error('Login error:', error);
     return c.json({ error: 'ログイン処理中にエラーが発生しました' }, 500);
+  }
+});
+
+// パスキーのみモード確認（ログイン前にチェック）
+auth.get('/check-passkey-mode', async (c) => {
+  try {
+    const email = c.req.query('email');
+
+    if (!email) {
+      return c.json({ error: 'メールアドレスが必要です' }, 400);
+    }
+
+    const user = await c.env.DB.prepare(
+      'SELECT passkey_only FROM users WHERE email = ?'
+    ).bind(email).first<{ passkey_only: number }>();
+
+    if (!user) {
+      // セキュリティ: ユーザー存在有無を隠す
+      return c.json({ passkeyOnly: false });
+    }
+
+    return c.json({ passkeyOnly: user.passkey_only === 1 });
+  } catch (error) {
+    console.error('Check passkey mode error:', error);
+    return c.json({ error: 'パスキーのみモードの確認中にエラーが発生しました' }, 500);
   }
 });
 
@@ -252,7 +278,7 @@ auth.get('/me', authMiddleware, async (c) => {
     // ユーザー情報とサブスクリプション情報を取得
     const user = await c.env.DB.prepare(`
       SELECT
-        u.id, u.email, u.created_at,
+        u.id, u.email, u.created_at, u.passkey_only,
         s.status as subscription_status, s.plan_type
       FROM users u
       LEFT JOIN subscriptions s ON u.id = s.user_id
@@ -261,6 +287,7 @@ auth.get('/me', authMiddleware, async (c) => {
       id: number;
       email: string;
       created_at: string;
+      passkey_only: number;
       subscription_status: string;
       plan_type: string;
     }>();
@@ -273,6 +300,7 @@ auth.get('/me', authMiddleware, async (c) => {
       user: {
         id: user.id,
         email: user.email,
+        passkeyOnly: user.passkey_only,
         createdAt: user.created_at,
         subscription: {
           status: user.subscription_status || 'free',

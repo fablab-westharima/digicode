@@ -31,7 +31,7 @@ const RP_NAME = 'DigiCode';
 
 // RP_IDを動的に取得する関数
 function getRpId(origin: string | undefined): string {
-  if (!origin) return 'digicode-frontend.pages.dev';
+  if (!origin) return 'code.fablab-westharima.jp';
 
   const url = new URL(origin);
   const hostname = url.hostname;
@@ -41,8 +41,8 @@ function getRpId(origin: string | undefined): string {
     return 'localhost';
   }
 
-  // 本番環境
-  return 'digicode-frontend.pages.dev';
+  // originからホスト名を返す（動的対応）
+  return hostname;
 }
 
 // Uint8ArrayをBase64URL文字列に変換（Cloudflare Workers用）
@@ -189,8 +189,9 @@ app.post('/register/verify', authMiddleware, async (c) => {
     const { credential: registeredCredential } = verification.registrationInfo;
     console.log('[Passkey Register] registeredCredential:', registeredCredential);
 
-    // credentialIDをBase64URLエンコード（Cloudflare Workers対応）
-    const credentialIDBase64 = uint8ArrayToBase64url(registeredCredential.id);
+    // v13では credential.id は既にBase64URL文字列
+    // publicKey は Uint8Array なのでエンコードが必要
+    const credentialIDBase64 = registeredCredential.id;
     const publicKeyBase64 = uint8ArrayToBase64url(registeredCredential.publicKey);
 
     // transportsからhybridを除外（QRコード表示を防ぐ）
@@ -314,7 +315,7 @@ app.post('/login/verify', async (c) => {
 
     // ユーザーを取得
     const userResult = await c.env.DB.prepare(
-      'SELECT id, email, email_verified FROM users WHERE email = ?'
+      'SELECT id, email, email_verified, passkey_only FROM users WHERE email = ?'
     )
       .bind(email)
       .first();
@@ -349,6 +350,8 @@ app.post('/login/verify', async (c) => {
     // credentialIDをBase64URLエンコード
     const credentialIDBase64 = credential.id;
 
+    console.log('[Passkey Login Verify] credential.id from browser:', credentialIDBase64);
+
     // DBから認証器を取得
     const authenticator = await c.env.DB.prepare(
       'SELECT id, public_key, counter FROM authenticators WHERE user_id = ? AND credential_id = ?'
@@ -356,7 +359,14 @@ app.post('/login/verify', async (c) => {
       .bind(userId, credentialIDBase64)
       .first();
 
+    console.log('[Passkey Login Verify] authenticator from DB:', authenticator);
+
     if (!authenticator) {
+      // デバッグ: ユーザーの全認証器を取得
+      const allAuths = await c.env.DB.prepare(
+        'SELECT credential_id FROM authenticators WHERE user_id = ?'
+      ).bind(userId).all();
+      console.log('[Passkey Login Verify] All authenticators for user:', JSON.stringify(allAuths.results));
       return c.json({ error: 'パスキーが見つかりません' }, 404);
     }
 
@@ -370,9 +380,9 @@ app.post('/login/verify', async (c) => {
       expectedChallenge,
       expectedOrigin: origin || `https://${rpId}`,
       expectedRPID: rpId,
-      authenticator: {
-        credentialID: credentialIDBuffer,
-        credentialPublicKey: publicKeyBuffer,
+      credential: {
+        id: credentialIDBuffer,
+        publicKey: publicKeyBuffer,
         counter: authenticator.counter as number,
       },
       requireUserVerification: false,
@@ -418,6 +428,7 @@ app.post('/login/verify', async (c) => {
       user: {
         id: userId,
         email: userResult.email,
+        passkeyOnly: userResult.passkey_only,
       },
     });
   } catch (error) {

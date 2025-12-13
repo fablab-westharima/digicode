@@ -7,7 +7,7 @@ import { Resend } from 'resend';
 
 // フロントエンドURL設定
 const FRONTEND_URLS = {
-  production: 'https://digicode-frontend.pages.dev',
+  production: 'https://code.fablab-westharima.jp',
   development: 'http://localhost:5173',
 };
 

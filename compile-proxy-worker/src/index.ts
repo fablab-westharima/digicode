@@ -15,8 +15,8 @@ const SERVERS = {
 
 // Allowed origins for CORS
 const ALLOWED_ORIGINS = [
+  'https://code.fablab-westharima.jp',
   'https://digicode-frontend.pages.dev',
-  'https://digicode.digital-fab.jp',
   'http://localhost:5173',
   'http://localhost:3000'
 ];
