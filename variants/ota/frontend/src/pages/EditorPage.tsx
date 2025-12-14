@@ -42,7 +42,8 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import type { Project } from '@/stores/projectStore';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { compileService, type CompileServerMode, type FullPackage } from '@/services/compileService';
+import { compileService, type CompileServerMode, type FullPackage, type ConnectionType } from '@/services/compileService';
+import { usbFirmwareService, type UsbFlashProgress, type UsbChipInfo } from '@/services/usbFirmwareService';
 import { checkADC2Usage, type ADC2Warning } from '@/utils/adc2Check';
 import { api } from '@/lib/api';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
@@ -651,6 +652,191 @@ export function EditorPage() {
     }
   };
 
+  /**
+   * USB用コンパイル（connectionType='usb'でDigiCodeUSB.inoテンプレート使用）
+   * 教訓（ルール10）に基づき、OTA用とは別関数として定義
+   * @returns FullPackage（4ファイルセット）またはnull
+   */
+  const executeCompileForUsb = async (): Promise<FullPackage | null> => {
+    setIsCompiling(true);
+    setCompileLog([]);
+    setCompileDialogOpen(true);
+    setStatusBarState('compiling');
+    setStatusBarMessage('USB用ファームウェアをコンパイル中...');
+
+    const addLog = (message: string) => {
+      setCompileLog(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${message}`]);
+    };
+
+    try {
+      addLog('USB用コンパイル開始（DigiCodeUSB.inoテンプレート）...');
+
+      // コードを解析してincludes, globals, setup, loopに分割
+      const includeLines = generatedCode.match(/^#include\s+.+$/gm) || [];
+      const includes = includeLines.join('\n');
+      addLog(`#include: ${includeLines.length}件検出`);
+
+      const extractFunctionBody = (code: string, functionName: string): string => {
+        const regex = new RegExp(`void ${functionName}\\(\\)\\s*\\{`);
+        const match = code.match(regex);
+        if (!match) return '';
+
+        const startIndex = match.index! + match[0].length;
+        let braceCount = 1;
+        let endIndex = startIndex;
+
+        for (let i = startIndex; i < code.length && braceCount > 0; i++) {
+          if (code[i] === '{') braceCount++;
+          else if (code[i] === '}') braceCount--;
+          endIndex = i;
+        }
+
+        return code.substring(startIndex, endIndex).trim();
+      };
+
+      const setupCode = extractFunctionBody(generatedCode, 'setup');
+      const loopCode = extractFunctionBody(generatedCode, 'loop');
+
+      const setupMatch = generatedCode.match(/void setup\(\)/);
+      const globals = setupMatch
+        ? generatedCode.substring(0, setupMatch.index).replace(/^#include\s+.+$\n?/gm, '').trim()
+        : '';
+
+      addLog(`グローバル変数: ${globals ? '検出' : 'なし'}`);
+      addLog(`setup(): ${setupCode ? '検出' : 'なし'}`);
+      addLog(`loop(): ${loopCode ? '検出' : 'なし'}`);
+
+      addLog('サーバーにコンパイルリクエスト送信中（connectionType=usb）...');
+
+      // USB用コンパイル実行（connectionType='usb'を指定）
+      const result = await compileService.compile(includes, globals, setupCode, loopCode, undefined, 'bin', 'usb');
+
+      if (result.success && result.fullPackage) {
+        addLog('✓ USB用コンパイル成功！');
+        addLog(`ファームウェアサイズ: ${(result.fullPackage.firmware.size / 1024).toFixed(1)} KB`);
+        addLog('📦 fullPackageモード: 4ファイル取得完了');
+
+        refreshUsage();
+        setIsCompiling(false);
+        setCompileDialogOpen(false);
+        setStatusBarState('success');
+        setStatusBarMessage('USB用コンパイル成功');
+
+        return result.fullPackage;
+      } else {
+        addLog(`✗ コンパイルエラー: ${result.error || 'fullPackageが取得できませんでした'}`);
+        if (result.details) {
+          addLog(`詳細: ${result.details}`);
+        }
+        setIsCompiling(false);
+        setStatusBarState('error');
+        setStatusBarMessage(result.error || 'コンパイル失敗');
+        return null;
+      }
+    } catch (error) {
+      addLog(`✗ エラー: ${error instanceof Error ? error.message : '不明なエラー'}`);
+      setIsCompiling(false);
+      setStatusBarState('error');
+      setStatusBarMessage(error instanceof Error ? error.message : '不明なエラー');
+      return null;
+    }
+  };
+
+  /**
+   * USB書き込み処理
+   * 教訓（2025-12-10）に基づく実装:
+   * - usbFirmwareServiceを使用（firmwareServiceとは独立）
+   * - fullPackageモード: 4ファイル書き込み
+   * - NVS保護: eraseFlash()なし
+   * - baudrate: 115200 bps固定
+   *
+   * 重要: Web Serial APIのrequestPort()はユーザージェスチャーコンテキスト内でのみ呼び出し可能
+   * そのため、順序は「1.ポート選択 → 2.コンパイル → 3.書き込み」とする
+   */
+  const handleUsbWrite = async () => {
+    // 1. 先にUSBポート選択（ユーザージェスチャーコンテキスト内で実行必須）
+    setFlashDialogOpen(true);
+    setFlashProgress({
+      stage: 'connecting',
+      percent: 0,
+      message: 'USBデバイスを選択してください...'
+    });
+
+    let chipInfo: UsbChipInfo | null = null;
+    try {
+      chipInfo = await usbFirmwareService.connect((progress: UsbFlashProgress) => {
+        setFlashProgress({
+          stage: progress.stage as FlashProgress['stage'],
+          percent: progress.percent,
+          message: progress.message,
+          file: progress.file
+        });
+      });
+
+      if (!chipInfo) {
+        setFlashDialogOpen(false);
+        return;
+      }
+
+      setFlashProgress({
+        stage: 'connecting',
+        percent: 30,
+        message: `接続成功: ${chipInfo.name} (MAC: ${chipInfo.mac})`
+      });
+    } catch (error) {
+      setFlashDialogOpen(false);
+      alert(`✗ USB接続エラー:\n${error instanceof Error ? error.message : '不明なエラー'}`);
+      return;
+    }
+
+    // 2. USB用コンパイル（接続確認後）
+    setFlashProgress({
+      stage: 'preparing',
+      percent: 35,
+      message: 'USB用ファームウェアをコンパイル中...'
+    });
+
+    const fullPackage = await executeCompileForUsb();
+    if (!fullPackage) {
+      setFlashDialogOpen(false);
+      await usbFirmwareService.disconnect();
+      return;
+    }
+
+    // 3. fullPackage書き込み
+    try {
+      setFlashProgress({
+        stage: 'flashing',
+        percent: 50,
+        message: '書き込み開始...'
+      });
+
+      const success = await usbFirmwareService.writeFullPackage(fullPackage, (progress: UsbFlashProgress) => {
+        setFlashProgress({
+          stage: progress.stage as FlashProgress['stage'],
+          percent: progress.percent,
+          message: progress.message,
+          file: progress.file
+        });
+      });
+
+      if (success) {
+        setTimeout(() => {
+          setFlashDialogOpen(false);
+          alert('✓ USB書き込みが完了しました！\n\nESP32のENボタンを押して再起動してください。');
+        }, 2000);
+      } else {
+        setFlashDialogOpen(false);
+      }
+    } catch (error) {
+      setFlashDialogOpen(false);
+      alert(`✗ USB書き込みエラー:\n${error instanceof Error ? error.message : '不明なエラー'}`);
+    } finally {
+      // 接続解除
+      await usbFirmwareService.disconnect();
+    }
+  };
+
   // 前回の選択を取得
   const getLastFlashMethod = (): FlashMethod => {
     return (localStorage.getItem('lastFlashMethod') as FlashMethod) || 'wifi';
@@ -706,6 +892,11 @@ export function EditorPage() {
         // 一括書込み: デバイス選択ダイアログを表示
         setPendingOtaBinary(null);
         setBatchSelectDialogOpen(true);
+        break;
+      }
+      case 'usb': {
+        // USB書き込み: connectionType='usb'でコンパイル→USB経由で書き込み
+        await handleUsbWrite();
         break;
       }
     }
@@ -1373,6 +1564,27 @@ export function EditorPage() {
                           )}
                         </button>
                       )}
+
+                  {/* USB直接書き込み */}
+                  {supportedMethods.includes('usb') && (
+                    <button
+                      onClick={() => handleFlashMethodSelect('usb')}
+                      className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-300 dark:hover:border-blue-700 ${
+                        getLastFlashMethod() === 'usb' ? 'border-blue-400 dark:border-blue-600 bg-blue-50 dark:bg-blue-950' : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                        <Usb className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div className="text-left flex-1">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">{t('editor.flash.usb')}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{t('editor.flash.usbDesc')}</div>
+                      </div>
+                      {getLastFlashMethod() === 'usb' && (
+                        <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900 px-2 py-0.5 rounded">{t('editor.flash.previous')}</span>
+                      )}
+                    </button>
+                  )}
                 </>
               );
             })()}

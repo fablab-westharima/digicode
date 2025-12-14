@@ -13,12 +13,21 @@ import {
   type CompileServerMode
 } from '@/config/servers';
 
+/**
+ * 接続方式タイプ
+ * - ota: OTA書き込み（DigiCodeOTA.inoテンプレート）
+ * - usb: USB書き込み（DigiCodeUSB.inoテンプレート、WiFi/OTA機能なし）
+ * - ble: Bluetooth書き込み（DigiCodeBLE.inoテンプレート）
+ */
+export type ConnectionType = 'ota' | 'usb' | 'ble';
+
 export interface CompileRequest {
   includes: string;
   globals: string;
   setupCode: string;
   loopCode: string;
   board?: string; // FQBN (e.g., 'esp32:esp32:esp32')
+  connectionType?: ConnectionType; // 接続方式（テンプレート選択に使用）
 }
 
 export interface FullPackage {
@@ -65,8 +74,7 @@ const testCompileServerConnection = async (url: string): Promise<boolean> => {
 export const compileService = {
   /**
    * Arduino C++コードをコンパイルして.binファイルを取得
-   * サーバーはDigiCodeOTAテンプレートにコードを挿入してコンパイル
-   * → WiFi/mDNS/OTA機能が保持される
+   * サーバーはテンプレートにコードを挿入してコンパイル
    *
    * @param includes - インクルード文
    * @param globals - グローバル変数・関数
@@ -74,8 +82,9 @@ export const compileService = {
    * @param loopCode - loop()の中身
    * @param board - FQBN（省略時はストアから取得）
    * @param format - ファイルフォーマット ('bin' | 'uf2'、省略時は 'bin')
+   * @param connectionType - 接続方式（テンプレート選択: 'ota'=DigiCodeOTA.ino, 'usb'=DigiCodeUSB.ino, 'ble'=DigiCodeBLE.ino）
    */
-  async compile(includes: string, globals: string, setupCode: string, loopCode: string, board?: string, format: 'bin' | 'uf2' = 'bin'): Promise<CompileResult> {
+  async compile(includes: string, globals: string, setupCode: string, loopCode: string, board?: string, format: 'bin' | 'uf2' = 'bin', connectionType?: ConnectionType): Promise<CompileResult> {
     const mode = getCompileServerMode();
 
     // ボードが指定されていない場合はストアから取得
@@ -90,7 +99,8 @@ export const compileService = {
       globals,
       setupCode,
       loopCode,
-      board: targetBoard
+      board: targetBoard,
+      connectionType: connectionType || undefined  // 未指定の場合はサーバーのデフォルト（OTA）
     });
 
     // cloudモードの場合はUbuntu→Railwayのフォールバック

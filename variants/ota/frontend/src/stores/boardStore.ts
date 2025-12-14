@@ -2,10 +2,12 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 /**
- * 書き込み方法の種類 (OTA版)
- * OTA版ではWiFi経由のプログラム書き込みのみサポート
+ * 書き込み方法の種類
+ * - wifi: WiFi OTA書き込み（単一デバイス）
+ * - wifi-batch: WiFi OTA一括書き込み（複数デバイス）
+ * - usb: USB直接書き込み（esptool-js, fullPackageモード）
  */
-export type FlashMethod = 'wifi' | 'wifi-batch';
+export type FlashMethod = 'wifi' | 'wifi-batch' | 'usb';
 
 /**
  * 対応ボード定義 (OTA版)
@@ -44,7 +46,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: 'ESP32-WROOM等、OTA可',
     category: 'generic',
     supportsOta: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb'],
   },
   {
     id: 'esp32-s3-generic',
@@ -53,7 +55,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: 'USB OTG、カメラ対応、OTA可',
     category: 'generic',
     supportsOta: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb'],
   },
   {
     id: 'esp32-c3-generic',
@@ -62,7 +64,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: 'RISC-V、省電力、OTA可',
     category: 'generic',
     supportsOta: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb'],
   },
   {
     id: 'esp32-c6-generic',
@@ -71,7 +73,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: 'WiFi 6、Thread/Zigbee、OTA可',
     category: 'generic',
     supportsOta: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb'],
   },
   // M5Stackシリーズ
   {
@@ -81,7 +83,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '2.0インチ画面、ボタン3個、OTA可',
     category: 'm5stack',
     supportsOta: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb'],
   },
   {
     id: 'm5stickc-plus',
@@ -90,7 +92,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '1.14インチ画面、IMU搭載、OTA可',
     category: 'm5stack',
     supportsOta: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb'],
   },
   {
     id: 'atom-lite',
@@ -99,7 +101,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '24x24mm、RGB LED、OTA可',
     category: 'm5stack',
     supportsOta: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb'],
   },
   {
     id: 'atom-matrix',
@@ -108,7 +110,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '24x24mm、5x5 LED、IMU、OTA可',
     category: 'm5stack',
     supportsOta: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb'],
   },
   {
     id: 'm5stamp-pico',
@@ -117,7 +119,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '超小型スタンプ型、OTA可',
     category: 'm5stack',
     supportsOta: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb'],
   },
   {
     id: 'm5stamp-c3',
@@ -126,7 +128,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: 'C3搭載スタンプ型、OTA可',
     category: 'm5stack',
     supportsOta: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb'],
   },
   // Seeed Xiaoシリーズ
   {
@@ -136,7 +138,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '21x17.5mm、RISC-V、OTA可',
     category: 'xiao',
     supportsOta: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb'],
   },
   {
     id: 'xiao-esp32s3',
@@ -145,7 +147,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '21x17.5mm、カメラ対応、OTA可',
     category: 'xiao',
     supportsOta: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb'],
   },
   {
     id: 'xiao-esp32c6',
@@ -154,7 +156,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '21x17.5mm、WiFi 6、OTA可',
     category: 'xiao',
     supportsOta: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb'],
   },
 ];
 
