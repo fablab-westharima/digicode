@@ -43,6 +43,8 @@ export interface CompileResult {
   fullPackage?: FullPackage;
   error?: string;
   details?: string;
+  version?: string;    // ファームウェアバージョン（サーバーから取得）
+  template?: string;   // 使用したテンプレート名
 }
 
 export type { CompileServerMode };
@@ -103,6 +105,14 @@ export const compileService = {
       connectionType: connectionType || undefined  // 未指定の場合はサーバーのデフォルト（OTA）
     });
 
+    // デバッグログ: 送信するconnectionTypeを確認
+    console.log('[Compile] Request parameters:', {
+      board: targetBoard,
+      connectionType: connectionType || 'undefined (default: ota)',
+      isEsp32,
+      queryParams
+    });
+
     // cloudモードの場合はUbuntu→Railwayのフォールバック
     if (mode === 'cloud') {
       // まずUbuntuサーバーで試行
@@ -122,7 +132,10 @@ export const compileService = {
           if (contentType?.includes('application/json')) {
             const json = await response.json();
             if (json.success) {
-              console.log('[Compile] ✓ Ubuntu server compilation successful (fullPackage)');
+              console.log('[Compile] ✓ Ubuntu server compilation successful (fullPackage)', {
+                version: json.version,
+                template: json.template
+              });
 
               const fullPackage = {
                 firmware: base64ToBlob(json.firmware),
@@ -137,7 +150,12 @@ export const compileService = {
                 api.compileUsage.increment().catch(console.error);
               }
 
-              return { success: true, fullPackage };
+              return {
+                success: true,
+                fullPackage,
+                version: json.version,
+                template: json.template
+              };
             } else {
               // fullPackageモードでコンパイル失敗
               console.warn('[Compile] Ubuntu server compilation failed (fullPackage)');
@@ -188,7 +206,10 @@ export const compileService = {
         if (contentType?.includes('application/json')) {
           const json = await response.json();
           if (json.success) {
-            console.log('[Compile] ✓ Railway server compilation successful (fullPackage, fallback)');
+            console.log('[Compile] ✓ Railway server compilation successful (fullPackage, fallback)', {
+              version: json.version,
+              template: json.template
+            });
 
             const fullPackage = {
               firmware: base64ToBlob(json.firmware),
@@ -203,7 +224,12 @@ export const compileService = {
               api.compileUsage.increment().catch(console.error);
             }
 
-            return { success: true, fullPackage };
+            return {
+              success: true,
+              fullPackage,
+              version: json.version,
+              template: json.template
+            };
           } else {
             // fullPackageモードでコンパイル失敗
             return {
@@ -263,7 +289,10 @@ export const compileService = {
       if (contentType?.includes('application/json')) {
         const json = await response.json();
         if (json.success) {
-          console.log('[Compile] ✓ Local server compilation successful (fullPackage)');
+          console.log('[Compile] ✓ Local server compilation successful (fullPackage)', {
+            version: json.version,
+            template: json.template
+          });
 
           const fullPackage = {
             firmware: base64ToBlob(json.firmware),
@@ -272,7 +301,12 @@ export const compileService = {
             bootApp0: base64ToBlob(json.bootApp0)
           };
 
-          return { success: true, fullPackage };
+          return {
+            success: true,
+            fullPackage,
+            version: json.version,
+            template: json.template
+          };
         } else {
           // fullPackageモードでコンパイル失敗
           return {

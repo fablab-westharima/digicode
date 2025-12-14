@@ -8,9 +8,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Usb, Trash2 } from 'lucide-react';
+import { Usb, Trash2, Wifi, Bluetooth } from 'lucide-react';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
-import { compileService } from '@/services/compileService';
+import { compileService, type ConnectionType } from '@/services/compileService';
 
 interface FirmwareInstallerDialogProps {
   open: boolean;
@@ -27,6 +27,7 @@ type FirmwarePackage = Blob | {
 
 export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstallerDialogProps) {
   const { t } = useTranslation();
+  const [firmwareType, setFirmwareType] = useState<'ota' | 'ble'>('ota');
   const [isErasing, setIsErasing] = useState(false);
   const [eraseProgress, setEraseProgress] = useState<FlashProgress | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -34,6 +35,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
   const [logs, setLogs] = useState<string[]>([]);
   const [isCompiling, setIsCompiling] = useState(false);
   const [compiledFirmwareBlob, setCompiledFirmwareBlob] = useState<FirmwarePackage | null>(null);
+  const [firmwareVersion, setFirmwareVersion] = useState<string | null>(null);
   const [compileError, setCompileError] = useState<string | null>(null);
   const [isInstalling, setIsInstalling] = useState(false);
   const [installProgress, setInstallProgress] = useState<FlashProgress | null>(null);
@@ -44,12 +46,15 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
   const compileFirmware = async () => {
     setIsCompiling(true);
     setCompileError(null);
-    addLog('クラウドから最新ファームウェアをコンパイル中...');
-    console.log('[FirmwareInstaller] Compiling latest firmware from cloud...');
+    const firmwareName = firmwareType === 'ble' ? 'BLE対応' : 'OTA';
+    addLog(`クラウドから最新${firmwareName}ファームウェアをコンパイル中...`);
+    console.log(`[FirmwareInstaller] Compiling latest ${firmwareType} firmware from cloud...`);
 
     try {
-      // DigiCodeOTAテンプレートをそのままコンパイル（空のコード）
-      const result = await compileService.compile('', '', '', '', 'esp32:esp32:esp32', 'bin');
+      // firmwareTypeに応じてconnectionTypeを指定
+      const connectionType: ConnectionType = firmwareType === 'ble' ? 'ble' : 'ota';
+      console.log('[FirmwareInstaller] Compiling with:', { firmwareType, connectionType });
+      const result = await compileService.compile('', '', '', '', 'esp32:esp32:esp32', 'bin', connectionType);
 
       if (!result.success) {
         throw new Error(result.error || 'Compilation failed');
@@ -58,12 +63,22 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
       // fullPackage または binary を保存
       if (result.fullPackage) {
         setCompiledFirmwareBlob(result.fullPackage);
-        addLog('✅ 完全なファームウェアパッケージのコンパイルが完了しました');
-        console.log('[FirmwareInstaller] ✓ Full firmware package compiled successfully');
+        setFirmwareVersion(result.version || null);
+        const versionInfo = result.version ? ` (v${result.version})` : '';
+        addLog(`✅ 完全なファームウェアパッケージのコンパイルが完了しました${versionInfo}`);
+        console.log('[FirmwareInstaller] ✓ Full firmware package compiled successfully', {
+          version: result.version,
+          template: result.template
+        });
       } else if (result.binary) {
         setCompiledFirmwareBlob(result.binary);
-        addLog('✅ ファームウェアのコンパイルが完了しました');
-        console.log('[FirmwareInstaller] ✓ Firmware compiled successfully');
+        setFirmwareVersion(result.version || null);
+        const versionInfo = result.version ? ` (v${result.version})` : '';
+        addLog(`✅ ファームウェアのコンパイルが完了しました${versionInfo}`);
+        console.log('[FirmwareInstaller] ✓ Firmware compiled successfully', {
+          version: result.version,
+          template: result.template
+        });
       } else {
         throw new Error('Compilation returned neither binary nor fullPackage');
       }
@@ -316,16 +331,61 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
               {t('firmware.step2Title')}
             </h3>
             <div className="space-y-2">
-              {/* Arduino C++ */}
-              <div className="flex items-start gap-3 p-4 rounded-lg border-2 border-[#58A6F9] bg-[#0D1117]">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold">🏆</span>
-                    <p className="font-semibold text-[#E6EDF3]">{t('firmware.arduinoTitle')}</p>
-                  </div>
-                  <p className="text-xs text-[#8B949E] mt-1">{t('firmware.arduinoDesc')}</p>
+              {/* DigiCode OTA */}
+              <button
+                onClick={() => {
+                  setFirmwareType('ota');
+                  setCompiledFirmwareBlob(null);
+                  setFirmwareVersion(null);
+                  setCompileError(null);
+                }}
+                className={`w-full flex items-start gap-3 p-4 rounded-lg border-2 transition-all ${
+                  firmwareType === 'ota'
+                    ? 'border-[#58A6F9] bg-[#0D1117]'
+                    : 'border-[#2E333D] bg-[#0D1117] hover:border-[#58A6F9]/50'
+                }`}
+              >
+                <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                  <Wifi className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 </div>
-              </div>
+                <div className="flex-1 text-left">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-[#E6EDF3]">DigiCode OTA ファームウェア</p>
+                    {firmwareType === 'ota' && (
+                      <span className="text-xs text-[#58A6F9] bg-[#1f6feb] px-2 py-0.5 rounded">選択中</span>
+                    )}
+                  </div>
+                  <p className="text-xs text-[#8B949E] mt-1">WiFi OTA書き込み対応（推奨）</p>
+                </div>
+              </button>
+
+              {/* DigiCode BLE */}
+              <button
+                onClick={() => {
+                  setFirmwareType('ble');
+                  setCompiledFirmwareBlob(null);
+                  setFirmwareVersion(null);
+                  setCompileError(null);
+                }}
+                className={`w-full flex items-start gap-3 p-4 rounded-lg border-2 transition-all ${
+                  firmwareType === 'ble'
+                    ? 'border-[#8B5CF6] bg-[#0D1117]'
+                    : 'border-[#2E333D] bg-[#0D1117] hover:border-[#8B5CF6]/50'
+                }`}
+              >
+                <div className="p-2 bg-violet-100 dark:bg-violet-900 rounded-lg">
+                  <Bluetooth className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-[#E6EDF3]">DigiCode BLE ファームウェア</p>
+                    {firmwareType === 'ble' && (
+                      <span className="text-xs text-[#8B5CF6] bg-[#8B5CF6]/20 px-2 py-0.5 rounded">選択中</span>
+                    )}
+                  </div>
+                  <p className="text-xs text-[#8B949E] mt-1">Bluetooth書き込み対応、初回書き込みに必要</p>
+                </div>
+              </button>
             </div>
 
             {/* ビルド開始ボタン */}
@@ -535,7 +595,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
             {/* 説明テキスト */}
             {!isCompiling && !compileError && compiledFirmwareBlob && (
               <p className="text-xs text-[#8B949E] text-center">
-                INSTALLボタンを押してESP32にUSB接続し、最新のv1.4.0ファームウェアを書き込みます。
+                INSTALLボタンを押してESP32にUSB接続し、{firmwareType === 'ble' ? 'BLE対応' : 'OTA'}ファームウェア{firmwareVersion ? ` (v${firmwareVersion})` : ''}を書き込みます。
               </p>
             )}
           </div>
