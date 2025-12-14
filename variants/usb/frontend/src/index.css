@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* DigiCode USB カラースキーム (ダークモード) */
+    --background: 220 13% 13%;
+    --foreground: 220 13% 91%;
+    --card: 220 13% 18%;
+    --card-foreground: 220 13% 91%;
+    --popover: 220 13% 18%;
+    --popover-foreground: 220 13% 91%;
+    /* Primary: USB Blue */
+    --primary: 210 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    /* Secondary */
+    --secondary: 210 50% 40%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 220 13% 25%;
+    --muted-foreground: 215 16% 65%;
+    --accent: 220 13% 28%;
+    --accent-foreground: 220 13% 91%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 28%;
+    --input: 220 13% 28%;
+    --ring: 210 100% 50%;
+    --radius: 0.5rem
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
