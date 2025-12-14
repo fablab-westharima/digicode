@@ -4,6 +4,7 @@ import { api, setTokens, removeToken, getRefreshToken } from '@/lib/api';
 interface User {
   id: number;
   email: string;
+  passkeyOnly?: number;
 }
 
 interface AuthState {
@@ -38,6 +39,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
 
       setTokens(data.accessToken, data.refreshToken, data.expiresIn);
+      localStorage.setItem('user', JSON.stringify(data.user));
       set({
         user: data.user,
         accessToken: data.accessToken,
@@ -83,6 +85,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     api.auth.logout(refreshToken).catch(() => {});
 
     removeToken();
+    localStorage.removeItem('user');
     set({
       user: null,
       accessToken: null,
@@ -106,6 +109,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         throw new Error('認証に失敗しました');
       }
 
+      localStorage.setItem('user', JSON.stringify(data.user));
       set({
         user: data.user,
         accessToken,
@@ -114,6 +118,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
     } catch {
       removeToken();
+      localStorage.removeItem('user');
       set({
         user: null,
         accessToken: null,

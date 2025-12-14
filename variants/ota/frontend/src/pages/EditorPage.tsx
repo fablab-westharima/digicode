@@ -28,6 +28,7 @@ import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
 import { HeaderDeviceSelector } from '@/components/device/HeaderDeviceSelector';
 import { PasskeyManagementDialog } from '@/components/auth/PasskeyManagementDialog';
+import { useAuthStore } from '@/stores/authStore';
 import { AccountDeleteDialog } from '@/components/auth/AccountDeleteDialog';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSerialStore } from '@/stores/serialStore';
@@ -42,9 +43,10 @@ import type { Project } from '@/stores/projectStore';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { compileService, type CompileServerMode, type FullPackage } from '@/services/compileService';
+import { checkADC2Usage, type ADC2Warning } from '@/utils/adc2Check';
 import { api } from '@/lib/api';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
-import { Download, Loader2, Zap, SlidersHorizontal, LineChart, Code, Terminal, ChevronUp, ChevronDown, GraduationCap, ChevronDown as ChevronDownIcon, X, FilePlus, FolderOpen, FileCode, Cloud, Server, Usb, Wifi, Check, Settings2, Pin, BookOpen, Globe } from 'lucide-react';
+import { Download, Loader2, Zap, SlidersHorizontal, LineChart, Code, Terminal, ChevronUp, ChevronDown, GraduationCap, ChevronDown as ChevronDownIcon, X, FilePlus, FolderOpen, FileCode, Cloud, Server, Usb, Wifi, Check, Settings2, Pin, BookOpen, Globe, AlertTriangle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,6 +62,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Progress } from '@/components/ui/progress';
 
 export function EditorPage() {
@@ -104,6 +116,9 @@ export function EditorPage() {
   const [pidTuningDialogOpen, setPidTuningDialogOpen] = useState(false);
   const [passkeyRegisterDialogOpen, setPasskeyRegisterDialogOpen] = useState(false);
   const [accountDeleteDialogOpen, setAccountDeleteDialogOpen] = useState(false);
+  const [adc2WarningDialogOpen, setAdc2WarningDialogOpen] = useState(false);
+  const [adc2Warnings, setAdc2Warnings] = useState<ADC2Warning[]>([]);
+  const [pendingCompileAction, setPendingCompileAction] = useState<(() => void) | null>(null);
   const [bottomPanelExpanded, setBottomPanelExpanded] = useState(false);
   const [serverMode, setServerMode] = useState<CompileServerMode>('cloud');
   const [compileUsage, setCompileUsage] = useState<{
@@ -267,11 +282,10 @@ export function EditorPage() {
   };
 
   // ログアウト
+  const { logout } = useAuthStore();
   const handleLogout = () => {
     if (confirm('ログアウトしますか？')) {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('tokenExpiresAt');
+      logout();
       navigate('/auth');
     }
   };
@@ -384,6 +398,15 @@ export function EditorPage() {
     }
   };
 
+  // ADC2チェック付きコンパイル実行
+  const proceedWithCompile = async () => {
+    setAdc2WarningDialogOpen(false);
+    if (pendingCompileAction) {
+      pendingCompileAction();
+      setPendingCompileAction(null);
+    }
+  };
+
   // コンパイル＆書き込み - WiFiの場合は先に接続確認
   const handleCompile = async () => {
     if (!generatedCode.trim()) {
@@ -391,6 +414,20 @@ export function EditorPage() {
       return;
     }
 
+    // ADC2チェック（OTAモードのみ）
+    const warnings = checkADC2Usage(generatedCode);
+    if (warnings.length > 0) {
+      setAdc2Warnings(warnings);
+      setPendingCompileAction(() => () => proceedToFlashMethodSelection());
+      setAdc2WarningDialogOpen(true);
+      return;
+    }
+
+    proceedToFlashMethodSelection();
+  };
+
+  // 書き込み方法選択へ進む
+  const proceedToFlashMethodSelection = async () => {
     const lastMethod = getLastFlashMethod();
 
     // 前回WiFiを選択していて、デバイスが選択されている場合は即座に接続確認
@@ -1382,7 +1419,7 @@ export function EditorPage() {
               {t('editor.generatedCode')}
             </DialogTitle>
             <DialogDescription>
-              Arduino C++ {t('editor.codePreview')}
+              {t('editor.codePreview.description')}
             </DialogDescription>
           </DialogHeader>
           <div className="flex-1 overflow-hidden">
@@ -1427,6 +1464,37 @@ export function EditorPage() {
         open={accountDeleteDialogOpen}
         onOpenChange={setAccountDeleteDialogOpen}
       />
+
+      {/* ADC2警告ダイアログ */}
+      <AlertDialog open={adc2WarningDialogOpen} onOpenChange={setAdc2WarningDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-yellow-600">
+              <AlertTriangle className="h-5 w-5" />
+              {t('editor.adc2Warning.title')}
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">{t('editor.adc2Warning.description')}</p>
+                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 space-y-2">
+                  {adc2Warnings.map((warning, index) => (
+                    <p key={index} className="text-sm text-yellow-800">
+                      <span className="font-semibold">GPIO{warning.pin}:</span> {t('editor.adc2Warning.pinWarning')}
+                    </p>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500">{t('editor.adc2Warning.recommendation')}</p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('editor.adc2Warning.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={proceedWithCompile} className="bg-yellow-600 hover:bg-yellow-700">
+              {t('editor.adc2Warning.proceed')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* ステータスバー */}
       <StatusBar

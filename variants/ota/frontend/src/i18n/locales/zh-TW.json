@@ -251,6 +251,7 @@
     "deviceConnectedOk": "裝置連接正常",
     "codePreview": {
       "title": "生成的程式碼 ({{language}})",
+      "description": "從 Blockly 積木生成的 Arduino C++ 程式碼",
       "connectEsp32": "請連接到 ESP32",
       "micropythonOnly": "只能執行 MicroPython",
       "noCode": "沒有可用的程式碼",
@@ -269,6 +270,14 @@
       "writeTargetDevice": "寫入目標裝置",
       "wifiRegisteredDevices": "WiFi 已註冊的裝置",
       "deselect": "取消選擇"
+    },
+    "adc2Warning": {
+      "title": "ADC2 引腳使用警告",
+      "description": "OTA 韌體持續使用 WiFi，因此 ADC2 引腳的類比讀取將無法正常工作。",
+      "pinWarning": "正在使用 ADC2 引腳進行類比輸入",
+      "recommendation": "建議：切換到 ADC1 引腳（GPIO 32、33、34、35、36、39）。數位 I/O 不受影響。",
+      "cancel": "修正程式碼",
+      "proceed": "忽略並編譯"
     }
   },
   "project": {

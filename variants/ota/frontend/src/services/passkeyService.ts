@@ -225,3 +225,113 @@ export async function setPasskeyOnlyMode(enabled: boolean): Promise<void> {
     throw new Error(error.error || 'パスキーのみモードの設定に失敗しました');
   }
 }
+
+/**
+ * リカバリーコードを生成
+ * @returns 生成されたリカバリーコード（10個）
+ */
+export async function generateRecoveryCodes(): Promise<string[]> {
+  const accessToken = localStorage.getItem('accessToken');
+
+  if (!accessToken) {
+    throw new Error('ログインが必要です');
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/auth/recovery-codes/generate`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'リカバリーコードの生成に失敗しました');
+  }
+
+  const result = await response.json();
+  return result.codes;
+}
+
+/**
+ * 残りの有効なリカバリーコード数を取得
+ * @returns 有効なリカバリーコード数
+ */
+export async function getRecoveryCodesCount(): Promise<number> {
+  const accessToken = localStorage.getItem('accessToken');
+
+  if (!accessToken) {
+    throw new Error('ログインが必要です');
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/auth/recovery-codes/count`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'リカバリーコード数の取得に失敗しました');
+  }
+
+  const result = await response.json();
+  return result.count;
+}
+
+/**
+ * リカバリーコードで認証
+ * @param email メールアドレス
+ * @param code リカバリーコード
+ * @returns 認証結果（トークン含む）
+ */
+export async function verifyRecoveryCode(email: string, code: string): Promise<{
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  user: { id: number; email: string };
+  message: string;
+}> {
+  const response = await fetch(`${API_BASE_URL}/api/auth/recovery-codes/verify`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, code }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'リカバリーコードの検証に失敗しました');
+  }
+
+  return response.json();
+}
+
+/**
+ * リカバリーコードを再生成
+ * @returns 新しく生成されたリカバリーコード（10個）
+ */
+export async function regenerateRecoveryCodes(): Promise<string[]> {
+  const accessToken = localStorage.getItem('accessToken');
+
+  if (!accessToken) {
+    throw new Error('ログインが必要です');
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/auth/recovery-codes/regenerate`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'リカバリーコードの再生成に失敗しました');
+  }
+
+  const result = await response.json();
+  return result.codes;
+}

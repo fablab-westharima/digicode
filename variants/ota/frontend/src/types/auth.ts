@@ -5,6 +5,7 @@
 export interface User {
   id: number;
   email: string;
+  passkeyOnly?: number;
   createdAt?: string;
   subscription?: {
     status: string;

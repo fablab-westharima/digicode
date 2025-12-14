@@ -4,7 +4,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Check, X } from 'lucide-react';
 import { api } from '@/lib/api';
+
+// パスワード要件チェック（RegisterFormと同じ）
+interface PasswordRequirements {
+  minLength: boolean;
+  hasLowercase: boolean;
+  hasUppercase: boolean;
+  hasNumber: boolean;
+  hasSpecialChar: boolean;
+}
+
+function checkPasswordRequirements(password: string): PasswordRequirements {
+  return {
+    minLength: password.length >= 8,
+    hasLowercase: /[a-z]/.test(password),
+    hasUppercase: /[A-Z]/.test(password),
+    hasNumber: /[0-9]/.test(password),
+    hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  };
+}
 
 export function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -16,6 +36,10 @@ export function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [showRequirements, setShowRequirements] = useState(false);
+
+  const requirements = checkPasswordRequirements(password);
+  const allRequirementsMet = Object.values(requirements).every(Boolean);
 
   useEffect(() => {
     if (!token) {
@@ -27,30 +51,15 @@ export function ResetPasswordPage() {
     e.preventDefault();
     setError(null);
 
+    // パスワード要件チェック
+    if (!allRequirementsMet) {
+      setError('パスワードが要件を満たしていません');
+      return;
+    }
+
     // パスワード一致チェック
     if (password !== confirmPassword) {
       setError('パスワードが一致しません');
-      return;
-    }
-
-    // パスワード強度チェック
-    if (password.length < 8) {
-      setError('パスワードは8文字以上で入力してください');
-      return;
-    }
-
-    if (!/[a-z]/.test(password)) {
-      setError('パスワードには小文字を含めてください');
-      return;
-    }
-
-    if (!/[A-Z]/.test(password)) {
-      setError('パスワードには大文字を含めてください');
-      return;
-    }
-
-    if (!/[0-9]/.test(password)) {
-      setError('パスワードには数字を含めてください');
       return;
     }
 
@@ -80,18 +89,18 @@ export function ResetPasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-[#0D1117] px-4">
+        <Card className="w-full max-w-md bg-[#161B22] border-[#2E333D]">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl text-green-600">
+            <CardTitle className="text-2xl text-green-500">
               パスワードリセット完了
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-[#8B949E]">
               パスワードが正常に変更されました
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="text-sm text-[#8B949E] text-center">
               新しいパスワードでログインしてください。
             </p>
             <Button
@@ -107,31 +116,67 @@ export function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-[#0D1117] px-4">
+      <Card className="w-full max-w-md bg-[#161B22] border-[#2E333D]">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">パスワードリセット</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl text-[#E6EDF3]">パスワードリセット</CardTitle>
+          <CardDescription className="text-[#8B949E]">
             新しいパスワードを入力してください
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="new-password">新しいパスワード</Label>
+              <Label htmlFor="new-password" className="text-[#E6EDF3]">新しいパスワード</Label>
               <Input
                 id="new-password"
                 type="password"
-                placeholder="8文字以上（大小英字・数字を含む）"
+                placeholder="8文字以上（大小英字・数字・特殊文字を含む）"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onFocus={() => setShowRequirements(true)}
                 required
                 disabled={isLoading || !token}
+                className="bg-[#0D1117] border-[#2E333D] text-[#E6EDF3] placeholder:text-[#484F58]"
               />
+
+              {/* パスワード要件表示（リアルタイムチェック） */}
+              {showRequirements && (
+                <div className="bg-[#0D1117] border border-[#2E333D] rounded-md p-3 space-y-1.5 text-xs">
+                  <div className="text-[#8B949E] font-medium mb-2">
+                    パスワードの要件:
+                  </div>
+
+                  <div className={`flex items-center gap-2 ${requirements.minLength ? 'text-green-500' : 'text-[#8B949E]'}`}>
+                    {requirements.minLength ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                    <span>8文字以上</span>
+                  </div>
+
+                  <div className={`flex items-center gap-2 ${requirements.hasLowercase ? 'text-green-500' : 'text-[#8B949E]'}`}>
+                    {requirements.hasLowercase ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                    <span>小文字 (a-z) を含む</span>
+                  </div>
+
+                  <div className={`flex items-center gap-2 ${requirements.hasUppercase ? 'text-green-500' : 'text-[#8B949E]'}`}>
+                    {requirements.hasUppercase ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                    <span>大文字 (A-Z) を含む</span>
+                  </div>
+
+                  <div className={`flex items-center gap-2 ${requirements.hasNumber ? 'text-green-500' : 'text-[#8B949E]'}`}>
+                    {requirements.hasNumber ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                    <span>数字 (0-9) を含む</span>
+                  </div>
+
+                  <div className={`flex items-center gap-2 ${requirements.hasSpecialChar ? 'text-green-500' : 'text-[#8B949E]'}`}>
+                    {requirements.hasSpecialChar ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                    <span>特殊文字 (!@#$%^&* など) を含む</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirm-new-password">パスワード（確認）</Label>
+              <Label htmlFor="confirm-new-password" className="text-[#E6EDF3]">パスワード（確認）</Label>
               <Input
                 id="confirm-new-password"
                 type="password"
@@ -140,21 +185,15 @@ export function ResetPasswordPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 disabled={isLoading || !token}
+                className="bg-[#0D1117] border-[#2E333D] text-[#E6EDF3] placeholder:text-[#484F58]"
               />
-            </div>
-
-            <div className="text-xs text-muted-foreground">
-              パスワード要件:
-              <ul className="list-disc list-inside mt-1">
-                <li>8文字以上</li>
-                <li>大文字を含む</li>
-                <li>小文字を含む</li>
-                <li>数字を含む</li>
-              </ul>
+              {confirmPassword && password !== confirmPassword && (
+                <p className="text-xs text-red-500">パスワードが一致しません</p>
+              )}
             </div>
 
             {error && (
-              <div className="text-sm text-red-500 bg-red-50 p-3 rounded-md">
+              <div className="text-sm text-red-400 bg-red-900/30 border border-red-700 p-3 rounded-md">
                 {error}
               </div>
             )}
@@ -162,7 +201,7 @@ export function ResetPasswordPage() {
             <Button
               type="submit"
               className="w-full"
-              disabled={isLoading || !token}
+              disabled={isLoading || !token || !allRequirementsMet || password !== confirmPassword}
             >
               {isLoading ? 'リセット中...' : 'パスワードをリセット'}
             </Button>
@@ -170,7 +209,7 @@ export function ResetPasswordPage() {
             <Button
               type="button"
               variant="ghost"
-              className="w-full"
+              className="w-full text-[#8B949E] hover:text-[#E6EDF3]"
               onClick={() => navigate('/')}
               disabled={isLoading}
             >

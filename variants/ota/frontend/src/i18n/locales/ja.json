@@ -339,6 +339,7 @@
     "deviceConnectedOk": "デバイス接続OK",
     "codePreview": {
       "title": "生成コード ({{language}})",
+      "description": "Blocklyブロックから生成されたArduino C++コード",
       "connectEsp32": "ESP32に接続してください",
       "micropythonOnly": "MicroPythonのみ実行可能です",
       "noCode": "コードがありません",
@@ -357,6 +358,14 @@
       "writeTargetDevice": "書込み先デバイス",
       "wifiRegisteredDevices": "WiFi登録デバイス",
       "deselect": "選択解除"
+    },
+    "adc2Warning": {
+      "title": "ADC2ピン使用の警告",
+      "description": "OTAファームウェアはWiFi常時接続のため、ADC2ピンのアナログ読み取りは正常に動作しません。",
+      "pinWarning": "ADC2ピンをアナログ入力で使用しています",
+      "recommendation": "推奨: ADC1ピン（GPIO 32, 33, 34, 35, 36, 39）に変更してください。デジタル入出力は問題ありません。",
+      "cancel": "修正する",
+      "proceed": "警告を無視してコンパイル"
     }
   },
   "project": {

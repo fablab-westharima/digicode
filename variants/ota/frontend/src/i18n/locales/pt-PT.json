@@ -251,6 +251,7 @@
     "deviceConnectedOk": "Dispositivo conectado OK",
     "codePreview": {
       "title": "Código Gerado ({{language}})",
+      "description": "Código Arduino C++ gerado a partir de blocos Blockly",
       "connectEsp32": "Por favor, conecte-se a ESP32",
       "micropythonOnly": "Apenas MicroPython pode ser executado",
       "noCode": "Nenhum código disponível",
@@ -269,6 +270,14 @@
       "writeTargetDevice": "Escrever Dispositivo de Destino",
       "wifiRegisteredDevices": "Dispositivos WiFi Registrados",
       "deselect": "Desselecionar"
+    },
+    "adc2Warning": {
+      "title": "Aviso de uso do pino ADC2",
+      "description": "O firmware OTA usa WiFi continuamente, então leituras analógicas nos pinos ADC2 não funcionarão corretamente.",
+      "pinWarning": "Usando pino ADC2 para entrada analógica",
+      "recommendation": "Recomendado: Mude para pinos ADC1 (GPIO 32, 33, 34, 35, 36, 39). E/S digital não é afetada.",
+      "cancel": "Corrigir código",
+      "proceed": "Ignorar e compilar"
     }
   },
   "project": {
