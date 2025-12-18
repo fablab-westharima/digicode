@@ -10,7 +10,9 @@
     "success": "Success",
     "confirm": "Confirm",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "optional": "Optional",
+    "goToHome": "Go to Home"
   },
   "nav": {
     "home": "Home",
@@ -49,6 +51,7 @@
     "resetEmailSent": "If the email address is registered, a password reset email has been sent. Please check your email.",
     "enterRegisteredEmail": "Please enter your registered email address. We will send you a password reset link.",
     "sending": "Sending...",
+    "logout": "Logout",
     "passkey": {
       "loginWithPasskey": "Sign in with Passkey",
       "loggingInWithPasskey": "Signing in with passkey...",
@@ -70,7 +73,108 @@
       "deleteError": "Failed to delete passkey",
       "loginError": "Failed to sign in with passkey",
       "notSupported": "Your browser does not support passkey authentication",
-      "orDivider": "or"
+      "orDivider": "or",
+      "registerDesc": "Register a passkey on this device to log in without a password next time.",
+      "registerFailed": "Failed to register passkey",
+      "deviceNamePlaceholder": "e.g. MacBook Pro",
+      "manageDesc": "Manage your registered passkeys. You can delete unnecessary passkeys.",
+      "unnamedDevice": "Unnamed",
+      "loadFailed": "Failed to load passkey list",
+      "deleteFailed": "Failed to delete passkey",
+      "deleteConfirmTitle": "Delete this passkey?",
+      "deleteConfirmDesc": "If you delete this passkey, you will not be able to log in with passkey on this device.",
+      "recoveryCodeTitle": "Recovery Codes",
+      "recoveryCodeDesc": "Emergency codes that can be used if you lose access to your passkeys. Each code can only be used once.",
+      "remainingCodes": "Remaining codes: {{count}} / {{total}}",
+      "regenerateCodes": "Regenerate codes",
+      "regenerateCodesNote": "※Regenerating will invalidate all existing codes",
+      "regenerateCodesConfirm": "All existing recovery codes will be invalidated. Generate new codes?",
+      "regenerateCodesFailed": "Failed to regenerate recovery codes",
+      "noRecoveryCodes": "⚠️ No recovery codes generated",
+      "generateCodes": "Generate recovery codes",
+      "generateCodesFailed": "Failed to generate recovery codes",
+      "generateCodesRequirement": "※Register at least one passkey before generating"
+    },
+    "passwordRequirementsNotMet": "Password does not meet requirements",
+    "req": {
+      "minLength": "8+ characters",
+      "lowercase": "Lowercase letter (a-z)",
+      "uppercase": "Uppercase letter (A-Z)",
+      "number": "Number (0-9)",
+      "special": "Special character (!@#$%^&* etc.)"
+    },
+    "emailRequired": "Please enter your email address",
+    "or": "or",
+    "passkeyLoginFailed": "Passkey login failed",
+    "verification": {
+      "title": "Email Verification",
+      "description": "Verification email sent",
+      "emailSentTo": "A verification email has been sent to:",
+      "instruction1": "Click the link in the email to activate your account.",
+      "instruction2": "If you don't see the email, check your spam folder.",
+      "resend": "Resend verification email",
+      "resendFailed": "Failed to resend verification email",
+      "resendSuccess": "Verification email resent",
+      "verifying": "Verifying email...",
+      "successTitle": "Email Verified",
+      "successDesc": "Your email has been verified",
+      "canLoginNow": "You can now log in.",
+      "errorTitle": "Verification Error",
+      "errorInstruction": "The link may be invalid or expired.",
+      "invalidToken": "Invalid verification link",
+      "failed": "Email verification failed"
+    },
+    "recovery": {
+      "requestTitle": "Account Recovery",
+      "requestDesc": "If you can't access your passkey, you can recover your account with your email.",
+      "requestFailed": "Recovery request failed",
+      "requestSuccessTitle": "Recovery Email Sent",
+      "requestSuccessDesc": "A recovery link has been sent to your email.",
+      "emailSentTo": "A recovery link has been sent to:",
+      "instruction1": "Click the link in the email to recover your account.",
+      "instruction2": "The link expires in 1 hour.",
+      "sendLink": "Send Recovery Link",
+      "recovering": "Recovering account...",
+      "successTitle": "Recovery Complete",
+      "successDesc": "Your account has been recovered and you are now logged in.",
+      "redirecting": "Redirecting to home page in {count} seconds...",
+      "registerPasskeyRecommendation": "For security, we recommend registering a new passkey.",
+      "errorTitle": "Recovery Error",
+      "errorInstruction": "The link may be invalid or expired.",
+      "invalidToken": "Invalid recovery link",
+      "failed": "Account recovery failed"
+    },
+    "2fa": {
+      "title": "Two-Factor Authentication",
+      "description": "Enter the 6-digit code sent to {{email}}.",
+      "otpLengthError": "Please enter a 6-digit code",
+      "verifyError": "Code verification failed",
+      "expiresIn": "The code is valid for 10 minutes",
+      "verify": "Verify",
+      "resendCooldown": "Resend available in {{seconds}} seconds",
+      "resend": "Resend code",
+      "resendError": "Failed to resend code",
+      "statusError": "Failed to get settings",
+      "enableSuccess": "Two-factor authentication enabled",
+      "enableError": "Failed to enable two-factor authentication",
+      "passwordRequired": "Please enter your password",
+      "disableSuccess": "Two-factor authentication disabled",
+      "disableError": "Failed to disable two-factor authentication",
+      "settingsTitle": "Two-Factor Authentication",
+      "settingsDescription": "When logging in with a password, you'll also need to enter a 6-digit code sent to your email.",
+      "enableLabel": "Enable two-factor authentication",
+      "enabledSince": "Enabled since {{date}}",
+      "howItWorks": "When enabled, a 6-digit verification code will be sent to your registered email address during password login. Enter this code to complete the login.",
+      "passkeyNote": "* Two-factor authentication is not required for passkey or recovery code login.",
+      "enableTitle": "Enable Two-Factor Authentication",
+      "enableConfirm": "You will need to enter a verification code sent by email when logging in with a password. Continue?",
+      "enable": "Enable",
+      "disableTitle": "Disable Two-Factor Authentication",
+      "disableConfirm": "This will lower your security level. Enter your password to disable.",
+      "disable": "Disable",
+      "dialogTitle": "Two-Factor Authentication Settings",
+      "dialogDescription": "Enhance security for password login.",
+      "trustDevice": "Trust this device (30 days)"
     }
   },
   "home": {
@@ -150,7 +254,16 @@
     "language": "Language",
     "arduino": "Arduino C++",
     "micropython": "MicroPython",
-    "board": "Board",
+    "board": {
+      "wiredOnly": "Wired Only",
+      "selectBoard": "Select Board",
+      "categoryArduino": "Arduino",
+      "categoryEsp8266": "ESP8266",
+      "categoryGeneric": "Generic ESP32",
+      "categoryM5stack": "M5Stack Series",
+      "categoryXiao": "Seeed Xiao Series",
+      "notSupportOta": "{{boardName}} does not support OTA updates"
+    },
     "compileSuccess": "Compile successful",
     "compileError": "Compile error",
     "writeSuccess": "Write successful",
@@ -164,7 +277,7 @@
     "noCodeToCompile": "No code to compile.",
     "connectionCheck": "Connection Check",
     "wifiOtaSelected": "WiFi OTA write selected",
-    "targetDevice": "Target device",
+    "targetDevice": "WiFi Device",
     "checkingDeviceStatus": "Checking device connection status...",
     "resolvingMdns": "Resolving IP address via mDNS...",
     "deviceNotFound": "Device \"{{hostname}}\" not found. Check power and WiFi connection.",
@@ -235,17 +348,9 @@
       "mode": "Mode",
       "compileTargetBoard": "Compile Target Board",
       "tutorial": "Tutorial",
-      "passkeyManagement": "Passkey Management"
-    },
-    "board": {
-      "wiredOnly": "Wired Only",
-      "selectBoard": "Select Board",
-      "categoryArduino": "Arduino",
-      "categoryEsp8266": "ESP8266",
-      "categoryGeneric": "Generic ESP32",
-      "categoryM5stack": "M5Stack Series",
-      "categoryXiao": "Seeed Xiao Series",
-      "notSupportOta": "{{boardName}} does not support OTA updates"
+      "passkeyManagement": "Passkey Management",
+      "cloudServer": "Cloud Server",
+      "localServer": "Local Server"
     },
     "flash": {
       "title": "Compile & Write",
@@ -291,10 +396,16 @@
       "usbConnection": "USB Connection",
       "bluetoothConnection": "Bluetooth Connection",
       "noDevice": "No Device",
-      "writeTarget": "Target",
+      "writeTarget": "WiFi Device",
       "writeTargetDevice": "Write Target Device",
       "wifiRegisteredDevices": "WiFi Registered Devices",
-      "deselect": "Deselect"
+      "deselect": "Deselect",
+      "searchDevice": "Search Devices",
+      "searching": "Searching...",
+      "onlineDevices": "Online devices ({{count}}):",
+      "noOnlineDevices": "No online devices found. Please check if the device is powered on and the IP address is correct.",
+      "searchError": "An error occurred while searching for devices",
+      "registerFromWifi": "Register devices from WiFi settings"
     },
     "adc2Warning": {
       "title": "ADC2 Pin Usage Warning",
@@ -303,7 +414,9 @@
       "recommendation": "Recommended: Switch to ADC1 pins (GPIO 32, 33, 34, 35, 36, 39). Digital I/O is not affected.",
       "cancel": "Fix Code",
       "proceed": "Ignore and Compile"
-    }
+    },
+    "compileAndFlash": "Compile & Flash",
+    "flashButton": "Flash"
   },
   "project": {
     "title": "Projects",
@@ -494,12 +607,26 @@
     "compileServerSelect": "Compile Server Settings",
     "wirelessLan": "Wireless LAN",
     "usbPortRelease": "USB Port Release",
+    "servoTrim": "Servo Trim Settings",
     "extensions": "Extensions",
     "passkeyManagement": "Passkey Management",
     "codePreview": "Generated Code",
     "pidTuning": "PID Tuning",
     "usbDriver": "USB Driver",
-    "document": "Document"
+    "document": "Document",
+    "category": {
+      "project": "Projects",
+      "settings": "Settings",
+      "tools": "Tools",
+      "docs": "Documentation",
+      "account": "Account Settings"
+    },
+    "logout": "Logout",
+    "passkeyRegister": "Register Passkey",
+    "twoFactorSettings": "Two-Factor Auth",
+    "accountDelete": "Delete Account",
+    "documentation": "Documentation",
+    "hint": "Click left arrow to collapse sidebar"
   },
   "tutorial": {
     "selectTutorial": "Select Tutorial",
@@ -525,9 +652,134 @@
     "io": "I/O",
     "motor": "Motor",
     "servo": "Servo",
-    "sensor": "Sensor",
-    "display": "Display",
-    "audio": "Audio",
+    "sensor": {
+      "ultrasonic": {
+        "init": "📏 HC-SR04 Init",
+        "trigPin": "Trig Pin",
+        "echoPin": "Echo Pin",
+        "distance": "📏 Ultrasonic Distance (cm)",
+        "initTooltip": "Initialize HC-SR04 ultrasonic sensor (HP Robot ESP32: Trig=GPIO18, Echo=GPIO19 #1)",
+        "distanceTooltip": "Measure distance with HC-SR04 (initialization required)"
+      },
+      "dht": {
+        "init": "🌡️ DHT Init",
+        "pin": "Pin",
+        "temperature": "🌡️ DHT Temperature (°C)",
+        "humidity": "💧 DHT Humidity (%)",
+        "initTooltip": "Initialize DHT11/DHT22 temperature & humidity sensor",
+        "temperatureTooltip": "Read DHT temperature in Celsius",
+        "humidityTooltip": "Read DHT humidity in percent"
+      },
+      "rus04": {
+        "init": "👀 RUS-04 Init",
+        "rgbPin": "RGB Pin",
+        "numLeds": "LED Count",
+        "distance": "📏 RUS-04 Distance (cm)",
+        "rgbBoth": "🌈 RUS-04 RGB Both Eyes",
+        "rgbEye": "👁️ RUS-04 RGB Eye",
+        "brightness": "☀️ RUS-04 RGB Brightness",
+        "off": "⬛ RUS-04 RGB Off",
+        "left": "Left",
+        "right": "Right",
+        "initTooltip": "Initialize RUS-04 ultrasonic sensor (RGB built-in). HC-SR04 compatible + WS2812B LED×6",
+        "distanceTooltip": "Measure distance with RUS-04 (initialization required)",
+        "rgbTooltip": "Set RUS-04 eye (RGB LED) colors individually for left and right",
+        "eyeTooltip": "Set individual eye color",
+        "brightnessTooltip": "Set eye LED brightness (0-255)",
+        "offTooltip": "Turn off both eyes",
+        "bothSimpleTooltip": "Set both eyes color via dropdown"
+      },
+      "color": {
+        "red": "Red",
+        "green": "Green",
+        "blue": "Blue",
+        "yellow": "Yellow",
+        "purple": "Purple",
+        "cyan": "Cyan",
+        "white": "White",
+        "off": "Off"
+      },
+      "touch": {
+        "init": "👆 Touch Sensor Init",
+        "threshold": "Threshold",
+        "read": "👆 Touched?",
+        "value": "👆 Touch Value",
+        "initTooltip": "Initialize capacitive touch sensor (ESP32 touch pins: T0=GPIO4, T2=GPIO2, etc.)",
+        "readTooltip": "Returns whether the touch sensor is touched",
+        "valueTooltip": "Returns raw touch sensor value (smaller = stronger touch)"
+      },
+      "sound": {
+        "init": "🎤 Sound Sensor Init",
+        "level": "🎤 Sound Level",
+        "detected": "🎤 Sound Detected?",
+        "initTooltip": "Initialize analog sound sensor/microphone (ADC pins: GPIO32-39)",
+        "levelTooltip": "Returns sound level (0-4095)",
+        "detectedTooltip": "Returns whether sound exceeds threshold"
+      },
+      "light": {
+        "init": "☀️ Light Sensor Init",
+        "level": "☀️ Light Level",
+        "initTooltip": "Initialize light sensor (CdS, photoresistor)",
+        "levelTooltip": "Returns light level (0-4095, higher = brighter)"
+      }
+    },
+    "display": {
+      "oledInit": "Initialize OLED",
+      "oledInitTooltip": "Initialize I2C OLED display (SSD1306)",
+      "width": "Width",
+      "height": "Height",
+      "sda": "SDA:",
+      "scl": "SCL:",
+      "oledText": "OLED Text",
+      "oledTextTooltip": "Display text on OLED",
+      "text": "Text",
+      "x": "X:",
+      "y": "Y:",
+      "size": "Size",
+      "sizeSmall": "Small",
+      "sizeMedium": "Medium",
+      "sizeLarge": "Large",
+      "oledClear": "Clear OLED",
+      "oledClearTooltip": "Clear the OLED display",
+      "oledShow": "Update OLED",
+      "oledShowTooltip": "Refresh the OLED display",
+      "oledLine": "Draw Line",
+      "oledLineTooltip": "Draw a line on OLED",
+      "startX": "Start X:",
+      "startY": "Y:",
+      "endX": "End X:",
+      "endY": "Y:",
+      "oledRect": "Draw Rectangle",
+      "oledRectTooltip": "Draw a rectangle on OLED",
+      "widthLabel": "Width:",
+      "heightLabel": "Height:",
+      "outline": "Outline",
+      "filled": "Filled"
+    },
+    "audio": {
+      "buzzerTone": "Buzzer Tone",
+      "buzzerToneTooltip": "Play a tone on the buzzer",
+      "pin": "Pin",
+      "frequency": "Frequency",
+      "hz": "Hz",
+      "duration": "Duration (ms)",
+      "noteC": "C (262Hz)",
+      "noteD": "D (294Hz)",
+      "noteE": "E (330Hz)",
+      "noteF": "F (349Hz)",
+      "noteG": "G (392Hz)",
+      "noteA": "A (440Hz)",
+      "noteB": "B (494Hz)",
+      "custom": "Custom",
+      "buzzerStop": "Stop Buzzer",
+      "buzzerStopTooltip": "Stop the buzzer sound",
+      "buzzerMelody": "Play Melody",
+      "buzzerMelodyTooltip": "Play a predefined melody",
+      "startup": "Startup",
+      "success": "Success",
+      "error": "Error",
+      "complete": "Complete"
+    },
     "communication": "Communication",
     "robot": "Robot",
     "arduino": {
@@ -694,344 +946,6 @@
         "end": "end",
         "speed": "speed"
       }
-    },
-    "sensor": {
-      "button": {
-        "label": "Button Pin",
-        "pressed": "Pressed",
-        "released": "Released",
-        "tooltip": "Get button state (pull-up input)"
-      },
-      "pir": {
-        "label": "PIR Sensor Pin",
-        "detect": "Motion Detected",
-        "tooltip": "Detect motion with PIR sensor"
-      },
-      "tilt": {
-        "label": "Tilt Sensor Pin",
-        "detect": "Tilt Detected",
-        "tooltip": "Detect tilt"
-      },
-      "vibration": {
-        "label": "Vibration Sensor Pin",
-        "detect": "Vibration Detected",
-        "tooltip": "Detect vibration"
-      },
-      "hall": {
-        "label": "Hall Sensor Pin",
-        "detect": "Magnet Detected",
-        "tooltip": "Detect magnetic field (external sensor)"
-      },
-      "hallEsp32": {
-        "label": "ESP32 Built-in Hall Sensor",
-        "tooltip": "Get ESP32 built-in magnetic sensor value"
-      },
-      "photoInterrupter": {
-        "label": "Photo Interrupter Pin",
-        "detect": "Interrupted",
-        "tooltip": "Detect light interruption"
-      },
-      "irObstacle": {
-        "label": "IR Obstacle Sensor Pin",
-        "detect": "Obstacle Detected",
-        "tooltip": "Detect obstacle with IR"
-      },
-      "flameDigital": {
-        "label": "Flame Sensor(D) Pin",
-        "detect": "Flame Detected",
-        "tooltip": "Detect flame (digital output)"
-      },
-      "gasDigital": {
-        "label": "Gas Sensor(D) Pin",
-        "detect": "Gas Detected",
-        "tooltip": "Detect gas (digital output)"
-      },
-      "limitSwitch": {
-        "label": "Limit Switch Pin",
-        "detect": "Switch Activated",
-        "tooltip": "Get limit switch state"
-      },
-      "digitalRead": {
-        "label": "Digital Read Pin",
-        "pullup": "Pull-up",
-        "pulldown": "Pull-down",
-        "none": "None",
-        "tooltip": "Read digital pin state"
-      },
-      "potentiometer": {
-        "label": "Potentiometer Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (0-100)",
-        "angle": "Angle (0-270)",
-        "tooltip": "Read potentiometer value"
-      },
-      "ldr": {
-        "label": "Light Sensor (LDR) Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (0-100)",
-        "tooltip": "Measure light intensity"
-      },
-      "thermistor": {
-        "label": "Thermistor Pin",
-        "unit": "Temp (°C)",
-        "tooltip": "Measure temperature with NTC thermistor"
-      },
-      "lm35": {
-        "label": "LM35 Pin",
-        "unit": "Temp (°C)",
-        "tooltip": "Measure temperature with LM35 sensor"
-      },
-      "gas": {
-        "label": "Gas Sensor(A) Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (0-100)",
-        "tooltip": "Read MQ-2 or similar gas sensor value"
-      },
-      "soilMoisture": {
-        "label": "Soil Moisture Sensor Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (0-100)",
-        "tooltip": "Measure soil moisture"
-      },
-      "waterLevel": {
-        "label": "Water Level Sensor Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (0-100)",
-        "tooltip": "Measure water level"
-      },
-      "flame": {
-        "label": "Flame Sensor(A) Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (0-100)",
-        "tooltip": "Measure flame intensity (analog)"
-      },
-      "irReflective": {
-        "label": "IR Reflective Sensor Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (0-100)",
-        "tooltip": "Measure IR reflection"
-      },
-      "joystick": {
-        "label": "Joystick",
-        "xAxis": "X-Axis",
-        "yAxis": "Y-Axis",
-        "pin": "Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (-100 to 100)",
-        "tooltip": "Read joystick position"
-      },
-      "analogRead": {
-        "label": "Analog Read Pin",
-        "tooltip": "Read analog pin value (0-4095)"
-      },
-      "encoder": {
-        "init": "Initialize Encoder (2 wheels)",
-        "initTooltip": "Initialize rotary encoders",
-        "leftA": "Left A",
-        "leftB": "Left B",
-        "rightA": "Right A",
-        "rightB": "Right B",
-        "ppr": "Pulses/Rev",
-        "wheelDiameter": "Wheel Diameter (mm)",
-        "distance": "Travel Distance",
-        "distanceTooltip": "Get travel distance from encoder",
-        "average": "Average",
-        "leftWheel": "Left Wheel",
-        "rightWheel": "Right Wheel",
-        "speed": "Speed (mm/s)",
-        "speedTooltip": "Get current speed",
-        "count": "Pulse Count",
-        "countTooltip": "Get encoder pulse count",
-        "reset": "Reset Encoder",
-        "resetTooltip": "Reset encoder count",
-        "waitDistance": "Distance",
-        "waitUntil": "mm and wait",
-        "waitDistanceTooltip": "Wait until specified distance"
-      },
-      "lineSensor": {
-        "init": "Initialize Line Sensor",
-        "initTooltip": "Initialize line sensor (dynamic pin config)",
-        "count": "Sensor Count",
-        "count2": "2",
-        "count3": "3",
-        "count4": "4",
-        "count5": "5",
-        "count6": "6",
-        "count8": "8",
-        "initSimple5": "Initialize Line Sensor (5)",
-        "initSimple5Tooltip": "Initialize 5 line sensors",
-        "initTCRT": "Initialize Line Sensor (2)",
-        "initTCRTTooltip": "Initialize TCRT5000 or similar 2 line sensors",
-        "leftS1": "Left S1",
-        "rightS2": "Right S2",
-        "calibrate": "Calibrate",
-        "calibrateTooltip": "Calibrate sensors (move over line)",
-        "duration": "Duration (ms)",
-        "position": "Line Position (-1000 to 1000)",
-        "positionTooltip": "Get line position (-1000=left, 0=center, 1000=right)",
-        "sensor": "Sensor",
-        "sensor1Left": "1 (Left)",
-        "sensor2": "2",
-        "sensor3Center": "3 (Center)",
-        "sensor4": "4",
-        "sensor5Right": "5 (Right)",
-        "value": "Value",
-        "valueTooltip": "Get individual sensor value (0-1000)",
-        "detected": "Line Detected",
-        "detectedTooltip": "Check if line is detected",
-        "threshold": "Threshold",
-        "rawValue": "Raw Value",
-        "rawValueTooltip": "Get sensor raw value (debug)"
-      },
-      "qtr": {
-        "qtr8aInit": "Initialize QTR-8A (Analog)",
-        "qtr8aInitTooltip": "Initialize QTR-8A analog line sensor",
-        "sensorCount": "Sensor Count",
-        "count8": "8",
-        "count6": "6",
-        "count4": "4",
-        "count3": "3",
-        "pinS1": "S1",
-        "pinS2": "S2",
-        "pinS3": "S3",
-        "pinS4": "S4",
-        "pinS5": "S5",
-        "pinS6": "S6",
-        "pinS7": "S7",
-        "pinS8": "S8",
-        "emitterPin": "Emitter Pin",
-        "emitterNone": "(0=none)",
-        "qtr8rcInit": "Initialize QTR-8RC (Digital)",
-        "qtr8rcInitTooltip": "Initialize QTR-8RC digital line sensor",
-        "calibrate": "QTR Calibrate",
-        "calibrateTooltip": "Calibrate sensors",
-        "samples": "Samples",
-        "calibrateHint": "(move over line)",
-        "autoCalibrate": "QTR Auto Calibrate",
-        "autoCalibrateTooltip": "Calibrate with time duration",
-        "duration": "Duration (ms)",
-        "autoCalibrateHint": "(move left-right)",
-        "linePosition": "Line Position (0-7000)",
-        "linePositionTooltip": "Get line position",
-        "lineColor": "Line Color",
-        "whiteOnBlack": "White on Black",
-        "blackOnWhite": "Black on White",
-        "linePositionNormalized": "Line Position (-1000 to 1000)",
-        "linePositionNormalizedTooltip": "Get normalized line position",
-        "sensorValue": "QTR Sensor",
-        "sensorValueTooltip": "Get individual sensor value (0-1000)",
-        "sensor1Left": "1 (Left)",
-        "sensor2": "2",
-        "sensor3": "3",
-        "sensor4": "4",
-        "sensor5": "5",
-        "sensor6": "6",
-        "sensor7": "7",
-        "sensor8Right": "8 (Right)",
-        "value": "Value",
-        "readAll": "Read All Sensors",
-        "readAllTooltip": "Read all sensor values at once",
-        "rawValue": "QTR Sensor",
-        "rawValueLabel": "Raw Value",
-        "rawValueTooltip": "Get sensor raw value (debug)",
-        "lineDetected": "Line Detected",
-        "lineDetectedTooltip": "Check if line is detected",
-        "threshold": "Threshold",
-        "isCalibrated": "Is Calibrated?",
-        "isCalibratedTooltip": "Check if calibration is complete",
-        "emitterControl": "Emitter",
-        "emitterControlTooltip": "Control emitter ON/OFF",
-        "emitterOn": "ON",
-        "emitterOff": "OFF"
-      },
-      "wall": {
-        "init": "Initialize Wall Sensors (4 directions)",
-        "initTooltip": "Initialize IR distance sensors for micromouse",
-        "frontLeft": "Front Left",
-        "frontRight": "Front Right",
-        "left": "Left",
-        "right": "Right",
-        "threshold": "Threshold",
-        "hasWall": "Has Wall",
-        "hasWallSuffix": "?",
-        "hasWallTooltip": "Check if wall exists in direction",
-        "directionFront": "Front",
-        "directionLeft": "Left",
-        "directionRight": "Right",
-        "sensorValue": "Wall Sensor",
-        "sensorValueTooltip": "Get sensor value",
-        "sensorFrontLeft": "Front Left",
-        "sensorFrontRight": "Front Right",
-        "sensorLeft": "Left",
-        "sensorRight": "Right",
-        "value": "Value",
-        "error": "Wall Error Offset",
-        "errorTooltip": "Calculate offset from center using side sensors",
-        "info": "Wall Info (3-bit)",
-        "infoTooltip": "Get left/front/right wall info as 3 bits",
-        "read": "Read Wall Sensors",
-        "readTooltip": "Update all sensor values",
-        "setThreshold": "Set Wall Threshold to",
-        "setThresholdSuffix": "",
-        "setThresholdTooltip": "Change wall detection threshold"
-      }
-    },
-    "audio": {
-      "buzzerTone": "Buzzer Tone",
-      "buzzerToneTooltip": "Play a tone on the buzzer",
-      "pin": "Pin",
-      "frequency": "Frequency",
-      "hz": "Hz",
-      "duration": "Duration (ms)",
-      "noteC": "C (262Hz)",
-      "noteD": "D (294Hz)",
-      "noteE": "E (330Hz)",
-      "noteF": "F (349Hz)",
-      "noteG": "G (392Hz)",
-      "noteA": "A (440Hz)",
-      "noteB": "B (494Hz)",
-      "custom": "Custom",
-      "buzzerStop": "Stop Buzzer",
-      "buzzerStopTooltip": "Stop the buzzer sound",
-      "buzzerMelody": "Play Melody",
-      "buzzerMelodyTooltip": "Play a predefined melody",
-      "startup": "Startup",
-      "success": "Success",
-      "error": "Error",
-      "complete": "Complete"
-    },
-    "display": {
-      "oledInit": "Initialize OLED",
-      "oledInitTooltip": "Initialize I2C OLED display (SSD1306)",
-      "width": "Width",
-      "height": "Height",
-      "sda": "SDA:",
-      "scl": "SCL:",
-      "oledText": "OLED Text",
-      "oledTextTooltip": "Display text on OLED",
-      "text": "Text",
-      "x": "X:",
-      "y": "Y:",
-      "size": "Size",
-      "sizeSmall": "Small",
-      "sizeMedium": "Medium",
-      "sizeLarge": "Large",
-      "oledClear": "Clear OLED",
-      "oledClearTooltip": "Clear the OLED display",
-      "oledShow": "Update OLED",
-      "oledShowTooltip": "Refresh the OLED display",
-      "oledLine": "Draw Line",
-      "oledLineTooltip": "Draw a line on OLED",
-      "startX": "Start X:",
-      "startY": "Y:",
-      "endX": "End X:",
-      "endY": "Y:",
-      "oledRect": "Draw Rectangle",
-      "oledRectTooltip": "Draw a rectangle on OLED",
-      "widthLabel": "Width:",
-      "heightLabel": "Height:",
-      "outline": "Outline",
-      "filled": "Filled"
     },
     "neopixel": {
       "init": "Initialize NeoPixel Ring",
@@ -1895,7 +1809,8 @@
           "type": "Type",
           "dht11": "DHT11",
           "dht22": "DHT22",
-          "tooltip": "Initialize DHT temperature/humidity sensor"
+          "tooltip": "Initialize DHT temperature/humidity sensor",
+          "pin": "Pin"
         },
         "dhtTemperature": {
           "label": "DHT Temperature",
@@ -1942,7 +1857,8 @@
         "potentiometer": {
           "label": "Potentiometer",
           "value": "value",
-          "tooltip": "Read potentiometer value (0-4095)"
+          "tooltip": "Read potentiometer value (0-4095)",
+          "angle": "Angle (0-270)"
         }
       },
       "otto": {
@@ -2359,7 +2275,9 @@
         "name": "Analog Sensors",
         "description": "Potentiometer, Photoresistor, LM35, Joystick, etc."
       }
-    }
+    },
+    "subtitle": "Manage pin assignment settings",
+    "default": "Default"
   },
   "docs": {
     "loadError": "Failed to load document.",
@@ -2413,14 +2331,14 @@
     }
   },
   "firmware": {
-    "description": "Write competition Arduino C++ or beginner MicroPython firmware to ESP32",
+    "description": "Write Arduino C++ firmware to ESP32 (WiFi OTA or BLE supported)",
     "step1Title": "USB Connection",
     "step1Desc": "Connect ESP32 to your PC via USB cable",
     "step2Title": "Select Firmware",
-    "arduinoTitle": "DigiCode Competition (Recommended)",
-    "arduinoDesc": "Arduino C++ / Fast Control / OTA Support",
-    "micropythonTitle": "Beginner",
-    "micropythonDesc": "MicroPython / OTTO teaching materials, etc.",
+    "arduinoTitle": "DigiCode WiFi Firmware",
+    "arduinoDesc": "Arduino C++ / WiFi OTA Support",
+    "bleTitle": "DigiCode BLE Firmware",
+    "bleDesc": "Arduino C++ / Bluetooth Support",
     "step3Title": "Write Firmware",
     "step3Desc": "Click the button to show device selection dialog. Select ESP32 to start writing.",
     "webSerialNotSupported": "Web Serial API is not supported.",
@@ -2431,7 +2349,84 @@
     "usbDriverDesc": "If device is not recognized, install USB serial driver:",
     "usbDriverNote": "Drivers for CP2102, CH340, FTDI, and other chips are required.",
     "title": "Firmware Installer",
-    "installerTitle": "DigiCode Firmware Installer"
+    "installerTitle": "DigiCode Firmware Installer",
+    "wifiFirmware": "DigiCode WiFi Firmware",
+    "wifiFirmwareDesc": "WiFi OTA upload supported (Recommended)",
+    "bleFirmware": "DigiCode BLE Firmware",
+    "bleFirmwareDesc": "Bluetooth upload supported, required for initial upload",
+    "selected": "Selected",
+    "buildFirmware": "🚀 Build Firmware",
+    "eraseFlashTitle": "Erase Entire Flash (Debug)",
+    "eraseFlashDesc": "Erasing the entire flash will delete all saved data (UUID, WiFi settings, etc.) and reset to factory state.",
+    "connectUsb": "Connect ESP32 via USB",
+    "connecting": "Connecting...",
+    "eraseFlash": "Erase Entire Flash",
+    "erasing": "Erasing Flash...",
+    "connectUsbFirst": "※ Please connect ESP32 via USB first",
+    "eraseConfirm": "This will erase the entire flash. All saved data (UUID, WiFi settings, etc.) will be deleted. Are you sure?",
+    "compilingFirmware": "Compiling latest firmware...",
+    "compileComplete": "✅ Firmware compilation complete",
+    "installDesc": "Press INSTALL to connect ESP32 via USB and write {{type}} firmware{{version}}.",
+    "bleType": "BLE",
+    "otaType": "OTA",
+    "bleFirmwareName": "BLE",
+    "otaFirmwareName": "OTA",
+    "compilingFromCloud": "Compiling latest {{firmwareName}} firmware from cloud...",
+    "fullPackageCompiled": "✅ Full firmware package compiled{{versionInfo}}",
+    "firmwareCompiled": "✅ Firmware compiled{{versionInfo}}",
+    "compileError": "❌ Compile error: {{error}}",
+    "notCompiled": "❌ Firmware has not been compiled",
+    "usbNotConnected": "❌ USB connection not established",
+    "startingInstall": "Starting firmware installation...",
+    "loadingStaticFiles": "Loading bootloader/partitions/boot_app0 (legacy mode)...",
+    "staticFilesError": "Failed to load static files",
+    "allFilesLoaded": "✓ All files loaded",
+    "usingFullPackage": "Using full firmware package...",
+    "packagePrepared": "✓ Version-consistent firmware package prepared",
+    "flashing": "Flashing...",
+    "installComplete": "✅ Firmware installation complete!",
+    "flashFailed": "❌ Firmware flash failed",
+    "autoConnectFailed": "💡 Auto-connect failed. Please enter BOOT mode manually and retry.",
+    "installError": "❌ Installation error: {{error}}",
+    "connectingEsp32": "Connecting to ESP32...",
+    "connectionFailed": "Could not connect to ESP32",
+    "connected": "✅ Connected: {{name}}",
+    "connectionError": "❌ Connection error: {{error}}",
+    "disconnecting": "Disconnecting...",
+    "disconnected": "✅ Disconnected",
+    "connectFirst": "❌ Please connect via USB first",
+    "erasingFlash": "Erasing entire flash...",
+    "eraseComplete": "✅ Flash erase complete",
+    "eraseCompleteReset": "✅ Flash erase complete. Please reset ESP32.",
+    "loaderNotInitialized": "Loader not initialized",
+    "eraseError": "Erase error: {{error}}",
+    "wifiFirmwareTitle": "DigiCode WiFi Firmware",
+    "bleFirmwareTitle": "DigiCode BLE Firmware",
+    "rebuild": "Rebuild",
+    "compileErrorLabel": "Compile Error",
+    "compilingLatest": "Compiling latest firmware...",
+    "cloudServerFallback": "Cloud server (Ubuntu → Railway fallback)",
+    "compileCompleteMessage": "✅ Firmware compilation complete",
+    "connectUsbInstruction": "Connect ESP32 to PC with USB cable",
+    "selectPortInstruction": "After connecting, press the button below to select the port",
+    "usbConnected": "✅ USB connection established",
+    "manualBootMode": "Please enter BOOT mode manually",
+    "autoConnectFailedMsg": "Auto-connect failed.",
+    "followStepsInstruction": "Follow these steps to put ESP32 in flash mode, then press retry:",
+    "bootStep1": "Hold down the BOOT button",
+    "bootStep2": "While holding BOOT, press and release the EN button",
+    "bootStep3": "Release the BOOT button",
+    "bootStep4": "Press the Retry button below",
+    "bootHint": "Hint: Some boards label the BOOT button as IO0, FLASH, or GPIO0",
+    "autoConnectTry": "Attempting auto-connect.",
+    "pressStartFlash": "Press Start Flash button.",
+    "retry": "🔄 Retry",
+    "startFlash": "▶ Start Flash",
+    "browserNotSupported": "Your browser is not supported.",
+    "installDescription": "Press INSTALL button to connect ESP32 via USB and flash {{firmwareType}} firmware{{version}}.",
+    "eraseFlashDescription": "Erasing the entire flash will delete all stored data (UUID, WiFi settings, etc.) and reset to initial state.",
+    "disconnect": "Disconnect",
+    "connectFirstNote": "* Please Connect ESP32 via USB first"
   },
   "toolboxMp": {
     "categories": {
@@ -2474,5 +2469,177 @@
       "walkMode": "Walk Mode",
       "rollMode": "Roll Mode"
     }
+  },
+  "modeSelector": {
+    "groups": {
+      "otto": "OTTO Robot",
+      "competition": "Competition Robot",
+      "iot": "IoT / Smart Home",
+      "other": "Others"
+    },
+    "modes": {
+      "ottoBipedal": {
+        "name": "OTTO Bipedal",
+        "description": "4-servo bipedal robot"
+      },
+      "ottoWheel": {
+        "name": "OTTO Wheel",
+        "description": "2-wheel drive robot"
+      },
+      "ottoNinja": {
+        "name": "OTTO Ninja",
+        "description": "Walk/roll transforming robot"
+      },
+      "micromouse": {
+        "name": "Micromouse",
+        "description": "Maze-solving robot"
+      },
+      "lineTrace": {
+        "name": "Line Tracer",
+        "description": "Line tracing robot"
+      },
+      "homeassistant": {
+        "name": "Home Assistant",
+        "description": "IoT/Smart home integration"
+      },
+      "generic": {
+        "name": "Generic Device",
+        "description": "For microcontroller projects"
+      },
+      "allBlocks": {
+        "name": "All Blocks",
+        "description": "Show all blocks"
+      },
+      "custom": {
+        "name": "Favorites",
+        "description": "Register frequently used blocks"
+      }
+    }
+  },
+  "boardSelector": {
+    "categories": {
+      "generic": "Generic ESP32",
+      "m5stack": "M5Stack Series",
+      "xiao": "Seeed Xiao Series"
+    },
+    "boards": {
+      "esp32Generic": {
+        "name": "ESP32 (Standard)",
+        "description": "ESP32-WROOM etc., OTA supported"
+      },
+      "esp32S3": {
+        "name": "ESP32-S3",
+        "description": "USB OTG, Camera, OTA supported"
+      },
+      "esp32C3": {
+        "name": "ESP32-C3",
+        "description": "RISC-V, Low power, OTA supported"
+      },
+      "esp32C6": {
+        "name": "ESP32-C6",
+        "description": "WiFi 6, Thread/Zigbee, OTA supported"
+      },
+      "m5stackBasic": {
+        "name": "M5Stack Basic/Gray/Fire",
+        "description": "2.0\" display, 3 buttons, OTA supported"
+      },
+      "m5stickCPlus": {
+        "name": "M5StickC Plus",
+        "description": "1.14\" display, IMU, OTA supported"
+      },
+      "atomLite": {
+        "name": "ATOM Lite",
+        "description": "24x24mm, RGB LED, OTA supported"
+      },
+      "atomMatrix": {
+        "name": "ATOM Matrix",
+        "description": "24x24mm, 5x5 LED, IMU, OTA supported"
+      },
+      "m5stampPico": {
+        "name": "M5Stamp Pico",
+        "description": "Ultra-compact stamp, OTA supported"
+      },
+      "m5stampC3": {
+        "name": "M5Stamp C3/C3U",
+        "description": "C3-based stamp, OTA supported"
+      },
+      "xiaoEsp32C3": {
+        "name": "XIAO ESP32C3",
+        "description": "21x17.5mm, RISC-V, OTA supported"
+      },
+      "xiaoEsp32S3": {
+        "name": "XIAO ESP32S3",
+        "description": "21x17.5mm, Camera, OTA supported"
+      },
+      "xiaoEsp32C6": {
+        "name": "XIAO ESP32C6",
+        "description": "21x17.5mm, WiFi 6, OTA supported"
+      }
+    }
+  },
+  "pidTuning": {
+    "title": "PID Tuning",
+    "reset": "Reset",
+    "preset": "Preset",
+    "custom": "Custom",
+    "kp": "Kp (Proportional Gain)",
+    "kpDesc": "Output proportional to error",
+    "ki": "Ki (Integral Gain)",
+    "kiDesc": "Eliminates steady-state error",
+    "kd": "Kd (Derivative Gain)",
+    "kdDesc": "Suppresses rapid changes",
+    "sendToEsp32": "Send to ESP32",
+    "connectEsp32": "Please connect to ESP32",
+    "generatedCode": "Generated Code",
+    "selectPreset": "Select preset",
+    "savePreset": "Save Preset",
+    "savePresetDesc": "Save current PID parameters as a preset",
+    "presetName": "Preset Name",
+    "presetNamePlaceholder": "e.g., Fast Line Trace",
+    "description": "Description (optional)",
+    "descriptionPlaceholder": "e.g., High-speed competition settings"
+  },
+  "servo": {
+    "trim": {
+      "title": "Servo Trim Settings",
+      "description": "Adjust servo motor trim (offset) values",
+      "connected": "Connected",
+      "notConnected": "Please connect to device",
+      "loadError": "Failed to load trim values",
+      "testError": "Test action failed",
+      "saveError": "Failed to save",
+      "preset": "Preset",
+      "servoList": "Servo Settings",
+      "testServo": "Test Servo",
+      "home": "Home Position",
+      "test": "Test",
+      "reset": "Reset",
+      "reload": "Reload",
+      "save": "Save",
+      "saveNote": "Settings are saved to the device and persist even after power off",
+      "angleTrim": "Angle Trim",
+      "speedTrim": "Speed Adj"
+    }
+  },
+  "accountDelete": {
+    "title": "Delete Account",
+    "description": "Deleting your account will result in permanent loss of all data. This action cannot be undone.",
+    "warningTitle": "The following data will be permanently deleted:",
+    "warningProjects": "All projects",
+    "warningPasskeys": "Registered passkeys",
+    "warningCompileHistory": "Compile usage history",
+    "warningAccountInfo": "Account information",
+    "irreversible": "This action cannot be undone",
+    "confirmIdentity": "Enter your password to confirm your identity",
+    "passwordPlaceholder": "Password",
+    "cancel": "Cancel",
+    "deleteAccount": "Delete Account",
+    "enterPassword": "Please enter your password",
+    "getUserFailed": "Failed to get user info. Please login again.",
+    "incorrectPassword": "Incorrect password",
+    "deleteFailed": "Failed to delete account",
+    "deleteSuccess": "Account deleted. Thank you for using our service.",
+    "passwordPrompt": "Enter your password to confirm your identity",
+    "deleteButton": "Delete Account"
   }
 }

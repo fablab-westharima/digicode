@@ -61,6 +61,7 @@
     "sending": "送信中...",
     "emailRequired": "メールアドレスを入力してください",
     "or": "または",
+    "logout": "ログアウト",
     "passkeyLoginFailed": "パスキーログインに失敗しました",
     "passkey": {
       "loginWithPasskey": "パスキーでログイン",
@@ -92,7 +93,18 @@
       "loadFailed": "パスキー一覧の取得に失敗しました",
       "deleteFailed": "パスキーの削除に失敗しました",
       "deleteConfirmTitle": "パスキーを削除しますか？",
-      "deleteConfirmDesc": "このパスキーを削除すると、このデバイスではパスキーでログインできなくなります。"
+      "deleteConfirmDesc": "このパスキーを削除すると、このデバイスではパスキーでログインできなくなります。",
+      "recoveryCodeTitle": "リカバリーコード",
+      "recoveryCodeDesc": "パスキーを失った場合に使用できる緊急用コードです。各コードは1回のみ使用可能です。",
+      "remainingCodes": "残り有効コード: {{count}} / {{total}}",
+      "regenerateCodes": "新しいコードを再生成",
+      "regenerateCodesNote": "※再生成すると既存のコードは全て無効になります",
+      "regenerateCodesConfirm": "既存のリカバリーコードは全て無効になります。新しいコードを生成しますか？",
+      "regenerateCodesFailed": "リカバリーコードの再生成に失敗しました",
+      "noRecoveryCodes": "⚠️ リカバリーコードが生成されていません",
+      "generateCodes": "リカバリーコードを生成",
+      "generateCodesFailed": "リカバリーコードの生成に失敗しました",
+      "generateCodesRequirement": "※パスキーを最低1つ登録してから生成してください"
     },
     "verification": {
       "title": "メールアドレスの確認",
@@ -131,6 +143,38 @@
       "errorInstruction": "リンクが無効または期限切れの可能性があります。",
       "invalidToken": "無効なリカバリーリンクです",
       "failed": "アカウントリカバリーに失敗しました"
+    },
+    "2fa": {
+      "title": "2段階認証",
+      "description": "{{email}} に送信された6桁のコードを入力してください。",
+      "otpLengthError": "6桁のコードを入力してください",
+      "verifyError": "コードの確認に失敗しました",
+      "expiresIn": "コードは10分間有効です",
+      "verify": "確認",
+      "resendCooldown": "{{seconds}}秒後に再送信可能",
+      "resend": "コードを再送信",
+      "resendError": "コードの再送信に失敗しました",
+      "statusError": "設定の取得に失敗しました",
+      "enableSuccess": "2段階認証を有効にしました",
+      "enableError": "2段階認証の有効化に失敗しました",
+      "passwordRequired": "パスワードを入力してください",
+      "disableSuccess": "2段階認証を無効にしました",
+      "disableError": "2段階認証の無効化に失敗しました",
+      "settingsTitle": "2段階認証",
+      "settingsDescription": "パスワードログイン時に、メールで送信される6桁のコードを追加で入力します。",
+      "enableLabel": "2段階認証を有効にする",
+      "enabledSince": "{{date}} から有効",
+      "howItWorks": "有効にすると、パスワードログイン時に登録メールアドレスへ6桁の認証コードが送信されます。このコードを入力することでログインが完了します。",
+      "passkeyNote": "※ パスキー認証やリカバリーコード認証では2段階認証は不要です。",
+      "enableTitle": "2段階認証を有効にする",
+      "enableConfirm": "パスワードログイン時に、メールで送信される認証コードが必要になります。よろしいですか？",
+      "enable": "有効にする",
+      "disableTitle": "2段階認証を無効にする",
+      "disableConfirm": "セキュリティレベルが下がります。無効にするにはパスワードを入力してください。",
+      "disable": "無効にする",
+      "dialogTitle": "2段階認証設定",
+      "dialogDescription": "パスワードログイン時のセキュリティを強化します。",
+      "trustDevice": "このデバイスを信頼する（30日間）"
     }
   },
   "home": {
@@ -210,7 +254,16 @@
     "language": "言語",
     "arduino": "Arduino C++",
     "micropython": "MicroPython",
-    "board": "ボード",
+    "board": {
+      "wiredOnly": "有線のみ",
+      "selectBoard": "ボードを選択",
+      "categoryArduino": "Arduino",
+      "categoryEsp8266": "ESP8266",
+      "categoryGeneric": "汎用 ESP32",
+      "categoryM5stack": "M5Stack シリーズ",
+      "categoryXiao": "Seeed Xiao シリーズ",
+      "notSupportOta": "{{boardName}}はOTA更新に対応していません"
+    },
     "compileSuccess": "コンパイル成功",
     "compileError": "コンパイルエラー",
     "writeSuccess": "書き込み成功",
@@ -224,7 +277,7 @@
     "noCodeToCompile": "コンパイルするコードがありません。",
     "connectionCheck": "接続確認",
     "wifiOtaSelected": "WiFi OTA書込みが選択されています",
-    "targetDevice": "書込み先",
+    "targetDevice": "WiFiデバイス",
     "checkingDeviceStatus": "デバイスの接続状態を確認中...",
     "resolvingMdns": "mDNSでIPアドレスを解決中...",
     "deviceNotFound": "デバイス「{{hostname}}」が見つかりません。電源とWiFi接続を確認してください。",
@@ -300,16 +353,6 @@
       "tutorial": "チュートリアル",
       "passkeyManagement": "パスキー管理"
     },
-    "board": {
-      "wiredOnly": "有線のみ",
-      "selectBoard": "ボードを選択",
-      "categoryArduino": "Arduino",
-      "categoryEsp8266": "ESP8266",
-      "categoryGeneric": "汎用 ESP32",
-      "categoryM5stack": "M5Stack シリーズ",
-      "categoryXiao": "Seeed Xiao シリーズ",
-      "notSupportOta": "{{boardName}}はOTA更新に対応していません"
-    },
     "flash": {
       "title": "コンパイル＆書き込み",
       "selectMethod": "書き込み方法を選択すると、コンパイルと書き込みが実行されます。",
@@ -354,10 +397,16 @@
       "usbConnection": "USB接続",
       "bluetoothConnection": "Bluetooth接続",
       "noDevice": "デバイスなし",
-      "writeTarget": "書込み先",
+      "writeTarget": "WiFiデバイス",
       "writeTargetDevice": "書込み先デバイス",
       "wifiRegisteredDevices": "WiFi登録デバイス",
-      "deselect": "選択解除"
+      "deselect": "選択解除",
+      "searchDevice": "デバイス検索",
+      "searching": "検索中...",
+      "onlineDevices": "オンラインデバイス ({{count}}台):",
+      "noOnlineDevices": "オンラインのデバイスが見つかりませんでした。デバイスが起動しているか、IPアドレスが正しいか確認してください。",
+      "searchError": "デバイス検索中にエラーが発生しました",
+      "registerFromWifi": "WiFi設定からデバイスを登録してください"
     },
     "adc2Warning": {
       "title": "ADC2ピン使用の警告",
@@ -366,7 +415,8 @@
       "recommendation": "推奨: ADC1ピン（GPIO 32, 33, 34, 35, 36, 39）に変更してください。デジタル入出力は問題ありません。",
       "cancel": "修正する",
       "proceed": "警告を無視してコンパイル"
-    }
+    },
+    "flashButton": "書込み"
   },
   "project": {
     "title": "プロジェクト",
@@ -557,12 +607,26 @@
     "compileServerSelect": "コンパイルサーバ設定",
     "wirelessLan": "無線LAN接続",
     "usbPortRelease": "USBポート解放",
+    "servoTrim": "サーボトリム設定",
     "extensions": "拡張機能",
     "passkeyManagement": "パスキー管理",
     "codePreview": "生成コード",
     "pidTuning": "PIDチューニング",
     "usbDriver": "USBドライバー",
-    "document": "ドキュメント"
+    "document": "ドキュメント",
+    "category": {
+      "project": "プロジェクト",
+      "settings": "設定",
+      "tools": "ツール",
+      "docs": "ドキュメント",
+      "account": "アカウント設定"
+    },
+    "logout": "ログアウト",
+    "passkeyRegister": "パスキーを登録",
+    "twoFactorSettings": "2段階認証",
+    "accountDelete": "アカウント削除",
+    "documentation": "ドキュメント",
+    "hint": "サイドバーを折りたたむには左矢印をクリック"
   },
   "tutorial": {
     "selectTutorial": "チュートリアルを選択",
@@ -588,9 +652,134 @@
     "io": "入出力",
     "motor": "モーター",
     "servo": "サーボ",
-    "sensor": "センサー",
-    "display": "ディスプレイ",
-    "audio": "オーディオ",
+    "sensor": {
+      "ultrasonic": {
+        "init": "📏 HC-SR04初期化",
+        "trigPin": "Trigピン",
+        "echoPin": "Echoピン",
+        "distance": "📏 超音波距離(cm)",
+        "initTooltip": "HC-SR04超音波センサーを初期化します（HP Robot ESP32: Trig=GPIO18, Echo=GPIO19 #1）",
+        "distanceTooltip": "HC-SR04超音波センサーで距離を測定します（初期化が必要）"
+      },
+      "dht": {
+        "init": "🌡️ DHT初期化",
+        "pin": "ピン",
+        "temperature": "🌡️ DHT温度(℃)",
+        "humidity": "💧 DHT湿度(%)",
+        "initTooltip": "DHT11/DHT22温湿度センサーを初期化します",
+        "temperatureTooltip": "DHT温度を摂氏で読み取ります",
+        "humidityTooltip": "DHT湿度をパーセントで読み取ります"
+      },
+      "rus04": {
+        "init": "👀 RUS-04初期化",
+        "rgbPin": "RGBピン",
+        "numLeds": "LED数",
+        "distance": "📏 RUS-04距離(cm)",
+        "rgbBoth": "🌈 RUS-04 RGB両目",
+        "rgbEye": "👁️ RUS-04 RGB 目",
+        "brightness": "☀️ RUS-04 RGB 明るさ",
+        "off": "⬛ RUS-04 RGB 消灯",
+        "left": "左",
+        "right": "右",
+        "initTooltip": "RUS-04超音波センサー(RGB内蔵)を初期化します。HC-SR04互換+WS2812B LED×6",
+        "distanceTooltip": "RUS-04超音波センサーで距離を測定します（初期化が必要）",
+        "rgbTooltip": "RUS-04の目(RGB LED)の色を左右個別に設定します",
+        "eyeTooltip": "左右の目を個別に設定します",
+        "brightnessTooltip": "目のLEDの明るさを設定（0-255）",
+        "offTooltip": "両目を消灯します",
+        "bothSimpleTooltip": "両目の色をドロップダウンで設定"
+      },
+      "color": {
+        "red": "赤",
+        "green": "緑",
+        "blue": "青",
+        "yellow": "黄",
+        "purple": "紫",
+        "cyan": "水色",
+        "white": "白",
+        "off": "消灯"
+      },
+      "touch": {
+        "init": "👆 タッチセンサー初期化",
+        "threshold": "しきい値",
+        "read": "👆 タッチされた？",
+        "value": "👆 タッチセンサー値",
+        "initTooltip": "静電容量式タッチセンサーを初期化します（ESP32タッチピン対応: T0=GPIO4, T2=GPIO2等）",
+        "readTooltip": "タッチセンサーがタッチされているかを返します",
+        "valueTooltip": "タッチセンサーの生の値を返します（小さいほど強くタッチ）"
+      },
+      "sound": {
+        "init": "🎤 サウンドセンサー初期化",
+        "level": "🎤 音量レベル",
+        "detected": "🎤 音が聞こえた？",
+        "initTooltip": "アナログサウンドセンサー/マイクを初期化します（ADC対応ピン: GPIO32-39）",
+        "levelTooltip": "サウンドセンサーの音量レベルを返します（0-4095）",
+        "detectedTooltip": "音がしきい値を超えたかを返します"
+      },
+      "light": {
+        "init": "☀️ 光センサー初期化",
+        "level": "☀️ 光量レベル",
+        "initTooltip": "光センサー（CdS、フォトレジスター）を初期化します",
+        "levelTooltip": "光センサーの光量レベルを返します（0-4095、大きいほど明るい）"
+      }
+    },
+    "display": {
+      "oledInit": "OLED初期化",
+      "oledInitTooltip": "I2C OLEDディスプレイを初期化します（SSD1306）",
+      "width": "幅",
+      "height": "高さ",
+      "sda": "SDA:",
+      "scl": "SCL:",
+      "oledText": "OLED表示",
+      "oledTextTooltip": "OLEDにテキストを表示します",
+      "text": "テキスト",
+      "x": "X:",
+      "y": "Y:",
+      "size": "サイズ",
+      "sizeSmall": "小",
+      "sizeMedium": "中",
+      "sizeLarge": "大",
+      "oledClear": "OLED消去",
+      "oledClearTooltip": "OLEDの表示内容を消去します",
+      "oledShow": "OLED更新",
+      "oledShowTooltip": "OLEDの描画内容を画面に反映します",
+      "oledLine": "OLED線描画",
+      "oledLineTooltip": "OLEDに線を描画します",
+      "startX": "始点X:",
+      "startY": "Y:",
+      "endX": "終点X:",
+      "endY": "Y:",
+      "oledRect": "OLED四角形",
+      "oledRectTooltip": "OLEDに四角形を描画します",
+      "widthLabel": "幅:",
+      "heightLabel": "高さ:",
+      "outline": "枠のみ",
+      "filled": "塗りつぶし"
+    },
+    "audio": {
+      "buzzerTone": "ブザー音",
+      "buzzerToneTooltip": "ブザーで音を鳴らします",
+      "pin": "ピン",
+      "frequency": "周波数",
+      "hz": "Hz",
+      "duration": "時間(ms)",
+      "noteC": "ド (262Hz)",
+      "noteD": "レ (294Hz)",
+      "noteE": "ミ (330Hz)",
+      "noteF": "ファ (349Hz)",
+      "noteG": "ソ (392Hz)",
+      "noteA": "ラ (440Hz)",
+      "noteB": "シ (494Hz)",
+      "custom": "カスタム",
+      "buzzerStop": "ブザー停止",
+      "buzzerStopTooltip": "ブザーの音を止めます",
+      "buzzerMelody": "メロディ再生",
+      "buzzerMelodyTooltip": "あらかじめ定義されたメロディを再生します",
+      "startup": "起動音",
+      "success": "成功音",
+      "error": "エラー音",
+      "complete": "完了音"
+    },
     "communication": "通信",
     "robot": "ロボット",
     "arduino": {
@@ -757,344 +946,6 @@
         "end": "終了",
         "speed": "速度"
       }
-    },
-    "sensor": {
-      "button": {
-        "label": "ボタン ピン",
-        "pressed": "押されている",
-        "released": "離されている",
-        "tooltip": "ボタンの状態を取得します（プルアップ入力）"
-      },
-      "pir": {
-        "label": "PIRセンサー ピン",
-        "detect": "動き検出",
-        "tooltip": "人感センサーで動きを検出します"
-      },
-      "tilt": {
-        "label": "傾斜センサー ピン",
-        "detect": "傾き検出",
-        "tooltip": "傾斜を検出します"
-      },
-      "vibration": {
-        "label": "振動センサー ピン",
-        "detect": "振動検出",
-        "tooltip": "振動を検出します"
-      },
-      "hall": {
-        "label": "ホールセンサー ピン",
-        "detect": "磁気検出",
-        "tooltip": "磁気を検出します（外付けセンサー）"
-      },
-      "hallEsp32": {
-        "label": "ESP32内蔵ホールセンサー",
-        "tooltip": "ESP32内蔵の磁気センサー値を取得します"
-      },
-      "photoInterrupter": {
-        "label": "フォトインタラプタ ピン",
-        "detect": "遮断検出",
-        "tooltip": "光の遮断を検出します"
-      },
-      "irObstacle": {
-        "label": "IR障害物センサー ピン",
-        "detect": "障害物検出",
-        "tooltip": "赤外線で障害物を検出します"
-      },
-      "flameDigital": {
-        "label": "炎センサー(D) ピン",
-        "detect": "炎検出",
-        "tooltip": "炎を検出します（デジタル出力）"
-      },
-      "gasDigital": {
-        "label": "ガスセンサー(D) ピン",
-        "detect": "ガス検出",
-        "tooltip": "ガスを検出します（デジタル出力）"
-      },
-      "limitSwitch": {
-        "label": "リミットスイッチ ピン",
-        "detect": "スイッチ検出",
-        "tooltip": "リミットスイッチの状態を取得します"
-      },
-      "digitalRead": {
-        "label": "デジタル入力 ピン",
-        "pullup": "プルアップ",
-        "pulldown": "プルダウン",
-        "none": "なし",
-        "tooltip": "デジタルピンの状態を読み取ります"
-      },
-      "potentiometer": {
-        "label": "ポテンショメータ ピン",
-        "raw": "生値(0-4095)",
-        "percent": "パーセント(0-100)",
-        "angle": "角度(0-270)",
-        "tooltip": "可変抵抗器の値を読み取ります"
-      },
-      "ldr": {
-        "label": "光センサー(LDR) ピン",
-        "raw": "生値(0-4095)",
-        "percent": "パーセント(0-100)",
-        "tooltip": "光の明るさを測定します"
-      },
-      "thermistor": {
-        "label": "サーミスタ ピン",
-        "unit": "温度(℃)",
-        "tooltip": "NTCサーミスタで温度を測定します"
-      },
-      "lm35": {
-        "label": "LM35 ピン",
-        "unit": "温度(℃)",
-        "tooltip": "LM35温度センサーで温度を測定します"
-      },
-      "gas": {
-        "label": "ガスセンサー(A) ピン",
-        "raw": "生値(0-4095)",
-        "percent": "パーセント(0-100)",
-        "tooltip": "MQ-2等のガスセンサー値を読み取ります"
-      },
-      "soilMoisture": {
-        "label": "土壌水分センサー ピン",
-        "raw": "生値(0-4095)",
-        "percent": "パーセント(0-100)",
-        "tooltip": "土壌の水分量を測定します"
-      },
-      "waterLevel": {
-        "label": "水位センサー ピン",
-        "raw": "生値(0-4095)",
-        "percent": "パーセント(0-100)",
-        "tooltip": "水位を測定します"
-      },
-      "flame": {
-        "label": "炎センサー(A) ピン",
-        "raw": "生値(0-4095)",
-        "percent": "パーセント(0-100)",
-        "tooltip": "炎の強さを測定します（アナログ）"
-      },
-      "irReflective": {
-        "label": "IR反射センサー ピン",
-        "raw": "生値(0-4095)",
-        "percent": "パーセント(0-100)",
-        "tooltip": "赤外線の反射量を測定します"
-      },
-      "joystick": {
-        "label": "ジョイスティック",
-        "xAxis": "X軸",
-        "yAxis": "Y軸",
-        "pin": "ピン",
-        "raw": "生値(0-4095)",
-        "percent": "パーセント(-100〜100)",
-        "tooltip": "ジョイスティックの位置を読み取ります"
-      },
-      "analogRead": {
-        "label": "アナログ入力 ピン",
-        "tooltip": "アナログピンの値を読み取ります（0-4095）"
-      },
-      "encoder": {
-        "init": "エンコーダー初期化（2輪）",
-        "initTooltip": "ロータリーエンコーダーを初期化します",
-        "leftA": "左A",
-        "leftB": "左B",
-        "rightA": "右A",
-        "rightB": "右B",
-        "ppr": "パルス/回転",
-        "wheelDiameter": "車輪径(mm)",
-        "distance": "走行距離",
-        "distanceTooltip": "エンコーダーから走行距離を取得します",
-        "average": "平均",
-        "leftWheel": "左車輪",
-        "rightWheel": "右車輪",
-        "speed": "速度(mm/s)",
-        "speedTooltip": "現在の速度を取得します",
-        "count": "カウント値",
-        "countTooltip": "エンコーダーのパルスカウントを取得します",
-        "reset": "エンコーダーリセット",
-        "resetTooltip": "エンコーダーのカウントをリセットします",
-        "waitDistance": "距離",
-        "waitUntil": "mmまで待機",
-        "waitDistanceTooltip": "指定距離まで待機します"
-      },
-      "lineSensor": {
-        "init": "ラインセンサー初期化",
-        "initTooltip": "ラインセンサーを初期化します（動的ピン設定）",
-        "count": "センサー数",
-        "count2": "2個",
-        "count3": "3個",
-        "count4": "4個",
-        "count5": "5個",
-        "count6": "6個",
-        "count8": "8個",
-        "initSimple5": "ラインセンサー初期化（5個）",
-        "initSimple5Tooltip": "5個のラインセンサーを初期化します",
-        "initTCRT": "ラインセンサー初期化（2個）",
-        "initTCRTTooltip": "TCRT5000等の2個のラインセンサーを初期化します",
-        "leftS1": "左 S1",
-        "rightS2": "右 S2",
-        "calibrate": "キャリブレーション",
-        "calibrateTooltip": "センサーをキャリブレーションします（ライン上で移動）",
-        "duration": "時間(ms)",
-        "position": "ライン位置(-1000〜1000)",
-        "positionTooltip": "ラインの位置を取得します（-1000=左端, 0=中央, 1000=右端）",
-        "sensor": "センサー",
-        "sensor1Left": "1(左)",
-        "sensor2": "2",
-        "sensor3Center": "3(中央)",
-        "sensor4": "4",
-        "sensor5Right": "5(右)",
-        "value": "の値",
-        "valueTooltip": "個別センサーの値を取得します(0-1000)",
-        "detected": "ライン検出",
-        "detectedTooltip": "ラインが検出されたかを判定します",
-        "threshold": "閾値",
-        "rawValue": "の生値",
-        "rawValueTooltip": "センサーの生値を取得します（デバッグ用）"
-      },
-      "qtr": {
-        "qtr8aInit": "QTR-8A初期化（アナログ）",
-        "qtr8aInitTooltip": "QTR-8Aアナログラインセンサーを初期化します",
-        "sensorCount": "センサー数",
-        "count8": "8個",
-        "count6": "6個",
-        "count4": "4個",
-        "count3": "3個",
-        "pinS1": "S1",
-        "pinS2": "S2",
-        "pinS3": "S3",
-        "pinS4": "S4",
-        "pinS5": "S5",
-        "pinS6": "S6",
-        "pinS7": "S7",
-        "pinS8": "S8",
-        "emitterPin": "エミッターピン",
-        "emitterNone": "(0=なし)",
-        "qtr8rcInit": "QTR-8RC初期化（デジタル）",
-        "qtr8rcInitTooltip": "QTR-8RCデジタルラインセンサーを初期化します",
-        "calibrate": "QTRキャリブレーション",
-        "calibrateTooltip": "センサーをキャリブレーションします",
-        "samples": "サンプル数",
-        "calibrateHint": "（ライン上で移動）",
-        "autoCalibrate": "QTR自動キャリブレーション",
-        "autoCalibrateTooltip": "時間指定でキャリブレーションします",
-        "duration": "時間(ms)",
-        "autoCalibrateHint": "（左右に移動）",
-        "linePosition": "ライン位置(0〜7000)",
-        "linePositionTooltip": "ラインの位置を取得します",
-        "lineColor": "ライン色",
-        "whiteOnBlack": "白ライン/黒背景",
-        "blackOnWhite": "黒ライン/白背景",
-        "linePositionNormalized": "ライン位置(-1000〜1000)",
-        "linePositionNormalizedTooltip": "正規化されたライン位置を取得します",
-        "sensorValue": "QTRセンサー",
-        "sensorValueTooltip": "個別センサーの値を取得します(0-1000)",
-        "sensor1Left": "1(左端)",
-        "sensor2": "2",
-        "sensor3": "3",
-        "sensor4": "4",
-        "sensor5": "5",
-        "sensor6": "6",
-        "sensor7": "7",
-        "sensor8Right": "8(右端)",
-        "value": "の値",
-        "readAll": "全センサー読み取り",
-        "readAllTooltip": "全センサーの値を一度に読み取ります",
-        "rawValue": "QTRセンサー",
-        "rawValueLabel": "番の生値",
-        "rawValueTooltip": "センサーの生値を取得します（デバッグ用）",
-        "lineDetected": "ライン検出",
-        "lineDetectedTooltip": "ラインが検出されたかを判定します",
-        "threshold": "閾値",
-        "isCalibrated": "キャリブレーション済み？",
-        "isCalibratedTooltip": "キャリブレーションが完了しているかを確認します",
-        "emitterControl": "エミッター",
-        "emitterControlTooltip": "エミッターのON/OFFを制御します",
-        "emitterOn": "ON",
-        "emitterOff": "OFF"
-      },
-      "wall": {
-        "init": "壁センサー初期化（4方向）",
-        "initTooltip": "マイクロマウス用IR距離センサーを初期化します",
-        "frontLeft": "前左",
-        "frontRight": "前右",
-        "left": "左",
-        "right": "右",
-        "threshold": "閾値",
-        "hasWall": "壁あり",
-        "hasWallSuffix": "？",
-        "hasWallTooltip": "指定方向に壁があるかを判定します",
-        "directionFront": "前",
-        "directionLeft": "左",
-        "directionRight": "右",
-        "sensorValue": "壁センサー",
-        "sensorValueTooltip": "センサー値を取得します",
-        "sensorFrontLeft": "前左",
-        "sensorFrontRight": "前右",
-        "sensorLeft": "左",
-        "sensorRight": "右",
-        "value": "の値",
-        "error": "壁からのずれ量",
-        "errorTooltip": "左右センサーから中央からのずれ量を計算します",
-        "info": "壁情報(3ビット)",
-        "infoTooltip": "左・前・右の壁情報を3ビットで取得します",
-        "read": "壁センサー読み取り",
-        "readTooltip": "全センサーの値を更新します",
-        "setThreshold": "壁閾値を",
-        "setThresholdSuffix": "に設定",
-        "setThresholdTooltip": "壁検出の閾値を変更します"
-      }
-    },
-    "audio": {
-      "buzzerTone": "ブザー音",
-      "buzzerToneTooltip": "ブザーで音を鳴らします",
-      "pin": "ピン",
-      "frequency": "周波数",
-      "hz": "Hz",
-      "duration": "時間(ms)",
-      "noteC": "ド (262Hz)",
-      "noteD": "レ (294Hz)",
-      "noteE": "ミ (330Hz)",
-      "noteF": "ファ (349Hz)",
-      "noteG": "ソ (392Hz)",
-      "noteA": "ラ (440Hz)",
-      "noteB": "シ (494Hz)",
-      "custom": "カスタム",
-      "buzzerStop": "ブザー停止",
-      "buzzerStopTooltip": "ブザーの音を止めます",
-      "buzzerMelody": "メロディ再生",
-      "buzzerMelodyTooltip": "あらかじめ定義されたメロディを再生します",
-      "startup": "起動音",
-      "success": "成功音",
-      "error": "エラー音",
-      "complete": "完了音"
-    },
-    "display": {
-      "oledInit": "OLED初期化",
-      "oledInitTooltip": "I2C OLEDディスプレイを初期化します（SSD1306）",
-      "width": "幅",
-      "height": "高さ",
-      "sda": "SDA:",
-      "scl": "SCL:",
-      "oledText": "OLED表示",
-      "oledTextTooltip": "OLEDにテキストを表示します",
-      "text": "テキスト",
-      "x": "X:",
-      "y": "Y:",
-      "size": "サイズ",
-      "sizeSmall": "小",
-      "sizeMedium": "中",
-      "sizeLarge": "大",
-      "oledClear": "OLED消去",
-      "oledClearTooltip": "OLEDの表示内容を消去します",
-      "oledShow": "OLED更新",
-      "oledShowTooltip": "OLEDの描画内容を画面に反映します",
-      "oledLine": "OLED線描画",
-      "oledLineTooltip": "OLEDに線を描画します",
-      "startX": "始点X:",
-      "startY": "Y:",
-      "endX": "終点X:",
-      "endY": "Y:",
-      "oledRect": "OLED四角形",
-      "oledRectTooltip": "OLEDに四角形を描画します",
-      "widthLabel": "幅:",
-      "heightLabel": "高さ:",
-      "outline": "枠のみ",
-      "filled": "塗りつぶし"
     },
     "neopixel": {
       "init": "NeoPixelリング初期化",
@@ -2414,7 +2265,9 @@
         "name": "アナログセンサー",
         "description": "ポテンショメータ、フォトレジスタ、LM35、ジョイスティックなど"
       }
-    }
+    },
+    "subtitle": "ピンアサインメント設定を管理します",
+    "default": "デフォルト"
   },
   "docs": {
     "loadError": "ドキュメントの読み込みに失敗しました。",
@@ -2468,14 +2321,14 @@
     }
   },
   "firmware": {
-    "description": "ESP32に競技用Arduino C++または入門用MicroPythonファームウェアを書き込みます",
+    "description": "ESP32にArduino C++ファームウェアを書き込みます（WiFi OTAまたはBLE対応）",
     "step1Title": "USB接続",
     "step1Desc": "ESP32をUSBケーブルでPCに接続してください",
     "step2Title": "ファームウェアを選択",
-    "arduinoTitle": "DigiCode OTAファームウェア",
-    "arduinoDesc": "Arduino C++ / OTA対応",
-    "micropythonTitle": "入門用",
-    "micropythonDesc": "MicroPython / OTTO教材など",
+    "arduinoTitle": "DigiCode WiFiファームウェア",
+    "arduinoDesc": "Arduino C++ / WiFi OTA対応",
+    "bleTitle": "DigiCode BLEファームウェア",
+    "bleDesc": "Arduino C++ / Bluetooth対応",
     "step3Title": "ファームウェア書き込み",
     "step3Desc": "ボタンをクリックするとデバイス選択ダイアログが表示されます。ESP32を選択して書き込みを開始してください。",
     "webSerialNotSupported": "Web Serial APIがサポートされていません。",
@@ -2486,7 +2339,84 @@
     "usbDriverDesc": "デバイスが認識されない場合、USBシリアルドライバーをインストールしてください:",
     "usbDriverNote": "CP2102, CH340, FTDI などのチップに対応したドライバーが必要です。",
     "title": "ファームウェア書き込み",
-    "installerTitle": "DigiCode ファームウェアインストーラー"
+    "installerTitle": "DigiCode ファームウェアインストーラー",
+    "wifiFirmware": "DigiCode WiFi ファームウェア",
+    "wifiFirmwareDesc": "WiFi OTA書き込み対応（推奨）",
+    "bleFirmware": "DigiCode BLE ファームウェア",
+    "bleFirmwareDesc": "Bluetooth書き込み対応、初回書き込みに必要",
+    "selected": "選択中",
+    "buildFirmware": "🚀 ファームウェアをビルド",
+    "eraseFlashTitle": "Flash全体を消去（デバッグ用）",
+    "eraseFlashDesc": "Flash全体を消去すると、保存されているすべてのデータ（UUID、WiFi設定など）が削除され、初期状態に戻ります。",
+    "connectUsb": "ESP32にUSB接続",
+    "connecting": "接続中...",
+    "eraseFlash": "Flash全体を消去",
+    "erasing": "Flash消去中...",
+    "connectUsbFirst": "※ 先に「ESP32にUSB接続」してください",
+    "eraseConfirm": "Flash全体を消去します。保存されているすべてのデータ（UUID、WiFi設定など）が削除されます。よろしいですか？",
+    "compilingFirmware": "最新ファームウェアをコンパイル中...",
+    "compileComplete": "✅ ファームウェアのコンパイルが完了しました",
+    "installDesc": "INSTALLボタンを押してESP32にUSB接続し、{{type}}ファームウェア{{version}}を書き込みます。",
+    "bleType": "BLE対応",
+    "otaType": "OTA",
+    "bleFirmwareName": "BLE対応",
+    "otaFirmwareName": "OTA",
+    "compilingFromCloud": "クラウドから最新{{firmwareName}}ファームウェアをコンパイル中...",
+    "fullPackageCompiled": "✅ 完全なファームウェアパッケージのコンパイルが完了しました{{versionInfo}}",
+    "firmwareCompiled": "✅ ファームウェアのコンパイルが完了しました{{versionInfo}}",
+    "compileError": "❌ コンパイルエラー: {{error}}",
+    "notCompiled": "❌ ファームウェアがコンパイルされていません",
+    "usbNotConnected": "❌ USB接続が確立していません",
+    "startingInstall": "ファームウェアのインストールを開始します...",
+    "loadingStaticFiles": "bootloader/partitions/boot_app0 を読み込み中（従来モード）...",
+    "staticFilesError": "静的ファイルの読み込みに失敗しました",
+    "allFilesLoaded": "✓ すべてのファイルを読み込みました",
+    "usingFullPackage": "完全なファームウェアパッケージを使用します...",
+    "packagePrepared": "✓ バージョン整合性が保証されたファームウェアパッケージを準備",
+    "flashing": "書き込み中...",
+    "installComplete": "✅ ファームウェアのインストールが完了しました！",
+    "flashFailed": "❌ ファームウェアの書き込みに失敗しました",
+    "autoConnectFailed": "💡 自動接続に失敗しました。手動でBOOTモードに入れてから再試行してください。",
+    "installError": "❌ インストールエラー: {{error}}",
+    "connectingEsp32": "ESP32との接続を開始...",
+    "connectionFailed": "ESP32に接続できませんでした",
+    "connected": "✅ 接続成功: {{name}}",
+    "connectionError": "❌ 接続エラー: {{error}}",
+    "disconnecting": "接続を切断中...",
+    "disconnected": "✅ 接続を切断しました",
+    "connectFirst": "❌ 先に有線接続してください",
+    "erasingFlash": "Flash全体を消去中...",
+    "eraseComplete": "✅ Flash消去が完了しました",
+    "eraseCompleteReset": "✅ Flash消去が完了しました。ESP32をリセットしてください。",
+    "loaderNotInitialized": "loaderが初期化されていません",
+    "eraseError": "消去エラー: {{error}}",
+    "wifiFirmwareTitle": "DigiCode WiFi ファームウェア",
+    "bleFirmwareTitle": "DigiCode BLE ファームウェア",
+    "rebuild": "再ビルド",
+    "compileErrorLabel": "コンパイルエラー",
+    "compilingLatest": "最新ファームウェアをコンパイル中...",
+    "cloudServerFallback": "クラウドサーバー（Ubuntu → Railway フォールバック）",
+    "compileCompleteMessage": "✅ ファームウェアのコンパイルが完了しました",
+    "connectUsbInstruction": "ESP32をUSBケーブルでPCに接続してください",
+    "selectPortInstruction": "接続後、下のボタンを押してポートを選択してください",
+    "usbConnected": "✅ USB接続が確立しました",
+    "manualBootMode": "手動でBOOTモードに入れてください",
+    "autoConnectFailedMsg": "自動接続に失敗しました。",
+    "followStepsInstruction": "以下の手順でESP32を書き込みモードにしてから、再試行ボタンを押してください：",
+    "bootStep1": "BOOTボタンを押し続ける",
+    "bootStep2": "BOOTを押したまま、ENボタンを一瞬押して離す",
+    "bootStep3": "BOOTボタンを離す",
+    "bootStep4": "この状態で下の「再試行」ボタンを押す",
+    "bootHint": "ヒント: ボードによってはBOOTボタンが「IO0」「FLASH」「GPIO0」などと表記されている場合があります",
+    "autoConnectTry": "自動接続を試行します。",
+    "pressStartFlash": "そのまま「書き込み開始」ボタンを押してください。",
+    "retry": "🔄 再試行",
+    "startFlash": "▶ 書き込み開始",
+    "browserNotSupported": "お使いのブラウザはサポートされていません。",
+    "installDescription": "INSTALLボタンを押してESP32にUSB接続し、{{firmwareType}}ファームウェア{{version}}を書き込みます。",
+    "eraseFlashDescription": "Flash全体を消去すると、保存されているすべてのデータ（UUID、WiFi設定など）が削除され、初期状態に戻ります。",
+    "disconnect": "接続解除",
+    "connectFirstNote": "※ 先に「ESP32にUSB接続」してください"
   },
   "toolboxMp": {
     "categories": {
@@ -2529,5 +2459,177 @@
       "walkMode": "歩行モード",
       "rollMode": "走行モード"
     }
+  },
+  "modeSelector": {
+    "groups": {
+      "otto": "OTTO ロボット",
+      "competition": "競技ロボット",
+      "iot": "IoT / スマートホーム",
+      "other": "その他"
+    },
+    "modes": {
+      "ottoBipedal": {
+        "name": "OTTO 二足歩行",
+        "description": "4サーボ二足歩行ロボット"
+      },
+      "ottoWheel": {
+        "name": "OTTO Wheel",
+        "description": "2輪駆動ロボット"
+      },
+      "ottoNinja": {
+        "name": "OTTO Ninja",
+        "description": "歩行/走行変形ロボット"
+      },
+      "micromouse": {
+        "name": "マイクロマウス",
+        "description": "迷路探索ロボット"
+      },
+      "lineTrace": {
+        "name": "ロボトレース",
+        "description": "ライントレースロボット"
+      },
+      "homeassistant": {
+        "name": "Home Assistant",
+        "description": "IoT/スマートホーム連携"
+      },
+      "generic": {
+        "name": "汎用デバイス",
+        "description": "マイコン工作・電子工作向け"
+      },
+      "allBlocks": {
+        "name": "全ブロック表示",
+        "description": "すべてのブロックを表示"
+      },
+      "custom": {
+        "name": "お気に入り",
+        "description": "よく使うブロックを登録"
+      }
+    }
+  },
+  "boardSelector": {
+    "categories": {
+      "generic": "汎用 ESP32",
+      "m5stack": "M5Stack シリーズ",
+      "xiao": "Seeed Xiao シリーズ"
+    },
+    "boards": {
+      "esp32Generic": {
+        "name": "ESP32（無印）",
+        "description": "ESP32-WROOM等、OTA可"
+      },
+      "esp32S3": {
+        "name": "ESP32-S3",
+        "description": "USB OTG、カメラ対応、OTA可"
+      },
+      "esp32C3": {
+        "name": "ESP32-C3",
+        "description": "RISC-V、省電力、OTA可"
+      },
+      "esp32C6": {
+        "name": "ESP32-C6",
+        "description": "WiFi 6、Thread/Zigbee、OTA可"
+      },
+      "m5stackBasic": {
+        "name": "M5Stack Basic/Gray/Fire",
+        "description": "2.0インチ画面、ボタン3個、OTA可"
+      },
+      "m5stickCPlus": {
+        "name": "M5StickC Plus",
+        "description": "1.14インチ画面、IMU搭載、OTA可"
+      },
+      "atomLite": {
+        "name": "ATOM Lite",
+        "description": "24x24mm、RGB LED、OTA可"
+      },
+      "atomMatrix": {
+        "name": "ATOM Matrix",
+        "description": "24x24mm、5x5 LED、IMU、OTA可"
+      },
+      "m5stampPico": {
+        "name": "M5Stamp Pico",
+        "description": "超小型スタンプ型、OTA可"
+      },
+      "m5stampC3": {
+        "name": "M5Stamp C3/C3U",
+        "description": "C3搭載スタンプ型、OTA可"
+      },
+      "xiaoEsp32C3": {
+        "name": "XIAO ESP32C3",
+        "description": "21x17.5mm、RISC-V、OTA可"
+      },
+      "xiaoEsp32S3": {
+        "name": "XIAO ESP32S3",
+        "description": "21x17.5mm、カメラ対応、OTA可"
+      },
+      "xiaoEsp32C6": {
+        "name": "XIAO ESP32C6",
+        "description": "21x17.5mm、WiFi 6、OTA可"
+      }
+    }
+  },
+  "pidTuning": {
+    "title": "PIDチューニング",
+    "reset": "リセット",
+    "preset": "プリセット",
+    "custom": "カスタム",
+    "kp": "Kp (比例ゲイン)",
+    "kpDesc": "誤差に比例した出力",
+    "ki": "Ki (積分ゲイン)",
+    "kiDesc": "定常偏差を解消",
+    "kd": "Kd (微分ゲイン)",
+    "kdDesc": "急激な変化を抑制",
+    "sendToEsp32": "ESP32に送信",
+    "connectEsp32": "ESP32に接続してください",
+    "generatedCode": "生成コード",
+    "selectPreset": "プリセットを選択",
+    "savePreset": "プリセットを保存",
+    "savePresetDesc": "現在のPIDパラメータをプリセットとして保存します",
+    "presetName": "プリセット名",
+    "presetNamePlaceholder": "例: 高速ライントレース",
+    "description": "説明（任意）",
+    "descriptionPlaceholder": "例: 競技用の高速設定"
+  },
+  "servo": {
+    "trim": {
+      "title": "サーボトリム設定",
+      "description": "サーボモーターのトリム（オフセット）値を調整します",
+      "connected": "接続済み",
+      "notConnected": "デバイスに接続してください",
+      "loadError": "トリム値の読み込みに失敗しました",
+      "testError": "テスト動作に失敗しました",
+      "saveError": "保存に失敗しました",
+      "preset": "プリセット",
+      "servoList": "サーボ設定",
+      "testServo": "個別テスト",
+      "home": "ホーム位置",
+      "test": "テスト",
+      "reset": "リセット",
+      "reload": "再読込",
+      "save": "保存",
+      "saveNote": "保存するとデバイス本体に書き込まれ、電源を切っても設定が保持されます",
+      "angleTrim": "角度トリム",
+      "speedTrim": "速度調整"
+    }
+  },
+  "accountDelete": {
+    "title": "アカウント削除",
+    "description": "アカウントを削除すると、全てのデータが失われます。この操作は取り消せません。",
+    "warningTitle": "以下のデータが完全に削除されます：",
+    "warningProjects": "すべてのプロジェクト",
+    "warningPasskeys": "登録済みのパスキー",
+    "warningCompileHistory": "コンパイル使用履歴",
+    "warningAccountInfo": "アカウント情報",
+    "irreversible": "この操作は取り消せません",
+    "confirmIdentity": "パスワードを入力して本人確認してください",
+    "passwordPlaceholder": "パスワード",
+    "cancel": "キャンセル",
+    "deleteAccount": "アカウントを削除",
+    "enterPassword": "パスワードを入力してください",
+    "getUserFailed": "ユーザー情報の取得に失敗しました。再度ログインしてください。",
+    "incorrectPassword": "パスワードが正しくありません",
+    "deleteFailed": "アカウント削除に失敗しました",
+    "deleteSuccess": "アカウントを削除しました。ご利用ありがとうございました。",
+    "passwordPrompt": "パスワードを入力して本人確認してください",
+    "deleteButton": "アカウントを削除"
   }
 }

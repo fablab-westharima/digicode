@@ -25,9 +25,11 @@ import { TutorialSelectDialog } from '@/components/tutorial/TutorialSelectDialog
 import { WifiSetupDialog } from '@/components/wifi/WifiSetupDialog';
 import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstallerDialog';
 import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
+import { ServoTrimDialog } from '@/components/servo/ServoTrimDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
 import { HeaderDeviceSelector } from '@/components/device/HeaderDeviceSelector';
 import { PasskeyManagementDialog } from '@/components/auth/PasskeyManagementDialog';
+import { TwoFactorSettingsDialog } from '@/components/auth/TwoFactorSettingsDialog';
 import { useAuthStore } from '@/stores/authStore';
 import { AccountDeleteDialog } from '@/components/auth/AccountDeleteDialog';
 import { useProjectStore } from '@/stores/projectStore';
@@ -44,10 +46,11 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { compileService, type CompileServerMode, type FullPackage, type ConnectionType } from '@/services/compileService';
 import { usbFirmwareService, type UsbFlashProgress, type UsbChipInfo } from '@/services/usbFirmwareService';
+import { bleFirmwareService, type BleFlashProgress, type BleDeviceInfo } from '@/services/bleFirmwareService';
 import { checkADC2Usage, type ADC2Warning } from '@/utils/adc2Check';
 import { api } from '@/lib/api';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
-import { Download, Loader2, Zap, SlidersHorizontal, LineChart, Code, Terminal, ChevronUp, ChevronDown, GraduationCap, ChevronDown as ChevronDownIcon, X, FilePlus, FolderOpen, FileCode, Cloud, Server, Usb, Wifi, Check, Settings2, Pin, BookOpen, Globe, AlertTriangle } from 'lucide-react';
+import { Download, Loader2, Zap, SlidersHorizontal, LineChart, Code, Terminal, ChevronUp, ChevronDown, GraduationCap, ChevronDown as ChevronDownIcon, X, FilePlus, FolderOpen, FileCode, Cloud, Server, Usb, Wifi, Bluetooth, Check, Settings2, Pin, BookOpen, Globe, AlertTriangle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -110,12 +113,14 @@ export function EditorPage() {
   const [wifiSetupDialogOpen, setWifiSetupDialogOpen] = useState(false);
   const [firmwareInstallerDialogOpen, setFirmwareInstallerDialogOpen] = useState(false);
   const [pinSettingsDialogOpen, setPinSettingsDialogOpen] = useState(false);
+  const [servoTrimDialogOpen, setServoTrimDialogOpen] = useState(false);
   const [compileServerSettingsDialogOpen, setCompileServerSettingsDialogOpen] = useState(false);
   const [flashMethodDialogOpen, setFlashMethodDialogOpen] = useState(false);
   const [compiledBinary, setCompiledBinary] = useState<Blob | null>(null);
   const [codePreviewDialogOpen, setCodePreviewDialogOpen] = useState(false);
   const [pidTuningDialogOpen, setPidTuningDialogOpen] = useState(false);
   const [passkeyRegisterDialogOpen, setPasskeyRegisterDialogOpen] = useState(false);
+  const [twoFactorSettingsDialogOpen, setTwoFactorSettingsDialogOpen] = useState(false);
   const [accountDeleteDialogOpen, setAccountDeleteDialogOpen] = useState(false);
   const [adc2WarningDialogOpen, setAdc2WarningDialogOpen] = useState(false);
   const [adc2Warnings, setAdc2Warnings] = useState<ADC2Warning[]>([]);
@@ -299,6 +304,11 @@ export function EditorPage() {
   // アカウント削除ダイアログを開く
   const handleAccountDelete = () => {
     setAccountDeleteDialogOpen(true);
+  };
+
+  // 2FA設定ダイアログを開く
+  const handleTwoFactorSettings = () => {
+    setTwoFactorSettingsDialogOpen(true);
   };
 
   // プロジェクト選択
@@ -837,6 +847,187 @@ export function EditorPage() {
     }
   };
 
+  /**
+   * BLE用コンパイル
+   * connectionType='ble'を指定してDigiCodeBLE.inoテンプレート使用
+   */
+  const executeCompileForBle = async (): Promise<Blob | null> => {
+    setIsCompiling(true);
+    setCompileLog([]);
+    setCompileDialogOpen(true);
+    setStatusBarState('compiling');
+    setStatusBarMessage('BLE用ファームウェアをコンパイル中...');
+
+    const addLog = (message: string) => {
+      setCompileLog(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${message}`]);
+    };
+
+    try {
+      addLog('BLE用コンパイル開始（DigiCodeBLE.inoテンプレート）...');
+
+      // コードを解析してincludes, globals, setup, loopに分割
+      const includeLines = generatedCode.match(/^#include\s+.+$/gm) || [];
+      const includes = includeLines.join('\n');
+      addLog(`#include: ${includeLines.length}件検出`);
+
+      const extractFunctionBody = (code: string, functionName: string): string => {
+        const regex = new RegExp(`void ${functionName}\\(\\)\\s*\\{`);
+        const match = code.match(regex);
+        if (!match) return '';
+
+        const startIndex = match.index! + match[0].length;
+        let braceCount = 1;
+        let endIndex = startIndex;
+
+        for (let i = startIndex; i < code.length && braceCount > 0; i++) {
+          if (code[i] === '{') braceCount++;
+          else if (code[i] === '}') braceCount--;
+          endIndex = i;
+        }
+
+        return code.substring(startIndex, endIndex).trim();
+      };
+
+      const setupCode = extractFunctionBody(generatedCode, 'setup');
+      const loopCode = extractFunctionBody(generatedCode, 'loop');
+
+      const setupMatch = generatedCode.match(/void setup\(\)/);
+      const globals = setupMatch
+        ? generatedCode.substring(0, setupMatch.index).replace(/^#include\s+.+$\n?/gm, '').trim()
+        : '';
+
+      addLog(`グローバル変数: ${globals ? '検出' : 'なし'}`);
+      addLog(`setup(): ${setupCode ? '検出' : 'なし'}`);
+      addLog(`loop(): ${loopCode ? '検出' : 'なし'}`);
+
+      addLog('サーバーにコンパイルリクエスト送信中（connectionType=ble）...');
+
+      // BLE用コンパイル実行（connectionType='ble'を指定）
+      const result = await compileService.compile(includes, globals, setupCode, loopCode, undefined, 'bin', 'ble');
+
+      if (result.success && result.fullPackage) {
+        // fullPackageのfirmwareだけを使用
+        addLog('✓ BLE用コンパイル成功！');
+        addLog(`ファームウェアサイズ: ${(result.fullPackage.firmware.size / 1024).toFixed(1)} KB`);
+
+        refreshUsage();
+        setIsCompiling(false);
+        setCompileDialogOpen(false);
+        setStatusBarState('success');
+        setStatusBarMessage('BLE用コンパイル成功');
+
+        return result.fullPackage.firmware;
+      } else {
+        addLog(`✗ コンパイルエラー: ${result.error || 'ファームウェアが取得できませんでした'}`);
+        if (result.details) {
+          addLog(`詳細: ${result.details}`);
+        }
+        setIsCompiling(false);
+        setStatusBarState('error');
+        setStatusBarMessage(result.error || 'コンパイル失敗');
+        return null;
+      }
+    } catch (error) {
+      addLog(`✗ エラー: ${error instanceof Error ? error.message : '不明なエラー'}`);
+      setIsCompiling(false);
+      setStatusBarState('error');
+      setStatusBarMessage(error instanceof Error ? error.message : '不明なエラー');
+      return null;
+    }
+  };
+
+  /**
+   * BLE書き込み処理
+   * Rule 22に基づく実装:
+   * - requestDevice()はユーザージェスチャーコンテキスト内で呼び出す
+   * - bleFirmwareServiceを使用（firmwareService/usbFirmwareServiceとは独立）
+   * - h2zero/NimBLEOtaプロトコル
+   *
+   * 重要: Web Bluetooth APIのrequestDevice()はユーザージェスチャーコンテキスト内でのみ呼び出し可能
+   * そのため、順序は「1.デバイス選択 → 2.コンパイル → 3.書き込み」とする
+   */
+  const handleBleWrite = async () => {
+    // 1. 先にBLEデバイス選択（ユーザージェスチャーコンテキスト内で実行必須）
+    setFlashDialogOpen(true);
+    setFlashProgress({
+      stage: 'connecting',
+      percent: 0,
+      message: 'BLEデバイスを検索中...'
+    });
+
+    let deviceInfo: BleDeviceInfo | null = null;
+    try {
+      deviceInfo = await bleFirmwareService.connect((progress: BleFlashProgress) => {
+        setFlashProgress({
+          stage: progress.stage as FlashProgress['stage'],
+          percent: progress.percent,
+          message: progress.message
+        });
+      });
+
+      if (!deviceInfo) {
+        setFlashDialogOpen(false);
+        return;
+      }
+
+      setFlashProgress({
+        stage: 'connecting',
+        percent: 30,
+        message: `接続成功: ${deviceInfo.name}`
+      });
+    } catch (error) {
+      setFlashDialogOpen(false);
+      alert(`✗ BLE接続エラー:\n${error instanceof Error ? error.message : '不明なエラー'}`);
+      return;
+    }
+
+    // 2. BLE用コンパイル（接続確認後）
+    setFlashProgress({
+      stage: 'preparing',
+      percent: 35,
+      message: 'BLE用ファームウェアをコンパイル中...'
+    });
+
+    const firmware = await executeCompileForBle();
+    if (!firmware) {
+      setFlashDialogOpen(false);
+      await bleFirmwareService.disconnect();
+      return;
+    }
+
+    // 3. BLE OTA書き込み
+    try {
+      setFlashProgress({
+        stage: 'flashing',
+        percent: 50,
+        message: '書き込み開始...'
+      });
+
+      const success = await bleFirmwareService.writeOta(firmware, (progress: BleFlashProgress) => {
+        setFlashProgress({
+          stage: progress.stage as FlashProgress['stage'],
+          percent: progress.percent,
+          message: progress.message
+        });
+      });
+
+      if (success) {
+        setTimeout(() => {
+          setFlashDialogOpen(false);
+          alert('✓ BLE書き込みが完了しました！\n\nデバイスが自動的に再起動します。');
+        }, 2000);
+      } else {
+        setFlashDialogOpen(false);
+      }
+    } catch (error) {
+      setFlashDialogOpen(false);
+      alert(`✗ BLE書き込みエラー:\n${error instanceof Error ? error.message : '不明なエラー'}`);
+    } finally {
+      // 接続解除
+      await bleFirmwareService.disconnect();
+    }
+  };
+
   // 前回の選択を取得
   const getLastFlashMethod = (): FlashMethod => {
     return (localStorage.getItem('lastFlashMethod') as FlashMethod) || 'wifi';
@@ -897,6 +1088,11 @@ export function EditorPage() {
       case 'usb': {
         // USB書き込み: connectionType='usb'でコンパイル→USB経由で書き込み
         await handleUsbWrite();
+        break;
+      }
+      case 'ble': {
+        // BLE書き込み: connectionType='ble'でコンパイル→BLE経由で書き込み
+        await handleBleWrite();
         break;
       }
     }
@@ -1309,6 +1505,7 @@ export function EditorPage() {
             onFirmwareWrite={handleFirmwareWrite}
             onApSetup={() => setWifiSetupDialogOpen(true)}
             onUsbPortRelease={handleUsbPortRelease}
+            onServoTrim={() => setServoTrimDialogOpen(true)}
             onPinAssignment={() => setPinSettingsDialogOpen(true)}
             onCompileServerSettings={() => setCompileServerSettingsDialogOpen(true)}
             onDocs={() => window.open('/docs', '_blank')}
@@ -1317,6 +1514,7 @@ export function EditorPage() {
             onUsbDriver={() => window.open('https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers', '_blank')}
             onLogout={handleLogout}
             onPasskeyRegister={handlePasskeyRegister}
+            onTwoFactorSettings={handleTwoFactorSettings}
             onAccountDelete={handleAccountDelete}
           />
 
@@ -1585,6 +1783,27 @@ export function EditorPage() {
                       )}
                     </button>
                   )}
+
+                  {/* BLE書き込み */}
+                  {supportedMethods.includes('ble') && (
+                    <button
+                      onClick={() => handleFlashMethodSelect('ble')}
+                      className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all hover:bg-violet-50 dark:hover:bg-violet-950 hover:border-violet-300 dark:hover:border-violet-700 ${
+                        getLastFlashMethod() === 'ble' ? 'border-violet-400 dark:border-violet-600 bg-violet-50 dark:bg-violet-950' : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <div className="p-2 bg-violet-100 dark:bg-violet-900 rounded-lg">
+                        <Bluetooth className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                      </div>
+                      <div className="text-left flex-1">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">Bluetooth書き込み</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Chrome/Edge推奨、初回USB必須</div>
+                      </div>
+                      {getLastFlashMethod() === 'ble' && (
+                        <span className="text-xs text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900 px-2 py-0.5 rounded">{t('editor.flash.previous')}</span>
+                      )}
+                    </button>
+                  )}
                 </>
               );
             })()}
@@ -1614,6 +1833,12 @@ export function EditorPage() {
       <PinSettingsDialog
         open={pinSettingsDialogOpen}
         onOpenChange={setPinSettingsDialogOpen}
+      />
+
+      {/* サーボトリム設定ダイアログ */}
+      <ServoTrimDialog
+        open={servoTrimDialogOpen}
+        onOpenChange={setServoTrimDialogOpen}
       />
 
       {/* コンパイルサーバー設定ダイアログ */}
@@ -1675,6 +1900,12 @@ export function EditorPage() {
       <AccountDeleteDialog
         open={accountDeleteDialogOpen}
         onOpenChange={setAccountDeleteDialogOpen}
+      />
+
+      {/* 2段階認証設定ダイアログ */}
+      <TwoFactorSettingsDialog
+        open={twoFactorSettingsDialogOpen}
+        onOpenChange={setTwoFactorSettingsDialogOpen}
       />
 
       {/* ADC2警告ダイアログ */}

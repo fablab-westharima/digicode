@@ -13,7 +13,8 @@ import {
   Usb,
   LogOut,
   Key,
-  UserX
+  UserX,
+  Shield
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
@@ -22,6 +23,7 @@ interface SidebarProps {
   onFirmwareWrite?: () => void;
   onApSetup?: () => void;
   onUsbPortRelease?: () => void;
+  onServoTrim?: () => void;
   onPinAssignment?: () => void;
   onCompileServerSettings?: () => void;
   onDocs?: () => void;
@@ -30,6 +32,7 @@ interface SidebarProps {
   onUsbDriver?: () => void;
   onLogout?: () => void;
   onPasskeyRegister?: () => void;
+  onTwoFactorSettings?: () => void;
   onAccountDelete?: () => void;
 }
 
@@ -46,6 +49,7 @@ export function Sidebar({
   onFirmwareWrite,
   onApSetup,
   onUsbPortRelease,
+  onServoTrim,
   onPinAssignment,
   onCompileServerSettings,
   onDocs,
@@ -54,6 +58,7 @@ export function Sidebar({
   onUsbDriver,
   onLogout,
   onPasskeyRegister,
+  onTwoFactorSettings,
   onAccountDelete,
 }: SidebarProps) {
   const { t } = useTranslation();
@@ -96,6 +101,13 @@ export function Sidebar({
       label: t('sidebar.usbPortRelease', { defaultValue: 'USBポート解放' }),
       icon: <Trash2 className="w-4 h-4" />,
       action: onUsbPortRelease || (() => {}),
+      category: 'settings'
+    },
+    {
+      id: 'servo-trim',
+      label: t('sidebar.servoTrim', { defaultValue: 'サーボトリム設定' }),
+      icon: <SlidersHorizontal className="w-4 h-4" />,
+      action: onServoTrim || (() => {}),
       category: 'settings'
     },
     {
@@ -148,6 +160,13 @@ export function Sidebar({
       label: t('sidebar.passkeyRegister', { defaultValue: 'パスキーを登録' }),
       icon: <Key className="w-4 h-4" />,
       action: onPasskeyRegister || (() => {}),
+      category: 'account'
+    },
+    {
+      id: 'two-factor-settings',
+      label: t('sidebar.twoFactorSettings', { defaultValue: '2段階認証' }),
+      icon: <Shield className="w-4 h-4" />,
+      action: onTwoFactorSettings || (() => {}),
       category: 'account'
     },
     {
