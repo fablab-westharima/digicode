@@ -367,6 +367,11 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
           setGateway('');
           setSubnet('');
         }
+      } else {
+        // タイムアウト時（Flash消去後など）も古いIP情報をクリア
+        setStaticIp('');
+        setGateway('');
+        setSubnet('');
       }
 
       return null;
