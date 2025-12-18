@@ -332,3 +332,190 @@ export async function verifyRecovery(token: string): Promise<{
 
   return result;
 }
+
+// ======================
+// 2段階認証（2FA）関連
+// ======================
+
+/**
+ * 2FA OTP送信（パスワード検証 + OTP送信）
+ * 2FAが無効なユーザーの場合はJWTを直接返す
+ */
+export async function sendOtp(email: string, password: string): Promise<{
+  success: boolean;
+  twoFactorRequired: boolean;
+  trustedDevice?: boolean; // Phase 2: 信頼済みデバイスからのログイン
+  message?: string;
+  expiresIn?: number;
+  // 2FA不要の場合はJWTが返る
+  accessToken?: string;
+  refreshToken?: string;
+  user?: { id: number; email: string };
+}> {
+  const response = await fetch(`${API_BASE_URL}/api/auth/2fa/send-otp`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // Cookie送受信のために必要（信頼済みデバイス）
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || '認証に失敗しました');
+  }
+
+  const result = await response.json();
+
+  // 2FAが不要の場合、トークンをlocalStorageに保存
+  if (!result.twoFactorRequired && result.accessToken) {
+    localStorage.setItem('accessToken', result.accessToken);
+    localStorage.setItem('refreshToken', result.refreshToken);
+  }
+
+  return result;
+}
+
+/**
+ * OTPコード検証
+ */
+export async function verifyOtp(email: string, code: string, trustDevice?: boolean): Promise<{
+  success: boolean;
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  user: { id: number; email: string };
+}> {
+  const response = await fetch(`${API_BASE_URL}/api/auth/2fa/verify-otp`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // Cookie送受信のために必要
+    body: JSON.stringify({ email, code, trustDevice }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'OTP検証に失敗しました');
+  }
+
+  const result = await response.json();
+
+  // トークンをlocalStorageに保存
+  localStorage.setItem('accessToken', result.accessToken);
+  localStorage.setItem('refreshToken', result.refreshToken);
+
+  return result;
+}
+
+/**
+ * OTP再送信
+ */
+export async function resendOtp(email: string): Promise<{
+  success: boolean;
+  message: string;
+  expiresIn: number;
+}> {
+  const response = await fetch(`${API_BASE_URL}/api/auth/2fa/resend-otp`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'OTP再送信に失敗しました');
+  }
+
+  return await response.json();
+}
+
+/**
+ * 2FA設定状態取得
+ */
+export async function getTwoFactorStatus(): Promise<{
+  enabled: boolean;
+  enabledAt: string | null;
+}> {
+  const accessToken = localStorage.getItem('accessToken');
+
+  if (!accessToken) {
+    throw new Error('ログインが必要です');
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/auth/2fa/status`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || '2FA設定の取得に失敗しました');
+  }
+
+  return await response.json();
+}
+
+/**
+ * 2FA有効化
+ */
+export async function enableTwoFactor(): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  const accessToken = localStorage.getItem('accessToken');
+
+  if (!accessToken) {
+    throw new Error('ログインが必要です');
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/auth/2fa/enable`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || '2FA有効化に失敗しました');
+  }
+
+  return await response.json();
+}
+
+/**
+ * 2FA無効化（パスワード確認必須）
+ */
+export async function disableTwoFactor(password: string): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  const accessToken = localStorage.getItem('accessToken');
+
+  if (!accessToken) {
+    throw new Error('ログインが必要です');
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/auth/2fa/disable`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ password }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || '2FA無効化に失敗しました');
+  }
+
+  return await response.json();
+}
