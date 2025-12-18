@@ -89,6 +89,9 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       setNewWifiPassword('');
       setDeviceName('');
       setOriginalDeviceName('');
+      // 注意: staticIp, gateway, subnetはクリアしない
+      // deviceStore（localStorage）のキャッシュは意図的に残す設計
+      // ヘッダーメニューからデバイス選択してOTA書込みするために必要
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, open]);
@@ -358,6 +361,11 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
               ssid: foundSsid,
             };
           }
+        } else {
+          // WiFi未接続時は古いIP情報をクリア
+          setStaticIp('');
+          setGateway('');
+          setSubnet('');
         }
       }
 
