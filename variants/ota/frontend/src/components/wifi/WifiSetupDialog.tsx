@@ -573,11 +573,60 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
         needsSaveConfig = true;
       }
 
-      // 新規WiFiがある場合は追加
+      // 新規WiFiがある場合は接続テスト付きで追加
       if (hasNewWifi) {
-        setWifiMessage(t('device.savingWifiSettings'));
+        setWifiMessage(t('device.testingWifiConnection'));
+        const addWifiStartIndex = useSerialStore.getState().output.length;
         await send(`ADD_WIFI:${newWifiSsid.trim()},${newWifiPassword.trim()}\n`);
-        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // 接続テスト結果を待つ（最大15秒）
+        const checkResult = async (): Promise<'success' | 'failed' | 'timeout'> => {
+          const maxWait = 15000;
+          const checkInterval = 200;
+          let elapsed = 0;
+
+          while (elapsed < maxWait) {
+            await new Promise(resolve => setTimeout(resolve, checkInterval));
+            elapsed += checkInterval;
+
+            const currentOutput = useSerialStore.getState().output;
+            const newLines = currentOutput.slice(addWifiStartIndex).join('\n');
+
+            if (newLines.includes('OK:WIFI_ADDED:CONNECTED')) {
+              return 'success';
+            }
+            if (newLines.includes('ERROR:WIFI_TEST_FAILED')) {
+              return 'failed';
+            }
+          }
+          return 'timeout';
+        };
+
+        const result = await checkResult();
+
+        if (result === 'failed') {
+          // 接続テスト失敗 - エラー表示して中断
+          const currentOutput = useSerialStore.getState().output;
+          const newLines = currentOutput.slice(addWifiStartIndex).join('\n');
+          let errorReason = 'Unknown error';
+          if (newLines.includes('SSID not found')) {
+            errorReason = t('device.wifiErrorSsidNotFound');
+          } else if (newLines.includes('Wrong password')) {
+            errorReason = t('device.wifiErrorWrongPassword');
+          }
+          setWifiMessage(`❌ ${t('device.wifiConnectionFailed')}: ${errorReason}`);
+          console.error('[saveAndRestart] WiFi connection test failed');
+          return;
+        }
+
+        if (result === 'timeout') {
+          setWifiMessage(`❌ ${t('device.wifiConnectionTimeout')}`);
+          console.error('[saveAndRestart] WiFi connection test timeout');
+          return;
+        }
+
+        // 接続成功
+        setWifiMessage(t('device.wifiConnectionSuccess'));
         needsSaveConfig = true;
       }
 
