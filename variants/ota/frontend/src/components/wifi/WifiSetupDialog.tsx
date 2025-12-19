@@ -52,6 +52,11 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
   const [gateway, setGateway] = useState('');
   const [subnet, setSubnet] = useState('');
 
+  // ESP32起動完了フラグ
+  const [isDeviceReady, setIsDeviceReady] = useState(false);
+  // 接続後リセット済みフラグ
+  const hasResetOnConnect = useRef(false);
+
   // コンソール自動スクロール
   useEffect(() => {
     if (consoleRef.current) {
@@ -69,19 +74,45 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
     }
   }, [output, wifiMessage, t]);
 
-  // 接続時にWiFi一覧とデバイス名を読み込み
+  // USB接続後に一度リセットをかける（ファームウェア書き込み直後対策）
   useEffect(() => {
-    if (status === 'connected' && open) {
-      // デバイス名を先に読み込む（ブートログから取得するため）
-      // その後WiFi一覧を取得（コマンド送信が必要）
-      const timer = setTimeout(async () => {
-        // ESP32の起動完了を待つ（シリアル接続でリセットされるため）
-        // WiFi接続・固定IP設定完了まで時間がかかるので余裕を持たせる
+    if (status === 'connected' && open && !hasResetOnConnect.current) {
+      hasResetOnConnect.current = true;
+      console.log('[WifiSetupDialog] Resetting ESP32 after connection');
+      setWifiMessage('ESP32をリセット中...');
+      resetESP32();
+    }
+  }, [status, open, resetESP32]);
+
+  // ESP32起動完了を検知（"System Ready!" を監視）
+  useEffect(() => {
+    if (status === 'connected' && !isDeviceReady) {
+      const lastOutputs = output.slice(-20).join('\n');
+      if (lastOutputs.includes('System Ready!') || lastOutputs.includes('User setup completed')) {
+        console.log('[WifiSetupDialog] ESP32 ready detected');
+        setIsDeviceReady(true);
+      }
+    }
+  }, [output, status, isDeviceReady]);
+
+  // ESP32起動完了後にデバイス情報を読み込み
+  useEffect(() => {
+    if (status === 'connected' && open && isDeviceReady) {
+      const loadInfo = async () => {
+        console.log('[WifiSetupDialog] Loading device info after ready');
         await loadDeviceName();
         await loadWiFiList();
-      }, 5000);
-      return () => clearTimeout(timer);
-    } else if (status !== 'connected') {
+      };
+      loadInfo();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDeviceReady, open]);
+
+  // 切断時に状態をリセット
+  useEffect(() => {
+    if (status !== 'connected') {
+      setIsDeviceReady(false);
+      hasResetOnConnect.current = false;
       setWifiList([]);
       setWifiMessage('');
       setSelectedWifi(null);
@@ -93,8 +124,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       // deviceStore（localStorage）のキャッシュは意図的に残す設計
       // ヘッダーメニューからデバイス選択してOTA書込みするために必要
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, open]);
+  }, [status]);
 
   // 応答を待つヘルパー関数（startIndexより後の出力のみチェック）
   const waitForResponse = async (keyword: string, startIndex: number, maxWaitMs: number = 10000): Promise<boolean> => {
@@ -548,13 +578,15 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
         setWifiMessage(t('device.savingWifiSettings'));
         await send(`ADD_WIFI:${newWifiSsid.trim()},${newWifiPassword.trim()}\n`);
         await new Promise(resolve => setTimeout(resolve, 500));
+        needsSaveConfig = true;
       }
 
       // 設定を保存（SAVE_CONFIGでフラッシュに書き込み）
       if (needsSaveConfig) {
         setWifiMessage(t('device.savingToFlash'));
         await send(`SAVE_CONFIG\n`);
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Flash書き込み完了を待つ（1秒）
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
       setWifiMessage(t('device.savedRestartingEsp32'));
@@ -564,12 +596,22 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       const connectedSsid = selectedWifi || newWifiSsid.trim();
 
       // ESP32を自動リセット
-      await new Promise(resolve => setTimeout(resolve, 500));
+      setIsDeviceReady(false);
       await resetESP32();
 
-      // リセット後、ESP32の再起動を待ってからデバイス情報を再読み込み
+      // リセット後、"System Ready!" を待つ（最大30秒）
       setWifiMessage(t('device.waitingForRestart'));
-      await new Promise(resolve => setTimeout(resolve, 10000)); // 10秒待つ（WiFi接続完了まで）
+      const startIndex = useSerialStore.getState().output.length;
+      const ready = await waitForResponse('System Ready!', startIndex, 30000);
+
+      if (!ready) {
+        console.warn('[saveAndRestart] System Ready! timeout');
+        setWifiMessage('ESP32の起動がタイムアウトしました');
+        return;
+      }
+
+      setIsDeviceReady(true);
+      console.log('[saveAndRestart] System Ready! detected');
 
       // デバイス名とWiFi一覧を再読み込みしてUIを更新
       setWifiMessage(t('device.updatingInfo'));
@@ -711,8 +753,21 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
             </div>
           </div>
 
+          {/* ESP32起動待ち中 */}
+          {status === 'connected' && !isDeviceReady && (
+            <div className="p-4 rounded-lg border-2 border-yellow-600/50 bg-yellow-900/20">
+              <div className="flex items-center gap-3">
+                <div className="animate-spin h-5 w-5 border-2 border-yellow-500 border-t-transparent rounded-full" />
+                <div>
+                  <p className="text-sm font-medium text-yellow-400">ESP32起動待ち中...</p>
+                  <p className="text-xs text-[#8B949E]">「System Ready!」を検知するまでお待ちください</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* STEP 2: アクセスポイント選択 */}
-          {status === 'connected' && (
+          {status === 'connected' && isDeviceReady && (
             <div className="space-y-3">
               <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
                 <span className={`text-xs font-medium px-2 py-0.5 rounded ${isStep2Complete ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}`}>
@@ -810,7 +865,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
           )}
 
           {/* STEP 3: デバイス名入力 */}
-          {status === 'connected' && (
+          {status === 'connected' && isDeviceReady && (
             <div className="space-y-3">
               <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
                 <span className={`text-xs font-medium px-2 py-0.5 rounded ${isStep3Complete ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}`}>
@@ -892,7 +947,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
           )}
 
           {/* 接続ボタン */}
-          {status === 'connected' && (
+          {status === 'connected' && isDeviceReady && (
             <Button
               onClick={handleSaveAndConnect}
               disabled={isLoadingWifi || (!selectedWifi && !(newWifiSsid.trim() && newWifiPassword.trim()))}
