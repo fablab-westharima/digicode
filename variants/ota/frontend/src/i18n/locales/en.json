@@ -500,7 +500,7 @@
     "wifiConnectionFailed": "WiFi connection failed",
     "wifiConnectionTimeout": "WiFi connection test timed out",
     "wifiErrorSsidNotFound": "SSID not found",
-    "wifiErrorWrongPassword": "Wrong password",
+    "wifiErrorWrongPassword": "Incorrect input information",
     "waitingForRestart": "Waiting for ESP32 to restart...",
     "updatingInfo": "Updating device info...",
     "serialConsole": "Serial Console",

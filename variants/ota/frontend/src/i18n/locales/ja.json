@@ -500,7 +500,7 @@
     "wifiConnectionFailed": "WiFi接続に失敗しました",
     "wifiConnectionTimeout": "WiFi接続テストがタイムアウトしました",
     "wifiErrorSsidNotFound": "SSIDが見つかりません",
-    "wifiErrorWrongPassword": "パスワードが間違っています",
+    "wifiErrorWrongPassword": "入力情報が間違っています",
     "waitingForRestart": "ESP32の再起動を待っています...",
     "updatingInfo": "デバイス情報を更新中...",
     "serialConsole": "シリアルコンソール",
