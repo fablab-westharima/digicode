@@ -407,6 +407,14 @@
       "searchError": "An error occurred while searching for devices",
       "registerFromWifi": "Register devices from WiFi settings"
     },
+    "wifiDeviceSelect": {
+      "title": "Select WiFi Device",
+      "description": "Select the target device for writing",
+      "noDevices": "No registered WiFi devices",
+      "registerHint": "Register a device from \"Connection\" → \"WiFi Setup\"",
+      "noIp": "IP address not set",
+      "startFlash": "Start Flash"
+    },
     "adc2Warning": {
       "title": "ADC2 Pin Usage Warning",
       "description": "OTA firmware uses WiFi continuously, so analog reads on ADC2 pins will not work correctly.",
@@ -611,7 +619,7 @@
   },
   "sidebar": {
     "projects": "Projects",
-    "firmwareWrite": "Firmware Write",
+    "firmwareWrite": "OTA Setup",
     "compileServerSelect": "Compile Server Settings",
     "wirelessLan": "Wireless LAN",
     "usbPortRelease": "USB Port Release",
@@ -621,13 +629,15 @@
     "codePreview": "Generated Code",
     "pidTuning": "PID Tuning",
     "usbDriver": "USB Driver",
+    "usbDriverAll": "All Drivers",
     "document": "Document",
     "category": {
       "project": "Projects",
-      "settings": "Settings",
-      "tools": "Tools",
-      "docs": "Documentation",
-      "account": "Account Settings"
+      "deviceSetup": "Device Setup",
+      "tuning": "Tuning",
+      "advanced": "Advanced",
+      "help": "Help",
+      "account": "Account"
     },
     "logout": "Logout",
     "passkeyRegister": "Register Passkey",
@@ -2357,7 +2367,7 @@
     "usbDriverDesc": "If device is not recognized, install USB serial driver:",
     "usbDriverNote": "Drivers for CP2102, CH340, FTDI, and other chips are required.",
     "title": "Firmware Installer",
-    "installerTitle": "DigiCode Firmware Installer",
+    "installerTitle": "Wireless Upload Setup",
     "wifiFirmware": "DigiCode WiFi Firmware",
     "wifiFirmwareDesc": "WiFi OTA upload supported (Recommended)",
     "bleFirmware": "DigiCode BLE Firmware",

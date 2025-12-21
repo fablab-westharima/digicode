@@ -51,9 +51,6 @@ interface LinearToolbarProps {
   onCompile: () => void;
   onServerModeChange: (mode: CompileServerMode) => void;
 
-  // デバイスセレクタ
-  deviceSelector?: React.ReactNode;
-
   // ロボットモード切り替え
   onRobotModeChange?: () => void;
 }
@@ -70,7 +67,6 @@ export function LinearToolbar({
   compileUsage,
   onCompile,
   onServerModeChange,
-  deviceSelector,
   onRobotModeChange,
 }: LinearToolbarProps) {
   const { t, i18n } = useTranslation();
@@ -137,14 +133,6 @@ export function LinearToolbar({
                 </div>
               </div>
 
-              {/* デバイス選択 */}
-              <div className="space-y-2">
-                <div className="text-xs text-gray-400 px-2">{t('editor.menu.device')}</div>
-                <div className="px-2">
-                  {deviceSelector}
-                </div>
-              </div>
-
               {/* 表示言語 */}
               <div className="space-y-2">
                 <div className="text-xs text-gray-400 px-2">{t('editor.menu.displayLanguage')}</div>
@@ -180,7 +168,7 @@ export function LinearToolbar({
           ) : (
             <>
               <Zap className="w-4 h-4" />
-              {!isMobile && <span className="ml-1">書込み</span>}
+              {!isMobile && <span className="ml-1">{t('editor.flashButton')}</span>}
             </>
           )}
         </Button>
@@ -237,16 +225,13 @@ export function LinearToolbar({
         </DropdownMenu>
       </div>
 
-      {/* 中央: ロボットモードセレクタ + ボードセレクタ + デバイスセレクタ + コンパイルボタン */}
+      {/* 中央: ロボットモードセレクタ + ボードセレクタ + コンパイルボタン */}
       <div className="flex items-center gap-2">
         {/* ロボットモードセレクタ */}
         <RobotModeSelector onModeChange={onRobotModeChange} />
 
         {/* ボードセレクタ */}
         <BoardSelector />
-
-        {/* デバイスセレクタ（親から渡される） */}
-        {deviceSelector}
 
         {/* 書き込みボタン */}
         <Button
@@ -263,7 +248,7 @@ export function LinearToolbar({
           ) : (
             <>
               <Zap className="w-3 h-3 mr-1" />
-              書込み
+              {t('editor.flashButton')}
               {serverMode === 'cloud' && compileUsage && (
                 <span className={`ml-1 text-xs ${compileUsage.isOverLimit ? 'text-red-200' : 'text-orange-200'}`}>
                   ({compileUsage.count}/{compileUsage.limit})

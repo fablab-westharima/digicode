@@ -27,7 +27,7 @@ import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstaller
 import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { ServoTrimDialog } from '@/components/servo/ServoTrimDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
-import { HeaderDeviceSelector } from '@/components/device/HeaderDeviceSelector';
+import { WifiDeviceSelectDialog } from '@/components/device/WifiDeviceSelectDialog';
 import { PasskeyManagementDialog } from '@/components/auth/PasskeyManagementDialog';
 import { TwoFactorSettingsDialog } from '@/components/auth/TwoFactorSettingsDialog';
 import { useAuthStore } from '@/stores/authStore';
@@ -111,6 +111,7 @@ export function EditorPage() {
   const [pendingOtaBinary, setPendingOtaBinary] = useState<Blob | null>(null);
   const [tutorialDialogOpen, setTutorialDialogOpen] = useState(false);
   const [wifiSetupDialogOpen, setWifiSetupDialogOpen] = useState(false);
+  const [wifiDeviceSelectDialogOpen, setWifiDeviceSelectDialogOpen] = useState(false);
   const [firmwareInstallerDialogOpen, setFirmwareInstallerDialogOpen] = useState(false);
   const [pinSettingsDialogOpen, setPinSettingsDialogOpen] = useState(false);
   const [servoTrimDialogOpen, setServoTrimDialogOpen] = useState(false);
@@ -663,6 +664,54 @@ export function EditorPage() {
   };
 
   /**
+   * WiFiデバイス選択後の処理
+   * WifiDeviceSelectDialogからデバイスが選択されたときに呼ばれる
+   */
+  const handleWifiDeviceSelected = async (device: { uuid: string; name: string; ipAddress?: string }) => {
+    setWifiDeviceSelectDialogOpen(false);
+
+    if (!device.ipAddress) {
+      alert('デバイスにIPアドレスが設定されていません。\n「接続」→「無線LAN接続」から再設定してください。');
+      return;
+    }
+
+    const deviceUrl = `http://${device.ipAddress}`;
+
+    // wifiStoreの状態を更新
+    setHost(device.ipAddress);
+    setDeviceName(device.name);
+    await connectWifi();
+
+    // コンパイル前にデバイス接続確認
+    setCompileLog([
+      `[接続確認] デバイス: ${device.name} (${device.ipAddress})`,
+      '[接続確認] 接続状態を確認中...'
+    ]);
+    setCompileDialogOpen(true);
+    setIsCompiling(true);
+
+    const checkResult = await checkDeviceConnection(deviceUrl);
+    if (!checkResult.ok) {
+      setCompileLog(prev => [...prev, `[接続確認] ✗ ${checkResult.error}`]);
+      setIsCompiling(false);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      alert(`デバイス接続エラー: ${checkResult.error}\n\nコンパイルチケットを節約するため、コンパイルは実行されませんでした。`);
+      setCompileDialogOpen(false);
+      return;
+    }
+
+    setCompileLog(prev => [...prev, '[接続確認] ✓ デバイス接続OK']);
+    setCompileDialogOpen(false);
+    setIsCompiling(false);
+
+    // 接続確認OK→コンパイル実行→書込み
+    const binary = await executeCompile();
+    if (binary) {
+      await handleOtaUpdate(binary, deviceUrl);
+    }
+  };
+
+  /**
    * USB用コンパイル（connectionType='usb'でDigiCodeUSB.inoテンプレート使用）
    * 教訓（ルール10）に基づき、OTA用とは別関数として定義
    * @returns FullPackage（4ファイルセット）またはnull
@@ -1045,38 +1094,8 @@ export function EditorPage() {
 
     switch (method) {
       case 'wifi': {
-        // WiFi: デバイス接続確認→コンパイル→書込み
-        if (wifiStatus === 'connected') {
-          const deviceUrl = getDeviceUrl();
-
-          // コンパイル前にデバイス接続確認
-          setCompileLog(['[接続確認] デバイスの接続状態を確認中...']);
-          setCompileDialogOpen(true);
-          setIsCompiling(true);
-
-          const checkResult = await checkDeviceConnection(deviceUrl);
-          if (!checkResult.ok) {
-            setCompileLog(prev => [...prev, `[接続確認] ✗ ${checkResult.error}`]);
-            setIsCompiling(false);
-            alert(`デバイス接続エラー: ${checkResult.error}\n\nコンパイルチケットを節約するため、コンパイルは実行されませんでした。`);
-            return;
-          }
-
-          setCompileLog(prev => [...prev, '[接続確認] ✓ デバイス接続OK']);
-          setCompileDialogOpen(false);
-          setIsCompiling(false);
-
-          // 接続確認OK→コンパイル実行
-          const binary = await executeCompile();
-          if (binary) {
-            await handleOtaUpdate(binary, deviceUrl);
-          }
-        } else {
-          // デバイス未選択の場合はエラーメッセージを表示
-          setCompileLog(prev => [...prev, '[エラー] デバイスが選択されていません']);
-          setIsCompiling(false);
-          alert('デバイスが選択されていません。ヘッダーメニューの書き込みデバイスからデバイスを選択してください。');
-        }
+        // WiFi: デバイス選択ダイアログを表示
+        setWifiDeviceSelectDialogOpen(true);
         break;
       }
       case 'wifi-batch': {
@@ -1281,9 +1300,6 @@ export function EditorPage() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-      {/* 書込み先デバイス選択 */}
-      <HeaderDeviceSelector />
-
       {/* 接続メニュー */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -1474,7 +1490,6 @@ export function EditorPage() {
         compileUsage={compileUsage}
         onCompile={handleCompile}
         onServerModeChange={setServerMode}
-        deviceSelector={<HeaderDeviceSelector />}
         onRobotModeChange={() => {
           // ロボットモード変更時、BlocklyEditorが自動的にツールボックスを更新します
         }}
@@ -1821,6 +1836,13 @@ export function EditorPage() {
       <WifiSetupDialog
         open={wifiSetupDialogOpen}
         onOpenChange={setWifiSetupDialogOpen}
+      />
+
+      {/* WiFiデバイス選択ダイアログ */}
+      <WifiDeviceSelectDialog
+        open={wifiDeviceSelectDialogOpen}
+        onOpenChange={setWifiDeviceSelectDialogOpen}
+        onDeviceSelect={handleWifiDeviceSelected}
       />
 
       {/* ファームウェアインストーラーダイアログ */}

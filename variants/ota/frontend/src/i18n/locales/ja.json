@@ -408,6 +408,14 @@
       "searchError": "デバイス検索中にエラーが発生しました",
       "registerFromWifi": "WiFi設定からデバイスを登録してください"
     },
+    "wifiDeviceSelect": {
+      "title": "WiFiデバイスを選択",
+      "description": "書き込み先のデバイスを選択してください",
+      "noDevices": "登録済みのWiFiデバイスがありません",
+      "registerHint": "「接続」→「無線LAN接続」からデバイスを登録してください",
+      "noIp": "IPアドレス未設定",
+      "startFlash": "書込み開始"
+    },
     "adc2Warning": {
       "title": "ADC2ピン使用の警告",
       "description": "OTAファームウェアはWiFi常時接続のため、ADC2ピンのアナログ読み取りは正常に動作しません。",
@@ -611,7 +619,7 @@
   },
   "sidebar": {
     "projects": "プロジェクト",
-    "firmwareWrite": "ファームウェア書込",
+    "firmwareWrite": "OTAセットアップ",
     "compileServerSelect": "コンパイルサーバ設定",
     "wirelessLan": "無線LAN接続",
     "usbPortRelease": "USBポート解放",
@@ -621,13 +629,15 @@
     "codePreview": "生成コード",
     "pidTuning": "PIDチューニング",
     "usbDriver": "USBドライバー",
+    "usbDriverAll": "すべてのドライバー",
     "document": "ドキュメント",
     "category": {
       "project": "プロジェクト",
-      "settings": "設定",
-      "tools": "ツール",
-      "docs": "ドキュメント",
-      "account": "アカウント設定"
+      "deviceSetup": "デバイス準備",
+      "tuning": "調整",
+      "advanced": "詳細設定",
+      "help": "ヘルプ",
+      "account": "アカウント"
     },
     "logout": "ログアウト",
     "passkeyRegister": "パスキーを登録",
@@ -2347,7 +2357,7 @@
     "usbDriverDesc": "デバイスが認識されない場合、USBシリアルドライバーをインストールしてください:",
     "usbDriverNote": "CP2102, CH340, FTDI などのチップに対応したドライバーが必要です。",
     "title": "ファームウェア書き込み",
-    "installerTitle": "DigiCode ファームウェアインストーラー",
+    "installerTitle": "無線書込の準備",
     "wifiFirmware": "DigiCode WiFi ファームウェア",
     "wifiFirmwareDesc": "WiFi OTA書き込み対応（推奨）",
     "bleFirmware": "DigiCode BLE ファームウェア",
