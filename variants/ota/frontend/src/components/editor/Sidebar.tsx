@@ -14,7 +14,10 @@ import {
   LogOut,
   Key,
   UserX,
-  Shield
+  Shield,
+  ChevronDown,
+  ChevronRight,
+  ExternalLink
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
@@ -36,12 +39,21 @@ interface SidebarProps {
   onAccountDelete?: () => void;
 }
 
+interface NavSubItem {
+  id: string;
+  label: string;
+  icon?: React.ReactNode;
+  action?: () => void;
+  href?: string; // 外部リンク用
+}
+
 interface NavItem {
   id: string;
   label: string;
   icon: React.ReactNode;
-  action: () => void;
+  action?: () => void;
   category: string;
+  children?: NavSubItem[]; // サブメニュー用
 }
 
 export function Sidebar({
@@ -64,9 +76,35 @@ export function Sidebar({
   const { t } = useTranslation();
   const [isPinned, setIsPinned] = useState(false); // ピン留めなし
   const [isHovered, setIsHovered] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['project'])); // デフォルトでprojectを開く
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set()); // サブメニュー展開状態
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev => {
+      const next = new Set(prev);
+      if (next.has(category)) {
+        next.delete(category);
+      } else {
+        next.add(category);
+      }
+      return next;
+    });
+  };
+
+  const toggleItem = (itemId: string) => {
+    setExpandedItems(prev => {
+      const next = new Set(prev);
+      if (next.has(itemId)) {
+        next.delete(itemId);
+      } else {
+        next.add(itemId);
+      }
+      return next;
+    });
+  };
 
   const navItems: NavItem[] = [
-    // Projects
+    // プロジェクト
     {
       id: 'projects',
       label: t('sidebar.projects', { defaultValue: 'プロジェクト' }),
@@ -74,87 +112,100 @@ export function Sidebar({
       action: onProjectOpen || (() => {}),
       category: 'project'
     },
-    // Settings (設定) - 手順の流れに沿った順番
+    // デバイス準備（初回セットアップ系）
     {
       id: 'firmware-write',
-      label: t('sidebar.firmwareWrite', { defaultValue: 'ファームウェア書込み' }),
+      label: t('sidebar.firmwareWrite', { defaultValue: 'ファームウェア書込' }),
       icon: <Zap className="w-4 h-4" />,
       action: onFirmwareWrite || (() => {}),
-      category: 'settings'
-    },
-    {
-      id: 'compile-server',
-      label: t('sidebar.compileServerSelect', { defaultValue: 'コンパイルサーバ選択' }),
-      icon: <Cpu className="w-4 h-4" />,
-      action: onCompileServerSettings || (() => {}),
-      category: 'settings'
+      category: 'deviceSetup'
     },
     {
       id: 'ap-setup',
       label: t('sidebar.wirelessLan', { defaultValue: '無線LAN接続' }),
       icon: <Radio className="w-4 h-4" />,
       action: onApSetup || (() => {}),
-      category: 'settings'
+      category: 'deviceSetup'
     },
     {
-      id: 'usb-port-release',
-      label: t('sidebar.usbPortRelease', { defaultValue: 'USBポート解放' }),
-      icon: <Trash2 className="w-4 h-4" />,
-      action: onUsbPortRelease || (() => {}),
-      category: 'settings'
+      id: 'usb-driver',
+      label: t('sidebar.usbDriver', { defaultValue: 'USBドライバー' }),
+      icon: <Usb className="w-4 h-4" />,
+      category: 'deviceSetup',
+      children: [
+        {
+          id: 'usb-driver-cp210x',
+          label: 'CP210x (Silicon Labs)',
+          icon: <ExternalLink className="w-3 h-3" />,
+          href: 'https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads'
+        },
+        {
+          id: 'usb-driver-ch340',
+          label: 'CH340 (WCH)',
+          icon: <ExternalLink className="w-3 h-3" />,
+          href: 'https://www.wch-ic.com/downloads/CH341SER_EXE.html'
+        },
+        {
+          id: 'usb-driver-all',
+          label: t('sidebar.usbDriverAll', { defaultValue: 'すべてのドライバー' }),
+          icon: <Usb className="w-3 h-3" />,
+          action: onUsbDriver || (() => {})
+        }
+      ]
     },
+    // 調整（動作調整系）
     {
       id: 'servo-trim',
       label: t('sidebar.servoTrim', { defaultValue: 'サーボトリム設定' }),
       icon: <SlidersHorizontal className="w-4 h-4" />,
       action: onServoTrim || (() => {}),
-      category: 'settings'
-    },
-    {
-      id: 'pin-assignment',
-      label: t('sidebar.extensions', { defaultValue: '拡張機能' }),
-      icon: <PinIcon className="w-4 h-4" />,
-      action: onPinAssignment || (() => {}),
-      category: 'settings'
-    },
-    // Tools (ツール)
-    {
-      id: 'code-preview',
-      label: t('sidebar.codePreview', { defaultValue: '生成コード' }),
-      icon: <Code className="w-4 h-4" />,
-      action: onCodePreview || (() => {}),
-      category: 'tools'
+      category: 'tuning'
     },
     {
       id: 'pid-tuning',
       label: t('sidebar.pidTuning', { defaultValue: 'PIDチューニング' }),
       icon: <SlidersHorizontal className="w-4 h-4" />,
       action: onPidTuning || (() => {}),
-      category: 'tools'
+      category: 'tuning'
+    },
+    // 詳細設定（上級者・開発者向け）
+    {
+      id: 'code-preview',
+      label: t('sidebar.codePreview', { defaultValue: '生成コード' }),
+      icon: <Code className="w-4 h-4" />,
+      action: onCodePreview || (() => {}),
+      category: 'advanced'
     },
     {
-      id: 'usb-driver',
-      label: t('sidebar.usbDriver', { defaultValue: 'USBドライバー' }),
-      icon: <Usb className="w-4 h-4" />,
-      action: onUsbDriver || (() => {}),
-      category: 'tools'
+      id: 'compile-server',
+      label: t('sidebar.compileServerSelect', { defaultValue: 'コンパイルサーバ設定' }),
+      icon: <Cpu className="w-4 h-4" />,
+      action: onCompileServerSettings || (() => {}),
+      category: 'advanced'
     },
-    // Documentation
+    {
+      id: 'usb-port-release',
+      label: t('sidebar.usbPortRelease', { defaultValue: 'USBポート解放' }),
+      icon: <Trash2 className="w-4 h-4" />,
+      action: onUsbPortRelease || (() => {}),
+      category: 'advanced'
+    },
+    {
+      id: 'pin-assignment',
+      label: t('sidebar.extensions', { defaultValue: '拡張機能' }),
+      icon: <PinIcon className="w-4 h-4" />,
+      action: onPinAssignment || (() => {}),
+      category: 'advanced'
+    },
+    // ヘルプ
     {
       id: 'docs',
       label: t('sidebar.documentation', { defaultValue: 'ドキュメント' }),
       icon: <BookOpen className="w-4 h-4" />,
       action: onDocs || (() => {}),
-      category: 'docs'
+      category: 'help'
     },
-    // Account Settings
-    {
-      id: 'logout',
-      label: t('sidebar.logout', { defaultValue: 'ログアウト' }),
-      icon: <LogOut className="w-4 h-4" />,
-      action: onLogout || (() => {}),
-      category: 'account'
-    },
+    // アカウント（ログアウトを最後に）
     {
       id: 'passkey-register',
       label: t('sidebar.passkeyRegister', { defaultValue: 'パスキーを登録' }),
@@ -176,20 +227,29 @@ export function Sidebar({
       action: onAccountDelete || (() => {}),
       category: 'account'
     },
+    {
+      id: 'logout',
+      label: t('sidebar.logout', { defaultValue: 'ログアウト' }),
+      icon: <LogOut className="w-4 h-4" />,
+      action: onLogout || (() => {}),
+      category: 'account'
+    },
   ];
 
   const getCategoryLabel = (category: string) => {
     switch (category) {
       case 'project':
         return t('sidebar.category.project', { defaultValue: 'プロジェクト' });
-      case 'settings':
-        return t('sidebar.category.settings', { defaultValue: '設定' });
-      case 'tools':
-        return t('sidebar.category.tools', { defaultValue: 'ツール' });
-      case 'docs':
-        return t('sidebar.category.docs', { defaultValue: 'ドキュメント' });
+      case 'deviceSetup':
+        return t('sidebar.category.deviceSetup', { defaultValue: 'デバイス準備' });
+      case 'tuning':
+        return t('sidebar.category.tuning', { defaultValue: '調整' });
+      case 'advanced':
+        return t('sidebar.category.advanced', { defaultValue: '詳細設定' });
+      case 'help':
+        return t('sidebar.category.help', { defaultValue: 'ヘルプ' });
       case 'account':
-        return t('sidebar.category.account', { defaultValue: 'アカウント設定' });
+        return t('sidebar.category.account', { defaultValue: 'アカウント' });
       default:
         return category;
     }
@@ -204,7 +264,7 @@ export function Sidebar({
   }, {} as Record<string, NavItem[]>);
 
   // カテゴリの表示順序を定義
-  const categoryOrder = ['project', 'settings', 'tools', 'docs', 'account'];
+  const categoryOrder = ['project', 'deviceSetup', 'tuning', 'advanced', 'help', 'account'];
   const orderedCategories = categoryOrder.filter(cat => groupedItems[cat]);
 
   // 表示状態を計算
@@ -238,27 +298,110 @@ export function Sidebar({
       <div className="flex-1 overflow-y-auto py-2">
         {orderedCategories.map((category) => {
           const items = groupedItems[category];
+          const isExpanded = expandedCategories.has(category);
           return (
-            <div key={category} className="mb-4">
-              {shouldShowFull && (
-                <div className="px-4 py-2 text-xs font-semibold text-[#8B949E] uppercase tracking-wide">
-                  {getCategoryLabel(category)}
-                </div>
+            <div key={category} className="mb-1">
+              {shouldShowFull ? (
+                <button
+                  onClick={() => toggleCategory(category)}
+                  className="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-[#8B949E] uppercase tracking-wide hover:bg-[#2E333D] hover:text-[#E6EDF3] transition-colors"
+                >
+                  <span>{getCategoryLabel(category)}</span>
+                  {isExpanded ? (
+                    <ChevronDown className="w-4 h-4" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4" />
+                  )}
+                </button>
+              ) : (
+                <div className="h-px bg-[#2E333D] mx-2 my-2" />
               )}
-              <div className="space-y-1 px-2">
+              <div
+                className={`space-y-1 px-2 overflow-hidden transition-all duration-200 ${
+                  shouldShowFull
+                    ? isExpanded
+                      ? 'max-h-[500px] opacity-100'
+                      : 'max-h-0 opacity-0'
+                    : 'max-h-[500px] opacity-100'
+                }`}
+              >
                 {items.map((item) => (
-                  <Button
-                    key={item.id}
-                    variant="ghost"
-                    className={`w-full justify-start text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white ${
-                      shouldShowFull ? 'px-3' : 'px-0 justify-center'
-                    }`}
-                    onClick={item.action}
-                    title={!shouldShowFull ? item.label : undefined}
-                  >
-                    <span className={shouldShowFull ? 'mr-3' : ''}>{item.icon}</span>
-                    {shouldShowFull && <span className="text-sm">{item.label}</span>}
-                  </Button>
+                  <div key={item.id}>
+                    {item.children ? (
+                      // サブメニューを持つアイテム
+                      <>
+                        <Button
+                          variant="ghost"
+                          className={`w-full justify-start text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white ${
+                            shouldShowFull ? 'px-3' : 'px-0 justify-center'
+                          }`}
+                          onClick={() => toggleItem(item.id)}
+                          title={!shouldShowFull ? item.label : undefined}
+                        >
+                          <span className={shouldShowFull ? 'mr-3' : ''}>{item.icon}</span>
+                          {shouldShowFull && (
+                            <>
+                              <span className="text-sm flex-1 text-left">{item.label}</span>
+                              {expandedItems.has(item.id) ? (
+                                <ChevronDown className="w-3 h-3 ml-1" />
+                              ) : (
+                                <ChevronRight className="w-3 h-3 ml-1" />
+                              )}
+                            </>
+                          )}
+                        </Button>
+                        {/* サブメニュー */}
+                        {shouldShowFull && (
+                          <div
+                            className={`ml-4 space-y-1 overflow-hidden transition-all duration-200 ${
+                              expandedItems.has(item.id)
+                                ? 'max-h-48 opacity-100 mt-1'
+                                : 'max-h-0 opacity-0'
+                            }`}
+                          >
+                            {item.children.map((child) => (
+                              child.href ? (
+                                <a
+                                  key={child.id}
+                                  href={child.href}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-2 px-3 py-2 text-sm text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D] rounded-md transition-colors"
+                                >
+                                  {child.icon}
+                                  <span>{child.label}</span>
+                                </a>
+                              ) : (
+                                <Button
+                                  key={child.id}
+                                  variant="ghost"
+                                  size="sm"
+                                  className="w-full justify-start text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D] px-3"
+                                  onClick={child.action}
+                                >
+                                  {child.icon && <span className="mr-2">{child.icon}</span>}
+                                  <span className="text-sm">{child.label}</span>
+                                </Button>
+                              )
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      // 通常のアイテム
+                      <Button
+                        variant="ghost"
+                        className={`w-full justify-start text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white ${
+                          shouldShowFull ? 'px-3' : 'px-0 justify-center'
+                        }`}
+                        onClick={item.action}
+                        title={!shouldShowFull ? item.label : undefined}
+                      >
+                        <span className={shouldShowFull ? 'mr-3' : ''}>{item.icon}</span>
+                        {shouldShowFull && <span className="text-sm">{item.label}</span>}
+                      </Button>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
