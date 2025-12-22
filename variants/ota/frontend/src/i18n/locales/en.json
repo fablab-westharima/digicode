@@ -405,7 +405,11 @@
       "onlineDevices": "Online devices ({{count}}):",
       "noOnlineDevices": "No online devices found. Please check if the device is powered on and the IP address is correct.",
       "searchError": "An error occurred while searching for devices",
-      "registerFromWifi": "Register devices from WiFi settings"
+      "registerFromWifi": "Register devices from WiFi settings",
+      "noIpAddress": "This device has no IP address set.\nPlease reconfigure from \"Connection\" → \"WiFi Setup\".",
+      "deviceOffline": "Cannot connect to device \"{{name}}\"",
+      "offlineWarning": "The device may be offline.\n• Check if the device is powered on\n• Check if connected to the same WiFi network\n• If in a different location, reconfigure from \"Connection\" → \"WiFi Setup\"\n\nSelect anyway?",
+      "selectionError": "An error occurred while selecting the device"
     },
     "wifiDeviceSelect": {
       "title": "Select WiFi Device",

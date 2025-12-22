@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Wifi, ChevronDown, Search } from 'lucide-react';
+import { Wifi, ChevronDown, Search, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -12,6 +12,7 @@ import { useDeviceStore } from '@/stores/deviceStore';
 import { useWifiStore } from '@/stores/wifiStore';
 import { uuidToMdns } from '@/lib/uuid';
 import { useTranslation } from 'react-i18next';
+import { firmwareService } from '@/services/firmwareService';
 
 interface SelectedDevice {
   name: string;
@@ -54,11 +55,52 @@ export function HeaderDeviceSelector() {
     return uuidToMdns(device.uuid);
   };
 
-  // WiFiデバイス選択
+  // WiFiデバイス選択中のフラグ
+  const [isSelectingDevice, setIsSelectingDevice] = useState(false);
+
+  // WiFiデバイス選択（到達性チェック付き）
   const handleSelectWifiDevice = async (device: { uuid: string; name: string; ipAddress?: string }) => {
-    setHost(getDeviceHost(device));
-    setDeviceName(device.name);
-    await connectWifi();
+    if (!device.ipAddress) {
+      alert(t('editor.deviceSelector.noIpAddress'));
+      return;
+    }
+
+    setIsSelectingDevice(true);
+
+    try {
+      // 到達性チェック（3秒タイムアウト）
+      const deviceUrl = `http://${device.ipAddress}`;
+      const isOnline = await firmwareService.checkDeviceOnline(deviceUrl, 3000);
+
+      if (!isOnline) {
+        // オフラインの場合、オンライン状態を更新してから警告
+        setDeviceOnlineStatus(prev => ({ ...prev, [device.uuid]: false }));
+
+        const shouldContinue = window.confirm(
+          `${t('editor.deviceSelector.deviceOffline', { name: device.name })}\n\n` +
+          `IP: ${device.ipAddress}\n\n` +
+          t('editor.deviceSelector.offlineWarning')
+        );
+
+        if (!shouldContinue) {
+          setIsSelectingDevice(false);
+          return;
+        }
+      } else {
+        // オンラインの場合、状態を更新
+        setDeviceOnlineStatus(prev => ({ ...prev, [device.uuid]: true }));
+      }
+
+      // デバイスを選択
+      setHost(device.ipAddress);
+      setDeviceName(device.name);
+      await connectWifi();
+    } catch (error) {
+      console.error('[SELECT] Device selection error:', error);
+      alert(t('editor.deviceSelector.selectionError'));
+    } finally {
+      setIsSelectingDevice(false);
+    }
   };
 
   // 選択解除
@@ -71,7 +113,7 @@ export function HeaderDeviceSelector() {
   // デバイスを検索（localStorageのデバイスのオンライン状態を確認）
   const handleSearchDevices = async () => {
     if (wifiDevices.length === 0) {
-      alert('検索するデバイスがありません。WiFi設定からデバイスを登録してください。');
+      alert(t('editor.deviceSelector.registerFromWifi'));
       return;
     }
 
@@ -160,13 +202,13 @@ export function HeaderDeviceSelector() {
           .map((r) => r.status === 'fulfilled' ? r.value.device.name : '')
           .filter(Boolean)
           .join(', ');
-        alert(`オンラインデバイス (${onlineDevices.length}台):\n${onlineNames}`);
+        alert(`${t('editor.deviceSelector.onlineDevices', { count: onlineDevices.length })}\n${onlineNames}`);
       } else {
-        alert('オンラインのデバイスが見つかりませんでした。デバイスが起動しているか、IPアドレスが正しいか確認してください。');
+        alert(t('editor.deviceSelector.noOnlineDevices'));
       }
     } catch (error) {
       console.error('[SEARCH] Device search error:', error);
-      alert('デバイス検索中にエラーが発生しました');
+      alert(t('editor.deviceSelector.searchError'));
     } finally {
       setIsSearching(false);
     }
@@ -227,7 +269,7 @@ export function HeaderDeviceSelector() {
           </>
         ) : (
           <div className="px-2 py-1.5 text-xs text-gray-500">
-            WiFi設定からデバイスを登録してください
+            {t('editor.deviceSelector.registerFromWifi')}
           </div>
         )}
 
@@ -241,7 +283,7 @@ export function HeaderDeviceSelector() {
               className="text-green-600 hover:text-green-700"
             >
               <Search className="w-4 h-4 mr-2" />
-              {isSearching ? '検索中...' : 'デバイス検索'}
+              {isSearching ? t('editor.deviceSelector.searching') : t('editor.deviceSelector.searchDevice')}
             </DropdownMenuItem>
           </>
         )}

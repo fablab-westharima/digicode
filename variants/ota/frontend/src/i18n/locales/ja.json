@@ -406,7 +406,11 @@
       "onlineDevices": "オンラインデバイス ({{count}}台):",
       "noOnlineDevices": "オンラインのデバイスが見つかりませんでした。デバイスが起動しているか、IPアドレスが正しいか確認してください。",
       "searchError": "デバイス検索中にエラーが発生しました",
-      "registerFromWifi": "WiFi設定からデバイスを登録してください"
+      "registerFromWifi": "WiFi設定からデバイスを登録してください",
+      "noIpAddress": "このデバイスにはIPアドレスが設定されていません。\n「接続」→「無線LAN接続」から再設定してください。",
+      "deviceOffline": "デバイス「{{name}}」に接続できません",
+      "offlineWarning": "デバイスがオフラインの可能性があります。\n・デバイスの電源が入っているか確認\n・同じWiFiネットワークに接続しているか確認\n・別の場所にいる場合は「接続」→「無線LAN接続」で再設定が必要です\n\nそれでも選択しますか？",
+      "selectionError": "デバイス選択中にエラーが発生しました"
     },
     "wifiDeviceSelect": {
       "title": "WiFiデバイスを選択",

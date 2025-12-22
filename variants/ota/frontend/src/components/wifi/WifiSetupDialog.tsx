@@ -23,6 +23,9 @@ interface WifiSetupDialogProps {
 interface WiFiEntry {
   ssid: string;
   isConnected: boolean;
+  staticIp?: string;
+  gateway?: string;
+  subnet?: string;
 }
 
 export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
@@ -193,7 +196,12 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
           const match = trimmed.match(/^\[\d+\]\s+(.+?)\s+\(password:/);
           const ssid = match ? match[1].trim() : '';
           const isConnected = trimmed.includes('[CONNECTED]');
-          return { ssid, isConnected };
+
+          // [Static: xxx] をパース
+          const staticMatch = trimmed.match(/\[Static:\s*([^\]]+)\]/);
+          const staticIp = staticMatch ? staticMatch[1].trim() : undefined;
+
+          return { ssid, isConnected, staticIp };
         });
 
         // 重複を除去（最後の出現を優先）
@@ -215,6 +223,14 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
         const connectedWifi = uniqueWifi.find(w => w.isConnected);
         if (connectedWifi) {
           setSelectedWifi(connectedWifi.ssid);
+
+          // 接続中WiFiの固定IP情報をstateに設定（GET_CONFIGのバックアップ）
+          if (connectedWifi.staticIp) {
+            console.log('[loadWiFiList] Found static IP from LIST_WIFI:', connectedWifi.staticIp);
+            setStaticIp(connectedWifi.staticIp);
+            // gateway/subnetはLIST_WIFIには含まれないため、GET_CONFIGから取得済みの値を維持
+            // または、後続のGET_CONFIGで上書きされる
+          }
         } else if (uniqueWifi.length > 0) {
           setSelectedWifi(uniqueWifi[0].ssid);
         }
