@@ -500,6 +500,14 @@
     "deviceNameStep": "デバイス名",
     "deviceNamePlaceholder": "デバイス名（例: MyRobot-01）",
     "deviceNameDesc": "デバイスを識別するための名前です。同じネットワーク上に複数のデバイスがある場合に便利です。",
+    "mdnsPreview": "mDNSホスト名: digicode-{{name}}.local",
+    "deviceNameError": {
+      "required": "デバイス名を入力してください",
+      "invalidChars": "英数字とハイフンのみ使用できます",
+      "startWithHyphen": "先頭にハイフンは使用できません",
+      "endWithHyphen": "末尾にハイフンは使用できません",
+      "tooLong": "32文字以内で入力してください"
+    },
     "configured": "設定済み",
     "savingDeviceName": "デバイス名を保存中...",
     "savingWifiSettings": "WiFi設定を保存中...",

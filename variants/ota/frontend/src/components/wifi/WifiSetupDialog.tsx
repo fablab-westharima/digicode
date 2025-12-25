@@ -49,6 +49,47 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
   const [deviceName, setDeviceName] = useState('');
   const [originalDeviceName, setOriginalDeviceName] = useState('');
   const [isLoadingDeviceName, setIsLoadingDeviceName] = useState(false);
+  const [deviceNameError, setDeviceNameError] = useState<string | null>(null);
+
+  // デバイス名バリデーション関数
+  const validateDeviceName = (name: string): { valid: boolean; error?: string } => {
+    // 空の場合は必須エラー
+    if (!name || !name.trim()) {
+      return { valid: false, error: 'required' };
+    }
+    // 長さチェック（1〜32文字）
+    if (name.length > 32) {
+      return { valid: false, error: 'tooLong' };
+    }
+    // 使用可能文字チェック（英数字とハイフンのみ）
+    if (!/^[a-zA-Z0-9-]+$/.test(name)) {
+      return { valid: false, error: 'invalidChars' };
+    }
+    // 先頭ハイフンチェック
+    if (name.startsWith('-')) {
+      return { valid: false, error: 'startWithHyphen' };
+    }
+    // 末尾ハイフンチェック
+    if (name.endsWith('-')) {
+      return { valid: false, error: 'endWithHyphen' };
+    }
+    return { valid: true };
+  };
+
+  // デバイス名変更時のバリデーション
+  const handleDeviceNameChange = (value: string) => {
+    setDeviceName(value);
+    if (value) {
+      const result = validateDeviceName(value);
+      if (!result.valid && result.error) {
+        setDeviceNameError(result.error);
+      } else {
+        setDeviceNameError(null);
+      }
+    } else {
+      setDeviceNameError('required');
+    }
+  };
 
   // 固定IP情報（表示用）
   const [staticIp, setStaticIp] = useState('');
@@ -575,6 +616,17 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       return;
     }
 
+    // デバイス名バリデーション
+    if (!deviceName.trim()) {
+      setWifiMessage(t('device.deviceNameError.required', { defaultValue: 'デバイス名を入力してください' }));
+      return;
+    }
+    const validation = validateDeviceName(deviceName.trim());
+    if (!validation.valid) {
+      setWifiMessage(t(`device.deviceNameError.${validation.error}`, { defaultValue: '無効なデバイス名です' }));
+      return;
+    }
+
     setIsLoadingWifi(true);
     setWifiMessage('');
 
@@ -730,7 +782,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
   // ステップの完了状態
   const isStep1Complete = status === 'connected';
   const isStep2Complete = selectedWifi !== null || (newWifiSsid.trim() && newWifiPassword.trim());
-  const isStep3Complete = deviceName.trim().length > 0;
+  const isStep3Complete = deviceName.trim().length > 0 && !deviceNameError;
 
   if (!isSupported) {
     return (
@@ -945,13 +997,39 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
                   <Input
                     placeholder={t('device.deviceNamePlaceholder')}
                     value={deviceName}
-                    onChange={(e) => setDeviceName(e.target.value)}
+                    onChange={(e) => handleDeviceNameChange(e.target.value)}
                     disabled={isLoadingDeviceName}
-                    className="text-sm h-9 bg-[#161B22] border-[#2E333D] text-[#E6EDF3]"
+                    className={`text-sm h-9 bg-[#161B22] border-[#2E333D] text-[#E6EDF3] ${
+                      deviceNameError ? 'border-red-500 focus:border-red-500' : ''
+                    }`}
                   />
-                  <p className="text-xs text-[#8B949E] mt-2">
-                    {t('device.deviceNameDesc')}
-                  </p>
+
+                  {/* mDNSホスト名プレビュー */}
+                  {deviceName && !deviceNameError && (
+                    <p className="text-xs text-green-400 mt-2 font-mono">
+                      {t('device.mdnsPreview', { name: deviceName, defaultValue: `mDNSホスト名: digicode-${deviceName}.local` })}
+                    </p>
+                  )}
+
+                  {/* バリデーションエラー表示 */}
+                  {deviceNameError && (
+                    <p className="text-xs text-red-400 mt-2">
+                      {t(`device.deviceNameError.${deviceNameError}`, {
+                        defaultValue: deviceNameError === 'required' ? 'デバイス名を入力してください' :
+                                      deviceNameError === 'invalidChars' ? '英数字とハイフンのみ使用できます' :
+                                      deviceNameError === 'startWithHyphen' ? '先頭にハイフンは使用できません' :
+                                      deviceNameError === 'endWithHyphen' ? '末尾にハイフンは使用できません' :
+                                      deviceNameError === 'tooLong' ? '32文字以内で入力してください' : ''
+                      })}
+                    </p>
+                  )}
+
+                  {/* 説明文（エラーがない場合のみ表示） */}
+                  {!deviceNameError && (
+                    <p className="text-xs text-[#8B949E] mt-2">
+                      {t('device.deviceNameDesc')}
+                    </p>
+                  )}
                 </div>
 
                 {/* 固定IP情報の表示 */}
@@ -1015,7 +1093,12 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
           {status === 'connected' && isDeviceReady && (
             <Button
               onClick={handleSaveAndConnect}
-              disabled={isLoadingWifi || (!selectedWifi && !(newWifiSsid.trim() && newWifiPassword.trim()))}
+              disabled={
+                isLoadingWifi ||
+                (!selectedWifi && !(newWifiSsid.trim() && newWifiPassword.trim())) ||
+                !deviceName.trim() ||
+                deviceNameError !== null
+              }
               className="w-full bg-green-600 hover:bg-green-700"
             >
               {t('device.saveSettings')}

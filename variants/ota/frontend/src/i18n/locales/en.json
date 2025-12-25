@@ -500,6 +500,14 @@
     "deviceNameStep": "Device Name",
     "deviceNamePlaceholder": "Device name (e.g. MyRobot-01)",
     "deviceNameDesc": "A name to identify your device. Useful when you have multiple devices on the same network.",
+    "mdnsPreview": "mDNS hostname: digicode-{{name}}.local",
+    "deviceNameError": {
+      "required": "Please enter a device name",
+      "invalidChars": "Only alphanumeric characters and hyphens are allowed",
+      "startWithHyphen": "Cannot start with a hyphen",
+      "endWithHyphen": "Cannot end with a hyphen",
+      "tooLong": "Must be 32 characters or less"
+    },
     "configured": "Configured",
     "savingDeviceName": "Saving device name...",
     "savingWifiSettings": "Saving WiFi settings...",

@@ -10,7 +10,9 @@
     "success": "成功",
     "confirm": "確認",
     "yes": "是",
-    "no": "否"
+    "no": "否",
+    "optional": "選填",
+    "goToHome": "返回首頁"
   },
   "nav": {
     "home": "首頁",
@@ -48,7 +50,132 @@
     "sendComplete": "已發送",
     "resetEmailSent": "如果電子郵件地址已註冊，密碼重置電子郵件已發送。請檢查您的電子郵件。",
     "enterRegisteredEmail": "請輸入您已註冊的電子郵件地址。我們將發送密碼重置鏈接。",
-    "sending": "正在發送..."
+    "sending": "正在發送...",
+    "logout": "登出",
+    "passwordRequirementsNotMet": "密碼不符合要求",
+    "req": {
+      "minLength": "8個字元以上",
+      "lowercase": "小寫字母 (a-z)",
+      "uppercase": "大寫字母 (A-Z)",
+      "number": "數字 (0-9)",
+      "special": "特殊字元 (!@#$%^&* 等)"
+    },
+    "emailRequired": "請輸入電子郵件地址",
+    "or": "或",
+    "passkeyLoginFailed": "密鑰登入失敗",
+    "passkey": {
+      "registerDesc": "在此裝置上註冊密鑰，下次無需密碼即可登入。",
+      "registerFailed": "密鑰註冊失敗",
+      "deviceNamePlaceholder": "例如：MacBook Pro",
+      "manageDesc": "管理已註冊的密鑰。可刪除不需要的密鑰。",
+      "unnamedDevice": "未命名",
+      "loadFailed": "無法載入密鑰列表",
+      "deleteFailed": "密鑰刪除失敗",
+      "deleteConfirmTitle": "刪除此密鑰？",
+      "deleteConfirmDesc": "刪除此密鑰後，將無法在此裝置上使用密鑰登入。",
+      "loginWithPasskey": "使用密鑰登入",
+      "loggingInWithPasskey": "正在使用密鑰登入...",
+      "registerPasskey": "註冊密鑰",
+      "registeringPasskey": "正在註冊密鑰...",
+      "managePasskeys": "管理密鑰",
+      "passkeyList": "已註冊的密鑰",
+      "deviceName": "裝置名稱",
+      "createdAt": "註冊日期",
+      "lastUsedAt": "最後使用時間",
+      "neverUsed": "從未使用",
+      "noPasskeys": "尚未註冊任何密鑰",
+      "registerNewPasskey": "註冊新密鑰",
+      "deletePasskey": "刪除密鑰",
+      "confirmDelete": "確定要刪除此密鑰？",
+      "registerSuccess": "密鑰註冊成功",
+      "registerError": "密鑰註冊失敗",
+      "deleteSuccess": "密鑰刪除成功",
+      "deleteError": "密鑰刪除失敗",
+      "loginError": "使用密鑰登入失敗",
+      "notSupported": "您的瀏覽器不支援密鑰",
+      "orDivider": "或",
+      "recoveryCodeTitle": "恢復碼",
+      "recoveryCodeDesc": "如果您失去對密鑰的存取權限，可以使用的緊急代碼。每個代碼只能使用一次。",
+      "remainingCodes": "剩餘有效碼: {{count}} / {{total}}",
+      "regenerateCodes": "重新生成代碼",
+      "regenerateCodesNote": "※重新生成將使所有現有代碼失效",
+      "regenerateCodesConfirm": "所有現有恢復碼將失效。是否生成新代碼？",
+      "regenerateCodesFailed": "重新生成恢復碼失敗",
+      "noRecoveryCodes": "⚠️ 尚未生成恢復碼",
+      "generateCodes": "生成恢復碼",
+      "generateCodesFailed": "生成恢復碼失敗",
+      "generateCodesRequirement": "※請先註冊至少一個密鑰再生成"
+    },
+    "verification": {
+      "title": "電子郵件驗證",
+      "description": "驗證郵件已發送",
+      "emailSentTo": "驗證郵件已發送至：",
+      "instruction1": "請點擊郵件中的連結以啟用您的帳戶。",
+      "instruction2": "如果沒有收到郵件，請檢查垃圾郵件資料夾。",
+      "resend": "重新發送驗證郵件",
+      "resendFailed": "重新發送驗證郵件失敗",
+      "resendSuccess": "驗證郵件已重新發送",
+      "verifying": "正在驗證電子郵件...",
+      "successTitle": "郵件驗證完成",
+      "successDesc": "您的電子郵件已驗證",
+      "canLoginNow": "現在可以登入了。",
+      "errorTitle": "驗證錯誤",
+      "errorInstruction": "連結可能無效或已過期。",
+      "invalidToken": "無效的驗證連結",
+      "failed": "電子郵件驗證失敗"
+    },
+    "recovery": {
+      "requestTitle": "帳戶恢復",
+      "requestDesc": "如果無法使用密鑰，可透過電子郵件恢復帳戶。",
+      "requestFailed": "恢復請求失敗",
+      "requestSuccessTitle": "恢復郵件已發送",
+      "requestSuccessDesc": "恢復連結已發送至您的電子郵件。",
+      "emailSentTo": "恢復連結已發送至：",
+      "instruction1": "請點擊郵件中的連結以恢復帳戶。",
+      "instruction2": "連結將在1小時後過期。",
+      "sendLink": "發送恢復連結",
+      "recovering": "正在恢復帳戶...",
+      "successTitle": "恢復完成",
+      "successDesc": "您的帳戶已恢復，現已登入。",
+      "redirecting": "{count}秒後自動跳轉至首頁...",
+      "registerPasskeyRecommendation": "為了安全起見，建議註冊新的密鑰。",
+      "errorTitle": "恢復錯誤",
+      "errorInstruction": "連結可能無效或已過期。",
+      "invalidToken": "無效的恢復連結",
+      "failed": "帳戶恢復失敗"
+    },
+    "2fa": {
+      "title": "兩步驟驗證",
+      "description": "請輸入發送至 {{email}} 的6位數驗證碼。",
+      "otpLengthError": "請輸入6位數驗證碼",
+      "verifyError": "驗證碼確認失敗",
+      "expiresIn": "驗證碼有效期為10分鐘",
+      "verify": "驗證",
+      "resendCooldown": "{{seconds}}秒後可重新發送",
+      "resend": "重新發送驗證碼",
+      "resendError": "重新發送驗證碼失敗",
+      "statusError": "獲取設定失敗",
+      "enableSuccess": "兩步驟驗證已啟用",
+      "enableError": "啟用兩步驟驗證失敗",
+      "passwordRequired": "請輸入您的密碼",
+      "disableSuccess": "兩步驟驗證已停用",
+      "disableError": "停用兩步驟驗證失敗",
+      "settingsTitle": "兩步驟驗證",
+      "settingsDescription": "使用密碼登入時，還需輸入發送至您電子郵件的6位數驗證碼。",
+      "enableLabel": "啟用兩步驟驗證",
+      "enabledSince": "自 {{date}} 起啟用",
+      "howItWorks": "啟用後，使用密碼登入時會向您的註冊電子郵件發送6位數驗證碼。輸入此驗證碼以完成登入。",
+      "passkeyNote": "※ 使用密鑰或恢復碼登入時不需要兩步驟驗證。",
+      "enableTitle": "啟用兩步驟驗證",
+      "enableConfirm": "使用密碼登入時需要輸入電子郵件發送的驗證碼。是否繼續？",
+      "enable": "啟用",
+      "disableTitle": "停用兩步驟驗證",
+      "disableConfirm": "這會降低您的安全級別。請輸入密碼以停用。",
+      "disable": "停用",
+      "dialogTitle": "兩步驟驗證設定",
+      "dialogDescription": "增強密碼登入的安全性。",
+      "trustDevice": "信任此裝置（30天）"
+    }
   },
   "home": {
     "title": "DigiCode",
@@ -150,7 +277,7 @@
     "noCodeToCompile": "沒有程式碼可編譯。",
     "connectionCheck": "連線檢查",
     "wifiOtaSelected": "已選擇 WiFi OTA 寫入",
-    "targetDevice": "目標裝置",
+    "targetDevice": "WiFi裝置",
     "checkingDeviceStatus": "正在檢查裝置連線狀態...",
     "resolvingMdns": "正在透過 mDNS 解析 IP 位址...",
     "deviceNotFound": "找不到裝置 \"{{hostname}}\"。檢查電源和 WiFi 連線。",
@@ -220,7 +347,10 @@
       "displayLanguage": "顯示語言",
       "mode": "模式",
       "compileTargetBoard": "編譯目標開發板",
-      "tutorial": "教學課程"
+      "tutorial": "教學課程",
+      "cloudServer": "雲端伺服器",
+      "localServer": "本地伺服器",
+      "passkeyManagement": "密鑰管理"
     },
     "flash": {
       "title": "編譯和寫入",
@@ -266,10 +396,16 @@
       "usbConnection": "USB 連線",
       "bluetoothConnection": "藍牙連線",
       "noDevice": "沒有裝置",
-      "writeTarget": "目標",
+      "writeTarget": "WiFi 裝置",
       "writeTargetDevice": "寫入目標裝置",
       "wifiRegisteredDevices": "WiFi 已註冊的裝置",
-      "deselect": "取消選擇"
+      "deselect": "取消選擇",
+      "searchDevice": "搜尋裝置",
+      "searching": "搜尋中...",
+      "onlineDevices": "線上裝置 ({{count}}):",
+      "noOnlineDevices": "找不到線上裝置。請確認裝置已開機且IP位址正確。",
+      "searchError": "搜尋裝置時發生錯誤",
+      "registerFromWifi": "請從WiFi設定中註冊裝置"
     },
     "adc2Warning": {
       "title": "ADC2 引腳使用警告",
@@ -278,7 +414,9 @@
       "recommendation": "建議：切換到 ADC1 引腳（GPIO 32、33、34、35、36、39）。數位 I/O 不受影響。",
       "cancel": "修正程式碼",
       "proceed": "忽略並編譯"
-    }
+    },
+    "compileAndFlash": "編譯並燒錄",
+    "flashButton": "燒錄"
   },
   "project": {
     "title": "項目",
@@ -350,6 +488,14 @@
     "deviceNameStep": "Device Name",
     "deviceNamePlaceholder": "Device name (e.g. MyRobot-01)",
     "deviceNameDesc": "用於識別您的裝置的名稱。當您在同一網路上有多個裝置時很有用。",
+    "mdnsPreview": "mDNS 主機名稱: digicode-{{name}}.local",
+    "deviceNameError": {
+      "required": "請輸入裝置名稱",
+      "invalidChars": "只允許使用英數字和連字號",
+      "startWithHyphen": "不能以連字號開頭",
+      "endWithHyphen": "不能以連字號結尾",
+      "tooLong": "必須在32個字元以內"
+    },
     "configured": "Configured",
     "savingDeviceName": "Saving device name...",
     "savingWifiSettings": "Saving WiFi settings...",
@@ -488,284 +634,74 @@
     "motor": "Motor",
     "servo": "Servo",
     "sensor": {
-      "button": {
-        "label": "Button Pin",
-        "pressed": "Pressed",
-        "released": "Released",
-        "tooltip": "Get button state (pull-up input)"
+      "ultrasonic": {
+        "init": "📏 HC-SR04 初始化",
+        "trigPin": "Trig腳位",
+        "echoPin": "Echo腳位",
+        "distance": "📏 超音波距離(cm)",
+        "initTooltip": "初始化 HC-SR04 超音波感測器",
+        "distanceTooltip": "使用 HC-SR04 測量距離（需要初始化）"
       },
-      "pir": {
-        "label": "PIR Sensor Pin",
-        "detect": "Motion Detected",
-        "tooltip": "Detect motion with PIR sensor"
+      "dht": {
+        "init": "🌡️ DHT 初始化",
+        "pin": "腳位",
+        "temperature": "🌡️ DHT 溫度 (°C)",
+        "humidity": "💧 DHT 濕度 (%)",
+        "initTooltip": "初始化 DHT11/DHT22 溫濕度感測器",
+        "temperatureTooltip": "讀取 DHT 攝氏溫度",
+        "humidityTooltip": "讀取 DHT 濕度百分比"
       },
-      "tilt": {
-        "label": "Tilt Sensor Pin",
-        "detect": "Tilt Detected",
-        "tooltip": "Detect tilt"
+      "rus04": {
+        "init": "👀 RUS-04 初始化",
+        "rgbPin": "RGB腳位",
+        "numLeds": "LED數量",
+        "distance": "📏 RUS-04 距離(cm)",
+        "rgbBoth": "🌈 RUS-04 RGB 雙眼",
+        "rgbEye": "👁️ RUS-04 RGB 眼睛",
+        "brightness": "☀️ RUS-04 RGB 亮度",
+        "off": "⬛ RUS-04 RGB 關閉",
+        "left": "左",
+        "right": "右",
+        "initTooltip": "初始化 RUS-04 超音波感測器（內建RGB）",
+        "distanceTooltip": "使用 RUS-04 測量距離（需要初始化）",
+        "rgbTooltip": "分別設置 RUS-04 左右眼 RGB LED 顏色",
+        "eyeTooltip": "設置單獨眼睛顏色",
+        "brightnessTooltip": "設置眼睛 LED 亮度（0-255）",
+        "offTooltip": "關閉雙眼",
+        "bothSimpleTooltip": "透過下拉選單設置雙眼顏色"
       },
-      "vibration": {
-        "label": "Vibration Sensor Pin",
-        "detect": "Vibration Detected",
-        "tooltip": "Detect vibration"
+      "color": {
+        "red": "紅",
+        "green": "綠",
+        "blue": "藍",
+        "yellow": "黃",
+        "purple": "紫",
+        "cyan": "青",
+        "white": "白",
+        "off": "關閉"
       },
-      "hall": {
-        "label": "Hall Sensor Pin",
-        "detect": "Magnet Detected",
-        "tooltip": "Detect magnetic field (external sensor)"
+      "touch": {
+        "init": "👆 觸控感測器初始化",
+        "threshold": "閾值",
+        "read": "👆 被觸摸？",
+        "value": "👆 觸控數值",
+        "initTooltip": "初始化電容式觸控感測器",
+        "readTooltip": "返回觸控感測器是否被觸摸",
+        "valueTooltip": "返回觸控感測器原始數值"
       },
-      "hallEsp32": {
-        "label": "ESP32 Built-in Hall Sensor",
-        "tooltip": "Get ESP32 built-in magnetic sensor value"
+      "sound": {
+        "init": "🎤 聲音感測器初始化",
+        "level": "🎤 音量等級",
+        "detected": "🎤 偵測到聲音？",
+        "initTooltip": "初始化類比聲音感測器/麥克風",
+        "levelTooltip": "返回音量等級（0-4095）",
+        "detectedTooltip": "返回聲音是否超過閾值"
       },
-      "photoInterrupter": {
-        "label": "Photo Interrupter Pin",
-        "detect": "Interrupted",
-        "tooltip": "Detect light interruption"
-      },
-      "irObstacle": {
-        "label": "IR Obstacle Sensor Pin",
-        "detect": "Obstacle Detected",
-        "tooltip": "Detect obstacle with IR"
-      },
-      "flameDigital": {
-        "label": "Flame Sensor(D) Pin",
-        "detect": "Flame Detected",
-        "tooltip": "Detect flame (digital output)"
-      },
-      "gasDigital": {
-        "label": "Gas Sensor(D) Pin",
-        "detect": "Gas Detected",
-        "tooltip": "Detect gas (digital output)"
-      },
-      "limitSwitch": {
-        "label": "Limit Switch Pin",
-        "detect": "Switch Activated",
-        "tooltip": "Get limit switch state"
-      },
-      "digitalRead": {
-        "label": "Digital Read Pin",
-        "pullup": "Pull-up",
-        "pulldown": "Pull-down",
-        "none": "無",
-        "tooltip": "Read digital pin state"
-      },
-      "potentiometer": {
-        "label": "Potentiometer Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (0-100)",
-        "angle": "Angle (0-270)",
-        "tooltip": "Read potentiometer value"
-      },
-      "ldr": {
-        "label": "Light Sensor (LDR) Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (0-100)",
-        "tooltip": "Measure light intensity"
-      },
-      "thermistor": {
-        "label": "Thermistor Pin",
-        "unit": "Temp (°C)",
-        "tooltip": "Measure temperature with NTC thermistor"
-      },
-      "lm35": {
-        "label": "LM35 Pin",
-        "unit": "Temp (°C)",
-        "tooltip": "Measure temperature with LM35 sensor"
-      },
-      "gas": {
-        "label": "Gas Sensor(A) Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (0-100)",
-        "tooltip": "Read MQ-2 or similar gas sensor value"
-      },
-      "soilMoisture": {
-        "label": "Soil Moisture Sensor Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (0-100)",
-        "tooltip": "Measure soil moisture"
-      },
-      "waterLevel": {
-        "label": "Water Level Sensor Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (0-100)",
-        "tooltip": "Measure water level"
-      },
-      "flame": {
-        "label": "Flame Sensor(A) Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (0-100)",
-        "tooltip": "Measure flame intensity (analog)"
-      },
-      "irReflective": {
-        "label": "IR Reflective Sensor Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (0-100)",
-        "tooltip": "Measure IR reflection"
-      },
-      "joystick": {
-        "label": "Joystick",
-        "xAxis": "X-Axis",
-        "yAxis": "Y-Axis",
-        "pin": "Pin",
-        "raw": "Raw (0-4095)",
-        "percent": "Percent (-100 to 100)",
-        "tooltip": "Read joystick position"
-      },
-      "analogRead": {
-        "label": "Analog Read Pin",
-        "tooltip": "Read analog pin value (0-4095)"
-      },
-      "encoder": {
-        "init": "Initialize Encoder (2 wheels)",
-        "initTooltip": "Initialize rotary encoders",
-        "leftA": "Left A",
-        "leftB": "Left B",
-        "rightA": "Right A",
-        "rightB": "Right B",
-        "ppr": "Pulses/Rev",
-        "wheelDiameter": "Wheel Diameter (mm)",
-        "distance": "Travel Distance",
-        "distanceTooltip": "Get travel distance from encoder",
-        "average": "平均",
-        "leftWheel": "Left Wheel",
-        "rightWheel": "Right Wheel",
-        "speed": "Speed (mm/s)",
-        "speedTooltip": "Get current speed",
-        "count": "Pulse Count",
-        "countTooltip": "Get encoder pulse count",
-        "reset": "Reset Encoder",
-        "resetTooltip": "Reset encoder count",
-        "waitDistance": "距離",
-        "waitUntil": "mm and wait",
-        "waitDistanceTooltip": "Wait until specified distance"
-      },
-      "lineSensor": {
-        "init": "Initialize Line Sensor",
-        "initTooltip": "Initialize line sensor (dynamic pin config)",
-        "count": "Sensor Count",
-        "count2": "2",
-        "count3": "3",
-        "count4": "4",
-        "count5": "5",
-        "count6": "6",
-        "count8": "8",
-        "initSimple5": "Initialize Line Sensor (5)",
-        "initSimple5Tooltip": "Initialize 5 line sensors",
-        "initTCRT": "Initialize Line Sensor (2)",
-        "initTCRTTooltip": "Initialize TCRT5000 or similar 2 line sensors",
-        "leftS1": "Left S1",
-        "rightS2": "Right S2",
-        "calibrate": "Calibrate",
-        "calibrateTooltip": "Calibrate sensors (move over line)",
-        "duration": "Duration (ms)",
-        "position": "Line Position (-1000 to 1000)",
-        "positionTooltip": "Get line position (-1000=left, 0=center, 1000=right)",
-        "sensor": "感測器",
-        "sensor1Left": "1 (左)",
-        "sensor2": "2",
-        "sensor3Center": "3 (中)",
-        "sensor4": "4",
-        "sensor5Right": "5 (右)",
-        "value": "值",
-        "valueTooltip": "Get individual sensor value (0-1000)",
-        "detected": "Line Detected",
-        "detectedTooltip": "Check if line is detected",
-        "threshold": "Threshold",
-        "rawValue": "Raw Value",
-        "rawValueTooltip": "Get sensor raw value (debug)"
-      },
-      "qtr": {
-        "qtr8aInit": "Initialize QTR-8A (Analog)",
-        "qtr8aInitTooltip": "Initialize QTR-8A analog line sensor",
-        "sensorCount": "Sensor Count",
-        "count8": "8",
-        "count6": "6",
-        "count4": "4",
-        "count3": "3",
-        "pinS1": "S1",
-        "pinS2": "S2",
-        "pinS3": "S3",
-        "pinS4": "S4",
-        "pinS5": "S5",
-        "pinS6": "S6",
-        "pinS7": "S7",
-        "pinS8": "S8",
-        "emitterPin": "Emitter Pin",
-        "emitterNone": "(0=無)",
-        "qtr8rcInit": "Initialize QTR-8RC (Digital)",
-        "qtr8rcInitTooltip": "Initialize QTR-8RC digital line sensor",
-        "calibrate": "QTR Calibrate",
-        "calibrateTooltip": "Calibrate sensors",
-        "samples": "Samples",
-        "calibrateHint": "(在線上移動)",
-        "autoCalibrate": "QTR Auto Calibrate",
-        "autoCalibrateTooltip": "Calibrate with time duration",
-        "duration": "Duration (ms)",
-        "autoCalibrateHint": "(左右移動)",
-        "linePosition": "Line Position (0-7000)",
-        "linePositionTooltip": "Get line position",
-        "lineColor": "Line Color",
-        "whiteOnBlack": "White on Black",
-        "blackOnWhite": "黑底白字",
-        "linePositionNormalized": "Line Position (-1000 to 1000)",
-        "linePositionNormalizedTooltip": "Get normalized line position",
-        "sensorValue": "QTR Sensor",
-        "sensorValueTooltip": "Get individual sensor value (0-1000)",
-        "sensor1Left": "1 (左)",
-        "sensor2": "2",
-        "sensor3": "3",
-        "sensor4": "4",
-        "sensor5": "5",
-        "sensor6": "6",
-        "sensor7": "7",
-        "sensor8Right": "8 (右)",
-        "value": "值",
-        "readAll": "Read All Sensors",
-        "readAllTooltip": "Read all sensor values at once",
-        "rawValue": "QTR Sensor",
-        "rawValueLabel": "Raw Value",
-        "rawValueTooltip": "Get sensor raw value (debug)",
-        "lineDetected": "Line Detected",
-        "lineDetectedTooltip": "Check if line is detected",
-        "threshold": "Threshold",
-        "isCalibrated": "Is Calibrated?",
-        "isCalibratedTooltip": "Check if calibration is complete",
-        "emitterControl": "Emitter",
-        "emitterControlTooltip": "Control emitter ON/OFF",
-        "emitterOn": "ON",
-        "emitterOff": "OFF"
-      },
-      "wall": {
-        "init": "Initialize Wall Sensors (4 directions)",
-        "initTooltip": "Initialize IR distance sensors for micromouse",
-        "frontLeft": "Front Left",
-        "frontRight": "Front Right",
-        "left": "Left",
-        "right": "Right",
-        "threshold": "Threshold",
-        "hasWall": "Has Wall",
-        "hasWallSuffix": "?",
-        "hasWallTooltip": "Check if wall exists in direction",
-        "directionFront": "Front",
-        "directionLeft": "Left",
-        "directionRight": "Right",
-        "sensorValue": "Wall Sensor",
-        "sensorValueTooltip": "Get sensor value",
-        "sensorFrontLeft": "Front Left",
-        "sensorFrontRight": "Front Right",
-        "sensorLeft": "Left",
-        "sensorRight": "Right",
-        "value": "值",
-        "error": "Wall Error Offset",
-        "errorTooltip": "Calculate offset from center using side sensors",
-        "info": "Wall Info (3-bit)",
-        "infoTooltip": "Get left/front/right wall info as 3 bits",
-        "read": "Read Wall Sensors",
-        "readTooltip": "Update all sensor values",
-        "setThreshold": "Set Wall Threshold to",
-        "setThresholdSuffix": "",
-        "setThresholdTooltip": "Change wall detection threshold"
+      "light": {
+        "init": "☀️ 光感測器初始化",
+        "level": "☀️ 光量等級",
+        "initTooltip": "初始化光感測器（CdS、光敏電阻）",
+        "levelTooltip": "返回光量等級（0-4095，越大越亮）"
       }
     },
     "display": {
@@ -1854,7 +1790,8 @@
           "type": "Type",
           "dht11": "DHT11",
           "dht22": "DHT22",
-          "tooltip": "Initialize DHT temperature/humidity sensor"
+          "tooltip": "Initialize DHT temperature/humidity sensor",
+          "pin": "引腳"
         },
         "dhtTemperature": {
           "label": "DHT Temperature",
@@ -1901,7 +1838,8 @@
         "potentiometer": {
           "label": "Potentiometer",
           "value": "value",
-          "tooltip": "Read potentiometer value (0-4095)"
+          "tooltip": "Read potentiometer value (0-4095)",
+          "angle": "角度 (0-270)"
         }
       },
       "otto": {
@@ -2318,7 +2256,9 @@
         "name": "Analog Sensors",
         "description": "Potentiometer, Photoresistor, LM35, Joystick, etc."
       }
-    }
+    },
+    "subtitle": "管理引腳分配設定",
+    "default": "預設"
   },
   "docs": {
     "loadError": "Failed to load document.",
@@ -2349,17 +2289,37 @@
     "local-compile-server": {
       "title": "Local Compile Server",
       "description": "Compile on your own PC (Advanced)"
+    },
+    "program-setup-common": {
+      "title": "程式燒錄_通用步驟",
+      "description": "所有微控制器通用的準備工作和基本流程"
+    },
+    "program-setup-rp2040": {
+      "title": "程式燒錄_RP2040",
+      "description": "RP2040系列微控制器的燒錄步驟"
+    },
+    "program-setup-arduino": {
+      "title": "程式燒錄_Arduino",
+      "description": "Arduino系列微控制器的燒錄步驟（USB・FTDI）"
+    },
+    "program-setup-esp32": {
+      "title": "程式燒錄_ESP32",
+      "description": "ESP32系列微控制器的燒錄步驟（USB・OTA・Binary）"
+    },
+    "ota-guide": {
+      "title": "OTA設定指南",
+      "description": "透過WiFi燒錄程式的設定方法"
     }
   },
   "firmware": {
-    "description": "Write competition Arduino C++ or beginner MicroPython firmware to ESP32",
+    "description": "將 Arduino C++ 韌體寫入 ESP32（支援 WiFi OTA 或 BLE）",
     "step1Title": "USB 連線",
-    "step1Desc": "Connect ESP32 to your PC via USB cable",
-    "step2Title": "Select Firmware",
-    "arduinoTitle": "DigiCode Competition (Recommended)",
-    "arduinoDesc": "Arduino C++ / Fast Control / OTA Support",
-    "micropythonTitle": "初級",
-    "micropythonDesc": "MicroPython / OTTO teaching materials, etc.",
+    "step1Desc": "透過 USB 線將 ESP32 連接到電腦",
+    "step2Title": "選擇韌體",
+    "arduinoTitle": "DigiCode WiFi 韌體",
+    "arduinoDesc": "Arduino C++ / WiFi OTA 支援",
+    "bleTitle": "DigiCode BLE 韌體",
+    "bleDesc": "Arduino C++ / 藍牙支援",
     "step3Title": "Write Firmware",
     "step3Desc": "Click the button to show device selection dialog. Select ESP32 to start writing.",
     "webSerialNotSupported": "Web Serial API is not supported.",
@@ -2370,7 +2330,84 @@
     "usbDriverDesc": "If device is not recognized, install USB serial driver:",
     "usbDriverNote": "Drivers for CP2102, CH340, FTDI, and other chips are required.",
     "title": "Firmware Installer",
-    "installerTitle": "DigiCode Firmware Installer"
+    "installerTitle": "無線上傳準備",
+    "wifiFirmware": "DigiCode WiFi 韌體",
+    "wifiFirmwareDesc": "支援 WiFi OTA 上傳（推薦）",
+    "bleFirmware": "DigiCode BLE 韌體",
+    "bleFirmwareDesc": "支援藍牙上傳，首次上傳必需",
+    "selected": "已選擇",
+    "buildFirmware": "🚀 編譯韌體",
+    "eraseFlashTitle": "擦除整個Flash（除錯用）",
+    "eraseFlashDesc": "清除整個 Flash 將刪除所有保存的資料（UUID、WiFi 設定等）並恢復到出廠狀態。",
+    "connectUsb": "透過 USB 連接 ESP32",
+    "connecting": "連接中...",
+    "eraseFlash": "清除整個 Flash",
+    "erasing": "正在清除 Flash...",
+    "connectUsbFirst": "※ 請先透過 USB 連接 ESP32",
+    "eraseConfirm": "這將清除整個 Flash。所有保存的資料（UUID、WiFi 設定等）將被刪除。確定嗎？",
+    "compilingFirmware": "正在編譯最新韌體...",
+    "compileComplete": "✅ 韌體編譯完成",
+    "installDesc": "按下 INSTALL 透過 USB 連接 ESP32 並寫入 {{type}} 韌體{{version}}。",
+    "bleType": "BLE",
+    "otaType": "OTA",
+    "bleFirmwareName": "BLE",
+    "otaFirmwareName": "OTA",
+    "compilingFromCloud": "正在從雲端編譯最新{{firmwareName}}韌體...",
+    "fullPackageCompiled": "✅ 完整韌體套件編譯完成{{versionInfo}}",
+    "firmwareCompiled": "✅ 韌體編譯完成{{versionInfo}}",
+    "compileError": "❌ 編譯錯誤: {{error}}",
+    "notCompiled": "❌ 韌體尚未編譯",
+    "usbNotConnected": "❌ USB連接未建立",
+    "startingInstall": "開始安裝韌體...",
+    "loadingStaticFiles": "正在載入 bootloader/partitions/boot_app0（傳統模式）...",
+    "staticFilesError": "載入靜態檔案失敗",
+    "allFilesLoaded": "✓ 所有檔案已載入",
+    "usingFullPackage": "使用完整韌體套件...",
+    "packagePrepared": "✓ 版本一致的韌體套件已準備",
+    "flashing": "燒錄中...",
+    "installComplete": "✅ 韌體安裝完成！",
+    "flashFailed": "❌ 韌體燒錄失敗",
+    "autoConnectFailed": "💡 自動連接失敗。請手動進入BOOT模式後重試。",
+    "installError": "❌ 安裝錯誤: {{error}}",
+    "connectingEsp32": "正在連接ESP32...",
+    "connectionFailed": "無法連接到ESP32",
+    "connected": "✅ 已連接: {{name}}",
+    "connectionError": "❌ 連接錯誤: {{error}}",
+    "disconnecting": "正在斷開連接...",
+    "disconnected": "✅ 已斷開連接",
+    "connectFirst": "❌ 請先透過USB連接",
+    "erasingFlash": "正在擦除整個Flash...",
+    "eraseComplete": "✅ Flash擦除完成",
+    "eraseCompleteReset": "✅ Flash擦除完成。請重置ESP32。",
+    "loaderNotInitialized": "Loader未初始化",
+    "eraseError": "擦除錯誤: {{error}}",
+    "wifiFirmwareTitle": "DigiCode WiFi 韌體",
+    "bleFirmwareTitle": "DigiCode BLE 韌體",
+    "rebuild": "重新編譯",
+    "compileErrorLabel": "編譯錯誤",
+    "compilingLatest": "正在編譯最新韌體...",
+    "cloudServerFallback": "雲端伺服器（Ubuntu → Railway備援）",
+    "compileCompleteMessage": "✅ 韌體編譯完成",
+    "connectUsbInstruction": "請用USB線將ESP32連接到電腦",
+    "selectPortInstruction": "連接後，按下方按鈕選擇連接埠",
+    "usbConnected": "✅ USB連接已建立",
+    "manualBootMode": "請手動進入BOOT模式",
+    "autoConnectFailedMsg": "自動連接失敗。",
+    "followStepsInstruction": "請按照以下步驟將ESP32設為燒錄模式，然後按重試:",
+    "bootStep1": "按住BOOT按鈕不放",
+    "bootStep2": "保持按住BOOT，按下然後鬆開EN按鈕",
+    "bootStep3": "鬆開BOOT按鈕",
+    "bootStep4": "按下方的重試按鈕",
+    "bootHint": "提示：某些開發板將BOOT按鈕標記為IO0、FLASH或GPIO0",
+    "autoConnectTry": "嘗試自動連接。",
+    "pressStartFlash": "請按開始燒錄按鈕。",
+    "retry": "🔄 重試",
+    "startFlash": "▶ 開始燒錄",
+    "browserNotSupported": "您的瀏覽器不受支援。",
+    "installDescription": "按INSTALL按鈕透過USB連接ESP32並燒錄{{firmwareType}}韌體{{version}}。",
+    "eraseFlashDescription": "擦除整個Flash將刪除所有儲存的資料（UUID、WiFi設定等）並重置為初始狀態。",
+    "disconnect": "斷開連接",
+    "connectFirstNote": "※ 請先透過USB連接ESP32"
   },
   "toolboxMp": {
     "categories": {
@@ -2413,5 +2450,183 @@
       "walkMode": "Walk Mode",
       "rollMode": "Roll Mode"
     }
+  },
+  "sidebar": {
+    "projects": "專案",
+    "firmwareWrite": "OTA設定",
+    "compileServerSelect": "編譯伺服器設定",
+    "wirelessLan": "無線網路連線",
+    "usbPortRelease": "釋放USB連接埠",
+    "extensions": "擴充功能",
+    "passkeyManagement": "密鑰管理",
+    "codePreview": "生成的程式碼",
+    "pidTuning": "PID調整",
+    "usbDriver": "USB驅動程式",
+    "usbDriverAll": "所有驅動程式",
+    "document": "文件",
+    "category": {
+      "project": "專案",
+      "deviceSetup": "裝置準備",
+      "tuning": "調整",
+      "advanced": "進階設定",
+      "help": "說明",
+      "account": "帳戶"
+    },
+    "logout": "登出",
+    "passkeyRegister": "註冊密鑰",
+    "twoFactorSettings": "兩步驟驗證",
+    "accountDelete": "刪除帳戶",
+    "documentation": "文件",
+    "hint": "點擊左箭頭以收合側邊欄"
+  },
+  "modeSelector": {
+    "groups": {
+      "otto": "OTTO 機器人",
+      "competition": "競賽機器人",
+      "iot": "IoT / 智慧家庭",
+      "other": "其他"
+    },
+    "modes": {
+      "ottoBipedal": {
+        "name": "OTTO 雙足步行",
+        "description": "4伺服雙足機器人"
+      },
+      "ottoWheel": {
+        "name": "OTTO Wheel",
+        "description": "兩輪驅動機器人"
+      },
+      "ottoNinja": {
+        "name": "OTTO Ninja",
+        "description": "步行/滾動變形機器人"
+      },
+      "micromouse": {
+        "name": "迷宮鼠",
+        "description": "迷宮探索機器人"
+      },
+      "lineTrace": {
+        "name": "循線機器人",
+        "description": "循線追蹤機器人"
+      },
+      "homeassistant": {
+        "name": "Home Assistant",
+        "description": "IoT/智慧家庭整合"
+      },
+      "generic": {
+        "name": "通用裝置",
+        "description": "適用於微控制器專案"
+      },
+      "allBlocks": {
+        "name": "顯示所有積木",
+        "description": "顯示所有積木"
+      },
+      "custom": {
+        "name": "收藏",
+        "description": "註冊常用積木"
+      }
+    }
+  },
+  "boardSelector": {
+    "categories": {
+      "generic": "通用 ESP32",
+      "m5stack": "M5Stack 系列",
+      "xiao": "Seeed Xiao 系列"
+    },
+    "boards": {
+      "esp32Generic": {
+        "name": "ESP32（標準）",
+        "description": "ESP32-WROOM等，支援OTA"
+      },
+      "esp32S3": {
+        "name": "ESP32-S3",
+        "description": "USB OTG、相機，支援OTA"
+      },
+      "esp32C3": {
+        "name": "ESP32-C3",
+        "description": "RISC-V、低功耗，支援OTA"
+      },
+      "esp32C6": {
+        "name": "ESP32-C6",
+        "description": "WiFi 6、Thread/Zigbee，支援OTA"
+      },
+      "m5stackBasic": {
+        "name": "M5Stack Basic/Gray/Fire",
+        "description": "2.0吋螢幕、3按鈕，支援OTA"
+      },
+      "m5stickCPlus": {
+        "name": "M5StickC Plus",
+        "description": "1.14吋螢幕、IMU，支援OTA"
+      },
+      "atomLite": {
+        "name": "ATOM Lite",
+        "description": "24x24mm、RGB LED，支援OTA"
+      },
+      "atomMatrix": {
+        "name": "ATOM Matrix",
+        "description": "24x24mm、5x5 LED、IMU，支援OTA"
+      },
+      "m5stampPico": {
+        "name": "M5Stamp Pico",
+        "description": "超小型郵票模組，支援OTA"
+      },
+      "m5stampC3": {
+        "name": "M5Stamp C3/C3U",
+        "description": "C3郵票模組，支援OTA"
+      },
+      "xiaoEsp32C3": {
+        "name": "XIAO ESP32C3",
+        "description": "21x17.5mm、RISC-V，支援OTA"
+      },
+      "xiaoEsp32S3": {
+        "name": "XIAO ESP32S3",
+        "description": "21x17.5mm、相機，支援OTA"
+      },
+      "xiaoEsp32C6": {
+        "name": "XIAO ESP32C6",
+        "description": "21x17.5mm、WiFi 6，支援OTA"
+      }
+    }
+  },
+  "pidTuning": {
+    "title": "PID 調整",
+    "reset": "重置",
+    "preset": "預設",
+    "custom": "自訂",
+    "kp": "Kp（比例增益）",
+    "kpDesc": "與誤差成比例的輸出",
+    "ki": "Ki（積分增益）",
+    "kiDesc": "消除穩態誤差",
+    "kd": "Kd（微分增益）",
+    "kdDesc": "抑制急劇變化",
+    "sendToEsp32": "發送到 ESP32",
+    "connectEsp32": "請連接 ESP32",
+    "generatedCode": "生成的程式碼",
+    "selectPreset": "選擇預設",
+    "savePreset": "儲存預設",
+    "savePresetDesc": "將目前的PID參數儲存為預設",
+    "presetName": "預設名稱",
+    "presetNamePlaceholder": "例：快速循線",
+    "description": "描述（選填）",
+    "descriptionPlaceholder": "例：競賽用高速設定"
+  },
+  "accountDelete": {
+    "title": "刪除帳戶",
+    "description": "刪除帳戶將導致所有資料永久遺失。此操作無法撤銷。",
+    "warningTitle": "以下資料將被永久刪除：",
+    "warningProjects": "所有專案",
+    "warningPasskeys": "已註冊的密鑰",
+    "warningCompileHistory": "編譯使用紀錄",
+    "warningAccountInfo": "帳戶資訊",
+    "irreversible": "此操作無法撤銷",
+    "confirmIdentity": "請輸入密碼以確認您的身份",
+    "passwordPlaceholder": "密碼",
+    "cancel": "取消",
+    "deleteAccount": "刪除帳戶",
+    "enterPassword": "請輸入密碼",
+    "getUserFailed": "無法取得使用者資訊。請重新登入。",
+    "incorrectPassword": "密碼錯誤",
+    "deleteFailed": "刪除帳號失敗",
+    "deleteSuccess": "帳號已刪除。感謝您使用我們的服務。",
+    "passwordPrompt": "請輸入密碼以驗證身分",
+    "deleteButton": "刪除帳號"
   }
 }
