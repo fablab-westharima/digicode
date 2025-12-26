@@ -14,6 +14,19 @@
     "optional": "Opcional",
     "goToHome": "Ir al inicio"
   },
+  "helper": {
+    "status": {
+      "checking": "Verificando estado de Helper...",
+      "launching": "Iniciando Helper...",
+      "launchingHint": "Cuando el navegador pregunte, haz clic en \"Abrir\" para iniciar la aplicación",
+      "failed": "No se pudo iniciar Helper",
+      "failedHint": "Helper podría no estar instalado. Descárgalo desde el enlace a continuación."
+    },
+    "action": {
+      "retry": "Reintentar",
+      "download": "Descargar"
+    }
+  },
   "nav": {
     "home": "Inicio",
     "editor": "Editor",

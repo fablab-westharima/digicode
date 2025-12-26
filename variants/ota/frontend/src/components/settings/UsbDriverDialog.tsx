@@ -37,8 +37,8 @@ export function UsbDriverDialog({ open, onOpenChange }: UsbDriverDialogProps) {
       name: 'CH340 (WCH)',
       chips: 'CH340G, CH340C, CH340Eなど',
       description: '安価なESP32開発ボードでよく使用されるUSB-UARTブリッジチップ',
-      windows: 'https://github.com/nodemcu/nodemcu-devkit/tree/master/Drivers',
-      mac: 'https://github.com/adrianmihalko/ch340g-ch34g-ch34x-mac-os-x-driver',
+      windows: 'https://www.wch-ic.com/downloads/CH341SER_EXE.html',
+      mac: 'https://www.wch-ic.com/downloads/CH341SER_MAC_ZIP.html',
       linux: 'カーネルに含まれています（通常インストール不要）',
     },
     {

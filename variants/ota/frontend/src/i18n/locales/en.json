@@ -14,6 +14,19 @@
     "optional": "Optional",
     "goToHome": "Go to Home"
   },
+  "helper": {
+    "status": {
+      "checking": "Checking Helper status...",
+      "launching": "Launching Helper...",
+      "launchingHint": "When prompted by your browser, click \"Open\" to launch the app",
+      "failed": "Failed to launch Helper",
+      "failedHint": "Helper may not be installed. Please download it from the link below."
+    },
+    "action": {
+      "retry": "Retry",
+      "download": "Download"
+    }
+  },
   "nav": {
     "home": "Home",
     "editor": "Editor",
@@ -414,8 +427,11 @@
     "wifiDeviceSelect": {
       "title": "Select WiFi Device",
       "description": "Select the target device for writing",
+      "helperDescription": "Select a device detected by Helper",
       "noDevices": "No registered WiFi devices",
+      "noDevicesHelper": "No devices found",
       "registerHint": "Register a device from \"Connection\" → \"WiFi Setup\"",
+      "searchHint": "Make sure the device is powered on, then search",
       "noIp": "IP address not set",
       "startFlash": "Start Flash"
     },

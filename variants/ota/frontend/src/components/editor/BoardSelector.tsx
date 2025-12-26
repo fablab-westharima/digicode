@@ -17,14 +17,46 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Cpu, Cable } from 'lucide-react';
 
+// Board ID to i18n key mapping
+const BOARD_I18N_KEYS: Record<string, string> = {
+  'esp32-generic': 'esp32Generic',
+  'esp32-s3-generic': 'esp32S3',
+  'esp32-c3-generic': 'esp32C3',
+  'esp32-c6-generic': 'esp32C6',
+  'm5stack-basic': 'm5stackBasic',
+  'm5stickc-plus': 'm5stickCPlus',
+  'atom-lite': 'atomLite',
+  'atom-matrix': 'atomMatrix',
+  'm5stamp-pico': 'm5stampPico',
+  'm5stamp-c3': 'm5stampC3',
+  'xiao-esp32c3': 'xiaoEsp32C3',
+  'xiao-esp32s3': 'xiaoEsp32S3',
+  'xiao-esp32c6': 'xiaoEsp32C6',
+};
+
 export function BoardSelector() {
   const { t } = useTranslation();
   const { selectedBoardId, setSelectedBoard, getSelectedBoard } = useBoardStore();
   const selectedBoard = getSelectedBoard();
 
   const getCategoryLabel = (category: BoardDefinition['category']): string => {
-    const labelKey = `editor.board.category${category.charAt(0).toUpperCase() + category.slice(1)}`;
-    return t(labelKey, { defaultValue: category });
+    return t(`boardSelector.categories.${category}`, { defaultValue: category });
+  };
+
+  const getBoardName = (board: BoardDefinition): string => {
+    const key = BOARD_I18N_KEYS[board.id];
+    if (key) {
+      return t(`boardSelector.boards.${key}.name`, { defaultValue: board.name });
+    }
+    return board.name;
+  };
+
+  const getBoardDescription = (board: BoardDefinition): string => {
+    const key = BOARD_I18N_KEYS[board.id];
+    if (key) {
+      return t(`boardSelector.boards.${key}.description`, { defaultValue: board.description });
+    }
+    return board.description;
   };
 
   const arduinoBoards = SUPPORTED_BOARDS.filter(b => b.category === 'arduino');
@@ -37,14 +69,14 @@ export function BoardSelector() {
   const renderBoardItem = (board: BoardDefinition) => (
     <SelectItem key={board.id} value={board.id}>
       <div className="flex items-center gap-2">
-        <span>{board.name}</span>
+        <span>{getBoardName(board)}</span>
         {!board.supportsOta && (
           <Badge variant="secondary" className="text-xs px-1.5 py-0 h-5">
             <Cable className="h-3 w-3 mr-1" />
             {t('editor.board.wiredOnly')}
           </Badge>
         )}
-        <span className="text-xs text-muted-foreground">- {board.description}</span>
+        <span className="text-xs text-muted-foreground">- {getBoardDescription(board)}</span>
       </div>
     </SelectItem>
   );

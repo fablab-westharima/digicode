@@ -46,8 +46,8 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
   const compileFirmware = async () => {
     setIsCompiling(true);
     setCompileError(null);
-    const firmwareName = firmwareType === 'ble' ? 'BLE対応' : 'OTA';
-    addLog(`クラウドから最新${firmwareName}ファームウェアをコンパイル中...`);
+    const firmwareName = firmwareType === 'ble' ? t('firmware.bleFirmwareName') : t('firmware.otaFirmwareName');
+    addLog(t('firmware.compilingFromCloud', { firmwareName }));
     console.log(`[FirmwareInstaller] Compiling latest ${firmwareType} firmware from cloud...`);
 
     try {
@@ -65,7 +65,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
         setCompiledFirmwareBlob(result.fullPackage);
         setFirmwareVersion(result.version || null);
         const versionInfo = result.version ? ` (v${result.version})` : '';
-        addLog(`✅ 完全なファームウェアパッケージのコンパイルが完了しました${versionInfo}`);
+        addLog(t('firmware.fullPackageCompiled', { versionInfo }));
         console.log('[FirmwareInstaller] ✓ Full firmware package compiled successfully', {
           version: result.version,
           template: result.template
@@ -74,7 +74,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
         setCompiledFirmwareBlob(result.binary);
         setFirmwareVersion(result.version || null);
         const versionInfo = result.version ? ` (v${result.version})` : '';
-        addLog(`✅ ファームウェアのコンパイルが完了しました${versionInfo}`);
+        addLog(t('firmware.firmwareCompiled', { versionInfo }));
         console.log('[FirmwareInstaller] ✓ Firmware compiled successfully', {
           version: result.version,
           template: result.template
@@ -86,7 +86,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
       console.error('[FirmwareInstaller] Compilation error:', error);
       const errorMsg = error instanceof Error ? error.message : 'Unknown compilation error';
       setCompileError(errorMsg);
-      addLog(`❌ コンパイルエラー: ${errorMsg}`);
+      addLog(t('firmware.compileError', { error: errorMsg }));
     } finally {
       setIsCompiling(false);
     }
@@ -95,17 +95,17 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
   // Arduino完全ファームウェアをインストール（USB接続は事前に完了済み）
   const installArduinoFirmware = async () => {
     if (!compiledFirmwareBlob) {
-      addLog('❌ ファームウェアがコンパイルされていません');
+      addLog(t('firmware.notCompiled'));
       return;
     }
 
     if (!isConnected) {
-      addLog('❌ USB接続が確立していません');
+      addLog(t('firmware.usbNotConnected'));
       return;
     }
 
     setIsInstalling(true);
-    addLog('ファームウェアのインストールを開始します...');
+    addLog(t('firmware.startingInstall'));
 
     try {
       // 1. ファームウェアファイルを準備
@@ -116,7 +116,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
 
       if (compiledFirmwareBlob instanceof Blob) {
         // 従来モード: 静的ファイルを取得
-        addLog('bootloader/partitions/boot_app0 を読み込み中（従来モード）...');
+        addLog(t('firmware.loadingStaticFiles'));
         const [bootloaderRes, partitionsRes, bootApp0Res] = await Promise.all([
           fetch('/firmware/esp32/arduino/bootloader.bin'),
           fetch('/firmware/esp32/arduino/partitions.bin'),
@@ -124,7 +124,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
         ]);
 
         if (!bootloaderRes.ok || !partitionsRes.ok || !bootApp0Res.ok) {
-          throw new Error('静的ファイルの読み込みに失敗しました');
+          throw new Error(t('firmware.staticFilesError'));
         }
 
         bootloaderBlob = await bootloaderRes.blob();
@@ -132,20 +132,20 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
         bootApp0Blob = await bootApp0Res.blob();
         firmwareBlob = compiledFirmwareBlob;
 
-        addLog('✓ すべてのファイルを読み込みました');
+        addLog(t('firmware.allFilesLoaded'));
       } else {
         // fullPackageモード: コンパイル時に取得した4ファイルを使用
-        addLog('完全なファームウェアパッケージを使用します...');
+        addLog(t('firmware.usingFullPackage'));
         bootloaderBlob = compiledFirmwareBlob.bootloader;
         partitionsBlob = compiledFirmwareBlob.partitions;
         bootApp0Blob = compiledFirmwareBlob.bootApp0;
         firmwareBlob = compiledFirmwareBlob.firmware;
 
-        addLog('✓ バージョン整合性が保証されたファームウェアパッケージを準備');
+        addLog(t('firmware.packagePrepared'));
       }
 
       // 2. 完全なファームウェアを書き込み（USB接続は既に確立済み）
-      addLog('ファームウェアを書き込み中...');
+      addLog(t('firmware.flashing'));
       const success = await firmwareService.flashCompleteArduinoFirmware(
         bootloaderBlob,
         partitionsBlob,
@@ -158,24 +158,24 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
       );
 
       if (success) {
-        addLog('✅ ファームウェアのインストールが完了しました！');
+        addLog(t('firmware.installComplete'));
         setNeedsManualReset(false); // 成功したらフラグをリセット
       } else {
         // flashCompleteArduinoFirmware()がfalseを返した場合
         // すでにonProgressでエラーメッセージが設定されているので、それを保持
-        addLog('❌ ファームウェアの書き込みに失敗しました');
+        addLog(t('firmware.flashFailed'));
 
         // エラーメッセージから自動接続失敗を判定
         const errorMsg = installProgress?.message || '';
         if (errorMsg.includes('Invalid head of packet') || errorMsg.includes('serial noise')) {
-          addLog('💡 自動接続に失敗しました。手動でBOOTモードに入れてから再試行してください。');
+          addLog(t('firmware.autoConnectFailed'));
           setNeedsManualReset(true);
         }
       }
     } catch (error) {
       console.error('[FirmwareInstaller] Installation error:', error);
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-      addLog(`❌ インストールエラー: ${errorMsg}`);
+      addLog(t('firmware.installError', { error: errorMsg }));
       setInstallProgress({
         stage: 'error',
         percent: 0,
@@ -218,7 +218,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
   const handleConnect = async () => {
     setIsConnecting(true);
     setLogs([]);
-    addLog('ESP32との接続を開始...');
+    addLog(t('firmware.connectingEsp32'));
 
     // ログコールバックを設定
     firmwareService.setLogCallback((msg) => {
@@ -232,15 +232,15 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
       });
 
       if (!chipInfo) {
-        throw new Error('ESP32に接続できませんでした');
+        throw new Error(t('firmware.connectionFailed'));
       }
 
-      addLog(`✅ 接続成功: ${chipInfo.name}`);
+      addLog(t('firmware.connected', { name: chipInfo.name }));
       addLog(`MAC Address: ${chipInfo.mac}`);
       setIsConnected(true);
     } catch (error) {
       console.error('Connection error:', error);
-      addLog(`❌ 接続エラー: ${(error as Error).message}`);
+      addLog(t('firmware.connectionError', { error: (error as Error).message }));
       setIsConnected(false);
     } finally {
       setIsConnecting(false);
@@ -249,31 +249,31 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
 
   // 接続解除
   const handleDisconnect = async () => {
-    addLog('接続を切断中...');
+    addLog(t('firmware.disconnecting'));
     await firmwareService.disconnect();
     setIsConnected(false);
-    addLog('✅ 接続を切断しました');
+    addLog(t('firmware.disconnected'));
   };
 
   // Flash全体を消去
   const handleEraseFlash = async () => {
     if (!isConnected) {
-      addLog('❌ 先に有線接続してください');
+      addLog(t('firmware.connectFirst'));
       return;
     }
 
-    if (!confirm('Flash全体を消去します。保存されているすべてのデータ（UUID、WiFi設定など）が削除されます。よろしいですか？')) {
+    if (!confirm(t('firmware.eraseConfirm'))) {
       return;
     }
 
     setIsErasing(true);
-    addLog('Flash全体を消去中...');
+    addLog(t('firmware.erasingFlash'));
 
     try {
       setEraseProgress({
         stage: 'erasing',
         percent: 50,
-        message: 'Flash全体を消去中...'
+        message: t('firmware.erasingFlash')
       });
 
       // firmwareServiceのloaderを使って直接消去
@@ -282,19 +282,19 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
         // @ts-expect-error - private propertyにアクセス
         await firmwareService.loader.eraseFlash();
 
-        addLog('✅ Flash消去が完了しました');
+        addLog(t('firmware.eraseComplete'));
         setEraseProgress({
           stage: 'complete',
           percent: 100,
-          message: '✅ Flash消去が完了しました。ESP32をリセットしてください。'
+          message: t('firmware.eraseCompleteReset')
         });
       } else {
-        throw new Error('loaderが初期化されていません');
+        throw new Error(t('firmware.loaderNotInitialized'));
       }
     } catch (error) {
       console.error('Flash erase error:', error);
-      const errorMsg = `消去エラー: ${(error as Error).message}`;
-      addLog(`❌ ${errorMsg}`);
+      const errorMsg = t('firmware.eraseError', { error: (error as Error).message });
+      addLog(errorMsg);
       setEraseProgress({
         stage: 'error',
         percent: 0,
@@ -327,7 +327,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
           {/* ファームウェア選択 */}
           <div className="space-y-3">
             <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
-              <span className="bg-[#1f6feb] text-[#58A6F9] text-xs font-medium px-2 py-0.5 rounded">Step 1</span>
+              <span className="bg-[#1f6feb] text-[#58A6F9] text-xs font-medium px-2 py-0.5 rounded">Step 2</span>
               {t('firmware.step2Title')}
             </h3>
             <div className="space-y-2">
@@ -350,12 +350,12 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                 </div>
                 <div className="flex-1 text-left">
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold text-[#E6EDF3]">DigiCode OTA ファームウェア</p>
+                    <p className="font-semibold text-[#E6EDF3]">{t('firmware.wifiFirmwareTitle')}</p>
                     {firmwareType === 'ota' && (
-                      <span className="text-xs text-[#58A6F9] bg-[#1f6feb] px-2 py-0.5 rounded">選択中</span>
+                      <span className="text-xs text-[#58A6F9] bg-[#1f6feb] px-2 py-0.5 rounded">{t('firmware.selected')}</span>
                     )}
                   </div>
-                  <p className="text-xs text-[#8B949E] mt-1">WiFi OTA書き込み対応（推奨）</p>
+                  <p className="text-xs text-[#8B949E] mt-1">{t('firmware.wifiFirmwareDesc')}</p>
                 </div>
               </button>
 
@@ -378,12 +378,12 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                 </div>
                 <div className="flex-1 text-left">
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold text-[#E6EDF3]">DigiCode BLE ファームウェア</p>
+                    <p className="font-semibold text-[#E6EDF3]">{t('firmware.bleFirmwareTitle')}</p>
                     {firmwareType === 'ble' && (
-                      <span className="text-xs text-[#8B5CF6] bg-[#8B5CF6]/20 px-2 py-0.5 rounded">選択中</span>
+                      <span className="text-xs text-[#8B5CF6] bg-[#8B5CF6]/20 px-2 py-0.5 rounded">{t('firmware.selected')}</span>
                     )}
                   </div>
-                  <p className="text-xs text-[#8B949E] mt-1">Bluetooth書き込み対応、初回書き込みに必要</p>
+                  <p className="text-xs text-[#8B949E] mt-1">{t('firmware.bleFirmwareDesc')}</p>
                 </div>
               </button>
             </div>
@@ -394,7 +394,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                 onClick={compileFirmware}
                 className="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-semibold py-3 mt-3"
               >
-                🚀 ファームウェアをビルド
+                🚀 {t('firmware.buildFirmware')}
               </Button>
             )}
 
@@ -409,7 +409,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                 variant="outline"
                 className="w-full border-[#2E333D] text-[#E6EDF3] hover:bg-[#2E333D] py-2 mt-3"
               >
-                🔄 再ビルド
+                🔄 {t('firmware.rebuild')}
               </Button>
             )}
           </div>
@@ -417,7 +417,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
           {/* ファームウェア書き込み */}
           <div className="space-y-3">
             <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
-              <span className="bg-[#1f6feb] text-[#58A6F9] text-xs font-medium px-2 py-0.5 rounded">Step 2</span>
+              <span className="bg-[#1f6feb] text-[#58A6F9] text-xs font-medium px-2 py-0.5 rounded">Step 1</span>
               {t('firmware.step3Title')}
             </h3>
 
@@ -436,7 +436,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
             {compileError && (
               <div className="bg-[#3d2626] border border-[#da3633] p-4 rounded-lg">
                 <p className="text-[#f85149] text-sm">
-                  <strong>コンパイルエラー:</strong><br />
+                  <strong>{t('firmware.compileErrorLabel')}:</strong><br />
                   {compileError}
                 </p>
               </div>
@@ -447,9 +447,9 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
               <div className="flex flex-col items-center gap-3 p-4 bg-[#0D1117] rounded-lg border-2 border-[#58A6F9]">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#58A6F9]"></div>
                 <p className="text-[#58A6F9] text-sm text-center">
-                  最新ファームウェアをコンパイル中...<br />
+                  {t('firmware.compilingLatest')}<br />
                   <span className="text-xs text-[#8B949E]">
-                    クラウドサーバー（Ubuntu → Railway フォールバック）
+                    {t('firmware.cloudServerFallback')}
                   </span>
                 </p>
               </div>
@@ -461,7 +461,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                 {/* コンパイル完了メッセージ */}
                 <div className="w-full p-3 bg-[#1a472a] border border-[#2ea043] rounded-lg">
                   <p className="text-[#2ea043] text-sm text-center font-semibold">
-                    ✅ ファームウェアのコンパイルが完了しました
+                    {t('firmware.compileCompleteMessage')}
                   </p>
                 </div>
 
@@ -473,9 +473,9 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                         <Usb className="w-5 h-5 text-[#79C0FF]" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="text-[#E6EDF3] font-semibold text-sm">ESP32をUSBケーブルでPCに接続してください</h4>
+                        <h4 className="text-[#E6EDF3] font-semibold text-sm">{t('firmware.connectUsbInstruction')}</h4>
                         <p className="text-xs text-[#8B949E] mt-1">
-                          接続後、下のボタンを押してポートを選択してください
+                          {t('firmware.selectPortInstruction')}
                         </p>
                       </div>
                     </div>
@@ -485,7 +485,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                       className="w-full bg-[#238636] hover:bg-[#2ea043] text-white"
                     >
                       <Usb className="w-4 h-4 mr-2" />
-                      {isConnecting ? '接続中...' : 'ESP32に有線接続'}
+                      {isConnecting ? t('firmware.connecting') : t('firmware.connectUsb')}
                     </Button>
                   </div>
                 )}
@@ -496,7 +496,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                     {/* 接続成功メッセージ */}
                     <div className="w-full p-3 bg-[#1a472a] border border-[#2ea043] rounded-lg">
                       <p className="text-[#2ea043] text-sm text-center font-semibold">
-                        ✅ USB接続が確立しました
+                        {t('firmware.usbConnected')}
                       </p>
                     </div>
 
@@ -505,34 +505,34 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                       <div className="w-full p-4 bg-[#2d333b] border-2 border-[#f0883e] rounded-lg">
                         <h4 className="text-[#f0883e] font-semibold mb-3 flex items-center gap-2">
                           <span className="text-xl">⚠️</span>
-                          手動でBOOTモードに入れてください
+                          {t('firmware.manualBootMode')}
                         </h4>
                         <div className="mb-3 p-3 bg-[#161b22] rounded border border-[#30363d]">
                           <p className="text-xs text-[#8B949E] mb-2">
-                            <strong className="text-[#E6EDF3]">自動接続に失敗しました。</strong><br />
-                            以下の手順でESP32を書き込みモードにしてから、再試行ボタンを押してください：
+                            <strong className="text-[#E6EDF3]">{t('firmware.autoConnectFailedMsg')}</strong><br />
+                            {t('firmware.followStepsInstruction')}
                           </p>
                         </div>
                         <ol className="text-sm text-[#E6EDF3] space-y-2 mb-3">
                           <li className="flex items-start gap-2">
                             <span className="text-[#f0883e] font-mono font-bold">1.</span>
-                            <span><strong className="text-[#f0883e]">BOOT</strong>ボタンを押し続ける</span>
+                            <span>{t('firmware.bootStep1')}</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-[#f0883e] font-mono font-bold">2.</span>
-                            <span><strong className="text-[#f0883e]">BOOT</strong>を押したまま、<strong className="text-[#f0883e]">EN</strong>ボタンを一瞬押して離す</span>
+                            <span>{t('firmware.bootStep2')}</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-[#f0883e] font-mono font-bold">3.</span>
-                            <span><strong className="text-[#f0883e]">BOOT</strong>ボタンを離す</span>
+                            <span>{t('firmware.bootStep3')}</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-[#f0883e] font-mono font-bold">4.</span>
-                            <span>この状態で下の「再試行」ボタンを押す</span>
+                            <span>{t('firmware.bootStep4')}</span>
                           </li>
                         </ol>
                         <p className="text-xs text-[#8B949E]">
-                          💡 ヒント: ボードによってはBOOTボタンが「IO0」「FLASH」「GPIO0」などと表記されている場合があります
+                          💡 {t('firmware.bootHint')}
                         </p>
                       </div>
                     )}
@@ -541,8 +541,8 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                     {!needsManualReset && !installProgress && (
                       <div className="w-full p-3 bg-[#161b22] border border-[#30363d] rounded-lg">
                         <p className="text-sm text-[#8B949E] text-center">
-                          <strong className="text-[#E6EDF3]">自動接続を試行します。</strong><br />
-                          そのまま「書き込み開始」ボタンを押してください。
+                          <strong className="text-[#E6EDF3]">{t('firmware.autoConnectTry')}</strong><br />
+                          {t('firmware.pressStartFlash')}
                         </p>
                       </div>
                     )}
@@ -553,13 +553,13 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                       disabled={isInstalling || !isSupported}
                       className="w-full bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg font-semibold rounded-lg transition-colors disabled:opacity-50"
                     >
-                      {isInstalling ? '書き込み中...' : needsManualReset ? '🔄 再試行' : '▶ 書き込み開始'}
+                      {isInstalling ? t('firmware.flashing') : needsManualReset ? t('firmware.retry') : t('firmware.startFlash')}
                     </Button>
 
                     {!isSupported && (
                       <p className="text-[#f85149] text-xs text-center">
-                        お使いのブラウザはサポートされていません。<br />
-                        Chrome または Edge をお使いください。
+                        {t('firmware.browserNotSupported')}<br />
+                        {t('firmware.useChromeOrEdge')}
                       </p>
                     )}
 
@@ -595,7 +595,10 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
             {/* 説明テキスト */}
             {!isCompiling && !compileError && compiledFirmwareBlob && (
               <p className="text-xs text-[#8B949E] text-center">
-                INSTALLボタンを押してESP32にUSB接続し、{firmwareType === 'ble' ? 'BLE対応' : 'OTA'}ファームウェア{firmwareVersion ? ` (v${firmwareVersion})` : ''}を書き込みます。
+                {t('firmware.installDescription', {
+                  firmwareType: firmwareType === 'ble' ? t('firmware.bleFirmwareName') : t('firmware.otaFirmwareName'),
+                  version: firmwareVersion ? ` (v${firmwareVersion})` : ''
+                })}
               </p>
             )}
           </div>
@@ -604,10 +607,10 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
           <div className="border-t border-[#2E333D] pt-4 space-y-3">
             <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
               <Trash2 className="w-4 h-4 text-[#f85149]" />
-              Flash全体を消去（デバッグ用）
+              {t('firmware.eraseFlashTitle')}
             </h3>
             <p className="text-sm text-[#8B949E]">
-              Flash全体を消去すると、保存されているすべてのデータ（UUID、WiFi設定など）が削除され、初期状態に戻ります。
+              {t('firmware.eraseFlashDescription')}
             </p>
 
             {/* ボタン行 */}
@@ -619,7 +622,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                   className="flex-1 bg-[#238636] hover:bg-[#2ea043] text-white"
                 >
                   <Usb className="w-4 h-4 mr-2" />
-                  {isConnecting ? '接続中...' : 'ESP32にUSB接続'}
+                  {isConnecting ? t('firmware.connecting') : t('firmware.connectUsb')}
                 </Button>
               ) : (
                 <Button
@@ -627,7 +630,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                   variant="outline"
                   className="flex-1 border-[#2E333D] text-[#E6EDF3] hover:bg-[#2E333D]"
                 >
-                  接続解除
+                  {t('firmware.disconnect')}
                 </Button>
               )}
               <Button
@@ -637,12 +640,12 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
                 className="flex-1 bg-[#f85149] hover:bg-[#da3633] text-white disabled:opacity-50"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                {isErasing ? 'Flash消去中...' : 'Flash全体を消去'}
+                {isErasing ? t('firmware.erasingFlash') : t('firmware.eraseFlash')}
               </Button>
             </div>
             {!isConnected && (
               <p className="text-xs text-[#8B949E] text-center">
-                ※ 先に「ESP32にUSB接続」してください
+                {t('firmware.connectFirstNote')}
               </p>
             )}
 

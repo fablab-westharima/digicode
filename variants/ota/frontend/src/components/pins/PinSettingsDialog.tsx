@@ -168,6 +168,19 @@ interface PinSettingsDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// Map store mode IDs to i18n keys
+const MODE_ID_TO_I18N_KEY: Record<string, string> = {
+  'otto_bipedal': 'ottoBipedal',
+  'otto_wheel': 'ottoWheel',
+  'otto_ninja': 'ottoNinja',
+  'micromouse': 'micromouse',
+  'line_trace': 'lineTrace',
+  'homeassistant': 'homeassistant',
+  'generic': 'generic',
+  'all_blocks': 'allBlocks',
+  'custom': 'custom',
+};
+
 export function PinSettingsDialog({ open, onOpenChange }: PinSettingsDialogProps) {
   const { t } = useTranslation();
   const {
@@ -388,18 +401,21 @@ export function PinSettingsDialog({ open, onOpenChange }: PinSettingsDialogProps
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {Object.values(ROBOT_MODES).map((modeInfo) => (
-                  <Button
-                    key={modeInfo.id}
-                    variant={robotMode === modeInfo.id ? 'default' : 'outline'}
-                    className="h-auto py-3 flex flex-col items-center gap-1 border-[#2E333D]"
-                    onClick={() => setRobotMode(modeInfo.id as RobotMode)}
-                  >
-                    <span className="text-2xl">{modeInfo.icon}</span>
-                    <span className="text-sm font-medium">{modeInfo.name}</span>
-                    <span className="text-xs text-muted-foreground">{modeInfo.description}</span>
-                  </Button>
-                ))}
+                {Object.values(ROBOT_MODES).map((modeInfo) => {
+                  const i18nKey = MODE_ID_TO_I18N_KEY[modeInfo.id] || modeInfo.id;
+                  return (
+                    <Button
+                      key={modeInfo.id}
+                      variant={robotMode === modeInfo.id ? 'default' : 'outline'}
+                      className="h-auto py-3 flex flex-col items-center gap-1 border-[#2E333D]"
+                      onClick={() => setRobotMode(modeInfo.id as RobotMode)}
+                    >
+                      <span className="text-2xl">{modeInfo.icon}</span>
+                      <span className="text-sm font-medium">{t(`modeSelector.modes.${i18nKey}.name`)}</span>
+                      <span className="text-xs text-muted-foreground">{t(`modeSelector.modes.${i18nKey}.description`)}</span>
+                    </Button>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>

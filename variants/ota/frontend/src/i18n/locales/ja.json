@@ -14,6 +14,19 @@
     "optional": "省略可",
     "goToHome": "ホームへ"
   },
+  "helper": {
+    "status": {
+      "checking": "Helperの状態を確認中...",
+      "launching": "Helperを起動中...",
+      "launchingHint": "ブラウザの確認ダイアログが表示されたら「開く」を選択してください",
+      "failed": "Helperを起動できませんでした",
+      "failedHint": "Helperがインストールされていない可能性があります。下のリンクからダウンロードしてください。"
+    },
+    "action": {
+      "retry": "再試行",
+      "download": "ダウンロード"
+    }
+  },
   "nav": {
     "home": "ホーム",
     "editor": "エディタ",
@@ -415,8 +428,11 @@
     "wifiDeviceSelect": {
       "title": "WiFiデバイスを選択",
       "description": "書き込み先のデバイスを選択してください",
+      "helperDescription": "Helperで検出されたデバイスから選択してください",
       "noDevices": "登録済みのWiFiデバイスがありません",
+      "noDevicesHelper": "デバイスが見つかりません",
       "registerHint": "「接続」→「無線LAN接続」からデバイスを登録してください",
+      "searchHint": "デバイスの電源が入っていることを確認し、検索してください",
       "noIp": "IPアドレス未設定",
       "startFlash": "書込み開始"
     },

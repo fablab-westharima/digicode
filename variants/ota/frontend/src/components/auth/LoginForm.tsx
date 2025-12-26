@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PasskeyLoginButton } from './PasskeyLoginButton';
+import { OtpInputDialog } from './OtpInputDialog';
 import { setTokens } from '@/lib/api';
+import { sendOtp } from '@/services/authService';
 
 // Cloudflare Pagesでは環境変数が使えないため、hostnameで判定
 const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
@@ -24,10 +26,41 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
   const [passkeyError, setPasskeyError] = useState<string | null>(null);
   const [passkeyOnlyMode, setPasskeyOnlyMode] = useState(false);
   const [isCheckingMode, setIsCheckingMode] = useState(false);
+  // 2FA関連の状態
+  const [showOtpDialog, setShowOtpDialog] = useState(false);
+  const [twoFactorEmail, setTwoFactorEmail] = useState('');
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit(email, password);
+    setLoginError(null);
+    setIsSubmitting(true);
+
+    try {
+      // 2FA API を使用（パスワード検証 + 2FA判定）
+      const result = await sendOtp(email, password);
+
+      if (result.twoFactorRequired) {
+        // 2FA が必要な場合、OTP入力ダイアログを表示
+        setTwoFactorEmail(email);
+        setShowOtpDialog(true);
+      } else if (result.accessToken && result.user) {
+        // 2FA不要の場合、直接ログイン完了
+        setTokens(result.accessToken, result.refreshToken!, result.expiresIn || 3600);
+        localStorage.setItem('user', JSON.stringify(result.user));
+        window.location.href = '/';
+      }
+    } catch (err) {
+      setLoginError(err instanceof Error ? err.message : t('auth.loginError', 'ログインに失敗しました'));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleOtpSuccess = () => {
+    // OTP検証成功後、ページリロード
+    window.location.href = '/';
   };
 
   const handlePasskeySuccess = async (result: {
@@ -114,9 +147,9 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
           </div>
         )}
 
-        {error && (
+        {(error || loginError) && (
           <div className="text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/30 p-3 rounded-md">
-            {error}
+            {error || loginError}
           </div>
         )}
 
@@ -127,8 +160,8 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
         )}
 
         {!passkeyOnlyMode && (
-          <Button type="submit" className="w-full" disabled={isLoading || isCheckingMode}>
-            {isLoading ? t('auth.loggingIn') : t('auth.login')}
+          <Button type="submit" className="w-full" disabled={isLoading || isSubmitting || isCheckingMode}>
+            {(isLoading || isSubmitting) ? t('auth.loggingIn') : t('auth.login')}
           </Button>
         )}
       </form>
@@ -136,6 +169,14 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
       <PasskeyLoginButton
         onSuccess={handlePasskeySuccess}
         onError={handlePasskeyError}
+      />
+
+      {/* 2FA OTP入力ダイアログ */}
+      <OtpInputDialog
+        open={showOtpDialog}
+        onOpenChange={setShowOtpDialog}
+        email={twoFactorEmail}
+        onSuccess={handleOtpSuccess}
       />
     </div>
   );

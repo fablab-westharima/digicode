@@ -156,7 +156,7 @@ export function PasskeyManagementDialog({
       setError(
         error instanceof Error
           ? error.message
-          : 'リカバリーコードの生成に失敗しました'
+          : t('auth.passkey.generateCodesFailed')
       );
     } finally {
       setIsGeneratingCodes(false);
@@ -164,7 +164,7 @@ export function PasskeyManagementDialog({
   };
 
   const handleRegenerateRecoveryCodes = async () => {
-    if (!confirm('既存のリカバリーコードは全て無効になります。新しいコードを生成しますか？')) {
+    if (!confirm(t('auth.passkey.regenerateCodesConfirm'))) {
       return;
     }
 
@@ -180,7 +180,7 @@ export function PasskeyManagementDialog({
       setError(
         error instanceof Error
           ? error.message
-          : 'リカバリーコードの再生成に失敗しました'
+          : t('auth.passkey.regenerateCodesFailed')
       );
     } finally {
       setIsGeneratingCodes(false);
@@ -364,16 +364,16 @@ export function PasskeyManagementDialog({
                   <KeyRound className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <h4 className="font-medium text-green-900 dark:text-green-100">
-                      リカバリーコード
+                      {t('auth.passkey.recoveryCodeTitle')}
                     </h4>
                     <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                      パスキーを失った場合に使用できる緊急用コードです。各コードは1回のみ使用可能です。
+                      {t('auth.passkey.recoveryCodeDesc')}
                     </p>
 
                     {recoveryCodesCount > 0 ? (
                       <div className="mt-3">
                         <p className="text-sm font-medium text-green-800 dark:text-green-200">
-                          残り有効コード: {recoveryCodesCount} / 10
+                          {t('auth.passkey.remainingCodes', { count: recoveryCodesCount, total: 10 })}
                         </p>
                         <Button
                           variant="outline"
@@ -383,16 +383,16 @@ export function PasskeyManagementDialog({
                           className="mt-2"
                         >
                           {isGeneratingCodes && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                          新しいコードを再生成
+                          {t('auth.passkey.regenerateCodes')}
                         </Button>
                         <p className="text-xs text-green-600 dark:text-green-400 mt-2">
-                          ※再生成すると既存のコードは全て無効になります
+                          {t('auth.passkey.regenerateCodesNote')}
                         </p>
                       </div>
                     ) : (
                       <div className="mt-3">
                         <p className="text-sm text-orange-600 font-medium">
-                          ⚠️ リカバリーコードが生成されていません
+                          {t('auth.passkey.noRecoveryCodes')}
                         </p>
                         <Button
                           variant="outline"
@@ -402,11 +402,11 @@ export function PasskeyManagementDialog({
                           className="mt-2"
                         >
                           {isGeneratingCodes && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                          リカバリーコードを生成
+                          {t('auth.passkey.generateCodes')}
                         </Button>
                         {passkeys.length === 0 && (
                           <p className="text-xs text-red-600 mt-2">
-                            ※パスキーを最低1つ登録してから生成してください
+                            {t('auth.passkey.generateCodesRequirement')}
                           </p>
                         )}
                       </div>

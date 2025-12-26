@@ -4,6 +4,7 @@
  */
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,6 +34,7 @@ interface PIDTuningPanelProps {
 }
 
 export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
+  const { t } = useTranslation();
   const {
     kp, ki, kd,
     setKp, setKi, setKd,
@@ -87,31 +89,31 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
   // Slider configuration for each parameter
   const sliderConfigs = [
     {
-      label: 'Kp (比例ゲイン)',
+      label: t('pidTuning.kp'),
       value: kp,
       setValue: setKp,
       min: 0,
       max: 2,
       step: 0.01,
-      description: '誤差に比例した出力'
+      description: t('pidTuning.kpDesc')
     },
     {
-      label: 'Ki (積分ゲイン)',
+      label: t('pidTuning.ki'),
       value: ki,
       setValue: setKi,
       min: 0,
       max: 0.01,
       step: 0.00001,
-      description: '定常偏差を解消'
+      description: t('pidTuning.kiDesc')
     },
     {
-      label: 'Kd (微分ゲイン)',
+      label: t('pidTuning.kd'),
       value: kd,
       setValue: setKd,
       min: 0,
       max: 50,
       step: 0.1,
-      description: '急激な変化を抑制'
+      description: t('pidTuning.kdDesc')
     }
   ];
 
@@ -119,7 +121,7 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
     <div className={`flex flex-col bg-[#161B22] border border-[#2E333D] rounded-lg overflow-hidden ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 bg-[#0D1117] border-b border-[#2E333D]">
-        <span className="text-sm text-[#E6EDF3] font-medium">PIDチューニング</span>
+        <span className="text-sm text-[#E6EDF3] font-medium">{t('pidTuning.title')}</span>
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
@@ -128,7 +130,7 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
             className="text-xs text-[#8B949E] hover:text-[#E6EDF3] h-6 px-2"
           >
             <RotateCcw className="w-3 h-3 mr-1" />
-            リセット
+            {t('pidTuning.reset')}
           </Button>
         </div>
       </div>
@@ -137,14 +139,14 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
       <div className="p-3 space-y-4">
         {/* Preset Selector */}
         <div className="space-y-1">
-          <Label className="text-xs text-[#8B949E]">プリセット</Label>
+          <Label className="text-xs text-[#8B949E]">{t('pidTuning.preset')}</Label>
           <div className="flex gap-2">
             <Select value={currentValue} onValueChange={handlePresetChange}>
               <SelectTrigger className="flex-1 h-8 bg-[#0D1117] border-[#2E333D] text-[#E6EDF3] text-sm">
-                <SelectValue placeholder="プリセットを選択" />
+                <SelectValue placeholder={t('pidTuning.selectPreset')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="custom">カスタム</SelectItem>
+                <SelectItem value="custom">{t('pidTuning.custom')}</SelectItem>
                 {presets.map((preset) => (
                   <SelectItem key={preset.id} value={preset.id}>
                     {preset.name}
@@ -211,18 +213,18 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
             className="w-full bg-green-600 hover:bg-green-700 text-sm"
           >
             <Send className="w-3 h-3 mr-2" />
-            ESP32に送信
+            {t('pidTuning.sendToEsp32')}
           </Button>
           {!isConnected && (
             <p className="text-[10px] text-[#8B949E] text-center mt-1">
-              ESP32に接続してください
+              {t('pidTuning.connectEsp32')}
             </p>
           )}
         </div>
 
         {/* Generated Code Preview */}
         <div className="pt-2 border-t border-[#2E333D]">
-          <Label className="text-xs text-[#8B949E] mb-1 block">生成コード</Label>
+          <Label className="text-xs text-[#8B949E] mb-1 block">{t('pidTuning.generatedCode')}</Label>
           <pre className="bg-[#0D1117] p-2 rounded text-[10px] text-[#E6EDF3] overflow-x-auto font-mono">
 {`pid_init(${kp}, ${ki}, ${kd});`}
           </pre>
@@ -233,28 +235,28 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
       <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>プリセットを保存</DialogTitle>
+            <DialogTitle>{t('pidTuning.savePreset')}</DialogTitle>
             <DialogDescription>
-              現在のPIDパラメータをプリセットとして保存します
+              {t('pidTuning.savePresetDesc')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="preset-name">プリセット名</Label>
+              <Label htmlFor="preset-name">{t('pidTuning.presetName')}</Label>
               <Input
                 id="preset-name"
                 value={presetName}
                 onChange={(e) => setPresetName(e.target.value)}
-                placeholder="例: 高速ライントレース"
+                placeholder={t('pidTuning.presetNamePlaceholder')}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="preset-desc">説明（任意）</Label>
+              <Label htmlFor="preset-desc">{t('pidTuning.description')}</Label>
               <Input
                 id="preset-desc"
                 value={presetDescription}
                 onChange={(e) => setPresetDescription(e.target.value)}
-                placeholder="例: 競技用の高速設定"
+                placeholder={t('pidTuning.descriptionPlaceholder')}
               />
             </div>
             <div className="bg-[#0D1117] p-3 rounded-md text-sm border border-[#2E333D]">
@@ -265,10 +267,10 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>
-              キャンセル
+              {t('common.cancel')}
             </Button>
             <Button onClick={handleSavePreset} disabled={!presetName.trim()}>
-              保存
+              {t('common.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
