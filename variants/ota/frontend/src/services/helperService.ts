@@ -1,7 +1,7 @@
 // helperService.ts
 // DigiCode-Helper との通信を担当するサービス
 
-const HELPER_BASE_URL = 'http://127.0.0.1:31415';
+const HELPER_BASE_URL = 'http://localhost:31415';
 const HELPER_TIMEOUT = 3000; // 3秒
 const HELPER_LAUNCH_WAIT = 1000; // 1秒
 const HELPER_LAUNCH_MAX_ATTEMPTS = 10; // 最大10回
