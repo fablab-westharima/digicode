@@ -380,7 +380,8 @@
       "downloadDesc": "Save file for later use",
       "previous": "Previous",
       "writingToEsp32": "Writing to ESP32",
-      "connectingTo": "Connecting to {{url}}..."
+      "connectingTo": "Connecting to {{url}}...",
+      "doNotClose": "Do not close this window while writing"
     },
     "bottom": {
       "code": "Code",
@@ -2327,6 +2328,10 @@
   },
   "docs": {
     "loadError": "Failed to load document.",
+    "index": {
+      "title": "Documentation",
+      "description": "Overview and choosing the right upload method"
+    },
     "getting-started": {
       "title": "Getting Started",
       "description": "Initial setup instructions"

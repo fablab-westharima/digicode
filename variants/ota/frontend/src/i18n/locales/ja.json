@@ -381,7 +381,8 @@
       "downloadDesc": "ファイルを保存して後で使用",
       "previous": "前回",
       "writingToEsp32": "ESP32に書き込み中",
-      "connectingTo": "{{url}} に接続中..."
+      "connectingTo": "{{url}} に接続中...",
+      "doNotClose": "書き込み中は画面を閉じないでください"
     },
     "bottom": {
       "code": "コード",
@@ -2317,6 +2318,10 @@
   },
   "docs": {
     "loadError": "ドキュメントの読み込みに失敗しました。",
+    "index": {
+      "title": "ドキュメント",
+      "description": "全体の流れと書き込み方式の選び方"
+    },
     "getting-started": {
       "title": "はじめかた",
       "description": "初回セットアップ手順"

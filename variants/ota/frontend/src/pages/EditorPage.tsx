@@ -27,7 +27,7 @@ import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstaller
 import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { ServoTrimDialog } from '@/components/servo/ServoTrimDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
-import { WifiDeviceSelectDialog } from '@/components/device/WifiDeviceSelectDialog';
+import { WifiDeviceSelectDialog, type Device } from '@/components/device/WifiDeviceSelectDialog';
 import { PasskeyManagementDialog } from '@/components/auth/PasskeyManagementDialog';
 import { TwoFactorSettingsDialog } from '@/components/auth/TwoFactorSettingsDialog';
 import { useAuthStore } from '@/stores/authStore';
@@ -35,7 +35,6 @@ import { AccountDeleteDialog } from '@/components/auth/AccountDeleteDialog';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
-import { useDeviceStore } from '@/stores/deviceStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { useBoardStore, type FlashMethod } from '@/stores/boardStore';
 import { getTutorialById } from '@/data/tutorials';
@@ -85,7 +84,6 @@ export function EditorPage() {
   const { currentProject, loadProject, setCurrentProject } = useProjectStore();
   const { status: serialStatus, connect: connectSerial, disconnect: disconnectSerial, forceReleaseAllPorts } = useSerialStore();
   const { status: wifiStatus, getDeviceUrl, setHost, setDeviceName, connect: connectWifi } = useWifiStore();
-  const { addDevice } = useDeviceStore();
   const { getSelectedBoard } = useBoardStore();
 
   const [generatedCode, setGeneratedCode] = useState('');
@@ -112,6 +110,7 @@ export function EditorPage() {
   const [tutorialDialogOpen, setTutorialDialogOpen] = useState(false);
   const [wifiSetupDialogOpen, setWifiSetupDialogOpen] = useState(false);
   const [wifiDeviceSelectDialogOpen, setWifiDeviceSelectDialogOpen] = useState(false);
+  const [wifiDeviceSelectMultiMode, setWifiDeviceSelectMultiMode] = useState(false);
   const [firmwareInstallerDialogOpen, setFirmwareInstallerDialogOpen] = useState(false);
   const [pinSettingsDialogOpen, setPinSettingsDialogOpen] = useState(false);
   const [servoTrimDialogOpen, setServoTrimDialogOpen] = useState(false);
@@ -440,60 +439,9 @@ export function EditorPage() {
 
   // 書き込み方法選択へ進む
   const proceedToFlashMethodSelection = async () => {
-    const lastMethod = getLastFlashMethod();
-
-    // 前回WiFiを選択していて、デバイスが選択されている場合は即座に接続確認
-    if (lastMethod === 'wifi' && wifiStatus === 'connected') {
-      const deviceUrl = getDeviceUrl();
-
-      // 接続確認ダイアログを表示
-      setCompileLog([
-        '[接続確認] WiFi OTA書込みが選択されています',
-        `[接続確認] 書込み先: ${deviceUrl}`,
-        '[接続確認] デバイスの接続状態を確認中...'
-      ]);
-      setCompileDialogOpen(true);
-      setIsCompiling(true);
-
-      // mDNS解決のログを追加
-      if (deviceUrl.includes('.local')) {
-        setCompileLog(prev => [...prev, '[接続確認] mDNSでIPアドレスを解決中...']);
-      }
-
-      const checkResult = await checkDeviceConnection(deviceUrl);
-      if (!checkResult.ok) {
-        setCompileLog(prev => [...prev, `[接続確認] ✗ ${checkResult.error}`]);
-        setIsCompiling(false);
-        // 3秒待ってからalertとダイアログ切替
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        alert(`デバイス接続エラー: ${checkResult.error}\n\nコンパイルチケットを節約するため、コンパイルは実行されませんでした。\n\n別の書き込み方法を選択するか、デバイスの電源とWiFi接続を確認してください。`);
-        // 書込み方法選択ダイアログを表示して別の方法を選べるようにする
-        setCompileDialogOpen(false);
-        setFlashMethodDialogOpen(true);
-        return;
-      }
-
-      setCompileLog(prev => [
-        ...prev,
-        checkResult.resolvedUrl ? `[接続確認] ✓ IPアドレス解決: ${checkResult.resolvedUrl}` : '',
-        '[接続確認] ✓ デバイス応答確認OK',
-        '[接続確認] → コンパイルを開始します...'
-      ].filter(Boolean));
-
-      // 1秒待ってコンパイルへ遷移（ログが見えるように）
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setCompileDialogOpen(false);
-      setIsCompiling(false);
-
-      // 接続確認OK→コンパイル実行→書込み
-      const binary = await executeCompile();
-      if (binary) {
-        await handleOtaUpdate(binary, deviceUrl);
-      }
-      return;
-    }
-
-    // WiFi以外、またはデバイス未選択の場合は書込み方法選択ダイアログを表示
+    // 毎回書込み方法選択ダイアログを表示
+    // （以前は前回WiFiで接続済みの場合にデバイス選択をスキップしていたが、
+    //   毎回異なるデバイスに書き込む可能性があるため、常にデバイス選択を表示する）
     setFlashMethodDialogOpen(true);
   };
 
@@ -616,10 +564,28 @@ export function EditorPage() {
     }
   };
 
-  // 複数デバイス選択後の処理（一括更新）
+  // 複数デバイス選択後の処理（一括更新）- 旧DeviceSelectDialog用
   const handleBatchDeviceSelect = (devices: DigiCodeDevice[]) => {
     setBatchUpdateDevices(devices);
     setBatchSelectDialogOpen(false);
+    setBatchUpdateDialogOpen(true);
+  };
+
+  // 複数デバイス選択後の処理（一括更新）- 新WifiDeviceSelectDialog用
+  const handleWifiMultiDeviceSelected = (devices: Device[]) => {
+    // Device[] を DigiCodeDevice[] に変換
+    const digiCodeDevices: DigiCodeDevice[] = devices.map(d => ({
+      url: d.ipAddress ? `http://${d.ipAddress}` : '',
+      name: d.name,
+      uuid: d.uuid,
+      ipAddress: d.ipAddress || '',
+      firmwareVersion: '',
+      lastSeen: Date.now(),
+      isOnline: true,
+    }));
+
+    setBatchUpdateDevices(digiCodeDevices);
+    setWifiDeviceSelectDialogOpen(false);
     setBatchUpdateDialogOpen(true);
   };
 
@@ -1094,14 +1060,16 @@ export function EditorPage() {
 
     switch (method) {
       case 'wifi': {
-        // WiFi: デバイス選択ダイアログを表示
+        // WiFi: デバイス選択ダイアログを表示（単一選択モード）
+        setWifiDeviceSelectMultiMode(false);
         setWifiDeviceSelectDialogOpen(true);
         break;
       }
       case 'wifi-batch': {
-        // 一括書込み: デバイス選択ダイアログを表示
+        // 一括書込み: デバイス選択ダイアログを表示（複数選択モード）
         setPendingOtaBinary(null);
-        setBatchSelectDialogOpen(true);
+        setWifiDeviceSelectMultiMode(true);
+        setWifiDeviceSelectDialogOpen(true);
         break;
       }
       case 'usb': {
@@ -1652,10 +1620,24 @@ export function EditorPage() {
       </Dialog>
 
       {/* OTA更新進捗ダイアログ */}
-      <Dialog open={flashDialogOpen} onOpenChange={setFlashDialogOpen}>
+      <Dialog
+        open={flashDialogOpen}
+        onOpenChange={(open) => {
+          // 書き込み中（flashing, erasing）は閉じられないようにする
+          // connecting, verifying, complete, error の場合のみ閉じることを許可
+          const isCriticalStage = flashProgress.stage === 'flashing' || flashProgress.stage === 'erasing';
+          if (!open && isCriticalStage) {
+            // 書き込み中は閉じない
+            return;
+          }
+          setFlashDialogOpen(open);
+        }}
+      >
         <DialogContent
           className="sm:max-w-lg"
           onInteractOutside={(e) => e.preventDefault()}
+          // 書き込み中はXボタンを非表示にする
+          hideCloseButton={flashProgress.stage === 'flashing' || flashProgress.stage === 'erasing'}
         >
           <DialogHeader>
             <DialogTitle>
@@ -1683,6 +1665,12 @@ export function EditorPage() {
             <div className="text-center text-lg font-semibold">
               {Math.floor(flashProgress.percent)}%
             </div>
+            {/* 書き込み中は警告メッセージを表示 */}
+            {(flashProgress.stage === 'flashing' || flashProgress.stage === 'erasing') && (
+              <div className="text-xs text-center text-amber-600 dark:text-amber-400">
+                ⚠️ {t('editor.flash.doNotClose', '書き込み中は画面を閉じないでください')}
+              </div>
+            )}
             {flashProgress.stage === 'error' && (
               <Button
                 onClick={() => setFlashDialogOpen(false)}
@@ -1843,6 +1831,8 @@ export function EditorPage() {
         open={wifiDeviceSelectDialogOpen}
         onOpenChange={setWifiDeviceSelectDialogOpen}
         onDeviceSelect={handleWifiDeviceSelected}
+        multiSelect={wifiDeviceSelectMultiMode}
+        onMultiDeviceSelect={handleWifiMultiDeviceSelected}
       />
 
       {/* ファームウェアインストーラーダイアログ */}

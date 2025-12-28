@@ -672,17 +672,40 @@ class FirmwareService {
         message: `${resolvedUrl} に接続中...`
       });
 
-      // まずデバイスの疎通確認
-      try {
-        const pingResponse = await fetch(resolvedUrl, {
-          signal: AbortSignal.timeout(5000),
-          mode: 'cors'
-        });
-        if (!pingResponse.ok) {
-          throw new Error('デバイスが応答しません');
+      // デバイスの疎通確認（リトライ機能付き）
+      // 2回目以降の書き込みで接続が不安定な問題への対策
+      const maxConnectRetries = 3;
+      let connected = false;
+
+      for (let attempt = 0; attempt < maxConnectRetries; attempt++) {
+        try {
+          onProgress({
+            stage: 'connecting',
+            percent: 5 + (attempt * 2),
+            message: attempt > 0
+              ? `接続を再試行中... (${attempt + 1}/${maxConnectRetries})`
+              : `${resolvedUrl} に接続中...`
+          });
+
+          const pingResponse = await fetch(resolvedUrl, {
+            signal: AbortSignal.timeout(5000),
+            mode: 'cors'
+          });
+          if (pingResponse.ok) {
+            connected = true;
+            break;
+          }
+        } catch (pingError) {
+          console.log(`[OTA] Connection attempt ${attempt + 1}/${maxConnectRetries} failed:`, pingError);
+          if (attempt < maxConnectRetries - 1) {
+            // 次のリトライまで待機（exponential backoff）
+            await new Promise(resolve => setTimeout(resolve, 2000 * (attempt + 1)));
+          }
         }
-      } catch (_pingError) {
-        throw new Error(`デバイスに接続できません: ${resolvedUrl}`);
+      }
+
+      if (!connected) {
+        throw new Error(`デバイスに接続できません: ${resolvedUrl}\n再起動直後の場合は、10秒程度待ってから再試行してください。`);
       }
 
       onProgress({
@@ -751,31 +774,39 @@ class FirmwareService {
       });
 
       // デバイスの再起動を待つ（進捗表示付き）
-      // ESP32のリブート + WiFi再接続 + mDNS再登録に十分な時間を確保
-      const rebootWaitTime = 15000; // 15秒（8秒では不足する場合がある）
+      // ESP32のリブート + WiFi再接続 + OTAサーバー起動に十分な時間を確保
+      // 2回目以降の書き込みが不安定になる問題への対策として待機時間を延長
+      const rebootWaitTime = 20000; // 20秒（15秒では不足する場合がある）
       const rebootSteps = 5;
       for (let i = 0; i < rebootSteps; i++) {
         await new Promise(resolve => setTimeout(resolve, rebootWaitTime / rebootSteps));
         onProgress({
           stage: 'verifying',
-          percent: 75 + ((i + 1) / rebootSteps) * 20, // 75% - 95%
+          percent: 75 + ((i + 1) / rebootSteps) * 15, // 75% - 90%
           message: `デバイス再起動中... (${i + 1}/${rebootSteps})`
         });
       }
 
       // デバイスが復帰したか確認（複数回リトライ）
+      // OTAサーバーが完全に起動するまで時間がかかる場合があるため、
+      // リトライ回数と間隔を増やして安定性を向上
       onProgress({
         stage: 'verifying',
-        percent: 95,
+        percent: 90,
         message: 'デバイスの復帰を確認中...'
       });
 
       let deviceVerified = false;
-      const maxRetries = 3;
+      const maxRetries = 5; // 3回から5回に増加
 
       for (let retry = 0; retry < maxRetries; retry++) {
         try {
-          await new Promise(resolve => setTimeout(resolve, 2000)); // 2秒待機
+          await new Promise(resolve => setTimeout(resolve, 3000)); // 2秒から3秒に増加
+          onProgress({
+            stage: 'verifying',
+            percent: 90 + ((retry + 1) / maxRetries) * 8, // 90% - 98%
+            message: `デバイス確認中... (${retry + 1}/${maxRetries})`
+          });
           const verifyResponse = await fetch(resolvedUrl, {
             signal: AbortSignal.timeout(5000),
             mode: 'cors'
