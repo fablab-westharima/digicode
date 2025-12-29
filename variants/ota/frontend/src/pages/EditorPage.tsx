@@ -382,28 +382,49 @@ export function EditorPage() {
     }
   };
 
-  // デバイス接続確認（コンパイル前チェック用）
-  const checkDeviceConnection = async (deviceUrl: string): Promise<{ ok: boolean; resolvedUrl?: string; error?: string }> => {
+  // デバイス接続確認（コンパイル前チェック用）- リトライ付き
+  const checkDeviceConnection = async (
+    deviceUrl: string,
+    onLog?: (message: string) => void
+  ): Promise<{ ok: boolean; resolvedUrl?: string; error?: string }> => {
+    const maxRetries = 3;
+    const retryDelay = 2000; // 2秒
+    const log = (msg: string) => {
+      console.log(msg);
+      onLog?.(msg);
+    };
+
     try {
       // .localドメインの場合、mDNS解決を先に行う
       let resolvedUrl = deviceUrl;
       if (deviceUrl.includes('.local')) {
         const hostname = new URL(deviceUrl).hostname;
+        log(`[接続確認] mDNS解決中: ${hostname}`);
         const resolvedIp = await firmwareService.resolveMdns(hostname);
         if (resolvedIp) {
           resolvedUrl = `http://${resolvedIp}`;
+          log(`[接続確認] IP解決: ${resolvedIp}`);
         } else {
           return { ok: false, error: `デバイス「${hostname}」が見つかりません。電源とWiFi接続を確認してください。` };
         }
       }
 
-      // デバイスにping
-      const online = await firmwareService.checkDeviceOnline(resolvedUrl, 5000);
-      if (!online) {
-        return { ok: false, error: 'デバイスが応答しません。電源とWiFi接続を確認してください。' };
+      // デバイスにping（リトライ付き）
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        log(`[接続確認] 接続テスト中... (${attempt + 1}/${maxRetries})`);
+        const online = await firmwareService.checkDeviceOnline(resolvedUrl, 30000);
+        if (online) {
+          return { ok: true, resolvedUrl };
+        }
+
+        // 最後のリトライでなければ待機
+        if (attempt < maxRetries - 1) {
+          log(`[接続確認] 応答なし、${retryDelay / 1000}秒後にリトライ...`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+        }
       }
 
-      return { ok: true, resolvedUrl };
+      return { ok: false, error: 'デバイスが応答しません。電源とWiFi接続を確認してください。' };
     } catch (error) {
       return { ok: false, error: `接続確認エラー: ${error instanceof Error ? error.message : '不明なエラー'}` };
     }
@@ -650,13 +671,15 @@ export function EditorPage() {
 
     // コンパイル前にデバイス接続確認
     setCompileLog([
-      `[接続確認] デバイス: ${device.name} (${device.ipAddress})`,
-      '[接続確認] 接続状態を確認中...'
+      `[接続確認] デバイス: ${device.name} (${device.ipAddress})`
     ]);
     setCompileDialogOpen(true);
     setIsCompiling(true);
 
-    const checkResult = await checkDeviceConnection(deviceUrl);
+    const checkResult = await checkDeviceConnection(
+      deviceUrl,
+      (msg) => setCompileLog(prev => [...prev, msg])
+    );
     if (!checkResult.ok) {
       setCompileLog(prev => [...prev, `[接続確認] ✗ ${checkResult.error}`]);
       setIsCompiling(false);
@@ -1580,6 +1603,7 @@ export function EditorPage() {
         <DialogContent
           className="sm:max-w-lg"
           onInteractOutside={(e) => e.preventDefault()}
+          hideCloseButton={isCompiling}
         >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">

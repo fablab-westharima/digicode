@@ -688,7 +688,7 @@ class FirmwareService {
           });
 
           const pingResponse = await fetch(resolvedUrl, {
-            signal: AbortSignal.timeout(5000),
+            signal: AbortSignal.timeout(30000),
             mode: 'cors'
           });
           if (pingResponse.ok) {
@@ -808,7 +808,7 @@ class FirmwareService {
             message: `デバイス確認中... (${retry + 1}/${maxRetries})`
           });
           const verifyResponse = await fetch(resolvedUrl, {
-            signal: AbortSignal.timeout(5000),
+            signal: AbortSignal.timeout(30000),
             mode: 'cors'
           });
           if (verifyResponse.ok) {
@@ -866,7 +866,7 @@ class FirmwareService {
    * @param deviceUrl デバイスのURL
    * @param timeoutMs タイムアウト（ミリ秒）
    */
-  async checkDeviceOnline(deviceUrl: string, timeoutMs: number = 3000): Promise<boolean> {
+  async checkDeviceOnline(deviceUrl: string, timeoutMs: number = 30000): Promise<boolean> {
     try {
       const response = await fetch(deviceUrl, {
         signal: AbortSignal.timeout(timeoutMs),
