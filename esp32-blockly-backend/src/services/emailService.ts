@@ -358,3 +358,116 @@ ${recoveryUrl}
 © 2024 DigiCode - ビジュアルプログラミングでESP32を動かそう
   `.trim();
 }
+
+/**
+ * ログインOTPメールを送信（2段階認証用）
+ */
+export async function sendLoginOtpEmail(
+  resendApiKey: string,
+  to: string,
+  otpCode: string,
+  isDev: boolean = false
+): Promise<{ success: boolean; error?: string }> {
+  if (!resendApiKey) {
+    console.warn('RESEND_API_KEY is not set. Skipping email send.');
+    // 開発環境ではコンソールにOTPを出力
+    if (isDev) {
+      console.log(`[DEV] Login OTP for ${to}: ${otpCode}`);
+    }
+    return { success: false, error: 'メール送信サービスが設定されていません' };
+  }
+
+  const resend = new Resend(resendApiKey);
+
+  try {
+    const { error } = await resend.emails.send({
+      from: 'DigiCode <noreply@fablab-westharima.jp>',
+      to: [to],
+      subject: '【DigiCode】ログイン認証コード',
+      html: generateLoginOtpEmailHtml(otpCode),
+      text: generateLoginOtpEmailText(otpCode),
+    });
+
+    if (error) {
+      console.error('Resend error:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error('Email send error:', err);
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'メール送信に失敗しました'
+    };
+  }
+}
+
+/**
+ * ログインOTPメールのHTML本文
+ */
+function generateLoginOtpEmailHtml(otpCode: string): string {
+  return `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: linear-gradient(135deg, #22c55e 0%, #3b82f6 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+    <h1 style="color: white; margin: 0; font-size: 28px;">DigiCode</h1>
+    <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">ログイン認証コード</p>
+  </div>
+
+  <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 10px 10px;">
+    <p>DigiCodeへのログインが試みられました。</p>
+
+    <p>以下の認証コードを入力してください：</p>
+
+    <div style="text-align: center; margin: 30px 0;">
+      <div style="display: inline-block; background: #ffffff; color: #1f2937; font-family: 'Courier New', monospace; font-size: 36px; font-weight: bold; padding: 20px 40px; border-radius: 8px; letter-spacing: 8px; border: 2px solid #e5e7eb;">
+        ${otpCode}
+      </div>
+    </div>
+
+    <p style="font-size: 14px; color: #6b7280;">
+      このコードは<strong>10分間</strong>有効です。<br>
+      心当たりがない場合は、このメールを無視してください。<br>
+      アカウントのセキュリティを確保するため、このコードを他人と共有しないでください。
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+
+    <p style="font-size: 12px; color: #9ca3af;">
+      このメールはDigiCodeの2段階認証システムから自動送信されています。
+    </p>
+  </div>
+
+  <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
+    <p>&copy; 2024 DigiCode - ビジュアルプログラミングでESP32を動かそう</p>
+  </div>
+</body>
+</html>
+  `.trim();
+}
+
+/**
+ * ログインOTPメールのテキスト本文
+ */
+function generateLoginOtpEmailText(otpCode: string): string {
+  return `
+DigiCode - ログイン認証コード
+
+DigiCodeへのログインが試みられました。
+
+認証コード: ${otpCode}
+
+このコードは10分間有効です。
+心当たりがない場合は、このメールを無視してください。
+アカウントのセキュリティを確保するため、このコードを他人と共有しないでください。
+
+---
+© 2024 DigiCode - ビジュアルプログラミングでESP32を動かそう
+  `.trim();
+}

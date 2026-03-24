@@ -3,6 +3,7 @@ import { cors } from 'hono/cors';
 import auth from './routes/auth';
 import passkey from './routes/passkey';
 import recoveryCodes from './routes/recovery-codes';
+import twoFactor from './routes/2fa';
 import projects from './routes/projects';
 import compileUsage from './routes/compile-usage';
 import subscriptions from './routes/subscriptions';
@@ -27,6 +28,7 @@ const app = new Hono<{ Bindings: Bindings }>();
 const defaultOrigins = [
   // Development
   'http://localhost:5173',
+  'http://localhost:5174',
   'http://localhost:3000',
   // Production (Cloudflare Pages)
   'https://esp32-blockly-frontend.pages.dev',
@@ -34,6 +36,7 @@ const defaultOrigins = [
   // Custom domain (if configured)
   'https://digicode.app',
   'https://www.digicode.app',
+  'https://code.fablab-westharima.jp',
 ];
 
 app.use('*', cors({
@@ -91,6 +94,9 @@ app.route('/api/auth/passkey', passkey);
 
 // リカバリーコードルート
 app.route('/api/auth/recovery-codes', recoveryCodes);
+
+// 2段階認証ルート
+app.route('/api/auth/2fa', twoFactor);
 
 // プロジェクトルート
 app.route('/api/projects', projects);
