@@ -10,23 +10,20 @@ interface SerialMonitorProps {
 
 export function SerialMonitor({ className }: SerialMonitorProps) {
   const { output: serialOutput, send: serialSend, clearOutput: serialClear, status: serialStatus } = useSerialStore();
-  const { output: wifiOutput, send: wifiSend, clearOutput: wifiClear, status: wifiStatus } = useWifiStore();
+  const { status: wifiStatus } = useWifiStore();
 
   const [inputValue, setInputValue] = useState('');
   const [autoScroll, setAutoScroll] = useState(true);
   const outputRef = useRef<HTMLDivElement>(null);
 
-  // 全ての接続からの出力を統合（接続中のもののみ）
+  // シリアル出力を使用（WiFiストアには出力機能がない）
   const output = useMemo(() => {
     const combined: string[] = [];
     if (serialStatus === 'connected' && serialOutput.length > 0) {
       combined.push(...serialOutput);
     }
-    if (wifiStatus === 'connected' && wifiOutput.length > 0) {
-      combined.push(...wifiOutput);
-    }
     return combined;
-  }, [serialOutput, wifiOutput, serialStatus, wifiStatus]);
+  }, [serialOutput, serialStatus]);
 
   // 接続状態（いずれかが接続されているか）
   const status = serialStatus === 'connected' ? 'connected' :
@@ -45,17 +42,14 @@ export function SerialMonitor({ className }: SerialMonitorProps) {
       // 接続中のコネクションにデータを送信
       if (serialStatus === 'connected') {
         await serialSend(inputValue);
-      } else if (wifiStatus === 'connected') {
-        await wifiSend(inputValue);
       }
       setInputValue('');
     }
   };
 
   const clearOutput = () => {
-    // 全ての出力をクリア
+    // シリアル出力をクリア
     serialClear();
-    wifiClear();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

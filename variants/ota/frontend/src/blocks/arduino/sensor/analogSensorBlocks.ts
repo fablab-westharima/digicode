@@ -24,7 +24,7 @@ Blockly.Blocks['potentiometer'] = {
         [(Blockly.Msg as any).BLOCKS_SENSOR_POTENTIOMETER_RAW || 'Raw (0-4095)', 'raw'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_POTENTIOMETER_PERCENT || 'Percent (0-100)', 'percent'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_POTENTIOMETER_ANGLE || 'Angle (0-270)', 'angle']
-      ]), 'MODE');
+      ]) as any, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
     this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_POTENTIOMETER_TOOLTIP || 'Read potentiometer value');
@@ -59,7 +59,7 @@ Blockly.Blocks['ldr_sensor'] = {
       .appendField(new Blockly.FieldDropdown([
         [(Blockly.Msg as any).BLOCKS_SENSOR_LDR_RAW || 'Raw (0-4095)', 'raw'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_LDR_PERCENT || 'Percent (0-100)', 'percent']
-      ]), 'MODE');
+      ]) as any, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
     this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_LDR_TOOLTIP || 'Measure light intensity');
@@ -149,7 +149,7 @@ Blockly.Blocks['gas_sensor_analog'] = {
       .appendField(new Blockly.FieldDropdown([
         [(Blockly.Msg as any).BLOCKS_SENSOR_GAS_RAW || 'Raw (0-4095)', 'raw'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_GAS_PERCENT || 'Percent (0-100)', 'percent']
-      ]), 'MODE');
+      ]) as any, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
     this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_GAS_TOOLTIP || 'Read gas sensor value');
@@ -182,7 +182,7 @@ Blockly.Blocks['soil_moisture_sensor'] = {
       .appendField(new Blockly.FieldDropdown([
         [(Blockly.Msg as any).BLOCKS_SENSOR_SOILMOISTURE_RAW || 'Raw (0-4095)', 'raw'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_SOILMOISTURE_PERCENT || 'Percent (0-100)', 'percent']
-      ]), 'MODE');
+      ]) as any, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
     this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_SOILMOISTURE_TOOLTIP || 'Measure soil moisture');
@@ -216,7 +216,7 @@ Blockly.Blocks['water_level_sensor'] = {
       .appendField(new Blockly.FieldDropdown([
         [(Blockly.Msg as any).BLOCKS_SENSOR_WATERLEVEL_RAW || 'Raw (0-4095)', 'raw'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_WATERLEVEL_PERCENT || 'Percent (0-100)', 'percent']
-      ]), 'MODE');
+      ]) as any, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
     this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_WATERLEVEL_TOOLTIP || 'Measure water level');
@@ -249,7 +249,7 @@ Blockly.Blocks['flame_sensor_analog'] = {
       .appendField(new Blockly.FieldDropdown([
         [(Blockly.Msg as any).BLOCKS_SENSOR_FLAME_RAW || 'Raw (0-4095)', 'raw'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_FLAME_PERCENT || 'Percent (0-100)', 'percent']
-      ]), 'MODE');
+      ]) as any, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
     this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_FLAME_TOOLTIP || 'Measure flame intensity');
@@ -283,7 +283,7 @@ Blockly.Blocks['ir_reflective_sensor'] = {
       .appendField(new Blockly.FieldDropdown([
         [(Blockly.Msg as any).BLOCKS_SENSOR_IRREFLECTIVE_RAW || 'Raw (0-4095)', 'raw'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_IRREFLECTIVE_PERCENT || 'Percent (0-100)', 'percent']
-      ]), 'MODE');
+      ]) as any, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
     this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_IRREFLECTIVE_TOOLTIP || 'Measure IR reflection');
@@ -315,13 +315,13 @@ Blockly.Blocks['joystick_sensor'] = {
       .appendField(new Blockly.FieldDropdown([
         [(Blockly.Msg as any).BLOCKS_SENSOR_JOYSTICK_XAXIS || 'X-Axis', 'X'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_JOYSTICK_YAXIS || 'Y-Axis', 'Y']
-      ]), 'AXIS')
+      ]) as any, 'AXIS')
       .appendField((Blockly.Msg as any).BLOCKS_SENSOR_JOYSTICK_PIN || 'Pin')
       .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN')
       .appendField(new Blockly.FieldDropdown([
         [(Blockly.Msg as any).BLOCKS_SENSOR_JOYSTICK_RAW || 'Raw (0-4095)', 'raw'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_JOYSTICK_PERCENT || 'Percent (-100 to 100)', 'percent']
-      ]), 'MODE');
+      ]) as any, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
     this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_JOYSTICK_TOOLTIP || 'Read joystick position');

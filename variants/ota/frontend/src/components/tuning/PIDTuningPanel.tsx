@@ -44,7 +44,7 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
   } = usePIDTuningStore();
 
   const { send: serialSend, status: serialStatus } = useSerialStore();
-  const { send: wifiSend, status: wifiStatus } = useWifiStore();
+  const { status: wifiStatus } = useWifiStore();
 
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [presetName, setPresetName] = useState('');
@@ -60,8 +60,6 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
 
     if (serialStatus === 'connected') {
       await serialSend(command);
-    } else if (wifiStatus === 'connected') {
-      await wifiSend(command);
     }
   };
 

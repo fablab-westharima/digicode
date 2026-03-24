@@ -89,7 +89,7 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         console.log('[BlocklyEditor] UI language changed to:', lang);
 
         // 重要: 言語変更前に現在のワークスペースのXMLを保存
-        if (workspaceRef.current && !workspaceRef.current.isDisposed) {
+        if (workspaceRef.current && !(workspaceRef.current as any).isDisposed) {
           const xml = Blockly.Xml.workspaceToDom(workspaceRef.current);
           const xmlText = Blockly.Xml.domToText(xml);
           savedXmlRef.current = xmlText;
@@ -385,7 +385,7 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         if (languageChangeSavedRef.current) {
           return;
         }
-        if (workspaceRef.current && !workspaceRef.current.isDisposed) {
+        if (workspaceRef.current && !(workspaceRef.current as any).isDisposed) {
           const xml = Blockly.Xml.workspaceToDom(workspaceRef.current);
           const xmlText = Blockly.Xml.domToText(xml);
           savedXmlRef.current = xmlText;
@@ -407,7 +407,7 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         // 言語変更ハンドラで既に保存済みの場合はスキップ（フラグはworkspace復元後にリセット）
         if (languageChangeSavedRef.current) {
           console.log('[BlocklyEditor] Cleanup: Skipping XML save (already saved by language change handler)');
-        } else if (workspace && !workspace.isDisposed) {
+        } else if (workspace && !(workspace as any).isDisposed) {
           const blockCount = workspace.getAllBlocks(false).length;
           // ブロックが存在する場合のみ保存（React Strict Modeの2回目cleanup対策）
           if (blockCount > 0) {

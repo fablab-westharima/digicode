@@ -57,7 +57,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 // 認証ページ（ログイン済みならホームへ）
 function AuthRoute() {
   const { isAuthenticated, isLoading, login, register, error, clearError } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
+  const [activeTab, setActiveTab] = useState<'login' | 'register' | 'recovery'>('login');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
 

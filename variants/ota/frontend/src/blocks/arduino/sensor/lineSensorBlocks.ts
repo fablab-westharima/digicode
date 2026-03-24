@@ -35,16 +35,16 @@ Blockly.Blocks['line_sensor_init'] = {
           [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_COUNT6 || '6', '6'],
           [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_COUNT8 || '8', '8']
         ],
-        this.updatePinInputs_.bind(this)
-      ), 'COUNT');
+        (this as any).updatePinInputs_.bind(this)
+      ) as any, 'COUNT');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#E91E63');
     this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_INITTOOLTIP || 'Initialize line sensors');
 
     // 初期状態で2個のピン入力を追加
-    this.pinCount_ = 2;
-    this.updatePinInputs_('2');
+    (this as any).pinCount_ = 2;
+    (this as any).updatePinInputs_('2');
   },
 
   pinCount_: 2,
@@ -52,7 +52,7 @@ Blockly.Blocks['line_sensor_init'] = {
   updatePinInputs_: function(this: Blockly.Block, newValue: string) {
     const newCount = parseInt(newValue, 10);
     // oldCount preserved for potential future use in incremental updates
-    const _oldCount = this.pinCount_ || 0;
+    const _oldCount = (this as any).pinCount_ || 0;
 
     // 既存のピン入力を削除
     for (let i = 1; i <= 8; i++) {
@@ -83,14 +83,14 @@ Blockly.Blocks['line_sensor_init'] = {
       rowNum++;
     }
 
-    this.pinCount_ = newCount;
+    (this as any).pinCount_ = newCount;
     return newValue;
   },
 
   // ブロックの状態を保存（XMLシリアライズ用）
   mutationToDom: function(this: Blockly.Block) {
     const container = Blockly.utils.xml.createElement('mutation');
-    container.setAttribute('pincount', String(this.pinCount_));
+    container.setAttribute('pincount', String((this as any).pinCount_));
     return container;
   },
 
@@ -98,8 +98,8 @@ Blockly.Blocks['line_sensor_init'] = {
   domToMutation: function(this: Blockly.Block, xmlElement: Element) {
     const count = xmlElement.getAttribute('pincount');
     if (count) {
-      this.pinCount_ = parseInt(count, 10);
-      this.updatePinInputs_(count);
+      (this as any).pinCount_ = parseInt(count, 10);
+      (this as any).updatePinInputs_(count);
       // ドロップダウンの値も更新
       this.setFieldValue(count, 'COUNT');
     }
@@ -381,7 +381,7 @@ Blockly.Blocks['line_sensor_value'] = {
         [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_SENSOR3CENTER || 'S3 (Center)', '2'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_SENSOR4 || 'S4', '3'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_SENSOR5RIGHT || 'S5 (Right)', '4']
-      ]), 'INDEX')
+      ]) as any, 'INDEX')
       .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_VALUE || 'Value');
     this.setOutput(true, 'Number');
     this.setColour('#E91E63');

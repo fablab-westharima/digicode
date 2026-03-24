@@ -137,7 +137,7 @@ export function EditorPage() {
   const [statusBarState, setStatusBarState] = useState<StatusBarState>('ready');
   const [statusBarMessage, setStatusBarMessage] = useState<string>('');
   const blocklyEditorRef = useRef<BlocklyEditorRef>(null);
-  const compiledBinaryRef = useRef<ArrayBuffer | null>(null);
+  const compiledBinaryRef = useRef<Blob | null>(null);
   const { isMobile, isMobileOrTablet } = useBreakpoint();
   const { currentTutorial, isActive: isTutorialActive } = useTutorialStore();
   // ブラウザを閉じる/リロード時の確認
@@ -1478,7 +1478,7 @@ export function EditorPage() {
         isSaving={false}
         isCompiling={isCompiling}
         serverMode={serverMode}
-        compileUsage={compileUsage}
+        compileUsage={compileUsage ?? undefined}
         onCompile={handleCompile}
         onServerModeChange={setServerMode}
         onRobotModeChange={() => {

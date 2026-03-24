@@ -48,7 +48,7 @@ interface SerialPlotterProps {
 
 export function SerialPlotter({ className }: SerialPlotterProps) {
   const { output: serialOutput, status: serialStatus } = useSerialStore();
-  const { output: wifiOutput, status: wifiStatus } = useWifiStore();
+  const { status: wifiStatus } = useWifiStore();
 
   const [data, setData] = useState<DataPoint[]>([]);
   const [channels, setChannels] = useState<ChannelConfig[]>([]);
@@ -176,10 +176,7 @@ export function SerialPlotter({ className }: SerialPlotterProps) {
     if (serialStatus === 'connected') {
       processOutput(serialOutput, 'serial');
     }
-    if (wifiStatus === 'connected') {
-      processOutput(wifiOutput, 'wifi');
-    }
-  }, [serialOutput, wifiOutput, serialStatus, wifiStatus, isPaused, maxPoints, parseDataLine]);
+  }, [serialOutput, serialStatus, isPaused, maxPoints, parseDataLine]);
 
   // Clear data
   const clearData = () => {

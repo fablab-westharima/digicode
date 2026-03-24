@@ -39,7 +39,7 @@ export function BoardSelector() {
   const { selectedBoardId, setSelectedBoard, getSelectedBoard } = useBoardStore();
   const selectedBoard = getSelectedBoard();
 
-  const getCategoryLabel = (category: BoardDefinition['category']): string => {
+  const getCategoryLabel = (category: string): string => {
     return t(`boardSelector.categories.${category}`, { defaultValue: category });
   };
 
@@ -59,12 +59,12 @@ export function BoardSelector() {
     return board.description;
   };
 
-  const arduinoBoards = SUPPORTED_BOARDS.filter(b => b.category === 'arduino');
-  const esp8266Boards = SUPPORTED_BOARDS.filter(b => b.category === 'esp8266');
+  const arduinoBoards = SUPPORTED_BOARDS.filter(b => (b.category as string) === 'arduino');
+  const esp8266Boards = SUPPORTED_BOARDS.filter(b => (b.category as string) === 'esp8266');
   const genericBoards = SUPPORTED_BOARDS.filter(b => b.category === 'generic');
   const m5stackBoards = SUPPORTED_BOARDS.filter(b => b.category === 'm5stack');
   const xiaoBoards = SUPPORTED_BOARDS.filter(b => b.category === 'xiao');
-  const rp2040Boards = SUPPORTED_BOARDS.filter(b => b.category === 'rp2040');
+  const rp2040Boards = SUPPORTED_BOARDS.filter(b => (b.category as string) === 'rp2040');
 
   const renderBoardItem = (board: BoardDefinition) => (
     <SelectItem key={board.id} value={board.id}>

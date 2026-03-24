@@ -2,7 +2,7 @@ import { ESPLoader, Transport } from 'esptool-js';
 import { getCompileServerUrl } from '@/config/servers';
 import type { FullPackage } from './compileService';
 
-export type FlashStage = 'connecting' | 'erasing' | 'flashing' | 'verifying' | 'complete' | 'error';
+export type FlashStage = 'connecting' | 'preparing' | 'erasing' | 'flashing' | 'verifying' | 'complete' | 'error';
 
 export type FlashProgress = {
   stage: FlashStage;
@@ -964,7 +964,7 @@ class FirmwareService {
       await port.open({ baudRate: 115200 });
 
       // Transportを作成
-      this.transport = new Transport(port, true);
+      this.transport = new Transport(port as any, true);
       this.loader = new ESPLoader({
         transport: this.transport,
         baudrate: 115200,
@@ -977,13 +977,13 @@ class FirmwareService {
 
       // チップ情報を取得
       const chipName = await this.loader.main();
-      const macAddr = await this.loader.readMac();
-      const features = await this.loader.getFlashId();
+      const macAddr = await this.loader.chip.readMac(this.loader);
+      await this.loader.flashId();
 
       const chipInfo: ChipInfo = {
         name: chipName,
         mac: macAddr,
-        features: [features.toString()]
+        features: []
       };
 
       console.log('[AutoReconnect] Successfully reconnected:', chipInfo);

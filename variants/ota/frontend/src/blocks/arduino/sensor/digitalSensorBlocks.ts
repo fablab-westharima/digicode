@@ -24,7 +24,7 @@ Blockly.Blocks['button_sensor'] = {
       .appendField(new Blockly.FieldDropdown([
         [(Blockly.Msg as any).BLOCKS_SENSOR_BUTTON_PRESSED || 'Pressed', 'pressed'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_BUTTON_RELEASED || 'Released', 'released']
-      ]), 'STATE');
+      ]) as any, 'STATE');
     this.setOutput(true, 'Boolean');
     this.setColour(SENSOR_COLOR);
     this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_BUTTON_TOOLTIP || 'Get button state');
@@ -299,7 +299,7 @@ Blockly.Blocks['digital_read'] = {
         [(Blockly.Msg as any).BLOCKS_SENSOR_DIGITALREAD_PULLUP || 'Pull-up', 'pullup'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_DIGITALREAD_PULLDOWN || 'Pull-down', 'pulldown'],
         [(Blockly.Msg as any).BLOCKS_SENSOR_DIGITALREAD_NONE || 'None', 'none']
-      ]), 'MODE');
+      ]) as any, 'MODE');
     this.setOutput(true, 'Boolean');
     this.setColour(SENSOR_COLOR);
     this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_DIGITALREAD_TOOLTIP || 'Read digital pin state');

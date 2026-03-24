@@ -54,6 +54,7 @@ export function AuthPage({
             <TabsContent value="register" className="mt-4">
               <RegisterForm
                 onSubmit={onRegister}
+                onSwitchToLogin={() => onTabChange('login')}
                 isLoading={isLoading}
                 error={activeTab === 'register' ? error : null}
               />
