@@ -23,7 +23,7 @@ i18n
     resources,
     supportedLngs: ['ja', 'en', 'es', 'pt-PT', 'zh-TW'],
     fallbackLng: 'ja',
-    load: 'languageOnly', // Strip region code (ja-JP -> ja)
+    load: 'currentOnly', // Use exact language code (pt-PT, zh-TW)
     interpolation: {
       escapeValue: false,
     },

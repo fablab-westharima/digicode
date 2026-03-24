@@ -6,7 +6,6 @@ import { EmailVerificationWaiting } from '@/components/auth/EmailVerificationWai
 import { MobileWarning } from '@/components/MobileWarning';
 import { EditorPage } from '@/pages/EditorPage';
 import { FirmwareInstaller } from '@/pages/FirmwareInstaller';
-import { DeviceSetupPage } from '@/pages/DeviceSetupPage';
 import { DocsPage } from '@/pages/DocsPage';
 import { PinSettingsPage } from '@/pages/PinSettingsPage';
 import { CompileServerSettingsPage } from '@/pages/CompileServerSettingsPage';
@@ -153,7 +152,6 @@ function App() {
         <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
         <Route path="/recovery/:token" element={<RecoveryPage />} />
         <Route path="/firmware" element={<FirmwareInstaller />} />
-        <Route path="/device-setup" element={<DeviceSetupPage />} />
         <Route
           path="/"
           element={

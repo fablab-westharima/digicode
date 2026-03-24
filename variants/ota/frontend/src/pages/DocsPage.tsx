@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Card, CardContent } from '@/components/ui/card';
-import { BookOpen, Wrench, Lightbulb, Blocks, HelpCircle, Cpu, Server, Wifi } from 'lucide-react';
+import { BookOpen, Wrench, Lightbulb, Blocks, HelpCircle, Cpu, Server, Wifi, Home } from 'lucide-react';
 import { LocaleSelector } from '@/components/common/LocaleSelector';
 
 interface DocItem {
@@ -13,6 +14,11 @@ interface DocItem {
 }
 
 const docItems: DocItem[] = [
+  {
+    id: 'index',
+    file: 'index.md',
+    icon: <Home className="w-5 h-5" />
+  },
   {
     id: 'getting-started',
     file: 'getting-started.md',
@@ -81,24 +87,55 @@ export function DocsPage() {
   const [content, setContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const loadDoc = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`/docs/${selectedDoc.file}`);
-        if (!response.ok) throw new Error('Failed to load document');
-        const text = await response.text();
-        setContent(text);
-      } catch (error) {
-        console.error('Error loading document:', error);
-        setContent(`# ${t('common.error')}\n\n${t('docs.loadError')}`);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Use full language code for regional variants (pt-PT, zh-TW), otherwise use base code
+  const getLangPath = (lang: string): string => {
+    // Regional variants that need full code
+    if (lang === 'pt-PT' || lang === 'zh-TW') return lang;
+    // For other languages, use base code (e.g., 'en-US' -> 'en')
+    return lang?.split('-')[0] || 'ja';
+  };
+  const currentLang = getLangPath(i18n.language);
 
+  const loadDoc = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      // Try language-specific file first
+      const langPath = `/docs/${currentLang}/${selectedDoc.file}`;
+      let response = await fetch(langPath);
+      let usedLangPath = true;
+
+      // Fallback to default (root = Japanese) if language-specific file not found
+      if (!response.ok) {
+        response = await fetch(`/docs/${selectedDoc.file}`);
+        usedLangPath = false;
+      }
+
+      if (!response.ok) throw new Error('Failed to load document');
+      let text = await response.text();
+
+      // If we loaded a language-specific doc, the paths are already correct
+      // If we loaded from root (Japanese fallback), keep the original paths
+      // which point to /docs/images/ (Japanese images)
+      if (usedLangPath) {
+        // Language-specific doc might reference /docs/images/, update to /docs/{lang}/images/
+        text = text.replace(
+          /!\[([^\]]*)\]\(\/docs\/images\/([^)]+)\)/g,
+          (match, alt, imageName) => `![${alt}](/docs/${currentLang}/images/${imageName})`
+        );
+      }
+
+      setContent(text);
+    } catch (error) {
+      console.error('Error loading document:', error);
+      setContent(`# ${t('common.error')}\n\n${t('docs.loadError')}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedDoc, currentLang, t]);
+
+  useEffect(() => {
     loadDoc();
-  }, [selectedDoc, t]);
+  }, [loadDoc]);
 
   return (
     <div className="min-h-screen bg-[#0D1117]">

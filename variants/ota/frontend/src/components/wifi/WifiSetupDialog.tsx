@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useSerialStore } from '@/stores/serialStore';
-import { useDeviceStore } from '@/stores/deviceStore';
 import { Trash2, AlertCircle, Terminal, Wifi, Usb, Check } from 'lucide-react';
 
 interface WifiSetupDialogProps {
@@ -31,7 +30,6 @@ interface WiFiEntry {
 export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
   const { t } = useTranslation();
   const { status, isSupported, connect, disconnect, send, output, clearOutput, resetESP32 } = useSerialStore();
-  const { addDevice, removeDevice, clearDevices } = useDeviceStore();
 
   const [showConsole, setShowConsole] = useState(true);
   const consoleRef = useRef<HTMLDivElement>(null);
@@ -45,7 +43,6 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
   const [wifiMessage, setWifiMessage] = useState('');
 
   // デバイス情報
-  const [deviceUuid, setDeviceUuid] = useState('');
   const [deviceName, setDeviceName] = useState('');
   const [originalDeviceName, setOriginalDeviceName] = useState('');
   const [isLoadingDeviceName, setIsLoadingDeviceName] = useState(false);
@@ -361,16 +358,11 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
         console.log(`[UUID] Detected default UUID "robot001", generating new UUID: ${newUuid}`);
 
         try {
-          // 古いrobot001デバイスがdeviceStoreに存在すれば削除
-          removeDevice('robot001');
-          console.log(`[UUID] Removed old robot001 device from store`);
-
           await send(`SET_UUID:${newUuid}\n`);
           await new Promise(resolve => setTimeout(resolve, 200));
 
-          // 送信後、新しいUUIDを状態に反映
+          // 送信後、新しいUUIDをローカル変数に反映
           foundUuid = newUuid;
-          setDeviceUuid(newUuid);
 
           // SAVE_CONFIGを送信して永続化
           await send('SAVE_CONFIG\n');
@@ -379,11 +371,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
           console.log(`[UUID] Successfully set new UUID: ${newUuid}`);
         } catch (error) {
           console.error('[UUID] Failed to set new UUID:', error);
-          // エラーでも既存のUUIDは設定しておく
-          setDeviceUuid(foundUuid);
         }
-      } else if (foundUuid) {
-        setDeviceUuid(foundUuid);
       }
 
       if (foundName) {
@@ -420,25 +408,8 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
           setGateway(foundGateway);
           setSubnet(foundSubnet);
 
-          // 固定IP情報があり、デバイス情報も揃っていればデバイスを登録
+          // 固定IP情報があり、デバイス情報も揃っていれば返す
           if (foundUuid && foundName && foundSsid) {
-            console.log('[loadDeviceName] Registering device to store:', {
-              uuid: foundUuid,
-              name: foundName,
-              ssid: foundSsid,
-              ipAddress: foundStaticIp,
-            });
-
-            addDevice({
-              uuid: foundUuid,
-              name: foundName,
-              ssid: foundSsid,
-              lastConnected: new Date().toISOString(),
-              ipAddress: foundStaticIp,
-              gateway: foundGateway,
-              subnet: foundSubnet,
-            });
-
             return {
               uuid: foundUuid,
               name: foundName,
@@ -516,54 +487,6 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
     } catch (error) {
       console.error('Auto set static IP error:', error);
       return null;
-    }
-  };
-
-  // デバイスリストをクリアして再読み込み
-  const handleRefreshDevices = async () => {
-    if (status !== 'connected') {
-      alert(t('device.connectFirst', { defaultValue: 'まずUSB接続してください' }));
-      return;
-    }
-
-    if (!confirm(t('device.confirmClearDevices', { defaultValue: 'デバイスリストをクリアして再読み込みしますか？ 現在接続中のデバイスのみが再登録されます。' }))) {
-      return;
-    }
-
-    setIsLoadingWifi(true);
-    try {
-      // デバイスリストをクリア
-      clearDevices();
-      console.log('[REFRESH] Device list cleared');
-
-      // 現在のデバイス情報を再読み込み
-      setWifiMessage(t('device.updatingInfo', { defaultValue: 'デバイス情報を更新中...' }));
-      await loadDeviceName();
-      const wifiEntries = await loadWiFiList();
-
-      // WiFi接続されていれば自動的にデバイスを登録
-      const isWifiConnected = wifiEntries.some(w => w.isConnected);
-      if (isWifiConnected && deviceUuid && deviceName && staticIp) {
-        const connectedSsid = wifiEntries.find(w => w.isConnected)?.ssid || '';
-        addDevice({
-          uuid: deviceUuid,
-          name: deviceName,
-          ssid: connectedSsid,
-          lastConnected: new Date().toISOString(),
-          ipAddress: staticIp,
-          gateway: gateway,
-          subnet: subnet,
-        });
-        console.log('[REFRESH] Device list refreshed and current device added');
-        setWifiMessage(t('device.deviceListRefreshed', { defaultValue: 'デバイスリストを更新しました' }));
-      } else {
-        setWifiMessage(t('device.noDeviceToRegister', { defaultValue: 'WiFi接続されていないため、デバイスは登録されませんでした' }));
-      }
-    } catch (error) {
-      console.error('Refresh devices error:', error);
-      setWifiMessage(t('device.refreshFailed', { defaultValue: 'デバイスリスト更新に失敗しました' }));
-    } finally {
-      setIsLoadingWifi(false);
     }
   };
 
@@ -708,10 +631,6 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
 
       setWifiMessage(t('device.savedRestartingEsp32'));
 
-      // デバイス情報を準備（IP固定化後にdeviceStoreに登録）
-      const finalDeviceName = deviceName.trim() || originalDeviceName;
-      const connectedSsid = selectedWifi || newWifiSsid.trim();
-
       // ESP32を自動リセット
       setIsDeviceReady(false);
       await resetESP32();
@@ -739,29 +658,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       const isWifiConnected = wifiEntries.some(w => w.isConnected);
       if (isWifiConnected) {
         setWifiMessage('WiFi接続成功。DHCPで取得したIPを固定化中...');
-        const ipInfo = await autoSetStaticIp();
-
-        // IP固定化が成功した場合、デバイスストアを更新
-        if (ipInfo && deviceUuid && finalDeviceName) {
-          const deviceData = {
-            uuid: deviceUuid,
-            name: finalDeviceName,
-            ssid: connectedSsid,
-            lastConnected: new Date().toISOString(),
-            ipAddress: ipInfo.ip,
-            gateway: ipInfo.gateway,
-            subnet: ipInfo.subnet,
-          };
-          console.log('[handleSaveAndConnect] Adding device to store:', deviceData);
-          addDevice(deviceData);
-          console.log('[handleSaveAndConnect] Device registered successfully');
-        } else {
-          console.warn('[handleSaveAndConnect] Missing data for device registration:', {
-            hasIpInfo: !!ipInfo,
-            deviceUuid,
-            finalDeviceName,
-          });
-        }
+        await autoSetStaticIp();
       }
 
       setWifiMessage(t('device.connectionSuccess'));
@@ -1057,25 +954,6 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
                         💡 再起動時にリセットされ、DHCPで新規取得したIPが自動的に固定化されます
                       </p>
                     </div>
-                  </div>
-                )}
-
-                {/* デバイスリスト再読み込みボタン */}
-                {staticIp && (
-                  <div className="pt-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleRefreshDevices}
-                      disabled={isLoadingWifi || status !== 'connected'}
-                      className="w-full text-xs"
-                    >
-                      デバイスリストを再読み込み
-                    </Button>
-                    <p className="text-xs text-[#8B949E] mt-1.5">
-                      ※ localStorageのデバイスリストをクリアし、現在接続中のデバイスのみを再登録します
-                    </p>
                   </div>
                 )}
               </div>
