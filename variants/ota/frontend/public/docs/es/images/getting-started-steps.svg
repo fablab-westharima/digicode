@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400">
+  <defs>
+    <linearGradient id="gsGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4f46e5;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadowGS" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="1" dy="2" stdDeviation="3" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <rect width="700" height="400" fill="#0D1117" rx="12"/>
+
+  <text x="350" y="35" text-anchor="middle" fill="#E6EDF3" font-family="sans-serif" font-weight="bold" font-size="18">Pasos de Primeros Pasos</text>
+
+  <g transform="translate(30, 60)">
+    <rect width="300" height="80" rx="12" fill="url(#gsGrad)" filter="url(#shadowGS)"/>
+    <circle cx="40" cy="40" r="25" fill="rgba(255,255,255,0.2)"/>
+    <text x="40" y="47" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="18">1</text>
+    <text x="175" y="35" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="14">Acceder a DigiCode</text>
+    <text x="175" y="55" text-anchor="middle" fill="#c7d2fe" font-family="sans-serif" font-size="11">Abrir navegador, crear cuenta</text>
+  </g>
+
+  <path d="M180 140 L180 160" stroke="#5eead4" stroke-width="2" fill="none"/>
+  <polygon points="175,160 180,175 185,160" fill="#5eead4"/>
+
+  <g transform="translate(30, 180)">
+    <rect width="300" height="80" rx="12" fill="url(#gsGrad)" filter="url(#shadowGS)"/>
+    <circle cx="40" cy="40" r="25" fill="rgba(255,255,255,0.2)"/>
+    <text x="40" y="47" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="18">2</text>
+    <text x="175" y="35" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="14">Seleccionar Placa</text>
+    <text x="175" y="55" text-anchor="middle" fill="#c7d2fe" font-family="sans-serif" font-size="11">Elegir modelo ESP32</text>
+  </g>
+
+  <path d="M180 260 L180 280" stroke="#5eead4" stroke-width="2" fill="none"/>
+  <polygon points="175,280 180,295 185,280" fill="#5eead4"/>
+
+  <g transform="translate(30, 300)">
+    <rect width="300" height="80" rx="12" fill="url(#gsGrad)" filter="url(#shadowGS)"/>
+    <circle cx="40" cy="40" r="25" fill="rgba(255,255,255,0.2)"/>
+    <text x="40" y="47" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="18">3</text>
+    <text x="175" y="35" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="14">Cargar Firmware</text>
+    <text x="175" y="55" text-anchor="middle" fill="#c7d2fe" font-family="sans-serif" font-size="11">Conectar USB, clic INSTALAR</text>
+  </g>
+
+  <g transform="translate(370, 60)">
+    <rect width="300" height="80" rx="12" fill="#22c55e" filter="url(#shadowGS)"/>
+    <circle cx="40" cy="40" r="25" fill="rgba(255,255,255,0.2)"/>
+    <text x="40" y="47" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="18">4</text>
+    <text x="175" y="35" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="14">Configurar WiFi</text>
+    <text x="175" y="55" text-anchor="middle" fill="#bbf7d0" font-family="sans-serif" font-size="11">Ingresar SSID y contraseña</text>
+  </g>
+
+  <path d="M520 140 L520 160" stroke="#5eead4" stroke-width="2" fill="none"/>
+  <polygon points="515,160 520,175 525,160" fill="#5eead4"/>
+
+  <g transform="translate(370, 180)">
+    <rect width="300" height="80" rx="12" fill="#22c55e" filter="url(#shadowGS)"/>
+    <circle cx="40" cy="40" r="25" fill="rgba(255,255,255,0.2)"/>
+    <text x="40" y="47" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="18">5</text>
+    <text x="175" y="35" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="14">Crear Programa</text>
+    <text x="175" y="55" text-anchor="middle" fill="#bbf7d0" font-family="sans-serif" font-size="11">Arrastrar y soltar bloques</text>
+  </g>
+
+  <path d="M520 260 L520 280" stroke="#5eead4" stroke-width="2" fill="none"/>
+  <polygon points="515,280 520,295 525,280" fill="#5eead4"/>
+
+  <g transform="translate(370, 300)">
+    <rect width="300" height="80" rx="12" fill="#f59e0b" filter="url(#shadowGS)"/>
+    <circle cx="40" cy="40" r="25" fill="rgba(255,255,255,0.2)"/>
+    <text x="40" y="47" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="18">6</text>
+    <text x="175" y="35" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="14">¡Subir y Ejecutar!</text>
+    <text x="175" y="55" text-anchor="middle" fill="#fef3c7" font-family="sans-serif" font-size="11">WiFi OTA o USB</text>
+  </g>
+</svg>

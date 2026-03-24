@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">
+  <defs>
+    <linearGradient id="userGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4f46e5;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="frontendGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d9488;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="backendGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="deviceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16a34a;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="3" stdDeviation="4" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <rect width="800" height="450" fill="#0D1117" rx="12"/>
+
+  <g transform="translate(300, 20)">
+    <rect width="200" height="70" rx="12" fill="url(#userGrad)" filter="url(#shadow)"/>
+    <text x="100" y="35" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="16">Usuario</text>
+    <text x="100" y="55" text-anchor="middle" fill="#c7d2fe" font-family="sans-serif" font-size="12">(Navegador Web)</text>
+  </g>
+
+  <path d="M350 90 L350 130 L200 130 L200 160" stroke="#5eead4" stroke-width="2" fill="none"/>
+  <polygon points="195,160 200,175 205,160" fill="#5eead4"/>
+  <path d="M450 90 L450 130 L600 130 L600 160" stroke="#5eead4" stroke-width="2" fill="none"/>
+  <polygon points="595,160 600,175 605,160" fill="#5eead4"/>
+
+  <text x="270" y="125" fill="#8B949E" font-family="sans-serif" font-size="11">HTTP</text>
+  <text x="520" y="125" fill="#8B949E" font-family="sans-serif" font-size="11">USB / WiFi</text>
+
+  <g transform="translate(80, 175)">
+    <rect width="240" height="90" rx="12" fill="url(#frontendGrad)" filter="url(#shadow)"/>
+    <text x="120" y="30" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="15">Frontend</text>
+    <text x="120" y="50" text-anchor="middle" fill="#a5f3fc" font-family="sans-serif" font-size="12">React + Blockly</text>
+    <text x="120" y="70" text-anchor="middle" fill="#a5f3fc" font-family="sans-serif" font-size="11">localhost:5173</text>
+  </g>
+
+  <g transform="translate(480, 175)">
+    <rect width="240" height="90" rx="12" fill="url(#deviceGrad)" filter="url(#shadow)"/>
+    <text x="120" y="30" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="15">Dispositivo ESP32</text>
+    <text x="120" y="50" text-anchor="middle" fill="#bbf7d0" font-family="sans-serif" font-size="12">Arduino C++</text>
+    <text x="120" y="70" text-anchor="middle" fill="#bbf7d0" font-family="sans-serif" font-size="11">WiFi OTA / mDNS</text>
+  </g>
+
+  <path d="M200 265 L200 310" stroke="#5eead4" stroke-width="2" fill="none"/>
+  <polygon points="195,310 200,325 205,310" fill="#5eead4"/>
+  <text x="215" y="295" fill="#8B949E" font-family="sans-serif" font-size="11">REST API</text>
+
+  <g transform="translate(30, 330)">
+    <rect width="180" height="100" rx="12" fill="url(#backendGrad)" filter="url(#shadow)"/>
+    <text x="90" y="28" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="14">API Backend</text>
+    <text x="90" y="50" text-anchor="middle" fill="#fef3c7" font-family="sans-serif" font-size="11">Hono + Workers</text>
+    <text x="90" y="70" text-anchor="middle" fill="#fef3c7" font-family="sans-serif" font-size="10">localhost:8787</text>
+    <text x="90" y="88" text-anchor="middle" fill="#fcd34d" font-family="sans-serif" font-size="10">Auth y Proyectos</text>
+  </g>
+
+  <g transform="translate(230, 330)">
+    <rect width="180" height="100" rx="12" fill="url(#backendGrad)" filter="url(#shadow)"/>
+    <text x="90" y="28" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="14">Servidor Compile</text>
+    <text x="90" y="50" text-anchor="middle" fill="#fef3c7" font-family="sans-serif" font-size="11">Node.js + Arduino CLI</text>
+    <text x="90" y="70" text-anchor="middle" fill="#fef3c7" font-family="sans-serif" font-size="10">localhost:3001</text>
+    <text x="90" y="88" text-anchor="middle" fill="#fcd34d" font-family="sans-serif" font-size="10">Código → Binario</text>
+  </g>
+
+  <g transform="translate(430, 330)">
+    <rect width="180" height="100" rx="12" fill="#3b82f6" filter="url(#shadow)"/>
+    <text x="90" y="28" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="14">Cloudflare D1</text>
+    <text x="90" y="50" text-anchor="middle" fill="#bfdbfe" font-family="sans-serif" font-size="11">SQLite</text>
+    <text x="90" y="70" text-anchor="middle" fill="#bfdbfe" font-family="sans-serif" font-size="10">Usuarios y Proyectos</text>
+    <text x="90" y="88" text-anchor="middle" fill="#93c5fd" font-family="sans-serif" font-size="10">Persistencia</text>
+  </g>
+
+  <g transform="translate(630, 330)">
+    <rect width="150" height="100" rx="12" fill="#8b5cf6" filter="url(#shadow)"/>
+    <text x="75" y="28" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="12">DigiCode Finder</text>
+    <text x="75" y="50" text-anchor="middle" fill="#ddd6fe" font-family="sans-serif" font-size="10">Tauri Desktop</text>
+    <text x="75" y="70" text-anchor="middle" fill="#ddd6fe" font-family="sans-serif" font-size="10">Descubrir mDNS</text>
+    <text x="75" y="88" text-anchor="middle" fill="#c4b5fd" font-family="sans-serif" font-size="10">Detectar Disp.</text>
+  </g>
+
+  <line x1="210" y1="380" x2="230" y2="380" stroke="#5eead4" stroke-width="1.5" stroke-dasharray="4"/>
+  <line x1="410" y1="380" x2="430" y2="380" stroke="#5eead4" stroke-width="1.5" stroke-dasharray="4"/>
+
+  <path d="M705 330 L705 280 L660 280" stroke="#c4b5fd" stroke-width="2" fill="none"/>
+  <polygon points="660,275 645,280 660,285" fill="#c4b5fd"/>
+  <text x="720" y="305" fill="#8B949E" font-family="sans-serif" font-size="10">mDNS</text>
+</svg>

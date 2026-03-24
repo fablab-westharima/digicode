@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 380">
+  <defs>
+    <linearGradient id="stepGradP" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d9488;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadowP" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="700" height="380" fill="#0D1117" rx="12"/>
+
+  <!-- Title -->
+  <text x="350" y="30" text-anchor="middle" fill="#E6EDF3" font-family="sans-serif" font-weight="bold" font-size="16">Program Creation Flow</text>
+
+  <!-- Step 1: User -->
+  <g transform="translate(50, 55)">
+    <rect width="130" height="50" rx="10" fill="url(#stepGradP)" filter="url(#shadowP)"/>
+    <text x="65" y="30" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="13">User</text>
+  </g>
+  <polygon points="185,80 200,80 200,75 215,82 200,89 200,84 185,84" fill="#5eead4"/>
+  <text x="185" y="110" fill="#8B949E" font-family="sans-serif" font-size="10">Place Blocks</text>
+
+  <!-- Step 2: Blockly Editor -->
+  <g transform="translate(220, 55)">
+    <rect width="130" height="50" rx="10" fill="url(#stepGradP)" filter="url(#shadowP)"/>
+    <text x="65" y="25" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="12">Blockly</text>
+    <text x="65" y="40" text-anchor="middle" fill="white" font-family="sans-serif" font-size="12">Editor</text>
+  </g>
+  <polygon points="355,80 370,80 370,75 385,82 370,89 370,84 355,84" fill="#5eead4"/>
+  <text x="355" y="110" fill="#8B949E" font-family="sans-serif" font-size="10">Generate Code</text>
+
+  <!-- Step 3: Arduino Code -->
+  <g transform="translate(390, 55)">
+    <rect width="130" height="50" rx="10" fill="#f59e0b" filter="url(#shadowP)"/>
+    <text x="65" y="25" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="12">Arduino C++</text>
+    <text x="65" y="40" text-anchor="middle" fill="white" font-family="sans-serif" font-size="12">Code</text>
+  </g>
+  <polygon points="525,80 540,80 540,75 555,82 540,89 540,84 525,84" fill="#5eead4"/>
+  <text x="545" y="110" fill="#8B949E" font-family="sans-serif" font-size="10">Send</text>
+
+  <!-- Step 4: Compile Server -->
+  <g transform="translate(560, 55)">
+    <rect width="130" height="50" rx="10" fill="#f59e0b" filter="url(#shadowP)"/>
+    <text x="65" y="25" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="11">Compile</text>
+    <text x="65" y="40" text-anchor="middle" fill="white" font-family="sans-serif" font-size="11">Server</text>
+  </g>
+
+  <!-- Arrow down -->
+  <path d="M625 105 L625 140" stroke="#5eead4" stroke-width="2" fill="none"/>
+  <polygon points="620,140 625,155 630,140" fill="#5eead4"/>
+  <text x="640" y="130" fill="#8B949E" font-family="sans-serif" font-size="10">Arduino CLI</text>
+
+  <!-- Step 5: Binary File -->
+  <g transform="translate(560, 160)">
+    <rect width="130" height="50" rx="10" fill="#22c55e" filter="url(#shadowP)"/>
+    <text x="65" y="30" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="13">.bin File</text>
+  </g>
+  <polygon points="555,185 540,185 540,180 525,187 540,194 540,189 555,189" fill="#5eead4"/>
+  <text x="470" y="175" fill="#8B949E" font-family="sans-serif" font-size="10">Download</text>
+
+  <!-- Step 6: Browser -->
+  <g transform="translate(390, 160)">
+    <rect width="130" height="50" rx="10" fill="url(#stepGradP)" filter="url(#shadowP)"/>
+    <text x="65" y="30" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="13">Browser</text>
+  </g>
+  <polygon points="385,185 370,185 370,180 355,187 370,194 370,189 385,189" fill="#5eead4"/>
+  <text x="270" y="175" fill="#8B949E" font-family="sans-serif" font-size="10">USB/WiFi Upload</text>
+
+  <!-- Step 7: ESP32 -->
+  <g transform="translate(220, 160)">
+    <rect width="130" height="50" rx="10" fill="#22c55e" filter="url(#shadowP)"/>
+    <text x="65" y="25" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="12">ESP32</text>
+    <text x="65" y="40" text-anchor="middle" fill="white" font-family="sans-serif" font-size="12">Device</text>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(50, 250)">
+    <text x="0" y="0" fill="#8B949E" font-family="sans-serif" font-size="12">Legend:</text>
+    <rect x="0" y="15" width="20" height="14" rx="3" fill="#14b8a6"/>
+    <text x="28" y="26" fill="#E6EDF3" font-family="sans-serif" font-size="11">Frontend</text>
+    <rect x="100" y="15" width="20" height="14" rx="3" fill="#f59e0b"/>
+    <text x="128" y="26" fill="#E6EDF3" font-family="sans-serif" font-size="11">Backend</text>
+    <rect x="200" y="15" width="20" height="14" rx="3" fill="#22c55e"/>
+    <text x="228" y="26" fill="#E6EDF3" font-family="sans-serif" font-size="11">Output/Device</text>
+  </g>
+
+  <!-- Summary box -->
+  <g transform="translate(50, 300)">
+    <rect width="600" height="60" rx="8" fill="#161B22" stroke="#2E333D" stroke-width="1"/>
+    <text x="20" y="25" fill="#E6EDF3" font-family="sans-serif" font-weight="bold" font-size="12">Estimated Processing Time:</text>
+    <text x="20" y="45" fill="#8B949E" font-family="sans-serif" font-size="11">Code Generation: Instant → Compile: 5-30s → Upload: WiFi OTA 10s / USB 30s</text>
+  </g>
+</svg>

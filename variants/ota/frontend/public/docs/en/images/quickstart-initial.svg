@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 160">
+  <defs>
+    <linearGradient id="stepGradQ" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d9488;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadowQ" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <rect width="800" height="160" fill="#0D1117" rx="12"/>
+  <text x="400" y="28" text-anchor="middle" fill="#E6EDF3" font-family="sans-serif" font-weight="bold" font-size="16">Initial Setup (~15 min)</text>
+
+  <g transform="translate(30, 45)">
+    <rect width="160" height="100" rx="12" fill="url(#stepGradQ)" filter="url(#shadowQ)"/>
+    <text x="80" y="30" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="13">STEP 1</text>
+    <text x="80" y="55" text-anchor="middle" fill="white" font-family="sans-serif" font-size="14">USB Connect</text>
+    <text x="80" y="80" text-anchor="middle" fill="#a5f3fc" font-family="sans-serif" font-size="11">~2 min</text>
+  </g>
+
+  <polygon points="200,95 215,95 215,90 230,97 215,104 215,99 200,99" fill="#5eead4"/>
+
+  <g transform="translate(220, 45)">
+    <rect width="160" height="100" rx="12" fill="url(#stepGradQ)" filter="url(#shadowQ)"/>
+    <text x="80" y="30" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="13">STEP 2</text>
+    <text x="80" y="55" text-anchor="middle" fill="white" font-family="sans-serif" font-size="13">Firmware Upload</text>
+    <text x="80" y="80" text-anchor="middle" fill="#a5f3fc" font-family="sans-serif" font-size="11">~3 min</text>
+  </g>
+
+  <polygon points="390,95 405,95 405,90 420,97 405,104 405,99 390,99" fill="#5eead4"/>
+
+  <g transform="translate(410, 45)">
+    <rect width="160" height="100" rx="12" fill="url(#stepGradQ)" filter="url(#shadowQ)"/>
+    <text x="80" y="30" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="13">STEP 3</text>
+    <text x="80" y="55" text-anchor="middle" fill="white" font-family="sans-serif" font-size="14">WiFi Setup</text>
+    <text x="80" y="80" text-anchor="middle" fill="#a5f3fc" font-family="sans-serif" font-size="11">~5 min</text>
+  </g>
+
+  <polygon points="580,95 595,95 595,90 610,97 595,104 595,99 580,99" fill="#5eead4"/>
+
+  <g transform="translate(600, 45)">
+    <rect width="170" height="100" rx="12" fill="url(#stepGradQ)" filter="url(#shadowQ)"/>
+    <text x="85" y="30" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="13">STEP 4</text>
+    <text x="85" y="55" text-anchor="middle" fill="white" font-family="sans-serif" font-size="12">Device Detection</text>
+    <text x="85" y="80" text-anchor="middle" fill="#a5f3fc" font-family="sans-serif" font-size="11">~5 min</text>
+  </g>
+</svg>

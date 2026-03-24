@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <rect width="600" height="300" fill="#0D1117" rx="12"/>
+
+  <text x="300" y="35" text-anchor="middle" fill="#E6EDF3" font-family="sans-serif" font-weight="bold" font-size="18">DigiCode 整體流程</text>
+
+  <g transform="translate(30, 70)">
+    <rect width="120" height="70" rx="12" fill="url(#grad1)" filter="url(#shadow)"/>
+    <text x="60" y="35" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="13">建立</text>
+    <text x="60" y="52" text-anchor="middle" fill="white" font-family="sans-serif" font-size="11">程式</text>
+  </g>
+
+  <polygon points="155,105 175,105 175,100 190,107 175,114 175,109 155,109" fill="#5eead4"/>
+
+  <g transform="translate(195, 70)">
+    <rect width="120" height="70" rx="12" fill="#14b8a6" filter="url(#shadow)"/>
+    <text x="60" y="35" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="13">編譯</text>
+    <text x="60" y="52" text-anchor="middle" fill="white" font-family="sans-serif" font-size="11">在伺服器上</text>
+  </g>
+
+  <polygon points="320,105 340,105 340,100 355,107 340,114 340,109 320,109" fill="#5eead4"/>
+
+  <g transform="translate(360, 70)">
+    <rect width="120" height="70" rx="12" fill="#22c55e" filter="url(#shadow)"/>
+    <text x="60" y="35" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="13">燒錄</text>
+    <text x="60" y="52" text-anchor="middle" fill="white" font-family="sans-serif" font-size="11">WiFi/USB</text>
+  </g>
+
+  <polygon points="485,105 505,105 505,100 520,107 505,114 505,109 485,109" fill="#5eead4"/>
+
+  <g transform="translate(525, 70)">
+    <circle cx="35" cy="35" r="35" fill="#f59e0b" filter="url(#shadow)"/>
+    <text x="35" y="32" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="11">ESP32</text>
+    <text x="35" y="46" text-anchor="middle" fill="white" font-family="sans-serif" font-size="9">執行</text>
+  </g>
+
+  <g transform="translate(30, 180)">
+    <rect width="540" height="100" rx="12" fill="#161B22" stroke="#2E333D" stroke-width="1"/>
+    <text x="20" y="30" fill="#E6EDF3" font-family="sans-serif" font-weight="bold" font-size="14">特色功能</text>
+    <text x="20" y="55" fill="#8B949E" font-family="sans-serif" font-size="12">• 使用 Blockly 視覺化程式設計</text>
+    <text x="20" y="75" fill="#8B949E" font-family="sans-serif" font-size="12">• 無線 OTA 燒錄</text>
+    <text x="280" y="55" fill="#8B949E" font-family="sans-serif" font-size="12">• 雲端編譯</text>
+    <text x="280" y="75" fill="#8B949E" font-family="sans-serif" font-size="12">• 支援 OTTO 機器人</text>
+  </g>
+</svg>
