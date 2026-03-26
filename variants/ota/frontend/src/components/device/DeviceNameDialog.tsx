@@ -385,6 +385,14 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
             </div>
           )}
 
+          {/* macOSでのBLE名に関する注意 */}
+          {isConnected && isDeviceReady && (
+            <div className="p-3 rounded-lg border border-amber-600/30 bg-amber-900/10 text-xs text-[#8B949E]">
+              <p className="font-medium text-amber-400 mb-1">macOSをお使いの方へ</p>
+              <p>macOSはBLEデバイス名を強力にキャッシュするため、名前を変更してもBLEスキャン時に旧名（UUID表示）のまま表示される場合があります。Windowsでは正しく反映されます。これはmacOS側の仕様であり、デバイスには正しく保存されています。</p>
+            </div>
+          )}
+
           {/* シリアルコンソール */}
           {isConnected && (
             <SerialConsole />
