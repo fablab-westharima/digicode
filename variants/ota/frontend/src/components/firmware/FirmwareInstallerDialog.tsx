@@ -321,78 +321,92 @@ export function FirmwareInstallerDialog({ open, onOpenChange, defaultFirmwareTyp
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle className="text-[#58D5D5]">
-            {t('firmware.installerTitle')}
+          <DialogTitle className="text-[#58D5D5] flex items-center gap-2">
+            {defaultFirmwareType === 'ble' ? (
+              <><Bluetooth className="w-5 h-5 text-[#8B5CF6]" /> BLEファームウェア書き込み</>
+            ) : defaultFirmwareType === 'ota' ? (
+              <><Wifi className="w-5 h-5 text-purple-400" /> WiFiファームウェア書き込み</>
+            ) : (
+              t('firmware.installerTitle')
+            )}
           </DialogTitle>
           <DialogDescription className="text-[#8B949E]">
-            {t('firmware.description')}
+            {defaultFirmwareType === 'ble'
+              ? 'ESP32にBLE OTAファームウェアをUSB経由で書き込みます。初回書き込みに必要です。'
+              : defaultFirmwareType === 'ota'
+              ? 'ESP32にWiFi OTAファームウェアをUSB経由で書き込みます。初回書き込みに必要です。'
+              : t('firmware.description')}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* ファームウェア選択 */}
+          {/* ファームウェア選択（専用モード時は非表示） */}
           <div className="space-y-3">
-            <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
-              <span className="bg-[#1f6feb] text-[#58A6F9] text-xs font-medium px-2 py-0.5 rounded">Step 2</span>
-              {t('firmware.step2Title')}
-            </h3>
-            <div className="space-y-2">
-              {/* DigiCode OTA */}
-              <button
-                onClick={() => {
-                  setFirmwareType('ota');
-                  setCompiledFirmwareBlob(null);
-                  setFirmwareVersion(null);
-                  setCompileError(null);
-                }}
-                className={`w-full flex items-start gap-3 p-4 rounded-lg border-2 transition-all ${
-                  firmwareType === 'ota'
-                    ? 'border-[#58A6F9] bg-[#0D1117]'
-                    : 'border-[#2E333D] bg-[#0D1117] hover:border-[#58A6F9]/50'
-                }`}
-              >
-                <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                  <Wifi className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                </div>
-                <div className="flex-1 text-left">
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold text-[#E6EDF3]">{t('firmware.wifiFirmwareTitle')}</p>
-                    {firmwareType === 'ota' && (
-                      <span className="text-xs text-[#58A6F9] bg-[#1f6feb] px-2 py-0.5 rounded">{t('firmware.selected')}</span>
-                    )}
-                  </div>
-                  <p className="text-xs text-[#8B949E] mt-1">{t('firmware.wifiFirmwareDesc')}</p>
-                </div>
-              </button>
+            {!defaultFirmwareType && (
+              <>
+                <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
+                  <span className="bg-[#1f6feb] text-[#58A6F9] text-xs font-medium px-2 py-0.5 rounded">Step 2</span>
+                  {t('firmware.step2Title')}
+                </h3>
+                <div className="space-y-2">
+                  {/* DigiCode OTA */}
+                  <button
+                    onClick={() => {
+                      setFirmwareType('ota');
+                      setCompiledFirmwareBlob(null);
+                      setFirmwareVersion(null);
+                      setCompileError(null);
+                    }}
+                    className={`w-full flex items-start gap-3 p-4 rounded-lg border-2 transition-all ${
+                      firmwareType === 'ota'
+                        ? 'border-[#58A6F9] bg-[#0D1117]'
+                        : 'border-[#2E333D] bg-[#0D1117] hover:border-[#58A6F9]/50'
+                    }`}
+                  >
+                    <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                      <Wifi className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-[#E6EDF3]">{t('firmware.wifiFirmwareTitle')}</p>
+                        {firmwareType === 'ota' && (
+                          <span className="text-xs text-[#58A6F9] bg-[#1f6feb] px-2 py-0.5 rounded">{t('firmware.selected')}</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-[#8B949E] mt-1">{t('firmware.wifiFirmwareDesc')}</p>
+                    </div>
+                  </button>
 
-              {/* DigiCode BLE */}
-              <button
-                onClick={() => {
-                  setFirmwareType('ble');
-                  setCompiledFirmwareBlob(null);
-                  setFirmwareVersion(null);
-                  setCompileError(null);
-                }}
-                className={`w-full flex items-start gap-3 p-4 rounded-lg border-2 transition-all ${
-                  firmwareType === 'ble'
-                    ? 'border-[#8B5CF6] bg-[#0D1117]'
-                    : 'border-[#2E333D] bg-[#0D1117] hover:border-[#8B5CF6]/50'
-                }`}
-              >
-                <div className="p-2 bg-violet-100 dark:bg-violet-900 rounded-lg">
-                  <Bluetooth className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                  {/* DigiCode BLE */}
+                  <button
+                    onClick={() => {
+                      setFirmwareType('ble');
+                      setCompiledFirmwareBlob(null);
+                      setFirmwareVersion(null);
+                      setCompileError(null);
+                    }}
+                    className={`w-full flex items-start gap-3 p-4 rounded-lg border-2 transition-all ${
+                      firmwareType === 'ble'
+                        ? 'border-[#8B5CF6] bg-[#0D1117]'
+                        : 'border-[#2E333D] bg-[#0D1117] hover:border-[#8B5CF6]/50'
+                    }`}
+                  >
+                    <div className="p-2 bg-violet-100 dark:bg-violet-900 rounded-lg">
+                      <Bluetooth className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-[#E6EDF3]">{t('firmware.bleFirmwareTitle')}</p>
+                        {firmwareType === 'ble' && (
+                          <span className="text-xs text-[#8B5CF6] bg-[#8B5CF6]/20 px-2 py-0.5 rounded">{t('firmware.selected')}</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-[#8B949E] mt-1">{t('firmware.bleFirmwareDesc')}</p>
+                    </div>
+                  </button>
                 </div>
-                <div className="flex-1 text-left">
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold text-[#E6EDF3]">{t('firmware.bleFirmwareTitle')}</p>
-                    {firmwareType === 'ble' && (
-                      <span className="text-xs text-[#8B5CF6] bg-[#8B5CF6]/20 px-2 py-0.5 rounded">{t('firmware.selected')}</span>
-                    )}
-                  </div>
-                  <p className="text-xs text-[#8B949E] mt-1">{t('firmware.bleFirmwareDesc')}</p>
-                </div>
-              </button>
-            </div>
+              </>
+            )}
 
             {/* ビルド開始ボタン */}
             {!isCompiling && !compiledFirmwareBlob && !compileError && (
