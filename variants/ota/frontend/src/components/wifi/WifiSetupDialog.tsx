@@ -95,6 +95,8 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
 
   // ESP32起動完了フラグ
   const [isDeviceReady, setIsDeviceReady] = useState(false);
+  // 初期化処理実行中フラグ（二重実行防止）
+  const initRunning = useRef(false);
 
   // コンソール自動スクロール
   useEffect(() => {
@@ -113,11 +115,12 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
     }
   }, [output, wifiMessage, t]);
 
-  // 接続状態を監視してリセット→Ready待ち→デバイス情報読み込み（DeviceNameDialogと同じパターン）
+  // 接続状態を監視してリセット→Ready待ち→デバイス情報読み込み
   useEffect(() => {
-    if (status !== 'connected' || isDeviceReady || !open) return;
+    if (status !== 'connected' || isDeviceReady || !open || initRunning.current) return;
 
     const initDevice = async () => {
+      initRunning.current = true;
       setWifiMessage('ESP32をリセット中...');
       await resetESP32();
 
@@ -145,8 +148,9 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
         await loadDeviceName();
         await loadWiFiList();
       } else {
-        setWifiMessage('起動タイムアウト。USBケーブルを抜き差しして再度接続してください。');
+        setWifiMessage('起動タイムアウト。もう一度「接続」を試してください。');
       }
+      initRunning.current = false;
     };
 
     initDevice();
@@ -156,6 +160,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
   // ダイアログが閉じた時に状態をリセット
   useEffect(() => {
     if (!open) {
+      initRunning.current = false;
       setIsDeviceReady(false);
       setWifiList([]);
       setWifiMessage('');
