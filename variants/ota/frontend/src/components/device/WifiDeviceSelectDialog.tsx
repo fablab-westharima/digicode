@@ -278,7 +278,7 @@ export function WifiDeviceSelectDialog({
           <DialogDescription>
             {multiSelect
               ? t('editor.wifiDeviceSelect.batchDescription', '更新するデバイスをチェックしてください')
-              : t('editor.wifiDeviceSelect.clipboardDescription', 'Helperでコピーしたデバイス情報を貼り付けてください')}
+              : t('editor.wifiDeviceSelect.clipboardDescription', 'DigiCode Finderでコピーしたデバイス情報を貼り付けてください')}
           </DialogDescription>
         </DialogHeader>
 
@@ -380,7 +380,7 @@ export function WifiDeviceSelectDialog({
                     {t('editor.wifiDeviceSelect.noClipboardDevice', 'デバイス情報がありません')}
                   </p>
                   <p className="text-xs mt-1">
-                    {t('editor.wifiDeviceSelect.clipboardHint', 'Helperアプリで「書込みデバイス情報を取得」をクリックしてください')}
+                    {t('editor.wifiDeviceSelect.clipboardHint', 'DigiCode Finderで「書込みデバイス情報を取得」をクリックしてください')}
                   </p>
                 </div>
               )}
@@ -396,7 +396,7 @@ export function WifiDeviceSelectDialog({
                 {t('editor.wifiDeviceSelect.refreshClipboard', 'クリップボードを再読み込み')}
               </Button>
 
-              {/* Helper ダウンロードリンク */}
+              {/* DigiCode Finder ダウンロードリンク */}
               <div className="text-center">
                 <a
                   href={HELPER_DOWNLOAD_URL}
@@ -405,7 +405,7 @@ export function WifiDeviceSelectDialog({
                   className={`inline-flex items-center gap-1 text-xs ${multiSelect ? 'text-orange-600 dark:text-orange-400' : 'text-purple-600 dark:text-purple-400'} hover:underline`}
                 >
                   <Download className="w-3 h-3" />
-                  {t('editor.wifiDeviceSelect.downloadHelper', 'DigiCode Helper をダウンロード')}
+                  {t('editor.wifiDeviceSelect.downloadHelper', 'DigiCode Finder をダウンロード')}
                 </a>
               </div>
             </>
