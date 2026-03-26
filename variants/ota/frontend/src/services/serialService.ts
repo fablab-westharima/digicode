@@ -73,6 +73,18 @@ class SerialService {
         ]
       }) as SerialPortType;
 
+      // ポートが既に開いている場合（他サービスが閉じきれていない場合）は一度閉じる
+      if (this.port.readable || this.port.writable) {
+        console.debug('[Serial] Port already open, closing before reconnect...');
+        try {
+          await this.port.close();
+        } catch (error) {
+          console.debug('[Serial] Port close error (expected):', error);
+        }
+        // ポートが安定するまで少し待つ
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+
       await this.port.open({
         baudRate: options.baudRate || 115200,
         dataBits: 8,
