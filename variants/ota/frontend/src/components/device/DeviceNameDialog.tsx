@@ -245,135 +245,143 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-md max-h-[85vh] overflow-y-auto bg-[#161B22] border-[#2E333D]"
+        className="sm:max-w-lg max-h-[85vh] flex flex-col"
         onInteractOutside={(e) => e.preventDefault()}
       >
-        <DialogHeader>
-          <DialogTitle className="text-[#E6EDF3] flex items-center gap-2">
+        <DialogHeader className="flex-shrink-0">
+          <DialogTitle className="flex items-center gap-2">
             <Pencil className="w-5 h-5 text-[#8B5CF6]" />
             デバイス名の設定
           </DialogTitle>
-          <DialogDescription className="text-[#8B949E]">
+          <DialogDescription>
             ESP32のデバイス名を設定します。BLE/WiFi OTAでデバイスを識別する名前になります。
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          {/* Step 1: USB接続 */}
-          {!isConnected ? (
-            <div className="space-y-3">
-              <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
-                <span className="bg-[#1f6feb] text-white text-xs font-medium px-2 py-0.5 rounded">Step 1</span>
-                USB接続
-              </h3>
-              <p className="text-xs text-[#8B949E]">
-                ESP32をUSBケーブルでPCに接続し、下のボタンをクリックしてください。
-              </p>
-              <Button
-                onClick={handleConnect}
-                className="w-full bg-[#238636] hover:bg-[#2ea043] text-white"
-              >
-                <Usb className="w-4 h-4 mr-2" />
-                ESP32にUSB接続
-              </Button>
-            </div>
-          ) : !isDeviceReady ? (
-            <div className="space-y-3">
-              <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
-                <span className="bg-[#1f6feb] text-white text-xs font-medium px-2 py-0.5 rounded">Step 1</span>
-                USB接続
-              </h3>
-              <div className="flex items-center gap-2 p-3 bg-[#0D1117] rounded-lg border border-[#2E333D]">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#8B5CF6]"></div>
-                <span className="text-sm text-[#8B949E]">{statusMessage || '接続中...'}</span>
-              </div>
-            </div>
-          ) : (
-            <>
-              {/* 接続済み表示 */}
-              <div className="flex items-center justify-between p-2 bg-[#1a472a] border border-[#2ea043] rounded-lg">
-                <span className="text-sm text-[#2ea043]">
-                  <Check className="w-4 h-4 inline mr-1" />
-                  ESP32に接続済み
-                </span>
-                <Button
-                  onClick={() => { disconnect(); setIsDeviceReady(false); }}
-                  variant="ghost"
-                  size="sm"
-                  className="text-xs text-[#8B949E] hover:text-[#E6EDF3]"
-                >
-                  切断
-                </Button>
-              </div>
-
-              {/* Step 2: デバイス名 */}
-              <div className="space-y-3">
-                <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
-                  <span className="bg-[#8B5CF6] text-white text-xs font-medium px-2 py-0.5 rounded">Step 2</span>
-                  デバイス名
-                </h3>
-
-                {isLoading ? (
-                  <div className="flex items-center gap-2 p-3 bg-[#0D1117] rounded-lg">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#8B5CF6]"></div>
-                    <span className="text-sm text-[#8B949E]">読み込み中...</span>
+        <div className="space-y-4 overflow-y-auto flex-1 pr-2">
+          {/* STEP 1: USB接続 */}
+          <div className="space-y-3">
+            <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
+              <span className={`text-xs font-medium px-2 py-0.5 rounded ${isDeviceReady ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}`}>
+                Step 1
+              </span>
+              USB接続
+              {isDeviceReady && <Check className="w-4 h-4 text-green-500" />}
+            </h3>
+            <div className="p-3 rounded-lg border-2 border-[#2E333D] bg-[#0D1117]">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-[#161B22]">
+                    <Usb className="w-5 h-5 text-[#8B949E]" />
                   </div>
-                ) : (
-                  <>
-                    {deviceUuid && (
-                      <p className="text-xs text-[#484F58]">UUID: {deviceUuid}</p>
-                    )}
-
-                    <div>
-                      <label className="text-xs text-[#8B949E] block mb-1">
-                        デバイス名（英数字とハイフン、1-20文字）
-                      </label>
-                      <div className="flex gap-2">
-                        <div className="flex items-center bg-[#0D1117] border border-[#2E333D] rounded-lg px-3 shrink-0">
-                          <span className="text-sm text-[#484F58]">DigiCode-</span>
-                        </div>
-                        <input
-                          type="text"
-                          value={deviceName}
-                          onChange={(e) => {
-                            setDeviceName(e.target.value);
-                            setNameError(validateName(e.target.value));
-                            setIsSaved(false);
-                          }}
-                          placeholder="MyRobot"
-                          maxLength={20}
-                          disabled={isSaving}
-                          className="flex-1 bg-[#0D1117] border border-[#2E333D] rounded-lg px-3 py-2 text-sm text-[#E6EDF3] placeholder-[#484F58] focus:border-[#8B5CF6] focus:outline-none disabled:opacity-50"
-                        />
-                      </div>
-                      {nameError && (
-                        <p className="text-xs text-[#f85149] mt-1">{nameError}</p>
-                      )}
+                  <div>
+                    <p className="text-sm font-medium text-[#E6EDF3]">
+                      {isConnected ? 'ESP32に接続済み' : 'ESP32をUSBケーブルで接続'}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className={`w-2 h-2 rounded-full ${
+                        isConnected ? 'bg-green-500' : 'bg-gray-500'
+                      }`} />
+                      <span className="text-xs text-[#8B949E]">
+                        {isConnected ? '接続済み' : '未接続'}
+                      </span>
                     </div>
-
-                    <Button
-                      onClick={handleSave}
-                      disabled={isSaving || !hasChanged || deviceName.length === 0 || !!nameError}
-                      className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED] text-white disabled:opacity-50"
-                    >
-                      {isSaving ? '保存中...' : isSaved ? (
-                        <><Check className="w-4 h-4 mr-1" /> 保存完了</>
-                      ) : '保存して再起動'}
-                    </Button>
-                  </>
+                  </div>
+                </div>
+                {isConnected ? (
+                  <Button variant="outline" size="sm" onClick={() => { disconnect(); setIsDeviceReady(false); }}>
+                    切断
+                  </Button>
+                ) : (
+                  <Button size="sm" onClick={handleConnect}>
+                    接続
+                  </Button>
                 )}
               </div>
-            </>
+            </div>
+          </div>
+
+          {/* ESP32起動待ち中 */}
+          {isConnected && !isDeviceReady && (
+            <div className="p-4 rounded-lg border-2 border-yellow-600/50 bg-yellow-900/20">
+              <div className="flex items-center gap-3">
+                <div className="animate-spin h-5 w-5 border-2 border-yellow-500 border-t-transparent rounded-full" />
+                <div>
+                  <p className="text-sm font-medium text-yellow-400">{statusMessage || 'ESP32起動待ち中...'}</p>
+                  <p className="text-xs text-[#8B949E]">起動完了を検知するまでお待ちください</p>
+                </div>
+              </div>
+            </div>
           )}
 
-          {/* ステータスメッセージ */}
-          {statusMessage && isDeviceReady && (
-            <div className={`p-3 rounded-lg text-sm text-center ${
-              isSaved
-                ? 'bg-[#1a472a] border border-[#2ea043] text-[#2ea043]'
-                : 'bg-[#0D1117] border border-[#2E333D] text-[#8B949E]'
-            }`}>
-              {statusMessage}
+          {/* STEP 2: デバイス名 */}
+          {isConnected && isDeviceReady && (
+            <div className="space-y-3">
+              <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
+                <span className={`text-xs font-medium px-2 py-0.5 rounded ${isSaved ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}`}>
+                  Step 2
+                </span>
+                デバイス名
+                {isSaved && <Check className="w-4 h-4 text-green-500" />}
+              </h3>
+
+              {isLoading ? (
+                <div className="p-4 rounded-lg border-2 border-[#2E333D] bg-[#0D1117]">
+                  <div className="flex items-center gap-3">
+                    <div className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full" />
+                    <span className="text-sm text-[#8B949E]">デバイス情報を読み込み中...</span>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {deviceUuid && (
+                    <p className="text-xs text-[#484F58]">UUID: {deviceUuid}</p>
+                  )}
+
+                  <div>
+                    <label className="text-xs text-[#8B949E] block mb-1">
+                      デバイス名（英数字とハイフン、1-20文字）
+                    </label>
+                    <input
+                      type="text"
+                      value={deviceName}
+                      onChange={(e) => {
+                        setDeviceName(e.target.value);
+                        setNameError(validateName(e.target.value));
+                        setIsSaved(false);
+                      }}
+                      placeholder="MyRobot"
+                      maxLength={20}
+                      disabled={isSaving}
+                      className="w-full bg-[#0D1117] border border-[#2E333D] rounded-lg px-3 py-2 text-sm text-[#E6EDF3] placeholder-[#484F58] focus:border-[#8B5CF6] focus:outline-none disabled:opacity-50"
+                    />
+                    {nameError && (
+                      <p className="text-xs text-[#f85149] mt-1">{nameError}</p>
+                    )}
+                  </div>
+
+                  {/* ステータスメッセージ */}
+                  {statusMessage && (
+                    <div className={`p-3 rounded-lg text-sm ${
+                      isSaved
+                        ? 'bg-[#1a472a] border border-[#2ea043] text-[#2ea043]'
+                        : 'bg-[#0D1117] border border-[#2E333D] text-[#8B949E]'
+                    }`}>
+                      {statusMessage}
+                    </div>
+                  )}
+
+                  <Button
+                    onClick={handleSave}
+                    disabled={isSaving || !hasChanged || deviceName.length === 0 || !!nameError}
+                    className="w-full bg-[#238636] hover:bg-[#2ea043] text-white disabled:opacity-50"
+                  >
+                    {isSaving ? '保存中...' : isSaved ? (
+                      <><Check className="w-4 h-4 mr-1" /> 保存完了</>
+                    ) : '設定を保存'}
+                  </Button>
+                </>
+              )}
             </div>
           )}
 
