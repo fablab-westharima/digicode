@@ -160,7 +160,7 @@ export function Sidebar({
         },
         {
           id: 'wifi-device-name',
-          label: t('sidebar.wifiDeviceName', { defaultValue: 'WiFiデバイス名設定' }),
+          label: t('sidebar.wifiDeviceName', { defaultValue: 'WiFiデバイス名変更' }),
           icon: <Pencil className="w-3 h-3" />,
           action: onDeviceName || (() => {}),
         },
