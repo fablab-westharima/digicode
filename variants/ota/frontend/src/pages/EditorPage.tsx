@@ -23,6 +23,7 @@ import { BatchUpdateDialog } from '@/components/device/BatchUpdateDialog';
 import { TutorialOverlay } from '@/components/tutorial/TutorialOverlay';
 import { TutorialSelectDialog } from '@/components/tutorial/TutorialSelectDialog';
 import { WifiSetupDialog } from '@/components/wifi/WifiSetupDialog';
+import { WifiPrerequisitesDialog } from '@/components/wifi/WifiPrerequisitesDialog';
 import { DeviceNameDialog } from '@/components/device/DeviceNameDialog';
 import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstallerDialog';
 import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
@@ -110,6 +111,7 @@ export function EditorPage() {
   const [pendingOtaBinary, setPendingOtaBinary] = useState<Blob | null>(null);
   const [tutorialDialogOpen, setTutorialDialogOpen] = useState(false);
   const [wifiSetupDialogOpen, setWifiSetupDialogOpen] = useState(false);
+  const [wifiPrerequisitesDialogOpen, setWifiPrerequisitesDialogOpen] = useState(false);
   const [deviceNameDialogOpen, setDeviceNameDialogOpen] = useState(false);
   const [wifiDeviceSelectDialogOpen, setWifiDeviceSelectDialogOpen] = useState(false);
   const [wifiDeviceSelectMultiMode, setWifiDeviceSelectMultiMode] = useState(false);
@@ -1518,6 +1520,7 @@ export function EditorPage() {
           <Sidebar
             onProjectOpen={handleOpen}
             onBleFirmwareWrite={handleBleFirmwareWrite}
+            onWifiPrerequisites={() => setWifiPrerequisitesDialogOpen(true)}
             onWifiFirmwareWrite={handleWifiFirmwareWrite}
             onApSetup={() => setWifiSetupDialogOpen(true)}
             onDeviceName={() => setDeviceNameDialogOpen(true)}
@@ -1853,6 +1856,12 @@ export function EditorPage() {
       <TutorialSelectDialog
         open={tutorialDialogOpen}
         onOpenChange={setTutorialDialogOpen}
+      />
+
+      {/* WiFi OTA必要ソフトの準備ダイアログ */}
+      <WifiPrerequisitesDialog
+        open={wifiPrerequisitesDialogOpen}
+        onOpenChange={setWifiPrerequisitesDialogOpen}
       />
 
       {/* Wifiルータに接続ダイアログ */}

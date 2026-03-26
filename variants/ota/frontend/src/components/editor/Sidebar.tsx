@@ -19,13 +19,15 @@ import {
   ChevronRight,
   ExternalLink,
   Pencil,
-  Bluetooth
+  Bluetooth,
+  Download
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface SidebarProps {
   onProjectOpen?: () => void;
   onBleFirmwareWrite?: () => void;
+  onWifiPrerequisites?: () => void;
   onWifiFirmwareWrite?: () => void;
   onApSetup?: () => void;
   onUsbPortRelease?: () => void;
@@ -63,6 +65,7 @@ interface NavItem {
 export function Sidebar({
   onProjectOpen,
   onBleFirmwareWrite,
+  onWifiPrerequisites,
   onWifiFirmwareWrite,
   onApSetup,
   onUsbPortRelease,
@@ -146,6 +149,12 @@ export function Sidebar({
       icon: <Radio className="w-4 h-4" />,
       category: 'otaSetup',
       children: [
+        {
+          id: 'wifi-prerequisites',
+          label: t('sidebar.wifiPrerequisites', { defaultValue: '必要ソフトの準備' }),
+          icon: <Download className="w-3 h-3" />,
+          action: onWifiPrerequisites || (() => {}),
+        },
         {
           id: 'wifi-firmware-write',
           label: t('sidebar.wifiFirmwareWrite', { defaultValue: 'WiFiファームウェア書き込み' }),
