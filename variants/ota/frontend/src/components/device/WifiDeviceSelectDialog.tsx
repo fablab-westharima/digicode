@@ -289,6 +289,28 @@ export function WifiDeviceSelectDialog({
             </div>
           ) : (
             <>
+              {/* Step 1: DigiCode Finder 起動 */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={launchHelper}
+                className="w-full"
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                DigiCode Finder を起動（書込みデバイス選択）
+              </Button>
+
+              {/* Step 2: クリップボード読み込み */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRefreshClipboard}
+                className="w-full"
+              >
+                <Clipboard className="w-4 h-4 mr-2" />
+                クリップボードを読み込み（選択反映）
+              </Button>
+
               {/* デバイスリスト */}
               {hasDevices ? (
                 <div className="space-y-1">
@@ -374,38 +396,15 @@ export function WifiDeviceSelectDialog({
                   )}
                 </div>
               ) : (
-                <div className="text-center py-6 text-gray-500 dark:text-gray-400">
-                  <Clipboard className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                  <p className="text-sm font-medium">
-                    {t('editor.wifiDeviceSelect.noClipboardDevice', 'デバイス情報がありません')}
-                  </p>
-                  <p className="text-xs mt-1">
+                <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                  <p className="text-xs">
                     {t('editor.wifiDeviceSelect.clipboardHint', 'DigiCode Finderで「書込みデバイス情報を取得」をクリックしてください')}
                   </p>
                 </div>
               )}
 
-              {/* クリップボード再読み込みボタン */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRefreshClipboard}
-                className="w-full"
-              >
-                <Clipboard className="w-4 h-4 mr-2" />
-                {t('editor.wifiDeviceSelect.refreshClipboard', 'クリップボードを再読み込み')}
-              </Button>
-
-              {/* DigiCode Finder 起動 / ダウンロード */}
-              <div className="flex items-center justify-center gap-4">
-                <button
-                  onClick={launchHelper}
-                  className={`inline-flex items-center gap-1 text-xs ${multiSelect ? 'text-orange-600 dark:text-orange-400' : 'text-purple-600 dark:text-purple-400'} hover:underline`}
-                >
-                  <ExternalLink className="w-3 h-3" />
-                  DigiCode Finder を起動
-                </button>
-                <span className="text-xs text-gray-500">|</span>
+              {/* DigiCode Finder ダウンロードリンク */}
+              <div className="text-center">
                 <a
                   href={HELPER_DOWNLOAD_URL}
                   target="_blank"
@@ -413,7 +412,7 @@ export function WifiDeviceSelectDialog({
                   className={`inline-flex items-center gap-1 text-xs ${multiSelect ? 'text-orange-600 dark:text-orange-400' : 'text-purple-600 dark:text-purple-400'} hover:underline`}
                 >
                   <Download className="w-3 h-3" />
-                  ダウンロード
+                  DigiCode Finder をダウンロード
                 </a>
               </div>
             </>
