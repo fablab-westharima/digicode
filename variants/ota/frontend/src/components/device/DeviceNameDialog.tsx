@@ -241,7 +241,7 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-md bg-[#161B22] border-[#2E333D]"
+        className="max-w-md max-h-[85vh] overflow-y-auto bg-[#161B22] border-[#2E333D]"
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
