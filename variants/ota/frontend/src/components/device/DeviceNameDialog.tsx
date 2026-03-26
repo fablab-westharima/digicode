@@ -373,7 +373,7 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
 
                   <Button
                     onClick={handleSave}
-                    disabled={isSaving || !hasChanged || deviceName.length === 0 || !!nameError}
+                    disabled={isSaving || isSaved || !hasChanged || deviceName.length === 0 || !!nameError}
                     className="w-full bg-[#238636] hover:bg-[#2ea043] text-white disabled:opacity-50"
                   >
                     {isSaving ? '保存中...' : isSaved ? (
