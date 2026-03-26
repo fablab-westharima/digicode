@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Dialog,
@@ -219,9 +219,11 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
     }
   };
 
-  // ダイアログクローズ時のクリーンアップ
+  // ダイアログが閉じた瞬間のみクリーンアップ（open: true→falseの変化時のみ）
+  const prevOpen = useRef(open);
   useEffect(() => {
-    if (!open) {
+    if (prevOpen.current && !open) {
+      // ダイアログが開→閉に変わった時だけ切断
       if (status === 'connected') {
         disconnect();
       }
@@ -233,6 +235,7 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
       setIsSaved(false);
       setStatusMessage('');
     }
+    prevOpen.current = open;
   }, [open, status, disconnect]);
 
   const isConnected = status === 'connected';
