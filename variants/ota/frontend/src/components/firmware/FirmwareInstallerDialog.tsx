@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Dialog,
@@ -8,10 +8,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Usb, Trash2, Wifi, Bluetooth, Check } from 'lucide-react';
+import { Usb, Trash2, Wifi, Bluetooth } from 'lucide-react';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
 import { compileService, type ConnectionType } from '@/services/compileService';
-import { useSerialStore } from '@/stores/serialStore';
 
 interface FirmwareInstallerDialogProps {
   open: boolean;
@@ -42,106 +41,6 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
   const [installProgress, setInstallProgress] = useState<FlashProgress | null>(null);
   const [needsManualReset, setNeedsManualReset] = useState(false);
   const [connectionAttempts, setConnectionAttempts] = useState(0);
-
-  // デバイス名設定ステップ
-  const [showDeviceNameStep, setShowDeviceNameStep] = useState(false);
-  const [deviceNameInput, setDeviceNameInput] = useState('');
-  const [deviceNameError, setDeviceNameError] = useState('');
-  const [isSavingDeviceName, setIsSavingDeviceName] = useState(false);
-  const [deviceNameSaved, setDeviceNameSaved] = useState(false);
-  const [isSerialReconnecting, setIsSerialReconnecting] = useState(false);
-  const [serialReconnected, setSerialReconnected] = useState(false);
-
-  // デバイス名バリデーション（英数字とハイフン、1-20文字）
-  const validateDeviceName = (name: string): string => {
-    if (name.length === 0) return '';
-    if (name.length > 20) return 'デバイス名は20文字以内で入力してください';
-    if (!/^[a-zA-Z0-9-]+$/.test(name)) return '英数字とハイフン(-)のみ使用できます';
-    if (name.startsWith('-') || name.endsWith('-')) return '先頭・末尾にハイフンは使えません';
-    return '';
-  };
-
-  // ファームウェア書き込み完了後、シリアル再接続してデバイス名設定ステップを表示
-  const startDeviceNameStep = useCallback(async () => {
-    setShowDeviceNameStep(true);
-    setDeviceNameSaved(false);
-    setDeviceNameInput('');
-    setDeviceNameError('');
-    setIsSerialReconnecting(true);
-    setSerialReconnected(false);
-
-    // esptoolのポートを解放
-    addLog('デバイス名設定の準備中...');
-    await firmwareService.disconnect();
-    setIsConnected(false);
-
-    // ESP32の再起動待ち
-    addLog('ESP32の起動を待っています...');
-    await new Promise(resolve => setTimeout(resolve, 3000));
-
-    // serialServiceで再接続
-    try {
-      const { connect, output } = useSerialStore.getState();
-      await connect();
-      setSerialReconnected(true);
-      addLog('シリアル接続成功。デバイス名を設定できます。');
-
-      // 既存のデバイス名を取得
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const { send } = useSerialStore.getState();
-      await send('GET_CONFIG\n');
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      const currentOutput = useSerialStore.getState().output;
-      const nameLine = currentOutput.find((line: string) => line.startsWith('OK:NAME='));
-      if (nameLine) {
-        const existingName = nameLine.substring(8);
-        if (existingName.length > 0) {
-          setDeviceNameInput(existingName);
-          addLog(`現在のデバイス名: ${existingName}`);
-        }
-      }
-    } catch (error) {
-      addLog('シリアル再接続に失敗しました。デバイス名は後からUSB接続で設定できます。');
-      console.error('[FirmwareInstaller] Serial reconnect failed:', error);
-    } finally {
-      setIsSerialReconnecting(false);
-    }
-  }, []);
-
-  // デバイス名を保存
-  const saveDeviceName = async () => {
-    const error = validateDeviceName(deviceNameInput);
-    if (error) {
-      setDeviceNameError(error);
-      return;
-    }
-
-    setIsSavingDeviceName(true);
-    try {
-      const { send } = useSerialStore.getState();
-      await send(`SET_NAME:${deviceNameInput}\n`);
-      await new Promise(resolve => setTimeout(resolve, 300));
-      await send('SAVE_CONFIG\n');
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // 保存確認
-      const currentOutput = useSerialStore.getState().output;
-      const saved = currentOutput.some((line: string) => line.includes('OK:CONFIG_SAVED') || line.includes('OK:NAME='));
-      if (saved) {
-        setDeviceNameSaved(true);
-        addLog(`デバイス名を「${deviceNameInput}」に設定しました。BLE名: DigiCode-${deviceNameInput}`);
-      } else {
-        addLog('デバイス名の保存を実行しました。');
-        setDeviceNameSaved(true);
-      }
-    } catch (error) {
-      addLog('デバイス名の保存に失敗しました。');
-      console.error('[FirmwareInstaller] Save device name error:', error);
-    } finally {
-      setIsSavingDeviceName(false);
-    }
-  };
 
   // ファームウェアをコンパイル
   const compileFirmware = async () => {
@@ -261,11 +160,6 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
       if (success) {
         addLog(t('firmware.installComplete'));
         setNeedsManualReset(false);
-
-        // BLEファームウェアの場合、デバイス名設定ステップを開始
-        if (firmwareType === 'ble') {
-          await startDeviceNameStep();
-        }
       } else {
         // flashCompleteArduinoFirmware()がfalseを返した場合
         // すでにonProgressでエラーメッセージが設定されているので、それを保持
@@ -313,15 +207,9 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
         firmwareService.disconnect();
         setIsConnected(false);
       }
-      if (serialReconnected) {
-        useSerialStore.getState().disconnect();
-      }
       setLogs([]);
-      setShowDeviceNameStep(false);
-      setDeviceNameSaved(false);
-      setSerialReconnected(false);
     }
-  }, [open, isConnected, serialReconnected]);
+  }, [open, isConnected]);
 
   // ログ追加
   const addLog = (message: string) => {
@@ -716,92 +604,6 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
               </p>
             )}
           </div>
-
-          {/* デバイス名設定ステップ（BLEファームウェア書き込み完了後） */}
-          {showDeviceNameStep && (
-            <div className="space-y-3 p-4 bg-[#0D1117] rounded-lg border-2 border-[#8B5CF6]">
-              <h3 className="font-semibold text-sm text-[#E6EDF3] flex items-center gap-2">
-                <Bluetooth className="w-4 h-4 text-[#8B5CF6]" />
-                デバイス名の設定
-              </h3>
-              <p className="text-xs text-[#8B949E]">
-                BLEデバイス名を設定します。複数台使用する際にデバイスを識別しやすくなります。
-                <br />
-                設定しない場合は自動生成されたIDが使用されます。
-              </p>
-
-              {isSerialReconnecting ? (
-                <div className="flex items-center gap-2 p-3 bg-[#161B22] rounded-lg">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#8B5CF6]"></div>
-                  <span className="text-sm text-[#8B949E]">ESP32に接続中...</span>
-                </div>
-              ) : serialReconnected ? (
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs text-[#8B949E] block mb-1">
-                      デバイス名（英数字とハイフン、1-20文字）
-                    </label>
-                    <div className="flex gap-2">
-                      <div className="flex items-center bg-[#161B22] border border-[#2E333D] rounded-lg px-3">
-                        <span className="text-sm text-[#8B949E]">DigiCode-</span>
-                      </div>
-                      <input
-                        type="text"
-                        value={deviceNameInput}
-                        onChange={(e) => {
-                          setDeviceNameInput(e.target.value);
-                          setDeviceNameError(validateDeviceName(e.target.value));
-                          setDeviceNameSaved(false);
-                        }}
-                        placeholder="MyRobot"
-                        maxLength={20}
-                        disabled={isSavingDeviceName || deviceNameSaved}
-                        className="flex-1 bg-[#161B22] border border-[#2E333D] rounded-lg px-3 py-2 text-sm text-[#E6EDF3] placeholder-[#484F58] focus:border-[#8B5CF6] focus:outline-none disabled:opacity-50"
-                      />
-                    </div>
-                    {deviceNameError && (
-                      <p className="text-xs text-[#f85149] mt-1">{deviceNameError}</p>
-                    )}
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={saveDeviceName}
-                      disabled={isSavingDeviceName || deviceNameSaved || deviceNameInput.length === 0 || !!deviceNameError}
-                      className="flex-1 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white disabled:opacity-50"
-                    >
-                      {isSavingDeviceName ? '保存中...' : deviceNameSaved ? (
-                        <><Check className="w-4 h-4 mr-1" /> 保存完了</>
-                      ) : '保存'}
-                    </Button>
-                    {!deviceNameSaved && (
-                      <Button
-                        onClick={() => setShowDeviceNameStep(false)}
-                        variant="outline"
-                        className="border-[#2E333D] text-[#8B949E] hover:bg-[#2E333D]"
-                      >
-                        スキップ
-                      </Button>
-                    )}
-                  </div>
-
-                  {deviceNameSaved && (
-                    <div className="p-3 bg-[#1a472a] border border-[#2ea043] rounded-lg">
-                      <p className="text-[#2ea043] text-sm text-center">
-                        デバイス名を保存しました。再起動後にBLE名「DigiCode-{deviceNameInput}」で検出されます。
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="p-3 bg-[#2d333b] border border-[#484F58] rounded-lg">
-                  <p className="text-xs text-[#8B949E]">
-                    シリアル接続に失敗しました。デバイス名は後からUSB接続で設定できます。
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Flash消去（デバッグ用） */}
           <div className="border-t border-[#2E333D] pt-4 space-y-3">
