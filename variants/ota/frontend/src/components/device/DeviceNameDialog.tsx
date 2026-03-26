@@ -28,9 +28,9 @@ function SerialConsole() {
         {expanded ? '▾' : '▸'} シリアルコンソール
       </button>
       {expanded && (
-        <div className="mt-2 bg-[#0D1117] border border-[#2E333D] rounded-lg p-2 h-40 overflow-y-auto font-mono text-xs">
+        <div className="mt-2 bg-[#0D1117] border border-[#2E333D] rounded-lg p-2 h-40 overflow-x-auto overflow-y-auto font-mono text-xs">
           {lines.map((line: string, i: number) => (
-            <div key={i} className={`whitespace-pre-wrap ${
+            <div key={i} className={`whitespace-pre ${
               line.includes('ERROR') || line.includes('assert failed') ? 'text-red-400' :
               line.includes('OK:') || line.includes('SUCCESS') ? 'text-green-400' :
               line.includes('BLE Name:') || line.includes('Device config') ? 'text-yellow-300' :

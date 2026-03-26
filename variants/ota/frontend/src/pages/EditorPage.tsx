@@ -114,6 +114,7 @@ export function EditorPage() {
   const [wifiDeviceSelectDialogOpen, setWifiDeviceSelectDialogOpen] = useState(false);
   const [wifiDeviceSelectMultiMode, setWifiDeviceSelectMultiMode] = useState(false);
   const [firmwareInstallerDialogOpen, setFirmwareInstallerDialogOpen] = useState(false);
+  const [firmwareDialogDefaultType, setFirmwareDialogDefaultType] = useState<'ota' | 'ble'>('ota');
   const [pinSettingsDialogOpen, setPinSettingsDialogOpen] = useState(false);
   const [servoTrimDialogOpen, setServoTrimDialogOpen] = useState(false);
   const [compileServerSettingsDialogOpen, setCompileServerSettingsDialogOpen] = useState(false);
@@ -270,7 +271,13 @@ export function EditorPage() {
   };
 
   // ファームウェア初期書き込みダイアログを開く
-  const handleFirmwareWrite = () => {
+  const handleBleFirmwareWrite = () => {
+    setFirmwareDialogDefaultType('ble');
+    setFirmwareInstallerDialogOpen(true);
+  };
+
+  const handleWifiFirmwareWrite = () => {
+    setFirmwareDialogDefaultType('ota');
     setFirmwareInstallerDialogOpen(true);
   };
 
@@ -1510,7 +1517,8 @@ export function EditorPage() {
           {/* サイドバー */}
           <Sidebar
             onProjectOpen={handleOpen}
-            onFirmwareWrite={handleFirmwareWrite}
+            onBleFirmwareWrite={handleBleFirmwareWrite}
+            onWifiFirmwareWrite={handleWifiFirmwareWrite}
             onApSetup={() => setWifiSetupDialogOpen(true)}
             onDeviceName={() => setDeviceNameDialogOpen(true)}
             onUsbPortRelease={handleUsbPortRelease}
@@ -1872,6 +1880,7 @@ export function EditorPage() {
       <FirmwareInstallerDialog
         open={firmwareInstallerDialogOpen}
         onOpenChange={setFirmwareInstallerDialogOpen}
+        defaultFirmwareType={firmwareDialogDefaultType}
       />
 
       {/* ピンアサイン設定ダイアログ */}

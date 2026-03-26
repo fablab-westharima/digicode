@@ -15,6 +15,7 @@ import { compileService, type ConnectionType } from '@/services/compileService';
 interface FirmwareInstallerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  defaultFirmwareType?: 'ota' | 'ble';
 }
 
 // ファームウェアパッケージの型（従来のBlob or fullPackage）
@@ -25,7 +26,7 @@ type FirmwarePackage = Blob | {
   bootApp0: Blob;
 };
 
-export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstallerDialogProps) {
+export function FirmwareInstallerDialog({ open, onOpenChange, defaultFirmwareType }: FirmwareInstallerDialogProps) {
   const { t } = useTranslation();
   const [firmwareType, setFirmwareType] = useState<'ota' | 'ble'>('ota');
   const [isErasing, setIsErasing] = useState(false);
@@ -193,12 +194,15 @@ export function FirmwareInstallerDialog({ open, onOpenChange }: FirmwareInstalle
 
   // 自動コンパイルは削除 - ユーザーが明示的にビルドボタンをクリックする必要がある
 
-  // ダイアログが開いた時にneedsManualResetをリセット
+  // ダイアログが開いた時にneedsManualResetをリセット＆firmwareTypeをプリセット
   useEffect(() => {
     if (open) {
       setNeedsManualReset(false);
+      if (defaultFirmwareType) {
+        setFirmwareType(defaultFirmwareType);
+      }
     }
-  }, [open]);
+  }, [open, defaultFirmwareType]);
 
   // ダイアログが閉じられた時のクリーンアップ
   useEffect(() => {

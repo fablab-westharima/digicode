@@ -18,13 +18,15 @@ import {
   ChevronDown,
   ChevronRight,
   ExternalLink,
-  Pencil
+  Pencil,
+  Bluetooth
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface SidebarProps {
   onProjectOpen?: () => void;
-  onFirmwareWrite?: () => void;
+  onBleFirmwareWrite?: () => void;
+  onWifiFirmwareWrite?: () => void;
   onApSetup?: () => void;
   onUsbPortRelease?: () => void;
   onServoTrim?: () => void;
@@ -60,7 +62,8 @@ interface NavItem {
 
 export function Sidebar({
   onProjectOpen,
-  onFirmwareWrite,
+  onBleFirmwareWrite,
+  onWifiFirmwareWrite,
   onApSetup,
   onUsbPortRelease,
   onServoTrim,
@@ -115,53 +118,75 @@ export function Sidebar({
       action: onProjectOpen || (() => {}),
       category: 'project'
     },
-    // デバイス準備（初回セットアップ系）
+    // OTAセットアップ - BLE OTA
     {
-      id: 'firmware-write',
-      label: t('sidebar.firmwareWrite', { defaultValue: 'ファームウェア書込' }),
-      icon: <Zap className="w-4 h-4" />,
-      action: onFirmwareWrite || (() => {}),
-      category: 'deviceSetup'
-    },
-    {
-      id: 'ap-setup',
-      label: t('sidebar.wirelessLan', { defaultValue: '無線LAN接続' }),
-      icon: <Radio className="w-4 h-4" />,
-      action: onApSetup || (() => {}),
-      category: 'deviceSetup'
-    },
-    {
-      id: 'device-name',
-      label: t('sidebar.deviceName', { defaultValue: 'デバイス名設定' }),
-      icon: <Pencil className="w-4 h-4" />,
-      action: onDeviceName || (() => {}),
-      category: 'deviceSetup'
-    },
-    {
-      id: 'usb-driver',
-      label: t('sidebar.usbDriver', { defaultValue: 'USBドライバー' }),
-      icon: <Usb className="w-4 h-4" />,
-      category: 'deviceSetup',
+      id: 'ble-ota',
+      label: t('sidebar.bleOta', { defaultValue: 'BLE OTA' }),
+      icon: <Bluetooth className="w-4 h-4" />,
+      category: 'otaSetup',
       children: [
         {
-          id: 'usb-driver-cp210x',
-          label: 'CP210x (Silicon Labs)',
-          icon: <ExternalLink className="w-3 h-3" />,
-          href: 'https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads'
+          id: 'ble-firmware-write',
+          label: t('sidebar.bleFirmwareWrite', { defaultValue: 'BLEファームウェア書き込み' }),
+          icon: <Zap className="w-3 h-3" />,
+          action: onBleFirmwareWrite || (() => {}),
         },
         {
-          id: 'usb-driver-ch340',
-          label: 'CH340 (WCH)',
-          icon: <ExternalLink className="w-3 h-3" />,
-          href: 'https://www.wch-ic.com/downloads/CH341SER_EXE.html'
+          id: 'ble-device-name',
+          label: t('sidebar.bleDeviceName', { defaultValue: 'BLEデバイス名設定' }),
+          icon: <Pencil className="w-3 h-3" />,
+          action: onDeviceName || (() => {}),
+        },
+      ],
+    },
+    // OTAセットアップ - WiFi OTA
+    {
+      id: 'wifi-ota',
+      label: t('sidebar.wifiOta', { defaultValue: 'WiFi OTA' }),
+      icon: <Radio className="w-4 h-4" />,
+      category: 'otaSetup',
+      children: [
+        {
+          id: 'wifi-firmware-write',
+          label: t('sidebar.wifiFirmwareWrite', { defaultValue: 'WiFiファームウェア書き込み' }),
+          icon: <Zap className="w-3 h-3" />,
+          action: onWifiFirmwareWrite || (() => {}),
         },
         {
-          id: 'usb-driver-all',
-          label: t('sidebar.usbDriverAll', { defaultValue: 'すべてのドライバー' }),
-          icon: <Usb className="w-3 h-3" />,
-          action: onUsbDriver || (() => {})
-        }
-      ]
+          id: 'wifi-ap-setup',
+          label: t('sidebar.apSetup', { defaultValue: 'アクセスポイント接続' }),
+          icon: <Radio className="w-3 h-3" />,
+          action: onApSetup || (() => {}),
+        },
+        {
+          id: 'wifi-device-name',
+          label: t('sidebar.wifiDeviceName', { defaultValue: 'WiFiデバイス名設定' }),
+          icon: <Pencil className="w-3 h-3" />,
+          action: onDeviceName || (() => {}),
+        },
+      ],
+    },
+    // USBドライバー（独立カテゴリ）
+    {
+      id: 'usb-driver-cp210x',
+      label: 'CP210x (Silicon Labs)',
+      icon: <ExternalLink className="w-4 h-4" />,
+      category: 'usbDriver',
+      action: () => window.open('https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads', '_blank'),
+    },
+    {
+      id: 'usb-driver-ch340',
+      label: 'CH340 (WCH)',
+      icon: <ExternalLink className="w-4 h-4" />,
+      category: 'usbDriver',
+      action: () => window.open('https://www.wch-ic.com/downloads/CH341SER_EXE.html', '_blank'),
+    },
+    {
+      id: 'usb-driver-all',
+      label: t('sidebar.usbDriverAll', { defaultValue: 'すべてのドライバー' }),
+      icon: <Usb className="w-4 h-4" />,
+      action: onUsbDriver || (() => {}),
+      category: 'usbDriver',
     },
     // 調整（動作調整系）
     {
@@ -250,8 +275,10 @@ export function Sidebar({
     switch (category) {
       case 'project':
         return t('sidebar.category.project', { defaultValue: 'プロジェクト' });
-      case 'deviceSetup':
-        return t('sidebar.category.deviceSetup', { defaultValue: 'デバイス準備' });
+      case 'otaSetup':
+        return t('sidebar.category.otaSetup', { defaultValue: 'OTAセットアップ' });
+      case 'usbDriver':
+        return t('sidebar.category.usbDriver', { defaultValue: 'USBドライバー' });
       case 'tuning':
         return t('sidebar.category.tuning', { defaultValue: '調整' });
       case 'advanced':
@@ -274,7 +301,7 @@ export function Sidebar({
   }, {} as Record<string, NavItem[]>);
 
   // カテゴリの表示順序を定義
-  const categoryOrder = ['project', 'deviceSetup', 'tuning', 'advanced', 'help', 'account'];
+  const categoryOrder = ['project', 'otaSetup', 'usbDriver', 'tuning', 'advanced', 'help', 'account'];
   const orderedCategories = categoryOrder.filter(cat => groupedItems[cat]);
 
   // 表示状態を計算
