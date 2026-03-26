@@ -95,8 +95,6 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
 
   // ESP32起動完了フラグ
   const [isDeviceReady, setIsDeviceReady] = useState(false);
-  // 接続後リセット済みフラグ
-  const hasResetOnConnect = useRef(false);
 
   // コンソール自動スクロール
   useEffect(() => {
@@ -115,50 +113,49 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
     }
   }, [output, wifiMessage, t]);
 
-  // ダイアログが閉じた時にリセットフラグをクリア（次回オープン時に再リセット可能にする）
+  // 接続状態を監視してリセット→Ready待ち→デバイス情報読み込み（DeviceNameDialogと同じパターン）
   useEffect(() => {
-    if (!open) {
-      hasResetOnConnect.current = false;
-    }
-  }, [open]);
+    if (status !== 'connected' || isDeviceReady || !open) return;
 
-  // USB接続後に一度リセットをかける（ファームウェア書き込み直後対策）
-  useEffect(() => {
-    if (status === 'connected' && open && !hasResetOnConnect.current) {
-      hasResetOnConnect.current = true;
-      console.log('[WifiSetupDialog] Resetting ESP32 after connection');
+    const initDevice = async () => {
       setWifiMessage('ESP32をリセット中...');
-      resetESP32();
-    }
-  }, [status, open, resetESP32]);
+      await resetESP32();
 
-  // ESP32起動完了を検知（"System Ready!" を監視）
-  useEffect(() => {
-    if (status === 'connected' && !isDeviceReady) {
-      const lastOutputs = output.slice(-20).join('\n');
-      if (lastOutputs.includes('System Ready!') || lastOutputs.includes('User setup completed')) {
+      setWifiMessage(t('device.waitingForBoot', { defaultValue: 'ESP32起動待ち中... "System Ready!" を待機しています。お待ちください。' }));
+      const startIndex = useSerialStore.getState().output.length;
+
+      // System Ready! または User setup completed を待つ
+      const startTime = Date.now();
+      const maxWaitMs = 15000;
+      let ready = false;
+      while (Date.now() - startTime < maxWaitMs) {
+        const currentOutput = useSerialStore.getState().output;
+        const newOutput = currentOutput.slice(startIndex);
+        if (newOutput.some(line => line.includes('System Ready!') || line.includes('User setup completed'))) {
+          ready = true;
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+
+      if (ready) {
         console.log('[WifiSetupDialog] ESP32 ready detected');
         setIsDeviceReady(true);
-      }
-    }
-  }, [output, status, isDeviceReady]);
-
-  // ESP32起動完了後にデバイス情報を読み込み
-  useEffect(() => {
-    if (status === 'connected' && open && isDeviceReady) {
-      const loadInfo = async () => {
-        console.log('[WifiSetupDialog] Loading device info after ready');
+        setWifiMessage('');
         await loadDeviceName();
         await loadWiFiList();
-      };
-      loadInfo();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDeviceReady, open]);
+      } else {
+        setWifiMessage('起動タイムアウト。USBケーブルを抜き差しして再度接続してください。');
+      }
+    };
 
-  // 切断時に状態をリセット（hasResetOnConnectはリセットしない：リセットループ防止）
+    initDevice();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, isDeviceReady, open]);
+
+  // ダイアログが閉じた時に状態をリセット
   useEffect(() => {
-    if (status !== 'connected') {
+    if (!open) {
       setIsDeviceReady(false);
       setWifiList([]);
       setWifiMessage('');
@@ -167,11 +164,8 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       setNewWifiPassword('');
       setDeviceName('');
       setOriginalDeviceName('');
-      // 注意: staticIp, gateway, subnetはクリアしない
-      // deviceStore（localStorage）のキャッシュは意図的に残す設計
-      // ヘッダーメニューからデバイス選択してOTA書込みするために必要
     }
-  }, [status]);
+  }, [open]);
 
   // 応答を待つヘルパー関数（startIndexより後の出力のみチェック）
   const waitForResponse = async (keyword: string, startIndex: number, maxWaitMs: number = 10000): Promise<boolean> => {
