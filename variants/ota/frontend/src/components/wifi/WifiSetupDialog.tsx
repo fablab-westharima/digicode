@@ -115,6 +115,13 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
     }
   }, [output, wifiMessage, t]);
 
+  // ダイアログが閉じた時にリセットフラグをクリア（次回オープン時に再リセット可能にする）
+  useEffect(() => {
+    if (!open) {
+      hasResetOnConnect.current = false;
+    }
+  }, [open]);
+
   // USB接続後に一度リセットをかける（ファームウェア書き込み直後対策）
   useEffect(() => {
     if (status === 'connected' && open && !hasResetOnConnect.current) {
@@ -149,11 +156,10 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDeviceReady, open]);
 
-  // 切断時に状態をリセット
+  // 切断時に状態をリセット（hasResetOnConnectはリセットしない：リセットループ防止）
   useEffect(() => {
     if (status !== 'connected') {
       setIsDeviceReady(false);
-      hasResetOnConnect.current = false;
       setWifiList([]);
       setWifiMessage('');
       setSelectedWifi(null);
