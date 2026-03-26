@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Wifi, Clipboard, Clock, Download, Sparkles, Check, Square, CheckSquare } from 'lucide-react';
+import { Wifi, Clipboard, Clock, Download, Sparkles, Check, Square, CheckSquare, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { useTranslation } from 'react-i18next';
-import { HELPER_DOWNLOAD_URL } from '@/services/helperService';
+import { HELPER_DOWNLOAD_URL, launchHelper } from '@/services/helperService';
 
 // WiFiデバイス選択で使用するデバイス情報の型（EditorPage.tsxからもimportされる）
 export interface Device {
@@ -396,8 +396,16 @@ export function WifiDeviceSelectDialog({
                 {t('editor.wifiDeviceSelect.refreshClipboard', 'クリップボードを再読み込み')}
               </Button>
 
-              {/* DigiCode Finder ダウンロードリンク */}
-              <div className="text-center">
+              {/* DigiCode Finder 起動 / ダウンロード */}
+              <div className="flex items-center justify-center gap-4">
+                <button
+                  onClick={launchHelper}
+                  className={`inline-flex items-center gap-1 text-xs ${multiSelect ? 'text-orange-600 dark:text-orange-400' : 'text-purple-600 dark:text-purple-400'} hover:underline`}
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  DigiCode Finder を起動
+                </button>
+                <span className="text-xs text-gray-500">|</span>
                 <a
                   href={HELPER_DOWNLOAD_URL}
                   target="_blank"
@@ -405,7 +413,7 @@ export function WifiDeviceSelectDialog({
                   className={`inline-flex items-center gap-1 text-xs ${multiSelect ? 'text-orange-600 dark:text-orange-400' : 'text-purple-600 dark:text-purple-400'} hover:underline`}
                 >
                   <Download className="w-3 h-3" />
-                  {t('editor.wifiDeviceSelect.downloadHelper', 'DigiCode Finder をダウンロード')}
+                  ダウンロード
                 </a>
               </div>
             </>
