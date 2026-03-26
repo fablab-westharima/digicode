@@ -11,6 +11,38 @@ import { Button } from '@/components/ui/button';
 import { Usb, Check, Pencil } from 'lucide-react';
 import { useSerialStore } from '@/stores/serialStore';
 
+// シリアルコンソール表示コンポーネント
+function SerialConsole() {
+  const { output } = useSerialStore();
+  const [expanded, setExpanded] = useState(false);
+
+  // 最新20行を表示
+  const lines = output.slice(-20);
+
+  return (
+    <div className="border-t border-[#2E333D] pt-3">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="text-xs text-[#484F58] hover:text-[#8B949E] flex items-center gap-1"
+      >
+        {expanded ? '▾' : '▸'} シリアルコンソール
+      </button>
+      {expanded && (
+        <div className="mt-2 bg-[#0D1117] border border-[#2E333D] rounded-lg p-2 h-40 overflow-y-auto font-mono text-xs">
+          {lines.map((line: string, i: number) => (
+            <div key={i} className={`whitespace-pre-wrap ${
+              line.includes('ERROR') || line.includes('assert failed') ? 'text-red-400' :
+              line.includes('OK:') || line.includes('SUCCESS') ? 'text-green-400' :
+              line.includes('BLE Name:') || line.includes('Device config') ? 'text-yellow-300' :
+              'text-gray-400'
+            }`}>{line}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface DeviceNameDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -339,6 +371,11 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
             }`}>
               {statusMessage}
             </div>
+          )}
+
+          {/* シリアルコンソール */}
+          {isConnected && (
+            <SerialConsole />
           )}
         </div>
       </DialogContent>
