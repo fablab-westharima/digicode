@@ -17,7 +17,8 @@ import {
   Shield,
   ChevronDown,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
+  Pencil
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
@@ -33,6 +34,7 @@ interface SidebarProps {
   onCodePreview?: () => void;
   onPidTuning?: () => void;
   onUsbDriver?: () => void;
+  onDeviceName?: () => void;
   onLogout?: () => void;
   onPasskeyRegister?: () => void;
   onTwoFactorSettings?: () => void;
@@ -68,6 +70,7 @@ export function Sidebar({
   onCodePreview,
   onPidTuning,
   onUsbDriver,
+  onDeviceName,
   onLogout,
   onPasskeyRegister,
   onTwoFactorSettings,
@@ -125,6 +128,13 @@ export function Sidebar({
       label: t('sidebar.wirelessLan', { defaultValue: '無線LAN接続' }),
       icon: <Radio className="w-4 h-4" />,
       action: onApSetup || (() => {}),
+      category: 'deviceSetup'
+    },
+    {
+      id: 'device-name',
+      label: t('sidebar.deviceName', { defaultValue: 'デバイス名設定' }),
+      icon: <Pencil className="w-4 h-4" />,
+      action: onDeviceName || (() => {}),
       category: 'deviceSetup'
     },
     {

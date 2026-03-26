@@ -50,7 +50,7 @@ import { bleFirmwareService, type BleFlashProgress, type BleDeviceInfo } from '@
 import { checkADC2Usage, type ADC2Warning } from '@/utils/adc2Check';
 import { api } from '@/lib/api';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
-import { Download, Loader2, Zap, SlidersHorizontal, LineChart, Code, Terminal, ChevronUp, ChevronDown, GraduationCap, ChevronDown as ChevronDownIcon, X, FilePlus, FolderOpen, FileCode, Cloud, Server, Usb, Wifi, Bluetooth, Check, Settings2, Pin, BookOpen, Globe, AlertTriangle, Pencil } from 'lucide-react';
+import { Download, Loader2, Zap, SlidersHorizontal, LineChart, Code, Terminal, ChevronUp, ChevronDown, GraduationCap, ChevronDown as ChevronDownIcon, X, FilePlus, FolderOpen, FileCode, Cloud, Server, Usb, Wifi, Bluetooth, Check, Settings2, Pin, BookOpen, Globe, AlertTriangle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -1307,10 +1307,6 @@ export function EditorPage() {
             <Settings2 className="w-4 h-4 mr-2" />
             {t('editor.menu.wifiRouterConnect')}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setDeviceNameDialogOpen(true)}>
-            <Pencil className="w-4 h-4 mr-2" />
-            デバイス名設定
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -1516,6 +1512,7 @@ export function EditorPage() {
             onProjectOpen={handleOpen}
             onFirmwareWrite={handleFirmwareWrite}
             onApSetup={() => setWifiSetupDialogOpen(true)}
+            onDeviceName={() => setDeviceNameDialogOpen(true)}
             onUsbPortRelease={handleUsbPortRelease}
             onServoTrim={() => setServoTrimDialogOpen(true)}
             onPinAssignment={() => setPinSettingsDialogOpen(true)}
