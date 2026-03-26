@@ -151,7 +151,8 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
 
       setStatusMessage('起動を待っています...');
       const startIndex = useSerialStore.getState().output.length;
-      const ready = await waitForResponse('Ready.', startIndex, 15000);
+      // BLEファームウェアは"Ready."、WiFiファームウェアは"System Ready!"を出力する
+      const ready = await waitForResponse('Ready', startIndex, 15000);
 
       if (ready) {
         setIsDeviceReady(true);
