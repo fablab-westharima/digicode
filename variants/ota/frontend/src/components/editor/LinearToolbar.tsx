@@ -71,12 +71,15 @@ export function LinearToolbar({
 }: LinearToolbarProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user, logout, isAuthenticated } = useAuthStore();
   const { isMobile, isMobileOrTablet } = useBreakpoint();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
+  };
+
+  const handleLogin = () => {
     navigate('/auth');
   };
 
@@ -143,11 +146,20 @@ export function LinearToolbar({
 
               {/* ユーザー */}
               <div className="space-y-2 pt-4 border-t border-[#2E333D]">
-                <div className="text-xs text-gray-400 px-2">{user?.email || 'User'}</div>
-                <Button variant="ghost" className="w-full justify-start text-red-400" onClick={handleLogout}>
-                  <LogOut className="w-4 h-4 mr-2" />
-                  {t('auth.logout')}
-                </Button>
+                {isAuthenticated ? (
+                  <>
+                    <div className="text-xs text-gray-400 px-2">{user?.email || 'User'}</div>
+                    <Button variant="ghost" className="w-full justify-start text-red-400" onClick={handleLogout}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      {t('auth.logout')}
+                    </Button>
+                  </>
+                ) : (
+                  <Button variant="ghost" className="w-full justify-start text-[#E6EDF3]" onClick={handleLogin}>
+                    <User className="w-4 h-4 mr-2" />
+                    {t('sidebar.login', { defaultValue: 'ログイン / 新規登録' })}
+                  </Button>
+                )}
               </div>
             </div>
           </SheetContent>
@@ -276,23 +288,29 @@ export function LinearToolbar({
         </Button>
 
         {/* ユーザーメニュー */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="text-[#E6EDF3] hover:bg-[#2E333D] px-2">
-              <User className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <div className="px-2 py-1.5 text-xs text-gray-500">
-              {user?.email || 'User'}
-            </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
-              {t('auth.logout')}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {isAuthenticated ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="text-[#E6EDF3] hover:bg-[#2E333D] px-2">
+                <User className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <div className="px-2 py-1.5 text-xs text-gray-500">
+                {user?.email || 'User'}
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>
+                <LogOut className="w-4 h-4 mr-2" />
+                {t('auth.logout')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Button variant="ghost" size="sm" className="text-[#E6EDF3] hover:bg-[#2E333D] px-2" onClick={handleLogin}>
+            <User className="w-4 h-4" />
+          </Button>
+        )}
       </div>
     </div>
   );
