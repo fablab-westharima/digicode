@@ -83,6 +83,7 @@ export function EditorPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { logout, isAuthenticated } = useAuthStore();
   const { currentProject, loadProject, setCurrentProject } = useProjectStore();
   const { status: serialStatus, connect: connectSerial, disconnect: disconnectSerial, forceReleaseAllPorts } = useSerialStore();
   const { status: wifiStatus, getDeviceUrl, setHost, setDeviceName, connect: connectWifi } = useWifiStore();
@@ -299,7 +300,6 @@ export function EditorPage() {
   };
 
   // ログアウト（エディタに残る）
-  const { logout, isAuthenticated } = useAuthStore();
   const handleLogout = () => {
     if (confirm('ログアウトしますか？')) {
       logout();
