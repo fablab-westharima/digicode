@@ -1596,6 +1596,7 @@ export function EditorPage() {
         onOpenChange={setSaveDialogOpen}
         blocklyXml={workspaceXml}
         generatedCode={generatedCode}
+        isAuthenticated={isAuthenticated}
         onSaved={handleSaved}
       />
 
@@ -1604,6 +1605,7 @@ export function EditorPage() {
         open={openDialogOpen}
         onOpenChange={setOpenDialogOpen}
         onSelect={handleProjectSelect}
+        isAuthenticated={isAuthenticated}
       />
 
       {/* サンプルプロジェクトダイアログ */}

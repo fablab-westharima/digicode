@@ -15,6 +15,22 @@ export interface Project {
   updatedAt?: string;
 }
 
+// ローカルプロジェクト保存用
+const LOCAL_PROJECTS_KEY = 'digicode-local-projects';
+
+function getLocalProjects(): Project[] {
+  try {
+    const data = localStorage.getItem(LOCAL_PROJECTS_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+function setLocalProjects(projects: Project[]): void {
+  localStorage.setItem(LOCAL_PROJECTS_KEY, JSON.stringify(projects));
+}
+
 interface ProjectState {
   currentProject: Project | null;
   projects: Project[];
@@ -22,11 +38,18 @@ interface ProjectState {
   error: string | null;
   setCurrentProject: (project: Project | null) => void;
   updateCurrentProject: (updates: Partial<Project>) => void;
+  // サーバー保存（ログイン済みユーザー用）
   loadProjects: () => Promise<void>;
   loadProject: (id: number) => Promise<Project | null>;
   createProject: (data: { title: string; description?: string; blocklyXml: string; language?: CodeLanguage }) => Promise<Project | null>;
   saveProject: (blocklyXml: string, generatedCode: string, language?: CodeLanguage) => Promise<boolean>;
   deleteProject: (id: number) => Promise<boolean>;
+  // ローカル保存（未ログインユーザー用）
+  loadLocalProjects: () => void;
+  loadLocalProject: (id: number) => Project | null;
+  createLocalProject: (data: { title: string; description?: string; blocklyXml: string; language?: CodeLanguage }) => Project;
+  saveLocalProject: (blocklyXml: string, generatedCode: string) => boolean;
+  deleteLocalProject: (id: number) => boolean;
   clearError: () => void;
 }
 
@@ -209,5 +232,73 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       });
       return false;
     }
+  },
+
+  // ローカル保存関数群
+  loadLocalProjects: () => {
+    const projects = getLocalProjects();
+    set({ projects, isLoading: false });
+  },
+
+  loadLocalProject: (id: number) => {
+    const projects = getLocalProjects();
+    const project = projects.find(p => p.id === id) || null;
+    if (project) {
+      set({ currentProject: project });
+    }
+    return project;
+  },
+
+  createLocalProject: (data) => {
+    const now = new Date().toISOString();
+    const project: Project = {
+      id: Date.now(),
+      title: data.title,
+      description: data.description,
+      blocklyXml: data.blocklyXml,
+      language: data.language || 'arduino',
+      createdAt: now,
+      updatedAt: now,
+    };
+    const projects = getLocalProjects();
+    projects.unshift(project);
+    setLocalProjects(projects);
+    set((state) => ({
+      currentProject: project,
+      projects: [project, ...state.projects],
+    }));
+    return project;
+  },
+
+  saveLocalProject: (blocklyXml: string, generatedCode: string) => {
+    const { currentProject } = get();
+    if (!currentProject) return false;
+
+    const now = new Date().toISOString();
+    const updated: Project = {
+      ...currentProject,
+      blocklyXml,
+      generatedCode,
+      updatedAt: now,
+    };
+    const projects = getLocalProjects().map(p =>
+      p.id === updated.id ? updated : p
+    );
+    setLocalProjects(projects);
+    set((state) => ({
+      currentProject: updated,
+      projects: state.projects.map(p => p.id === updated.id ? updated : p),
+    }));
+    return true;
+  },
+
+  deleteLocalProject: (id: number) => {
+    const projects = getLocalProjects().filter(p => p.id !== id);
+    setLocalProjects(projects);
+    set((state) => ({
+      currentProject: state.currentProject?.id === id ? null : state.currentProject,
+      projects: state.projects.filter(p => p.id !== id),
+    }));
+    return true;
   },
 }));

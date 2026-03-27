@@ -15,35 +15,53 @@ interface ProjectListDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelect: (project: Project) => void;
+  isAuthenticated?: boolean;
 }
 
 export function ProjectListDialog({
   open,
   onOpenChange,
   onSelect,
+  isAuthenticated = false,
 }: ProjectListDialogProps) {
   const { t, i18n } = useTranslation();
-  const { projects, loadProjects, loadProject, deleteProject, isLoading, error } = useProjectStore();
+  const { projects, loadProjects, loadProject, loadLocalProjects, loadLocalProject, deleteProject, deleteLocalProject, isLoading, error } = useProjectStore();
 
   // ダイアログが開いた時にプロジェクト一覧を取得
   useEffect(() => {
     if (open) {
-      loadProjects();
+      if (isAuthenticated) {
+        loadProjects();
+      } else {
+        loadLocalProjects();
+      }
     }
-  }, [open, loadProjects]);
+  }, [open, isAuthenticated, loadProjects, loadLocalProjects]);
 
   const handleSelect = async (projectId: number) => {
-    const project = await loadProject(projectId);
-    if (project) {
-      onSelect(project);
-      onOpenChange(false);
+    if (isAuthenticated) {
+      const project = await loadProject(projectId);
+      if (project) {
+        onSelect(project);
+        onOpenChange(false);
+      }
+    } else {
+      const project = loadLocalProject(projectId);
+      if (project) {
+        onSelect(project);
+        onOpenChange(false);
+      }
     }
   };
 
   const handleDelete = async (e: React.MouseEvent, projectId: number) => {
     e.stopPropagation();
     if (confirm(t('project.deleteConfirm'))) {
-      await deleteProject(projectId);
+      if (isAuthenticated) {
+        await deleteProject(projectId);
+      } else {
+        deleteLocalProject(projectId);
+      }
     }
   };
 

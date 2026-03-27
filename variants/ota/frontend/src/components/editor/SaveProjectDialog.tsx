@@ -18,6 +18,7 @@ interface SaveProjectDialogProps {
   onOpenChange: (open: boolean) => void;
   blocklyXml: string;
   generatedCode: string;
+  isAuthenticated?: boolean;
   onSaved?: () => void;
 }
 
@@ -26,10 +27,11 @@ export function SaveProjectDialog({
   onOpenChange,
   blocklyXml,
   generatedCode,
+  isAuthenticated = false,
   onSaved,
 }: SaveProjectDialogProps) {
   const { t } = useTranslation();
-  const { currentProject, createProject, saveProject, isLoading } = useProjectStore();
+  const { currentProject, createProject, saveProject, createLocalProject, saveLocalProject, isLoading } = useProjectStore();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
@@ -59,18 +61,32 @@ export function SaveProjectDialog({
 
     let success = false;
 
-    if (currentProject) {
-      // 既存プロジェクトの更新
-      success = await saveProject(blocklyXml, generatedCode, 'arduino');
+    if (isAuthenticated) {
+      // サーバー保存（ログイン済み）
+      if (currentProject) {
+        success = await saveProject(blocklyXml, generatedCode, 'arduino');
+      } else {
+        const project = await createProject({
+          title: title.trim(),
+          description: description.trim() || undefined,
+          blocklyXml,
+          language: 'arduino',
+        });
+        success = project !== null;
+      }
     } else {
-      // 新規プロジェクトの作成
-      const project = await createProject({
-        title: title.trim(),
-        description: description.trim() || undefined,
-        blocklyXml,
-        language: 'arduino',
-      });
-      success = project !== null;
+      // ローカル保存（未ログイン）
+      if (currentProject) {
+        success = saveLocalProject(blocklyXml, generatedCode);
+      } else {
+        const project = createLocalProject({
+          title: title.trim(),
+          description: description.trim() || undefined,
+          blocklyXml,
+          language: 'arduino',
+        });
+        success = project !== null;
+      }
     }
 
     if (success) {
