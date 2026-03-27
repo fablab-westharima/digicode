@@ -169,9 +169,9 @@ export function EditorPage() {
   useEffect(() => {
     setServerMode(compileService.getMode());
 
-    // 使用量を取得
+    // 使用量を取得（ログイン済みの場合のみ）
     const fetchUsage = async () => {
-      const token = localStorage.getItem('auth_token');
+      const token = localStorage.getItem('accessToken');
       if (!token) return;
 
       try {
@@ -194,9 +194,9 @@ export function EditorPage() {
     compileService.setMode(mode);
   };
 
-  // コンパイル成功後に使用量を再取得
+  // コンパイル成功後に使用量を再取得（ログイン済みの場合のみ）
   const refreshUsage = async () => {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('accessToken');
     if (!token || serverMode !== 'cloud') return;
 
     try {
@@ -298,12 +298,11 @@ export function EditorPage() {
     }
   };
 
-  // ログアウト
-  const { logout } = useAuthStore();
+  // ログアウト（エディタに残る）
+  const { logout, isAuthenticated } = useAuthStore();
   const handleLogout = () => {
     if (confirm('ログアウトしますか？')) {
       logout();
-      navigate('/auth');
     }
   };
 
@@ -1518,6 +1517,7 @@ export function EditorPage() {
         <div className="flex flex-1 overflow-hidden">
           {/* サイドバー */}
           <Sidebar
+            isAuthenticated={isAuthenticated}
             onProjectOpen={handleOpen}
             onBleFirmwareWrite={handleBleFirmwareWrite}
             onWifiPrerequisites={() => setWifiPrerequisitesDialogOpen(true)}
@@ -1532,6 +1532,7 @@ export function EditorPage() {
             onCodePreview={() => setCodePreviewDialogOpen(true)}
             onPidTuning={() => setPidTuningDialogOpen(true)}
             onUsbDriver={() => window.open('https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers', '_blank')}
+            onLogin={() => navigate('/auth')}
             onLogout={handleLogout}
             onPasskeyRegister={handlePasskeyRegister}
             onTwoFactorSettings={handleTwoFactorSettings}

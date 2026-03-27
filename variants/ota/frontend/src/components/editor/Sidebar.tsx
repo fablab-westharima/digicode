@@ -20,11 +20,13 @@ import {
   ExternalLink,
   Pencil,
   Bluetooth,
-  Download
+  Download,
+  LogIn
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface SidebarProps {
+  isAuthenticated?: boolean;
   onProjectOpen?: () => void;
   onBleFirmwareWrite?: () => void;
   onWifiPrerequisites?: () => void;
@@ -39,6 +41,7 @@ interface SidebarProps {
   onPidTuning?: () => void;
   onUsbDriver?: () => void;
   onDeviceName?: () => void;
+  onLogin?: () => void;
   onLogout?: () => void;
   onPasskeyRegister?: () => void;
   onTwoFactorSettings?: () => void;
@@ -60,9 +63,11 @@ interface NavItem {
   action?: () => void;
   category: string;
   children?: NavSubItem[]; // サブメニュー用
+  premium?: boolean; // 有料機能フラグ（未ログイン時グレーアウト）
 }
 
 export function Sidebar({
+  isAuthenticated = false,
   onProjectOpen,
   onBleFirmwareWrite,
   onWifiPrerequisites,
@@ -77,6 +82,7 @@ export function Sidebar({
   onPidTuning,
   onUsbDriver,
   onDeviceName,
+  onLogin,
   onLogout,
   onPasskeyRegister,
   onTwoFactorSettings,
@@ -203,14 +209,16 @@ export function Sidebar({
       label: t('sidebar.servoTrim', { defaultValue: 'サーボトリム設定' }),
       icon: <SlidersHorizontal className="w-4 h-4" />,
       action: onServoTrim || (() => {}),
-      category: 'tuning'
+      category: 'tuning',
+      premium: true,
     },
     {
       id: 'pid-tuning',
       label: t('sidebar.pidTuning', { defaultValue: 'PIDチューニング' }),
       icon: <SlidersHorizontal className="w-4 h-4" />,
       action: onPidTuning || (() => {}),
-      category: 'tuning'
+      category: 'tuning',
+      premium: true,
     },
     // 詳細設定（上級者・開発者向け）
     {
@@ -239,7 +247,8 @@ export function Sidebar({
       label: t('sidebar.extensions', { defaultValue: '拡張機能' }),
       icon: <PinIcon className="w-4 h-4" />,
       action: onPinAssignment || (() => {}),
-      category: 'advanced'
+      category: 'advanced',
+      premium: true,
     },
     // ヘルプ
     {
@@ -249,35 +258,45 @@ export function Sidebar({
       action: onDocs || (() => {}),
       category: 'help'
     },
-    // アカウント（ログアウトを最後に）
-    {
-      id: 'passkey-register',
-      label: t('sidebar.passkeyRegister', { defaultValue: 'パスキーを登録' }),
-      icon: <Key className="w-4 h-4" />,
-      action: onPasskeyRegister || (() => {}),
-      category: 'account'
-    },
-    {
-      id: 'two-factor-settings',
-      label: t('sidebar.twoFactorSettings', { defaultValue: '2段階認証' }),
-      icon: <Shield className="w-4 h-4" />,
-      action: onTwoFactorSettings || (() => {}),
-      category: 'account'
-    },
-    {
-      id: 'account-delete',
-      label: t('sidebar.accountDelete', { defaultValue: 'アカウント削除' }),
-      icon: <UserX className="w-4 h-4" />,
-      action: onAccountDelete || (() => {}),
-      category: 'account'
-    },
-    {
-      id: 'logout',
-      label: t('sidebar.logout', { defaultValue: 'ログアウト' }),
-      icon: <LogOut className="w-4 h-4" />,
-      action: onLogout || (() => {}),
-      category: 'account'
-    },
+    // アカウント（認証状態で表示を切り替え）
+    ...(isAuthenticated ? [
+      {
+        id: 'passkey-register',
+        label: t('sidebar.passkeyRegister', { defaultValue: 'パスキーを登録' }),
+        icon: <Key className="w-4 h-4" />,
+        action: onPasskeyRegister || (() => {}),
+        category: 'account'
+      },
+      {
+        id: 'two-factor-settings',
+        label: t('sidebar.twoFactorSettings', { defaultValue: '2段階認証' }),
+        icon: <Shield className="w-4 h-4" />,
+        action: onTwoFactorSettings || (() => {}),
+        category: 'account'
+      },
+      {
+        id: 'account-delete',
+        label: t('sidebar.accountDelete', { defaultValue: 'アカウント削除' }),
+        icon: <UserX className="w-4 h-4" />,
+        action: onAccountDelete || (() => {}),
+        category: 'account'
+      },
+      {
+        id: 'logout',
+        label: t('sidebar.logout', { defaultValue: 'ログアウト' }),
+        icon: <LogOut className="w-4 h-4" />,
+        action: onLogout || (() => {}),
+        category: 'account'
+      },
+    ] : [
+      {
+        id: 'login',
+        label: t('sidebar.login', { defaultValue: 'ログイン / 新規登録' }),
+        icon: <LogIn className="w-4 h-4" />,
+        action: onLogin || (() => {}),
+        category: 'account'
+      },
+    ]),
   ];
 
   const getCategoryLabel = (category: string) => {
@@ -434,17 +453,25 @@ export function Sidebar({
                         )}
                       </>
                     ) : (
-                      // 通常のアイテム
+                      // 通常のアイテム（premiumかつ未ログインならグレーアウト）
                       <Button
                         variant="ghost"
-                        className={`w-full justify-start text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white ${
-                          shouldShowFull ? 'px-3' : 'px-0 justify-center'
-                        }`}
-                        onClick={item.action}
-                        title={!shouldShowFull ? item.label : undefined}
+                        className={`w-full justify-start ${
+                          item.premium && !isAuthenticated
+                            ? 'text-[#484F58] cursor-not-allowed'
+                            : 'text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white'
+                        } ${shouldShowFull ? 'px-3' : 'px-0 justify-center'}`}
+                        onClick={item.premium && !isAuthenticated ? undefined : item.action}
+                        disabled={item.premium && !isAuthenticated}
+                        title={!shouldShowFull ? item.label : item.premium && !isAuthenticated ? 'ログインが必要です' : undefined}
                       >
                         <span className={shouldShowFull ? 'mr-3' : ''}>{item.icon}</span>
-                        {shouldShowFull && <span className="text-sm">{item.label}</span>}
+                        {shouldShowFull && (
+                          <span className="text-sm flex-1 text-left">{item.label}</span>
+                        )}
+                        {shouldShowFull && item.premium && !isAuthenticated && (
+                          <span className="text-[10px] text-[#484F58] ml-1">PRO</span>
+                        )}
                       </Button>
                     )}
                   </div>

@@ -154,11 +154,7 @@ function App() {
         <Route path="/firmware" element={<FirmwareInstaller />} />
         <Route
           path="/"
-          element={
-            <ProtectedRoute>
-              <EditorRoute />
-            </ProtectedRoute>
-          }
+          element={<EditorRoute />}
         />
         {/* 以下のルートはPhase 5で削除予定（EditorPage内に統合） */}
         <Route
