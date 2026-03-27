@@ -31,7 +31,7 @@ export function SaveProjectDialog({
   onSaved,
 }: SaveProjectDialogProps) {
   const { t } = useTranslation();
-  const { currentProject, createProject, saveProject, createLocalProject, saveLocalProject, isLoading } = useProjectStore();
+  const { currentProject, createProject, saveProject, isLoading } = useProjectStore();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
@@ -75,17 +75,28 @@ export function SaveProjectDialog({
         success = project !== null;
       }
     } else {
-      // ローカル保存（未ログイン）
-      if (currentProject) {
-        success = saveLocalProject(blocklyXml, generatedCode);
-      } else {
-        const project = createLocalProject({
+      // ファイルとしてダウンロード保存（未ログイン）
+      try {
+        const projectData = {
           title: title.trim(),
           description: description.trim() || undefined,
           blocklyXml,
+          generatedCode,
           language: 'arduino',
-        });
-        success = project !== null;
+          savedAt: new Date().toISOString(),
+        };
+        const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${title.trim()}.digicode.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        success = true;
+      } catch {
+        success = false;
       }
     }
 
