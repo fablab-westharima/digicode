@@ -213,7 +213,7 @@ export function EditorPage() {
   // URLパラメータからプロジェクトIDを取得して読み込み
   useEffect(() => {
     const projectId = searchParams.get('id');
-    if (projectId) {
+    if (projectId && isAuthenticated) {
       const id = parseInt(projectId);
       if (!isNaN(id)) {
         loadProject(id).then((project) => {
@@ -228,7 +228,7 @@ export function EditorPage() {
         });
       }
     }
-  }, [searchParams, loadProject]);
+  }, [searchParams, loadProject, isAuthenticated]);
 
   // 現在のプロジェクトが変更された時にワークスペースを更新
   useEffect(() => {

@@ -237,7 +237,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   // ローカル保存関数群
   loadLocalProjects: () => {
     const projects = getLocalProjects();
-    set({ projects, isLoading: false });
+    set({ projects, isLoading: false, error: null });
   },
 
   loadLocalProject: (id: number) => {
