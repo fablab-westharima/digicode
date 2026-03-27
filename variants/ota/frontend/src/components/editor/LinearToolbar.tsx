@@ -287,30 +287,6 @@ export function LinearToolbar({
           <HelpCircle className="w-4 h-4" />
         </Button>
 
-        {/* ユーザーメニュー */}
-        {isAuthenticated ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-[#E6EDF3] hover:bg-[#2E333D] px-2">
-                <User className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <div className="px-2 py-1.5 text-xs text-gray-500">
-                {user?.email || 'User'}
-              </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
-                <LogOut className="w-4 h-4 mr-2" />
-                {t('auth.logout')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <Button variant="ghost" size="sm" className="text-[#E6EDF3] hover:bg-[#2E333D] px-2" onClick={handleLogin}>
-            <User className="w-4 h-4" />
-          </Button>
-        )}
       </div>
     </div>
   );
