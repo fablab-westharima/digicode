@@ -330,8 +330,10 @@ export function EditorPage() {
     if (blocklyEditorRef.current) {
       blocklyEditorRef.current.loadXml(project.blocklyXml);
     }
-    // URLを更新
-    navigate(`/editor?id=${project.id}`, { replace: true });
+    // URLを更新（サーバー保存のプロジェクトのみ）
+    if (isAuthenticated) {
+      navigate(`/editor?id=${project.id}`, { replace: true });
+    }
   };
 
   // 新規作成
