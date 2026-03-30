@@ -210,7 +210,6 @@ export function Sidebar({
       icon: <SlidersHorizontal className="w-4 h-4" />,
       action: onServoTrim || (() => {}),
       category: 'tuning',
-      premium: true,
     },
     {
       id: 'pid-tuning',
@@ -218,7 +217,6 @@ export function Sidebar({
       icon: <SlidersHorizontal className="w-4 h-4" />,
       action: onPidTuning || (() => {}),
       category: 'tuning',
-      premium: true,
     },
     // 詳細設定（上級者・開発者向け）
     {
@@ -228,13 +226,14 @@ export function Sidebar({
       action: onCodePreview || (() => {}),
       category: 'advanced'
     },
-    {
-      id: 'compile-server',
-      label: t('sidebar.compileServerSelect', { defaultValue: 'コンパイルサーバ設定' }),
-      icon: <Cpu className="w-4 h-4" />,
-      action: onCompileServerSettings || (() => {}),
-      category: 'advanced'
-    },
+    // コンパイルサーバ設定: クラウド一本化のため非表示（Docker廃止 2026-03-31）
+    // {
+    //   id: 'compile-server',
+    //   label: t('sidebar.compileServerSelect', { defaultValue: 'コンパイルサーバ設定' }),
+    //   icon: <Cpu className="w-4 h-4" />,
+    //   action: onCompileServerSettings || (() => {}),
+    //   category: 'advanced'
+    // },
     {
       id: 'usb-port-release',
       label: t('sidebar.usbPortRelease', { defaultValue: 'USBポート解放' }),
@@ -458,7 +457,7 @@ export function Sidebar({
                         variant="ghost"
                         className={`w-full justify-start ${
                           item.premium && !isAuthenticated
-                            ? 'text-[#484F58] cursor-not-allowed'
+                            ? 'text-[#6B7280] cursor-not-allowed'
                             : 'text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white'
                         } ${shouldShowFull ? 'px-3' : 'px-0 justify-center'}`}
                         onClick={item.premium && !isAuthenticated ? undefined : item.action}
@@ -470,7 +469,7 @@ export function Sidebar({
                           <span className="text-sm flex-1 text-left">{item.label}</span>
                         )}
                         {shouldShowFull && item.premium && !isAuthenticated && (
-                          <span className="text-[10px] text-[#484F58] ml-1">PRO</span>
+                          <span className="text-[10px] text-[#6B7280] ml-1">PRO</span>
                         )}
                       </Button>
                     )}
