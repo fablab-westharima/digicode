@@ -457,7 +457,7 @@ export function Sidebar({
                         variant="ghost"
                         className={`w-full justify-start ${
                           item.premium && !isAuthenticated
-                            ? 'text-[#6B7280] cursor-not-allowed'
+                            ? 'text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white cursor-not-allowed'
                             : 'text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white'
                         } ${shouldShowFull ? 'px-3' : 'px-0 justify-center'}`}
                         onClick={item.premium && !isAuthenticated ? undefined : item.action}
@@ -468,7 +468,7 @@ export function Sidebar({
                           <span className="text-sm flex-1 text-left">{item.label}</span>
                         )}
                         {shouldShowFull && item.premium && !isAuthenticated && (
-                          <span className="text-[10px] text-[#6B7280] ml-1">PRO</span>
+                          <span className="text-[10px] text-orange-400 ml-1">PRO</span>
                         )}
                       </Button>
                     )}
