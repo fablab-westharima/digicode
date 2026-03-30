@@ -15,10 +15,20 @@ export type ServoType = '180' | '270' | '360';
  * - 270度サーボ: 500-2500μs
  * - 360度サーボ (連続回転): 500-2400μs
  */
+/**
+ * ピンごとの個別サーボパルス幅設定
+ */
+export interface PinServoConfig {
+  pin: number;
+  minPulse: number;
+  maxPulse: number;
+}
+
 export interface ServoConfig {
   servoType: ServoType;    // 使用するサーボの種類
-  minPulse: number;        // 最小パルス幅 (μs)
-  maxPulse: number;        // 最大パルス幅 (μs)
+  minPulse: number;        // 最小パルス幅 (μs) - 一括設定
+  maxPulse: number;        // 最大パルス幅 (μs) - 一括設定
+  perPinConfigs?: PinServoConfig[];  // ピンごとの個別設定（オプション）
 }
 
 /**
@@ -324,7 +334,7 @@ export const usePinPresetStore = create<PinPresetStore>()(
     }),
     {
       name: 'pin-preset-storage',
-      version: 6,
+      version: 7,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Migration handles various historic state structures
       migrate: (persistedState: any, version: number) => {
         let state = persistedState;
@@ -420,6 +430,23 @@ export const usePinPresetStore = create<PinPresetStore>()(
               },
             };
           }) || [DEFAULT_PRESET];
+
+          state = {
+            ...state,
+            presets,
+          };
+        }
+
+        // バージョン7: サーボパルス幅の個別設定を追加
+        if (version < 7) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Historic state has varying shapes
+          const presets = state?.presets?.map((preset: any) => ({
+            ...preset,
+            servoConfig: {
+              ...preset.servoConfig,
+              perPinConfigs: preset.servoConfig?.perPinConfigs || [],
+            },
+          })) || [DEFAULT_PRESET];
 
           state = {
             ...state,

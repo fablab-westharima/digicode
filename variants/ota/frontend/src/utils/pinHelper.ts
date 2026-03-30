@@ -92,10 +92,21 @@ export function getServoConfig() {
 
 /**
  * サーボのパルス幅を取得
- * プリセットで設定されたmin/maxパルスを返す
+ * ピン番号が指定された場合、個別設定があればそちらを返す
  */
-export function getServoPulseWidth() {
+export function getServoPulseWidth(pin?: number) {
   const config = getServoConfig();
+  // ピン番号指定時、個別設定を検索
+  if (pin !== undefined && config.perPinConfigs?.length) {
+    const perPin = config.perPinConfigs.find(c => c.pin === pin);
+    if (perPin) {
+      return {
+        min: perPin.minPulse,
+        max: perPin.maxPulse,
+        type: config.servoType,
+      };
+    }
+  }
   return {
     min: config.minPulse,
     max: config.maxPulse,

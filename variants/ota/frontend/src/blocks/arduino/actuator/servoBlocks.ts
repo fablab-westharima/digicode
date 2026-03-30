@@ -42,7 +42,8 @@ Blockly.Blocks['servo_attach'] = {
 
 javascriptGenerator.forBlock['servo_attach'] = function(block: Blockly.Block) {
   const pin = block.getFieldValue('PIN');
-  const pulseWidth = getServoPulseWidth();
+  const pinNum = parseInt(pin, 10);
+  const pulseWidth = getServoPulseWidth(isNaN(pinNum) ? undefined : pinNum);
 
   generator.definitions_['include_servo'] = '#include <ESP32Servo.h>';
   generator.definitions_[`servo_${pin}_instance`] = `Servo servo${pin};`;
