@@ -461,7 +461,6 @@ export function Sidebar({
                             : 'text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white'
                         } ${shouldShowFull ? 'px-3' : 'px-0 justify-center'}`}
                         onClick={item.premium && !isAuthenticated ? undefined : item.action}
-                        disabled={item.premium && !isAuthenticated}
                         title={!shouldShowFull ? item.label : item.premium && !isAuthenticated ? 'ログインが必要です' : undefined}
                       >
                         <span className={shouldShowFull ? 'mr-3' : ''}>{item.icon}</span>
