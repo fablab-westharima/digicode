@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Save, RotateCcw, Cpu, Bot, Gauge, Plus, Trash2, Copy, FolderOpen } from 'lucide-react';
-import { usePinPresetStore, SERVO_TYPE_DEFAULTS, type ServoType } from '@/stores/pinPresetStore';
+import { usePinPresetStore, SERVO_TYPE_DEFAULTS, type ServoType, type PinServoConfig } from '@/stores/pinPresetStore';
 import { useRobotModeStore, ROBOT_MODES, type RobotMode } from '@/stores/robotModeStore';
 import {
   Dialog,
@@ -200,6 +200,7 @@ export function PinSettingsDialog({ open, onOpenChange }: PinSettingsDialogProps
   const [servoType, setServoType] = useState<ServoType>(currentPreset.servoConfig.servoType);
   const [minPulse, setMinPulse] = useState(currentPreset.servoConfig.minPulse);
   const [maxPulse, setMaxPulse] = useState(currentPreset.servoConfig.maxPulse);
+  const [perPinConfigs, setPerPinConfigs] = useState<PinServoConfig[]>(currentPreset.servoConfig.perPinConfigs || []);
   const [hasChanges, setHasChanges] = useState(false);
 
   // 新規プリセット作成ダイアログ
@@ -215,6 +216,7 @@ export function PinSettingsDialog({ open, onOpenChange }: PinSettingsDialogProps
     setServoType(currentPreset.servoConfig.servoType);
     setMinPulse(currentPreset.servoConfig.minPulse);
     setMaxPulse(currentPreset.servoConfig.maxPulse);
+    setPerPinConfigs(currentPreset.servoConfig.perPinConfigs || []);
     setHasChanges(false);
   }, [currentPresetId, currentPreset]);
 
@@ -241,6 +243,7 @@ export function PinSettingsDialog({ open, onOpenChange }: PinSettingsDialogProps
         servoType,
         minPulse,
         maxPulse,
+        perPinConfigs,
       },
     });
     setHasChanges(false);
@@ -251,6 +254,7 @@ export function PinSettingsDialog({ open, onOpenChange }: PinSettingsDialogProps
     setServoType(currentPreset.servoConfig.servoType);
     setMinPulse(currentPreset.servoConfig.minPulse);
     setMaxPulse(currentPreset.servoConfig.maxPulse);
+    setPerPinConfigs(currentPreset.servoConfig.perPinConfigs || []);
     setHasChanges(false);
   };
 
@@ -264,6 +268,7 @@ export function PinSettingsDialog({ open, onOpenChange }: PinSettingsDialogProps
         servoType,
         minPulse,
         maxPulse,
+        perPinConfigs,
       },
       pins: { ...editedPins },
     });
@@ -468,6 +473,104 @@ export function PinSettingsDialog({ open, onOpenChange }: PinSettingsDialogProps
                     className="bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]"
                   />
                 </div>
+              </div>
+
+              {/* 個別サーボパルス幅設定 */}
+              <div className="mt-6 border-t border-[#2E333D] pt-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h4 className="text-sm font-medium text-[#E6EDF3]">
+                      {t('pinSettings.perPinServoSettings', { defaultValue: 'ピンごとの個別パルス幅設定' })}
+                    </h4>
+                    <p className="text-xs text-[#8B949E]">
+                      {t('pinSettings.perPinServoDesc', { defaultValue: 'サーボの個体差に合わせて、ピンごとにパルス幅を上書きできます' })}
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-[#2E333D] text-[#E6EDF3]"
+                    onClick={() => {
+                      setPerPinConfigs(prev => [...prev, { pin: 0, minPulse: minPulse, maxPulse: maxPulse }]);
+                      setHasChanges(true);
+                    }}
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    {t('common.add', { defaultValue: '追加' })}
+                  </Button>
+                </div>
+                {perPinConfigs.length > 0 && (
+                  <div className="space-y-2">
+                    {perPinConfigs.map((config, index) => (
+                      <div key={index} className="grid grid-cols-[80px_1fr_1fr_40px] gap-2 items-center bg-[#0D1117] p-2 rounded-lg border border-[#2E333D]">
+                        <div className="space-y-1">
+                          <Label className="text-xs text-[#E6EDF3]">GPIO</Label>
+                          <Input
+                            type="number"
+                            value={config.pin}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              if (!isNaN(val) && val >= 0 && val <= 39) {
+                                setPerPinConfigs(prev => prev.map((c, i) => i === index ? { ...c, pin: val } : c));
+                                setHasChanges(true);
+                              }
+                            }}
+                            min={0}
+                            max={39}
+                            className="h-8 bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs text-[#E6EDF3]">{t('pinSettings.minPulse')}</Label>
+                          <Input
+                            type="number"
+                            value={config.minPulse}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              if (!isNaN(val)) {
+                                setPerPinConfigs(prev => prev.map((c, i) => i === index ? { ...c, minPulse: val } : c));
+                                setHasChanges(true);
+                              }
+                            }}
+                            min={100}
+                            max={1500}
+                            className="h-8 bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs text-[#E6EDF3]">{t('pinSettings.maxPulse')}</Label>
+                          <Input
+                            type="number"
+                            value={config.maxPulse}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              if (!isNaN(val)) {
+                                setPerPinConfigs(prev => prev.map((c, i) => i === index ? { ...c, maxPulse: val } : c));
+                                setHasChanges(true);
+                              }
+                            }}
+                            min={1500}
+                            max={3000}
+                            className="h-8 bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]"
+                          />
+                        </div>
+                        <div className="flex items-end pb-0.5">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 h-8 w-8 p-0"
+                            onClick={() => {
+                              setPerPinConfigs(prev => prev.filter((_, i) => i !== index));
+                              setHasChanges(true);
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
