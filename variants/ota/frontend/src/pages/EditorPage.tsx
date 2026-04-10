@@ -84,7 +84,7 @@ export function EditorPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { logout, isAuthenticated } = useAuthStore();
-  const { currentProject, loadProject, setCurrentProject } = useProjectStore();
+  const { currentProject, setCurrentProject } = useProjectStore();
   const { status: serialStatus, connect: connectSerial, disconnect: disconnectSerial, forceReleaseAllPorts } = useSerialStore();
   const { status: wifiStatus, getDeviceUrl, setHost, setDeviceName, connect: connectWifi } = useWifiStore();
   const { getSelectedBoard } = useBoardStore();
@@ -211,25 +211,9 @@ export function EditorPage() {
     }
   };
 
-  // URLパラメータからプロジェクトIDを取得して読み込み
-  useEffect(() => {
-    const projectId = searchParams.get('id');
-    if (projectId && isAuthenticated) {
-      const id = parseInt(projectId);
-      if (!isNaN(id)) {
-        loadProject(id).then((project) => {
-          if (project) {
-            setWorkspaceXml(project.blocklyXml);
-            setGeneratedCode(project.generatedCode || '');
-            // BlocklyEditorに反映
-            if (blocklyEditorRef.current) {
-              blocklyEditorRef.current.loadXml(project.blocklyXml);
-            }
-          }
-        });
-      }
-    }
-  }, [searchParams, loadProject, isAuthenticated]);
+  // Phase A以降: プロジェクトはJSONファイルで読み書きするため、
+  // URL ?id= からのクラウドプロジェクト読み込みは廃止
+  // （projectStore / projects API はクラス機能（Phase C）で再利用予定のため残す）
 
   // 現在のプロジェクトが変更された時にワークスペースを更新
   useEffect(() => {
@@ -321,7 +305,7 @@ export function EditorPage() {
     setTwoFactorSettingsDialogOpen(true);
   };
 
-  // プロジェクト選択
+  // プロジェクト選択（JSONファイルから読み込み）
   const handleProjectSelect = (project: Project) => {
     setWorkspaceXml(project.blocklyXml);
     setGeneratedCode(project.generatedCode || '');
@@ -329,10 +313,6 @@ export function EditorPage() {
     // BlocklyEditorに反映
     if (blocklyEditorRef.current) {
       blocklyEditorRef.current.loadXml(project.blocklyXml);
-    }
-    // URLを更新（サーバー保存のプロジェクトのみ）
-    if (isAuthenticated) {
-      navigate(`/editor?id=${project.id}`, { replace: true });
     }
   };
 
@@ -389,9 +369,6 @@ export function EditorPage() {
   // 保存完了時
   const handleSaved = () => {
     setIsDirty(false);
-    if (currentProject) {
-      navigate(`/editor?id=${currentProject.id}`, { replace: true });
-    }
   };
 
   // デバイス接続確認（コンパイル前チェック用）- リトライ付き
@@ -1598,7 +1575,6 @@ export function EditorPage() {
         onOpenChange={setSaveDialogOpen}
         blocklyXml={workspaceXml}
         generatedCode={generatedCode}
-        isAuthenticated={isAuthenticated}
         onSaved={handleSaved}
       />
 
@@ -1607,7 +1583,6 @@ export function EditorPage() {
         open={openDialogOpen}
         onOpenChange={setOpenDialogOpen}
         onSelect={handleProjectSelect}
-        isAuthenticated={isAuthenticated}
       />
 
       {/* サンプルプロジェクトダイアログ */}

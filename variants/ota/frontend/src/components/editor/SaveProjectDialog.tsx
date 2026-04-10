@@ -11,14 +11,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useProjectStore } from '@/stores/projectStore';
 
 interface SaveProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   blocklyXml: string;
   generatedCode: string;
-  isAuthenticated?: boolean;
   onSaved?: () => void;
 }
 
@@ -27,23 +25,22 @@ export function SaveProjectDialog({
   onOpenChange,
   blocklyXml,
   generatedCode,
-  isAuthenticated = false,
   onSaved,
 }: SaveProjectDialogProps) {
   const { t } = useTranslation();
-  const { currentProject, createProject, saveProject, isLoading } = useProjectStore();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
-  // ダイアログが開いた時に現在のプロジェクト情報を反映
+  // ダイアログが開いた時に状態をリセット
   useEffect(() => {
     if (open) {
-      setTitle(currentProject?.title || '');
-      setDescription(currentProject?.description || '');
+      setTitle('');
+      setDescription('');
       setError('');
     }
-  }, [open, currentProject]);
+  }, [open]);
 
   const handleSave = async () => {
     setError('');
@@ -59,46 +56,34 @@ export function SaveProjectDialog({
       return;
     }
 
-    let success = false;
+    setIsSaving(true);
 
-    if (isAuthenticated) {
-      // サーバー保存（ログイン済み）
-      if (currentProject) {
-        success = await saveProject(blocklyXml, generatedCode, 'arduino');
-      } else {
-        const project = await createProject({
-          title: title.trim(),
-          description: description.trim() || undefined,
-          blocklyXml,
-          language: 'arduino',
-        });
-        success = project !== null;
-      }
-    } else {
-      // ファイルとしてダウンロード保存（未ログイン）
-      try {
-        const projectData = {
-          title: title.trim(),
-          description: description.trim() || undefined,
-          blocklyXml,
-          generatedCode,
-          language: 'arduino',
-          savedAt: new Date().toISOString(),
-        };
-        const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${title.trim()}.digicode.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        success = true;
-      } catch {
-        success = false;
-      }
+    // ファイルとしてダウンロード保存（全ユーザー共通）
+    let success = false;
+    try {
+      const projectData = {
+        title: title.trim(),
+        description: description.trim() || undefined,
+        blocklyXml,
+        generatedCode,
+        language: 'arduino',
+        savedAt: new Date().toISOString(),
+      };
+      const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title.trim()}.digicode.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      success = true;
+    } catch {
+      success = false;
     }
+
+    setIsSaving(false);
 
     if (success) {
       onOpenChange(false);
@@ -112,14 +97,8 @@ export function SaveProjectDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            {currentProject ? t('project.saveProject') : t('project.saveAsNew')}
-          </DialogTitle>
-          <DialogDescription>
-            {currentProject
-              ? t('project.saveChanges')
-              : t('project.enterNameToSave')}
-          </DialogDescription>
+          <DialogTitle>{t('project.saveAsNew')}</DialogTitle>
+          <DialogDescription>{t('project.enterNameToSave')}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
@@ -131,21 +110,18 @@ export function SaveProjectDialog({
               onChange={(e) => setTitle(e.target.value)}
               placeholder={t('project.titlePlaceholder')}
               maxLength={100}
-              disabled={!!currentProject}
             />
           </div>
 
-          {!currentProject && (
-            <div className="space-y-2">
-              <Label htmlFor="description">{t('project.descriptionOptional')}</Label>
-              <Input
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder={t('project.descriptionPlaceholder')}
-              />
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="description">{t('project.descriptionOptional')}</Label>
+            <Input
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder={t('project.descriptionPlaceholder')}
+            />
+          </div>
 
           {error && (
             <p className="text-sm text-red-500">{error}</p>
@@ -156,8 +132,8 @@ export function SaveProjectDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={handleSave} disabled={isLoading}>
-            {isLoading ? t('project.saving') : t('common.save')}
+          <Button onClick={handleSave} disabled={isSaving}>
+            {isSaving ? t('project.saving') : t('common.save')}
           </Button>
         </DialogFooter>
       </DialogContent>
