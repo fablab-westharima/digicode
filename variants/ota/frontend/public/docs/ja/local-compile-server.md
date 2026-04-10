@@ -66,7 +66,7 @@ docker --version
 ターミナル（コマンドプロンプト）で以下を実行：
 
 ```bash
-docker run -d -p 3001:3001 --name digicode-compiler digicollc/digicode-compile-server:latest
+docker run -d -p 3001:3001 --name digicode-compiler ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 初回実行時は約10GBのイメージをダウンロードします。**固定回線での実行を推奨します。**
@@ -80,7 +80,7 @@ version: '3.8'
 
 services:
   digicode-compiler:
-    image: digicollc/digicode-compile-server:latest
+    image: ghcr.io/fablab-westharima/digicode-compile-server:latest
     container_name: digicode-compiler
     ports:
       - "3001:3001"
@@ -148,7 +148,7 @@ docker logs digicode-compiler
 
 ```bash
 docker rm -f digicode-compiler
-docker rmi digicollc/digicode-compile-server:latest
+docker rmi ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 ---
@@ -163,10 +163,10 @@ docker stop digicode-compiler
 docker rm digicode-compiler
 
 # 新しいイメージをダウンロード
-docker pull digicollc/digicode-compile-server:latest
+docker pull ghcr.io/fablab-westharima/digicode-compile-server:latest
 
 # 再起動
-docker run -d -p 3001:3001 --name digicode-compiler digicollc/digicode-compile-server:latest
+docker run -d -p 3001:3001 --name digicode-compiler ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 ---
@@ -179,7 +179,7 @@ docker run -d -p 3001:3001 --name digicode-compiler digicollc/digicode-compile-s
 
 ```bash
 # ポート3002で起動
-docker run -d -p 3002:3001 --name digicode-compiler digicollc/digicode-compile-server:latest
+docker run -d -p 3002:3001 --name digicode-compiler ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 DigiCodeの設定でサーバーURLを `http://localhost:3002` に変更してください。
@@ -203,7 +203,7 @@ docker restart digicode-compiler
 
 # それでも解決しない場合は再作成
 docker rm -f digicode-compiler
-docker run -d -p 3001:3001 --name digicode-compiler digicollc/digicode-compile-server:latest
+docker run -d -p 3001:3001 --name digicode-compiler ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 ---

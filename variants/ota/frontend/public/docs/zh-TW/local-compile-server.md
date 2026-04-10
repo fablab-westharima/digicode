@@ -66,7 +66,7 @@ docker --version
 在終端機（命令提示字元）中執行：
 
 ```bash
-docker run -d -p 3001:3001 --name digicode-compiler digicollc/digicode-compile-server:latest
+docker run -d -p 3001:3001 --name digicode-compiler ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 首次執行會下載約 10GB 映像檔。**建議使用有線連接。**
@@ -80,7 +80,7 @@ version: '3.8'
 
 services:
   digicode-compiler:
-    image: digicollc/digicode-compile-server:latest
+    image: ghcr.io/fablab-westharima/digicode-compile-server:latest
     container_name: digicode-compiler
     ports:
       - "3001:3001"
@@ -148,7 +148,7 @@ docker logs digicode-compiler
 
 ```bash
 docker rm -f digicode-compiler
-docker rmi digicollc/digicode-compile-server:latest
+docker rmi ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 ---
@@ -163,10 +163,10 @@ docker stop digicode-compiler
 docker rm digicode-compiler
 
 # 下載新映像檔
-docker pull digicollc/digicode-compile-server:latest
+docker pull ghcr.io/fablab-westharima/digicode-compile-server:latest
 
 # 重新啟動
-docker run -d -p 3001:3001 --name digicode-compiler digicollc/digicode-compile-server:latest
+docker run -d -p 3001:3001 --name digicode-compiler ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 ---
@@ -179,7 +179,7 @@ docker run -d -p 3001:3001 --name digicode-compiler digicollc/digicode-compile-s
 
 ```bash
 # 在連接埠 3002 啟動
-docker run -d -p 3002:3001 --name digicode-compiler digicollc/digicode-compile-server:latest
+docker run -d -p 3002:3001 --name digicode-compiler ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 在 DigiCode 設定中將伺服器 URL 變更為 `http://localhost:3002`。
@@ -203,7 +203,7 @@ docker restart digicode-compiler
 
 # 如果無效，重新建立
 docker rm -f digicode-compiler
-docker run -d -p 3001:3001 --name digicode-compiler digicollc/digicode-compile-server:latest
+docker run -d -p 3001:3001 --name digicode-compiler ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 ---

@@ -31,7 +31,7 @@ Execute um servidor de compilação no seu computador em vez do servidor na nuve
 ## Passo 2: Iniciar Servidor
 
 ```bash
-docker run -d -p 3001:3001 --name digicode-compiler digicollc/digicode-compile-server:latest
+docker run -d -p 3001:3001 --name digicode-compiler ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 ---

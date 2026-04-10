@@ -66,7 +66,7 @@ If you see `Docker version 20.x.x` or similar, you're ready.
 Run in terminal (command prompt):
 
 ```bash
-docker run -d -p 3001:3001 --name digicode-compiler digicollc/digicode-compile-server:latest
+docker run -d -p 3001:3001 --name digicode-compiler ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 First run downloads ~10GB image. **Wired connection recommended.**
@@ -80,7 +80,7 @@ version: '3.8'
 
 services:
   digicode-compiler:
-    image: digicollc/digicode-compile-server:latest
+    image: ghcr.io/fablab-westharima/digicode-compile-server:latest
     container_name: digicode-compiler
     ports:
       - "3001:3001"
@@ -148,7 +148,7 @@ docker logs digicode-compiler
 
 ```bash
 docker rm -f digicode-compiler
-docker rmi digicollc/digicode-compile-server:latest
+docker rmi ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 ---
@@ -163,10 +163,10 @@ docker stop digicode-compiler
 docker rm digicode-compiler
 
 # Download new image
-docker pull digicollc/digicode-compile-server:latest
+docker pull ghcr.io/fablab-westharima/digicode-compile-server:latest
 
 # Restart
-docker run -d -p 3001:3001 --name digicode-compiler digicollc/digicode-compile-server:latest
+docker run -d -p 3001:3001 --name digicode-compiler ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 ---
@@ -179,7 +179,7 @@ If another application is using port 3001:
 
 ```bash
 # Start on port 3002
-docker run -d -p 3002:3001 --name digicode-compiler digicollc/digicode-compile-server:latest
+docker run -d -p 3002:3001 --name digicode-compiler ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 Change server URL to `http://localhost:3002` in DigiCode settings.
@@ -203,7 +203,7 @@ docker restart digicode-compiler
 
 # If that doesn't work, recreate
 docker rm -f digicode-compiler
-docker run -d -p 3001:3001 --name digicode-compiler digicollc/digicode-compile-server:latest
+docker run -d -p 3001:3001 --name digicode-compiler ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 ---

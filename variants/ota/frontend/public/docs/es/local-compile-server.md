@@ -54,7 +54,7 @@ Con DigiCode, puedes ejecutar un servidor de compilación en tu propia computado
 Ejecuta en terminal:
 
 ```bash
-docker run -d -p 3001:3001 --name digicode-compiler digicollc/digicode-compile-server:latest
+docker run -d -p 3001:3001 --name digicode-compiler ghcr.io/fablab-westharima/digicode-compile-server:latest
 ```
 
 Primera ejecución descarga imagen de ~10GB. **Conexión por cable recomendada.**
