@@ -13,6 +13,8 @@ import { ProjectsPage } from '@/pages/ProjectsPage';
 import { ResetPasswordPage } from '@/pages/ResetPasswordPage';
 import { VerifyEmailPage } from '@/pages/VerifyEmailPage';
 import { RecoveryPage } from '@/pages/RecoveryPage';
+import { AdminPage } from '@/pages/AdminPage';
+import { AboutPage } from '@/pages/AboutPage';
 import { initBlocklyMessages } from '@/utils/blocklyMessages';
 
 // モバイルデバイス検出フック
@@ -151,7 +153,13 @@ function App() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
         <Route path="/recovery/:token" element={<RecoveryPage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/firmware" element={<FirmwareInstaller />} />
+        <Route path="/admin" element={
+          <ProtectedRoute>
+            <AdminPage />
+          </ProtectedRoute>
+        } />
         <Route
           path="/"
           element={<EditorRoute />}

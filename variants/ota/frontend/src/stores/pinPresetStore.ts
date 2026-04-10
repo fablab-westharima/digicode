@@ -252,7 +252,7 @@ interface PinPresetStore {
   // 全てのプリセット
   presets: PinPreset[];
 
-  // プレミアム機能が有効かどうか
+  // プレミアム機能が有効かどうか（featureFlagStoreから取得するためdeprecated）
   isPremiumEnabled: boolean;
 
   // アクション

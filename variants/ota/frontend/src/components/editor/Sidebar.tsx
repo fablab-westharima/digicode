@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import {
   FolderOpen,
   Zap,
@@ -21,9 +22,12 @@ import {
   Pencil,
   Bluetooth,
   Download,
-  LogIn
+  LogIn,
+  Settings
 } from 'lucide-react';
 import { Button } from '../ui/button';
+import { useAuthStore } from '@/stores/authStore';
+import { useFeatureFlagStore } from '@/stores/featureFlagStore';
 
 interface SidebarProps {
   isAuthenticated?: boolean;
@@ -89,10 +93,21 @@ export function Sidebar({
   onAccountDelete,
 }: SidebarProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+  const { canUsePinAssign, isFreeOpenNow, fetchFlags } = useFeatureFlagStore();
   const [isPinned, setIsPinned] = useState(false); // ピン留めなし
   const [isHovered, setIsHovered] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['project'])); // デフォルトでprojectを開く
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set()); // サブメニュー展開状態
+
+  // Feature Flagsを取得
+  useEffect(() => {
+    fetchFlags();
+  }, [fetchFlags]);
+
+  const isPinAssignAvailable = canUsePinAssign(user?.plan);
+  const isPinAssignFreeOpen = isFreeOpenNow('pin_assign_pro');
 
   const toggleCategory = (category: string) => {
     setExpandedCategories(prev => {
@@ -259,6 +274,13 @@ export function Sidebar({
     },
     // アカウント（認証状態で表示を切り替え）
     ...(isAuthenticated ? [
+      ...(user?.isAdmin ? [{
+        id: 'admin',
+        label: t('sidebar.admin', { defaultValue: '管理画面' }),
+        icon: <Settings className="w-4 h-4" />,
+        action: () => navigate('/admin'),
+        category: 'account' as const,
+      }] : []),
       {
         id: 'passkey-register',
         label: t('sidebar.passkeyRegister', { defaultValue: 'パスキーを登録' }),
@@ -452,23 +474,26 @@ export function Sidebar({
                         )}
                       </>
                     ) : (
-                      // 通常のアイテム（premiumかつ未ログインならグレーアウト）
+                      // 通常のアイテム（premiumかつ機能制限中ならPROバッジ表示）
                       <Button
                         variant="ghost"
                         className={`w-full justify-start ${
-                          item.premium && !isAuthenticated
+                          item.premium && !isPinAssignAvailable
                             ? 'text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white cursor-not-allowed'
                             : 'text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white'
                         } ${shouldShowFull ? 'px-3' : 'px-0 justify-center'}`}
-                        onClick={item.premium && !isAuthenticated ? undefined : item.action}
-                        title={!shouldShowFull ? item.label : item.premium && !isAuthenticated ? 'ログインが必要です' : undefined}
+                        onClick={item.premium && !isPinAssignAvailable ? undefined : item.action}
+                        title={!shouldShowFull ? item.label : item.premium && !isPinAssignAvailable ? 'Proプラン以上で利用可能です' : undefined}
                       >
                         <span className={shouldShowFull ? 'mr-3' : ''}>{item.icon}</span>
                         {shouldShowFull && (
                           <span className="text-sm flex-1 text-left">{item.label}</span>
                         )}
-                        {shouldShowFull && item.premium && !isAuthenticated && (
+                        {shouldShowFull && item.premium && !isPinAssignAvailable && (
                           <span className="text-[10px] text-orange-400 ml-1">PRO</span>
+                        )}
+                        {shouldShowFull && item.premium && isPinAssignAvailable && isPinAssignFreeOpen && (
+                          <span className="text-[10px] text-green-400 ml-1">無料開放中</span>
                         )}
                       </Button>
                     )}

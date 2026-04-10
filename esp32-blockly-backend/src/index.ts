@@ -8,6 +8,7 @@ import projects from './routes/projects';
 import compileUsage from './routes/compile-usage';
 import subscriptions from './routes/subscriptions';
 import webhooks from './routes/webhooks';
+import admin from './routes/admin';
 import { rateLimitPresets } from './middleware/rateLimit';
 
 type Bindings = {
@@ -109,6 +110,10 @@ app.route('/api/subscriptions', subscriptions);
 
 // Webhookルート（Square決済連携）
 app.route('/api/webhooks', webhooks);
+
+// 管理者APIルート（Admin + Feature Flags公開API）
+app.route('/api/admin', admin);
+app.route('/api', admin); // GET /api/feature-flags（認証不要）
 
 // KVテストエンドポイント（Phase 1.6.2検証用、本番前に削除）
 app.get('/api/test/kv', async (c) => {

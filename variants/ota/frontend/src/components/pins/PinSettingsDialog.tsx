@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Save, RotateCcw, Cpu, Bot, Gauge, Plus, Trash2, Copy, FolderOpen } from 'lucide-react';
 import { usePinPresetStore, SERVO_TYPE_DEFAULTS, type ServoType, type PinServoConfig } from '@/stores/pinPresetStore';
+import { useAuthStore } from '@/stores/authStore';
+import { useFeatureFlagStore } from '@/stores/featureFlagStore';
 import { useRobotModeStore, ROBOT_MODES, type RobotMode } from '@/stores/robotModeStore';
 import {
   Dialog,
@@ -191,8 +193,14 @@ export function PinSettingsDialog({ open, onOpenChange }: PinSettingsDialogProps
     setCurrentPreset,
     addCustomPreset,
     deletePreset,
-    isPremiumEnabled
   } = usePinPresetStore();
+  const userFromAuth = useAuthStore((s) => s.user);
+  const { canUsePinAssign, fetchFlags } = useFeatureFlagStore();
+  const isPremiumEnabled = canUsePinAssign(userFromAuth?.plan);
+
+  useEffect(() => {
+    fetchFlags();
+  }, [fetchFlags]);
   const { mode: robotMode, setMode: setRobotMode } = useRobotModeStore();
 
   const currentPreset = getCurrentPreset();

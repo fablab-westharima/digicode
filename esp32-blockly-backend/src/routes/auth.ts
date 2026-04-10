@@ -229,6 +229,11 @@ auth.post('/login', async (c) => {
       'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
     ).bind(user.id, tokenHash, expiresAt).run();
 
+    // 最終ログイン日時を更新
+    await c.env.DB.prepare(
+      "UPDATE users SET last_login_at = datetime('now') WHERE id = ?"
+    ).bind(user.id).run();
+
     return c.json({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
@@ -279,6 +284,7 @@ auth.get('/me', authMiddleware, async (c) => {
     const user = await c.env.DB.prepare(`
       SELECT
         u.id, u.email, u.created_at, u.passkey_only,
+        u.is_admin, u.plan, u.plan_source,
         s.status as subscription_status, s.plan_type
       FROM users u
       LEFT JOIN subscriptions s ON u.id = s.user_id
@@ -288,6 +294,9 @@ auth.get('/me', authMiddleware, async (c) => {
       email: string;
       created_at: string;
       passkey_only: number;
+      is_admin: number;
+      plan: string;
+      plan_source: string | null;
       subscription_status: string;
       plan_type: string;
     }>();
@@ -301,6 +310,8 @@ auth.get('/me', authMiddleware, async (c) => {
         id: user.id,
         email: user.email,
         passkeyOnly: user.passkey_only,
+        isAdmin: user.is_admin === 1,
+        plan: user.plan || user.plan_type || 'free',
         createdAt: user.created_at,
         subscription: {
           status: user.subscription_status || 'free',

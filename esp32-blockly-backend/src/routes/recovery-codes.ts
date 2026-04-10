@@ -164,6 +164,11 @@ recoveryCodes.post('/verify', async (c) => {
       'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
     ).bind(user.id, tokenHash, expiresAt).run();
 
+    // 最終ログイン日時を更新
+    await c.env.DB.prepare(
+      "UPDATE users SET last_login_at = datetime('now') WHERE id = ?"
+    ).bind(user.id).run();
+
     return c.json({
       accessToken,
       refreshToken,

@@ -421,6 +421,11 @@ app.post('/login/verify', async (c) => {
       )
       .run();
 
+    // 最終ログイン日時を更新
+    await c.env.DB.prepare(
+      "UPDATE users SET last_login_at = datetime('now') WHERE id = ?"
+    ).bind(userId).run();
+
     return c.json({
       accessToken,
       refreshToken,

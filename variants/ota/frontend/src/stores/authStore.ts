@@ -5,6 +5,8 @@ interface User {
   id: number;
   email: string;
   passkeyOnly?: number;
+  plan?: string;
+  isAdmin?: boolean;
 }
 
 interface AuthState {

@@ -8,8 +8,10 @@
  * - Delete custom presets (premium)
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePinPresetStore, type PinPreset, type ServoConfig, type ServoType, SERVO_TYPE_DEFAULTS } from '@/stores/pinPresetStore';
+import { useAuthStore } from '@/stores/authStore';
+import { useFeatureFlagStore } from '@/stores/featureFlagStore';
 import {
   Dialog,
   DialogContent,
@@ -31,11 +33,18 @@ interface PinPresetDialogProps {
 }
 
 export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
-  const { getCurrentPreset, presets, setCurrentPreset, addCustomPreset, updatePreset, deletePreset, isPremiumEnabled } = usePinPresetStore();
+  const { getCurrentPreset, presets, setCurrentPreset, addCustomPreset, updatePreset, deletePreset } = usePinPresetStore();
+  const user = useAuthStore((s) => s.user);
+  const { canUsePinAssign, isFreeOpenNow, getFreeUntil, fetchFlags } = useFeatureFlagStore();
+  const isPremiumEnabled = canUsePinAssign(user?.plan);
   const currentPreset = getCurrentPreset();
   const [editingPreset, setEditingPreset] = useState<PinPreset | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
+
+  useEffect(() => {
+    if (open) fetchFlags();
+  }, [open, fetchFlags]);
 
   const handleCreateNew = () => {
     const newPreset: PinPreset = {
