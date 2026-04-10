@@ -30,9 +30,9 @@ const PLANS = {
     compileLimit: 50,
     features: ['月50回コンパイル', '基本ブロック'],
   },
-  basic: {
-    id: 'basic',
-    name: 'Basicプラン',
+  lite: {
+    id: 'lite',
+    name: 'Liteプラン',
     price: 500, // 円
     compileLimit: 250,
     features: ['月250回コンパイル', '基本ブロック', 'プロジェクト保存無制限'],

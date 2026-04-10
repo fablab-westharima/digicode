@@ -107,9 +107,9 @@ admin.post('/users/:id/plan', authMiddleware, adminMiddleware, async (c) => {
       note?: string;
     }>();
 
-    const validPlans = ['free', 'basic', 'pro', 'enterprise'];
+    const validPlans = ['free', 'lite', 'pro', 'enterprise'];
     if (!validPlans.includes(plan)) {
-      return c.json({ error: '無効なプランです。free, basic, pro, enterprise のいずれかを指定してください' }, 400);
+      return c.json({ error: '無効なプランです。free, lite, pro, enterprise のいずれかを指定してください' }, 400);
     }
 
     // 対象ユーザーの存在確認

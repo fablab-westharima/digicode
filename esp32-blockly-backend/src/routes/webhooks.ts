@@ -199,12 +199,12 @@ async function handlePaymentFailed(db: D1Database, invoice: any) {
 function mapPlanVariationToPlanType(planVariationId: string): string {
   // TODO: 実際のSquare Catalog IDに応じてマッピングを設定
   const mapping: Record<string, string> = {
-    // 'SQUARE_PLAN_VARIATION_ID_BASIC': 'basic',
+    // 'SQUARE_PLAN_VARIATION_ID_LITE': 'lite',
     // 'SQUARE_PLAN_VARIATION_ID_PRO': 'pro',
     // 'SQUARE_PLAN_VARIATION_ID_ENTERPRISE': 'enterprise',
   };
 
-  return mapping[planVariationId] || 'basic';
+  return mapping[planVariationId] || 'lite';
 }
 
 // ヘルスチェック（Webhook設定確認用）

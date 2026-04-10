@@ -50,7 +50,7 @@ interface FeatureFlag {
 function PlanBadge({ plan }: { plan: string }) {
   const colors: Record<string, string> = {
     free: 'bg-gray-600',
-    basic: 'bg-blue-600',
+    lite: 'bg-blue-600',
     pro: 'bg-orange-600',
     enterprise: 'bg-purple-600',
   };
@@ -180,7 +180,7 @@ function UsersTab() {
             <SelectContent>
               <SelectItem value="all">全て</SelectItem>
               <SelectItem value="free">Free</SelectItem>
-              <SelectItem value="basic">Basic</SelectItem>
+              <SelectItem value="lite">Lite</SelectItem>
               <SelectItem value="pro">Pro</SelectItem>
               <SelectItem value="enterprise">Enterprise</SelectItem>
             </SelectContent>
@@ -246,7 +246,7 @@ function UsersTab() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="free">Free</SelectItem>
-                          <SelectItem value="basic">Basic</SelectItem>
+                          <SelectItem value="lite">Lite</SelectItem>
                           <SelectItem value="pro">Pro</SelectItem>
                           <SelectItem value="enterprise">Enterprise</SelectItem>
                         </SelectContent>

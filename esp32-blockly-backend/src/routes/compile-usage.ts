@@ -71,12 +71,12 @@ compileUsage.get('/', authMiddleware, async (c) => {
       SELECT plan_type FROM subscriptions WHERE user_id = ?
     `).bind(userId).first<{ plan_type: string }>();
 
-    // プランごとの制限（FastSpringと連携）
+    // プランごとの制限
     const limits: Record<string, number> = {
       free: 50,         // 無料: 月50回
-      basic: 250,       // Basic($5): 月250回
+      lite: 250,        // Lite($5): 月250回
       pro: 500,         // Pro($10): 月500回 + ピンアサイン
-      enterprise: -1,   // Enterprise($20): 無制限 + ピンアサイン
+      enterprise: -1,   // Enterprise($20): 無制限 + ピンアサイン + クラス機能
     };
 
     const planType = subscription?.plan_type || 'free';
