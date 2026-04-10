@@ -37,3 +37,7 @@ temp/
 
 # Separate repository
 arduino-compile-server/
+
+# Temporary screenshots for AI conversation context
+# (定期的に削除されるためGit管理対象外)
+prompt/image/
