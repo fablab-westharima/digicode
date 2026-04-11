@@ -241,14 +241,14 @@ export function Sidebar({
       action: onCodePreview || (() => {}),
       category: 'advanced'
     },
-    // コンパイルサーバ設定: クラウド一本化のため非表示（Docker廃止 2026-03-31）
-    // {
-    //   id: 'compile-server',
-    //   label: t('sidebar.compileServerSelect', { defaultValue: 'コンパイルサーバ設定' }),
-    //   icon: <Cpu className="w-4 h-4" />,
-    //   action: onCompileServerSettings || (() => {}),
-    //   category: 'advanced'
-    // },
+    // コンパイル設定（2026-04-11復活: ghcr.ioでDocker配布再開、未ログイン時はクラウド選択不可）
+    {
+      id: 'compile-server',
+      label: t('sidebar.compileSettings', { defaultValue: 'コンパイル設定' }),
+      icon: <Cpu className="w-4 h-4" />,
+      action: onCompileServerSettings || (() => {}),
+      category: 'advanced' as const,
+    },
     {
       id: 'usb-port-release',
       label: t('sidebar.usbPortRelease', { defaultValue: 'USBポート解放' }),

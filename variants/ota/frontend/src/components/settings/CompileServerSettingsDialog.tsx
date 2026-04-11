@@ -25,10 +25,10 @@ export function CompileServerSettingsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {t('settings.compileServer', { defaultValue: 'コンパイルサーバー設定' })}
+            {t('settings.compileSettings', { defaultValue: 'コンパイル設定' })}
           </DialogTitle>
           <DialogDescription>
             {t('settings.compileServerDesc', { defaultValue: 'コンパイルに使用するサーバーを選択してください' })}
