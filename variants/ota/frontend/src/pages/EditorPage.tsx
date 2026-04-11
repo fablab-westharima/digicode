@@ -131,6 +131,7 @@ export function EditorPage() {
   const [adc2WarningDialogOpen, setAdc2WarningDialogOpen] = useState(false);
   const [adc2Warnings, setAdc2Warnings] = useState<ADC2Warning[]>([]);
   const [pendingCompileAction, setPendingCompileAction] = useState<(() => void) | null>(null);
+  const [limitReachedDialogOpen, setLimitReachedDialogOpen] = useState(false);
   const [bottomPanelExpanded, setBottomPanelExpanded] = useState(false);
   const [serverMode, setServerMode] = useState<CompileServerMode>('cloud');
   const [compileUsage, setCompileUsage] = useState<{
@@ -138,6 +139,7 @@ export function EditorPage() {
     limit: number;
     remaining: number;
     isOverLimit: boolean;
+    planType: string;
   } | null>(null);
   const [activeBottomTab, setActiveBottomTab] = useState<string>('code');
   const [statusBarState, setStatusBarState] = useState<StatusBarState>('ready');
@@ -432,6 +434,13 @@ export function EditorPage() {
   const handleCompile = async () => {
     if (!generatedCode.trim()) {
       alert(t('editor.noCodeToCompile'));
+      return;
+    }
+
+    // クラウドコンパイル選択時は使用量上限をチェック
+    // ローカルコンパイル時はチェックしない（自前リソースのため）
+    if (serverMode === 'cloud' && compileUsage?.isOverLimit) {
+      setLimitReachedDialogOpen(true);
       return;
     }
 
@@ -1199,7 +1208,7 @@ export function EditorPage() {
                   書き込み
                   {serverMode === 'cloud' && compileUsage && (
                     <span className={`ml-1 ${compileUsage.isOverLimit ? 'text-red-200' : 'text-orange-200'}`}>
-                      ({compileUsage.count}/{compileUsage.limit})
+                      ({compileUsage.count}/{compileUsage.limit === -1 ? '∞' : compileUsage.limit})
                     </span>
                   )}
                   <ChevronDownIcon className="w-3 h-3 ml-1" />
@@ -1246,19 +1255,25 @@ export function EditorPage() {
                   {compileUsage ? (
                     <div className="space-y-1">
                       <Progress
-                        value={(compileUsage.count / compileUsage.limit) * 100}
+                        value={compileUsage.limit === -1 ? 0 : (compileUsage.count / compileUsage.limit) * 100}
                         className={`h-2 ${compileUsage.isOverLimit ? '[&>div]:bg-red-500' : ''}`}
                       />
                       <div className="flex justify-between text-xs">
                         <span className={compileUsage.isOverLimit ? 'text-red-500 font-medium' : ''}>
                           {t('editor.menu.usedCount', { count: compileUsage.count })}
                         </span>
-                        <span className="text-gray-500">{t('editor.menu.limitCount', { limit: compileUsage.limit })}</span>
+                        <span className="text-gray-500">
+                          {compileUsage.limit === -1
+                            ? t('settings.unlimited', { defaultValue: '無制限' })
+                            : t('editor.menu.limitCount', { limit: compileUsage.limit })}
+                        </span>
                       </div>
                       <p className={`text-xs ${compileUsage.isOverLimit ? 'text-red-500' : 'text-green-600'}`}>
-                        {compileUsage.isOverLimit
-                          ? t('editor.menu.limitReached')
-                          : t('editor.menu.remaining', { count: compileUsage.remaining })
+                        {compileUsage.limit === -1
+                          ? t('settings.unlimited', { defaultValue: '無制限' })
+                          : compileUsage.isOverLimit
+                            ? t('editor.menu.limitReached')
+                            : t('editor.menu.remaining', { count: compileUsage.remaining })
                         }
                       </p>
                     </div>
@@ -1950,6 +1965,69 @@ export function EditorPage() {
         open={twoFactorSettingsDialogOpen}
         onOpenChange={setTwoFactorSettingsDialogOpen}
       />
+
+      {/* コンパイル上限到達ダイアログ */}
+      <AlertDialog open={limitReachedDialogOpen} onOpenChange={setLimitReachedDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle className="h-5 w-5" />
+              {t('editor.limitReached.title', { defaultValue: 'コンパイル回数の上限に達しました' })}
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">
+                  {t('editor.limitReached.description', {
+                    defaultValue: '今月のクラウドコンパイル回数が上限に達しました。以下のいずれかをお選びください。'
+                  })}
+                </p>
+                {compileUsage && (
+                  <div className="bg-red-50 border border-red-200 rounded-md p-3 space-y-1">
+                    <p className="text-sm text-red-800">
+                      <span className="font-semibold">{t('settings.currentPlan', { defaultValue: '現在のプラン' })}:</span>{' '}
+                      {compileUsage.planType === 'free' ? t('settings.freePlan', { defaultValue: '無料プラン' }) : compileUsage.planType}
+                    </p>
+                    <p className="text-sm text-red-800">
+                      <span className="font-semibold">{t('editor.menu.monthlyUsage', { defaultValue: '今月の使用量' })}:</span>{' '}
+                      {compileUsage.count} / {compileUsage.limit === -1 ? '∞' : compileUsage.limit}
+                    </p>
+                  </div>
+                )}
+                <div className="space-y-2 pt-2">
+                  <p className="text-sm font-medium text-gray-700">
+                    {t('editor.limitReached.option1Title', { defaultValue: '選択肢 1: ローカルコンパイル環境を利用' })}
+                  </p>
+                  <p className="text-xs text-gray-600 pl-4">
+                    {t('editor.limitReached.option1Desc', {
+                      defaultValue: 'Dockerでローカルにコンパイルサーバーを起動すれば、回数制限なく無料でコンパイルできます。'
+                    })}
+                  </p>
+                  <p className="text-sm font-medium text-gray-700 pt-2">
+                    {t('editor.limitReached.option2Title', { defaultValue: '選択肢 2: プランをアップグレード' })}
+                  </p>
+                  <p className="text-xs text-gray-600 pl-4">
+                    {t('editor.limitReached.option2Desc', {
+                      defaultValue: 'より多くのコンパイル回数を利用できるプランに変更することもできます。'
+                    })}
+                  </p>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.close', { defaultValue: '閉じる' })}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setLimitReachedDialogOpen(false);
+                setCompileServerSettingsDialogOpen(true);
+              }}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {t('editor.limitReached.openSettings', { defaultValue: 'コンパイル設定を開く' })}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* ADC2警告ダイアログ */}
       <AlertDialog open={adc2WarningDialogOpen} onOpenChange={setAdc2WarningDialogOpen}>
