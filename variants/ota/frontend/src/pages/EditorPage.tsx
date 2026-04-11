@@ -1970,42 +1970,42 @@ export function EditorPage() {
       <AlertDialog open={limitReachedDialogOpen} onOpenChange={setLimitReachedDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
               <AlertTriangle className="h-5 w-5" />
               {t('editor.limitReached.title', { defaultValue: 'コンパイル回数の上限に達しました' })}
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-foreground">
                   {t('editor.limitReached.description', {
                     defaultValue: '今月のクラウドコンパイル回数が上限に達しました。以下のいずれかをお選びください。'
                   })}
                 </p>
                 {compileUsage && (
-                  <div className="bg-red-50 border border-red-200 rounded-md p-3 space-y-1">
-                    <p className="text-sm text-red-800">
+                  <div className="bg-destructive/10 border border-destructive/30 rounded-md p-3 space-y-1">
+                    <p className="text-sm text-foreground">
                       <span className="font-semibold">{t('settings.currentPlan', { defaultValue: '現在のプラン' })}:</span>{' '}
                       {compileUsage.planType === 'free' ? t('settings.freePlan', { defaultValue: '無料プラン' }) : compileUsage.planType}
                     </p>
-                    <p className="text-sm text-red-800">
+                    <p className="text-sm text-foreground">
                       <span className="font-semibold">{t('editor.menu.monthlyUsage', { defaultValue: '今月の使用量' })}:</span>{' '}
                       {compileUsage.count} / {compileUsage.limit === -1 ? '∞' : compileUsage.limit}
                     </p>
                   </div>
                 )}
                 <div className="space-y-2 pt-2">
-                  <p className="text-sm font-medium text-gray-700">
+                  <p className="text-sm font-medium text-foreground">
                     {t('editor.limitReached.option1Title', { defaultValue: '選択肢 1: ローカルコンパイル環境を利用' })}
                   </p>
-                  <p className="text-xs text-gray-600 pl-4">
+                  <p className="text-xs text-muted-foreground pl-4">
                     {t('editor.limitReached.option1Desc', {
                       defaultValue: 'Dockerでローカルにコンパイルサーバーを起動すれば、回数制限なく無料でコンパイルできます。'
                     })}
                   </p>
-                  <p className="text-sm font-medium text-gray-700 pt-2">
+                  <p className="text-sm font-medium text-foreground pt-2">
                     {t('editor.limitReached.option2Title', { defaultValue: '選択肢 2: プランをアップグレード' })}
                   </p>
-                  <p className="text-xs text-gray-600 pl-4">
+                  <p className="text-xs text-muted-foreground pl-4">
                     {t('editor.limitReached.option2Desc', {
                       defaultValue: 'より多くのコンパイル回数を利用できるプランに変更することもできます。'
                     })}
@@ -2021,7 +2021,6 @@ export function EditorPage() {
                 setLimitReachedDialogOpen(false);
                 setCompileServerSettingsDialogOpen(true);
               }}
-              className="bg-blue-600 hover:bg-blue-700"
             >
               {t('editor.limitReached.openSettings', { defaultValue: 'コンパイル設定を開く' })}
             </AlertDialogAction>
