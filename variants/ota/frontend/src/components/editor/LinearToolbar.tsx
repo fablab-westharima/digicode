@@ -263,7 +263,7 @@ export function LinearToolbar({
               {t('editor.flashButton')}
               {serverMode === 'cloud' && compileUsage && (
                 <span className={`ml-1 text-xs ${compileUsage.isOverLimit ? 'text-red-200' : 'text-orange-200'}`}>
-                  ({compileUsage.count}/{compileUsage.limit})
+                  ({compileUsage.count}/{compileUsage.limit === -1 ? '∞' : compileUsage.limit})
                 </span>
               )}
             </>
