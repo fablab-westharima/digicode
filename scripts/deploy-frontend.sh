@@ -46,8 +46,21 @@ npm run build
 echo ""
 echo "🚀 Cloudflare Pages にデプロイ..."
 
+# 最新コミットのSHAとメッセージ1行目を取得
+# 注: wrangler pages deploy は --commit-message に特殊文字（∞、絵文字等）
+# が含まれていると「Invalid UTF-8」エラーで失敗する場合がある。
+# そのため ASCII安全な形式（"<shortSha>: <ASCII化されたタイトル>"）で渡す。
+COMMIT_SHA="$(git rev-parse --short HEAD)"
+COMMIT_TITLE_RAW="$(git log -1 --pretty=%s)"
+# 非ASCII文字をスペースに置換（簡易的な ASCII 化）
+COMMIT_TITLE_ASCII="$(echo "$COMMIT_TITLE_RAW" | LC_ALL=C tr -c '[:print:][:space:]' ' ' | tr -s ' ')"
+COMMIT_MESSAGE="${COMMIT_SHA}: ${COMMIT_TITLE_ASCII}"
+
 # --commit-dirty=true は使わない
-npx wrangler pages deploy dist --project-name digicode-frontend
+npx wrangler pages deploy dist \
+  --project-name digicode-frontend \
+  --commit-hash "$COMMIT_SHA" \
+  --commit-message "$COMMIT_MESSAGE"
 
 echo ""
 echo "✅ デプロイ完了"
