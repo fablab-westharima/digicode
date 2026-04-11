@@ -9,6 +9,7 @@ import compileUsage from './routes/compile-usage';
 import subscriptions from './routes/subscriptions';
 import webhooks from './routes/webhooks';
 import admin from './routes/admin';
+import classes from './routes/classes';
 import { rateLimitPresets } from './middleware/rateLimit';
 
 type Bindings = {
@@ -20,6 +21,9 @@ type Bindings = {
   SQUARE_ACCESS_TOKEN?: string;
   SQUARE_LOCATION_ID?: string;
   SQUARE_WEBHOOK_SIGNATURE_KEY?: string;
+  // Phase C: class feature proxy (digicode-class-server on ML30)
+  CLASS_API_URL: string;      // vars: e.g. "https://class.digital-fab.jp"
+  CLASS_API_SECRET: string;   // Workers Secret (wrangler secret put)
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -83,6 +87,7 @@ app.use('/api/compile-usage/*', rateLimitPresets.compile);
 // その他のAPIエンドポイント（標準: 100リクエスト/分）
 app.use('/api/projects/*', rateLimitPresets.standard);
 app.use('/api/subscriptions/*', rateLimitPresets.standard);
+app.use('/api/classes/*', rateLimitPresets.standard);
 
 // Webhook（制限緩め: 1000リクエスト/分）
 app.use('/api/webhooks/*', rateLimitPresets.webhook);
@@ -114,6 +119,9 @@ app.route('/api/webhooks', webhooks);
 // 管理者APIルート（Admin + Feature Flags公開API）
 app.route('/api/admin', admin);
 app.route('/api', admin); // GET /api/feature-flags（認証不要）
+
+// Phase C: クラス機能ルート（enterprise プラン専用、ML30 へプロキシ）
+app.route('/api/classes', classes);
 
 // KVテストエンドポイント（Phase 1.6.2検証用、本番前に削除）
 app.get('/api/test/kv', async (c) => {

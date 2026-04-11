@@ -9,7 +9,13 @@
 	// Secrets are managed via Cloudflare Secrets (not vars) for security
 	// JWT_SECRET: npx wrangler secret put JWT_SECRET
 	// RESEND_API_KEY: npx wrangler secret put RESEND_API_KEY (for password reset emails)
+	// CLASS_API_SECRET: npx wrangler secret put CLASS_API_SECRET (Phase C, shared with digicode-class-server on ML30)
 	// For local development, add these to .dev.vars file
+	"vars": {
+		// Phase C: ML30 class API endpoint. Not a secret (URL only).
+		// For local dev, override via .dev.vars if hitting a local digicode-class-server.
+		"CLASS_API_URL": "https://class.digital-fab.jp"
+	},
 	"d1_databases": [
 		{
 			"binding": "DB",
