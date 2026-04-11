@@ -66,10 +66,27 @@ compileUsage.get('/', authMiddleware, async (c) => {
       WHERE user_id = ? AND month = ?
     `).bind(userId, currentMonth).first<{ count: number }>();
 
-    // サブスクリプション情報を取得して制限を決定
-    const subscription = await c.env.DB.prepare(`
-      SELECT plan_type FROM subscriptions WHERE user_id = ?
-    `).bind(userId).first<{ plan_type: string }>();
+    // ユーザー情報とサブスクリプション情報を取得して制限を決定
+    // 優先順: users.plan > subscriptions.plan_type > 'free'
+    // （auth.ts L284-314 と同じロジック）
+    //
+    // 背景:
+    // - users.plan: Admin画面で手動付与されたプラン (migration 0014)
+    // - subscriptions.plan_type: Square/Stripe決済連携用 (migration 0001)
+    // - 2つのテーブルに分かれているが、users.plan を優先する
+    //   （現状、決済連携は未実装で admin 付与が主なため）
+    //
+    // バグ修正記録: 2026-04-11
+    // 修正前は subscriptions.plan_type のみを見ていたため、
+    // Admin画面で付与された lite/enterprise プランが反映されず、
+    // 全てのユーザーが free 扱いされていた。
+    // 詳細: prompt/maintenance/13_2026-04-11_プラン管理バグ修正と計画再編.md
+    const user = await c.env.DB.prepare(`
+      SELECT u.plan, s.plan_type
+      FROM users u
+      LEFT JOIN subscriptions s ON u.id = s.user_id
+      WHERE u.id = ?
+    `).bind(userId).first<{ plan: string | null; plan_type: string | null }>();
 
     // プランごとの制限
     const limits: Record<string, number> = {
@@ -79,7 +96,7 @@ compileUsage.get('/', authMiddleware, async (c) => {
       enterprise: -1,   // Enterprise($20): 無制限 + ピンアサイン + クラス機能
     };
 
-    const planType = subscription?.plan_type || 'free';
+    const planType = user?.plan || user?.plan_type || 'free';
     const limit = limits[planType] ?? limits.free;
     const count = usage?.count || 0;
 
