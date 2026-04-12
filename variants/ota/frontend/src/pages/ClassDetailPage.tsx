@@ -265,8 +265,17 @@ export function ClassDetailPage() {
           setCreatingAssignment(false);
           return;
         }
-        const buf = await attachmentFile.arrayBuffer();
-        attachment = btoa(String.fromCharCode(...new Uint8Array(buf)));
+        // FileReader で Base64 に変換（btoa + スプレッドはスタックオーバーフロー）
+        attachment = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const dataUrl = reader.result as string;
+            // "data:application/pdf;base64,XXXX" から Base64 部分を取り出す
+            resolve(dataUrl.split(',')[1]);
+          };
+          reader.onerror = () => reject(new Error('ファイルの読み込みに失敗しました'));
+          reader.readAsDataURL(attachmentFile);
+        });
         attachmentFilename = attachmentFile.name;
       }
 

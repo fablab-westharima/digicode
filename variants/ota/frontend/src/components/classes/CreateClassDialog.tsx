@@ -17,14 +17,14 @@ interface Props {
 
 export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
   const [name, setName] = useState('');
-  const [classType, setClassType] = useState('classroom');
+  const [classType, setClassType] = useState('workshop');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
       setName('');
-      setClassType('classroom');
+      setClassType('workshop');
       setError(null);
     }
   }, [open]);
@@ -96,8 +96,8 @@ export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
               disabled={loading}
               className="w-full px-3 py-2 rounded-md border border-border bg-input text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
             >
-              <option value="classroom">教室（4ヶ月・課題10件まで）</option>
               <option value="workshop">WS/短期講座（1ヶ月・課題5件まで）</option>
+              <option value="classroom">教室（4ヶ月・課題10件まで）</option>
             </select>
             <p className="text-xs text-muted-foreground mt-1">
               有効期限は種別に応じて自動設定されます
