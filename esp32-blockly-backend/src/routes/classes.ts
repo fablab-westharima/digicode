@@ -192,9 +192,26 @@ classes.delete('/:id', async (c) => {
     if (!row) return c.json({ error: 'クラスが見つかりません' }, 404);
     if (row.owner_id !== userId) return c.json({ error: '権限がありません' }, 403);
 
+    // 削除前に所属 student を取得（CASCADE 後は取得できない）
+    const students = await c.env.DB.prepare(
+      `SELECT user_id FROM class_members WHERE class_id = ? AND role = 'student'`
+    ).bind(id).all<{ user_id: number }>();
+
     // D1 CASCADE will auto-delete class_members.
     // TODO (Step 6-7): also delete assignments/submissions on ML30 via proxyClassApi
     await c.env.DB.prepare(`DELETE FROM classes WHERE id = ?`).bind(id).run();
+
+    // 他クラスにも未所属の student users を連動削除（使い捨てアカウント方針）
+    for (const s of students.results || []) {
+      const other = await c.env.DB.prepare(
+        `SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?`
+      ).bind(s.user_id).first<{ n: number }>();
+      if (!other || other.n === 0) {
+        await c.env.DB.prepare(
+          `DELETE FROM users WHERE id = ? AND account_type = 'student'`
+        ).bind(s.user_id).run();
+      }
+    }
 
     return c.json({ success: true });
   } catch (error) {
