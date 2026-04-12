@@ -295,8 +295,8 @@ export function Sidebar({
       {
         id: 'submission-save',
         label: currentSubmissionTitle
-          ? t('sidebar.submissionSave', { defaultValue: '保存' })
-          : t('sidebar.submissionSaveDisabled', { defaultValue: '保存（課題未選択）' }),
+          ? `保存 — ${currentSubmissionTitle}`
+          : '保存（課題未選択）',
         icon: <Save className="w-4 h-4" />,
         action: canSaveSubmission ? (onSubmissionSave || (() => {})) : (() => {}),
         category: 'assignment' as const,
@@ -305,8 +305,8 @@ export function Sidebar({
       {
         id: 'submission-submit',
         label: currentSubmissionTitle
-          ? t('sidebar.submissionSubmit', { defaultValue: '提出' })
-          : t('sidebar.submissionSubmitDisabled', { defaultValue: '提出（課題未選択）' }),
+          ? `提出 — ${currentSubmissionTitle}`
+          : '提出（課題未選択）',
         icon: <Send className="w-4 h-4" />,
         action: canSubmitSubmission ? (onSubmissionSubmit || (() => {})) : (() => {}),
         category: 'assignment' as const,
