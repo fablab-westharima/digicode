@@ -247,6 +247,8 @@ async function verifyClassOwner(c: any, classId: number, userId: number) {
 type StudentRow = {
   user_id: number;
   email: string;
+  display_name: string | null;
+  plain_password: string | null;
   account_type: string;
   role: string;
   joined_at: string;
@@ -309,10 +311,10 @@ classes.post('/:classId/students', async (c) => {
 
       // users テーブルに INSERT（email_verified=1: 管理者代理作成のため確認不要）
       const user = await c.env.DB.prepare(
-        `INSERT INTO users (email, password_hash, account_type, email_verified)
-         VALUES (?, ?, 'student', 1)
+        `INSERT INTO users (email, password_hash, account_type, email_verified, display_name, plain_password)
+         VALUES (?, ?, 'student', 1, ?, ?)
          RETURNING id`
-      ).bind(loginId, passwordHash).first<{ id: number }>();
+      ).bind(loginId, passwordHash, name, password).first<{ id: number }>();
 
       if (!user) continue;
 
@@ -354,7 +356,7 @@ classes.get('/:classId/students', async (c) => {
     if ('error' in result) return result.error;
 
     const rows = await c.env.DB.prepare(
-      `SELECT u.id AS user_id, u.email, u.account_type, cm.role, cm.joined_at
+      `SELECT u.id AS user_id, u.email, u.display_name, u.plain_password, u.account_type, cm.role, cm.joined_at
        FROM class_members cm
        JOIN users u ON cm.user_id = u.id
        WHERE cm.class_id = ? AND cm.role = 'student'
@@ -364,6 +366,8 @@ classes.get('/:classId/students', async (c) => {
     const students = (rows.results || []).map((r) => ({
       userId: r.user_id,
       loginId: r.email,
+      displayName: r.display_name,
+      password: r.plain_password,
       accountType: r.account_type,
       role: r.role,
       joinedAt: r.joined_at,
@@ -432,8 +436,8 @@ classes.post('/:classId/students/:studentId/reset-password', async (c) => {
     const newHash = await hashPassword(newPassword);
 
     await c.env.DB.prepare(
-      `UPDATE users SET password_hash = ?, updated_at = datetime('now') WHERE id = ? AND account_type = 'student'`
-    ).bind(newHash, studentId).run();
+      `UPDATE users SET password_hash = ?, plain_password = ?, updated_at = datetime('now') WHERE id = ? AND account_type = 'student'`
+    ).bind(newHash, newPassword, studentId).run();
 
     // student の loginId を取得して返す
     const student = await c.env.DB.prepare(

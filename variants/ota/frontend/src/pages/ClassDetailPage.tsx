@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft, Copy, Check, Loader2, AlertTriangle,
-  KeyRound, Trash2, Plus, Download, X,
+  KeyRound, Trash2, Plus, Download, X
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import {
@@ -14,12 +14,13 @@ import {
   createStudents,
   type ClassInfo,
   type StudentInfo,
-  type CreatedStudent,
 } from '@/services/classService';
 
-function downloadCSV(students: CreatedStudent[]) {
+function downloadStudentsCsv(students: StudentInfo[]) {
   const header = '名前,ログインID,パスワード\n';
-  const rows = students.map((s) => `${s.name},${s.loginId},${s.password}`).join('\n');
+  const rows = students.map((s) =>
+    `${s.displayName || ''},${s.loginId},${s.password || ''}`
+  ).join('\n');
   const bom = '\uFEFF';
   const blob = new Blob([bom + header + rows], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
@@ -44,7 +45,6 @@ export function ClassDetailPage() {
   // インライン生徒追加
   const [newNames, setNewNames] = useState<string[]>([]);
   const [addingStudents, setAddingStudents] = useState(false);
-  const [createdResult, setCreatedResult] = useState<CreatedStudent[] | null>(null);
 
   // インライン確認状態
   const [deletingClassConfirm, setDeletingClassConfirm] = useState(false);
@@ -52,14 +52,8 @@ export function ClassDetailPage() {
   const [deletingStudentId, setDeletingStudentId] = useState<number | null>(null);
   const [deletingStudentLoading, setDeletingStudentLoading] = useState(false);
 
-  // PWリセット結果
-  const [resetResult, setResetResult] = useState<{
-    studentId: number;
-    loginId: string;
-    password: string;
-  } | null>(null);
+  // PWリセット
   const [resetLoading, setResetLoading] = useState<number | null>(null);
-  const [copiedPassword, setCopiedPassword] = useState(false);
 
   const classId = id ? parseInt(id) : NaN;
 
@@ -115,7 +109,6 @@ export function ClassDetailPage() {
 
   const handleStartAddStudents = () => {
     setNewNames(['']);
-    setCreatedResult(null);
   };
 
   const handleCancelAdd = () => {
@@ -145,8 +138,7 @@ export function ClassDetailPage() {
     setAddingStudents(true);
     setError(null);
     try {
-      const result = await createStudents(classId, validNames);
-      setCreatedResult(result.students);
+      await createStudents(classId, validNames);
       setNewNames([]);
       // 生徒一覧をリフェッチ
       const studs = await listStudents(classId);
@@ -158,10 +150,6 @@ export function ClassDetailPage() {
     }
   };
 
-  const handleDismissResult = () => {
-    setCreatedResult(null);
-  };
-
   // --- 生徒操作 ---
 
   const handleDeleteStudent = async (studentId: number) => {
@@ -170,7 +158,6 @@ export function ClassDetailPage() {
       await deleteStudent(classId, studentId);
       setStudents((prev) => prev.filter((s) => s.userId !== studentId));
       setDeletingStudentId(null);
-      if (resetResult?.studentId === studentId) setResetResult(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : '生徒の削除に失敗しました');
     } finally {
@@ -180,25 +167,16 @@ export function ClassDetailPage() {
 
   const handleResetPassword = async (studentId: number) => {
     setResetLoading(studentId);
-    setResetResult(null);
     try {
-      const result = await resetStudentPassword(classId, studentId);
-      setResetResult({ studentId, ...result });
-      setCopiedPassword(false);
+      await resetStudentPassword(classId, studentId);
+      // リフェッチで新PWが表示される（plain_password が更新されるため）
+      const studs = await listStudents(classId);
+      setStudents(studs);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'パスワードリセットに失敗しました');
     } finally {
       setResetLoading(null);
     }
-  };
-
-  const handleCopyPassword = async () => {
-    if (!resetResult) return;
-    try {
-      await navigator.clipboard.writeText(resetResult.password);
-      setCopiedPassword(true);
-      setTimeout(() => setCopiedPassword(false), 2000);
-    } catch { /* ignore */ }
   };
 
   // --- 権限ガード ---
@@ -321,80 +299,41 @@ export function ClassDetailPage() {
           </div>
         </div>
 
-        {/* 作成結果表示（パスワードは再表示不可） */}
-        {createdResult && (
-          <div className="mb-6 border border-primary/30 rounded-lg bg-primary/5 p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-destructive" />
-                <span className="text-sm font-medium text-foreground">
-                  {createdResult.length}名の生徒を作成しました — パスワードは再表示できません
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => downloadCSV(createdResult)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-xs rounded border border-border text-foreground hover:bg-accent"
-                >
-                  <Download className="w-3 h-3" />
-                  CSV
-                </button>
-                <button
-                  onClick={handleDismissResult}
-                  className="p-1 text-muted-foreground hover:text-foreground"
-                  title="閉じる"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-            <div className="border border-border rounded bg-card overflow-hidden">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left px-4 py-2 text-muted-foreground font-medium">名前</th>
-                    <th className="text-left px-4 py-2 text-muted-foreground font-medium">ログインID</th>
-                    <th className="text-left px-4 py-2 text-muted-foreground font-medium">パスワード</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {createdResult.map((s, i) => (
-                    <tr key={i} className="border-b border-border last:border-b-0">
-                      <td className="px-4 py-2 text-foreground">{s.name}</td>
-                      <td className="px-4 py-2"><code className="font-mono text-foreground">{s.loginId}</code></td>
-                      <td className="px-4 py-2"><code className="font-mono text-foreground">{s.password}</code></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
         {/* 生徒一覧 */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">
               生徒一覧（{students.length}名）
             </h2>
-            {!isAddingMode && (
-              <button
-                onClick={handleStartAddStudents}
-                className="flex items-center gap-2 px-3 py-1.5 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 text-sm"
-              >
-                <Plus className="w-4 h-4" />
-                生徒を追加
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              {students.length > 0 && (
+                <button
+                  onClick={() => downloadStudentsCsv(students)}
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent"
+                >
+                  <Download className="w-4 h-4" />
+                  CSV
+                </button>
+              )}
+              {!isAddingMode && (
+                <button
+                  onClick={handleStartAddStudents}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 text-sm"
+                >
+                  <Plus className="w-4 h-4" />
+                  生徒を追加
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="border border-border rounded-lg bg-card overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">
-                    {isAddingMode ? '名前' : 'ログインID'}
-                  </th>
+                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">名前</th>
+                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">ログインID</th>
+                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">パスワード</th>
                   <th className="text-left px-4 py-3 text-muted-foreground font-medium">参加日</th>
                   <th className="text-right px-4 py-3 text-muted-foreground font-medium">操作</th>
                 </tr>
@@ -403,8 +342,14 @@ export function ClassDetailPage() {
                 {/* 既存生徒 */}
                 {students.map((student) => (
                   <tr key={student.userId} className="border-b border-border">
+                    <td className="px-4 py-3 text-foreground">
+                      {student.displayName || ''}
+                    </td>
                     <td className="px-4 py-3">
                       <code className="font-mono text-foreground">{student.loginId}</code>
+                    </td>
+                    <td className="px-4 py-3">
+                      <code className="font-mono text-foreground">{student.password || ''}</code>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
                       {new Date(student.joinedAt).toLocaleDateString('ja-JP')}
@@ -452,22 +397,6 @@ export function ClassDetailPage() {
                         </div>
                       )}
 
-                      {/* PWリセット結果 */}
-                      {resetResult?.studentId === student.userId && (
-                        <div className="mt-2 p-2 rounded bg-muted text-sm">
-                          <p className="text-xs text-muted-foreground mb-1">新しいパスワード:</p>
-                          <div className="flex items-center gap-2">
-                            <code className="font-mono text-foreground">{resetResult.password}</code>
-                            <button
-                              onClick={handleCopyPassword}
-                              className="p-1 text-muted-foreground hover:text-foreground"
-                              title="コピー"
-                            >
-                              {copiedPassword ? <Check className="w-3 h-3 text-primary" /> : <Copy className="w-3 h-3" />}
-                            </button>
-                          </div>
-                        </div>
-                      )}
                     </td>
                   </tr>
                 ))}
@@ -486,7 +415,7 @@ export function ClassDetailPage() {
                         autoFocus={index === newNames.length - 1}
                       />
                     </td>
-                    <td className="px-4 py-2 text-muted-foreground text-xs">新規</td>
+                    <td className="px-4 py-2 text-muted-foreground text-xs" colSpan={3}>自動生成</td>
                     <td className="px-4 py-2 text-right">
                       <button
                         onClick={() => handleRemoveRow(index)}
@@ -503,7 +432,7 @@ export function ClassDetailPage() {
                 {/* 行追加・操作ボタン */}
                 {isAddingMode && (
                   <tr>
-                    <td colSpan={3} className="px-4 py-3">
+                    <td colSpan={5} className="px-4 py-3">
                       <div className="flex items-center justify-between">
                         <button
                           onClick={handleAddRow}

@@ -18,6 +18,8 @@ export interface ClassInfo {
 export interface StudentInfo {
   userId: number;
   loginId: string;
+  displayName: string | null;
+  password: string | null;
   accountType: string;
   role: string;
   joinedAt: string;
