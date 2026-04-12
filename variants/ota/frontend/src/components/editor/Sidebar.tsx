@@ -24,7 +24,8 @@ import {
   Download,
   LogIn,
   Settings,
-  Users
+  Users,
+  Lock
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAuthStore } from '@/stores/authStore';
@@ -51,6 +52,7 @@ interface SidebarProps {
   onPasskeyRegister?: () => void;
   onTwoFactorSettings?: () => void;
   onAccountDelete?: () => void;
+  onChangePassword?: () => void;
 }
 
 interface NavSubItem {
@@ -92,6 +94,7 @@ export function Sidebar({
   onPasskeyRegister,
   onTwoFactorSettings,
   onAccountDelete,
+  onChangePassword,
 }: SidebarProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -273,7 +276,7 @@ export function Sidebar({
       action: onDocs || (() => {}),
       category: 'help'
     },
-    // アカウント（認証状態で表示を切り替え）
+    // アカウント（認証状態・アカウント種別で表示を切り替え）
     ...(isAuthenticated ? [
       ...(user?.isAdmin ? [{
         id: 'admin',
@@ -289,26 +292,37 @@ export function Sidebar({
         action: () => navigate('/classes'),
         category: 'account' as const,
       }] : []),
+      // 生徒アカウント: パスワード変更のみ表示
+      // 通常アカウント: パスキー登録・2段階認証・アカウント削除を表示
+      ...(user?.accountType !== 'student' ? [
+        {
+          id: 'passkey-register',
+          label: t('sidebar.passkeyRegister', { defaultValue: 'パスキーを登録' }),
+          icon: <Key className="w-4 h-4" />,
+          action: onPasskeyRegister || (() => {}),
+          category: 'account' as const,
+        },
+        {
+          id: 'two-factor-settings',
+          label: t('sidebar.twoFactorSettings', { defaultValue: '2段階認証' }),
+          icon: <Shield className="w-4 h-4" />,
+          action: onTwoFactorSettings || (() => {}),
+          category: 'account' as const,
+        },
+        {
+          id: 'account-delete',
+          label: t('sidebar.accountDelete', { defaultValue: 'アカウント削除' }),
+          icon: <UserX className="w-4 h-4" />,
+          action: onAccountDelete || (() => {}),
+          category: 'account' as const,
+        },
+      ] : []),
       {
-        id: 'passkey-register',
-        label: t('sidebar.passkeyRegister', { defaultValue: 'パスキーを登録' }),
-        icon: <Key className="w-4 h-4" />,
-        action: onPasskeyRegister || (() => {}),
-        category: 'account'
-      },
-      {
-        id: 'two-factor-settings',
-        label: t('sidebar.twoFactorSettings', { defaultValue: '2段階認証' }),
-        icon: <Shield className="w-4 h-4" />,
-        action: onTwoFactorSettings || (() => {}),
-        category: 'account'
-      },
-      {
-        id: 'account-delete',
-        label: t('sidebar.accountDelete', { defaultValue: 'アカウント削除' }),
-        icon: <UserX className="w-4 h-4" />,
-        action: onAccountDelete || (() => {}),
-        category: 'account'
+        id: 'change-password',
+        label: t('sidebar.changePassword', { defaultValue: 'パスワード変更' }),
+        icon: <Lock className="w-4 h-4" />,
+        action: onChangePassword || (() => {}),
+        category: 'account' as const,
       },
       {
         id: 'logout',

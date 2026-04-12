@@ -7,6 +7,7 @@ interface User {
   passkeyOnly?: number;
   plan?: string;
   isAdmin?: boolean;
+  accountType?: string;
 }
 
 interface AuthState {

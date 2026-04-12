@@ -112,8 +112,8 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
           <Label htmlFor="email">{t('auth.email')}</Label>
           <Input
             id="email"
-            type="email"
-            placeholder={t('auth.emailPlaceholder')}
+            type="text"
+            placeholder={t('auth.emailOrLoginIdPlaceholder', 'メールアドレスまたはログインID')}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required

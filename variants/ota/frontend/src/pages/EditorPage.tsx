@@ -34,6 +34,7 @@ import { PasskeyManagementDialog } from '@/components/auth/PasskeyManagementDial
 import { TwoFactorSettingsDialog } from '@/components/auth/TwoFactorSettingsDialog';
 import { useAuthStore } from '@/stores/authStore';
 import { AccountDeleteDialog } from '@/components/auth/AccountDeleteDialog';
+import { ChangePasswordDialog } from '@/components/auth/ChangePasswordDialog';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
@@ -128,6 +129,7 @@ export function EditorPage() {
   const [passkeyRegisterDialogOpen, setPasskeyRegisterDialogOpen] = useState(false);
   const [twoFactorSettingsDialogOpen, setTwoFactorSettingsDialogOpen] = useState(false);
   const [accountDeleteDialogOpen, setAccountDeleteDialogOpen] = useState(false);
+  const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false);
   const [adc2WarningDialogOpen, setAdc2WarningDialogOpen] = useState(false);
   const [adc2Warnings, setAdc2Warnings] = useState<ADC2Warning[]>([]);
   const [pendingCompileAction, setPendingCompileAction] = useState<(() => void) | null>(null);
@@ -1531,6 +1533,7 @@ export function EditorPage() {
             onPasskeyRegister={handlePasskeyRegister}
             onTwoFactorSettings={handleTwoFactorSettings}
             onAccountDelete={handleAccountDelete}
+            onChangePassword={() => setChangePasswordDialogOpen(true)}
           />
 
           {/* メインコンテンツエリア (Blocklyワークスペース) */}
@@ -1958,6 +1961,12 @@ export function EditorPage() {
       <AccountDeleteDialog
         open={accountDeleteDialogOpen}
         onOpenChange={setAccountDeleteDialogOpen}
+      />
+
+      {/* パスワード変更ダイアログ */}
+      <ChangePasswordDialog
+        open={changePasswordDialogOpen}
+        onOpenChange={setChangePasswordDialogOpen}
       />
 
       {/* 2段階認証設定ダイアログ */}

@@ -256,6 +256,7 @@ auth.post('/login', async (c) => {
         id: user.id,
         email: user.email,
         passkeyOnly: user.passkey_only,
+        accountType: user.account_type || 'regular',
       },
     });
   } catch (error) {
@@ -298,7 +299,7 @@ auth.get('/me', authMiddleware, async (c) => {
     const user = await c.env.DB.prepare(`
       SELECT
         u.id, u.email, u.created_at, u.passkey_only,
-        u.is_admin, u.plan, u.plan_source,
+        u.is_admin, u.plan, u.plan_source, u.account_type,
         s.status as subscription_status, s.plan_type
       FROM users u
       LEFT JOIN subscriptions s ON u.id = s.user_id
@@ -311,6 +312,7 @@ auth.get('/me', authMiddleware, async (c) => {
       is_admin: number;
       plan: string;
       plan_source: string | null;
+      account_type: string | null;
       subscription_status: string;
       plan_type: string;
     }>();
@@ -326,6 +328,7 @@ auth.get('/me', authMiddleware, async (c) => {
         passkeyOnly: user.passkey_only,
         isAdmin: user.is_admin === 1,
         plan: user.plan || user.plan_type || 'free',
+        accountType: user.account_type || 'regular',
         createdAt: user.created_at,
         subscription: {
           status: user.subscription_status || 'free',
@@ -980,6 +983,47 @@ auth.delete('/account', authMiddleware, async (c) => {
   } catch (error) {
     console.error('Account deletion error:', error);
     return c.json({ error: 'アカウント削除に失敗しました' }, 500);
+  }
+});
+
+// パスワード変更（生徒向け: plain_password を NULL にする）
+auth.post('/change-password', authMiddleware, async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const body = await c.req.json<{ currentPassword?: string; newPassword?: string }>();
+
+    if (!body.currentPassword || !body.newPassword) {
+      return c.json({ error: '現在のパスワードと新しいパスワードは必須です' }, 400);
+    }
+
+    if (body.newPassword.length < 4) {
+      return c.json({ error: 'パスワードは4文字以上にしてください' }, 400);
+    }
+
+    const user = await c.env.DB.prepare(
+      'SELECT password_hash FROM users WHERE id = ?'
+    ).bind(userId).first<{ password_hash: string }>();
+
+    if (!user) {
+      return c.json({ error: 'ユーザーが見つかりません' }, 404);
+    }
+
+    const isValid = await verifyPassword(body.currentPassword, user.password_hash);
+    if (!isValid) {
+      return c.json({ error: '現在のパスワードが正しくありません' }, 401);
+    }
+
+    const newHash = await hashPassword(body.newPassword);
+
+    // plain_password を NULL にする（管理者画面で「生徒変更済み」表示になる）
+    await c.env.DB.prepare(
+      "UPDATE users SET password_hash = ?, plain_password = NULL, updated_at = datetime('now') WHERE id = ?"
+    ).bind(newHash, userId).run();
+
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Change password error:', error);
+    return c.json({ error: 'パスワード変更に失敗しました' }, 500);
   }
 });
 
