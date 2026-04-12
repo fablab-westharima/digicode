@@ -17,7 +17,6 @@ interface Props {
 
 export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
   const [name, setName] = useState('');
-  const [compileServerTarget, setCompileServerTarget] = useState('cloud');
   const [expiresAt, setExpiresAt] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +24,6 @@ export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
   useEffect(() => {
     if (open) {
       setName('');
-      setCompileServerTarget('cloud');
       setExpiresAt('');
       setError(null);
     }
@@ -45,7 +43,7 @@ export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
     setLoading(true);
     setError(null);
     try {
-      await createClass(trimmed, compileServerTarget, expiresAt || undefined);
+      await createClass(trimmed, undefined, expiresAt || undefined);
       onCreated();
       onOpenChange(false);
     } catch (err) {
@@ -85,22 +83,6 @@ export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
             <p className="text-xs text-muted-foreground mt-1 text-right">
               {name.length}/100
             </p>
-          </div>
-
-          {/* コンパイルサーバー */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              コンパイルサーバー
-            </label>
-            <select
-              value={compileServerTarget}
-              onChange={(e) => setCompileServerTarget(e.target.value)}
-              disabled={loading}
-              className="w-full px-3 py-2 rounded-md border border-border bg-input text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
-            >
-              <option value="cloud">クラウド</option>
-              <option value="local">ローカル</option>
-            </select>
           </div>
 
           {/* 開講期限 */}

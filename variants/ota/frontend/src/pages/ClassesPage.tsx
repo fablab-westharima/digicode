@@ -143,9 +143,6 @@ export function ClassesPage() {
                           )}
                         </button>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        サーバー: {cls.compileServerTarget === 'local' ? 'ローカル' : 'クラウド'}
-                      </span>
                       {cls.expiresAt && (
                         <span className="text-xs text-muted-foreground">
                           期限: {new Date(cls.expiresAt).toLocaleDateString('ja-JP')}

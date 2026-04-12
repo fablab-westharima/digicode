@@ -231,12 +231,6 @@ export function ClassDetailPage() {
                 </button>
               </div>
             </div>
-            <div>
-              <span className="text-muted-foreground">コンパイルサーバー</span>
-              <p className="mt-1 text-foreground">
-                {classInfo.compileServerTarget === 'local' ? 'ローカル' : 'クラウド'}
-              </p>
-            </div>
             {classInfo.expiresAt && (
               <div>
                 <span className="text-muted-foreground">開講期限</span>
