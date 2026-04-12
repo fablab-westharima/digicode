@@ -1421,41 +1421,6 @@ export function EditorPage() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* 生徒用: 保存・提出ボタン */}
-      {isStudent && currentSubmission && (
-        <div className="flex items-center gap-1 ml-2">
-          {currentSubmission.status !== 'submitted' && currentSubmission.status !== 'graded' ? (
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-xs px-2"
-                onClick={handleSaveSubmission}
-                disabled={savingSubmission || !isDirty}
-              >
-                {savingSubmission ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Download className="w-3 h-3 mr-1" />}
-                保存
-              </Button>
-              <Button
-                variant="default"
-                size="sm"
-                className="text-xs px-2"
-                onClick={handleSubmitSubmission}
-                disabled={submittingSubmission}
-              >
-                {submittingSubmission ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Zap className="w-3 h-3 mr-1" />}
-                提出
-              </Button>
-            </>
-          ) : (
-            <span className="text-xs text-muted-foreground px-2">提出済み（閲覧のみ）</span>
-          )}
-          <span className="text-xs text-muted-foreground px-1 border-l border-border ml-1 pl-2">
-            {currentSubmission.assignmentTitle}
-          </span>
-        </div>
-      )}
-
       {/* 表示メニュー */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -1648,6 +1613,11 @@ export function EditorPage() {
             onAccountDelete={handleAccountDelete}
             onChangePassword={() => setChangePasswordDialogOpen(true)}
             onSubmissionList={() => setSubmissionListOpen(true)}
+            onSubmissionSave={handleSaveSubmission}
+            onSubmissionSubmit={handleSubmitSubmission}
+            currentSubmissionTitle={currentSubmission?.assignmentTitle || null}
+            canSaveSubmission={!!currentSubmission && currentSubmission.status !== 'submitted' && currentSubmission.status !== 'graded' && isDirty}
+            canSubmitSubmission={!!currentSubmission && currentSubmission.status !== 'submitted' && currentSubmission.status !== 'graded'}
           />
 
           {/* メインコンテンツエリア (Blocklyワークスペース) */}

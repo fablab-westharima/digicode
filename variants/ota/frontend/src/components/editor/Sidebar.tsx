@@ -26,7 +26,9 @@ import {
   Settings,
   Users,
   Lock,
-  ClipboardList
+  ClipboardList,
+  Save,
+  Send
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAuthStore } from '@/stores/authStore';
@@ -55,6 +57,11 @@ interface SidebarProps {
   onAccountDelete?: () => void;
   onChangePassword?: () => void;
   onSubmissionList?: () => void;
+  onSubmissionSave?: () => void;
+  onSubmissionSubmit?: () => void;
+  currentSubmissionTitle?: string | null;
+  canSaveSubmission?: boolean;
+  canSubmitSubmission?: boolean;
 }
 
 interface NavSubItem {
@@ -98,6 +105,11 @@ export function Sidebar({
   onAccountDelete,
   onChangePassword,
   onSubmissionList,
+  onSubmissionSave,
+  onSubmissionSubmit,
+  currentSubmissionTitle,
+  canSaveSubmission,
+  canSubmitSubmission,
 }: SidebarProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -149,14 +161,6 @@ export function Sidebar({
       action: onProjectOpen || (() => {}),
       category: 'project'
     },
-    // 生徒用: 課題一覧
-    ...(user?.accountType === 'student' ? [{
-      id: 'submission-list',
-      label: t('sidebar.submissionList', { defaultValue: '課題一覧' }),
-      icon: <ClipboardList className="w-4 h-4" />,
-      action: onSubmissionList || (() => {}),
-      category: 'project' as const,
-    }] : []),
     // OTAセットアップ - BLE OTA
     {
       id: 'ble-ota',
@@ -279,6 +283,36 @@ export function Sidebar({
       category: 'advanced',
       premium: true,
     },
+    // 課題（生徒のみ）
+    ...(user?.accountType === 'student' ? [
+      {
+        id: 'submission-list',
+        label: t('sidebar.submissionList', { defaultValue: '課題一覧' }),
+        icon: <ClipboardList className="w-4 h-4" />,
+        action: onSubmissionList || (() => {}),
+        category: 'assignment' as const,
+      },
+      {
+        id: 'submission-save',
+        label: currentSubmissionTitle
+          ? t('sidebar.submissionSave', { defaultValue: '保存' })
+          : t('sidebar.submissionSaveDisabled', { defaultValue: '保存（課題未選択）' }),
+        icon: <Save className="w-4 h-4" />,
+        action: canSaveSubmission ? (onSubmissionSave || (() => {})) : (() => {}),
+        category: 'assignment' as const,
+        premium: !canSaveSubmission,
+      },
+      {
+        id: 'submission-submit',
+        label: currentSubmissionTitle
+          ? t('sidebar.submissionSubmit', { defaultValue: '提出' })
+          : t('sidebar.submissionSubmitDisabled', { defaultValue: '提出（課題未選択）' }),
+        icon: <Send className="w-4 h-4" />,
+        action: canSubmitSubmission ? (onSubmissionSubmit || (() => {})) : (() => {}),
+        category: 'assignment' as const,
+        premium: !canSubmitSubmission,
+      },
+    ] : []),
     // ヘルプ
     {
       id: 'docs',
@@ -365,6 +399,8 @@ export function Sidebar({
         return t('sidebar.category.tuning', { defaultValue: '調整' });
       case 'advanced':
         return t('sidebar.category.advanced', { defaultValue: '詳細設定' });
+      case 'assignment':
+        return t('sidebar.category.assignment', { defaultValue: '課題' });
       case 'help':
         return t('sidebar.category.help', { defaultValue: 'ヘルプ' });
       case 'account':
@@ -383,7 +419,7 @@ export function Sidebar({
   }, {} as Record<string, NavItem[]>);
 
   // カテゴリの表示順序を定義
-  const categoryOrder = ['project', 'otaSetup', 'usbDriver', 'tuning', 'advanced', 'help', 'account'];
+  const categoryOrder = ['project', 'assignment', 'otaSetup', 'usbDriver', 'tuning', 'advanced', 'help', 'account'];
   const orderedCategories = categoryOrder.filter(cat => groupedItems[cat]);
 
   // 表示状態を計算
