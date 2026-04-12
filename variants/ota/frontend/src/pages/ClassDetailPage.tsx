@@ -26,7 +26,7 @@ function triggerDownload(blob: Blob, filename: string) {
 }
 
 function downloadStudentsCsv(students: StudentInfo[], className: string) {
-  const header = '名前,ログインID,パスワード\n';
+  const header = '名前,ログインID,初期パスワード\n';
   const rows = students.map((s) =>
     `${s.displayName || ''},${s.loginId},${s.password || ''}`
   ).join('\n');
@@ -389,7 +389,7 @@ export function ClassDetailPage() {
                 <tr className="border-b border-border">
                   <th className="text-left px-4 py-3 text-muted-foreground font-medium">名前</th>
                   <th className="text-left px-4 py-3 text-muted-foreground font-medium">ログインID</th>
-                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">パスワード</th>
+                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">初期パスワード</th>
                   <th className="text-left px-4 py-3 text-muted-foreground font-medium">参加日</th>
                   <th className="text-right px-4 py-3 text-muted-foreground font-medium">操作</th>
                 </tr>
@@ -405,7 +405,11 @@ export function ClassDetailPage() {
                       <code className="font-mono text-foreground">{student.loginId}</code>
                     </td>
                     <td className="px-4 py-3">
-                      <code className="font-mono text-foreground">{student.password || ''}</code>
+                      {student.password ? (
+                        <code className="font-mono text-foreground">{student.password}</code>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">生徒変更済み</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
                       {new Date(student.joinedAt).toLocaleDateString('ja-JP')}
