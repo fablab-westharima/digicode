@@ -10,6 +10,7 @@ import subscriptions from './routes/subscriptions';
 import webhooks from './routes/webhooks';
 import admin from './routes/admin';
 import classes from './routes/classes';
+import submissionsRoute from './routes/submissions';
 import { rateLimitPresets } from './middleware/rateLimit';
 
 type Bindings = {
@@ -122,6 +123,9 @@ app.route('/api', admin); // GET /api/feature-flags（認証不要）
 
 // Phase C: クラス機能ルート（enterprise プラン専用、ML30 へプロキシ）
 app.route('/api/classes', classes);
+
+// Phase C: 生徒用 submissions ルート（authMiddleware のみ、requirePlan なし）
+app.route('/api/submissions', submissionsRoute);
 
 // KVテストエンドポイント（Phase 1.6.2検証用、本番前に削除）
 app.get('/api/test/kv', async (c) => {

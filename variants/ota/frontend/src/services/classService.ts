@@ -208,14 +208,14 @@ export interface SubmissionInfo {
 }
 
 export async function listMySubmissions(): Promise<SubmissionInfo[]> {
-  const res = await fetchWithAuth('/api/classes/submissions/my');
+  const res = await fetchWithAuth('/api/submissions/my');
   if (!res.ok) await parseErrorOrThrow(res);
   const data = await res.json();
   return data.submissions;
 }
 
 export async function getSubmission(id: number): Promise<SubmissionInfo> {
-  const res = await fetchWithAuth(`/api/classes/submissions/${id}`);
+  const res = await fetchWithAuth(`/api/submissions/${id}`);
   if (!res.ok) await parseErrorOrThrow(res);
   const data = await res.json();
   return data.submission;
@@ -225,7 +225,7 @@ export async function saveSubmission(
   id: number,
   data: { blocklyXml: string; generatedCode: string },
 ): Promise<SubmissionInfo> {
-  const res = await fetchWithAuth(`/api/classes/submissions/${id}`, {
+  const res = await fetchWithAuth(`/api/submissions/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   });
@@ -235,7 +235,7 @@ export async function saveSubmission(
 }
 
 export async function submitSubmission(id: number): Promise<void> {
-  const res = await fetchWithAuth(`/api/classes/submissions/${id}/submit`, {
+  const res = await fetchWithAuth(`/api/submissions/${id}/submit`, {
     method: 'POST',
   });
   if (!res.ok) await parseErrorOrThrow(res);
