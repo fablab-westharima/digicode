@@ -414,6 +414,7 @@ export function EditorPage() {
       });
       setCurrentSubmission(updated);
       setIsDirty(false);
+      alert('保存しました');
     } catch (err) {
       alert(err instanceof Error ? err.message : '保存に失敗しました');
     } finally {
