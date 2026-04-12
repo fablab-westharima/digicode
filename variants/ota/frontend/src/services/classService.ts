@@ -8,9 +8,24 @@ export interface ClassInfo {
   ownerId: number;
   inviteCode: string;
   compileServerTarget: string;
+  classType: string;
   expiresAt: string | null;
   status: string;
   archivedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AssignmentInfo {
+  id: number;
+  classId: number;
+  title: string;
+  description: string | null;
+  templateBlocklyXml: string | null;
+  templateGeneratedCode: string | null;
+  dueDate: string | null;
+  attachmentFilename: string | null;
+  attachmentSize: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -55,12 +70,11 @@ export async function listClasses(): Promise<ClassInfo[]> {
 
 export async function createClass(
   name: string,
-  compileServerTarget?: string,
-  expiresAt?: string,
+  classType?: string,
 ): Promise<ClassInfo> {
   const res = await fetchWithAuth('/api/classes', {
     method: 'POST',
-    body: JSON.stringify({ name, compileServerTarget, expiresAt }),
+    body: JSON.stringify({ name, classType }),
   });
   if (!res.ok) await parseErrorOrThrow(res);
   const data = await res.json();
@@ -115,4 +129,60 @@ export async function resetStudentPassword(
   );
   if (!res.ok) await parseErrorOrThrow(res);
   return res.json();
+}
+
+// --- Assignments API ---
+
+export async function listAssignments(classId: number): Promise<AssignmentInfo[]> {
+  const res = await fetchWithAuth(`/api/classes/${classId}/assignments`);
+  if (!res.ok) await parseErrorOrThrow(res);
+  const data = await res.json();
+  return data.assignments;
+}
+
+export async function createAssignment(
+  classId: number,
+  data: {
+    title: string;
+    description?: string;
+    templateBlocklyXml?: string;
+    templateGeneratedCode?: string;
+    dueDate?: string;
+    attachment?: string; // Base64
+    attachmentFilename?: string;
+  },
+): Promise<AssignmentInfo> {
+  const res = await fetchWithAuth(`/api/classes/${classId}/assignments`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) await parseErrorOrThrow(res);
+  const result = await res.json();
+  return result.assignment;
+}
+
+export async function deleteAssignment(classId: number, assignmentId: number): Promise<void> {
+  const res = await fetchWithAuth(`/api/classes/${classId}/assignments/${assignmentId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) await parseErrorOrThrow(res);
+}
+
+export async function distributeAssignment(
+  classId: number,
+  assignmentId: number,
+): Promise<{ distributed: number; total: number }> {
+  const res = await fetchWithAuth(
+    `/api/classes/${classId}/assignments/${assignmentId}/distribute`,
+    { method: 'POST' },
+  );
+  if (!res.ok) await parseErrorOrThrow(res);
+  return res.json();
+}
+
+export function getAttachmentUrl(classId: number, assignmentId: number): string {
+  const API_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:8787'
+    : 'https://esp32-blockly-backend.kazunari-takeda.workers.dev';
+  return `${API_URL}/api/classes/${classId}/assignments/${assignmentId}/attachment`;
 }

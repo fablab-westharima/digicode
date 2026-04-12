@@ -17,14 +17,14 @@ interface Props {
 
 export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
   const [name, setName] = useState('');
-  const [expiresAt, setExpiresAt] = useState('');
+  const [classType, setClassType] = useState('classroom');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
       setName('');
-      setExpiresAt('');
+      setClassType('classroom');
       setError(null);
     }
   }, [open]);
@@ -43,7 +43,7 @@ export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
     setLoading(true);
     setError(null);
     try {
-      await createClass(trimmed, undefined, expiresAt || undefined);
+      await createClass(trimmed, classType);
       onCreated();
       onOpenChange(false);
     } catch (err) {
@@ -85,18 +85,23 @@ export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
             </p>
           </div>
 
-          {/* 開講期限 */}
+          {/* クラス種別 */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-1">
-              開講期限（任意）
+              クラス種別 <span className="text-destructive">*</span>
             </label>
-            <input
-              type="date"
-              value={expiresAt}
-              onChange={(e) => setExpiresAt(e.target.value)}
+            <select
+              value={classType}
+              onChange={(e) => setClassType(e.target.value)}
               disabled={loading}
               className="w-full px-3 py-2 rounded-md border border-border bg-input text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
-            />
+            >
+              <option value="classroom">教室（4ヶ月・課題10件まで）</option>
+              <option value="workshop">WS/短期講座（1ヶ月・課題5件まで）</option>
+            </select>
+            <p className="text-xs text-muted-foreground mt-1">
+              有効期限は種別に応じて自動設定されます
+            </p>
           </div>
 
           {/* エラー */}

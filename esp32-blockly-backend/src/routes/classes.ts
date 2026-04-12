@@ -22,11 +22,14 @@ import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import { requirePlan } from '../middleware/plan';
 import { hashPassword } from '../utils/password';
+import { proxyClassApi, type ClassApiEnv } from '../utils/classApi';
 import type { PlanType } from '../utils/plan';
 
 type Bindings = {
   DB: D1Database;
   JWT_SECRET: string;
+  CLASS_API_URL: string;
+  CLASS_API_SECRET: string;
 };
 
 type Variables = {
@@ -57,6 +60,7 @@ type ClassRow = {
   owner_id: number;
   invite_code: string;
   compile_server_target: string;
+  class_type: string;
   expires_at: string | null;
   status: string;
   archived_at: string | null;
@@ -71,6 +75,7 @@ function rowToCamel(row: ClassRow) {
     ownerId: row.owner_id,
     inviteCode: row.invite_code,
     compileServerTarget: row.compile_server_target,
+    classType: row.class_type,
     expiresAt: row.expires_at,
     status: row.status,
     archivedAt: row.archived_at,
@@ -102,16 +107,23 @@ classes.post('/', async (c) => {
 
     const body = await c.req.json<{
       name?: string;
-      compileServerTarget?: string;
-      expiresAt?: string;
+      classType?: string;
     }>();
 
     const name = typeof body.name === 'string' ? body.name.trim() : '';
     if (!name) return c.json({ error: 'クラス名は必須です' }, 400);
     if (name.length > 100) return c.json({ error: 'クラス名は100文字以内にしてください' }, 400);
 
-    const compileServerTarget = body.compileServerTarget === 'local' ? 'local' : 'cloud';
-    const expiresAt = typeof body.expiresAt === 'string' && body.expiresAt ? body.expiresAt : null;
+    const classType = body.classType === 'workshop' ? 'workshop' : 'classroom';
+
+    // 種別に応じて有効期限を自動設定
+    const now = new Date();
+    if (classType === 'workshop') {
+      now.setMonth(now.getMonth() + 1); // 1ヶ月
+    } else {
+      now.setMonth(now.getMonth() + 4); // 4ヶ月
+    }
+    const expiresAt = now.toISOString();
 
     // 3 クラス上限チェック
     const count = await c.env.DB.prepare(
@@ -127,10 +139,10 @@ classes.post('/', async (c) => {
     for (let attempt = 0; attempt < 2 && !created; attempt++) {
       try {
         created = await c.env.DB.prepare(
-          `INSERT INTO classes (name, owner_id, invite_code, compile_server_target, expires_at)
-           VALUES (?, ?, ?, ?, ?)
+          `INSERT INTO classes (name, owner_id, invite_code, compile_server_target, class_type, expires_at)
+           VALUES (?, ?, ?, 'cloud', ?, ?)
            RETURNING *`
-        ).bind(name, userId, generateInviteCode(), compileServerTarget, expiresAt)
+        ).bind(name, userId, generateInviteCode(), classType, expiresAt)
           .first<ClassRow>();
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
@@ -451,6 +463,204 @@ classes.post('/:classId/students/:studentId/reset-password', async (c) => {
   } catch (error) {
     console.error('Reset password error:', error);
     return c.json({ error: 'パスワードリセットに失敗しました' }, 500);
+  }
+});
+
+// ============================================================
+// Assignments proxy (ML30 digicode-class-server)
+// ============================================================
+
+function getClassApiEnv(c: any): ClassApiEnv {
+  return {
+    CLASS_API_URL: c.env.CLASS_API_URL,
+    CLASS_API_SECRET: c.env.CLASS_API_SECRET,
+  };
+}
+
+// GET /api/classes/:classId/assignments
+classes.get('/:classId/assignments', async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const classId = parseInt(c.req.param('classId'));
+    if (isNaN(classId)) return c.json({ error: '無効なクラスIDです' }, 400);
+
+    const result = await verifyClassOwner(c, classId, userId);
+    if ('error' in result) return result.error;
+
+    const apiResult = await proxyClassApi(getClassApiEnv(c), {
+      method: 'GET',
+      path: `/assignments?class_id=${classId}`,
+      userId,
+    });
+
+    if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+    return c.json(apiResult.body, apiResult.status);
+  } catch (error) {
+    console.error('List assignments error:', error);
+    return c.json({ error: '課題一覧の取得に失敗しました' }, 500);
+  }
+});
+
+// POST /api/classes/:classId/assignments
+classes.post('/:classId/assignments', async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const classId = parseInt(c.req.param('classId'));
+    if (isNaN(classId)) return c.json({ error: '無効なクラスIDです' }, 400);
+
+    const result = await verifyClassOwner(c, classId, userId);
+    if ('error' in result) return result.error;
+
+    const body = await c.req.json();
+
+    const apiResult = await proxyClassApi(getClassApiEnv(c), {
+      method: 'POST',
+      path: '/assignments',
+      userId,
+      body: { ...body, classId },
+    });
+
+    if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+    return c.json(apiResult.body, apiResult.status);
+  } catch (error) {
+    console.error('Create assignment error:', error);
+    return c.json({ error: '課題の作成に失敗しました' }, 500);
+  }
+});
+
+// GET /api/classes/:classId/assignments/:assignmentId
+classes.get('/:classId/assignments/:assignmentId', async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const classId = parseInt(c.req.param('classId'));
+    const assignmentId = parseInt(c.req.param('assignmentId'));
+    if (isNaN(classId) || isNaN(assignmentId)) return c.json({ error: '無効なIDです' }, 400);
+
+    const result = await verifyClassOwner(c, classId, userId);
+    if ('error' in result) return result.error;
+
+    const apiResult = await proxyClassApi(getClassApiEnv(c), {
+      method: 'GET',
+      path: `/assignments/${assignmentId}`,
+      userId,
+    });
+
+    if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+    return c.json(apiResult.body, apiResult.status);
+  } catch (error) {
+    console.error('Get assignment error:', error);
+    return c.json({ error: '課題の取得に失敗しました' }, 500);
+  }
+});
+
+// GET /api/classes/:classId/assignments/:assignmentId/attachment
+classes.get('/:classId/assignments/:assignmentId/attachment', async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const classId = parseInt(c.req.param('classId'));
+    const assignmentId = parseInt(c.req.param('assignmentId'));
+    if (isNaN(classId) || isNaN(assignmentId)) return c.json({ error: '無効なIDです' }, 400);
+
+    const result = await verifyClassOwner(c, classId, userId);
+    if ('error' in result) return result.error;
+
+    // Attachment download: proxy raw response from ML30
+    const env = getClassApiEnv(c);
+    const url = new URL(`/assignments/${assignmentId}/attachment`, env.CLASS_API_URL).toString();
+
+    const res = await fetch(url, {
+      headers: {
+        'X-Internal-Secret': env.CLASS_API_SECRET,
+        'X-User-Id': String(userId),
+      },
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({ error: 'ダウンロードに失敗しました' }));
+      return c.json(data, res.status as any);
+    }
+
+    // Pass through the binary response
+    return new Response(res.body, {
+      headers: {
+        'Content-Type': res.headers.get('Content-Type') || 'application/pdf',
+        'Content-Disposition': res.headers.get('Content-Disposition') || 'attachment',
+        'Content-Length': res.headers.get('Content-Length') || '',
+      },
+    });
+  } catch (error) {
+    console.error('Download attachment error:', error);
+    return c.json({ error: '添付ファイルのダウンロードに失敗しました' }, 500);
+  }
+});
+
+// DELETE /api/classes/:classId/assignments/:assignmentId
+classes.delete('/:classId/assignments/:assignmentId', async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const classId = parseInt(c.req.param('classId'));
+    const assignmentId = parseInt(c.req.param('assignmentId'));
+    if (isNaN(classId) || isNaN(assignmentId)) return c.json({ error: '無効なIDです' }, 400);
+
+    const result = await verifyClassOwner(c, classId, userId);
+    if ('error' in result) return result.error;
+
+    const apiResult = await proxyClassApi(getClassApiEnv(c), {
+      method: 'DELETE',
+      path: `/assignments/${assignmentId}`,
+      userId,
+    });
+
+    if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+    return c.json(apiResult.body, apiResult.status);
+  } catch (error) {
+    console.error('Delete assignment error:', error);
+    return c.json({ error: '課題の削除に失敗しました' }, 500);
+  }
+});
+
+// POST /api/classes/:classId/assignments/:assignmentId/distribute
+classes.post('/:classId/assignments/:assignmentId/distribute', async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const classId = parseInt(c.req.param('classId'));
+    const assignmentId = parseInt(c.req.param('assignmentId'));
+    if (isNaN(classId) || isNaN(assignmentId)) return c.json({ error: '無効なIDです' }, 400);
+
+    const result = await verifyClassOwner(c, classId, userId);
+    if ('error' in result) return result.error;
+
+    // D1 から生徒一覧を取得（ML30 からは D1 にアクセスできないため Workers が渡す）
+    const students = await c.env.DB.prepare(
+      `SELECT user_id FROM class_members WHERE class_id = ? AND role = 'student'`
+    ).bind(classId).all<{ user_id: number }>();
+
+    const studentUserIds = (students.results || []).map((s) => s.user_id);
+
+    if (studentUserIds.length === 0) {
+      return c.json({ error: '配布対象の生徒がいません' }, 400);
+    }
+
+    // ML30 に student_user_ids をヘッダーで渡す
+    const env = getClassApiEnv(c);
+    const url = new URL(`/assignments/${assignmentId}/distribute`, env.CLASS_API_URL).toString();
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-Internal-Secret': env.CLASS_API_SECRET,
+        'X-User-Id': String(userId),
+        'X-Student-User-Ids': JSON.stringify(studentUserIds),
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await res.json();
+    if (!res.ok) return c.json(data, res.status as any);
+    return c.json(data);
+  } catch (error) {
+    console.error('Distribute assignment error:', error);
+    return c.json({ error: '課題の配布に失敗しました' }, 500);
   }
 });
 

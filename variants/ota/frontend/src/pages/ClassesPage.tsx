@@ -150,9 +150,14 @@ export function ClassesPage() {
                       )}
                     </div>
                   </div>
-                  <span className="text-xs px-2 py-1 rounded bg-primary/10 text-primary">
-                    {cls.status}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground">
+                      {cls.classType === 'workshop' ? 'WS' : '教室'}
+                    </span>
+                    <span className="text-xs px-2 py-1 rounded bg-primary/10 text-primary">
+                      {cls.status}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}

@@ -2,7 +2,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft, Copy, Check, Loader2, AlertTriangle,
-  KeyRound, Trash2, Plus, Download, X
+  KeyRound, Trash2, Plus, Download, X,
+  FileText, Send, Upload, Paperclip,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import {
@@ -12,8 +13,14 @@ import {
   deleteStudent,
   resetStudentPassword,
   createStudents,
+  listAssignments,
+  createAssignment,
+  deleteAssignment,
+  distributeAssignment,
+  getAttachmentUrl,
   type ClassInfo,
   type StudentInfo,
+  type AssignmentInfo,
 } from '@/services/classService';
 
 function triggerDownload(blob: Blob, filename: string) {
@@ -102,6 +109,16 @@ export function ClassDetailPage() {
   // PWリセット
   const [resetLoading, setResetLoading] = useState<number | null>(null);
 
+  // 課題
+  const [assignments, setAssignments] = useState<AssignmentInfo[]>([]);
+  const [showCreateAssignment, setShowCreateAssignment] = useState(false);
+  const [newAssignment, setNewAssignment] = useState({ title: '', description: '' });
+  const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
+  const [creatingAssignment, setCreatingAssignment] = useState(false);
+  const [deletingAssignmentId, setDeletingAssignmentId] = useState<number | null>(null);
+  const [deletingAssignmentLoading, setDeletingAssignmentLoading] = useState(false);
+  const [distributingId, setDistributingId] = useState<number | null>(null);
+
   const classId = id ? parseInt(id) : NaN;
 
   const fetchData = useCallback(async () => {
@@ -109,12 +126,14 @@ export function ClassDetailPage() {
     setLoading(true);
     setError(null);
     try {
-      const [cls, studs] = await Promise.all([
+      const [cls, studs, assigns] = await Promise.all([
         getClass(classId),
         listStudents(classId),
+        listAssignments(classId).catch(() => [] as AssignmentInfo[]),
       ]);
       setClassInfo(cls);
       setStudents(studs);
+      setAssignments(assigns);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'データの取得に失敗しました');
     } finally {
@@ -223,6 +242,77 @@ export function ClassDetailPage() {
       setError(err instanceof Error ? err.message : 'パスワードリセットに失敗しました');
     } finally {
       setResetLoading(null);
+    }
+  };
+
+  // --- 課題操作 ---
+
+  const handleCreateAssignment = async () => {
+    if (!newAssignment.title.trim()) {
+      setError('課題タイトルを入力してください');
+      return;
+    }
+
+    setCreatingAssignment(true);
+    setError(null);
+    try {
+      let attachment: string | undefined;
+      let attachmentFilename: string | undefined;
+
+      if (attachmentFile) {
+        if (attachmentFile.size > 2 * 1024 * 1024) {
+          setError('添付ファイルは2MB以内にしてください');
+          setCreatingAssignment(false);
+          return;
+        }
+        const buf = await attachmentFile.arrayBuffer();
+        attachment = btoa(String.fromCharCode(...new Uint8Array(buf)));
+        attachmentFilename = attachmentFile.name;
+      }
+
+      await createAssignment(classId, {
+        title: newAssignment.title.trim(),
+        description: newAssignment.description.trim() || undefined,
+        attachment,
+        attachmentFilename,
+      });
+
+      setShowCreateAssignment(false);
+      setNewAssignment({ title: '', description: '' });
+      setAttachmentFile(null);
+      const assigns = await listAssignments(classId);
+      setAssignments(assigns);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '課題の作成に失敗しました');
+    } finally {
+      setCreatingAssignment(false);
+    }
+  };
+
+  const handleDeleteAssignment = async (assignmentId: number) => {
+    setDeletingAssignmentLoading(true);
+    try {
+      await deleteAssignment(classId, assignmentId);
+      setAssignments((prev) => prev.filter((a) => a.id !== assignmentId));
+      setDeletingAssignmentId(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '課題の削除に失敗しました');
+    } finally {
+      setDeletingAssignmentLoading(false);
+    }
+  };
+
+  const handleDistribute = async (assignmentId: number) => {
+    setDistributingId(assignmentId);
+    setError(null);
+    try {
+      const result = await distributeAssignment(classId, assignmentId);
+      setError(null);
+      alert(`${result.distributed}名に配布しました`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '課題の配布に失敗しました');
+    } finally {
+      setDistributingId(null);
     }
   };
 
@@ -538,6 +628,199 @@ export function ClassDetailPage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* 課題一覧 */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">
+              課題（{assignments.length}件）
+            </h2>
+            {!showCreateAssignment && (
+              <button
+                onClick={() => setShowCreateAssignment(true)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 text-sm"
+              >
+                <Plus className="w-4 h-4" />
+                課題を作成
+              </button>
+            )}
+          </div>
+
+          {/* 課題作成フォーム */}
+          {showCreateAssignment && (
+            <div className="border border-border rounded-lg p-4 bg-card mb-3">
+              <h3 className="text-sm font-medium text-foreground mb-3">新しい課題</h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1">タイトル *</label>
+                  <input
+                    type="text"
+                    value={newAssignment.title}
+                    onChange={(e) => setNewAssignment((prev) => ({ ...prev, title: e.target.value }))}
+                    placeholder="例: LED点滅プログラム"
+                    disabled={creatingAssignment}
+                    className="w-full px-3 py-2 rounded-md border border-border bg-input text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1">説明（任意）</label>
+                  <textarea
+                    value={newAssignment.description}
+                    onChange={(e) => setNewAssignment((prev) => ({ ...prev, description: e.target.value }))}
+                    placeholder="課題の説明や指示"
+                    rows={3}
+                    disabled={creatingAssignment}
+                    className="w-full px-3 py-2 rounded-md border border-border bg-input text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1">
+                    課題PDF（任意、2MBまで）
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 px-3 py-1.5 rounded border border-border text-foreground hover:bg-accent text-sm cursor-pointer">
+                      <Upload className="w-4 h-4" />
+                      ファイルを選択
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        className="hidden"
+                        onChange={(e) => setAttachmentFile(e.target.files?.[0] || null)}
+                        disabled={creatingAssignment}
+                      />
+                    </label>
+                    {attachmentFile && (
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Paperclip className="w-3 h-3" />
+                        {attachmentFile.name} ({(attachmentFile.size / 1024).toFixed(0)}KB)
+                        <button onClick={() => setAttachmentFile(null)} className="text-destructive">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    onClick={() => {
+                      setShowCreateAssignment(false);
+                      setNewAssignment({ title: '', description: '' });
+                      setAttachmentFile(null);
+                    }}
+                    disabled={creatingAssignment}
+                    className="px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
+                  >
+                    キャンセル
+                  </button>
+                  <button
+                    onClick={handleCreateAssignment}
+                    disabled={creatingAssignment || !newAssignment.title.trim()}
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                  >
+                    {creatingAssignment && <Loader2 className="w-3 h-3 animate-spin" />}
+                    作成
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 課題一覧テーブル */}
+          {assignments.length === 0 && !showCreateAssignment ? (
+            <div className="border border-border rounded-lg p-8 bg-card text-center">
+              <p className="text-muted-foreground">
+                課題がまだありません。「課題を作成」から始めましょう。
+              </p>
+            </div>
+          ) : assignments.length > 0 && (
+            <div className="border border-border rounded-lg bg-card overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left px-4 py-3 text-muted-foreground font-medium">タイトル</th>
+                    <th className="text-left px-4 py-3 text-muted-foreground font-medium">添付</th>
+                    <th className="text-left px-4 py-3 text-muted-foreground font-medium">作成日</th>
+                    <th className="text-right px-4 py-3 text-muted-foreground font-medium">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {assignments.map((assignment) => (
+                    <tr key={assignment.id} className="border-b border-border last:border-b-0">
+                      <td className="px-4 py-3">
+                        <p className="text-foreground font-medium">{assignment.title}</p>
+                        {assignment.description && (
+                          <p className="text-xs text-muted-foreground mt-0.5">{assignment.description}</p>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {assignment.attachmentFilename ? (
+                          <a
+                            href={getAttachmentUrl(classId, assignment.id)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-xs text-primary hover:underline"
+                          >
+                            <FileText className="w-3 h-3" />
+                            {assignment.attachmentFilename}
+                          </a>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {new Date(assignment.createdAt).toLocaleDateString('ja-JP')}
+                      </td>
+                      <td className="px-4 py-3">
+                        {deletingAssignmentId === assignment.id ? (
+                          <div className="flex items-center justify-end gap-2">
+                            <span className="text-xs text-destructive">削除しますか？</span>
+                            <button
+                              onClick={() => handleDeleteAssignment(assignment.id)}
+                              disabled={deletingAssignmentLoading}
+                              className="px-2 py-1 text-xs rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50"
+                            >
+                              {deletingAssignmentLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : '削除'}
+                            </button>
+                            <button
+                              onClick={() => setDeletingAssignmentId(null)}
+                              disabled={deletingAssignmentLoading}
+                              className="px-2 py-1 text-xs rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
+                            >
+                              取消
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              onClick={() => handleDistribute(assignment.id)}
+                              disabled={distributingId === assignment.id}
+                              className="flex items-center gap-1 px-2 py-1 text-xs rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
+                              title="生徒に配布"
+                            >
+                              {distributingId === assignment.id ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <Send className="w-3 h-3" />
+                              )}
+                              配布
+                            </button>
+                            <button
+                              onClick={() => setDeletingAssignmentId(assignment.id)}
+                              className="p-1.5 text-muted-foreground hover:text-destructive rounded hover:bg-accent"
+                              title="削除"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         {/* クラス削除 */}
