@@ -300,7 +300,6 @@ export function Sidebar({
         icon: <Save className="w-4 h-4" />,
         action: canSaveSubmission ? (onSubmissionSave || (() => {})) : (() => {}),
         category: 'assignment' as const,
-        premium: !canSaveSubmission,
       },
       {
         id: 'submission-submit',
@@ -310,7 +309,6 @@ export function Sidebar({
         icon: <Send className="w-4 h-4" />,
         action: canSubmitSubmission ? (onSubmissionSubmit || (() => {})) : (() => {}),
         category: 'assignment' as const,
-        premium: !canSubmitSubmission,
       },
     ] : []),
     // ヘルプ
