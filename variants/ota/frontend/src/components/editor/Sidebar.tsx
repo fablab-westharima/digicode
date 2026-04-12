@@ -25,7 +25,8 @@ import {
   LogIn,
   Settings,
   Users,
-  Lock
+  Lock,
+  ClipboardList
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAuthStore } from '@/stores/authStore';
@@ -53,6 +54,7 @@ interface SidebarProps {
   onTwoFactorSettings?: () => void;
   onAccountDelete?: () => void;
   onChangePassword?: () => void;
+  onSubmissionList?: () => void;
 }
 
 interface NavSubItem {
@@ -95,6 +97,7 @@ export function Sidebar({
   onTwoFactorSettings,
   onAccountDelete,
   onChangePassword,
+  onSubmissionList,
 }: SidebarProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -146,6 +149,14 @@ export function Sidebar({
       action: onProjectOpen || (() => {}),
       category: 'project'
     },
+    // 生徒用: 課題一覧
+    ...(user?.accountType === 'student' ? [{
+      id: 'submission-list',
+      label: t('sidebar.submissionList', { defaultValue: '課題一覧' }),
+      icon: <ClipboardList className="w-4 h-4" />,
+      action: onSubmissionList || (() => {}),
+      category: 'project' as const,
+    }] : []),
     // OTAセットアップ - BLE OTA
     {
       id: 'ble-ota',

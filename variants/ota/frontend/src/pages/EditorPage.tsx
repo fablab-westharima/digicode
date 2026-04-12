@@ -35,6 +35,8 @@ import { TwoFactorSettingsDialog } from '@/components/auth/TwoFactorSettingsDial
 import { useAuthStore } from '@/stores/authStore';
 import { AccountDeleteDialog } from '@/components/auth/AccountDeleteDialog';
 import { ChangePasswordDialog } from '@/components/auth/ChangePasswordDialog';
+import { SubmissionListDialog } from '@/components/classes/SubmissionListDialog';
+import { saveSubmission, submitSubmission, type SubmissionInfo } from '@/services/classService';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
@@ -84,7 +86,7 @@ export function EditorPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { logout, isAuthenticated } = useAuthStore();
+  const { logout, isAuthenticated, user } = useAuthStore();
   const { currentProject, setCurrentProject } = useProjectStore();
   const { status: serialStatus, connect: connectSerial, disconnect: disconnectSerial, forceReleaseAllPorts } = useSerialStore();
   const { status: wifiStatus, getDeviceUrl, setHost, setDeviceName, connect: connectWifi } = useWifiStore();
@@ -130,6 +132,13 @@ export function EditorPage() {
   const [twoFactorSettingsDialogOpen, setTwoFactorSettingsDialogOpen] = useState(false);
   const [accountDeleteDialogOpen, setAccountDeleteDialogOpen] = useState(false);
   const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false);
+
+  // 生徒用: submission 管理
+  const isStudent = user?.accountType === 'student';
+  const [submissionListOpen, setSubmissionListOpen] = useState(false);
+  const [currentSubmission, setCurrentSubmission] = useState<SubmissionInfo | null>(null);
+  const [savingSubmission, setSavingSubmission] = useState(false);
+  const [submittingSubmission, setSubmittingSubmission] = useState(false);
   const [adc2WarningDialogOpen, setAdc2WarningDialogOpen] = useState(false);
   const [adc2Warnings, setAdc2Warnings] = useState<ADC2Warning[]>([]);
   const [pendingCompileAction, setPendingCompileAction] = useState<(() => void) | null>(null);
@@ -373,6 +382,75 @@ export function EditorPage() {
   // 保存完了時
   const handleSaved = () => {
     setIsDirty(false);
+  };
+
+  // 生徒: submission 選択
+  const handleSubmissionSelect = (sub: SubmissionInfo) => {
+    setCurrentSubmission(sub);
+    setCurrentProject(null);
+    if (sub.blocklyXml) {
+      setWorkspaceXml(sub.blocklyXml);
+      if (blocklyEditorRef.current) {
+        blocklyEditorRef.current.loadXml(sub.blocklyXml);
+      }
+    } else {
+      setWorkspaceXml('<xml></xml>');
+      if (blocklyEditorRef.current) {
+        blocklyEditorRef.current.loadXml('<xml></xml>');
+      }
+    }
+    setGeneratedCode(sub.generatedCode || '');
+    setIsDirty(false);
+  };
+
+  // 生徒: submission 保存
+  const handleSaveSubmission = async () => {
+    if (!currentSubmission) return;
+    setSavingSubmission(true);
+    try {
+      const updated = await saveSubmission(currentSubmission.id, {
+        blocklyXml: workspaceXml,
+        generatedCode,
+      });
+      setCurrentSubmission(updated);
+      setIsDirty(false);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '保存に失敗しました');
+    } finally {
+      setSavingSubmission(false);
+    }
+  };
+
+  // 生徒: submission 提出
+  const handleSubmitSubmission = async () => {
+    if (!currentSubmission) return;
+    if (!confirm('提出すると編集できなくなります。提出しますか？')) return;
+
+    // 先に保存してから提出
+    setSavingSubmission(true);
+    try {
+      await saveSubmission(currentSubmission.id, {
+        blocklyXml: workspaceXml,
+        generatedCode,
+      });
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '保存に失敗しました');
+      setSavingSubmission(false);
+      return;
+    }
+    setSavingSubmission(false);
+
+    setSubmittingSubmission(true);
+    try {
+      await submitSubmission(currentSubmission.id);
+      setCurrentSubmission((prev) => prev ? { ...prev, status: 'submitted' } : null);
+      setIsDirty(false);
+      alert('提出しました');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '提出に失敗しました');
+    } finally {
+      setSubmittingSubmission(false);
+    }
   };
 
   // デバイス接続確認（コンパイル前チェック用）- リトライ付き
@@ -1343,6 +1421,41 @@ export function EditorPage() {
         </DropdownMenuContent>
       </DropdownMenu>
 
+      {/* 生徒用: 保存・提出ボタン */}
+      {isStudent && currentSubmission && (
+        <div className="flex items-center gap-1 ml-2">
+          {currentSubmission.status !== 'submitted' && currentSubmission.status !== 'graded' ? (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs px-2"
+                onClick={handleSaveSubmission}
+                disabled={savingSubmission || !isDirty}
+              >
+                {savingSubmission ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Download className="w-3 h-3 mr-1" />}
+                保存
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
+                className="text-xs px-2"
+                onClick={handleSubmitSubmission}
+                disabled={submittingSubmission}
+              >
+                {submittingSubmission ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Zap className="w-3 h-3 mr-1" />}
+                提出
+              </Button>
+            </>
+          ) : (
+            <span className="text-xs text-muted-foreground px-2">提出済み（閲覧のみ）</span>
+          )}
+          <span className="text-xs text-muted-foreground px-1 border-l border-border ml-1 pl-2">
+            {currentSubmission.assignmentTitle}
+          </span>
+        </div>
+      )}
+
       {/* 表示メニュー */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -1534,6 +1647,7 @@ export function EditorPage() {
             onTwoFactorSettings={handleTwoFactorSettings}
             onAccountDelete={handleAccountDelete}
             onChangePassword={() => setChangePasswordDialogOpen(true)}
+            onSubmissionList={() => setSubmissionListOpen(true)}
           />
 
           {/* メインコンテンツエリア (Blocklyワークスペース) */}
@@ -1967,6 +2081,13 @@ export function EditorPage() {
       <ChangePasswordDialog
         open={changePasswordDialogOpen}
         onOpenChange={setChangePasswordDialogOpen}
+      />
+
+      {/* 生徒用: 課題一覧ダイアログ */}
+      <SubmissionListDialog
+        open={submissionListOpen}
+        onOpenChange={setSubmissionListOpen}
+        onSelect={handleSubmissionSelect}
       />
 
       {/* 2段階認証設定ダイアログ */}

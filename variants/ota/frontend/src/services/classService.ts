@@ -186,3 +186,57 @@ export function getAttachmentUrl(classId: number, assignmentId: number): string 
     : 'https://esp32-blockly-backend.kazunari-takeda.workers.dev';
   return `${API_URL}/api/classes/${classId}/assignments/${assignmentId}/attachment`;
 }
+
+// --- Submissions API ---
+
+export interface SubmissionInfo {
+  id: number;
+  assignmentId: number;
+  studentUserId: number;
+  blocklyXml: string | null;
+  generatedCode: string | null;
+  status: string;
+  score: number | null;
+  comment: string | null;
+  submittedAt: string | null;
+  gradedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  assignmentTitle: string;
+  assignmentDescription?: string | null;
+  classId: number;
+}
+
+export async function listMySubmissions(): Promise<SubmissionInfo[]> {
+  const res = await fetchWithAuth('/api/classes/submissions/my');
+  if (!res.ok) await parseErrorOrThrow(res);
+  const data = await res.json();
+  return data.submissions;
+}
+
+export async function getSubmission(id: number): Promise<SubmissionInfo> {
+  const res = await fetchWithAuth(`/api/classes/submissions/${id}`);
+  if (!res.ok) await parseErrorOrThrow(res);
+  const data = await res.json();
+  return data.submission;
+}
+
+export async function saveSubmission(
+  id: number,
+  data: { blocklyXml: string; generatedCode: string },
+): Promise<SubmissionInfo> {
+  const res = await fetchWithAuth(`/api/classes/submissions/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) await parseErrorOrThrow(res);
+  const result = await res.json();
+  return result.submission;
+}
+
+export async function submitSubmission(id: number): Promise<void> {
+  const res = await fetchWithAuth(`/api/classes/submissions/${id}/submit`, {
+    method: 'POST',
+  });
+  if (!res.ok) await parseErrorOrThrow(res);
+}
