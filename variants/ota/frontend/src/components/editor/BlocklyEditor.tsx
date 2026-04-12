@@ -68,6 +68,7 @@ interface BlocklyEditorProps {
 export interface BlocklyEditorRef {
   loadXml: (xml: string) => void;
   appendBlocks: (xml: string) => void;
+  setReadOnly: (readOnly: boolean) => void;
 }
 
 export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
@@ -212,11 +213,30 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
       }
     }, [handleWorkspaceChange]);
 
+    const setReadOnly = useCallback((readOnly: boolean) => {
+      const ws = workspaceRef.current;
+      if (!ws) return;
+      // Blockly の options.readOnly は初期化後に変更できないため、
+      // 全ブロックの movable/editable/deletable を制御する
+      ws.getAllBlocks(false).forEach((block) => {
+        block.setMovable(!readOnly);
+        block.setEditable(!readOnly);
+        block.setDeletable(!readOnly);
+      });
+      // ツールボックスの表示/非表示で新規ブロック追加を防止
+      if (readOnly) {
+        ws.getToolbox()?.setVisible(false);
+      } else {
+        ws.getToolbox()?.setVisible(true);
+      }
+    }, []);
+
     // refを通じてメソッドを公開
     useImperativeHandle(ref, () => ({
       loadXml,
       appendBlocks,
-    }), [loadXml, appendBlocks]);
+      setReadOnly,
+    }), [loadXml, appendBlocks, setReadOnly]);
 
     // Blocklyワークスペースの初期化
     // 言語が変わったらワークスペース全体を再構築

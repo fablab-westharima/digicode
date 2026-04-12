@@ -37,6 +37,7 @@ import { AccountDeleteDialog } from '@/components/auth/AccountDeleteDialog';
 import { ChangePasswordDialog } from '@/components/auth/ChangePasswordDialog';
 import { SubmissionListDialog } from '@/components/classes/SubmissionListDialog';
 import { saveSubmission, submitSubmission, type SubmissionInfo } from '@/services/classService';
+import { ToastContainer, showToast } from '@/components/common/Toast';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
@@ -401,11 +402,20 @@ export function EditorPage() {
     }
     setGeneratedCode(sub.generatedCode || '');
     setIsDirty(false);
+    // 提出済みなら読み取り専用
+    if (blocklyEditorRef.current) {
+      const isReadOnly = sub.status === 'submitted' || sub.status === 'graded';
+      blocklyEditorRef.current.setReadOnly(isReadOnly);
+    }
   };
 
   // 生徒: submission 保存
   const handleSaveSubmission = async () => {
     if (!currentSubmission) return;
+    if (currentSubmission.status === 'submitted' || currentSubmission.status === 'graded') {
+      showToast('提出済みの課題は編集できません', 'error');
+      return;
+    }
     setSavingSubmission(true);
     try {
       const updated = await saveSubmission(currentSubmission.id, {
@@ -414,9 +424,9 @@ export function EditorPage() {
       });
       setCurrentSubmission(updated);
       setIsDirty(false);
-      alert('保存しました');
+      showToast('保存しました', 'success');
     } catch (err) {
-      alert(err instanceof Error ? err.message : '保存に失敗しました');
+      showToast(err instanceof Error ? err.message : '保存に失敗しました', 'error');
     } finally {
       setSavingSubmission(false);
     }
@@ -425,6 +435,10 @@ export function EditorPage() {
   // 生徒: submission 提出
   const handleSubmitSubmission = async () => {
     if (!currentSubmission) return;
+    if (currentSubmission.status === 'submitted' || currentSubmission.status === 'graded') {
+      showToast('既に提出済みです', 'error');
+      return;
+    }
     if (!confirm('提出すると編集できなくなります。提出しますか？')) return;
 
     // 先に保存してから提出
@@ -435,7 +449,7 @@ export function EditorPage() {
         generatedCode,
       });
     } catch (err) {
-      alert(err instanceof Error ? err.message : '保存に失敗しました');
+      showToast(err instanceof Error ? err.message : '保存に失敗しました', 'error');
       setSavingSubmission(false);
       return;
     }
@@ -446,9 +460,12 @@ export function EditorPage() {
       await submitSubmission(currentSubmission.id);
       setCurrentSubmission((prev) => prev ? { ...prev, status: 'submitted' } : null);
       setIsDirty(false);
-      alert('提出しました');
+      if (blocklyEditorRef.current) {
+        blocklyEditorRef.current.setReadOnly(true);
+      }
+      showToast('提出しました', 'success');
     } catch (err) {
-      alert(err instanceof Error ? err.message : '提出に失敗しました');
+      showToast(err instanceof Error ? err.message : '提出に失敗しました', 'error');
     } finally {
       setSubmittingSubmission(false);
     }
@@ -2060,6 +2077,9 @@ export function EditorPage() {
         onOpenChange={setSubmissionListOpen}
         onSelect={handleSubmissionSelect}
       />
+
+      {/* Toast通知 */}
+      <ToastContainer />
 
       {/* 2段階認証設定ダイアログ */}
       <TwoFactorSettingsDialog
