@@ -307,10 +307,10 @@ classes.post('/:classId/students', async (c) => {
       const password = generatePassword();
       const passwordHash = await hashPassword(password);
 
-      // users テーブルに INSERT
+      // users テーブルに INSERT（email_verified=1: 管理者代理作成のため確認不要）
       const user = await c.env.DB.prepare(
-        `INSERT INTO users (email, password_hash, account_type)
-         VALUES (?, ?, 'student')
+        `INSERT INTO users (email, password_hash, account_type, email_verified)
+         VALUES (?, ?, 'student', 1)
          RETURNING id`
       ).bind(loginId, passwordHash).first<{ id: number }>();
 

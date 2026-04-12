@@ -27,11 +27,36 @@ function getCurrentMonth(): string {
   return `${year}-${month}`;
 }
 
+/**
+ * student の場合、コンパイル枠は管理者（enterprise class owner）から消費する。
+ * student → class_members → classes.owner_id で管理者を特定。
+ * 複数クラス所属の場合は最初に見つかったクラスの owner を使う。
+ */
+async function resolveCompileUserId(db: D1Database, userId: number): Promise<number> {
+  const user = await db.prepare(
+    'SELECT account_type FROM users WHERE id = ?'
+  ).bind(userId).first<{ account_type: string | null }>();
+
+  if (user?.account_type !== 'student') return userId;
+
+  const owner = await db.prepare(
+    `SELECT c.owner_id FROM class_members cm
+     JOIN classes c ON cm.class_id = c.id
+     WHERE cm.user_id = ? AND cm.role = 'student'
+     LIMIT 1`
+  ).bind(userId).first<{ owner_id: number }>();
+
+  return owner?.owner_id ?? userId;
+}
+
 // コンパイル回数をインクリメント
 compileUsage.post('/increment', authMiddleware, async (c) => {
   try {
     const { userId } = c.get('user');
     const currentMonth = getCurrentMonth();
+
+    // student なら管理者の枠から消費
+    const targetUserId = await resolveCompileUserId(c.env.DB, userId);
 
     // UPSERT: 存在すればインクリメント、なければ作成
     const result = await c.env.DB.prepare(`
@@ -41,7 +66,7 @@ compileUsage.post('/increment', authMiddleware, async (c) => {
         count = count + 1,
         updated_at = datetime('now')
       RETURNING count
-    `).bind(userId, currentMonth).first<{ count: number }>();
+    `).bind(targetUserId, currentMonth).first<{ count: number }>();
 
     return c.json({
       success: true,
@@ -60,33 +85,28 @@ compileUsage.get('/', authMiddleware, async (c) => {
     const { userId } = c.get('user');
     const currentMonth = getCurrentMonth();
 
+    // student なら管理者の枠を参照（管理者は enterprise → 無制限）
+    const targetUserId = await resolveCompileUserId(c.env.DB, userId);
+
     // 使用量取得
     const usage = await c.env.DB.prepare(`
       SELECT count FROM compile_usage
       WHERE user_id = ? AND month = ?
-    `).bind(userId, currentMonth).first<{ count: number }>();
+    `).bind(targetUserId, currentMonth).first<{ count: number }>();
 
     // ユーザー情報とサブスクリプション情報を取得して制限を決定
     // 優先順: users.plan > subscriptions.plan_type > 'free'
-    // （auth.ts L284-314 と同じロジック）
     //
-    // 背景:
-    // - users.plan: Admin画面で手動付与されたプラン (migration 0014)
-    // - subscriptions.plan_type: Square/Stripe決済連携用 (migration 0001)
-    // - 2つのテーブルに分かれているが、users.plan を優先する
-    //   （現状、決済連携は未実装で admin 付与が主なため）
+    // student の場合: targetUserId = 管理者 → enterprise → limit = -1（無制限）
     //
     // バグ修正記録: 2026-04-11
-    // 修正前は subscriptions.plan_type のみを見ていたため、
-    // Admin画面で付与された lite/enterprise プランが反映されず、
-    // 全てのユーザーが free 扱いされていた。
     // 詳細: prompt/maintenance/13_2026-04-11_プラン管理バグ修正と計画再編.md
     const user = await c.env.DB.prepare(`
       SELECT u.plan, s.plan_type
       FROM users u
       LEFT JOIN subscriptions s ON u.id = s.user_id
       WHERE u.id = ?
-    `).bind(userId).first<{ plan: string | null; plan_type: string | null }>();
+    `).bind(targetUserId).first<{ plan: string | null; plan_type: string | null }>();
 
     // プランごとの制限
     const limits: Record<string, number> = {

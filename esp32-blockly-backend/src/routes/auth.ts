@@ -179,20 +179,21 @@ auth.post('/login', async (c) => {
 
     // ユーザー検索
     const user = await c.env.DB.prepare(
-      'SELECT id, email, password_hash, email_verified, passkey_only FROM users WHERE email = ?'
+      'SELECT id, email, password_hash, email_verified, passkey_only, account_type FROM users WHERE email = ?'
     ).bind(email).first<{
       id: number;
       email: string;
       password_hash: string;
       email_verified: number;
       passkey_only: number;
+      account_type: string | null;
     }>();
 
     if (!user) {
       return c.json({ error: 'メールアドレスまたはパスワードが正しくありません' }, 401);
     }
 
-    // メール確認チェック
+    // メール確認チェック（student は代理作成時に email_verified=1 済み）
     if (!user.email_verified) {
       return c.json({
         error: 'メールアドレスが確認されていません。確認メールをご確認ください。',
@@ -213,6 +214,19 @@ auth.post('/login', async (c) => {
 
     if (!isValid) {
       return c.json({ error: 'メールアドレスまたはパスワードが正しくありません' }, 401);
+    }
+
+    // 生徒ログイン制限: student かつクラス未所属ならログイン不可
+    if (user.account_type === 'student') {
+      const membership = await c.env.DB.prepare(
+        'SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?'
+      ).bind(user.id).first<{ n: number }>();
+
+      if (!membership || membership.n === 0) {
+        return c.json({
+          error: 'クラスに所属していないため、ログインできません。管理者にお問い合わせください。',
+        }, 403);
+      }
     }
 
     // JWTトークンペア発行
