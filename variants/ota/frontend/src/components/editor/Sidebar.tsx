@@ -23,7 +23,8 @@ import {
   Bluetooth,
   Download,
   LogIn,
-  Settings
+  Settings,
+  Users
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAuthStore } from '@/stores/authStore';
@@ -279,6 +280,13 @@ export function Sidebar({
         label: t('sidebar.admin', { defaultValue: '管理画面' }),
         icon: <Settings className="w-4 h-4" />,
         action: () => navigate('/admin'),
+        category: 'account' as const,
+      }] : []),
+      ...(user?.plan === 'enterprise' ? [{
+        id: 'class-management',
+        label: t('sidebar.classManagement', { defaultValue: 'クラス管理' }),
+        icon: <Users className="w-4 h-4" />,
+        action: () => navigate('/classes'),
         category: 'account' as const,
       }] : []),
       {

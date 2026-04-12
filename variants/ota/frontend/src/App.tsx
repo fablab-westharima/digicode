@@ -15,6 +15,8 @@ import { VerifyEmailPage } from '@/pages/VerifyEmailPage';
 import { RecoveryPage } from '@/pages/RecoveryPage';
 import { AdminPage } from '@/pages/AdminPage';
 import { AboutPage } from '@/pages/AboutPage';
+import { ClassesPage } from '@/pages/ClassesPage';
+import { ClassDetailPage } from '@/pages/ClassDetailPage';
 import { initBlocklyMessages } from '@/utils/blocklyMessages';
 
 // モバイルデバイス検出フック
@@ -158,6 +160,16 @@ function App() {
         <Route path="/admin" element={
           <ProtectedRoute>
             <AdminPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/classes" element={
+          <ProtectedRoute>
+            <ClassesPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/classes/:id" element={
+          <ProtectedRoute>
+            <ClassDetailPage />
           </ProtectedRoute>
         } />
         <Route
