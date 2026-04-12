@@ -6,6 +6,7 @@ import {
   FileText, Send, Upload, Paperclip,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import { fetchWithAuth } from '@/lib/api';
 import {
   getClass,
   listStudents,
@@ -17,7 +18,6 @@ import {
   createAssignment,
   deleteAssignment,
   distributeAssignment,
-  getAttachmentUrl,
   type ClassInfo,
   type StudentInfo,
   type AssignmentInfo,
@@ -768,15 +768,24 @@ export function ClassDetailPage() {
                       </td>
                       <td className="px-4 py-3">
                         {assignment.attachmentFilename ? (
-                          <a
-                            href={getAttachmentUrl(classId, assignment.id)}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <button
+                            onClick={async () => {
+                              try {
+                                const res = await fetchWithAuth(
+                                  `/api/classes/${classId}/assignments/${assignment.id}/attachment`
+                                );
+                                if (!res.ok) throw new Error('ダウンロードに失敗しました');
+                                const blob = await res.blob();
+                                triggerDownload(blob, assignment.attachmentFilename || 'attachment.pdf');
+                              } catch (err) {
+                                setError(err instanceof Error ? err.message : 'ダウンロードに失敗しました');
+                              }
+                            }}
                             className="flex items-center gap-1 text-xs text-primary hover:underline"
                           >
                             <FileText className="w-3 h-3" />
                             {assignment.attachmentFilename}
-                          </a>
+                          </button>
                         ) : (
                           <span className="text-xs text-muted-foreground">—</span>
                         )}
