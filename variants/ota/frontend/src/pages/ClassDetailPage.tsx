@@ -16,19 +16,66 @@ import {
   type StudentInfo,
 } from '@/services/classService';
 
-function downloadStudentsCsv(students: StudentInfo[]) {
+function triggerDownload(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function downloadStudentsCsv(students: StudentInfo[], className: string) {
   const header = '名前,ログインID,パスワード\n';
   const rows = students.map((s) =>
     `${s.displayName || ''},${s.loginId},${s.password || ''}`
   ).join('\n');
   const bom = '\uFEFF';
   const blob = new Blob([bom + header + rows], { type: 'text/csv;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `students_${new Date().toISOString().slice(0, 10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+  triggerDownload(blob, `${className}_students_${new Date().toISOString().slice(0, 10)}.csv`);
+}
+
+function downloadStudentsHtml(students: StudentInfo[], className: string) {
+  const date = new Date().toLocaleDateString('ja-JP');
+  const rows = students.map((s) =>
+    `      <tr>
+        <td>${s.displayName || ''}</td>
+        <td>${s.loginId}</td>
+        <td>${s.password || ''}</td>
+      </tr>`
+  ).join('\n');
+
+  const html = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>${className} — 生徒一覧</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; color: #222; }
+    h1 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+    p { font-size: 0.85rem; color: #666; margin-bottom: 1rem; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
+    th { background: #f5f5f5; font-weight: 600; }
+    td:nth-child(2), td:nth-child(3) { font-family: monospace; }
+  </style>
+</head>
+<body>
+  <h1>${className} — 生徒一覧</h1>
+  <p>出力日: ${date}</p>
+  <table>
+    <thead>
+      <tr><th>名前</th><th>ログインID</th><th>パスワード</th></tr>
+    </thead>
+    <tbody>
+${rows}
+    </tbody>
+  </table>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  triggerDownload(blob, `${className}_students_${new Date().toISOString().slice(0, 10)}.html`);
 }
 
 export function ClassDetailPage() {
@@ -307,13 +354,22 @@ export function ClassDetailPage() {
             </h2>
             <div className="flex items-center gap-2">
               {students.length > 0 && (
-                <button
-                  onClick={() => downloadStudentsCsv(students)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent"
-                >
-                  <Download className="w-4 h-4" />
-                  CSV
-                </button>
+                <>
+                  <button
+                    onClick={() => downloadStudentsCsv(students, classInfo.name)}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent"
+                  >
+                    <Download className="w-4 h-4" />
+                    CSV
+                  </button>
+                  <button
+                    onClick={() => downloadStudentsHtml(students, classInfo.name)}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent"
+                  >
+                    <Download className="w-4 h-4" />
+                    HTML
+                  </button>
+                </>
               )}
               {!isAddingMode && (
                 <button
