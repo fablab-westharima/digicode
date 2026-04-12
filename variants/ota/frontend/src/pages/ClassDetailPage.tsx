@@ -264,7 +264,7 @@ export function ClassDetailPage() {
         <div className="border border-border rounded-lg p-4 bg-card mb-6">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-muted-foreground">招待コード</span>
+              <span className="text-muted-foreground">クラスコード</span>
               <div className="flex items-center gap-2 mt-1">
                 <code className="font-mono text-lg bg-muted px-3 py-1 rounded text-foreground">
                   {classInfo.inviteCode}

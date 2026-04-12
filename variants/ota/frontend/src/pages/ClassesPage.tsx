@@ -124,7 +124,7 @@ export function ClassesPage() {
                     <h3 className="font-semibold text-foreground truncate">{cls.name}</h3>
                     <div className="flex items-center gap-4 mt-1">
                       <div className="flex items-center gap-1">
-                        <span className="text-xs text-muted-foreground">招待コード:</span>
+                        <span className="text-xs text-muted-foreground">クラスコード:</span>
                         <code className="font-mono text-sm bg-muted px-2 py-0.5 rounded text-foreground">
                           {cls.inviteCode}
                         </code>
