@@ -317,7 +317,11 @@ export function ClassDetailPage() {
     try {
       const result = await distributeAssignment(classId, assignmentId);
       setError(null);
-      alert(`${result.distributed}名に配布しました`);
+      if (result.distributed === 0) {
+        alert('既に全員に配布済みです');
+      } else {
+        alert(`${result.distributed}名に配布しました（全${result.total}名）`);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : '課題の配布に失敗しました');
     } finally {
