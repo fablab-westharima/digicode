@@ -36,8 +36,8 @@ import { useAuthStore } from '@/stores/authStore';
 import { AccountDeleteDialog } from '@/components/auth/AccountDeleteDialog';
 import { ChangePasswordDialog } from '@/components/auth/ChangePasswordDialog';
 import { SubmissionListDialog } from '@/components/classes/SubmissionListDialog';
+import { SubmissionSaveDialog } from '@/components/classes/SubmissionSaveDialog';
 import { saveSubmission, submitSubmission, type SubmissionInfo } from '@/services/classService';
-import { ToastContainer, showToast } from '@/components/common/Toast';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
@@ -137,9 +137,8 @@ export function EditorPage() {
   // 生徒用: submission 管理
   const isStudent = user?.accountType === 'student';
   const [submissionListOpen, setSubmissionListOpen] = useState(false);
+  const [submissionSaveDialogOpen, setSubmissionSaveDialogOpen] = useState(false);
   const [currentSubmission, setCurrentSubmission] = useState<SubmissionInfo | null>(null);
-  const [savingSubmission, setSavingSubmission] = useState(false);
-  const [submittingSubmission, setSubmittingSubmission] = useState(false);
   const [adc2WarningDialogOpen, setAdc2WarningDialogOpen] = useState(false);
   const [adc2Warnings, setAdc2Warnings] = useState<ADC2Warning[]>([]);
   const [pendingCompileAction, setPendingCompileAction] = useState<(() => void) | null>(null);
@@ -409,65 +408,30 @@ export function EditorPage() {
     }
   };
 
-  // 生徒: submission 保存
+  // 生徒: submission 保存（SubmissionSaveDialog から呼ばれる）
   const handleSaveSubmission = async () => {
     if (!currentSubmission) return;
-    if (currentSubmission.status === 'submitted' || currentSubmission.status === 'graded') {
-      showToast('提出済みの課題は編集できません', 'error');
-      return;
-    }
-    setSavingSubmission(true);
-    try {
-      const updated = await saveSubmission(currentSubmission.id, {
-        blocklyXml: workspaceXml,
-        generatedCode,
-      });
-      setCurrentSubmission(updated);
-      setIsDirty(false);
-      showToast('保存しました', 'success');
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : '保存に失敗しました', 'error');
-    } finally {
-      setSavingSubmission(false);
-    }
+    const updated = await saveSubmission(currentSubmission.id, {
+      blocklyXml: workspaceXml,
+      generatedCode,
+    });
+    setCurrentSubmission(updated);
+    setIsDirty(false);
   };
 
-  // 生徒: submission 提出
+  // 生徒: submission 提出（SubmissionSaveDialog から呼ばれる）
   const handleSubmitSubmission = async () => {
     if (!currentSubmission) return;
-    if (currentSubmission.status === 'submitted' || currentSubmission.status === 'graded') {
-      showToast('既に提出済みです', 'error');
-      return;
-    }
-    if (!confirm('提出すると編集できなくなります。提出しますか？')) return;
-
-    // 先に保存してから提出
-    setSavingSubmission(true);
-    try {
-      await saveSubmission(currentSubmission.id, {
-        blocklyXml: workspaceXml,
-        generatedCode,
-      });
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : '保存に失敗しました', 'error');
-      setSavingSubmission(false);
-      return;
-    }
-    setSavingSubmission(false);
-
-    setSubmittingSubmission(true);
-    try {
-      await submitSubmission(currentSubmission.id);
-      setCurrentSubmission((prev) => prev ? { ...prev, status: 'submitted' } : null);
-      setIsDirty(false);
-      if (blocklyEditorRef.current) {
-        blocklyEditorRef.current.setReadOnly(true);
-      }
-      showToast('提出しました', 'success');
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : '提出に失敗しました', 'error');
-    } finally {
-      setSubmittingSubmission(false);
+    // 先に保存
+    await saveSubmission(currentSubmission.id, {
+      blocklyXml: workspaceXml,
+      generatedCode,
+    });
+    await submitSubmission(currentSubmission.id);
+    setCurrentSubmission((prev) => prev ? { ...prev, status: 'submitted' } : null);
+    setIsDirty(false);
+    if (blocklyEditorRef.current) {
+      blocklyEditorRef.current.setReadOnly(true);
     }
   };
 
@@ -1631,11 +1595,8 @@ export function EditorPage() {
             onAccountDelete={handleAccountDelete}
             onChangePassword={() => setChangePasswordDialogOpen(true)}
             onSubmissionList={() => setSubmissionListOpen(true)}
-            onSubmissionSave={handleSaveSubmission}
-            onSubmissionSubmit={handleSubmitSubmission}
+            onSubmissionSaveDialog={() => setSubmissionSaveDialogOpen(true)}
             currentSubmissionTitle={currentSubmission?.assignmentTitle || null}
-            canSaveSubmission={!!currentSubmission && currentSubmission.status !== 'submitted' && currentSubmission.status !== 'graded' && isDirty}
-            canSubmitSubmission={!!currentSubmission && currentSubmission.status !== 'submitted' && currentSubmission.status !== 'graded'}
           />
 
           {/* メインコンテンツエリア (Blocklyワークスペース) */}
@@ -2078,8 +2039,15 @@ export function EditorPage() {
         onSelect={handleSubmissionSelect}
       />
 
-      {/* Toast通知 */}
-      <ToastContainer />
+      {/* 生徒用: 保存と提出ダイアログ */}
+      <SubmissionSaveDialog
+        open={submissionSaveDialogOpen}
+        onOpenChange={setSubmissionSaveDialogOpen}
+        submission={currentSubmission}
+        isDirty={isDirty}
+        onSave={handleSaveSubmission}
+        onSubmit={handleSubmitSubmission}
+      />
 
       {/* 2段階認証設定ダイアログ */}
       <TwoFactorSettingsDialog

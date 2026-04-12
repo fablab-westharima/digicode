@@ -27,8 +27,7 @@ import {
   Users,
   Lock,
   ClipboardList,
-  Save,
-  Send
+  Save
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAuthStore } from '@/stores/authStore';
@@ -57,11 +56,8 @@ interface SidebarProps {
   onAccountDelete?: () => void;
   onChangePassword?: () => void;
   onSubmissionList?: () => void;
-  onSubmissionSave?: () => void;
-  onSubmissionSubmit?: () => void;
+  onSubmissionSaveDialog?: () => void;
   currentSubmissionTitle?: string | null;
-  canSaveSubmission?: boolean;
-  canSubmitSubmission?: boolean;
 }
 
 interface NavSubItem {
@@ -105,11 +101,8 @@ export function Sidebar({
   onAccountDelete,
   onChangePassword,
   onSubmissionList,
-  onSubmissionSave,
-  onSubmissionSubmit,
+  onSubmissionSaveDialog,
   currentSubmissionTitle,
-  canSaveSubmission,
-  canSubmitSubmission,
 }: SidebarProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -293,21 +286,12 @@ export function Sidebar({
         category: 'assignment' as const,
       },
       {
-        id: 'submission-save',
+        id: 'submission-save-dialog',
         label: currentSubmissionTitle
-          ? `保存 — ${currentSubmissionTitle}`
-          : '保存（課題未選択）',
+          ? `保存と提出 — ${currentSubmissionTitle}`
+          : '保存と提出',
         icon: <Save className="w-4 h-4" />,
-        action: canSaveSubmission ? (onSubmissionSave || (() => {})) : (() => {}),
-        category: 'assignment' as const,
-      },
-      {
-        id: 'submission-submit',
-        label: currentSubmissionTitle
-          ? `提出 — ${currentSubmissionTitle}`
-          : '提出（課題未選択）',
-        icon: <Send className="w-4 h-4" />,
-        action: canSubmitSubmission ? (onSubmissionSubmit || (() => {})) : (() => {}),
+        action: onSubmissionSaveDialog || (() => {}),
         category: 'assignment' as const,
       },
     ] : []),
