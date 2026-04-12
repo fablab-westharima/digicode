@@ -87,13 +87,14 @@ twoFactor.post('/send-otp', async (c) => {
   try {
     // ユーザー取得
     const user = await c.env.DB.prepare(
-      'SELECT id, email, password_hash, email_verified, passkey_only FROM users WHERE email = ?'
+      'SELECT id, email, password_hash, email_verified, passkey_only, account_type FROM users WHERE email = ?'
     ).bind(email).first<{
       id: number;
       email: string;
       password_hash: string;
       email_verified: number;
       passkey_only: number;
+      account_type: string | null;
     }>();
 
     if (!user) {
@@ -141,7 +142,7 @@ twoFactor.post('/send-otp', async (c) => {
         accessToken,
         refreshToken,
         expiresIn,
-        user: { id: user.id, email: user.email },
+        user: { id: user.id, email: user.email, accountType: user.account_type || 'regular' },
       });
     }
 
