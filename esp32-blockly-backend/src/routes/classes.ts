@@ -21,6 +21,7 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import { requirePlan } from '../middleware/plan';
+import { hashPassword } from '../utils/password';
 import type { PlanType } from '../utils/plan';
 
 type Bindings = {
@@ -199,6 +200,236 @@ classes.delete('/:id', async (c) => {
   } catch (error) {
     console.error('Delete class error:', error);
     return c.json({ error: 'クラスの削除に失敗しました' }, 500);
+  }
+});
+
+// ============================================================
+// Student management (Phase C Step 2)
+// ============================================================
+
+function generatePassword(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  let out = '';
+  for (let i = 0; i < 8; i++) {
+    out += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return out;
+}
+
+// Verify that the caller owns the specified class. Returns the class row or an error response.
+async function verifyClassOwner(c: any, classId: number, userId: number) {
+  const cls = await c.env.DB.prepare(
+    `SELECT owner_id, invite_code FROM classes WHERE id = ?`
+  ).bind(classId).first<{ owner_id: number; invite_code: string }>();
+
+  if (!cls) return { error: c.json({ error: 'クラスが見つかりません' }, 404) };
+  if (cls.owner_id !== userId) return { error: c.json({ error: '権限がありません' }, 403) };
+  return { cls };
+}
+
+type StudentRow = {
+  user_id: number;
+  email: string;
+  account_type: string;
+  role: string;
+  joined_at: string;
+};
+
+// POST /api/classes/:classId/students — bulk create student accounts
+classes.post('/:classId/students', async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const classId = parseInt(c.req.param('classId'));
+    if (isNaN(classId)) return c.json({ error: '無効なクラスIDです' }, 400);
+
+    const result = await verifyClassOwner(c, classId, userId);
+    if ('error' in result) return result.error;
+    const { cls } = result;
+
+    const body = await c.req.json<{ students?: { name: string }[] }>();
+    const names = body.students;
+    if (!Array.isArray(names) || names.length === 0) {
+      return c.json({ error: '生徒名のリストが必要です' }, 400);
+    }
+    if (names.length > 40) {
+      return c.json({ error: '1回の作成は40名までです' }, 400);
+    }
+
+    // 40人/クラス上限チェック
+    const memberCount = await c.env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM class_members WHERE class_id = ? AND role = 'student'`
+    ).bind(classId).first<{ n: number }>();
+    const currentStudents = memberCount?.n ?? 0;
+    if (currentStudents + names.length > 40) {
+      return c.json({
+        error: `1クラスの生徒上限は40名です（現在${currentStudents}名）`,
+      }, 409);
+    }
+
+    // 既存の連番最大値を取得（invite_code-NN パターン）
+    const maxSeq = await c.env.DB.prepare(
+      `SELECT email FROM users
+       WHERE email LIKE ? AND account_type = 'student'
+       ORDER BY email DESC LIMIT 1`
+    ).bind(`${cls.invite_code}-%`).first<{ email: string }>();
+
+    let nextSeq = 1;
+    if (maxSeq) {
+      const parts = maxSeq.email.split('-');
+      const last = parseInt(parts[parts.length - 1]);
+      if (!isNaN(last)) nextSeq = last + 1;
+    }
+
+    const created: { name: string; loginId: string; password: string }[] = [];
+
+    for (const entry of names) {
+      const name = typeof entry.name === 'string' ? entry.name.trim() : '';
+      if (!name) continue;
+
+      const loginId = `${cls.invite_code}-${String(nextSeq).padStart(2, '0')}`;
+      const password = generatePassword();
+      const passwordHash = await hashPassword(password);
+
+      // users テーブルに INSERT
+      const user = await c.env.DB.prepare(
+        `INSERT INTO users (email, password_hash, account_type)
+         VALUES (?, ?, 'student')
+         RETURNING id`
+      ).bind(loginId, passwordHash).first<{ id: number }>();
+
+      if (!user) continue;
+
+      // 3クラス上限チェック（生徒側）
+      const studentClassCount = await c.env.DB.prepare(
+        `SELECT COUNT(*) AS n FROM class_members WHERE user_id = ? AND role = 'student'`
+      ).bind(user.id).first<{ n: number }>();
+
+      if (studentClassCount && studentClassCount.n >= 3) {
+        // 超えた場合は作成した user を削除してスキップ
+        await c.env.DB.prepare(`DELETE FROM users WHERE id = ?`).bind(user.id).run();
+        continue;
+      }
+
+      // class_members に追加
+      await c.env.DB.prepare(
+        `INSERT INTO class_members (class_id, user_id, role) VALUES (?, ?, 'student')`
+      ).bind(classId, user.id).run();
+
+      created.push({ name, loginId, password });
+      nextSeq++;
+    }
+
+    return c.json({ students: created, count: created.length }, 201);
+  } catch (error) {
+    console.error('Create students error:', error);
+    return c.json({ error: '生徒アカウントの作成に失敗しました' }, 500);
+  }
+});
+
+// GET /api/classes/:classId/students — list students in a class
+classes.get('/:classId/students', async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const classId = parseInt(c.req.param('classId'));
+    if (isNaN(classId)) return c.json({ error: '無効なクラスIDです' }, 400);
+
+    const result = await verifyClassOwner(c, classId, userId);
+    if ('error' in result) return result.error;
+
+    const rows = await c.env.DB.prepare(
+      `SELECT u.id AS user_id, u.email, u.account_type, cm.role, cm.joined_at
+       FROM class_members cm
+       JOIN users u ON cm.user_id = u.id
+       WHERE cm.class_id = ? AND cm.role = 'student'
+       ORDER BY u.email`
+    ).bind(classId).all<StudentRow>();
+
+    const students = (rows.results || []).map((r) => ({
+      userId: r.user_id,
+      loginId: r.email,
+      accountType: r.account_type,
+      role: r.role,
+      joinedAt: r.joined_at,
+    }));
+
+    return c.json({ students });
+  } catch (error) {
+    console.error('List students error:', error);
+    return c.json({ error: '生徒一覧の取得に失敗しました' }, 500);
+  }
+});
+
+// DELETE /api/classes/:classId/students/:studentId — remove a student
+classes.delete('/:classId/students/:studentId', async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const classId = parseInt(c.req.param('classId'));
+    const studentId = parseInt(c.req.param('studentId'));
+    if (isNaN(classId) || isNaN(studentId)) return c.json({ error: '無効なIDです' }, 400);
+
+    const result = await verifyClassOwner(c, classId, userId);
+    if ('error' in result) return result.error;
+
+    // class_members から削除
+    await c.env.DB.prepare(
+      `DELETE FROM class_members WHERE class_id = ? AND user_id = ? AND role = 'student'`
+    ).bind(classId, studentId).run();
+
+    // 他のクラスにも所属していなければ user ごと削除（使い捨てアカウント）
+    const otherMemberships = await c.env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?`
+    ).bind(studentId).first<{ n: number }>();
+
+    if (!otherMemberships || otherMemberships.n === 0) {
+      await c.env.DB.prepare(
+        `DELETE FROM users WHERE id = ? AND account_type = 'student'`
+      ).bind(studentId).run();
+    }
+
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Delete student error:', error);
+    return c.json({ error: '生徒の削除に失敗しました' }, 500);
+  }
+});
+
+// POST /api/classes/:classId/students/:studentId/reset-password
+classes.post('/:classId/students/:studentId/reset-password', async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const classId = parseInt(c.req.param('classId'));
+    const studentId = parseInt(c.req.param('studentId'));
+    if (isNaN(classId) || isNaN(studentId)) return c.json({ error: '無効なIDです' }, 400);
+
+    const result = await verifyClassOwner(c, classId, userId);
+    if ('error' in result) return result.error;
+
+    // student がこのクラスに所属していることを確認
+    const member = await c.env.DB.prepare(
+      `SELECT user_id FROM class_members WHERE class_id = ? AND user_id = ? AND role = 'student'`
+    ).bind(classId, studentId).first();
+
+    if (!member) return c.json({ error: 'この生徒はこのクラスに所属していません' }, 404);
+
+    const newPassword = generatePassword();
+    const newHash = await hashPassword(newPassword);
+
+    await c.env.DB.prepare(
+      `UPDATE users SET password_hash = ?, updated_at = datetime('now') WHERE id = ? AND account_type = 'student'`
+    ).bind(newHash, studentId).run();
+
+    // student の loginId を取得して返す
+    const student = await c.env.DB.prepare(
+      `SELECT email FROM users WHERE id = ?`
+    ).bind(studentId).first<{ email: string }>();
+
+    return c.json({
+      loginId: student?.email,
+      password: newPassword,
+    });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    return c.json({ error: 'パスワードリセットに失敗しました' }, 500);
   }
 });
 
