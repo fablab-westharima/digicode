@@ -122,28 +122,58 @@ export function SubmissionSaveDialog({ open, onOpenChange, submission, isDirty, 
             </div>
           </div>
 
-          {/* 差戻しフィードバック（returned かつ 過去の採点があるときのみ表示） */}
-          {submission.status === 'returned' && (submission.score !== null || submission.comment) && (
-            <div className="border border-destructive/30 rounded-md p-3 bg-destructive/10">
-              <p className="text-sm font-medium text-foreground mb-1 flex items-center gap-1">
-                <RotateCcw className="w-4 h-4 text-destructive" />
-                先生からの差戻しフィードバック
-              </p>
-              {submission.score !== null && (
-                <p className="text-sm text-foreground">
-                  前回のスコア: <span className="font-mono font-semibold">{submission.score}</span> 点
+          {/* 採点結果 / 差戻しフィードバック */}
+          {(submission.status === 'graded' || submission.status === 'returned') &&
+            (submission.score !== null || submission.comment) && (
+              <div
+                className={`border rounded-md p-3 ${
+                  submission.status === 'graded'
+                    ? 'border-primary/30 bg-primary/10'
+                    : 'border-destructive/30 bg-destructive/10'
+                }`}
+              >
+                <p className="text-sm font-medium text-foreground mb-1 flex items-center gap-1">
+                  {submission.status === 'graded' ? (
+                    <>
+                      <Check className="w-4 h-4 text-primary" />
+                      採点結果
+                    </>
+                  ) : (
+                    <>
+                      <RotateCcw className="w-4 h-4 text-destructive" />
+                      先生からの差戻しフィードバック
+                    </>
+                  )}
                 </p>
-              )}
-              {submission.comment && (
-                <p className="text-sm text-foreground mt-1 whitespace-pre-wrap">
-                  {submission.comment}
-                </p>
-              )}
-              <p className="text-xs text-muted-foreground mt-2">
-                編集して再提出すると、前回の採点はクリアされます。
-              </p>
-            </div>
-          )}
+                {submission.score !== null && (
+                  <p className="text-sm text-foreground">
+                    スコア:{' '}
+                    <span className="font-mono font-semibold text-base">
+                      {submission.score}
+                    </span>{' '}
+                    / 100 点
+                  </p>
+                )}
+                {submission.comment && (
+                  <div className="mt-2">
+                    <p className="text-xs text-muted-foreground mb-0.5">先生からのコメント:</p>
+                    <p className="text-sm text-foreground whitespace-pre-wrap">
+                      {submission.comment}
+                    </p>
+                  </div>
+                )}
+                {submission.gradedAt && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    採点日時: {new Date(submission.gradedAt).toLocaleString('ja-JP')}
+                  </p>
+                )}
+                {submission.status === 'returned' && (
+                  <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border">
+                    編集して再提出すると、前回の採点はクリアされます。
+                  </p>
+                )}
+              </div>
+            )}
 
           {/* メッセージエリア */}
           {message && (
