@@ -58,6 +58,95 @@ submissions.get('/my', async (c) => {
   }
 });
 
+// GET /api/submissions/:id/attachment — 課題PDFダウンロード（生徒・管理者共通）
+//
+// 認可:
+//   - 生徒: 自分の submission のみ（studentUserId === userId）
+//   - 管理者: 自クラスの submission のみ（classes.owner_id === userId）
+//
+// フロー:
+//   1. ML30 GET /submissions/:id で assignmentId, classId, studentUserId を取得
+//   2. 上記の認可判定
+//   3. ML30 GET /assignments/:assignmentId/attachment で binary を proxy
+//
+// 注: :id より前に配置してルートマッチ順序を明確化
+submissions.get('/:id/attachment', async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const id = parseInt(c.req.param('id'));
+    if (isNaN(id)) return c.json({ error: '無効なIDです' }, 400);
+
+    // 1. ML30 から submission メタデータを取得
+    const metaResult = await proxyClassApi(getClassApiEnv(c), {
+      method: 'GET',
+      path: `/submissions/${id}`,
+      userId,
+    });
+
+    if (!metaResult.ok) {
+      return c.json({ error: metaResult.error }, metaResult.status);
+    }
+
+    const sub = (metaResult.body as {
+      submission: {
+        assignmentId: number;
+        classId: number;
+        studentUserId: number;
+        attachmentFilename: string | null;
+      };
+    }).submission;
+
+    // 2. 認可: 生徒本人 or クラス owner
+    if (sub.studentUserId !== userId) {
+      const cls = await c.env.DB.prepare(
+        `SELECT owner_id FROM classes WHERE id = ?`
+      ).bind(sub.classId).first<{ owner_id: number }>();
+
+      if (!cls || cls.owner_id !== userId) {
+        return c.json({ error: '権限がありません' }, 403);
+      }
+    }
+
+    // 添付ファイルが無い場合は 404 を早期返却
+    if (!sub.attachmentFilename) {
+      return c.json({ error: '添付ファイルがありません' }, 404);
+    }
+
+    // 3. ML30 から binary を proxy（classes.ts の管理者用ルートと同じパターン）
+    const env = getClassApiEnv(c);
+    const url = new URL(
+      `/assignments/${sub.assignmentId}/attachment`,
+      env.CLASS_API_URL
+    ).toString();
+
+    const res = await fetch(url, {
+      headers: {
+        'X-Internal-Secret': env.CLASS_API_SECRET,
+        'X-User-Id': String(userId),
+      },
+    });
+
+    if (!res.ok) {
+      const data = await res
+        .json()
+        .catch(() => ({ error: 'ダウンロードに失敗しました' }));
+      return c.json(data, res.status as any);
+    }
+
+    return new Response(res.body, {
+      headers: {
+        'Content-Type': res.headers.get('Content-Type') || 'application/pdf',
+        'Content-Disposition':
+          res.headers.get('Content-Disposition') || 'attachment',
+        'Content-Length': res.headers.get('Content-Length') || '',
+      },
+    });
+  } catch (error) {
+    console.error('Download submission attachment error:', error);
+    return c.json({ error: '添付ファイルのダウンロードに失敗しました' }, 500);
+  }
+});
+
 // GET /api/submissions/:id — submission 詳細
 submissions.get('/:id', async (c) => {
   try {
