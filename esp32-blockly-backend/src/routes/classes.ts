@@ -664,4 +664,128 @@ classes.post('/:classId/assignments/:assignmentId/distribute', async (c) => {
   }
 });
 
+// GET /api/classes/:classId/assignments/:assignmentId/submissions
+// 課題別 submission 一覧（管理者用ダッシュボード）
+// ML30 からの応答に D1 users の displayName/email をマージして返す
+classes.get('/:classId/assignments/:assignmentId/submissions', async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const classId = parseInt(c.req.param('classId'));
+    const assignmentId = parseInt(c.req.param('assignmentId'));
+    if (isNaN(classId) || isNaN(assignmentId)) return c.json({ error: '無効なIDです' }, 400);
+
+    const result = await verifyClassOwner(c, classId, userId);
+    if ('error' in result) return result.error;
+
+    const apiResult = await proxyClassApi(getClassApiEnv(c), {
+      method: 'GET',
+      path: `/submissions/by-assignment/${assignmentId}`,
+      userId,
+    });
+
+    if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+
+    // ML30 からの submissions に D1 users の情報（email, display_name）をマージ
+    const body = apiResult.body as {
+      submissions: Array<{ studentUserId: number; [k: string]: any }>;
+    };
+
+    if (body.submissions.length > 0) {
+      const studentIds = [...new Set(body.submissions.map((s) => s.studentUserId))];
+      const placeholders = studentIds.map(() => '?').join(',');
+      const usersResult = await c.env.DB.prepare(
+        `SELECT id, email, display_name FROM users WHERE id IN (${placeholders})`
+      )
+        .bind(...studentIds)
+        .all<{ id: number; email: string; display_name: string | null }>();
+
+      const userMap = new Map(
+        (usersResult.results || []).map((u) => [u.id, u])
+      );
+
+      body.submissions = body.submissions.map((s) => {
+        const u = userMap.get(s.studentUserId);
+        return {
+          ...s,
+          studentEmail: u?.email || null,
+          studentDisplayName: u?.display_name || null,
+        };
+      });
+    }
+
+    return c.json(body, 200);
+  } catch (error) {
+    console.error('List assignment submissions error:', error);
+    return c.json({ error: '答案一覧の取得に失敗しました' }, 500);
+  }
+});
+
+// PUT /api/classes/:classId/assignments/:assignmentId/submissions/:submissionId/grade
+// 採点（管理者専用）
+classes.put(
+  '/:classId/assignments/:assignmentId/submissions/:submissionId/grade',
+  async (c) => {
+    try {
+      const { userId } = c.get('user');
+      const classId = parseInt(c.req.param('classId'));
+      const submissionId = parseInt(c.req.param('submissionId'));
+      if (isNaN(classId) || isNaN(submissionId)) {
+        return c.json({ error: '無効なIDです' }, 400);
+      }
+
+      const result = await verifyClassOwner(c, classId, userId);
+      if ('error' in result) return result.error;
+
+      const body = await c.req.json<{
+        score?: number | null;
+        comment?: string | null;
+      }>();
+
+      const apiResult = await proxyClassApi(getClassApiEnv(c), {
+        method: 'PUT',
+        path: `/submissions/${submissionId}/grade`,
+        userId,
+        body,
+      });
+
+      if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+      return c.json(apiResult.body, apiResult.status);
+    } catch (error) {
+      console.error('Grade submission error:', error);
+      return c.json({ error: '採点に失敗しました' }, 500);
+    }
+  }
+);
+
+// POST /api/classes/:classId/assignments/:assignmentId/submissions/:submissionId/return
+// 差戻し（管理者専用）
+classes.post(
+  '/:classId/assignments/:assignmentId/submissions/:submissionId/return',
+  async (c) => {
+    try {
+      const { userId } = c.get('user');
+      const classId = parseInt(c.req.param('classId'));
+      const submissionId = parseInt(c.req.param('submissionId'));
+      if (isNaN(classId) || isNaN(submissionId)) {
+        return c.json({ error: '無効なIDです' }, 400);
+      }
+
+      const result = await verifyClassOwner(c, classId, userId);
+      if ('error' in result) return result.error;
+
+      const apiResult = await proxyClassApi(getClassApiEnv(c), {
+        method: 'POST',
+        path: `/submissions/${submissionId}/return`,
+        userId,
+      });
+
+      if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+      return c.json(apiResult.body, apiResult.status);
+    } catch (error) {
+      console.error('Return submission error:', error);
+      return c.json({ error: '差戻しに失敗しました' }, 500);
+    }
+  }
+);
+
 export default classes;
