@@ -205,6 +205,8 @@ export interface SubmissionInfo {
   assignmentTitle: string;
   assignmentDescription?: string | null;
   classId: number;
+  attachmentFilename: string | null;
+  attachmentSize: number;
 }
 
 export async function listMySubmissions(): Promise<SubmissionInfo[]> {
@@ -239,4 +241,19 @@ export async function submitSubmission(id: number): Promise<void> {
     method: 'POST',
   });
   if (!res.ok) await parseErrorOrThrow(res);
+}
+
+export async function downloadSubmissionAttachment(
+  submissionId: number,
+  filename: string,
+): Promise<void> {
+  const res = await fetchWithAuth(`/api/submissions/${submissionId}/attachment`);
+  if (!res.ok) await parseErrorOrThrow(res);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
