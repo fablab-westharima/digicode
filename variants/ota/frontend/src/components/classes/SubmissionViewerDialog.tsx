@@ -94,13 +94,17 @@ export function SubmissionViewerDialog({
       .finally(() => setLoading(false));
   }, [open, submissionId]);
 
-  // Blockly に XML を読み込み + 読み取り専用化
+  // Blockly に XML を読み込み + 読み取り専用化 + 中央配置
   useEffect(() => {
     if (!submission || !blocklyRef.current) return;
     // 少し遅延させて Blockly の初期化を待つ
     const timer = setTimeout(() => {
       blocklyRef.current?.loadXml(submission.blocklyXml ?? '<xml></xml>');
       blocklyRef.current?.setReadOnly(true);
+      // ツールボックス非表示化後にブロックを中央配置
+      requestAnimationFrame(() => {
+        blocklyRef.current?.centerView();
+      });
     }, 100);
     return () => clearTimeout(timer);
   }, [submission]);

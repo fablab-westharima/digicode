@@ -69,6 +69,7 @@ export interface BlocklyEditorRef {
   loadXml: (xml: string) => void;
   appendBlocks: (xml: string) => void;
   setReadOnly: (readOnly: boolean) => void;
+  centerView: () => void;
 }
 
 export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
@@ -229,6 +230,19 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
       } else {
         ws.getToolbox()?.setVisible(true);
       }
+      // ツールボックスの表示状態変更に合わせて workspace の SVG サイズを再計算
+      Blockly.svgResize(ws);
+    }, []);
+
+    // ブロック全体を画面中央に配置し直す（読み取り専用ビューアで使用）
+    // loadXml + setReadOnly 後に呼ぶと、ツールボックス非表示後の領域に合わせて
+    // 中央にスクロールされる
+    const centerView = useCallback(() => {
+      const ws = workspaceRef.current;
+      if (!ws) return;
+      // svgResize でメトリクスを確実に更新してから scrollCenter
+      Blockly.svgResize(ws);
+      ws.scrollCenter();
     }, []);
 
     // refを通じてメソッドを公開
@@ -236,7 +250,8 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
       loadXml,
       appendBlocks,
       setReadOnly,
-    }), [loadXml, appendBlocks, setReadOnly]);
+      centerView,
+    }), [loadXml, appendBlocks, setReadOnly, centerView]);
 
     // Blocklyワークスペースの初期化
     // 言語が変わったらワークスペース全体を再構築

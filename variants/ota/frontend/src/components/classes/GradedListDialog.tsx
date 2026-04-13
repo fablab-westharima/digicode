@@ -73,12 +73,17 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
       .finally(() => setDetailLoading(false));
   }, [view, selectedId]);
 
-  // 答案表示時: Blockly に XML ロード + 読み取り専用
+  // 答案表示時: Blockly に XML ロード + 読み取り専用 + 中央配置
   useEffect(() => {
     if (!showAnswer || !detail) return;
     const timer = setTimeout(() => {
       blocklyRef.current?.loadXml(detail.blocklyXml ?? '<xml></xml>');
       blocklyRef.current?.setReadOnly(true);
+      // ツールボックス非表示化後にブロックを中央配置
+      // setReadOnly の svgResize が反映されるのを待つため次フレームで実行
+      requestAnimationFrame(() => {
+        blocklyRef.current?.centerView();
+      });
     }, 100);
     return () => clearTimeout(timer);
   }, [showAnswer, detail]);
