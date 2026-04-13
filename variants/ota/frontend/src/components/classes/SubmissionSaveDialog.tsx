@@ -154,14 +154,18 @@ export function SubmissionSaveDialog({ open, onOpenChange, submission, isDirty, 
                     / 100 点
                   </p>
                 )}
-                {submission.comment && (
-                  <div className="mt-2">
-                    <p className="text-xs text-muted-foreground mb-0.5">先生からのコメント:</p>
+                <div className="mt-2">
+                  <p className="text-xs text-muted-foreground mb-0.5">先生からのコメント:</p>
+                  {submission.comment ? (
                     <p className="text-sm text-foreground whitespace-pre-wrap">
                       {submission.comment}
                     </p>
-                  </div>
-                )}
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">
+                      コメントはありません
+                    </p>
+                  )}
+                </div>
                 {submission.gradedAt && (
                   <p className="text-xs text-muted-foreground mt-2">
                     採点日時: {new Date(submission.gradedAt).toLocaleString('ja-JP')}

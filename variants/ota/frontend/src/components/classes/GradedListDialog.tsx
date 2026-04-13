@@ -242,15 +242,19 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
                   </div>
                 )}
 
-                {/* コメント */}
-                {detail.comment && (
-                  <div className="border border-border rounded-md p-3 bg-card">
-                    <p className="text-xs text-muted-foreground mb-1">先生からのコメント</p>
+                {/* コメント（常に表示、空なら「なし」と明示） */}
+                <div className="border border-border rounded-md p-3 bg-card">
+                  <p className="text-xs text-muted-foreground mb-1">先生からのコメント</p>
+                  {detail.comment ? (
                     <p className="text-sm text-foreground whitespace-pre-wrap">
                       {detail.comment}
                     </p>
-                  </div>
-                )}
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">
+                      コメントはありません
+                    </p>
+                  )}
+                </div>
 
                 {/* 日時 */}
                 <div className="text-xs text-muted-foreground space-y-0.5">
