@@ -257,3 +257,83 @@ export async function downloadSubmissionAttachment(
   a.click();
   URL.revokeObjectURL(url);
 }
+
+// --- Admin Dashboard (Step 7) ---
+
+// 課題別 submission 一覧の各行（軽量版、blockly_xml 除外）
+// 管理者用ダッシュボード向け
+export interface AssignmentSubmissionRow {
+  id: number;
+  assignmentId: number;
+  studentUserId: number;
+  status: string;
+  score: number | null;
+  comment: string | null;
+  submittedAt: string | null;
+  gradedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  assignmentTitle: string;
+  classId: number;
+  attachmentFilename: string | null;
+  attachmentSize: number;
+  studentEmail: string | null;
+  studentDisplayName: string | null;
+}
+
+export async function listAssignmentSubmissions(
+  classId: number,
+  assignmentId: number,
+): Promise<AssignmentSubmissionRow[]> {
+  const res = await fetchWithAuth(
+    `/api/classes/${classId}/assignments/${assignmentId}/submissions`,
+  );
+  if (!res.ok) await parseErrorOrThrow(res);
+  const data = await res.json();
+  return data.submissions;
+}
+
+export async function gradeSubmission(
+  classId: number,
+  assignmentId: number,
+  submissionId: number,
+  data: { score: number | null; comment: string | null },
+): Promise<SubmissionInfo> {
+  const res = await fetchWithAuth(
+    `/api/classes/${classId}/assignments/${assignmentId}/submissions/${submissionId}/grade`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    },
+  );
+  if (!res.ok) await parseErrorOrThrow(res);
+  const result = await res.json();
+  return result.submission;
+}
+
+export async function returnSubmission(
+  classId: number,
+  assignmentId: number,
+  submissionId: number,
+): Promise<void> {
+  const res = await fetchWithAuth(
+    `/api/classes/${classId}/assignments/${assignmentId}/submissions/${submissionId}/return`,
+    { method: 'POST' },
+  );
+  if (!res.ok) await parseErrorOrThrow(res);
+}
+
+// 課題の詳細取得（既存 listAssignments から個別抽出は可能だが、専用 API が必要）
+// Step 7 では listAssignments で取得したリストから探す方式でも良いが、
+// AssignmentSubmissionsPage で URL から直接アクセスする場合のため新設
+export async function getAssignment(
+  classId: number,
+  assignmentId: number,
+): Promise<AssignmentInfo> {
+  const res = await fetchWithAuth(
+    `/api/classes/${classId}/assignments/${assignmentId}`,
+  );
+  if (!res.ok) await parseErrorOrThrow(res);
+  const data = await res.json();
+  return data.assignment;
+}

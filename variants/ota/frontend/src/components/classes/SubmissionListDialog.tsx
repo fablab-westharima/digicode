@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, FileText, Check, Clock, Send, Download } from 'lucide-react';
+import { Loader2, FileText, Check, Clock, Send, Download, RotateCcw } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -24,6 +24,7 @@ function statusLabel(status: string) {
     case 'in_progress': return { text: '作業中', icon: <FileText className="w-3 h-3" />, color: 'text-primary' };
     case 'submitted': return { text: '提出済み', icon: <Send className="w-3 h-3" />, color: 'text-primary' };
     case 'graded': return { text: '採点済み', icon: <Check className="w-3 h-3" />, color: 'text-primary' };
+    case 'returned': return { text: '差戻し', icon: <RotateCcw className="w-3 h-3" />, color: 'text-destructive' };
     default: return { text: status, icon: null, color: 'text-muted-foreground' };
   }
 }

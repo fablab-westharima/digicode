@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft, Copy, Check, Loader2, AlertTriangle,
   KeyRound, Trash2, Plus, Download, X,
-  FileText, Send, Upload, Paperclip,
+  FileText, Send, Upload, Paperclip, BarChart3,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { fetchWithAuth } from '@/lib/api';
@@ -826,6 +826,14 @@ export function ClassDetailPage() {
                                 <Send className="w-3 h-3" />
                               )}
                               配布
+                            </button>
+                            <button
+                              onClick={() => navigate(`/classes/${classId}/assignments/${assignment.id}/submissions`)}
+                              className="flex items-center gap-1 px-2 py-1 text-xs rounded border border-border text-foreground hover:bg-accent"
+                              title="進捗確認・答案閲覧・採点"
+                            >
+                              <BarChart3 className="w-3 h-3" />
+                              進捗
                             </button>
                             <button
                               onClick={() => setDeletingAssignmentId(assignment.id)}

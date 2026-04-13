@@ -17,6 +17,7 @@ import { AdminPage } from '@/pages/AdminPage';
 import { AboutPage } from '@/pages/AboutPage';
 import { ClassesPage } from '@/pages/ClassesPage';
 import { ClassDetailPage } from '@/pages/ClassDetailPage';
+import { AssignmentSubmissionsPage } from '@/pages/AssignmentSubmissionsPage';
 import { initBlocklyMessages } from '@/utils/blocklyMessages';
 
 // モバイルデバイス検出フック
@@ -170,6 +171,11 @@ function App() {
         <Route path="/classes/:id" element={
           <ProtectedRoute>
             <ClassDetailPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/classes/:classId/assignments/:assignmentId/submissions" element={
+          <ProtectedRoute>
+            <AssignmentSubmissionsPage />
           </ProtectedRoute>
         } />
         <Route

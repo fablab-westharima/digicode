@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Save, Send, Clock, FileText, Check, AlertTriangle } from 'lucide-react';
+import { Loader2, Save, Send, Clock, FileText, Check, AlertTriangle, RotateCcw } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -23,6 +23,7 @@ function statusDisplay(status: string) {
     case 'in_progress': return { text: '作業中', icon: <FileText className="w-4 h-4" />, color: 'text-primary' };
     case 'submitted': return { text: '提出済み', icon: <Check className="w-4 h-4" />, color: 'text-primary' };
     case 'graded': return { text: '採点済み', icon: <Check className="w-4 h-4" />, color: 'text-primary' };
+    case 'returned': return { text: '差戻し', icon: <RotateCcw className="w-4 h-4" />, color: 'text-destructive' };
     default: return { text: status, icon: null, color: 'text-muted-foreground' };
   }
 }
@@ -120,6 +121,29 @@ export function SubmissionSaveDialog({ open, onOpenChange, submission, isDirty, 
               </span>
             </div>
           </div>
+
+          {/* 差戻しフィードバック（returned かつ 過去の採点があるときのみ表示） */}
+          {submission.status === 'returned' && (submission.score !== null || submission.comment) && (
+            <div className="border border-destructive/30 rounded-md p-3 bg-destructive/10">
+              <p className="text-sm font-medium text-foreground mb-1 flex items-center gap-1">
+                <RotateCcw className="w-4 h-4 text-destructive" />
+                先生からの差戻しフィードバック
+              </p>
+              {submission.score !== null && (
+                <p className="text-sm text-foreground">
+                  前回のスコア: <span className="font-mono font-semibold">{submission.score}</span> 点
+                </p>
+              )}
+              {submission.comment && (
+                <p className="text-sm text-foreground mt-1 whitespace-pre-wrap">
+                  {submission.comment}
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground mt-2">
+                編集して再提出すると、前回の採点はクリアされます。
+              </p>
+            </div>
+          )}
 
           {/* メッセージエリア */}
           {message && (
