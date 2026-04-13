@@ -37,6 +37,7 @@ import { AccountDeleteDialog } from '@/components/auth/AccountDeleteDialog';
 import { ChangePasswordDialog } from '@/components/auth/ChangePasswordDialog';
 import { SubmissionListDialog } from '@/components/classes/SubmissionListDialog';
 import { SubmissionSaveDialog } from '@/components/classes/SubmissionSaveDialog';
+import { GradedListDialog } from '@/components/classes/GradedListDialog';
 import { saveSubmission, submitSubmission, type SubmissionInfo } from '@/services/classService';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSerialStore } from '@/stores/serialStore';
@@ -138,6 +139,7 @@ export function EditorPage() {
   const isStudent = user?.accountType === 'student';
   const [submissionListOpen, setSubmissionListOpen] = useState(false);
   const [submissionSaveDialogOpen, setSubmissionSaveDialogOpen] = useState(false);
+  const [gradedListOpen, setGradedListOpen] = useState(false);
   const [currentSubmission, setCurrentSubmission] = useState<SubmissionInfo | null>(null);
   const [adc2WarningDialogOpen, setAdc2WarningDialogOpen] = useState(false);
   const [adc2Warnings, setAdc2Warnings] = useState<ADC2Warning[]>([]);
@@ -1596,6 +1598,7 @@ export function EditorPage() {
             onChangePassword={() => setChangePasswordDialogOpen(true)}
             onSubmissionList={() => setSubmissionListOpen(true)}
             onSubmissionSaveDialog={() => setSubmissionSaveDialogOpen(true)}
+            onGradedList={() => setGradedListOpen(true)}
             currentSubmissionTitle={currentSubmission?.assignmentTitle || null}
           />
 
@@ -2047,6 +2050,12 @@ export function EditorPage() {
         isDirty={isDirty}
         onSave={handleSaveSubmission}
         onSubmit={handleSubmitSubmission}
+      />
+
+      {/* 生徒用: 採点結果ダイアログ */}
+      <GradedListDialog
+        open={gradedListOpen}
+        onOpenChange={setGradedListOpen}
       />
 
       {/* 2段階認証設定ダイアログ */}

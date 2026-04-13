@@ -27,7 +27,8 @@ import {
   Users,
   Lock,
   ClipboardList,
-  Save
+  Save,
+  Award
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAuthStore } from '@/stores/authStore';
@@ -57,6 +58,7 @@ interface SidebarProps {
   onChangePassword?: () => void;
   onSubmissionList?: () => void;
   onSubmissionSaveDialog?: () => void;
+  onGradedList?: () => void;
   currentSubmissionTitle?: string | null;
 }
 
@@ -102,6 +104,7 @@ export function Sidebar({
   onChangePassword,
   onSubmissionList,
   onSubmissionSaveDialog,
+  onGradedList,
   currentSubmissionTitle,
 }: SidebarProps) {
   const { t } = useTranslation();
@@ -292,6 +295,13 @@ export function Sidebar({
           : '保存と提出',
         icon: <Save className="w-4 h-4" />,
         action: onSubmissionSaveDialog || (() => {}),
+        category: 'assignment' as const,
+      },
+      {
+        id: 'graded-list',
+        label: t('sidebar.gradedList', { defaultValue: '採点結果' }),
+        icon: <Award className="w-4 h-4" />,
+        action: onGradedList || (() => {}),
         category: 'assignment' as const,
       },
     ] : []),
