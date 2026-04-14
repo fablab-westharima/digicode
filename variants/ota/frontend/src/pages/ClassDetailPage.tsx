@@ -280,10 +280,15 @@ export function ClassDetailPage() {
         attachmentFilename = attachmentFile.name;
       }
 
+      // 期限は完全な YYYY-MM-DD 形式のときのみ送信（部分入力は無視）
+      const validDueDate = /^\d{4}-\d{2}-\d{2}$/.test(newAssignment.dueDate)
+        ? newAssignment.dueDate
+        : undefined;
+
       await createAssignment(classId, {
         title: newAssignment.title.trim(),
         description: newAssignment.description.trim() || undefined,
-        dueDate: newAssignment.dueDate || undefined,
+        dueDate: validDueDate,
         attachment,
         attachmentFilename,
       });
@@ -728,13 +733,103 @@ export function ClassDetailPage() {
                 </div>
                 <div>
                   <label className="block text-xs text-muted-foreground mb-1">期限（任意）</label>
-                  <input
-                    type="date"
-                    value={newAssignment.dueDate}
-                    onChange={(e) => setNewAssignment((prev) => ({ ...prev, dueDate: e.target.value }))}
-                    disabled={creatingAssignment}
-                    className="w-full px-3 py-2 rounded-md border border-border bg-input text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
-                  />
+                  {(() => {
+                    // dueDate は 'YYYY-MM-DD' 形式、または空文字
+                    const parts = newAssignment.dueDate.split('-');
+                    const selYear = parts[0] || '';
+                    const selMonth = parts[1] || '';
+                    const selDay = parts[2] || '';
+                    const currentYear = new Date().getFullYear();
+                    const years = [currentYear, currentYear + 1];
+                    const months = Array.from({ length: 12 }, (_, i) => i + 1);
+                    const daysInMonth =
+                      selYear && selMonth
+                        ? new Date(parseInt(selYear), parseInt(selMonth), 0).getDate()
+                        : 31;
+                    const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+                    const update = (y: string, m: string, d: string) => {
+                      if (!y && !m && !d) {
+                        setNewAssignment((prev) => ({ ...prev, dueDate: '' }));
+                        return;
+                      }
+                      if (y && m && d) {
+                        // 日が月末を超えていたら月末に丸める
+                        const maxDay = new Date(parseInt(y), parseInt(m), 0).getDate();
+                        const dd = Math.min(parseInt(d), maxDay);
+                        setNewAssignment((prev) => ({
+                          ...prev,
+                          dueDate: `${y}-${m.padStart(2, '0')}-${String(dd).padStart(2, '0')}`,
+                        }));
+                      } else {
+                        // 部分入力（3 つ揃うまでは保存しない、UI 状態として保持するため便宜的に中間表現）
+                        setNewAssignment((prev) => ({
+                          ...prev,
+                          dueDate: `${y}-${m}-${d}`,
+                        }));
+                      }
+                    };
+
+                    const selectClass =
+                      'px-2 py-2 rounded-md border border-border bg-input text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50';
+
+                    return (
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={selYear}
+                          onChange={(e) => update(e.target.value, selMonth, selDay)}
+                          disabled={creatingAssignment}
+                          className={selectClass}
+                        >
+                          <option value="">年</option>
+                          {years.map((y) => (
+                            <option key={y} value={String(y)}>
+                              {y}年
+                            </option>
+                          ))}
+                        </select>
+                        <select
+                          value={selMonth}
+                          onChange={(e) => update(selYear, e.target.value, selDay)}
+                          disabled={creatingAssignment}
+                          className={selectClass}
+                        >
+                          <option value="">月</option>
+                          {months.map((m) => (
+                            <option key={m} value={String(m).padStart(2, '0')}>
+                              {m}月
+                            </option>
+                          ))}
+                        </select>
+                        <select
+                          value={selDay}
+                          onChange={(e) => update(selYear, selMonth, e.target.value)}
+                          disabled={creatingAssignment}
+                          className={selectClass}
+                        >
+                          <option value="">日</option>
+                          {days.map((d) => (
+                            <option key={d} value={String(d).padStart(2, '0')}>
+                              {d}日
+                            </option>
+                          ))}
+                        </select>
+                        {newAssignment.dueDate && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setNewAssignment((prev) => ({ ...prev, dueDate: '' }))
+                            }
+                            disabled={creatingAssignment}
+                            className="ml-1 p-1.5 text-muted-foreground hover:text-destructive rounded hover:bg-accent disabled:opacity-50"
+                            title="期限をクリア"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })()}
                   <p className="text-xs text-muted-foreground mt-1">
                     期限を設定すると、生徒の課題一覧と管理者のダッシュボードで表示されます
                   </p>
