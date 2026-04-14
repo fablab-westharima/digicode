@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Plus, Copy, Check, AlertTriangle } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
-import { listClasses, type ClassInfo } from '@/services/classService';
+import { listClasses, daysUntilExpiry, type ClassInfo } from '@/services/classService';
 import { CreateClassDialog } from '@/components/classes/CreateClassDialog';
 
 export function ClassesPage() {
@@ -143,11 +143,31 @@ export function ClassesPage() {
                           )}
                         </button>
                       </div>
-                      {cls.expiresAt && (
-                        <span className="text-xs text-muted-foreground">
-                          期限: {new Date(cls.expiresAt).toLocaleDateString('ja-JP')}
-                        </span>
-                      )}
+                      {cls.expiresAt && (() => {
+                        const days = daysUntilExpiry(cls.expiresAt);
+                        const dateStr = new Date(cls.expiresAt).toLocaleDateString('ja-JP');
+                        if (days !== null && days < 0) {
+                          return (
+                            <span className="inline-flex items-center gap-1 text-xs text-destructive">
+                              <AlertTriangle className="w-3 h-3" />
+                              期限切れ: {dateStr}
+                            </span>
+                          );
+                        }
+                        if (days !== null && days <= 7) {
+                          return (
+                            <span className="inline-flex items-center gap-1 text-xs text-destructive">
+                              <AlertTriangle className="w-3 h-3" />
+                              期限: {dateStr}（あと {days} 日）
+                            </span>
+                          );
+                        }
+                        return (
+                          <span className="text-xs text-muted-foreground">
+                            期限: {dateStr}
+                          </span>
+                        );
+                      })()}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

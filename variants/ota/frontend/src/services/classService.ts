@@ -48,6 +48,19 @@ export interface CreatedStudent {
 
 // --- Helper ---
 
+/**
+ * 有効期限まで残り何日かを返す。
+ * - null: expiresAt が未設定（期限なし）
+ * - 正の数: 期限まで N 日
+ * - 0: 今日が期限（24 時間以内）
+ * - 負の数: 期限切れ
+ */
+export function daysUntilExpiry(expiresAt: string | null): number | null {
+  if (!expiresAt) return null;
+  const diffMs = new Date(expiresAt).getTime() - Date.now();
+  return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+}
+
 async function parseErrorOrThrow(response: Response): Promise<never> {
   let message = 'エラーが発生しました';
   try {

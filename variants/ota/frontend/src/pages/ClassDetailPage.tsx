@@ -18,6 +18,7 @@ import {
   createAssignment,
   deleteAssignment,
   distributeAssignment,
+  daysUntilExpiry,
   type ClassInfo,
   type StudentInfo,
   type AssignmentInfo,
@@ -112,7 +113,7 @@ export function ClassDetailPage() {
   // 課題
   const [assignments, setAssignments] = useState<AssignmentInfo[]>([]);
   const [showCreateAssignment, setShowCreateAssignment] = useState(false);
-  const [newAssignment, setNewAssignment] = useState({ title: '', description: '' });
+  const [newAssignment, setNewAssignment] = useState({ title: '', description: '', dueDate: '' });
   const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
   const [creatingAssignment, setCreatingAssignment] = useState(false);
   const [deletingAssignmentId, setDeletingAssignmentId] = useState<number | null>(null);
@@ -282,12 +283,13 @@ export function ClassDetailPage() {
       await createAssignment(classId, {
         title: newAssignment.title.trim(),
         description: newAssignment.description.trim() || undefined,
+        dueDate: newAssignment.dueDate || undefined,
         attachment,
         attachmentFilename,
       });
 
       setShowCreateAssignment(false);
-      setNewAssignment({ title: '', description: '' });
+      setNewAssignment({ title: '', description: '', dueDate: '' });
       setAttachmentFile(null);
       const assigns = await listAssignments(classId);
       setAssignments(assigns);
@@ -409,6 +411,43 @@ export function ClassDetailPage() {
             </button>
           </div>
         )}
+
+        {/* 期限前警告バナー（Step 8 scope B） */}
+        {(() => {
+          const days = daysUntilExpiry(classInfo.expiresAt);
+          if (days === null) return null;
+          if (days < 0) {
+            return (
+              <div className="mb-4 p-3 rounded-md bg-destructive/10 border border-destructive/30 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">
+                    このクラスは開講期限を過ぎています
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    毎日深夜 00:00 の自動処理で削除されます。必要なデータは事前にダウンロードしてください。
+                  </p>
+                </div>
+              </div>
+            );
+          }
+          if (days <= 7) {
+            return (
+              <div className="mb-4 p-3 rounded-md bg-destructive/10 border border-destructive/30 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">
+                    開講期限まで残り {days} 日です
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    期限到達後、毎日深夜 00:00 の自動処理でクラスと関連データが削除されます。
+                  </p>
+                </div>
+              </div>
+            );
+          }
+          return null;
+        })()}
 
         {/* クラス情報 */}
         <div className="border border-border rounded-lg p-4 bg-card mb-6">
@@ -688,6 +727,19 @@ export function ClassDetailPage() {
                   />
                 </div>
                 <div>
+                  <label className="block text-xs text-muted-foreground mb-1">期限（任意）</label>
+                  <input
+                    type="date"
+                    value={newAssignment.dueDate}
+                    onChange={(e) => setNewAssignment((prev) => ({ ...prev, dueDate: e.target.value }))}
+                    disabled={creatingAssignment}
+                    className="w-full px-3 py-2 rounded-md border border-border bg-input text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    期限を設定すると、生徒の課題一覧と管理者のダッシュボードで表示されます
+                  </p>
+                </div>
+                <div>
                   <label className="block text-xs text-muted-foreground mb-1">
                     課題PDF（任意、2MBまで）
                   </label>
@@ -718,7 +770,7 @@ export function ClassDetailPage() {
                   <button
                     onClick={() => {
                       setShowCreateAssignment(false);
-                      setNewAssignment({ title: '', description: '' });
+                      setNewAssignment({ title: '', description: '', dueDate: '' });
                       setAttachmentFile(null);
                     }}
                     disabled={creatingAssignment}
@@ -753,6 +805,7 @@ export function ClassDetailPage() {
                   <tr className="border-b border-border">
                     <th className="text-left px-4 py-3 text-muted-foreground font-medium">タイトル</th>
                     <th className="text-left px-4 py-3 text-muted-foreground font-medium">添付</th>
+                    <th className="text-left px-4 py-3 text-muted-foreground font-medium">期限</th>
                     <th className="text-left px-4 py-3 text-muted-foreground font-medium">作成日</th>
                     <th className="text-right px-4 py-3 text-muted-foreground font-medium">操作</th>
                   </tr>
@@ -786,6 +839,37 @@ export function ClassDetailPage() {
                             <FileText className="w-3 h-3" />
                             {assignment.attachmentFilename}
                           </button>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {assignment.dueDate ? (
+                          (() => {
+                            const days = Math.ceil(
+                              (new Date(assignment.dueDate).getTime() - Date.now()) /
+                                (1000 * 60 * 60 * 24)
+                            );
+                            const dateStr = new Date(assignment.dueDate).toLocaleDateString('ja-JP');
+                            if (days < 0) {
+                              return (
+                                <span className="inline-flex items-center gap-1 text-xs text-destructive">
+                                  <AlertTriangle className="w-3 h-3" />
+                                  {dateStr}（期限切れ）
+                                </span>
+                              );
+                            }
+                            if (days <= 3) {
+                              return (
+                                <span className="text-xs text-destructive">
+                                  {dateStr}（あと {days} 日）
+                                </span>
+                              );
+                            }
+                            return (
+                              <span className="text-xs text-muted-foreground">{dateStr}</span>
+                            );
+                          })()
                         ) : (
                           <span className="text-xs text-muted-foreground">—</span>
                         )}
