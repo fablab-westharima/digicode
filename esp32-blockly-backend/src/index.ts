@@ -9,7 +9,7 @@ import compileUsage from './routes/compile-usage';
 import subscriptions from './routes/subscriptions';
 import webhooks from './routes/webhooks';
 import admin from './routes/admin';
-import classes from './routes/classes';
+import classes, { deleteClassCascade } from './routes/classes';
 import submissionsRoute from './routes/submissions';
 import { rateLimitPresets } from './middleware/rateLimit';
 
@@ -25,6 +25,8 @@ type Bindings = {
   // Phase C: class feature proxy (digicode-class-server on ML30)
   CLASS_API_URL: string;      // vars: e.g. "https://class.digital-fab.jp"
   CLASS_API_SECRET: string;   // Workers Secret (wrangler secret put)
+  // Step 8: Scheduled handler dry-run flag (Cloudflare env var)
+  SCHEDULED_DRY_RUN?: string; // 'true' で実削除せずログのみ
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -89,6 +91,7 @@ app.use('/api/compile-usage/*', rateLimitPresets.compile);
 app.use('/api/projects/*', rateLimitPresets.standard);
 app.use('/api/subscriptions/*', rateLimitPresets.standard);
 app.use('/api/classes/*', rateLimitPresets.standard);
+app.use('/api/submissions/*', rateLimitPresets.standard);
 
 // Webhook（制限緩め: 1000リクエスト/分）
 app.use('/api/webhooks/*', rateLimitPresets.webhook);
@@ -157,4 +160,94 @@ app.get('/api/test/kv', async (c) => {
   }
 });
 
-export default app;
+// ============================================================
+// Step 8: Cloudflare Workers Cron Trigger
+// ============================================================
+// wrangler.jsonc の triggers.crons で設定されたスケジュールに従って呼ばれる。
+// 期限切れクラスを検出して、ML30 → D1 の順でカスケード削除する。
+//
+// 安全装置:
+// - LIMIT 100 で大量誤削除を防止
+// - SCHEDULED_DRY_RUN='true' で実削除せずログのみ（初回本番検証用）
+// - 1 件の失敗で全体を止めず、エラーログのみ出して続行
+
+async function handleScheduled(
+  _event: ScheduledEvent,
+  env: Bindings,
+  _ctx: ExecutionContext
+): Promise<void> {
+  const runId = crypto.randomUUID();
+  console.log(`[scheduled ${runId}] triggered at ${new Date().toISOString()}`);
+
+  const dryRun = env.SCHEDULED_DRY_RUN === 'true';
+  if (dryRun) {
+    console.log(`[scheduled ${runId}] DRY RUN mode (SCHEDULED_DRY_RUN=true)`);
+  }
+
+  try {
+    // 期限切れクラスを列挙（LIMIT 100 で大量誤削除防止）
+    const expired = await env.DB.prepare(
+      `SELECT id, name, owner_id, expires_at
+       FROM classes
+       WHERE expires_at IS NOT NULL AND expires_at < datetime('now')
+       LIMIT 100`
+    ).all<{ id: number; name: string; owner_id: number; expires_at: string }>();
+
+    const count = expired.results?.length ?? 0;
+    console.log(`[scheduled ${runId}] found ${count} expired classes`);
+
+    if (count === 0) {
+      console.log(`[scheduled ${runId}] nothing to do, exiting`);
+      return;
+    }
+
+    if (dryRun) {
+      for (const cls of expired.results ?? []) {
+        console.log(
+          `[scheduled ${runId}] [DRY RUN] would delete: class#${cls.id} "${cls.name}" (owner ${cls.owner_id}, expired ${cls.expires_at})`
+        );
+      }
+      console.log(`[scheduled ${runId}] DRY RUN completed, no actual deletion`);
+      return;
+    }
+
+    // 本番モード: 実際に削除
+    let successCount = 0;
+    let failCount = 0;
+    for (const cls of expired.results ?? []) {
+      try {
+        const result = await deleteClassCascade(env, cls.id);
+        if (result.ok) {
+          successCount++;
+          console.log(
+            `[scheduled ${runId}] deleted class#${cls.id} "${cls.name}"`
+          );
+        } else {
+          failCount++;
+          console.error(
+            `[scheduled ${runId}] failed to delete class#${cls.id}: ${result.error}`
+          );
+        }
+      } catch (err) {
+        failCount++;
+        console.error(
+          `[scheduled ${runId}] exception deleting class#${cls.id}:`,
+          err
+        );
+        // 続行（一件の失敗で全体を止めない）
+      }
+    }
+
+    console.log(
+      `[scheduled ${runId}] completed: ${successCount} succeeded, ${failCount} failed of ${count} total`
+    );
+  } catch (err) {
+    console.error(`[scheduled ${runId}] fatal error:`, err);
+    // fatal error でも throw しない（次回実行は独立して継続）
+  }
+}
+
+export default {
+  fetch: app.fetch,
+  scheduled: handleScheduled,
+} satisfies ExportedHandler<Bindings>;

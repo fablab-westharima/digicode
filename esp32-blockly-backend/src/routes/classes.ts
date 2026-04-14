@@ -209,8 +209,23 @@ classes.delete('/:id', async (c) => {
       `SELECT user_id FROM class_members WHERE class_id = ? AND role = 'student'`
     ).bind(id).all<{ user_id: number }>();
 
-    // D1 CASCADE will auto-delete class_members.
-    // TODO (Step 6-7): also delete assignments/submissions on ML30 via proxyClassApi
+    // Step 8: ML30 の assignments/assignment_submissions を先に削除
+    // 失敗した場合は D1 側を触らず中断（孤児は残るが二次的被害なし、次回 cron で再挑戦）
+    const ml30Result = await proxyClassApi(getClassApiEnv(c), {
+      method: 'DELETE',
+      path: `/assignments/by-class/${id}`,
+      userId,
+    });
+
+    if (!ml30Result.ok && ml30Result.status !== 404) {
+      console.error(`Delete class: ML30 cleanup failed for class#${id}:`, ml30Result.error);
+      return c.json(
+        { error: `クラス関連データの削除に失敗しました: ${ml30Result.error}` },
+        ml30Result.status as any
+      );
+    }
+
+    // D1 CASCADE で class_members も自動削除
     await c.env.DB.prepare(`DELETE FROM classes WHERE id = ?`).bind(id).run();
 
     // 他クラスにも未所属の student users を連動削除（使い捨てアカウント方針）
@@ -787,5 +802,66 @@ classes.post(
     }
   }
 );
+
+// ============================================================
+// Step 8: Scheduled cleanup (Cron Trigger から呼ばれる共通ロジック)
+// ============================================================
+
+/**
+ * 単一クラスのカスケード削除（ML30 → D1 classes → 孤児 student）
+ * Workers の scheduled handler と DELETE /api/classes/:id の両方から呼ばれる
+ * 認可チェックは呼び出し元で実施済みの前提
+ */
+export async function deleteClassCascade(
+  env: {
+    DB: D1Database;
+    CLASS_API_URL: string;
+    CLASS_API_SECRET: string;
+  },
+  classId: number
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  // 削除前に所属 student を取得
+  const students = await env.DB.prepare(
+    `SELECT user_id FROM class_members WHERE class_id = ? AND role = 'student'`
+  )
+    .bind(classId)
+    .all<{ user_id: number }>();
+
+  // ML30 の assignments/assignment_submissions を先に削除
+  const ml30Env: ClassApiEnv = {
+    CLASS_API_URL: env.CLASS_API_URL,
+    CLASS_API_SECRET: env.CLASS_API_SECRET,
+  };
+  const ml30Result = await proxyClassApi(ml30Env, {
+    method: 'DELETE',
+    path: `/assignments/by-class/${classId}`,
+    userId: 0, // scheduled からの呼び出しでは userId はシステム固定値
+  });
+
+  if (!ml30Result.ok && ml30Result.status !== 404) {
+    return { ok: false, error: `ML30 cleanup failed: ${ml30Result.error}` };
+  }
+
+  // D1 classes を削除（CASCADE で class_members も削除）
+  await env.DB.prepare(`DELETE FROM classes WHERE id = ?`).bind(classId).run();
+
+  // 孤児 student を連動削除（使い捨てアカウント方針）
+  for (const s of students.results || []) {
+    const other = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?`
+    )
+      .bind(s.user_id)
+      .first<{ n: number }>();
+    if (!other || other.n === 0) {
+      await env.DB.prepare(
+        `DELETE FROM users WHERE id = ? AND account_type = 'student'`
+      )
+        .bind(s.user_id)
+        .run();
+    }
+  }
+
+  return { ok: true };
+}
 
 export default classes;

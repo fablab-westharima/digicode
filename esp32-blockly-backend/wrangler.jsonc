@@ -34,5 +34,10 @@
 			"binding": "WEBAUTHN_CHALLENGES",
 			"id": "c44460f3263542d8a1826904e49e02a4"
 		}
-	]
+	],
+	// Step 8: Cron Triggers for lifecycle management
+	// UTC 15:00 = JST 00:00 daily — 期限切れクラスの自動削除
+	"triggers": {
+		"crons": ["0 15 * * *"]
+	}
 }
