@@ -121,6 +121,7 @@ export function ClassDetailPage() {
   const [deletingAssignmentLoading, setDeletingAssignmentLoading] = useState(false);
   const [distributingId, setDistributingId] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [exportConfirm, setExportConfirm] = useState(false);
 
   const classId = id ? parseInt(id) : NaN;
 
@@ -1034,9 +1035,65 @@ export function ClassDetailPage() {
           )}
         </div>
 
-        {/* クラスバックアップ & 削除 */}
+        {/* クラス記録保存 & 削除 */}
         <div className="border-t border-border pt-6">
-          {deletingClassConfirm ? (
+          {exportConfirm ? (
+            <div className="p-4 rounded-md bg-accent border border-border">
+              <div className="flex items-start gap-3">
+                <Archive className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="font-medium text-foreground">
+                    クラス記録を保存します
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    このZIPは<strong className="text-foreground">成績記録と答案のスナップショット</strong>です。
+                    課題テンプレート・添付PDF・生徒一覧・答案・採点結果・コメントを含みます。
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    ※ このファイルを DigiCode へ再インポートしてクラスを復元することは
+                    <strong className="text-foreground">できません</strong>。
+                    クラス削除前の成績記録の保管用としてご利用ください。
+                  </p>
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      onClick={() => setExportConfirm(false)}
+                      disabled={exporting}
+                      className="px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
+                    >
+                      取消
+                    </button>
+                    <button
+                      onClick={async () => {
+                        setExporting(true);
+                        setError(null);
+                        try {
+                          await exportClass(classId, classInfo.name);
+                          setExportConfirm(false);
+                        } catch (err) {
+                          setError(
+                            err instanceof Error
+                              ? err.message
+                              : '記録の保存に失敗しました',
+                          );
+                        } finally {
+                          setExporting(false);
+                        }
+                      }}
+                      disabled={exporting}
+                      className="flex items-center gap-2 px-3 py-1.5 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                    >
+                      {exporting ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <Archive className="w-3 h-3" />
+                      )}
+                      保存する
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : deletingClassConfirm ? (
             <div className="p-4 rounded-md bg-destructive/10 border border-destructive/30">
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
@@ -1048,7 +1105,7 @@ export function ClassDetailPage() {
                     クラスに所属する全ての生徒アカウントも削除されます。この操作は取り消せません。
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    必要に応じて、削除前に「クラスをバックアップ」でデータを手元に保存してください。
+                    必要に応じて、削除前に「クラス記録を保存」で成績記録を手元に保管してください。
                   </p>
                   <div className="flex gap-2 mt-3">
                     <button
@@ -1073,31 +1130,12 @@ export function ClassDetailPage() {
           ) : (
             <div className="flex items-center gap-2">
               <button
-                onClick={async () => {
-                  setExporting(true);
-                  setError(null);
-                  try {
-                    await exportClass(classId, classInfo.name);
-                  } catch (err) {
-                    setError(
-                      err instanceof Error
-                        ? err.message
-                        : 'バックアップに失敗しました',
-                    );
-                  } finally {
-                    setExporting(false);
-                  }
-                }}
-                disabled={exporting}
-                className="flex items-center gap-1 px-4 py-2 text-sm rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
-                title="クラス全体のデータ（課題・答案・採点・添付PDF）を ZIP でダウンロード"
+                onClick={() => setExportConfirm(true)}
+                className="flex items-center gap-1 px-4 py-2 text-sm rounded border border-border text-foreground hover:bg-accent"
+                title="成績記録・答案・添付PDFを ZIP で保存します（再インポート不可）"
               >
-                {exporting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Archive className="w-4 h-4" />
-                )}
-                クラスをバックアップ
+                <Archive className="w-4 h-4" />
+                クラス記録を保存
               </button>
               <button
                 onClick={() => setDeletingClassConfirm(true)}
