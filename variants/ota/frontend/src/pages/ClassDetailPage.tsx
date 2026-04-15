@@ -520,33 +520,6 @@ export function ClassDetailPage() {
                   </button>
                 </>
               )}
-              <button
-                onClick={async () => {
-                  setExporting(true);
-                  setError(null);
-                  try {
-                    await exportClass(classId, classInfo.name);
-                  } catch (err) {
-                    setError(
-                      err instanceof Error
-                        ? err.message
-                        : 'エクスポートに失敗しました',
-                    );
-                  } finally {
-                    setExporting(false);
-                  }
-                }}
-                disabled={exporting}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
-                title="クラス全体のデータ（課題・答案・採点・添付PDF）を ZIP でダウンロード"
-              >
-                {exporting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Archive className="w-4 h-4" />
-                )}
-                エクスポート
-              </button>
               {!isAddingMode && (
                 <button
                   onClick={handleStartAddStudents}
@@ -1061,7 +1034,7 @@ export function ClassDetailPage() {
           )}
         </div>
 
-        {/* クラス削除 */}
+        {/* クラスバックアップ & 削除 */}
         <div className="border-t border-border pt-6">
           {deletingClassConfirm ? (
             <div className="p-4 rounded-md bg-destructive/10 border border-destructive/30">
@@ -1073,6 +1046,9 @@ export function ClassDetailPage() {
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
                     クラスに所属する全ての生徒アカウントも削除されます。この操作は取り消せません。
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    必要に応じて、削除前に「クラスをバックアップ」でデータを手元に保存してください。
                   </p>
                   <div className="flex gap-2 mt-3">
                     <button
@@ -1095,12 +1071,41 @@ export function ClassDetailPage() {
               </div>
             </div>
           ) : (
-            <button
-              onClick={() => setDeletingClassConfirm(true)}
-              className="px-4 py-2 text-sm rounded border border-destructive/30 text-destructive hover:bg-destructive/10"
-            >
-              クラスを削除
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  setExporting(true);
+                  setError(null);
+                  try {
+                    await exportClass(classId, classInfo.name);
+                  } catch (err) {
+                    setError(
+                      err instanceof Error
+                        ? err.message
+                        : 'バックアップに失敗しました',
+                    );
+                  } finally {
+                    setExporting(false);
+                  }
+                }}
+                disabled={exporting}
+                className="flex items-center gap-1 px-4 py-2 text-sm rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
+                title="クラス全体のデータ（課題・答案・採点・添付PDF）を ZIP でダウンロード"
+              >
+                {exporting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Archive className="w-4 h-4" />
+                )}
+                クラスをバックアップ
+              </button>
+              <button
+                onClick={() => setDeletingClassConfirm(true)}
+                className="px-4 py-2 text-sm rounded border border-destructive/30 text-destructive hover:bg-destructive/10"
+              >
+                クラスを削除
+              </button>
+            </div>
           )}
         </div>
       </div>
