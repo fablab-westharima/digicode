@@ -804,6 +804,103 @@ classes.post(
 );
 
 // ============================================================
+// T2: Class data export (ZIP download)
+// ============================================================
+
+// GET /api/classes/:classId/export
+// クラスデータ(課題・答案・添付・採点結果)を ZIP で一括ダウンロード。
+// 管理者(enterprise)専用、verifyClassOwner で認可。
+// ML30 の /classes/:classId/export がアーカイブ生成を担当し、Workers は
+// 以下のコンテキスト情報をヘッダーで渡した上で、binary ストリームを proxy する:
+//   - X-Class-Name       : クラス名(URL エンコード、ファイル名・README に使用)
+//   - X-Class-Type       : workshop / classroom
+//   - X-Class-Expires-At : クラスの期限(ISO8601 or 空)
+//   - X-Student-Info     : 生徒一覧 JSON [{userId, loginId, displayName, email}]
+classes.get('/:classId/export', async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const classId = parseInt(c.req.param('classId'));
+    if (isNaN(classId)) return c.json({ error: '無効なIDです' }, 400);
+
+    const result = await verifyClassOwner(c, classId, userId);
+    if ('error' in result) return result.error;
+
+    // クラス情報を D1 から取得(クラス名・種別・期限)
+    const cls = await c.env.DB.prepare(
+      `SELECT id, name, class_type, expires_at FROM classes WHERE id = ?`
+    )
+      .bind(classId)
+      .first<{
+        id: number;
+        name: string;
+        class_type: string | null;
+        expires_at: string | null;
+      }>();
+
+    if (!cls) return c.json({ error: 'クラスが見つかりません' }, 404);
+
+    // 生徒一覧を D1 から取得(email と display_name を含める)
+    const studentsResult = await c.env.DB.prepare(
+      `SELECT u.id, u.email, u.display_name
+       FROM class_members cm
+       JOIN users u ON cm.user_id = u.id
+       WHERE cm.class_id = ? AND cm.role = 'student'
+       ORDER BY u.id`
+    )
+      .bind(classId)
+      .all<{ id: number; email: string; display_name: string | null }>();
+
+    // 生徒情報を ML30 に渡す形式に整形
+    // loginId は email の "@" 前部分(DigiCode の student アカウントは
+    // "loginId@example.com" 形式で作られる)
+    const students = (studentsResult.results || []).map((u) => ({
+      userId: u.id,
+      loginId: u.email.includes('@') ? u.email.split('@')[0] : u.email,
+      displayName: u.display_name,
+      email: u.email,
+    }));
+
+    // ML30 /classes/:classId/export にプロキシ
+    const env = getClassApiEnv(c);
+    const url = new URL(
+      `/classes/${classId}/export`,
+      env.CLASS_API_URL
+    ).toString();
+
+    const res = await fetch(url, {
+      headers: {
+        'X-Internal-Secret': env.CLASS_API_SECRET,
+        'X-User-Id': String(userId),
+        'X-Class-Name': encodeURIComponent(cls.name),
+        'X-Class-Type': cls.class_type || '',
+        'X-Class-Expires-At': cls.expires_at || '',
+        'X-Student-Info': JSON.stringify(students),
+      },
+    });
+
+    if (!res.ok) {
+      const data = await res
+        .json()
+        .catch(() => ({ error: 'エクスポートに失敗しました' }));
+      return c.json(data, res.status as any);
+    }
+
+    // Binary stream pass-through
+    return new Response(res.body, {
+      headers: {
+        'Content-Type': res.headers.get('Content-Type') || 'application/zip',
+        'Content-Disposition':
+          res.headers.get('Content-Disposition') ||
+          `attachment; filename="class_${classId}_export.zip"`,
+      },
+    });
+  } catch (error) {
+    console.error('Export class error:', error);
+    return c.json({ error: 'エクスポートに失敗しました' }, 500);
+  }
+});
+
+// ============================================================
 // Step 8: Scheduled cleanup (Cron Trigger から呼ばれる共通ロジック)
 // ============================================================
 
