@@ -271,6 +271,29 @@ export async function downloadSubmissionAttachment(
   URL.revokeObjectURL(url);
 }
 
+// T2: クラスデータを ZIP でエクスポート
+// ClassDetailPage のエクスポートボタンから呼ばれる
+// Workers → ML30 で archiver により ZIP が生成され、ブラウザにダウンロードされる
+export async function exportClass(
+  classId: number,
+  className: string,
+): Promise<void> {
+  const res = await fetchWithAuth(`/api/classes/${classId}/export`);
+  if (!res.ok) await parseErrorOrThrow(res);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  // ファイル名: <className>_export_<YYYY-MM-DD>.zip
+  // サーバー側の Content-Disposition にもファイル名があるが、フロント側で
+  // 明示的に設定することで確実にダウンロード時のファイル名を制御
+  const dateStr = new Date().toISOString().slice(0, 10);
+  const safeName = className.replace(/[<>:"/\\|?*\x00-\x1f]/g, '_').slice(0, 100);
+  a.download = `${safeName || 'class'}_export_${dateStr}.zip`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 // --- Admin Dashboard (Step 7) ---
 
 // 課題別 submission 一覧の各行（軽量版、blockly_xml 除外）

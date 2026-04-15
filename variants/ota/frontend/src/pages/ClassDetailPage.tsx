@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft, Copy, Check, Loader2, AlertTriangle,
   KeyRound, Trash2, Plus, Download, X,
-  FileText, Send, Upload, Paperclip, BarChart3,
+  FileText, Send, Upload, Paperclip, BarChart3, Archive,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { fetchWithAuth } from '@/lib/api';
@@ -18,6 +18,7 @@ import {
   createAssignment,
   deleteAssignment,
   distributeAssignment,
+  exportClass,
   daysUntilExpiry,
   type ClassInfo,
   type StudentInfo,
@@ -119,6 +120,7 @@ export function ClassDetailPage() {
   const [deletingAssignmentId, setDeletingAssignmentId] = useState<number | null>(null);
   const [deletingAssignmentLoading, setDeletingAssignmentLoading] = useState(false);
   const [distributingId, setDistributingId] = useState<number | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   const classId = id ? parseInt(id) : NaN;
 
@@ -518,6 +520,33 @@ export function ClassDetailPage() {
                   </button>
                 </>
               )}
+              <button
+                onClick={async () => {
+                  setExporting(true);
+                  setError(null);
+                  try {
+                    await exportClass(classId, classInfo.name);
+                  } catch (err) {
+                    setError(
+                      err instanceof Error
+                        ? err.message
+                        : 'エクスポートに失敗しました',
+                    );
+                  } finally {
+                    setExporting(false);
+                  }
+                }}
+                disabled={exporting}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
+                title="クラス全体のデータ（課題・答案・採点・添付PDF）を ZIP でダウンロード"
+              >
+                {exporting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Archive className="w-4 h-4" />
+                )}
+                エクスポート
+              </button>
               {!isAddingMode && (
                 <button
                   onClick={handleStartAddStudents}
