@@ -901,6 +901,102 @@ classes.get('/:classId/export', async (c) => {
 });
 
 // ============================================================
+// Class duplication (教材コピーによる新クラス作成)
+// ============================================================
+
+// POST /api/classes/:classId/duplicate
+classes.post('/:classId/duplicate', async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const classId = parseInt(c.req.param('classId'));
+    if (isNaN(classId)) return c.json({ error: '無効なクラスIDです' }, 400);
+
+    // 1. 認可チェック（元クラスの所有者であること）
+    const ownerCheck = await verifyClassOwner(c, classId, userId);
+    if (ownerCheck.error) return ownerCheck.error;
+
+    // 2. 3 クラス上限チェック
+    const count = await c.env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM classes WHERE owner_id = ? AND status = 'active'`
+    ).bind(userId).first<{ n: number }>();
+    if (count && count.n >= 3) {
+      return c.json({ error: '同時に開講できるクラスは3つまでです' }, 409);
+    }
+
+    // 3. 元クラスの classType を取得
+    const source = await c.env.DB.prepare(
+      `SELECT class_type FROM classes WHERE id = ?`
+    ).bind(classId).first<{ class_type: string }>();
+    const classType = source?.class_type || 'classroom';
+
+    // 4. 新クラス名の取得・バリデーション
+    const body = await c.req.json<{ name?: string }>();
+    const name = typeof body.name === 'string' ? body.name.trim() : '';
+    if (!name) return c.json({ error: 'クラス名を入力してください' }, 400);
+    if (name.length > 100) return c.json({ error: 'クラス名は100文字以内にしてください' }, 400);
+
+    // 5. expiresAt 算出（classType に基づく新規算出）
+    const now = new Date();
+    if (classType === 'workshop') {
+      now.setMonth(now.getMonth() + 1);
+    } else {
+      now.setMonth(now.getMonth() + 4);
+    }
+    const expiresAt = now.toISOString();
+
+    // 6. D1 に新クラスを INSERT（inviteCode 衝突時 1 回リトライ）
+    let created: ClassRow | null = null;
+    for (let attempt = 0; attempt < 2 && !created; attempt++) {
+      try {
+        created = await c.env.DB.prepare(
+          `INSERT INTO classes (name, owner_id, invite_code, compile_server_target, class_type, expires_at)
+           VALUES (?, ?, ?, 'cloud', ?, ?)
+           RETURNING *`
+        ).bind(name, userId, generateInviteCode(), classType, expiresAt)
+          .first<ClassRow>();
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (attempt === 0 && msg.includes('UNIQUE') && msg.includes('invite_code')) {
+          continue;
+        }
+        throw err;
+      }
+    }
+
+    if (!created) {
+      return c.json({ error: '招待コードの生成に失敗しました' }, 500);
+    }
+
+    const newClassId = created.id;
+
+    // 7. owner を class_members に追加
+    await c.env.DB.prepare(
+      `INSERT OR IGNORE INTO class_members (class_id, user_id, role) VALUES (?, ?, 'owner')`
+    ).bind(newClassId, userId).run();
+
+    // 8. ML30 に課題複製を依頼
+    const ml30Result = await proxyClassApi(getClassApiEnv(c), {
+      method: 'POST',
+      path: '/assignments/duplicate',
+      userId,
+      body: { sourceClassId: classId, targetClassId: newClassId },
+    });
+
+    if (!ml30Result.ok) {
+      // ML30 失敗 → D1 のクラスをロールバック（CASCADE で class_members も削除）
+      await c.env.DB.prepare('DELETE FROM classes WHERE id = ?').bind(newClassId).run();
+      console.error('Class duplicate ML30 error:', ml30Result.error);
+      return c.json({ error: '課題の複製に失敗しました。しばらくしてからお試しください' }, 500);
+    }
+
+    return c.json({ class: rowToCamel(created) }, 201);
+  } catch (error) {
+    console.error('Duplicate class error:', error);
+    return c.json({ error: 'クラスの複製に失敗しました' }, 500);
+  }
+});
+
+// ============================================================
 // Step 8: Scheduled cleanup (Cron Trigger から呼ばれる共通ロジック)
 // ============================================================
 

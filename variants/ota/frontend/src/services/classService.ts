@@ -94,6 +94,19 @@ export async function createClass(
   return data.class;
 }
 
+export async function duplicateClass(
+  classId: number,
+  name: string,
+): Promise<ClassInfo> {
+  const res = await fetchWithAuth(`/api/classes/${classId}/duplicate`, {
+    method: 'POST',
+    body: JSON.stringify({ name }),
+  });
+  if (!res.ok) await parseErrorOrThrow(res);
+  const data = await res.json();
+  return data.class;
+}
+
 export async function getClass(id: number): Promise<ClassInfo> {
   const res = await fetchWithAuth(`/api/classes/${id}`);
   if (!res.ok) await parseErrorOrThrow(res);

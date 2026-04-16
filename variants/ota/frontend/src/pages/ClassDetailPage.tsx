@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft, Copy, Check, Loader2, AlertTriangle,
   KeyRound, Trash2, Plus, Download, X,
-  FileText, Send, Upload, Paperclip, BarChart3, Archive,
+  FileText, Send, Upload, Paperclip, BarChart3, Archive, CopyPlus,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { fetchWithAuth } from '@/lib/api';
@@ -19,6 +19,7 @@ import {
   deleteAssignment,
   distributeAssignment,
   exportClass,
+  duplicateClass,
   daysUntilExpiry,
   type ClassInfo,
   type StudentInfo,
@@ -122,6 +123,9 @@ export function ClassDetailPage() {
   const [distributingId, setDistributingId] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
   const [exportConfirm, setExportConfirm] = useState(false);
+  const [duplicateConfirm, setDuplicateConfirm] = useState(false);
+  const [duplicateName, setDuplicateName] = useState('');
+  const [duplicating, setDuplicating] = useState(false);
 
   const classId = id ? parseInt(id) : NaN;
 
@@ -1035,9 +1039,80 @@ export function ClassDetailPage() {
           )}
         </div>
 
-        {/* クラス記録保存 & 削除 */}
+        {/* クラス複製 & 記録保存 & 削除 */}
         <div className="border-t border-border pt-6">
-          {exportConfirm ? (
+          {duplicateConfirm ? (
+            <div className="p-4 rounded-md bg-accent border border-border">
+              <div className="flex items-start gap-3">
+                <CopyPlus className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="font-medium text-foreground">
+                    このクラスを複製します
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    課題テンプレート・添付PDFをコピーして新しいクラスを作成します。
+                    生徒や答案は複製されません。
+                  </p>
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      value={duplicateName}
+                      onChange={(e) => setDuplicateName(e.target.value)}
+                      placeholder="新しいクラス名を入力"
+                      maxLength={100}
+                      disabled={duplicating}
+                      className="w-full px-3 py-1.5 text-sm rounded border border-border bg-background text-foreground placeholder:text-muted-foreground disabled:opacity-50"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1 text-right">
+                      {duplicateName.length}/100
+                    </p>
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      onClick={() => {
+                        setDuplicateConfirm(false);
+                        setDuplicateName('');
+                      }}
+                      disabled={duplicating}
+                      className="px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
+                    >
+                      取消
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (!duplicateName.trim()) return;
+                        setDuplicating(true);
+                        setError(null);
+                        try {
+                          const newClass = await duplicateClass(classId, duplicateName.trim());
+                          setDuplicateConfirm(false);
+                          setDuplicateName('');
+                          navigate(`/classes/${newClass.id}`);
+                        } catch (err) {
+                          setError(
+                            err instanceof Error
+                              ? err.message
+                              : 'クラスの複製に失敗しました',
+                          );
+                        } finally {
+                          setDuplicating(false);
+                        }
+                      }}
+                      disabled={duplicating || !duplicateName.trim()}
+                      className="flex items-center gap-2 px-3 py-1.5 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                    >
+                      {duplicating ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <CopyPlus className="w-3 h-3" />
+                      )}
+                      複製する
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : exportConfirm ? (
             <div className="p-4 rounded-md bg-accent border border-border">
               <div className="flex items-start gap-3">
                 <Archive className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
@@ -1052,7 +1127,7 @@ export function ClassDetailPage() {
                   <p className="text-sm text-muted-foreground mt-2">
                     ※ このファイルを DigiCode へ再インポートしてクラスを復元することは
                     <strong className="text-foreground">できません</strong>。
-                    クラス削除前の成績記録の保管用としてご利用ください。
+                    同じ教材で新しいクラスを始めるには「このクラスを複製」をご利用ください。
                   </p>
                   <div className="flex gap-2 mt-3">
                     <button
@@ -1129,6 +1204,17 @@ export function ClassDetailPage() {
             </div>
           ) : (
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setDuplicateConfirm(true);
+                  setDuplicateName('');
+                }}
+                className="flex items-center gap-1 px-4 py-2 text-sm rounded border border-border text-foreground hover:bg-accent"
+                title="課題テンプレートをコピーして新しいクラスを作成します"
+              >
+                <CopyPlus className="w-4 h-4" />
+                このクラスを複製
+              </button>
               <button
                 onClick={() => setExportConfirm(true)}
                 className="flex items-center gap-1 px-4 py-2 text-sm rounded border border-border text-foreground hover:bg-accent"
