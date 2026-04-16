@@ -39,16 +39,13 @@ export default function PlanPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const result = searchParams.get('result');
-    if (result === 'success') {
-      setSuccessMessage('プランの変更が完了しました。反映まで数秒かかる場合があります。');
-      fetchUser();
-    }
-  }, [searchParams, fetchUser]);
-
-  useEffect(() => {
     (async () => {
       try {
+        const result = searchParams.get('result');
+        if (result === 'success') {
+          setSuccessMessage('プランの変更が完了しました。反映まで数秒かかる場合があります。');
+          await fetchUser();
+        }
         const s = await getSubscriptionStatus();
         setStatus(s);
       } catch (e) {
@@ -57,7 +54,7 @@ export default function PlanPage() {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [searchParams, fetchUser]);
 
   const currentPlan = user?.plan || status?.planType || 'free';
 
