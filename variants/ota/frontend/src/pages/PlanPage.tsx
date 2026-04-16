@@ -102,7 +102,7 @@ export default function PlanPage() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* ヘッダー */}
         <div className="flex items-center gap-3 mb-6">
-          <button onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground">
+          <button onClick={() => navigate('/')} className="text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="text-2xl font-bold">プラン・お支払い</h1>
