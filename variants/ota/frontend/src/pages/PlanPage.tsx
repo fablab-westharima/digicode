@@ -31,7 +31,7 @@ const PRICE_IDS: Record<string, string> = {
 export default function PlanPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, fetchUser } = useAuthStore();
+  const { user, checkAuth } = useAuthStore();
   const [status, setStatus] = useState<SubscriptionStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -44,7 +44,7 @@ export default function PlanPage() {
         const result = searchParams.get('result');
         if (result === 'success') {
           setSuccessMessage('プランの変更が完了しました。反映まで数秒かかる場合があります。');
-          await fetchUser();
+          await checkAuth();
         }
         const s = await getSubscriptionStatus();
         setStatus(s);
@@ -54,7 +54,7 @@ export default function PlanPage() {
         setLoading(false);
       }
     })();
-  }, [searchParams, fetchUser]);
+  }, [searchParams, checkAuth]);
 
   const currentPlan = user?.plan || status?.planType || 'free';
 
