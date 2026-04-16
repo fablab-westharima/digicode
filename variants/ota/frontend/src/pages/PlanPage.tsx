@@ -185,7 +185,7 @@ export default function PlanPage() {
                 </ul>
 
                 {/* アクションボタン */}
-                {canCheckout && (
+                {canCheckout && !status?.hasStripeSubscription && (
                   <button
                     onClick={() => handleCheckout(planId)}
                     disabled={!!actionLoading}
@@ -193,6 +193,17 @@ export default function PlanPage() {
                   >
                     {actionLoading === planId && <Loader2 className="w-3 h-3 animate-spin" />}
                     このプランにする
+                  </button>
+                )}
+                {canCheckout && status?.hasStripeSubscription && (
+                  <button
+                    onClick={handlePortal}
+                    disabled={!!actionLoading}
+                    className="w-full py-2 text-sm rounded border border-primary text-primary hover:bg-primary/10 disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {actionLoading === 'portal' && <Loader2 className="w-3 h-3 animate-spin" />}
+                    <ExternalLink className="w-3 h-3" />
+                    プランを変更する
                   </button>
                 )}
                 {planId !== 'free' && !priceId && !isCurrent && (
