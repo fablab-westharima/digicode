@@ -23,9 +23,9 @@ const PLAN_DISPLAY: Record<string, { badge: string; color: string; description: 
 // 本番運用開始までに環境変数化 or DB 管理に移行予定。
 // 現時点では空文字（Checkout ボタンは Price ID 未設定時に無効化）。
 const PRICE_IDS: Record<string, string> = {
-  lite: '',
-  pro: '',
-  enterprise: '',
+  lite: 'price_1TMsjzKt2XofKR989PNi3X23',
+  pro: 'price_1TMtLqKt2XofKR98ENLRATpy',
+  enterprise: 'price_1TMtM8Kt2XofKR98QjkOoqhu',
 };
 
 export default function PlanPage() {
