@@ -28,7 +28,8 @@ import {
   Lock,
   ClipboardList,
   Save,
-  Award
+  Award,
+  CreditCard
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAuthStore } from '@/stores/authStore';
@@ -315,6 +316,13 @@ export function Sidebar({
     },
     // アカウント（認証状態・アカウント種別で表示を切り替え）
     ...(isAuthenticated ? [
+      ...(user?.accountType !== 'student' ? [{
+        id: 'plan',
+        label: t('sidebar.plan', { defaultValue: 'プラン・お支払い' }),
+        icon: <CreditCard className="w-4 h-4" />,
+        action: () => navigate('/plan'),
+        category: 'account' as const,
+      }] : []),
       ...(user?.isAdmin ? [{
         id: 'admin',
         label: t('sidebar.admin', { defaultValue: '管理画面' }),

@@ -11,7 +11,8 @@
 		"hono": "^4.10.6",
 		"jspdf": "^3.0.4",
 		"resend": "^6.5.2",
-		"square": "^43.2.1"
+		"square": "^43.2.1",
+		"stripe": "^22.0.1"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20251121.0",

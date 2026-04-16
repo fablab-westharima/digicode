@@ -1,217 +1,267 @@
 /**
- * Webhook処理API
- * Square決済からの通知を処理
+ * Stripe Webhook 処理 API
+ *
+ * Phase D-1: Stripe の署名検証 + イベント処理。
+ * checkout.session.completed でプラン反映、
+ * customer.subscription.updated / deleted でプラン変更・解約を処理。
+ *
+ * C-2: enterprise 解約時は即 free に戻さず、1 ヶ月猶予
+ *      （subscriptions.status='canceling', expires_at=1ヶ月後）。
+ *      scheduled handler が expires_at 経過後にクラス削除 + plan 戻しを実行。
  */
 import { Hono } from 'hono';
+import Stripe from 'stripe';
 
 type Bindings = {
   DB: D1Database;
-  SQUARE_WEBHOOK_SIGNATURE_KEY?: string;
+  STRIPE_SECRET_KEY: string;
+  STRIPE_WEBHOOK_SECRET: string;
 };
 
 const webhooks = new Hono<{ Bindings: Bindings }>();
 
-// Square Webhook署名検証
-async function verifySquareSignature(
-  body: string,
-  signature: string | null,
-  signatureKey: string | undefined
-): Promise<boolean> {
-  if (!signature || !signatureKey) {
-    console.warn('Missing signature or signature key');
-    return false;
-  }
+// ---------- Stripe price_id → plan_type マッピング ----------
+// Price ID は Stripe Dashboard で作成後に環境変数で管理するのが理想だが、
+// Phase D-1 では D1 に price_id を保存して逆引きする方式を採用。
+// Webhook イベントには price_id が含まれるので、それを元にプランを判定する。
 
+async function resolvePlanFromSubscription(
+  stripe: Stripe,
+  subscriptionId: string,
+): Promise<string> {
   try {
-    // Square uses HMAC-SHA256 for webhook signatures
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-      'raw',
-      encoder.encode(signatureKey),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign']
-    );
+    const sub = await stripe.subscriptions.retrieve(subscriptionId);
+    const priceId = sub.items.data[0]?.price?.id;
+    if (!priceId) return 'free';
 
-    const signatureBuffer = await crypto.subtle.sign(
-      'HMAC',
-      key,
-      encoder.encode(body)
-    );
+    // price の metadata に plan_type を設定しておく（Dashboard で設定）
+    const price = await stripe.prices.retrieve(priceId);
+    const planType = price.metadata?.plan_type;
+    if (planType && ['lite', 'pro', 'enterprise'].includes(planType)) {
+      return planType;
+    }
 
-    const expectedSignature = btoa(String.fromCharCode(...new Uint8Array(signatureBuffer)));
-    return signature === expectedSignature;
-  } catch (error) {
-    console.error('Signature verification error:', error);
-    return false;
-  }
-}
-
-// Square Webhook エンドポイント
-webhooks.post('/square', async (c) => {
-  try {
-    const body = await c.req.text();
-    const signature = c.req.header('x-square-hmacsha256-signature');
-
-    // 署名検証（本番環境では必須）
-    if (c.env.SQUARE_WEBHOOK_SIGNATURE_KEY) {
-      const isValid = await verifySquareSignature(
-        body,
-        signature,
-        c.env.SQUARE_WEBHOOK_SIGNATURE_KEY
-      );
-
-      if (!isValid) {
-        console.error('Invalid webhook signature');
-        return c.json({ error: 'Invalid signature' }, 401);
+    // metadata がなければ product の metadata をフォールバック
+    const productId = typeof price.product === 'string' ? price.product : price.product?.id;
+    if (productId) {
+      const product = await stripe.products.retrieve(productId);
+      const productPlan = product.metadata?.plan_type;
+      if (productPlan && ['lite', 'pro', 'enterprise'].includes(productPlan)) {
+        return productPlan;
       }
     }
 
-    const event = JSON.parse(body);
-    console.log('Received Square webhook:', event.type);
-
-    // イベントタイプに応じた処理
-    switch (event.type) {
-      case 'subscription.created':
-        await handleSubscriptionCreated(c.env.DB, event.data.object);
-        break;
-
-      case 'subscription.updated':
-        await handleSubscriptionUpdated(c.env.DB, event.data.object);
-        break;
-
-      case 'subscription.canceled':
-        await handleSubscriptionCanceled(c.env.DB, event.data.object);
-        break;
-
-      case 'invoice.payment_made':
-        await handlePaymentMade(c.env.DB, event.data.object);
-        break;
-
-      case 'invoice.payment_failed':
-        await handlePaymentFailed(c.env.DB, event.data.object);
-        break;
-
-      default:
-        console.log('Unhandled webhook event type:', event.type);
-    }
-
-    return c.json({ received: true });
-
+    return 'free';
   } catch (error) {
-    console.error('Webhook processing error:', error);
-    return c.json({ error: 'Webhook processing failed' }, 500);
+    console.error('resolvePlanFromSubscription error:', error);
+    return 'free';
   }
+}
+
+// ---------- POST /stripe ----------
+webhooks.post('/stripe', async (c) => {
+  const body = await c.req.text();
+  const signature = c.req.header('stripe-signature');
+
+  if (!signature) {
+    return c.json({ error: 'Missing stripe-signature header' }, 400);
+  }
+
+  let event: Stripe.Event;
+  try {
+    const stripe = new Stripe(c.env.STRIPE_SECRET_KEY);
+    event = await stripe.webhooks.constructEventAsync(
+      body,
+      signature,
+      c.env.STRIPE_WEBHOOK_SECRET,
+    );
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Webhook signature verification failed:', msg);
+    return c.json({ error: `Webhook Error: ${msg}` }, 400);
+  }
+
+  const stripe = new Stripe(c.env.STRIPE_SECRET_KEY);
+  const db = c.env.DB;
+
+  console.log(`[webhook] ${event.type} id=${event.id}`);
+
+  switch (event.type) {
+    case 'checkout.session.completed':
+      await handleCheckoutCompleted(db, stripe, event.data.object as Stripe.Checkout.Session);
+      break;
+
+    case 'customer.subscription.updated':
+      await handleSubscriptionUpdated(db, stripe, event.data.object as Stripe.Subscription);
+      break;
+
+    case 'customer.subscription.deleted':
+      await handleSubscriptionDeleted(db, event.data.object as Stripe.Subscription);
+      break;
+
+    case 'invoice.payment_failed':
+      await handlePaymentFailed(db, event.data.object as Stripe.Invoice);
+      break;
+
+    default:
+      console.log(`[webhook] unhandled event type: ${event.type}`);
+  }
+
+  return c.json({ received: true });
 });
 
-// サブスクリプション作成ハンドラ
-async function handleSubscriptionCreated(db: D1Database, subscription: any) {
-  console.log('Processing subscription.created:', subscription.id);
+// ---------- checkout.session.completed ----------
+async function handleCheckoutCompleted(
+  db: D1Database,
+  stripe: Stripe,
+  session: Stripe.Checkout.Session,
+) {
+  const customerId = session.customer as string;
+  const subscriptionId = session.subscription as string;
+  const userId = session.metadata?.digicode_user_id;
 
-  const customerId = subscription.customer_id;
-  const subscriptionId = subscription.id;
-  const planVariationId = subscription.plan_variation_id;
-
-  // プランIDをplan_typeにマッピング（Square Catalog IDに応じて調整）
-  const planType = mapPlanVariationToPlanType(planVariationId);
-
-  // 顧客IDでユーザーを検索
-  const user = await db.prepare(`
-    SELECT user_id FROM subscriptions WHERE square_customer_id = ?
-  `).bind(customerId).first<{ user_id: number }>();
-
-  if (user) {
-    await db.prepare(`
-      UPDATE subscriptions
-      SET
-        square_subscription_id = ?,
-        plan_type = ?,
-        status = 'active',
-        current_period_start = datetime('now'),
-        updated_at = datetime('now')
-      WHERE user_id = ?
-    `).bind(subscriptionId, planType, user.user_id).run();
-
-    console.log(`Updated subscription for user ${user.user_id} to ${planType}`);
+  if (!userId || !customerId || !subscriptionId) {
+    console.error('[webhook] checkout.session.completed: missing metadata', {
+      userId, customerId, subscriptionId,
+    });
+    return;
   }
+
+  const planType = await resolvePlanFromSubscription(stripe, subscriptionId);
+  const sub = await stripe.subscriptions.retrieve(subscriptionId);
+  const priceId = sub.items.data[0]?.price?.id || null;
+
+  // subscriptions テーブル更新
+  await db.prepare(`
+    INSERT INTO subscriptions (user_id, status, plan_type, stripe_customer_id, stripe_subscription_id, stripe_price_id, started_at)
+    VALUES (?, 'active', ?, ?, ?, ?, datetime('now'))
+    ON CONFLICT(user_id) DO UPDATE SET
+      status = 'active',
+      plan_type = excluded.plan_type,
+      stripe_customer_id = excluded.stripe_customer_id,
+      stripe_subscription_id = excluded.stripe_subscription_id,
+      stripe_price_id = excluded.stripe_price_id,
+      started_at = excluded.started_at,
+      expires_at = NULL,
+      updated_at = datetime('now')
+  `).bind(Number(userId), planType, customerId, subscriptionId, priceId).run();
+
+  // users.plan も同時更新（二重管理の整合性維持）
+  await db.prepare(`
+    UPDATE users SET plan = ?, plan_source = 'stripe', updated_at = datetime('now')
+    WHERE id = ?
+  `).bind(planType, Number(userId)).run();
+
+  console.log(`[webhook] checkout completed: user=${userId} plan=${planType}`);
 }
 
-// サブスクリプション更新ハンドラ
-async function handleSubscriptionUpdated(db: D1Database, subscription: any) {
-  console.log('Processing subscription.updated:', subscription.id);
-
+// ---------- customer.subscription.updated ----------
+async function handleSubscriptionUpdated(
+  db: D1Database,
+  stripe: Stripe,
+  subscription: Stripe.Subscription,
+) {
   const subscriptionId = subscription.id;
-  const status = subscription.status?.toLowerCase();
-  const planVariationId = subscription.plan_variation_id;
-  const planType = mapPlanVariationToPlanType(planVariationId);
+  const status = subscription.status; // active, past_due, canceled, etc.
+  const planType = await resolvePlanFromSubscription(stripe, subscriptionId);
+  const priceId = subscription.items.data[0]?.price?.id || null;
 
   await db.prepare(`
     UPDATE subscriptions
-    SET
-      plan_type = ?,
-      status = ?,
-      updated_at = datetime('now')
-    WHERE square_subscription_id = ?
-  `).bind(planType, status, subscriptionId).run();
+    SET plan_type = ?, status = ?, stripe_price_id = ?, updated_at = datetime('now')
+    WHERE stripe_subscription_id = ?
+  `).bind(planType, status, priceId, subscriptionId).run();
+
+  // users.plan も同期（active の場合のみ。canceled 等は handleSubscriptionDeleted で処理）
+  if (status === 'active') {
+    const sub = await db.prepare(
+      'SELECT user_id FROM subscriptions WHERE stripe_subscription_id = ?'
+    ).bind(subscriptionId).first<{ user_id: number }>();
+
+    if (sub) {
+      await db.prepare(`
+        UPDATE users SET plan = ?, plan_source = 'stripe', updated_at = datetime('now')
+        WHERE id = ?
+      `).bind(planType, sub.user_id).run();
+    }
+  }
+
+  console.log(`[webhook] subscription.updated: sub=${subscriptionId} plan=${planType} status=${status}`);
 }
 
-// サブスクリプションキャンセルハンドラ
-async function handleSubscriptionCanceled(db: D1Database, subscription: any) {
-  console.log('Processing subscription.canceled:', subscription.id);
-
+// ---------- customer.subscription.deleted ----------
+// C-2: enterprise 解約時は 1 ヶ月猶予。それ以外は即 free。
+async function handleSubscriptionDeleted(
+  db: D1Database,
+  subscription: Stripe.Subscription,
+) {
   const subscriptionId = subscription.id;
 
-  await db.prepare(`
-    UPDATE subscriptions
-    SET
-      plan_type = 'free',
-      status = 'canceled',
-      square_subscription_id = NULL,
-      updated_at = datetime('now')
-    WHERE square_subscription_id = ?
-  `).bind(subscriptionId).run();
-}
+  const sub = await db.prepare(
+    'SELECT user_id, plan_type FROM subscriptions WHERE stripe_subscription_id = ?'
+  ).bind(subscriptionId).first<{ user_id: number; plan_type: string }>();
 
-// 支払い完了ハンドラ
-async function handlePaymentMade(db: D1Database, invoice: any) {
-  console.log('Processing invoice.payment_made:', invoice.id);
-  // 支払い成功のログを記録（必要に応じて）
-}
+  if (!sub) {
+    console.warn(`[webhook] subscription.deleted: no matching record for ${subscriptionId}`);
+    return;
+  }
 
-// 支払い失敗ハンドラ
-async function handlePaymentFailed(db: D1Database, invoice: any) {
-  console.log('Processing invoice.payment_failed:', invoice.id);
+  if (sub.plan_type === 'enterprise') {
+    // C-2: enterprise は 1 ヶ月猶予（scheduled handler でクラス削除 + plan 戻し）
+    const gracePeriod = new Date();
+    gracePeriod.setMonth(gracePeriod.getMonth() + 1);
 
-  const subscriptionId = invoice.subscription_id;
-
-  if (subscriptionId) {
     await db.prepare(`
       UPDATE subscriptions
-      SET
-        status = 'past_due',
-        updated_at = datetime('now')
-      WHERE square_subscription_id = ?
+      SET status = 'canceling', expires_at = ?, updated_at = datetime('now')
+      WHERE stripe_subscription_id = ?
+    `).bind(gracePeriod.toISOString(), subscriptionId).run();
+
+    console.log(`[webhook] enterprise canceling: user=${sub.user_id} grace until ${gracePeriod.toISOString()}`);
+  } else {
+    // lite/pro は即座に free に戻す
+    await db.prepare(`
+      UPDATE subscriptions
+      SET plan_type = 'free', status = 'canceled',
+          stripe_subscription_id = NULL, stripe_price_id = NULL,
+          updated_at = datetime('now')
+      WHERE stripe_subscription_id = ?
     `).bind(subscriptionId).run();
+
+    await db.prepare(`
+      UPDATE users SET plan = 'free', plan_source = 'stripe_canceled', updated_at = datetime('now')
+      WHERE id = ?
+    `).bind(sub.user_id).run();
+
+    console.log(`[webhook] subscription deleted: user=${sub.user_id} → free`);
   }
 }
 
-// Square Plan Variation IDをplan_typeにマッピング
-function mapPlanVariationToPlanType(planVariationId: string): string {
-  // TODO: 実際のSquare Catalog IDに応じてマッピングを設定
-  const mapping: Record<string, string> = {
-    // 'SQUARE_PLAN_VARIATION_ID_LITE': 'lite',
-    // 'SQUARE_PLAN_VARIATION_ID_PRO': 'pro',
-    // 'SQUARE_PLAN_VARIATION_ID_ENTERPRISE': 'enterprise',
-  };
+// ---------- invoice.payment_failed ----------
+async function handlePaymentFailed(
+  db: D1Database,
+  invoice: Stripe.Invoice,
+) {
+  const subscriptionId = typeof invoice.subscription === 'string'
+    ? invoice.subscription
+    : invoice.subscription?.id;
 
-  return mapping[planVariationId] || 'lite';
+  if (!subscriptionId) return;
+
+  await db.prepare(`
+    UPDATE subscriptions
+    SET status = 'past_due', updated_at = datetime('now')
+    WHERE stripe_subscription_id = ?
+  `).bind(subscriptionId).run();
+
+  console.log(`[webhook] payment failed: sub=${subscriptionId} → past_due`);
 }
 
-// ヘルスチェック（Webhook設定確認用）
-webhooks.get('/square/health', (c) => {
+// ---------- GET /stripe/health ----------
+webhooks.get('/stripe/health', (c) => {
   return c.json({
     status: 'ok',
-    signatureKeyConfigured: !!c.env.SQUARE_WEBHOOK_SIGNATURE_KEY,
+    webhookSecretConfigured: !!c.env.STRIPE_WEBHOOK_SECRET,
   });
 });
 

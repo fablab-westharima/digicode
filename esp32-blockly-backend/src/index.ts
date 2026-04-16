@@ -19,9 +19,9 @@ type Bindings = {
   WEBAUTHN_CHALLENGES: KVNamespace;
   JWT_SECRET: string;
   CORS_ORIGINS?: string; // Optional: comma-separated list of additional origins
-  SQUARE_ACCESS_TOKEN?: string;
-  SQUARE_LOCATION_ID?: string;
-  SQUARE_WEBHOOK_SIGNATURE_KEY?: string;
+  // Phase D-1: Stripe 決済連携
+  STRIPE_SECRET_KEY: string;          // Workers Secret
+  STRIPE_WEBHOOK_SECRET: string;      // Workers Secret
   // Phase C: class feature proxy (digicode-class-server on ML30)
   CLASS_API_URL: string;      // vars: e.g. "https://class.digital-fab.jp"
   CLASS_API_SECRET: string;   // Workers Secret (wrangler secret put)
@@ -239,8 +239,61 @@ async function handleScheduled(
     }
 
     console.log(
-      `[scheduled ${runId}] completed: ${successCount} succeeded, ${failCount} failed of ${count} total`
+      `[scheduled ${runId}] expired classes: ${successCount} succeeded, ${failCount} failed of ${count} total`
     );
+
+    // ---- C-2: enterprise 解約猶予の期限切れ処理 ----
+    // Webhook で status='canceling', expires_at=1ヶ月後 に設定されたレコードを処理
+    const cancelingUsers = await env.DB.prepare(
+      `SELECT s.user_id, u.plan
+       FROM subscriptions s
+       JOIN users u ON s.user_id = u.id
+       WHERE s.status = 'canceling'
+         AND s.expires_at IS NOT NULL
+         AND s.expires_at < datetime('now')
+       LIMIT 50`
+    ).all<{ user_id: number; plan: string }>();
+
+    const cancelCount = cancelingUsers.results?.length ?? 0;
+    if (cancelCount > 0) {
+      console.log(`[scheduled ${runId}] found ${cancelCount} canceling subscriptions past grace period`);
+
+      for (const row of cancelingUsers.results ?? []) {
+        try {
+          // 該当ユーザーの全クラスを削除
+          const userClasses = await env.DB.prepare(
+            `SELECT id FROM classes WHERE owner_id = ?`
+          ).bind(row.user_id).all<{ id: number }>();
+
+          for (const cls of userClasses.results ?? []) {
+            const delResult = await deleteClassCascade(env, cls.id);
+            if (!delResult.ok) {
+              console.error(`[scheduled ${runId}] C-2: failed to delete class#${cls.id} for user#${row.user_id}: ${delResult.error}`);
+            }
+          }
+
+          // subscriptions を free に戻す
+          await env.DB.prepare(`
+            UPDATE subscriptions
+            SET plan_type = 'free', status = 'canceled',
+                stripe_subscription_id = NULL, stripe_price_id = NULL,
+                expires_at = NULL, updated_at = datetime('now')
+            WHERE user_id = ?
+          `).bind(row.user_id).run();
+
+          // users.plan も free に戻す
+          await env.DB.prepare(`
+            UPDATE users SET plan = 'free', plan_source = 'grace_expired', updated_at = datetime('now')
+            WHERE id = ?
+          `).bind(row.user_id).run();
+
+          console.log(`[scheduled ${runId}] C-2: user#${row.user_id} grace expired → free, ${userClasses.results?.length ?? 0} classes deleted`);
+        } catch (err) {
+          console.error(`[scheduled ${runId}] C-2: exception for user#${row.user_id}:`, err);
+        }
+      }
+    }
+
   } catch (err) {
     console.error(`[scheduled ${runId}] fatal error:`, err);
     // fatal error でも throw しない（次回実行は独立して継続）

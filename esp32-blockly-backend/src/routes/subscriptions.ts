@@ -1,15 +1,19 @@
 /**
- * サブスクリプション管理API
- * プランの確認、変更、決済連携
+ * サブスクリプション管理 API — Stripe Checkout + Customer Portal
+ *
+ * Phase D-1: 国内 Stripe のみ。
+ * コードは price_id を参照するだけで金額をハードコードしない。
+ * 価格・税・返金ポリシーは Stripe Dashboard で設定する。
  */
 import { Hono } from 'hono';
+import Stripe from 'stripe';
 import { authMiddleware } from '../middleware/auth';
+import { getUserPlan } from '../utils/plan';
 
 type Bindings = {
   DB: D1Database;
   JWT_SECRET: string;
-  SQUARE_ACCESS_TOKEN?: string;
-  SQUARE_LOCATION_ID?: string;
+  STRIPE_SECRET_KEY: string;
 };
 
 type Variables = {
@@ -21,97 +25,73 @@ type Variables = {
 
 const subscriptions = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-// プラン定義
+// プラン定義（参考情報、実際の金額は Stripe Dashboard で設定）
 const PLANS = {
   free: {
     id: 'free',
     name: '無料プラン',
-    price: 0,
     compileLimit: 50,
     features: ['月50回コンパイル', '基本ブロック'],
   },
   lite: {
     id: 'lite',
     name: 'Liteプラン',
-    price: 500, // 円
     compileLimit: 250,
-    features: ['月250回コンパイル', '基本ブロック', 'プロジェクト保存無制限'],
+    features: ['月250回コンパイル', '基本ブロック'],
   },
   pro: {
     id: 'pro',
     name: 'Proプラン',
-    price: 1000,
     compileLimit: 500,
-    features: ['月500回コンパイル', '全ブロック', 'ピンアサイン機能', '優先サポート'],
+    features: ['月500回コンパイル', '全ブロック', 'ピンアサイン機能'],
   },
   enterprise: {
     id: 'enterprise',
     name: 'Enterpriseプラン',
-    price: 2000,
-    compileLimit: -1, // 無制限
-    features: ['無制限コンパイル', '全機能', 'ピンアサイン機能', '専用サポート'],
+    compileLimit: -1,
+    features: ['無制限コンパイル', '全機能', 'クラス機能'],
   },
 };
 
-// 利用可能なプラン一覧
+function getStripe(env: Bindings): Stripe {
+  return new Stripe(env.STRIPE_SECRET_KEY);
+}
+
+// ---------- GET /plans ----------
 subscriptions.get('/plans', (c) => {
   return c.json({ plans: Object.values(PLANS) });
 });
 
-// 現在のサブスクリプション状態を取得
+// ---------- GET /status ----------
 subscriptions.get('/status', authMiddleware, async (c) => {
   try {
     const { userId } = c.get('user');
+    const plan = await getUserPlan(c.env.DB, userId);
 
     const subscription = await c.env.DB.prepare(`
-      SELECT
-        id, user_id, status, plan_type,
-        square_subscription_id, square_customer_id,
-        current_period_start, current_period_end,
-        created_at, updated_at
-      FROM subscriptions
-      WHERE user_id = ?
+      SELECT status, plan_type, stripe_customer_id, stripe_subscription_id,
+             stripe_price_id, started_at, expires_at
+      FROM subscriptions WHERE user_id = ?
     `).bind(userId).first<{
-      id: number;
-      user_id: number;
       status: string;
       plan_type: string;
-      square_subscription_id: string | null;
-      square_customer_id: string | null;
-      current_period_start: string | null;
-      current_period_end: string | null;
-      created_at: string;
-      updated_at: string;
+      stripe_customer_id: string | null;
+      stripe_subscription_id: string | null;
+      stripe_price_id: string | null;
+      started_at: string | null;
+      expires_at: string | null;
     }>();
 
-    if (!subscription) {
-      // サブスクリプションがない場合は無料プランとして作成
-      await c.env.DB.prepare(`
-        INSERT INTO subscriptions (user_id, status, plan_type)
-        VALUES (?, 'active', 'free')
-      `).bind(userId).run();
-
-      return c.json({
-        subscription: {
-          status: 'active',
-          planType: 'free',
-          plan: PLANS.free,
-          currentPeriodStart: null,
-          currentPeriodEnd: null,
-        },
-      });
-    }
-
-    const plan = PLANS[subscription.plan_type as keyof typeof PLANS] || PLANS.free;
+    const planDef = PLANS[plan as keyof typeof PLANS] || PLANS.free;
 
     return c.json({
       subscription: {
-        status: subscription.status,
-        planType: subscription.plan_type,
-        plan,
-        currentPeriodStart: subscription.current_period_start,
-        currentPeriodEnd: subscription.current_period_end,
-        squareSubscriptionId: subscription.square_subscription_id,
+        status: subscription?.status || 'free',
+        planType: plan,
+        plan: planDef,
+        stripeCustomerId: subscription?.stripe_customer_id || null,
+        stripeSubscriptionId: subscription?.stripe_subscription_id || null,
+        hasStripeSubscription: !!subscription?.stripe_subscription_id,
       },
     });
   } catch (error) {
@@ -120,115 +100,91 @@ subscriptions.get('/status', authMiddleware, async (c) => {
   }
 });
 
-// プランアップグレードリクエスト（Square Checkout URLを生成）
-subscriptions.post('/upgrade', authMiddleware, async (c) => {
+// ---------- POST /checkout ----------
+// Stripe Checkout Session を作成し、URL を返す。
+// フロントエンドはこの URL にリダイレクトする。
+subscriptions.post('/checkout', authMiddleware, async (c) => {
   try {
     const { userId, email } = c.get('user');
-    const { planId } = await c.req.json<{ planId: string }>();
+    const { priceId } = await c.req.json<{ priceId: string }>();
 
-    // プラン検証
-    if (!planId || !(planId in PLANS) || planId === 'free') {
-      return c.json({ error: '無効なプランが指定されました' }, 400);
+    if (!priceId) {
+      return c.json({ error: 'priceId は必須です' }, 400);
     }
 
-    const plan = PLANS[planId as keyof typeof PLANS];
+    const stripe = getStripe(c.env);
 
-    // Square Access Tokenがない場合はエラー
-    if (!c.env.SQUARE_ACCESS_TOKEN) {
-      return c.json({
-        error: '決済システムが設定されていません',
-        message: 'Square Access Tokenを設定してください',
-      }, 503);
+    // 既存の Stripe Customer を検索、なければ作成
+    let customerId: string;
+    const sub = await c.env.DB.prepare(
+      'SELECT stripe_customer_id FROM subscriptions WHERE user_id = ?'
+    ).bind(userId).first<{ stripe_customer_id: string | null }>();
+
+    if (sub?.stripe_customer_id) {
+      customerId = sub.stripe_customer_id;
+    } else {
+      const customer = await stripe.customers.create({
+        email,
+        metadata: { digicode_user_id: String(userId) },
+      });
+      customerId = customer.id;
+
+      // subscriptions 行がなければ作成、あれば更新
+      await c.env.DB.prepare(`
+        INSERT INTO subscriptions (user_id, status, plan_type, stripe_customer_id)
+        VALUES (?, 'free', 'free', ?)
+        ON CONFLICT(user_id) DO UPDATE SET
+          stripe_customer_id = excluded.stripe_customer_id,
+          updated_at = datetime('now')
+      `).bind(userId, customerId).run();
     }
 
-    // 現在のサブスクリプション確認
-    const currentSub = await c.env.DB.prepare(`
-      SELECT plan_type FROM subscriptions WHERE user_id = ?
-    `).bind(userId).first<{ plan_type: string }>();
+    const origin = c.req.header('Origin') || 'https://code.fablab-westharima.jp';
 
-    if (currentSub?.plan_type === planId) {
-      return c.json({ error: '既に同じプランに加入しています' }, 400);
-    }
-
-    // TODO: Square Checkout API呼び出し
-    // 現在はプレースホルダー応答
-    return c.json({
-      message: 'Square決済連携は準備中です',
-      requestedPlan: plan,
-      // checkoutUrl: 'https://square.link/...',
+    const session = await stripe.checkout.sessions.create({
+      customer: customerId,
+      mode: 'subscription',
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${origin}/plan?result=success`,
+      cancel_url: `${origin}/plan?result=cancel`,
+      metadata: { digicode_user_id: String(userId) },
     });
 
+    return c.json({ url: session.url });
   } catch (error) {
-    console.error('Upgrade subscription error:', error);
-    return c.json({ error: 'プランアップグレードの処理に失敗しました' }, 500);
+    console.error('Checkout session error:', error);
+    const msg = error instanceof Error ? error.message : 'Checkout セッションの作成に失敗しました';
+    return c.json({ error: msg }, 500);
   }
 });
 
-// プランダウングレード/キャンセル
-subscriptions.post('/cancel', authMiddleware, async (c) => {
+// ---------- POST /portal ----------
+// Stripe Customer Portal セッションを作成し、URL を返す。
+// ユーザーはここでプラン変更・解約・請求書確認ができる。
+subscriptions.post('/portal', authMiddleware, async (c) => {
   try {
     const { userId } = c.get('user');
 
-    // 現在のサブスクリプション確認
-    const subscription = await c.env.DB.prepare(`
-      SELECT id, plan_type, square_subscription_id
-      FROM subscriptions WHERE user_id = ?
-    `).bind(userId).first<{
-      id: number;
-      plan_type: string;
-      square_subscription_id: string | null;
-    }>();
+    const sub = await c.env.DB.prepare(
+      'SELECT stripe_customer_id FROM subscriptions WHERE user_id = ?'
+    ).bind(userId).first<{ stripe_customer_id: string | null }>();
 
-    if (!subscription || subscription.plan_type === 'free') {
-      return c.json({ error: '無料プランはキャンセルできません' }, 400);
+    if (!sub?.stripe_customer_id) {
+      return c.json({ error: 'Stripe の顧客情報がありません。先にプランをご契約ください' }, 400);
     }
 
-    // TODO: Square Subscription キャンセル API呼び出し
+    const stripe = getStripe(c.env);
+    const origin = c.req.header('Origin') || 'https://code.fablab-westharima.jp';
 
-    // データベース更新（次回更新時に無料プランに戻る）
-    await c.env.DB.prepare(`
-      UPDATE subscriptions
-      SET status = 'canceling', updated_at = datetime('now')
-      WHERE user_id = ?
-    `).bind(userId).run();
-
-    return c.json({
-      message: 'サブスクリプションのキャンセルを受け付けました',
-      note: '現在の請求期間終了後に無料プランに移行します',
+    const session = await stripe.billingPortal.sessions.create({
+      customer: sub.stripe_customer_id,
+      return_url: `${origin}/plan`,
     });
 
+    return c.json({ url: session.url });
   } catch (error) {
-    console.error('Cancel subscription error:', error);
-    return c.json({ error: 'キャンセル処理に失敗しました' }, 500);
-  }
-});
-
-// 管理者用：プランを直接変更（テスト用）
-subscriptions.post('/admin/set-plan', authMiddleware, async (c) => {
-  try {
-    const { userId } = c.get('user');
-    const { planId } = await c.req.json<{ planId: string }>();
-
-    // TODO: 管理者権限チェックを追加
-
-    if (!planId || !(planId in PLANS)) {
-      return c.json({ error: '無効なプランが指定されました' }, 400);
-    }
-
-    await c.env.DB.prepare(`
-      UPDATE subscriptions
-      SET plan_type = ?, status = 'active', updated_at = datetime('now')
-      WHERE user_id = ?
-    `).bind(planId, userId).run();
-
-    return c.json({
-      success: true,
-      message: `プランを${PLANS[planId as keyof typeof PLANS].name}に変更しました`,
-    });
-
-  } catch (error) {
-    console.error('Admin set plan error:', error);
-    return c.json({ error: 'プラン変更に失敗しました' }, 500);
+    console.error('Portal session error:', error);
+    return c.json({ error: 'ポータルセッションの作成に失敗しました' }, 500);
   }
 });
 
