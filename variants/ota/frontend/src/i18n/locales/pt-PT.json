@@ -2484,7 +2484,11 @@
     "installDescription": "Pressione o botao INSTALL para conectar ESP32 via USB e gravar firmware {{firmwareType}}{{version}}.",
     "eraseFlashDescription": "Apagar toda a flash excluira todos os dados armazenados (UUID, configuracoes WiFi, etc.) e restaurara ao estado inicial.",
     "disconnect": "Desconectar",
-    "connectFirstNote": "* Por favor Conectar ESP32 via USB primeiro"
+    "connectFirstNote": "* Por favor Conectar ESP32 via USB primeiro",
+    "bleInstallerTitle": "Gravar firmware BLE",
+    "wifiInstallerTitle": "Gravar firmware WiFi",
+    "bleInstallerDescription": "Grave o firmware BLE OTA no ESP32 via USB. Necessário para a primeira gravação.",
+    "wifiInstallerDescription": "Grave o firmware WiFi OTA no ESP32 via USB. Necessário para a primeira gravação."
   },
   "toolboxMp": {
     "categories": {

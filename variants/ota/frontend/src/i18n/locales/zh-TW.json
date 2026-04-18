@@ -2484,7 +2484,11 @@
     "installDescription": "按INSTALL按鈕透過USB連接ESP32並燒錄{{firmwareType}}韌體{{version}}。",
     "eraseFlashDescription": "擦除整個Flash將刪除所有儲存的資料（UUID、WiFi設定等）並重置為初始狀態。",
     "disconnect": "斷開連接",
-    "connectFirstNote": "※ 請先透過USB連接ESP32"
+    "connectFirstNote": "※ 請先透過USB連接ESP32",
+    "bleInstallerTitle": "寫入 BLE 韌體",
+    "wifiInstallerTitle": "寫入 WiFi 韌體",
+    "bleInstallerDescription": "透過 USB 寫入 ESP32 的 BLE OTA 韌體。首次寫入時必要。",
+    "wifiInstallerDescription": "透過 USB 寫入 ESP32 的 WiFi OTA 韌體。首次寫入時必要。"
   },
   "toolboxMp": {
     "categories": {

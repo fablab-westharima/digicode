@@ -2552,7 +2552,11 @@
     "installDescription": "Press INSTALL button to connect ESP32 via USB and flash {{firmwareType}} firmware{{version}}.",
     "eraseFlashDescription": "Erasing the entire flash will delete all stored data (UUID, WiFi settings, etc.) and reset to initial state.",
     "disconnect": "Disconnect",
-    "connectFirstNote": "* Please Connect ESP32 via USB first"
+    "connectFirstNote": "* Please Connect ESP32 via USB first",
+    "bleInstallerTitle": "Write BLE Firmware",
+    "wifiInstallerTitle": "Write WiFi Firmware",
+    "bleInstallerDescription": "Write the ESP32 BLE OTA firmware via USB. Required for the first flash.",
+    "wifiInstallerDescription": "Write the ESP32 WiFi OTA firmware via USB. Required for the first flash."
   },
   "toolboxMp": {
     "categories": {

@@ -323,18 +323,18 @@ export function FirmwareInstallerDialog({ open, onOpenChange, defaultFirmwareTyp
         <DialogHeader>
           <DialogTitle className="text-[#58D5D5] flex items-center gap-2">
             {defaultFirmwareType === 'ble' ? (
-              <><Bluetooth className="w-5 h-5 text-[#8B5CF6]" /> BLEファームウェア書き込み</>
+              <><Bluetooth className="w-5 h-5 text-[#8B5CF6]" /> {t('firmware.bleInstallerTitle', { defaultValue: 'BLEファームウェア書き込み' })}</>
             ) : defaultFirmwareType === 'ota' ? (
-              <><Wifi className="w-5 h-5 text-purple-400" /> WiFiファームウェア書き込み</>
+              <><Wifi className="w-5 h-5 text-purple-400" /> {t('firmware.wifiInstallerTitle', { defaultValue: 'WiFiファームウェア書き込み' })}</>
             ) : (
               t('firmware.installerTitle')
             )}
           </DialogTitle>
           <DialogDescription className="text-[#8B949E]">
             {defaultFirmwareType === 'ble'
-              ? 'ESP32にBLE OTAファームウェアをUSB経由で書き込みます。初回書き込みに必要です。'
+              ? t('firmware.bleInstallerDescription', { defaultValue: 'ESP32にBLE OTAファームウェアをUSB経由で書き込みます。初回書き込みに必要です。' })
               : defaultFirmwareType === 'ota'
-              ? 'ESP32にWiFi OTAファームウェアをUSB経由で書き込みます。初回書き込みに必要です。'
+              ? t('firmware.wifiInstallerDescription', { defaultValue: 'ESP32にWiFi OTAファームウェアをUSB経由で書き込みます。初回書き込みに必要です。' })
               : t('firmware.description')}
           </DialogDescription>
         </DialogHeader>

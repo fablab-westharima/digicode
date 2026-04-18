@@ -2542,7 +2542,11 @@
     "installDescription": "INSTALLボタンを押してESP32にUSB接続し、{{firmwareType}}ファームウェア{{version}}を書き込みます。",
     "eraseFlashDescription": "Flash全体を消去すると、保存されているすべてのデータ（UUID、WiFi設定など）が削除され、初期状態に戻ります。",
     "disconnect": "接続解除",
-    "connectFirstNote": "※ 先に「ESP32にUSB接続」してください"
+    "connectFirstNote": "※ 先に「ESP32にUSB接続」してください",
+    "bleInstallerTitle": "BLEファームウェア書き込み",
+    "wifiInstallerTitle": "WiFiファームウェア書き込み",
+    "bleInstallerDescription": "ESP32にBLE OTAファームウェアをUSB経由で書き込みます。初回書き込みに必要です。",
+    "wifiInstallerDescription": "ESP32にWiFi OTAファームウェアをUSB経由で書き込みます。初回書き込みに必要です。"
   },
   "toolboxMp": {
     "categories": {
