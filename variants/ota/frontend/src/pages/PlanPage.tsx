@@ -64,6 +64,7 @@ export default function PlanPage() {
   const currentPlan = user?.plan || status?.planType || 'free';
   const isAdmin = !!user?.isAdmin;
   const isInvited = user?.planSource === 'admin_granted';
+  const hideCheckout = isAdmin; // 管理者のみ全ボタン非表示（招待ユーザーは上位プランのみ表示）
   const [inviteConfirmPlan, setInviteConfirmPlan] = useState<string | null>(null);
 
   const planRank = (p: string) => PLAN_ORDER.indexOf(p as any);
@@ -140,7 +141,7 @@ export default function PlanPage() {
         {/* 現在のプラン */}
         <div className="mb-8 p-4 rounded-md bg-card border border-border">
           <p className="text-sm text-muted-foreground">現在のプラン</p>
-          {hideCheckout ? (
+          {(isAdmin || isInvited) ? (
             <>
               <p className="text-xl font-bold mt-1 text-foreground">招待アカウント</p>
               <p className="mt-2 text-sm text-destructive">
@@ -152,7 +153,7 @@ export default function PlanPage() {
               {PLAN_DISPLAY[currentPlan]?.badge || currentPlan}
             </p>
           )}
-          {!hideCheckout && status?.hasStripeSubscription && (
+          {!isAdmin && !isInvited && status?.hasStripeSubscription && (
             <button
               onClick={handlePortal}
               disabled={actionLoading === 'portal'}
