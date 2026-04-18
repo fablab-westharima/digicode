@@ -134,7 +134,7 @@ export default function PlanPage() {
             {PLAN_DISPLAY[currentPlan]?.badge || currentPlan}
           </p>
           {isAdmin && (
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-2 text-sm text-destructive">
               管理者アカウント — プランは Admin 画面で管理されています
             </p>
           )}
