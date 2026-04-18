@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Plus, Copy, Check, AlertTriangle } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { listClasses, daysUntilExpiry, type ClassInfo } from '@/services/classService';
@@ -7,6 +8,7 @@ import { CreateClassDialog } from '@/components/classes/CreateClassDialog';
 
 export function ClassesPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuthStore();
 
   const [classes, setClasses] = useState<ClassInfo[]>([]);
@@ -22,7 +24,7 @@ export function ClassesPage() {
       const data = await listClasses();
       setClasses(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'クラス一覧の取得に失敗しました');
+      setError(err instanceof Error ? err.message : t('classes.fetchError', { defaultValue: 'クラス一覧の取得に失敗しました' }));
     } finally {
       setLoading(false);
     }
@@ -54,12 +56,12 @@ export function ClassesPage() {
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
-            戻る
+            {t('plan.backToEditor')}
           </button>
           <div className="text-center py-20">
-            <p className="text-lg text-foreground mb-2">クラス管理は Enterprise プラン専用です</p>
+            <p className="text-lg text-foreground mb-2">{t('classes.enterpriseRequired')}</p>
             <p className="text-sm text-muted-foreground">
-              Enterprise プランにアップグレードすると、クラスの作成・生徒管理が利用できます。
+              {t('classes.enterpriseDescription')}
             </p>
           </div>
         </div>
@@ -79,21 +81,21 @@ export function ClassesPage() {
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            <h1 className="text-xl font-bold">クラス管理</h1>
+            <h1 className="text-xl font-bold">{t('classes.title')}</h1>
           </div>
           <button
             onClick={() => setCreateDialogOpen(true)}
             className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 text-sm"
           >
             <Plus className="w-4 h-4" />
-            クラスを作成
+            {t('classes.create')}
           </button>
         </div>
 
         {/* コンテンツ */}
         {loading ? (
           <div className="text-center py-20">
-            <p className="text-muted-foreground">読み込み中...</p>
+            <p className="text-muted-foreground">{t('classes.loading')}</p>
           </div>
         ) : error ? (
           <div className="text-center py-20">
@@ -102,13 +104,13 @@ export function ClassesPage() {
               onClick={fetchClasses}
               className="mt-4 text-sm text-muted-foreground hover:text-foreground underline"
             >
-              再試行
+              {t('classes.retry')}
             </button>
           </div>
         ) : classes.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-muted-foreground">
-              クラスがまだありません。「クラスを作成」から始めましょう。
+              {t('classes.empty')}
             </p>
           </div>
         ) : (
@@ -124,7 +126,7 @@ export function ClassesPage() {
                     <h3 className="font-semibold text-foreground truncate">{cls.name}</h3>
                     <div className="flex items-center gap-4 mt-1">
                       <div className="flex items-center gap-1">
-                        <span className="text-xs text-muted-foreground">クラスコード:</span>
+                        <span className="text-xs text-muted-foreground">{t('classes.classCode')}</span>
                         <code className="font-mono text-sm bg-muted px-2 py-0.5 rounded text-foreground">
                           {cls.inviteCode}
                         </code>
@@ -150,7 +152,7 @@ export function ClassesPage() {
                           return (
                             <span className="inline-flex items-center gap-1 text-xs text-destructive">
                               <AlertTriangle className="w-3 h-3" />
-                              期限切れ: {dateStr}
+                              {t('classes.expiredDate', { date: dateStr })}
                             </span>
                           );
                         }
@@ -158,13 +160,13 @@ export function ClassesPage() {
                           return (
                             <span className="inline-flex items-center gap-1 text-xs text-destructive">
                               <AlertTriangle className="w-3 h-3" />
-                              期限: {dateStr}（あと {days} 日）
+                              {t('classes.expiresInDays', { date: dateStr, days })}
                             </span>
                           );
                         }
                         return (
                           <span className="text-xs text-muted-foreground">
-                            期限: {dateStr}
+                            {t('classes.expiresDate', { date: dateStr })}
                           </span>
                         );
                       })()}
@@ -172,7 +174,7 @@ export function ClassesPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground">
-                      {cls.classType === 'workshop' ? 'WS' : '教室'}
+                      {cls.classType === 'workshop' ? t('classes.typeWorkshop') : t('classes.typeClassroom')}
                     </span>
                     <span className="text-xs px-2 py-1 rounded bg-primary/10 text-primary">
                       {cls.status}

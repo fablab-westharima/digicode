@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 import {
   Dialog,
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function ChangePasswordDialog({ open, onOpenChange }: Props) {
+  const { t } = useTranslation();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -34,15 +36,15 @@ export function ChangePasswordDialog({ open, onOpenChange }: Props) {
 
   const handleSubmit = async () => {
     if (!currentPassword || !newPassword) {
-      setError('全ての項目を入力してください');
+      setError(t('changePassword.allFieldsRequired'));
       return;
     }
     if (newPassword.length < 4) {
-      setError('新しいパスワードは4文字以上にしてください');
+      setError(t('changePassword.tooShort'));
       return;
     }
     if (newPassword !== confirmPassword) {
-      setError('新しいパスワードが一致しません');
+      setError(t('changePassword.mismatch'));
       return;
     }
 
@@ -55,11 +57,11 @@ export function ChangePasswordDialog({ open, onOpenChange }: Props) {
       });
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || 'パスワード変更に失敗しました');
+        throw new Error(data.error || t('changePassword.error'));
       }
       setSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'パスワード変更に失敗しました');
+      setError(err instanceof Error ? err.message : t('changePassword.error'));
     } finally {
       setLoading(false);
     }
@@ -72,18 +74,18 @@ export function ChangePasswordDialog({ open, onOpenChange }: Props) {
         onInteractOutside={(e) => { if (loading) e.preventDefault(); }}
       >
         <DialogHeader>
-          <DialogTitle>パスワード変更</DialogTitle>
+          <DialogTitle>{t('changePassword.title')}</DialogTitle>
         </DialogHeader>
 
         {success ? (
           <div className="space-y-4">
-            <p className="text-sm text-foreground">パスワードを変更しました。</p>
+            <p className="text-sm text-foreground">{t('changePassword.success')}</p>
             <DialogFooter>
               <button
                 onClick={() => onOpenChange(false)}
                 className="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 text-sm"
               >
-                閉じる
+                {t('changePassword.close')}
               </button>
             </DialogFooter>
           </div>
@@ -91,7 +93,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: Props) {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">
-                現在のパスワード
+                {t('changePassword.currentPassword')}
               </label>
               <input
                 type="password"
@@ -103,7 +105,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: Props) {
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">
-                新しいパスワード
+                {t('changePassword.newPassword')}
               </label>
               <input
                 type="password"
@@ -115,7 +117,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: Props) {
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">
-                新しいパスワード（確認）
+                {t('changePassword.confirmPassword')}
               </label>
               <input
                 type="password"
@@ -134,7 +136,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: Props) {
                 disabled={loading}
                 className="px-4 py-2 rounded-md border border-border text-foreground hover:bg-accent text-sm disabled:opacity-50"
               >
-                キャンセル
+                {t('changePassword.cancel')}
               </button>
               <button
                 onClick={handleSubmit}
@@ -142,7 +144,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: Props) {
                 className="flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 text-sm disabled:opacity-50"
               >
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                変更
+                {t('changePassword.submit')}
               </button>
             </DialogFooter>
           </div>

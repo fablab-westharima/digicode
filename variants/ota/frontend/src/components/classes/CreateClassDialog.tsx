@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 import {
   Dialog,
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [classType, setClassType] = useState('workshop');
   const [loading, setLoading] = useState(false);
@@ -32,11 +34,11 @@ export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
   const handleSubmit = async () => {
     const trimmed = name.trim();
     if (!trimmed) {
-      setError('クラス名を入力してください');
+      setError(t('classes.createDialog.nameRequired'));
       return;
     }
     if (trimmed.length > 100) {
-      setError('クラス名は100文字以内にしてください');
+      setError(t('classes.createDialog.nameTooLong'));
       return;
     }
 
@@ -47,7 +49,7 @@ export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
       onCreated();
       onOpenChange(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'クラスの作成に失敗しました');
+      setError(err instanceof Error ? err.message : t('classes.createDialog.error'));
     } finally {
       setLoading(false);
     }
@@ -62,20 +64,20 @@ export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
         }}
       >
         <DialogHeader>
-          <DialogTitle>新しいクラスを作成</DialogTitle>
+          <DialogTitle>{t('classes.createDialog.title')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* クラス名 */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-1">
-              クラス名 <span className="text-destructive">*</span>
+              {t('classes.createDialog.name')} <span className="text-destructive">*</span>
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="例: 3年B組 プログラミング"
+              placeholder={t('classes.createDialog.namePlaceholder')}
               maxLength={100}
               disabled={loading}
               className="w-full px-3 py-2 rounded-md border border-border bg-input text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
@@ -88,7 +90,7 @@ export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
           {/* クラス種別 */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-1">
-              クラス種別 <span className="text-destructive">*</span>
+              {t('classes.createDialog.classType')} <span className="text-destructive">*</span>
             </label>
             <select
               value={classType}
@@ -96,11 +98,11 @@ export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
               disabled={loading}
               className="w-full px-3 py-2 rounded-md border border-border bg-input text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
             >
-              <option value="workshop">WS/短期講座（1ヶ月・課題5件まで）</option>
-              <option value="classroom">教室（4ヶ月・課題10件まで）</option>
+              <option value="workshop">{t('classes.createDialog.typeWorkshop')}</option>
+              <option value="classroom">{t('classes.createDialog.typeClassroom')}</option>
             </select>
             <p className="text-xs text-muted-foreground mt-1">
-              有効期限は種別に応じて自動設定されます
+              {t('classes.createDialog.autoExpiry')}
             </p>
           </div>
 
@@ -116,7 +118,7 @@ export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
             disabled={loading}
             className="px-4 py-2 rounded-md border border-border text-foreground hover:bg-accent text-sm disabled:opacity-50"
           >
-            キャンセル
+            {t('classes.createDialog.cancel')}
           </button>
           <button
             onClick={handleSubmit}
@@ -124,7 +126,7 @@ export function CreateClassDialog({ open, onOpenChange, onCreated }: Props) {
             className="flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 text-sm disabled:opacity-50"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            作成
+            {t('classes.createDialog.create')}
           </button>
         </DialogFooter>
       </DialogContent>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Loader2,
   Check,
@@ -27,6 +28,7 @@ interface Props {
 type View = 'list' | 'detail';
 
 export function GradedListDialog({ open, onOpenChange }: Props) {
+  const { t } = useTranslation();
   const [view, setView] = useState<View>('list');
   const [submissions, setSubmissions] = useState<SubmissionInfo[]>([]);
   const [loading, setLoading] = useState(false);
@@ -58,7 +60,7 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
         );
         setSubmissions(filtered);
       })
-      .catch((err) => setError(err instanceof Error ? err.message : 'エラーが発生しました'))
+      .catch((err) => setError(err instanceof Error ? err.message : t('submissions.graded.fetchError')))
       .finally(() => setLoading(false));
   }, [open]);
 
@@ -69,7 +71,7 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
     setError(null);
     getSubmission(selectedId)
       .then(setDetail)
-      .catch((err) => setError(err instanceof Error ? err.message : '詳細取得に失敗しました'))
+      .catch((err) => setError(err instanceof Error ? err.message : t('submissions.graded.detailError')))
       .finally(() => setDetailLoading(false));
   }, [view, selectedId]);
 
@@ -112,12 +114,12 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
               <button
                 onClick={handleBack}
                 className="p-1 rounded hover:bg-accent"
-                title="一覧に戻る"
+                title={t('submissions.graded.backToList')}
               >
                 <ArrowLeft className="w-4 h-4" />
               </button>
             )}
-            採点結果
+            {t('submissions.graded.title')}
           </DialogTitle>
         </DialogHeader>
 
@@ -132,7 +134,7 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
               <p className="text-sm text-destructive py-4">{error}</p>
             ) : submissions.length === 0 ? (
               <p className="text-sm text-muted-foreground py-8 text-center">
-                採点された課題はまだありません
+                {t('submissions.graded.empty')}
               </p>
             ) : (
               <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -160,7 +162,7 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
                               ) : (
                                 <RotateCcw className="w-3 h-3" />
                               )}
-                              {isGraded ? '採点済み' : '差戻し'}
+                              {isGraded ? t('submissions.graded.graded') : t('submissions.graded.returned')}
                             </span>
                             {sub.gradedAt && (
                               <span className="text-muted-foreground">
@@ -203,12 +205,12 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
                   className="self-start flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  採点結果に戻る
+                  {t('submissions.graded.backToList')}
                 </button>
                 <div className="flex-1 min-h-0 border border-border rounded-md overflow-hidden relative">
                   {(!detail.blocklyXml || detail.blocklyXml === '<xml></xml>') && (
                     <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-10 pointer-events-none">
-                      <p className="text-sm text-muted-foreground">答案が空です</p>
+                      <p className="text-sm text-muted-foreground">{t('submissions.graded.emptyAnswer')}</p>
                     </div>
                   )}
                   <BlocklyEditor ref={blocklyRef} />
@@ -219,7 +221,7 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
               <div className="space-y-4">
                 {/* 課題名 */}
                 <div className="border border-border rounded-md p-3 bg-muted">
-                  <p className="text-xs text-muted-foreground mb-0.5">課題</p>
+                  <p className="text-xs text-muted-foreground mb-0.5">{t('submissions.graded.assignment')}</p>
                   <p className="text-sm font-medium text-foreground">
                     {detail.assignmentTitle}
                   </p>
@@ -239,24 +241,24 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
                         : 'border-destructive/30 bg-destructive/10'
                     }`}
                   >
-                    <p className="text-xs text-muted-foreground mb-0.5">スコア</p>
+                    <p className="text-xs text-muted-foreground mb-0.5">{t('submissions.graded.score')}</p>
                     <p className="text-foreground">
                       <span className="font-mono font-bold text-3xl">{detail.score}</span>
-                      <span className="text-sm text-muted-foreground"> / 100 点</span>
+                      <span className="text-sm text-muted-foreground">{t('submissions.graded.scoreValue')}</span>
                     </p>
                   </div>
                 )}
 
                 {/* コメント（常に表示、空なら「なし」と明示） */}
                 <div className="border border-border rounded-md p-3 bg-card">
-                  <p className="text-xs text-muted-foreground mb-1">先生からのコメント</p>
+                  <p className="text-xs text-muted-foreground mb-1">{t('submissions.graded.teacherComment')}</p>
                   {detail.comment ? (
                     <p className="text-sm text-foreground whitespace-pre-wrap">
                       {detail.comment}
                     </p>
                   ) : (
                     <p className="text-sm text-muted-foreground italic">
-                      コメントはありません
+                      {t('submissions.graded.noComment')}
                     </p>
                   )}
                 </div>
@@ -264,10 +266,10 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
                 {/* 日時 */}
                 <div className="text-xs text-muted-foreground space-y-0.5">
                   {detail.submittedAt && (
-                    <p>提出日時: {new Date(detail.submittedAt).toLocaleString('ja-JP')}</p>
+                    <p>{t('submissions.graded.submittedAt', { date: new Date(detail.submittedAt).toLocaleString('ja-JP') })}</p>
                   )}
                   {detail.gradedAt && (
-                    <p>採点日時: {new Date(detail.gradedAt).toLocaleString('ja-JP')}</p>
+                    <p>{t('submissions.graded.gradedAt', { date: new Date(detail.gradedAt).toLocaleString('ja-JP') })}</p>
                   )}
                 </div>
 
@@ -275,8 +277,7 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
                 {detail.status === 'returned' && (
                   <div className="border border-destructive/30 rounded-md p-3 bg-destructive/10">
                     <p className="text-sm text-foreground">
-                      この課題は差戻されています。編集して再提出すると、前回の採点は
-                      クリアされます。
+                      {t('submissions.graded.returnedNote')}
                     </p>
                   </div>
                 )}
@@ -287,7 +288,7 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
                   className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm rounded border border-border text-foreground hover:bg-accent"
                 >
                   <Eye className="w-4 h-4" />
-                  提出した答案を見る
+                  {t('submissions.graded.viewAnswer')}
                 </button>
               </div>
             )}

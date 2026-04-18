@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2, FileText, Check, Clock, Send, Download, RotateCcw } from 'lucide-react';
 import {
   Dialog,
@@ -18,18 +19,19 @@ interface Props {
   onSelect: (submission: SubmissionInfo) => void;
 }
 
-function statusLabel(status: string) {
+function statusLabel(status: string, t: (key: string) => string) {
   switch (status) {
-    case 'assigned': return { text: '未着手', icon: <Clock className="w-3 h-3" />, color: 'text-muted-foreground' };
-    case 'in_progress': return { text: '作業中', icon: <FileText className="w-3 h-3" />, color: 'text-primary' };
-    case 'submitted': return { text: '提出済み', icon: <Send className="w-3 h-3" />, color: 'text-primary' };
-    case 'graded': return { text: '採点済み', icon: <Check className="w-3 h-3" />, color: 'text-primary' };
-    case 'returned': return { text: '差戻し', icon: <RotateCcw className="w-3 h-3" />, color: 'text-destructive' };
+    case 'assigned': return { text: t('submissions.status.assigned'), icon: <Clock className="w-3 h-3" />, color: 'text-muted-foreground' };
+    case 'in_progress': return { text: t('submissions.status.inProgress'), icon: <FileText className="w-3 h-3" />, color: 'text-primary' };
+    case 'submitted': return { text: t('submissions.status.submitted'), icon: <Send className="w-3 h-3" />, color: 'text-primary' };
+    case 'graded': return { text: t('submissions.status.graded'), icon: <Check className="w-3 h-3" />, color: 'text-primary' };
+    case 'returned': return { text: t('submissions.status.returned'), icon: <RotateCcw className="w-3 h-3" />, color: 'text-destructive' };
     default: return { text: status, icon: null, color: 'text-muted-foreground' };
   }
 }
 
 export function SubmissionListDialog({ open, onOpenChange, onSelect }: Props) {
+  const { t } = useTranslation();
   const [submissions, setSubmissions] = useState<SubmissionInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +43,7 @@ export function SubmissionListDialog({ open, onOpenChange, onSelect }: Props) {
     setError(null);
     listMySubmissions()
       .then(setSubmissions)
-      .catch((err) => setError(err instanceof Error ? err.message : 'エラーが発生しました'))
+      .catch((err) => setError(err instanceof Error ? err.message : t('submissions.progress.fetchError')))
       .finally(() => setLoading(false));
   }, [open]);
 
@@ -57,7 +59,7 @@ export function SubmissionListDialog({ open, onOpenChange, onSelect }: Props) {
     try {
       await downloadSubmissionAttachment(sub.id, sub.attachmentFilename);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'ダウンロードに失敗しました');
+      setError(err instanceof Error ? err.message : t('submissions.progress.fetchError'));
     } finally {
       setDownloadingId(null);
     }
@@ -67,7 +69,7 @@ export function SubmissionListDialog({ open, onOpenChange, onSelect }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>課題一覧</DialogTitle>
+          <DialogTitle>{t('submissions.list.title')}</DialogTitle>
         </DialogHeader>
 
         {loading ? (
@@ -78,12 +80,12 @@ export function SubmissionListDialog({ open, onOpenChange, onSelect }: Props) {
           <p className="text-sm text-destructive py-4">{error}</p>
         ) : submissions.length === 0 ? (
           <p className="text-sm text-muted-foreground py-8 text-center">
-            配布された課題はありません
+            {t('submissions.list.empty')}
           </p>
         ) : (
           <div className="space-y-2 max-h-80 overflow-y-auto">
             {submissions.map((sub) => {
-              const st = statusLabel(sub.status);
+              const st = statusLabel(sub.status, t);
               const isEditable = sub.status !== 'submitted' && sub.status !== 'graded';
               return (
                 <div
@@ -105,7 +107,7 @@ export function SubmissionListDialog({ open, onOpenChange, onSelect }: Props) {
                         {sub.assignmentTitle}
                       </p>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        {isEditable ? '編集可能' : '閲覧のみ'}
+                        {isEditable ? t('submissions.list.editable') : t('submissions.list.readOnly')}
                       </p>
                     </div>
 
@@ -120,7 +122,7 @@ export function SubmissionListDialog({ open, onOpenChange, onSelect }: Props) {
                         disabled={downloadingId === sub.id}
                         className="flex items-center gap-1 px-2 py-1 text-xs text-primary hover:bg-primary/10 rounded disabled:opacity-50 flex-shrink-0"
                         title={`PDF: ${sub.attachmentFilename}`}
-                        aria-label={`課題PDFをダウンロード: ${sub.attachmentFilename}`}
+                        aria-label={`PDF: ${sub.attachmentFilename}`}
                       >
                         {downloadingId === sub.id ? (
                           <Loader2 className="w-3 h-3 animate-spin" />

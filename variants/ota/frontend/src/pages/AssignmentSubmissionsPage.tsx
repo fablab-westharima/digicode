@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Loader2,
@@ -18,18 +19,18 @@ import {
 } from '@/services/classService';
 import { SubmissionViewerDialog } from '@/components/classes/SubmissionViewerDialog';
 
-function statusDisplay(status: string) {
+function statusDisplay(status: string, t: (key: string) => string) {
   switch (status) {
     case 'assigned':
-      return { text: '未着手', icon: <Clock className="w-3 h-3" />, color: 'text-muted-foreground' };
+      return { text: t('submissions.status.assigned'), icon: <Clock className="w-3 h-3" />, color: 'text-muted-foreground' };
     case 'in_progress':
-      return { text: '作業中', icon: <FileText className="w-3 h-3" />, color: 'text-primary' };
+      return { text: t('submissions.status.inProgress'), icon: <FileText className="w-3 h-3" />, color: 'text-primary' };
     case 'submitted':
-      return { text: '提出済み', icon: <Send className="w-3 h-3" />, color: 'text-primary' };
+      return { text: t('submissions.status.submitted'), icon: <Send className="w-3 h-3" />, color: 'text-primary' };
     case 'graded':
-      return { text: '採点済み', icon: <Check className="w-3 h-3" />, color: 'text-primary' };
+      return { text: t('submissions.status.graded'), icon: <Check className="w-3 h-3" />, color: 'text-primary' };
     case 'returned':
-      return { text: '差戻し', icon: <RotateCcw className="w-3 h-3" />, color: 'text-destructive' };
+      return { text: t('submissions.status.returned'), icon: <RotateCcw className="w-3 h-3" />, color: 'text-destructive' };
     default:
       return { text: status, icon: null, color: 'text-muted-foreground' };
   }
@@ -43,6 +44,7 @@ export function AssignmentSubmissionsPage() {
   const classId = classIdStr ? parseInt(classIdStr) : NaN;
   const assignmentId = assignmentIdStr ? parseInt(assignmentIdStr) : NaN;
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [assignment, setAssignment] = useState<AssignmentInfo | null>(null);
   const [submissions, setSubmissions] = useState<AssignmentSubmissionRow[]>([]);
@@ -53,7 +55,7 @@ export function AssignmentSubmissionsPage() {
 
   const load = async () => {
     if (isNaN(classId) || isNaN(assignmentId)) {
-      setError('無効な URL です');
+      setError(t('submissions.progress.urlError'));
       setLoading(false);
       return;
     }
@@ -67,7 +69,7 @@ export function AssignmentSubmissionsPage() {
       setAssignment(asn);
       setSubmissions(subs);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'エラーが発生しました');
+      setError(err instanceof Error ? err.message : t('submissions.progress.fetchError'));
     } finally {
       setLoading(false);
     }
@@ -98,7 +100,7 @@ export function AssignmentSubmissionsPage() {
             className="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent"
           >
             <ArrowLeft className="w-4 h-4" />
-            クラス詳細に戻る
+            {t('submissions.progress.backToClass')}
           </button>
         </div>
 
@@ -115,7 +117,7 @@ export function AssignmentSubmissionsPage() {
             {/* 課題情報 */}
             <div className="border border-border rounded-lg p-4 bg-card">
               <h1 className="text-xl font-bold text-foreground">
-                {assignment?.title ?? '課題'}
+                {assignment?.title ?? t('submissions.progress.assignment')}
               </h1>
               {assignment?.description && (
                 <p className="text-sm text-muted-foreground mt-1">{assignment.description}</p>
@@ -124,37 +126,37 @@ export function AssignmentSubmissionsPage() {
 
             {/* 進捗サマリー */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-              <SummaryCard label="全体" value={counts.total} color="text-foreground" />
-              <SummaryCard label="未着手" value={counts.assigned} color="text-muted-foreground" />
-              <SummaryCard label="作業中" value={counts.inProgress} color="text-primary" />
+              <SummaryCard label={t('submissions.progress.all')} value={counts.total} color="text-foreground" />
+              <SummaryCard label={t('submissions.progress.assigned')} value={counts.assigned} color="text-muted-foreground" />
+              <SummaryCard label={t('submissions.progress.inProgress')} value={counts.inProgress} color="text-primary" />
               <SummaryCard
-                label="提出"
+                label={t('submissions.progress.submitted')}
                 value={counts.submitted + counts.graded + counts.returned}
                 color="text-primary"
               />
-              <SummaryCard label="採点済" value={counts.graded} color="text-primary" />
+              <SummaryCard label={t('submissions.progress.gradedShort')} value={counts.graded} color="text-primary" />
             </div>
 
             {/* 生徒一覧テーブル */}
             {submissions.length === 0 ? (
               <div className="border border-border rounded-lg p-8 bg-card text-center">
-                <p className="text-muted-foreground">配布された生徒がいません</p>
+                <p className="text-muted-foreground">{t('submissions.progress.empty')}</p>
               </div>
             ) : (
               <div className="border border-border rounded-lg bg-card overflow-hidden">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-border">
-                      <th className="text-left px-4 py-3 text-muted-foreground font-medium">生徒</th>
-                      <th className="text-left px-4 py-3 text-muted-foreground font-medium">ステータス</th>
-                      <th className="text-left px-4 py-3 text-muted-foreground font-medium">スコア</th>
-                      <th className="text-left px-4 py-3 text-muted-foreground font-medium">提出日時</th>
-                      <th className="text-right px-4 py-3 text-muted-foreground font-medium">操作</th>
+                      <th className="text-left px-4 py-3 text-muted-foreground font-medium">{t('submissions.progress.student')}</th>
+                      <th className="text-left px-4 py-3 text-muted-foreground font-medium">{t('submissions.progress.status')}</th>
+                      <th className="text-left px-4 py-3 text-muted-foreground font-medium">{t('submissions.progress.score')}</th>
+                      <th className="text-left px-4 py-3 text-muted-foreground font-medium">{t('submissions.progress.submittedAt')}</th>
+                      <th className="text-right px-4 py-3 text-muted-foreground font-medium">{t('submissions.progress.action')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {submissions.map((sub) => {
-                      const st = statusDisplay(sub.status);
+                      const st = statusDisplay(sub.status, t);
                       return (
                         <tr key={sub.id} className="border-b border-border last:border-b-0">
                           <td className="px-4 py-3">
@@ -190,10 +192,10 @@ export function AssignmentSubmissionsPage() {
                               <button
                                 onClick={() => setViewingId(sub.id)}
                                 className="flex items-center gap-1 px-2 py-1 text-xs rounded border border-border text-foreground hover:bg-accent"
-                                title="答案を閲覧・採点"
+                                title={t('submissions.viewer.viewGrade')}
                               >
                                 <Eye className="w-3 h-3" />
-                                閲覧・採点
+                                {t('submissions.viewer.viewGradeShort')}
                               </button>
                             </div>
                           </td>

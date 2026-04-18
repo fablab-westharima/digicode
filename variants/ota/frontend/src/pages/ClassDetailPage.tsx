@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft, Copy, Check, Loader2, AlertTriangle,
   KeyRound, Trash2, Plus, Download, X,
@@ -92,6 +93,7 @@ export function ClassDetailPage() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { user } = useAuthStore();
+  const { t } = useTranslation();
 
   const [classInfo, setClassInfo] = useState<ClassInfo | null>(null);
   const [students, setStudents] = useState<StudentInfo[]>([]);
@@ -143,7 +145,7 @@ export function ClassDetailPage() {
       setStudents(studs);
       setAssignments(assigns);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'データの取得に失敗しました');
+      setError(err instanceof Error ? err.message : t('classes.fetchError'));
     } finally {
       setLoading(false);
     }
@@ -172,7 +174,7 @@ export function ClassDetailPage() {
       await deleteClass(classId);
       navigate('/classes');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'クラスの削除に失敗しました');
+      setError(err instanceof Error ? err.message : t('classes.deleteClass.error'));
       setDeletingClassConfirm(false);
     } finally {
       setDeletingClassLoading(false);
@@ -205,7 +207,7 @@ export function ClassDetailPage() {
   const handleSubmitNewStudents = async () => {
     const validNames = newNames.map((n) => n.trim()).filter((n) => n.length > 0);
     if (validNames.length === 0) {
-      setError('名前を入力してください');
+      setError(t('classes.students.nameRequired'));
       return;
     }
 
@@ -218,7 +220,7 @@ export function ClassDetailPage() {
       const studs = await listStudents(classId);
       setStudents(studs);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '生徒アカウントの作成に失敗しました');
+      setError(err instanceof Error ? err.message : t('classes.students.createError'));
     } finally {
       setAddingStudents(false);
     }
@@ -233,7 +235,7 @@ export function ClassDetailPage() {
       setStudents((prev) => prev.filter((s) => s.userId !== studentId));
       setDeletingStudentId(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '生徒の削除に失敗しました');
+      setError(err instanceof Error ? err.message : t('classes.students.deleteError'));
     } finally {
       setDeletingStudentLoading(false);
     }
@@ -247,7 +249,7 @@ export function ClassDetailPage() {
       const studs = await listStudents(classId);
       setStudents(studs);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'パスワードリセットに失敗しました');
+      setError(err instanceof Error ? err.message : t('classes.students.resetError'));
     } finally {
       setResetLoading(null);
     }
@@ -257,7 +259,7 @@ export function ClassDetailPage() {
 
   const handleCreateAssignment = async () => {
     if (!newAssignment.title.trim()) {
-      setError('課題タイトルを入力してください');
+      setError(t('classes.assignments.titleRequired'));
       return;
     }
 
@@ -269,7 +271,7 @@ export function ClassDetailPage() {
 
       if (attachmentFile) {
         if (attachmentFile.size > 2 * 1024 * 1024) {
-          setError('添付ファイルは2MB以内にしてください');
+          setError(t('classes.assignments.fileTooLarge'));
           setCreatingAssignment(false);
           return;
         }
@@ -281,7 +283,7 @@ export function ClassDetailPage() {
             // "data:application/pdf;base64,XXXX" から Base64 部分を取り出す
             resolve(dataUrl.split(',')[1]);
           };
-          reader.onerror = () => reject(new Error('ファイルの読み込みに失敗しました'));
+          reader.onerror = () => reject(new Error(t('classes.assignments.fileReadError')));
           reader.readAsDataURL(attachmentFile);
         });
         attachmentFilename = attachmentFile.name;
@@ -306,7 +308,7 @@ export function ClassDetailPage() {
       const assigns = await listAssignments(classId);
       setAssignments(assigns);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '課題の作成に失敗しました');
+      setError(err instanceof Error ? err.message : t('classes.assignments.createError'));
     } finally {
       setCreatingAssignment(false);
     }
@@ -319,7 +321,7 @@ export function ClassDetailPage() {
       setAssignments((prev) => prev.filter((a) => a.id !== assignmentId));
       setDeletingAssignmentId(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '課題の削除に失敗しました');
+      setError(err instanceof Error ? err.message : t('classes.assignments.deleteError'));
     } finally {
       setDeletingAssignmentLoading(false);
     }
@@ -332,12 +334,12 @@ export function ClassDetailPage() {
       const result = await distributeAssignment(classId, assignmentId);
       setError(null);
       if (result.distributed === 0) {
-        alert('既に全員に配布済みです');
+        alert(t('classes.assignments.allDistributed'));
       } else {
-        alert(`${result.distributed}名に配布しました（全${result.total}名）`);
+        alert(t('classes.assignments.distributed', { distributed: result.distributed, total: result.total }));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '課題の配布に失敗しました');
+      setError(err instanceof Error ? err.message : t('classes.assignments.distributeError'));
     } finally {
       setDistributingId(null);
     }
@@ -353,10 +355,10 @@ export function ClassDetailPage() {
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
-            戻る
+            {t('classes.back')}
           </button>
           <p className="text-center text-muted-foreground py-20">
-            Enterprise プランが必要です
+            {t('classes.enterpriseRequired')}
           </p>
         </div>
       </div>
@@ -367,7 +369,7 @@ export function ClassDetailPage() {
     return (
       <div className="min-h-screen bg-background text-foreground">
         <div className="max-w-5xl mx-auto px-6 py-6">
-          <p className="text-center text-muted-foreground py-20">読み込み中...</p>
+          <p className="text-center text-muted-foreground py-20">{t('classes.loading')}</p>
         </div>
       </div>
     );
@@ -382,7 +384,7 @@ export function ClassDetailPage() {
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
-            クラス一覧に戻る
+            {t('classes.detail.backToList')}
           </button>
           <p className="text-center text-destructive py-20">{error}</p>
         </div>
@@ -419,7 +421,7 @@ export function ClassDetailPage() {
               onClick={() => setError(null)}
               className="text-xs text-muted-foreground hover:text-foreground mt-1"
             >
-              閉じる
+              {t('changePassword.close')}
             </button>
           </div>
         )}
@@ -434,10 +436,10 @@ export function ClassDetailPage() {
                 <AlertTriangle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="text-sm font-medium text-foreground">
-                    このクラスは開講期限を過ぎています
+                    {t('classes.detail.expiredWarning')}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    毎日深夜 00:00 の自動処理で削除されます。必要なデータは事前にダウンロードしてください。
+                    {t('classes.detail.expiredWarningDesc')}
                   </p>
                 </div>
               </div>
@@ -449,10 +451,10 @@ export function ClassDetailPage() {
                 <AlertTriangle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="text-sm font-medium text-foreground">
-                    開講期限まで残り {days} 日です
+                    {t('classes.detail.expiringWarning', { days })}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    期限到達後、毎日深夜 00:00 の自動処理でクラスと関連データが削除されます。
+                    {t('classes.detail.expiringWarningDesc')}
                   </p>
                 </div>
               </div>
@@ -465,7 +467,7 @@ export function ClassDetailPage() {
         <div className="border border-border rounded-lg p-4 bg-card mb-6">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-muted-foreground">クラスコード</span>
+              <span className="text-muted-foreground">{t('classes.classCode')}</span>
               <div className="flex items-center gap-2 mt-1">
                 <code className="font-mono text-lg bg-muted px-3 py-1 rounded text-foreground">
                   {classInfo.inviteCode}
@@ -473,7 +475,7 @@ export function ClassDetailPage() {
                 <button
                   onClick={handleCopyInviteCode}
                   className="p-1 text-muted-foreground hover:text-foreground"
-                  title="コピー"
+                  title={t('classes.copy')}
                 >
                   {copiedCode ? (
                     <Check className="w-4 h-4 text-primary" />
@@ -485,14 +487,14 @@ export function ClassDetailPage() {
             </div>
             {classInfo.expiresAt && (
               <div>
-                <span className="text-muted-foreground">開講期限</span>
+                <span className="text-muted-foreground">{t('classes.detail.openingPeriod')}</span>
                 <p className="mt-1 text-foreground">
                   {new Date(classInfo.expiresAt).toLocaleDateString('ja-JP')}
                 </p>
               </div>
             )}
             <div>
-              <span className="text-muted-foreground">作成日</span>
+              <span className="text-muted-foreground">{t('classes.detail.createdAt')}</span>
               <p className="mt-1 text-foreground">
                 {new Date(classInfo.createdAt).toLocaleDateString('ja-JP')}
               </p>
@@ -504,7 +506,7 @@ export function ClassDetailPage() {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">
-              生徒一覧（{students.length}名）
+              {t('classes.students.title', { count: students.length })}
             </h2>
             <div className="flex items-center gap-2">
               {students.length > 0 && (
@@ -514,14 +516,14 @@ export function ClassDetailPage() {
                     className="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent"
                   >
                     <Download className="w-4 h-4" />
-                    CSV
+                    {t('classes.students.csv')}
                   </button>
                   <button
                     onClick={() => downloadStudentsHtml(students, classInfo.name)}
                     className="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent"
                   >
                     <Download className="w-4 h-4" />
-                    HTML
+                    {t('classes.students.html')}
                   </button>
                 </>
               )}
@@ -531,7 +533,7 @@ export function ClassDetailPage() {
                   className="flex items-center gap-2 px-3 py-1.5 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 text-sm"
                 >
                   <Plus className="w-4 h-4" />
-                  生徒を追加
+                  {t('classes.students.add')}
                 </button>
               )}
             </div>
@@ -541,11 +543,11 @@ export function ClassDetailPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">名前</th>
-                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">ログインID</th>
-                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">初期パスワード</th>
-                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">参加日</th>
-                  <th className="text-right px-4 py-3 text-muted-foreground font-medium">操作</th>
+                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">{t('classes.students.name')}</th>
+                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">{t('classes.students.loginId')}</th>
+                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">{t('classes.students.initialPassword')}</th>
+                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">{t('classes.students.joinedAt')}</th>
+                  <th className="text-right px-4 py-3 text-muted-foreground font-medium">{t('classes.students.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -562,7 +564,7 @@ export function ClassDetailPage() {
                       {student.password ? (
                         <code className="font-mono text-foreground">{student.password}</code>
                       ) : (
-                        <span className="text-muted-foreground text-xs">生徒変更済み</span>
+                        <span className="text-muted-foreground text-xs">{t('classes.students.changedByStudent')}</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
@@ -571,20 +573,20 @@ export function ClassDetailPage() {
                     <td className="px-4 py-3">
                       {deletingStudentId === student.userId ? (
                         <div className="flex items-center justify-end gap-2">
-                          <span className="text-xs text-destructive">削除しますか？</span>
+                          <span className="text-xs text-destructive">{t('classes.students.deleteConfirm')}</span>
                           <button
                             onClick={() => handleDeleteStudent(student.userId)}
                             disabled={deletingStudentLoading}
                             className="px-2 py-1 text-xs rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50"
                           >
-                            {deletingStudentLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : '削除'}
+                            {deletingStudentLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : t('classes.students.delete')}
                           </button>
                           <button
                             onClick={() => setDeletingStudentId(null)}
                             disabled={deletingStudentLoading}
                             className="px-2 py-1 text-xs rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
                           >
-                            取消
+                            {t('classes.students.cancelAction')}
                           </button>
                         </div>
                       ) : (
@@ -593,7 +595,7 @@ export function ClassDetailPage() {
                             onClick={() => handleResetPassword(student.userId)}
                             disabled={resetLoading === student.userId}
                             className="p-1.5 text-muted-foreground hover:text-foreground rounded hover:bg-accent disabled:opacity-50"
-                            title="パスワードリセット"
+                            title={t('classes.students.resetPassword')}
                           >
                             {resetLoading === student.userId ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
@@ -604,7 +606,7 @@ export function ClassDetailPage() {
                           <button
                             onClick={() => setDeletingStudentId(student.userId)}
                             className="p-1.5 text-muted-foreground hover:text-destructive rounded hover:bg-accent"
-                            title="削除"
+                            title={t('classes.students.delete')}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -623,19 +625,19 @@ export function ClassDetailPage() {
                         type="text"
                         value={name}
                         onChange={(e) => handleNameChange(index, e.target.value)}
-                        placeholder="生徒の名前を入力"
+                        placeholder={t('classes.students.namePlaceholder')}
                         disabled={addingStudents}
                         className="w-full px-2 py-1 rounded border border-border bg-input text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
                         autoFocus={index === newNames.length - 1}
                       />
                     </td>
-                    <td className="px-4 py-2 text-muted-foreground text-xs" colSpan={3}>自動生成</td>
+                    <td className="px-4 py-2 text-muted-foreground text-xs" colSpan={3}>{t('classes.students.autoGenerate')}</td>
                     <td className="px-4 py-2 text-right">
                       <button
                         onClick={() => handleRemoveRow(index)}
                         disabled={addingStudents}
                         className="p-1 text-muted-foreground hover:text-destructive disabled:opacity-50"
-                        title="行を削除"
+                        title={t('classes.students.removeRow')}
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -654,18 +656,18 @@ export function ClassDetailPage() {
                           className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground disabled:opacity-50"
                         >
                           <Plus className="w-4 h-4" />
-                          行を追加
+                          {t('classes.students.addRow')}
                         </button>
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-muted-foreground">
-                            {newNames.filter((n) => n.trim()).length}名
+                            {t('classes.students.count', { count: newNames.filter((n) => n.trim()).length })}
                           </span>
                           <button
                             onClick={handleCancelAdd}
                             disabled={addingStudents}
                             className="px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
                           >
-                            キャンセル
+                            {t('classes.students.cancel')}
                           </button>
                           <button
                             onClick={handleSubmitNewStudents}
@@ -673,7 +675,7 @@ export function ClassDetailPage() {
                             className="flex items-center gap-2 px-3 py-1.5 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
                           >
                             {addingStudents && <Loader2 className="w-3 h-3 animate-spin" />}
-                            作成
+                            {t('classes.students.create')}
                           </button>
                         </div>
                       </div>
@@ -687,7 +689,7 @@ export function ClassDetailPage() {
             {students.length === 0 && !isAddingMode && (
               <div className="p-8 text-center">
                 <p className="text-muted-foreground">
-                  生徒がまだいません。「生徒を追加」から作成してください。
+                  {t('classes.students.empty')}
                 </p>
               </div>
             )}
@@ -698,7 +700,7 @@ export function ClassDetailPage() {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">
-              課題（{assignments.length}件）
+              {t('classes.assignments.title', { count: assignments.length })}
             </h2>
             {!showCreateAssignment && (
               <button
@@ -706,7 +708,7 @@ export function ClassDetailPage() {
                 className="flex items-center gap-2 px-3 py-1.5 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 text-sm"
               >
                 <Plus className="w-4 h-4" />
-                課題を作成
+                {t('classes.assignments.create')}
               </button>
             )}
           </div>
@@ -714,32 +716,32 @@ export function ClassDetailPage() {
           {/* 課題作成フォーム */}
           {showCreateAssignment && (
             <div className="border border-border rounded-lg p-4 bg-card mb-3">
-              <h3 className="text-sm font-medium text-foreground mb-3">新しい課題</h3>
+              <h3 className="text-sm font-medium text-foreground mb-3">{t('classes.assignments.newAssignment')}</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1">タイトル *</label>
+                  <label className="block text-xs text-muted-foreground mb-1">{t('classes.assignments.titleLabel')}</label>
                   <input
                     type="text"
                     value={newAssignment.title}
                     onChange={(e) => setNewAssignment((prev) => ({ ...prev, title: e.target.value }))}
-                    placeholder="例: LED点滅プログラム"
+                    placeholder={t('classes.assignments.titlePlaceholder')}
                     disabled={creatingAssignment}
                     className="w-full px-3 py-2 rounded-md border border-border bg-input text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1">説明（任意）</label>
+                  <label className="block text-xs text-muted-foreground mb-1">{t('classes.assignments.description')}</label>
                   <textarea
                     value={newAssignment.description}
                     onChange={(e) => setNewAssignment((prev) => ({ ...prev, description: e.target.value }))}
-                    placeholder="課題の説明や指示"
+                    placeholder={t('classes.assignments.descriptionPlaceholder')}
                     rows={3}
                     disabled={creatingAssignment}
                     className="w-full px-3 py-2 rounded-md border border-border bg-input text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 resize-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1">期限（任意）</label>
+                  <label className="block text-xs text-muted-foreground mb-1">{t('classes.assignments.dueDate')}</label>
                   {(() => {
                     // dueDate は 'YYYY-MM-DD' 形式、または空文字
                     const parts = newAssignment.dueDate.split('-');
@@ -788,10 +790,10 @@ export function ClassDetailPage() {
                           disabled={creatingAssignment}
                           className={selectClass}
                         >
-                          <option value="">年</option>
+                          <option value="">{t('classes.assignments.year')}</option>
                           {years.map((y) => (
                             <option key={y} value={String(y)}>
-                              {y}年
+                              {y}
                             </option>
                           ))}
                         </select>
@@ -801,10 +803,10 @@ export function ClassDetailPage() {
                           disabled={creatingAssignment}
                           className={selectClass}
                         >
-                          <option value="">月</option>
+                          <option value="">{t('classes.assignments.month')}</option>
                           {months.map((m) => (
                             <option key={m} value={String(m).padStart(2, '0')}>
-                              {m}月
+                              {m}
                             </option>
                           ))}
                         </select>
@@ -814,10 +816,10 @@ export function ClassDetailPage() {
                           disabled={creatingAssignment}
                           className={selectClass}
                         >
-                          <option value="">日</option>
+                          <option value="">{t('classes.assignments.day')}</option>
                           {days.map((d) => (
                             <option key={d} value={String(d).padStart(2, '0')}>
-                              {d}日
+                              {d}
                             </option>
                           ))}
                         </select>
@@ -829,7 +831,7 @@ export function ClassDetailPage() {
                             }
                             disabled={creatingAssignment}
                             className="ml-1 p-1.5 text-muted-foreground hover:text-destructive rounded hover:bg-accent disabled:opacity-50"
-                            title="期限をクリア"
+                            title={t('classes.assignments.clearDueDate')}
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -838,17 +840,17 @@ export function ClassDetailPage() {
                     );
                   })()}
                   <p className="text-xs text-muted-foreground mt-1">
-                    期限を設定すると、生徒の課題一覧と管理者のダッシュボードで表示されます
+                    {t('classes.assignments.dueDateHint')}
                   </p>
                 </div>
                 <div>
                   <label className="block text-xs text-muted-foreground mb-1">
-                    課題PDF（任意、2MBまで）
+                    {t('classes.assignments.attachment')}
                   </label>
                   <div className="flex items-center gap-2">
                     <label className="flex items-center gap-2 px-3 py-1.5 rounded border border-border text-foreground hover:bg-accent text-sm cursor-pointer">
                       <Upload className="w-4 h-4" />
-                      ファイルを選択
+                      {t('classes.assignments.selectFile')}
                       <input
                         type="file"
                         accept=".pdf"
@@ -878,7 +880,7 @@ export function ClassDetailPage() {
                     disabled={creatingAssignment}
                     className="px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
                   >
-                    キャンセル
+                    {t('classes.assignments.cancel')}
                   </button>
                   <button
                     onClick={handleCreateAssignment}
@@ -886,7 +888,7 @@ export function ClassDetailPage() {
                     className="flex items-center gap-2 px-3 py-1.5 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
                   >
                     {creatingAssignment && <Loader2 className="w-3 h-3 animate-spin" />}
-                    作成
+                    {t('classes.assignments.createBtn')}
                   </button>
                 </div>
               </div>
@@ -897,7 +899,7 @@ export function ClassDetailPage() {
           {assignments.length === 0 && !showCreateAssignment ? (
             <div className="border border-border rounded-lg p-8 bg-card text-center">
               <p className="text-muted-foreground">
-                課題がまだありません。「課題を作成」から始めましょう。
+                {t('classes.assignments.empty')}
               </p>
             </div>
           ) : assignments.length > 0 && (
@@ -905,11 +907,11 @@ export function ClassDetailPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="text-left px-4 py-3 text-muted-foreground font-medium">タイトル</th>
-                    <th className="text-left px-4 py-3 text-muted-foreground font-medium">添付</th>
-                    <th className="text-left px-4 py-3 text-muted-foreground font-medium">期限</th>
-                    <th className="text-left px-4 py-3 text-muted-foreground font-medium">作成日</th>
-                    <th className="text-right px-4 py-3 text-muted-foreground font-medium">操作</th>
+                    <th className="text-left px-4 py-3 text-muted-foreground font-medium">{t('classes.assignments.tableTitle')}</th>
+                    <th className="text-left px-4 py-3 text-muted-foreground font-medium">{t('classes.assignments.tableAttachment')}</th>
+                    <th className="text-left px-4 py-3 text-muted-foreground font-medium">{t('classes.assignments.tableDueDate')}</th>
+                    <th className="text-left px-4 py-3 text-muted-foreground font-medium">{t('classes.assignments.tableCreatedAt')}</th>
+                    <th className="text-right px-4 py-3 text-muted-foreground font-medium">{t('classes.assignments.tableActions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -929,11 +931,11 @@ export function ClassDetailPage() {
                                 const res = await fetchWithAuth(
                                   `/api/classes/${classId}/assignments/${assignment.id}/attachment`
                                 );
-                                if (!res.ok) throw new Error('ダウンロードに失敗しました');
+                                if (!res.ok) throw new Error(t('classes.assignments.downloadError'));
                                 const blob = await res.blob();
                                 triggerDownload(blob, assignment.attachmentFilename || 'attachment.pdf');
                               } catch (err) {
-                                setError(err instanceof Error ? err.message : 'ダウンロードに失敗しました');
+                                setError(err instanceof Error ? err.message : t('classes.assignments.downloadError'));
                               }
                             }}
                             className="flex items-center gap-1 text-xs text-primary hover:underline"
@@ -957,14 +959,14 @@ export function ClassDetailPage() {
                               return (
                                 <span className="inline-flex items-center gap-1 text-xs text-destructive">
                                   <AlertTriangle className="w-3 h-3" />
-                                  {dateStr}（期限切れ）
+                                  {t('classes.assignments.expired', { date: dateStr })}
                                 </span>
                               );
                             }
                             if (days <= 3) {
                               return (
                                 <span className="text-xs text-destructive">
-                                  {dateStr}（あと {days} 日）
+                                  {t('classes.assignments.dueSoon', { date: dateStr, days })}
                                 </span>
                               );
                             }
@@ -982,20 +984,20 @@ export function ClassDetailPage() {
                       <td className="px-4 py-3">
                         {deletingAssignmentId === assignment.id ? (
                           <div className="flex items-center justify-end gap-2">
-                            <span className="text-xs text-destructive">削除しますか？</span>
+                            <span className="text-xs text-destructive">{t('classes.assignments.deleteConfirm')}</span>
                             <button
                               onClick={() => handleDeleteAssignment(assignment.id)}
                               disabled={deletingAssignmentLoading}
                               className="px-2 py-1 text-xs rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50"
                             >
-                              {deletingAssignmentLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : '削除'}
+                              {deletingAssignmentLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : t('classes.assignments.delete')}
                             </button>
                             <button
                               onClick={() => setDeletingAssignmentId(null)}
                               disabled={deletingAssignmentLoading}
                               className="px-2 py-1 text-xs rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
                             >
-                              取消
+                              {t('classes.assignments.cancelAction')}
                             </button>
                           </div>
                         ) : (
@@ -1004,27 +1006,27 @@ export function ClassDetailPage() {
                               onClick={() => handleDistribute(assignment.id)}
                               disabled={distributingId === assignment.id}
                               className="flex items-center gap-1 px-2 py-1 text-xs rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
-                              title="生徒に配布"
+                              title={t('classes.assignments.sendToStudents')}
                             >
                               {distributingId === assignment.id ? (
                                 <Loader2 className="w-3 h-3 animate-spin" />
                               ) : (
                                 <Send className="w-3 h-3" />
                               )}
-                              配布
+                              {t('classes.assignments.distribute')}
                             </button>
                             <button
                               onClick={() => navigate(`/classes/${classId}/assignments/${assignment.id}/submissions`)}
                               className="flex items-center gap-1 px-2 py-1 text-xs rounded border border-border text-foreground hover:bg-accent"
-                              title="進捗確認・答案閲覧・採点"
+                              title={t('classes.assignments.viewProgress')}
                             >
                               <BarChart3 className="w-3 h-3" />
-                              進捗
+                              {t('classes.assignments.progress')}
                             </button>
                             <button
                               onClick={() => setDeletingAssignmentId(assignment.id)}
                               className="p-1.5 text-muted-foreground hover:text-destructive rounded hover:bg-accent"
-                              title="削除"
+                              title={t('classes.assignments.delete')}
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -1047,18 +1049,17 @@ export function ClassDetailPage() {
                 <CopyPlus className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="font-medium text-foreground">
-                    このクラスを複製します
+                    {t('classes.duplicate.title')}
                   </p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    課題テンプレート・添付PDFをコピーして新しいクラスを作成します。
-                    生徒や答案は複製されません。
+                    {t('classes.duplicate.description')}
                   </p>
                   <div className="mt-3">
                     <input
                       type="text"
                       value={duplicateName}
                       onChange={(e) => setDuplicateName(e.target.value)}
-                      placeholder="新しいクラス名を入力"
+                      placeholder={t('classes.duplicate.namePlaceholder')}
                       maxLength={100}
                       disabled={duplicating}
                       className="w-full px-3 py-1.5 text-sm rounded border border-border bg-background text-foreground placeholder:text-muted-foreground disabled:opacity-50"
@@ -1076,7 +1077,7 @@ export function ClassDetailPage() {
                       disabled={duplicating}
                       className="px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
                     >
-                      取消
+                      {t('classes.duplicate.cancel')}
                     </button>
                     <button
                       onClick={async () => {
@@ -1092,7 +1093,7 @@ export function ClassDetailPage() {
                           setError(
                             err instanceof Error
                               ? err.message
-                              : 'クラスの複製に失敗しました',
+                              : t('classes.duplicate.error'),
                           );
                         } finally {
                           setDuplicating(false);
@@ -1106,7 +1107,7 @@ export function ClassDetailPage() {
                       ) : (
                         <CopyPlus className="w-3 h-3" />
                       )}
-                      複製する
+                      {t('classes.duplicate.submit')}
                     </button>
                   </div>
                 </div>
@@ -1118,16 +1119,13 @@ export function ClassDetailPage() {
                 <Archive className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="font-medium text-foreground">
-                    クラス記録を保存します
+                    {t('classes.export.title')}
                   </p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    このZIPは<strong className="text-foreground">成績記録と答案のスナップショット</strong>です。
-                    課題テンプレート・添付PDF・生徒一覧・答案・採点結果・コメントを含みます。
+                    {t('classes.export.description')}
                   </p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    ※ このファイルを DigiCode へ再インポートしてクラスを復元することは
-                    <strong className="text-foreground">できません</strong>。
-                    同じ教材で新しいクラスを始めるには「このクラスを複製」をご利用ください。
+                    {t('classes.export.noReimport')}
                   </p>
                   <div className="flex gap-2 mt-3">
                     <button
@@ -1135,7 +1133,7 @@ export function ClassDetailPage() {
                       disabled={exporting}
                       className="px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
                     >
-                      取消
+                      {t('classes.export.cancel')}
                     </button>
                     <button
                       onClick={async () => {
@@ -1148,7 +1146,7 @@ export function ClassDetailPage() {
                           setError(
                             err instanceof Error
                               ? err.message
-                              : '記録の保存に失敗しました',
+                              : t('classes.export.error'),
                           );
                         } finally {
                           setExporting(false);
@@ -1162,7 +1160,7 @@ export function ClassDetailPage() {
                       ) : (
                         <Archive className="w-3 h-3" />
                       )}
-                      保存する
+                      {t('classes.export.save')}
                     </button>
                   </div>
                 </div>
@@ -1174,13 +1172,13 @@ export function ClassDetailPage() {
                 <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="font-medium text-foreground">
-                    本当にこのクラスを削除しますか？
+                    {t('classes.deleteClass.confirm')}
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    クラスに所属する全ての生徒アカウントも削除されます。この操作は取り消せません。
+                    {t('classes.deleteClass.warning')}
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    必要に応じて、削除前に「クラス記録を保存」で成績記録を手元に保管してください。
+                    {t('classes.deleteClass.hint')}
                   </p>
                   <div className="flex gap-2 mt-3">
                     <button
@@ -1188,7 +1186,7 @@ export function ClassDetailPage() {
                       disabled={deletingClassLoading}
                       className="px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
                     >
-                      取消
+                      {t('classes.deleteClass.cancel')}
                     </button>
                     <button
                       onClick={handleDeleteClass}
@@ -1196,7 +1194,7 @@ export function ClassDetailPage() {
                       className="flex items-center gap-2 px-3 py-1.5 text-sm rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50"
                     >
                       {deletingClassLoading && <Loader2 className="w-3 h-3 animate-spin" />}
-                      削除する
+                      {t('classes.deleteClass.submit')}
                     </button>
                   </div>
                 </div>
@@ -1210,24 +1208,24 @@ export function ClassDetailPage() {
                   setDuplicateName('');
                 }}
                 className="flex items-center gap-1 px-4 py-2 text-sm rounded border border-border text-foreground hover:bg-accent"
-                title="課題テンプレートをコピーして新しいクラスを作成します"
+                title={t('classes.duplicate.description')}
               >
                 <CopyPlus className="w-4 h-4" />
-                このクラスを複製
+                {t('classes.duplicate.button')}
               </button>
               <button
                 onClick={() => setExportConfirm(true)}
                 className="flex items-center gap-1 px-4 py-2 text-sm rounded border border-border text-foreground hover:bg-accent"
-                title="成績記録・答案・添付PDFを ZIP で保存します（再インポート不可）"
+                title={t('classes.export.description')}
               >
                 <Archive className="w-4 h-4" />
-                クラス記録を保存
+                {t('classes.export.button')}
               </button>
               <button
                 onClick={() => setDeletingClassConfirm(true)}
                 className="px-4 py-2 text-sm rounded border border-destructive/30 text-destructive hover:bg-destructive/10"
               >
-                クラスを削除
+                {t('classes.deleteClass.button')}
               </button>
             </div>
           )}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Check, Loader2, ExternalLink } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import {
@@ -12,11 +13,11 @@ import {
 
 const PLAN_ORDER = ['free', 'lite', 'pro', 'enterprise'] as const;
 
-const PLAN_DISPLAY: Record<string, { badge: string; color: string; description: string }> = {
-  free: { badge: 'Free', color: 'text-muted-foreground', description: 'お試し・ローカルコンパイル向け' },
-  lite: { badge: 'Lite', color: 'text-blue-400', description: '個人ホビイスト向け' },
-  pro: { badge: 'Pro', color: 'text-orange-400', description: '開発者・Maker 向け' },
-  enterprise: { badge: 'Enterprise', color: 'text-purple-400', description: '教育機関・チーム向け' },
+const PLAN_DISPLAY_STATIC: Record<string, { badge: string; color: string }> = {
+  free: { badge: 'Free', color: 'text-muted-foreground' },
+  lite: { badge: 'Lite', color: 'text-blue-400' },
+  pro: { badge: 'Pro', color: 'text-orange-400' },
+  enterprise: { badge: 'Enterprise', color: 'text-purple-400' },
 };
 
 // Price ID は Stripe Dashboard で Product/Price 作成後に設定する。
@@ -31,6 +32,7 @@ const PRICE_IDS: Record<string, string> = {
 export default function PlanPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
   const { user, checkAuth } = useAuthStore();
   const [status, setStatus] = useState<SubscriptionStatus | null>(null);
   const [loading, setLoading] = useState(true);
@@ -43,7 +45,7 @@ export default function PlanPage() {
       try {
         const result = searchParams.get('result');
         if (result === 'success') {
-          setSuccessMessage('プランの変更が完了しました。反映まで数秒かかる場合があります。');
+          setSuccessMessage(t('plan.changeSuccess'));
           await checkAuth();
         }
       } catch {
@@ -73,7 +75,7 @@ export default function PlanPage() {
   const handleCheckout = async (planId: string) => {
     const priceId = PRICE_IDS[planId];
     if (!priceId) {
-      setError('このプランの Price ID が未設定です。管理者に連絡してください。');
+      setError(t('plan.priceNotSet'));
       return;
     }
     setActionLoading(planId);
@@ -82,7 +84,7 @@ export default function PlanPage() {
       const url = await createCheckoutSession(priceId);
       if (url) window.location.href = url;
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'エラーが発生しました');
+      setError(e instanceof Error ? e.message : t('plan.error'));
     } finally {
       setActionLoading(null);
     }
@@ -95,7 +97,7 @@ export default function PlanPage() {
       const url = await createPortalSession();
       if (url) window.location.href = url;
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'エラーが発生しました');
+      setError(e instanceof Error ? e.message : t('plan.error'));
     } finally {
       setActionLoading(null);
     }
@@ -119,9 +121,9 @@ export default function PlanPage() {
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            エディタに戻る
+            {t('plan.backToEditor')}
           </button>
-          <h1 className="text-2xl font-bold">プラン・お支払い</h1>
+          <h1 className="text-2xl font-bold">{t('plan.title')}</h1>
         </div>
 
         {/* 成功メッセージ */}
@@ -140,17 +142,17 @@ export default function PlanPage() {
 
         {/* 現在のプラン */}
         <div className="mb-8 p-4 rounded-md bg-card border border-border">
-          <p className="text-sm text-muted-foreground">現在のプラン</p>
+          <p className="text-sm text-muted-foreground">{t('plan.currentPlan')}</p>
           {(isAdmin || isInvited) ? (
             <>
-              <p className="text-xl font-bold mt-1 text-foreground">招待アカウント</p>
+              <p className="text-xl font-bold mt-1 text-foreground">{t('plan.invitedAccount')}</p>
               <p className="mt-2 text-sm text-destructive">
-                ファブラボ西播磨から {PLAN_DISPLAY[currentPlan]?.badge || currentPlan} プラン相当の権限が付与されています
+                {t('plan.invitedFrom', { plan: PLAN_DISPLAY_STATIC[currentPlan]?.badge || currentPlan })}
               </p>
             </>
           ) : (
-            <p className={`text-xl font-bold mt-1 ${PLAN_DISPLAY[currentPlan]?.color || ''}`}>
-              {PLAN_DISPLAY[currentPlan]?.badge || currentPlan}
+            <p className={`text-xl font-bold mt-1 ${PLAN_DISPLAY_STATIC[currentPlan]?.color || ''}`}>
+              {PLAN_DISPLAY_STATIC[currentPlan]?.badge || currentPlan}
             </p>
           )}
           {!isAdmin && !isInvited && status?.hasStripeSubscription && (
@@ -164,7 +166,7 @@ export default function PlanPage() {
               ) : (
                 <ExternalLink className="w-3 h-3" />
               )}
-              請求情報・プラン変更・解約
+              {t('plan.portalLink')}
             </button>
           )}
         </div>
@@ -172,7 +174,8 @@ export default function PlanPage() {
         {/* プラン一覧 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {PLAN_ORDER.map((planId) => {
-            const display = PLAN_DISPLAY[planId];
+            const display = PLAN_DISPLAY_STATIC[planId];
+            const description = t(`plan.${planId}.description`);
             const planInfo = status?.plan?.id === planId ? status.plan : null;
             const isCurrent = currentPlan === planId;
             const priceId = PRICE_IDS[planId as keyof typeof PRICE_IDS];
@@ -193,15 +196,15 @@ export default function PlanPage() {
                   </span>
                   {isCurrent && (
                     <span className="text-xs px-2 py-0.5 rounded bg-primary/20 text-primary">
-                      現在のプラン
+                      {t('plan.currentBadge')}
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-muted-foreground mb-4">{display.description}</p>
+                <p className="text-sm text-muted-foreground mb-4">{description}</p>
 
                 {/* 機能リスト */}
                 <ul className="space-y-1.5 mb-4">
-                  {(planInfo?.features || getFallbackFeatures(planId)).map((f, i) => (
+                  {(planInfo?.features || getFallbackFeatures(planId, t)).map((f, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-foreground">
                       <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                       {f}
@@ -214,7 +217,7 @@ export default function PlanPage() {
                   if (isAdmin || isCurrent || planId === 'free' || !priceId) {
                     // 管理者 / 現在のプラン / Free / Price未設定 → ボタンなし
                     if (planId !== 'free' && !priceId && !isCurrent) {
-                      return <p className="text-xs text-muted-foreground text-center">準備中</p>;
+                      return <p className="text-xs text-muted-foreground text-center">{t('plan.preparing')}</p>;
                     }
                     return null;
                   }
@@ -227,7 +230,7 @@ export default function PlanPage() {
                         disabled={!!actionLoading}
                         className="w-full py-2 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2"
                       >
-                        このプランに自分で契約する
+                        {t('plan.selfContract')}
                       </button>
                     );
                   }
@@ -247,7 +250,7 @@ export default function PlanPage() {
                       >
                         {actionLoading === 'portal' && <Loader2 className="w-3 h-3 animate-spin" />}
                         <ExternalLink className="w-3 h-3" />
-                        プランを変更する
+                        {t('plan.changePlan')}
                       </button>
                     );
                   }
@@ -259,7 +262,7 @@ export default function PlanPage() {
                       className="w-full py-2 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                       {actionLoading === planId && <Loader2 className="w-3 h-3 animate-spin" />}
-                      このプランにする
+                      {t('plan.subscribe')}
                     </button>
                   );
                 })()}
@@ -273,16 +276,14 @@ export default function PlanPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <div className="bg-card border border-border rounded-lg p-6 max-w-md mx-4">
               <h2 className="text-lg font-bold text-foreground mb-3">
-                {PLAN_DISPLAY[inviteConfirmPlan]?.badge} プランに契約しますか？
+                {t('plan.confirmTitle', { plan: PLAN_DISPLAY_STATIC[inviteConfirmPlan]?.badge })}
               </h2>
               <div className="p-3 rounded-md bg-destructive/10 border border-destructive/30 mb-4">
                 <p className="text-sm text-foreground">
-                  現在、ファブラボ西播磨から {PLAN_DISPLAY[currentPlan]?.badge} プラン相当の権限が付与されていますが、
-                  ご自身で {PLAN_DISPLAY[inviteConfirmPlan]?.badge} プランを契約すると、
-                  <strong className="text-destructive">ファブラボ西播磨からの権限付与は解除</strong>されます。
+                  {t('plan.confirmWarning', { currentPlan: PLAN_DISPLAY_STATIC[currentPlan]?.badge, newPlan: PLAN_DISPLAY_STATIC[inviteConfirmPlan]?.badge })}
                 </p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  以降はご自身の契約に基づくプランが適用されます。
+                  {t('plan.confirmNote')}
                 </p>
               </div>
               <div className="flex gap-2 justify-end">
@@ -291,7 +292,7 @@ export default function PlanPage() {
                   disabled={!!actionLoading}
                   className="px-4 py-2 text-sm rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
                 >
-                  キャンセル
+                  {t('plan.confirmCancel')}
                 </button>
                 <button
                   onClick={() => {
@@ -303,7 +304,7 @@ export default function PlanPage() {
                   className="px-4 py-2 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2"
                 >
                   {actionLoading && <Loader2 className="w-3 h-3 animate-spin" />}
-                  契約する
+                  {t('plan.confirmSubmit')}
                 </button>
               </div>
             </div>
@@ -314,12 +315,12 @@ export default function PlanPage() {
   );
 }
 
-function getFallbackFeatures(planId: string): string[] {
+function getFallbackFeatures(planId: string, t: (key: string) => string): string[] {
   const map: Record<string, string[]> = {
-    free: ['月50回クラウドコンパイル', '基本ブロック'],
-    lite: ['月250回クラウドコンパイル', '基本ブロック'],
-    pro: ['月500回クラウドコンパイル', '全ブロック', 'ピンアサイン機能'],
-    enterprise: ['無制限クラウドコンパイル', '全機能', 'クラス機能'],
+    free: [t('plan.features.cloudCompile50'), t('plan.features.basicBlocks')],
+    lite: [t('plan.features.cloudCompile250'), t('plan.features.basicBlocks')],
+    pro: [t('plan.features.cloudCompile500'), t('plan.features.allBlocks'), t('plan.features.pinAssign')],
+    enterprise: [t('plan.features.unlimitedCompile'), t('plan.features.allFeatures'), t('plan.features.classFeature')],
   };
   return map[planId] || [];
 }

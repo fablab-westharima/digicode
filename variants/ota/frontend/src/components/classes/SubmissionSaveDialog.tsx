@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2, Save, Send, Clock, FileText, Check, AlertTriangle, RotateCcw } from 'lucide-react';
 import {
   Dialog,
@@ -17,18 +18,19 @@ interface Props {
   onSubmit: () => Promise<void>;
 }
 
-function statusDisplay(status: string) {
+function statusDisplay(status: string, t: (key: string) => string) {
   switch (status) {
-    case 'assigned': return { text: '未着手', icon: <Clock className="w-4 h-4" />, color: 'text-muted-foreground' };
-    case 'in_progress': return { text: '作業中', icon: <FileText className="w-4 h-4" />, color: 'text-primary' };
-    case 'submitted': return { text: '提出済み', icon: <Check className="w-4 h-4" />, color: 'text-primary' };
-    case 'graded': return { text: '採点済み', icon: <Check className="w-4 h-4" />, color: 'text-primary' };
-    case 'returned': return { text: '差戻し', icon: <RotateCcw className="w-4 h-4" />, color: 'text-destructive' };
+    case 'assigned': return { text: t('submissions.status.assigned'), icon: <Clock className="w-4 h-4" />, color: 'text-muted-foreground' };
+    case 'in_progress': return { text: t('submissions.status.inProgress'), icon: <FileText className="w-4 h-4" />, color: 'text-primary' };
+    case 'submitted': return { text: t('submissions.status.submitted'), icon: <Check className="w-4 h-4" />, color: 'text-primary' };
+    case 'graded': return { text: t('submissions.status.graded'), icon: <Check className="w-4 h-4" />, color: 'text-primary' };
+    case 'returned': return { text: t('submissions.status.returned'), icon: <RotateCcw className="w-4 h-4" />, color: 'text-destructive' };
     default: return { text: status, icon: null, color: 'text-muted-foreground' };
   }
 }
 
 export function SubmissionSaveDialog({ open, onOpenChange, submission, isDirty, onSave, onSubmit }: Props) {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
@@ -44,10 +46,10 @@ export function SubmissionSaveDialog({ open, onOpenChange, submission, isDirty, 
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>保存と提出</DialogTitle>
+            <DialogTitle>{t('submissions.save.title')}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground py-4">
-            課題が選択されていません。「課題一覧」から課題を選択してください。
+            {t('submissions.save.noAssignment')}
           </p>
         </DialogContent>
       </Dialog>
@@ -55,24 +57,24 @@ export function SubmissionSaveDialog({ open, onOpenChange, submission, isDirty, 
   }
 
   const isReadOnly = submission.status === 'submitted' || submission.status === 'graded';
-  const st = statusDisplay(submission.status);
+  const st = statusDisplay(submission.status, t);
 
   const handleSave = async () => {
     if (isReadOnly) {
-      setMessage({ text: '提出済みの課題は編集できません', type: 'error' });
+      setMessage({ text: t('submissions.save.readOnly'), type: 'error' });
       return;
     }
     if (!isDirty) {
-      setMessage({ text: '変更がありません', type: 'info' });
+      setMessage({ text: t('submissions.save.noChanges'), type: 'info' });
       return;
     }
     setSaving(true);
     setMessage(null);
     try {
       await onSave();
-      setMessage({ text: '保存しました', type: 'success' });
+      setMessage({ text: t('submissions.save.saved'), type: 'success' });
     } catch (err) {
-      setMessage({ text: err instanceof Error ? err.message : '保存に失敗しました', type: 'error' });
+      setMessage({ text: err instanceof Error ? err.message : t('submissions.save.saveError'), type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -80,16 +82,16 @@ export function SubmissionSaveDialog({ open, onOpenChange, submission, isDirty, 
 
   const handleSubmit = async () => {
     if (isReadOnly) {
-      setMessage({ text: '既に提出済みです', type: 'error' });
+      setMessage({ text: t('submissions.save.alreadySubmitted'), type: 'error' });
       return;
     }
     setSubmitting(true);
     setMessage(null);
     try {
       await onSubmit();
-      setMessage({ text: '提出しました', type: 'success' });
+      setMessage({ text: t('submissions.save.submitted'), type: 'success' });
     } catch (err) {
-      setMessage({ text: err instanceof Error ? err.message : '提出に失敗しました', type: 'error' });
+      setMessage({ text: err instanceof Error ? err.message : t('submissions.save.submitError'), type: 'error' });
     } finally {
       setSubmitting(false);
     }
@@ -102,7 +104,7 @@ export function SubmissionSaveDialog({ open, onOpenChange, submission, isDirty, 
         onInteractOutside={(e) => { if (saving || submitting) e.preventDefault(); }}
       >
         <DialogHeader>
-          <DialogTitle>保存と提出</DialogTitle>
+          <DialogTitle>{t('submissions.save.title')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -136,44 +138,40 @@ export function SubmissionSaveDialog({ open, onOpenChange, submission, isDirty, 
                   {submission.status === 'graded' ? (
                     <>
                       <Check className="w-4 h-4 text-primary" />
-                      採点結果
+                      {t('submissions.save.gradedResult')}
                     </>
                   ) : (
                     <>
                       <RotateCcw className="w-4 h-4 text-destructive" />
-                      先生からの差戻しフィードバック
+                      {t('submissions.save.returnedFeedback')}
                     </>
                   )}
                 </p>
                 {submission.score !== null && (
                   <p className="text-sm text-foreground">
-                    スコア:{' '}
-                    <span className="font-mono font-semibold text-base">
-                      {submission.score}
-                    </span>{' '}
-                    / 100 点
+                    {t('submissions.save.score', { score: submission.score })}
                   </p>
                 )}
                 <div className="mt-2">
-                  <p className="text-xs text-muted-foreground mb-0.5">先生からのコメント:</p>
+                  <p className="text-xs text-muted-foreground mb-0.5">{t('submissions.save.teacherComment')}</p>
                   {submission.comment ? (
                     <p className="text-sm text-foreground whitespace-pre-wrap">
                       {submission.comment}
                     </p>
                   ) : (
                     <p className="text-sm text-muted-foreground italic">
-                      コメントはありません
+                      {t('submissions.save.noComment')}
                     </p>
                   )}
                 </div>
                 {submission.gradedAt && (
                   <p className="text-xs text-muted-foreground mt-2">
-                    採点日時: {new Date(submission.gradedAt).toLocaleString('ja-JP')}
+                    {t('submissions.save.gradedAt', { date: new Date(submission.gradedAt).toLocaleString('ja-JP') })}
                   </p>
                 )}
                 {submission.status === 'returned' && (
                   <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border">
-                    編集して再提出すると、前回の採点はクリアされます。
+                    {t('submissions.save.resubmitNote')}
                   </p>
                 )}
               </div>
@@ -202,7 +200,7 @@ export function SubmissionSaveDialog({ open, onOpenChange, submission, isDirty, 
               className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md border border-border text-foreground hover:bg-accent text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              保存
+              {t('submissions.save.saveBtn')}
             </button>
             <button
               onClick={handleSubmit}
@@ -210,19 +208,19 @@ export function SubmissionSaveDialog({ open, onOpenChange, submission, isDirty, 
               className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-              提出
+              {t('submissions.save.submitBtn')}
             </button>
           </div>
 
           {/* 提出済みの注意書き */}
           {isReadOnly && (
             <p className="text-xs text-muted-foreground text-center">
-              この課題は提出済みのため、編集・再提出はできません。
+              {t('submissions.save.submittedReadOnly')}
             </p>
           )}
           {!isReadOnly && (
             <p className="text-xs text-muted-foreground text-center">
-              提出すると編集できなくなります。
+              {t('submissions.save.submitWarning')}
             </p>
           )}
         </div>
