@@ -85,13 +85,13 @@ const getToolboxCategories = (): Record<string, string> => ({
   </category>`,
 
   variables: `
-  <category name="${cat('variables')}" colour="#f43f5e" custom="VARIABLE"></category>`,
+  <category id="variables" name="${cat('variables')}" colour="#f43f5e" custom="VARIABLE"></category>`,
 
   functions: `
-  <category name="${cat('functions')}" colour="#ec4899" custom="PROCEDURE"></category>`,
+  <category id="functions" name="${cat('functions')}" colour="#ec4899" custom="PROCEDURE"></category>`,
 
   time: `
-  <category name="${cat('time')}" colour="#06b6d4">
+  <category id="time" name="${cat('time')}" colour="#06b6d4">
     <block type="esp32_delay">
       <value name="TIME"><shadow type="math_number"><field name="NUM">1000</field></shadow></value>
     </block>
@@ -99,7 +99,7 @@ const getToolboxCategories = (): Record<string, string> => ({
   </category>`,
 
   serial: `
-  <category name="${cat('serial')}" colour="#64748b">
+  <category id="serial" name="${cat('serial')}" colour="#64748b">
     <block type="esp32_serial_begin">
       <field name="BAUD">9600</field>
     </block>
@@ -109,7 +109,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // OTTO 二足歩行
   otto_bipedal: `
-  <category name="${cat('ottoBipedal')}" colour="#FF6B35">
+  <category id="ottoBipedal" name="${cat('ottoBipedal')}" colour="#FF6B35">
     <block type="otto_init"></block>
     <block type="otto_home"></block>
     <sep></sep>
@@ -127,7 +127,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // OTTO Wheel
   otto_wheel: `
-  <category name="${cat('ottoWheel')}" colour="#4CAF50">
+  <category id="ottoWheel" name="${cat('ottoWheel')}" colour="#4CAF50">
     <block type="otto_wheel_init"></block>
     <sep></sep>
     <label text="${label('movement')}"></label>
@@ -142,7 +142,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // OTTO Ninja
   otto_ninja: `
-  <category name="${cat('ottoNinja')}" colour="#9C27B0">
+  <category id="ottoNinja" name="${cat('ottoNinja')}" colour="#9C27B0">
     <label text="${label('init')}"></label>
     <block type="otto_ninja_init"></block>
     <block type="otto_ninja_mode"></block>
@@ -165,7 +165,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // センサー - 超音波
   sensor_ultrasonic: `
-  <category name="${cat('ultrasonicSensor')}" colour="#3b82f6">
+  <category id="ultrasonicSensor" name="${cat('ultrasonicSensor')}" colour="#3b82f6">
     <label text="${label('hcsr04')}"></label>
     <block type="ultrasonic_init"></block>
     <block type="ultrasonic_distance"></block>
@@ -180,7 +180,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // モーター
   motor: `
-  <category name="${cat('motor')}" colour="#607D8B">
+  <category id="motor" name="${cat('motor')}" colour="#607D8B">
     <block type="motor_init"></block>
     <block type="motor_move"></block>
     <block type="motor_speed"></block>
@@ -189,7 +189,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // 差動駆動
   diff_drive: `
-  <category name="${cat('diffDrive')}" colour="#00897B">
+  <category id="diffDrive" name="${cat('diffDrive')}" colour="#00897B">
     <label text="${label('init')}"></label>
     <block type="diff_drive_init"></block>
     <sep></sep>
@@ -234,7 +234,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // エンコーダー
   encoder: `
-  <category name="${cat('encoder')}" colour="#795548">
+  <category id="encoder" name="${cat('encoder')}" colour="#795548">
     <label text="${label('init')}"></label>
     <block type="encoder_init"></block>
     <sep></sep>
@@ -252,7 +252,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // 壁センサー
   sensor_wall: `
-  <category name="${cat('wallSensor')}" colour="#FF5722">
+  <category id="wallSensor" name="${cat('wallSensor')}" colour="#FF5722">
     <label text="${label('init')}"></label>
     <block type="wall_sensor_init"></block>
     <sep></sep>
@@ -271,7 +271,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // ラインセンサー（TCRT5000/汎用）
   sensor_line: `
-  <category name="${cat('lineSensor')}" colour="#E91E63">
+  <category id="lineSensor" name="${cat('lineSensor')}" colour="#E91E63">
     <label text="${label('beginnerInit')}"></label>
     <block type="line_sensor_init_simple_2"></block>
     <sep></sep>
@@ -296,7 +296,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // QTRセンサー（高速）
   sensor_qtr: `
-  <category name="${cat('qtrSensor')}" colour="#9C27B0">
+  <category id="qtrSensor" name="${cat('qtrSensor')}" colour="#9C27B0">
     <label text="${label('init')}"></label>
     <block type="qtr_8a_init"></block>
     <block type="qtr_8rc_init"></block>
@@ -328,7 +328,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // PID制御
   pid: `
-  <category name="${cat('pidControl')}" colour="#3F51B5">
+  <category id="pidControl" name="${cat('pidControl')}" colour="#3F51B5">
     <label text="${label('init')}"></label>
     <block type="pid_init">
       <value name="KP"><shadow type="math_number"><field name="NUM">0.5</field></shadow></value>
@@ -357,7 +357,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // GPIO
   gpio: `
-  <category name="${cat('gpio')}" colour="#9C27B0">
+  <category id="gpio" name="${cat('gpio')}" colour="#9C27B0">
     <block type="esp32_pin_mode"></block>
     <block type="esp32_digital_write"></block>
     <block type="esp32_digital_read"></block>
@@ -371,7 +371,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // サーボ
   servo: `
-  <category name="${cat('servo')}" colour="#FF5722">
+  <category id="servo" name="${cat('servo')}" colour="#FF5722">
     <block type="servo_attach"></block>
     <block type="servo_write"></block>
     <block type="servo_write_value"></block>
@@ -381,7 +381,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // NeoPixel
   neopixel: `
-  <category name="${cat('neopixel')}" colour="#E91E63">
+  <category id="neopixel" name="${cat('neopixel')}" colour="#E91E63">
     <block type="neopixel_init"></block>
     <block type="neopixel_rainbow"></block>
     <block type="neopixel_color_simple"></block>
@@ -396,7 +396,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // ブザー
   buzzer: `
-  <category name="${cat('buzzer')}" colour="#8BC34A">
+  <category id="buzzer" name="${cat('buzzer')}" colour="#8BC34A">
     <block type="buzzer_tone">
       <value name="FREQ_CUSTOM"><shadow type="math_number"><field name="NUM">440</field></shadow></value>
       <value name="DURATION"><shadow type="math_number"><field name="NUM">500</field></shadow></value>
@@ -407,7 +407,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // ディスプレイ
   display: `
-  <category name="${cat('display')}" colour="#3F51B5">
+  <category id="display" name="${cat('display')}" colour="#3F51B5">
     <block type="display_init"></block>
     <block type="display_text"></block>
     <block type="display_show"></block>
@@ -416,7 +416,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // DHT温湿度センサー
   sensor_dht: `
-  <category name="${cat('temperature')}" colour="#06b6d4">
+  <category id="temperature" name="${cat('temperature')}" colour="#06b6d4">
     <block type="dht_init"></block>
     <block type="dht_temperature"></block>
     <block type="dht_humidity"></block>
@@ -424,7 +424,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // MQTT / Home Assistant
   mqtt: `
-  <category name="${cat('mqttHa')}" colour="#00BCD4">
+  <category id="mqttHa" name="${cat('mqttHa')}" colour="#00BCD4">
     <label text="${label('mqttSettings')}"></label>
     <block type="mqtt_setup"></block>
     <block type="mqtt_set_buffer_size"></block>
@@ -463,7 +463,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // ArduinoHA（Home Assistant Auto Discovery）
   arduino_ha: `
-  <category name="${cat('haAutoDiscovery')}" colour="#4CAF50">
+  <category id="haAutoDiscovery" name="${cat('haAutoDiscovery')}" colour="#4CAF50">
     <label text="${label('deviceInit')}"></label>
     <block type="ha_device_init"></block>
     <block type="ha_device_init_auth"></block>
@@ -538,7 +538,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // HTTPリクエスト
   http: `
-  <category name="${cat('http')}" colour="#2196F3">
+  <category id="http" name="${cat('http')}" colour="#2196F3">
     <label text="${label('get')}"></label>
     <block type="http_get"></block>
     <block type="http_get_with_headers"></block>
@@ -559,7 +559,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // JSON
   json: `
-  <category name="${cat('json')}" colour="#FF5722">
+  <category id="json" name="${cat('json')}" colour="#FF5722">
     <label text="${label('parse')}"></label>
     <block type="json_parse"></block>
     <block type="json_parse_size"></block>
@@ -588,7 +588,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // OTA・ESP管理
   ota: `
-  <category name="${cat('otaEsp')}" colour="#9C27B0">
+  <category id="otaEsp" name="${cat('otaEsp')}" colour="#9C27B0">
     <label text="${label('otaSettings')}"></label>
     <block type="ota_setup"></block>
     <block type="ota_setup_simple"></block>
@@ -611,7 +611,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // デジタルセンサー（Otto Blocklyスタイル）
   sensor_digital: `
-  <category name="${cat('digitalSensor')}" colour="#f59e0b">
+  <category id="digitalSensor" name="${cat('digitalSensor')}" colour="#f59e0b">
     <block type="button_sensor"></block>
     <block type="pir_sensor"></block>
     <block type="tilt_sensor"></block>
@@ -628,7 +628,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // アナログセンサー（Otto Blocklyスタイル）
   sensor_analog: `
-  <category name="${cat('analogSensor')}" colour="#10b981">
+  <category id="analogSensor" name="${cat('analogSensor')}" colour="#10b981">
     <block type="potentiometer"></block>
     <block type="ldr_sensor"></block>
     <block type="thermistor_sensor"></block>
@@ -644,7 +644,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // ステッピングモーター
   stepper: `
-  <category name="${cat('stepper')}" colour="#795548">
+  <category id="stepper" name="${cat('stepper')}" colour="#795548">
     <block type="stepper_init"></block>
     <block type="stepper_move"></block>
     <block type="stepper_rotate"></block>
@@ -653,7 +653,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // テキスト
   text: `
-  <category name="${cat('text')}" colour="#14b8a6">
+  <category id="text" name="${cat('text')}" colour="#14b8a6">
     <block type="text"><field name="TEXT"></field></block>
     <block type="text_join"></block>
     <block type="text_length">
@@ -663,7 +663,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // 配列（Otto Blocklyスタイル）
   lists: `
-  <category name="${cat('lists')}" colour="#FF8900">
+  <category id="lists" name="${cat('lists')}" colour="#FF8900">
     <block type="array_create">
       <field name="VAR">myArray</field>
       <field name="TYPE">int</field>
@@ -696,7 +696,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 
   // お気に入り設定（customモード専用）
   favorite_settings: `
-  <category name="⚙️ ${cat('favoriteSettings')}" colour="#FFA500">
+  <category id="favoriteSettings" name="⚙️ ${cat('favoriteSettings')}" colour="#FFA500">
     <label text="${label('clickToOpenSettings')}"></label>
   </category>`,
 

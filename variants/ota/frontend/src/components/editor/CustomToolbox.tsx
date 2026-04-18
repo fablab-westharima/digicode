@@ -43,37 +43,40 @@ const extractEmojiAndName = (name: string): { emoji: string | null; displayName:
 };
 
 // フォールバック用のアイコンマッピング（絵文字がない場合のみ使用）
+// キーは Blockly ツールボックスの category id（言語非依存）。
+// 旧: 日本語 displayName で引いていたが、多言語化で破綻するため id ベースに変更（2026-04-19、ルール33）。
+// 参考: toolboxGenerator.ts の <category id="..." ...>
 const fallbackIcons: Record<string, string> = {
-  'ロジック': '🧠',
-  'ループ': '🔄',
-  '数学': '🔢',
-  '変数': '📦',
-  '関数': '⚙️',
+  logic: '🧠',
+  loops: '🔄',
+  math: '🔢',
+  variables: '📦',
+  functions: '⚙️',
 };
 
-// カテゴリの色
+// カテゴリの色（キーは id、言語非依存）
 const categoryColors: Record<string, string> = {
-  '二足歩行': '#FF6B6B',
-  '超音波センサー': '#F59E0B',
-  'ブザー': '#6B7280',
-  'NeoPixel': '#EC4899',
-  'シリアル': '#14B8A6',
-  '時間': '#06B6D4',
-  'ロジック': '#6366F1',
-  'ループ': '#22C55E',
-  '数学': '#3B82F6',
-  '変数': '#F97316',
-  '関数': '#8B5CF6',
-  'サーボ': '#EF4444',
-  'モーター': '#10B981',
-  'ステッピングモーター': '#6366F1',
-  'ディスプレイ': '#8B5CF6',
-  'ラインセンサー': '#F59E0B',
-  'エンコーダー': '#06B6D4',
-  '壁センサー': '#EF4444',
-  'PID制御': '#3B82F6',
-  'QTRセンサー': '#22C55E',
-  '差動二輪': '#F97316',
+  ottoBipedal: '#FF6B6B',
+  ultrasonicSensor: '#F59E0B',
+  buzzer: '#6B7280',
+  neopixel: '#EC4899',
+  serial: '#14B8A6',
+  time: '#06B6D4',
+  logic: '#6366F1',
+  loops: '#22C55E',
+  math: '#3B82F6',
+  variables: '#F97316',
+  functions: '#8B5CF6',
+  servo: '#EF4444',
+  motor: '#10B981',
+  stepper: '#6366F1',
+  display: '#8B5CF6',
+  lineSensor: '#F59E0B',
+  encoder: '#06B6D4',
+  wallSensor: '#EF4444',
+  pidControl: '#3B82F6',
+  qtrSensor: '#22C55E',
+  diffDrive: '#F97316',
 };
 
 export function CustomToolbox({ workspace, categories }: CustomToolboxProps) {
@@ -151,10 +154,12 @@ export function CustomToolbox({ workspace, categories }: CustomToolboxProps) {
 
     // カテゴリ名から絵文字を抽出
     const { emoji, displayName } = extractEmojiAndName(category.name);
+    // 辞書キーは category.id（言語非依存）優先、fallback で displayName（後方互換）
+    const lookupKey = category.id || displayName;
     // 絵文字がなければフォールバックアイコンを使用
-    const icon = emoji || fallbackIcons[displayName] || '📦';
-    // 色の取得（displayNameで検索）
-    const color = categoryColors[displayName] || category.colour || '#6366F1';
+    const icon = emoji || fallbackIcons[lookupKey] || '📦';
+    // 色の取得
+    const color = categoryColors[lookupKey] || category.colour || '#6366F1';
 
     return (
       <div key={category.name}>

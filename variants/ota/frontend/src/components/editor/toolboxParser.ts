@@ -1,6 +1,7 @@
 // ツールボックスXMLをパースしてカテゴリ構造に変換
 
 export interface ToolboxCategory {
+  id?: string;
   name: string;
   colour: string;
   icon?: string;
@@ -28,6 +29,12 @@ function parseCategories(parent: Element): ToolboxCategory[] {
       name: catEl.getAttribute('name') || '',
       colour: catEl.getAttribute('colour') || '#6366F1',
     };
+
+    // 言語非依存の識別子（多言語対応: name は翻訳されるため id で辞書を引く）
+    const id = catEl.getAttribute('id');
+    if (id) {
+      category.id = id;
+    }
 
     // カスタムカテゴリ（変数、関数など）
     const custom = catEl.getAttribute('custom');
