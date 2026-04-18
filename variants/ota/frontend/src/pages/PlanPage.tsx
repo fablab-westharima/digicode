@@ -230,10 +230,10 @@ export default function PlanPage() {
 
 function getFallbackFeatures(planId: string): string[] {
   const map: Record<string, string[]> = {
-    free: ['月50回コンパイル', '基本ブロック'],
-    lite: ['月250回コンパイル', '基本ブロック'],
-    pro: ['月500回コンパイル', '全ブロック', 'ピンアサイン機能'],
-    enterprise: ['無制限コンパイル', '全機能', 'クラス機能'],
+    free: ['月50回クラウドコンパイル', '基本ブロック'],
+    lite: ['月250回クラウドコンパイル', '基本ブロック'],
+    pro: ['月500回クラウドコンパイル', '全ブロック', 'ピンアサイン機能'],
+    enterprise: ['無制限クラウドコンパイル', '全機能', 'クラス機能'],
   };
   return map[planId] || [];
 }

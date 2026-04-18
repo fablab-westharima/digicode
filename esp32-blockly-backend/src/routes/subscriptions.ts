@@ -31,25 +31,25 @@ const PLANS = {
     id: 'free',
     name: '無料プラン',
     compileLimit: 50,
-    features: ['月50回コンパイル', '基本ブロック'],
+    features: ['月50回クラウドコンパイル', '基本ブロック'],
   },
   lite: {
     id: 'lite',
     name: 'Liteプラン',
     compileLimit: 250,
-    features: ['月250回コンパイル', '基本ブロック'],
+    features: ['月250回クラウドコンパイル', '基本ブロック'],
   },
   pro: {
     id: 'pro',
     name: 'Proプラン',
     compileLimit: 500,
-    features: ['月500回コンパイル', '全ブロック', 'ピンアサイン機能'],
+    features: ['月500回クラウドコンパイル', '全ブロック', 'ピンアサイン機能'],
   },
   enterprise: {
     id: 'enterprise',
     name: 'Enterpriseプラン',
     compileLimit: -1,
-    features: ['無制限コンパイル', '全機能', 'クラス機能'],
+    features: ['無制限クラウドコンパイル', '全機能', 'クラス機能'],
   },
 };
 
