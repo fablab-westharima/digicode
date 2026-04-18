@@ -2514,11 +2514,35 @@
     "usbDriver": "Driver USB",
     "usbDriverAll": "Todos los drivers",
     "document": "Documentación",
+    "bleOta": "BLE OTA",
+    "bleFirmwareWrite": "Escribir firmware vía BLE",
+    "bleDeviceName": "Configurar nombre BLE",
+    "wifiOta": "WiFi OTA",
+    "wifiPrerequisites": "Instalar software requerido",
+    "wifiFirmwareWrite": "Escribir firmware vía WiFi",
+    "apSetup": "Conectar a punto de acceso",
+    "wifiDeviceName": "Cambiar nombre WiFi",
+    "submissionList": "Lista de tareas",
+    "submissionSave": "Guardar y enviar",
+    "submissionSaveWithTitle": "Guardar y enviar — {{title}}",
+    "gradedList": "Resultados calificados",
+    "plan": "Plan y facturación",
+    "admin": "Administrador",
+    "classManagement": "Gestión de clases",
+    "changePassword": "Cambiar contraseña",
+    "login": "Iniciar sesión / Registrarse",
+    "pin": "Fijar",
+    "unpin": "Desfijar",
+    "requiresPro": "Disponible con plan Pro o superior",
+    "freeOpenNow": "Prueba gratuita",
     "category": {
       "project": "Proyectos",
       "deviceSetup": "Preparación del dispositivo",
+      "otaSetup": "Configuración OTA",
+      "usbDriver": "Controladores USB",
       "tuning": "Ajustes",
       "advanced": "Avanzado",
+      "assignment": "Tareas",
       "help": "Ayuda",
       "account": "Cuenta"
     },
@@ -2528,6 +2552,20 @@
     "accountDelete": "Eliminar cuenta",
     "documentation": "Documentación",
     "hint": "Haz clic en la flecha izquierda para contraer"
+  },
+  "mobileWarning": {
+    "title": "Utilice la versión de escritorio",
+    "description": "DigiCode es un editor de bloques <strong>exclusivo para PC</strong>. Todas las funciones —escritura de firmware, configuración de dispositivos y más— requieren un entorno de escritorio.",
+    "requirements": {
+      "title": "Entorno recomendado",
+      "resolution": "Resolución de pantalla:",
+      "resolutionValue": "1024px × 768px o superior",
+      "os": "Sistema operativo:",
+      "osValue": "Windows / macOS / Linux",
+      "browser": "Navegador:",
+      "browserValue": "Chrome, Firefox, Edge (última versión)"
+    },
+    "notSupported": "No se admite el uso en smartphones y tablets."
   },
   "modeSelector": {
     "groups": {

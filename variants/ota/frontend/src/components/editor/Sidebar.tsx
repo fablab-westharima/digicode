@@ -292,8 +292,8 @@ export function Sidebar({
       {
         id: 'submission-save-dialog',
         label: currentSubmissionTitle
-          ? `保存と提出 — ${currentSubmissionTitle}`
-          : '保存と提出',
+          ? t('sidebar.submissionSaveWithTitle', { title: currentSubmissionTitle, defaultValue: '保存と提出 — {{title}}' })
+          : t('sidebar.submissionSave', { defaultValue: '保存と提出' }),
         icon: <Save className="w-4 h-4" />,
         action: onSubmissionSaveDialog || (() => {}),
         category: 'assignment' as const,
@@ -441,7 +441,7 @@ export function Sidebar({
             size="sm"
             onClick={() => setIsPinned(!isPinned)}
             className={`text-[#E6EDF3] hover:bg-[#2E333D] p-1 ${isPinned ? 'text-blue-400' : ''}`}
-            title={isPinned ? 'ピン留め解除' : 'ピン留め'}
+            title={isPinned ? t('sidebar.unpin', { defaultValue: 'ピン留め解除' }) : t('sidebar.pin', { defaultValue: 'ピン留め' })}
           >
             <PinIcon className={`w-4 h-4 ${isPinned ? 'fill-current' : ''}`} />
           </Button>
@@ -552,7 +552,7 @@ export function Sidebar({
                             : 'text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white'
                         } ${shouldShowFull ? 'px-3' : 'px-0 justify-center'}`}
                         onClick={item.premium && !isPinAssignAvailable ? undefined : item.action}
-                        title={!shouldShowFull ? item.label : item.premium && !isPinAssignAvailable ? 'Proプラン以上で利用可能です' : undefined}
+                        title={!shouldShowFull ? item.label : item.premium && !isPinAssignAvailable ? t('sidebar.requiresPro', { defaultValue: 'Proプラン以上で利用可能です' }) : undefined}
                       >
                         <span className={shouldShowFull ? 'mr-3' : ''}>{item.icon}</span>
                         {shouldShowFull && (
@@ -562,7 +562,7 @@ export function Sidebar({
                           <span className="text-[10px] text-orange-400 ml-1">PRO</span>
                         )}
                         {shouldShowFull && item.premium && isPinAssignAvailable && isPinAssignFreeOpen && (
-                          <span className="text-[10px] text-green-400 ml-1">無料開放中</span>
+                          <span className="text-[10px] text-green-400 ml-1">{t('sidebar.freeOpenNow', { defaultValue: '無料開放中' })}</span>
                         )}
                       </Button>
                     )}

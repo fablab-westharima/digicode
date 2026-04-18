@@ -2514,11 +2514,35 @@
     "usbDriver": "USB驅動程式",
     "usbDriverAll": "所有驅動程式",
     "document": "文件",
+    "bleOta": "BLE OTA",
+    "bleFirmwareWrite": "透過 BLE 寫入韌體",
+    "bleDeviceName": "設定 BLE 裝置名稱",
+    "wifiOta": "WiFi OTA",
+    "wifiPrerequisites": "安裝所需軟體",
+    "wifiFirmwareWrite": "透過 WiFi 寫入韌體",
+    "apSetup": "連線至存取點",
+    "wifiDeviceName": "變更 WiFi 裝置名稱",
+    "submissionList": "作業清單",
+    "submissionSave": "儲存並提交",
+    "submissionSaveWithTitle": "儲存並提交 — {{title}}",
+    "gradedList": "評分結果",
+    "plan": "方案與付款",
+    "admin": "管理",
+    "classManagement": "班級管理",
+    "changePassword": "變更密碼",
+    "login": "登入 / 註冊",
+    "pin": "釘選",
+    "unpin": "取消釘選",
+    "requiresPro": "需要 Pro 方案或更高方案",
+    "freeOpenNow": "免費試用中",
     "category": {
       "project": "專案",
       "deviceSetup": "裝置準備",
+      "otaSetup": "OTA 設定",
+      "usbDriver": "USB 驅動程式",
       "tuning": "調整",
       "advanced": "進階設定",
+      "assignment": "作業",
       "help": "說明",
       "account": "帳戶"
     },
@@ -2528,6 +2552,20 @@
     "accountDelete": "刪除帳戶",
     "documentation": "文件",
     "hint": "點擊左箭頭以收合側邊欄"
+  },
+  "mobileWarning": {
+    "title": "請使用桌面版",
+    "description": "DigiCode 是<strong>專為 PC 設計</strong>的積木編輯器。韌體寫入、裝置設定等所有功能皆需桌面環境。",
+    "requirements": {
+      "title": "建議環境",
+      "resolution": "螢幕解析度:",
+      "resolutionValue": "1024px × 768px 以上",
+      "os": "支援作業系統:",
+      "osValue": "Windows / macOS / Linux",
+      "browser": "瀏覽器:",
+      "browserValue": "Chrome、Firefox、Edge（最新版）"
+    },
+    "notSupported": "不支援智慧型手機和平板裝置。"
   },
   "modeSelector": {
     "groups": {

@@ -2514,11 +2514,35 @@
     "usbDriver": "Driver USB",
     "usbDriverAll": "Todos os drivers",
     "document": "Documentação",
+    "bleOta": "BLE OTA",
+    "bleFirmwareWrite": "Gravar firmware via BLE",
+    "bleDeviceName": "Definir nome BLE",
+    "wifiOta": "WiFi OTA",
+    "wifiPrerequisites": "Instalar software necessário",
+    "wifiFirmwareWrite": "Gravar firmware via WiFi",
+    "apSetup": "Conectar ao ponto de acesso",
+    "wifiDeviceName": "Alterar nome WiFi",
+    "submissionList": "Lista de tarefas",
+    "submissionSave": "Salvar e enviar",
+    "submissionSaveWithTitle": "Salvar e enviar — {{title}}",
+    "gradedList": "Resultados avaliados",
+    "plan": "Plano e cobrança",
+    "admin": "Administração",
+    "classManagement": "Gerenciamento de turmas",
+    "changePassword": "Alterar senha",
+    "login": "Entrar / Cadastrar",
+    "pin": "Fixar",
+    "unpin": "Desfixar",
+    "requiresPro": "Disponível com plano Pro ou superior",
+    "freeOpenNow": "Teste gratuito",
     "category": {
       "project": "Projetos",
       "deviceSetup": "Preparação do dispositivo",
+      "otaSetup": "Configuração OTA",
+      "usbDriver": "Drivers USB",
       "tuning": "Ajustes",
       "advanced": "Avançado",
+      "assignment": "Tarefas",
       "help": "Ajuda",
       "account": "Conta"
     },
@@ -2528,6 +2552,20 @@
     "accountDelete": "Excluir conta",
     "documentation": "Documentação",
     "hint": "Clique na seta esquerda para recolher"
+  },
+  "mobileWarning": {
+    "title": "Use a versão para desktop",
+    "description": "O DigiCode é um editor de blocos <strong>exclusivo para PC</strong>. Todas as funcionalidades—gravação de firmware, configurações de dispositivo e mais—requerem um ambiente desktop.",
+    "requirements": {
+      "title": "Ambiente recomendado",
+      "resolution": "Resolução da tela:",
+      "resolutionValue": "1024px × 768px ou superior",
+      "os": "Sistema operacional:",
+      "osValue": "Windows / macOS / Linux",
+      "browser": "Navegador:",
+      "browserValue": "Chrome, Firefox, Edge (versão mais recente)"
+    },
+    "notSupported": "O uso em smartphones e tablets não é suportado."
   },
   "modeSelector": {
     "groups": {
