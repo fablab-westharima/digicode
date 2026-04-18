@@ -204,7 +204,7 @@ export default function PlanPage() {
 
                 {/* 機能リスト */}
                 <ul className="space-y-1.5 mb-4">
-                  {(planInfo?.features || getFallbackFeatures(planId, t)).map((f, i) => (
+                  {getFallbackFeatures(planId, t).map((f, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-foreground">
                       <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                       {f}
