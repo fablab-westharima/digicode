@@ -13,6 +13,7 @@ import { useSerialStore } from '@/stores/serialStore';
 
 // シリアルコンソール表示コンポーネント
 function SerialConsole() {
+  const { t } = useTranslation();
   const { output } = useSerialStore();
   const [expanded, setExpanded] = useState(false);
 
@@ -25,7 +26,7 @@ function SerialConsole() {
         onClick={() => setExpanded(!expanded)}
         className="text-xs text-[#484F58] hover:text-[#8B949E] flex items-center gap-1"
       >
-        {expanded ? '▾' : '▸'} シリアルコンソール
+        {expanded ? '▾' : '▸'} {t('device.serialConsole', { defaultValue: 'シリアルコンソール' })}
       </button>
       {expanded && (
         <div className="mt-2 bg-[#0D1117] border border-[#2E333D] rounded-lg p-2 h-40 overflow-x-auto overflow-y-auto font-mono text-xs">
@@ -65,9 +66,9 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
   // バリデーション（英数字+ハイフン、1-20文字、先頭末尾ハイフン禁止）
   const validateName = (name: string): string => {
     if (name.length === 0) return '';
-    if (name.length > 20) return '20文字以内で入力してください';
-    if (!/^[a-zA-Z0-9-]+$/.test(name)) return '英数字とハイフン(-)のみ使用できます';
-    if (name.startsWith('-') || name.endsWith('-')) return '先頭・末尾にハイフンは使えません';
+    if (name.length > 20) return t('device.nameDialog.validation.tooLong', { defaultValue: '20文字以内で入力してください' });
+    if (!/^[a-zA-Z0-9-]+$/.test(name)) return t('device.nameDialog.validation.invalidChar', { defaultValue: '英数字とハイフン(-)のみ使用できます' });
+    if (name.startsWith('-') || name.endsWith('-')) return t('device.nameDialog.validation.hyphenPosition', { defaultValue: '先頭・末尾にハイフンは使えません' });
     return '';
   };
 
@@ -88,7 +89,7 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
   // デバイス名を起動ログからパース
   const loadDeviceName = useCallback(async () => {
     setIsLoading(true);
-    setStatusMessage('デバイス情報を読み込み中...');
+    setStatusMessage(t('device.nameDialog.loadingDeviceInfo', { defaultValue: 'デバイス情報を読み込み中...' }));
 
     let foundName = '';
     let foundUuid = '';
@@ -132,11 +133,11 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
 
   // USB接続→リセット→Ready待ち→デバイス名読み込み
   const handleConnect = async () => {
-    setStatusMessage('ESP32に接続中...');
+    setStatusMessage(t('device.nameDialog.status.connecting', { defaultValue: 'ESP32に接続中...' }));
     try {
       await connect();
     } catch {
-      setStatusMessage('接続に失敗しました。');
+      setStatusMessage(t('device.nameDialog.status.connectFailed', { defaultValue: '接続に失敗しました。' }));
       return;
     }
   };
@@ -146,10 +147,10 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
     if (status !== 'connected' || isDeviceReady) return;
 
     const initDevice = async () => {
-      setStatusMessage('ESP32をリセット中...');
+      setStatusMessage(t('device.nameDialog.status.resetting', { defaultValue: 'ESP32をリセット中...' }));
       await resetESP32();
 
-      setStatusMessage('起動を待っています...');
+      setStatusMessage(t('device.nameDialog.status.waitingBoot', { defaultValue: '起動を待っています...' }));
       const startIndex = useSerialStore.getState().output.length;
       // BLEファームウェアは"Ready."、WiFiファームウェアは"System Ready!"を出力する
       const ready = await waitForResponse('Ready', startIndex, 15000);
@@ -158,7 +159,7 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
         setIsDeviceReady(true);
         await loadDeviceName();
       } else {
-        setStatusMessage('起動タイムアウト。もう一度試してください。');
+        setStatusMessage(t('device.nameDialog.status.bootTimeout', { defaultValue: '起動タイムアウト。もう一度試してください。' }));
       }
     };
 
@@ -175,7 +176,7 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
 
     setIsSaving(true);
     setIsSaved(false);
-    setStatusMessage('デバイス名を保存中...');
+    setStatusMessage(t('device.savingDeviceName', { defaultValue: 'デバイス名を保存中...' }));
 
     try {
       const startIndex = useSerialStore.getState().output.length;
@@ -189,7 +190,7 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
       const saved = await waitForResponse('CONFIG_SAVED', startIndex, 5000);
 
       if (saved) {
-        setStatusMessage('再起動して新しい名前を適用中...');
+        setStatusMessage(t('device.nameDialog.status.applyingReset', { defaultValue: '再起動して新しい名前を適用中...' }));
         await resetESP32();
 
         const resetIndex = useSerialStore.getState().output.length;
@@ -204,17 +205,17 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
 
           setIsSaved(true);
           setOriginalName(deviceName);
-          setStatusMessage(`保存完了。BLE名: ${bleName}`);
+          setStatusMessage(t('device.nameDialog.status.saveComplete', { bleName, defaultValue: '保存完了。BLE名: {{bleName}}' }));
         } else {
-          setStatusMessage('保存完了。再起動のタイムアウト（名前は保存済み）。');
+          setStatusMessage(t('device.nameDialog.status.saveCompleteResetTimeout', { defaultValue: '保存完了。再起動のタイムアウト（名前は保存済み）。' }));
           setIsSaved(true);
         }
       } else {
-        setStatusMessage('保存に失敗しました。もう一度試してください。');
+        setStatusMessage(t('device.nameDialog.status.saveFailed', { defaultValue: '保存に失敗しました。もう一度試してください。' }));
       }
     } catch (error) {
       console.error('[DeviceNameDialog] Save error:', error);
-      setStatusMessage('エラーが発生しました。');
+      setStatusMessage(t('device.nameDialog.status.error', { defaultValue: 'エラーが発生しました。' }));
     } finally {
       setIsSaving(false);
     }
@@ -251,10 +252,10 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Pencil className="w-5 h-5 text-[#8B5CF6]" />
-            デバイス名の設定
+            {t('device.nameDialog.title', { defaultValue: 'デバイス名の設定' })}
           </DialogTitle>
           <DialogDescription>
-            ESP32のデバイス名を設定します。BLE/WiFi OTAでデバイスを識別する名前になります。
+            {t('device.nameDialog.description', { defaultValue: 'ESP32のデバイス名を設定します。BLE/WiFi OTAでデバイスを識別する名前になります。' })}
           </DialogDescription>
         </DialogHeader>
 
@@ -265,7 +266,7 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
               <span className={`text-xs font-medium px-2 py-0.5 rounded ${isDeviceReady ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}`}>
                 Step 1
               </span>
-              USB接続
+              {t('device.usbConnection', { defaultValue: 'USB接続' })}
               {isDeviceReady && <Check className="w-4 h-4 text-green-500" />}
             </h3>
             <div className="p-3 rounded-lg border-2 border-[#2E333D] bg-[#0D1117]">
@@ -276,25 +277,29 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
                   </div>
                   <div>
                     <p className="text-sm font-medium text-[#E6EDF3]">
-                      {isConnected ? 'ESP32に接続済み' : 'ESP32をUSBケーブルで接続'}
+                      {isConnected
+                        ? t('device.connectedToEsp32', { defaultValue: 'ESP32に接続済み' })
+                        : t('device.connectEsp32Usb', { defaultValue: 'ESP32をUSBケーブルで接続' })}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <div className={`w-2 h-2 rounded-full ${
                         isConnected ? 'bg-green-500' : 'bg-gray-500'
                       }`} />
                       <span className="text-xs text-[#8B949E]">
-                        {isConnected ? '接続済み' : '未接続'}
+                        {isConnected
+                          ? t('device.connected', { defaultValue: '接続済み' })
+                          : t('device.disconnected', { defaultValue: '未接続' })}
                       </span>
                     </div>
                   </div>
                 </div>
                 {isConnected ? (
                   <Button variant="outline" size="sm" onClick={() => { disconnect(); setIsDeviceReady(false); }}>
-                    切断
+                    {t('device.disconnect', { defaultValue: '切断' })}
                   </Button>
                 ) : (
                   <Button size="sm" onClick={handleConnect}>
-                    接続
+                    {t('device.connect', { defaultValue: '接続' })}
                   </Button>
                 )}
               </div>
@@ -307,8 +312,8 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
               <div className="flex items-center gap-3">
                 <div className="animate-spin h-5 w-5 border-2 border-yellow-500 border-t-transparent rounded-full" />
                 <div>
-                  <p className="text-sm font-medium text-yellow-400">{statusMessage || 'ESP32起動待ち中...'}</p>
-                  <p className="text-xs text-[#8B949E]">起動完了を検知するまでお待ちください</p>
+                  <p className="text-sm font-medium text-yellow-400">{statusMessage || t('device.nameDialog.waitingForBoot', { defaultValue: 'ESP32起動待ち中...' })}</p>
+                  <p className="text-xs text-[#8B949E]">{t('device.nameDialog.waitingHint', { defaultValue: '起動完了を検知するまでお待ちください' })}</p>
                 </div>
               </div>
             </div>
@@ -321,7 +326,7 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
                 <span className={`text-xs font-medium px-2 py-0.5 rounded ${isSaved ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}`}>
                   Step 2
                 </span>
-                デバイス名
+                {t('device.deviceNameStep', { defaultValue: 'デバイス名' })}
                 {isSaved && <Check className="w-4 h-4 text-green-500" />}
               </h3>
 
@@ -329,7 +334,7 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
                 <div className="p-4 rounded-lg border-2 border-[#2E333D] bg-[#0D1117]">
                   <div className="flex items-center gap-3">
                     <div className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full" />
-                    <span className="text-sm text-[#8B949E]">デバイス情報を読み込み中...</span>
+                    <span className="text-sm text-[#8B949E]">{t('device.nameDialog.loadingDeviceInfo', { defaultValue: 'デバイス情報を読み込み中...' })}</span>
                   </div>
                 </div>
               ) : (
@@ -340,7 +345,7 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
 
                   <div>
                     <label className="text-xs text-[#8B949E] block mb-1">
-                      デバイス名（英数字とハイフン、1-20文字）
+                      {t('device.nameDialog.nameFieldLabel', { defaultValue: 'デバイス名（英数字とハイフン、1-20文字）' })}
                     </label>
                     <input
                       type="text"
@@ -376,9 +381,9 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
                     disabled={isSaving || isSaved || !hasChanged || deviceName.length === 0 || !!nameError}
                     className="w-full bg-[#238636] hover:bg-[#2ea043] text-white disabled:opacity-50"
                   >
-                    {isSaving ? '保存中...' : isSaved ? (
-                      <><Check className="w-4 h-4 mr-1" /> 保存完了</>
-                    ) : '設定を保存'}
+                    {isSaving ? t('device.nameDialog.saving', { defaultValue: '保存中...' }) : isSaved ? (
+                      <><Check className="w-4 h-4 mr-1" /> {t('device.nameDialog.saved', { defaultValue: '保存完了' })}</>
+                    ) : t('device.saveSettings', { defaultValue: '設定を保存' })}
                   </Button>
                 </>
               )}
@@ -388,8 +393,8 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
           {/* macOSでのBLE名に関する注意 */}
           {isConnected && isDeviceReady && (
             <div className="p-3 rounded-lg border border-amber-600/30 bg-amber-900/10 text-xs text-[#8B949E]">
-              <p className="font-medium text-amber-400 mb-1">macOSをお使いの方へ</p>
-              <p>macOSはBLEデバイス名を強力にキャッシュするため、名前を変更してもBLEスキャン時に旧名（UUID表示）のまま表示される場合があります。Windowsでは正しく反映されます。これはmacOS側の仕様であり、デバイスには正しく保存されています。</p>
+              <p className="font-medium text-amber-400 mb-1">{t('device.nameDialog.macWarningTitle', { defaultValue: 'macOSをお使いの方へ' })}</p>
+              <p>{t('device.nameDialog.macWarningBody', { defaultValue: 'macOSはBLEデバイス名を強力にキャッシュするため、名前を変更してもBLEスキャン時に旧名（UUID表示）のまま表示される場合があります。Windowsでは正しく反映されます。これはmacOS側の仕様であり、デバイスには正しく保存されています。' })}</p>
             </div>
           )}
 

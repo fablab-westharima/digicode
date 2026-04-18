@@ -594,7 +594,36 @@
     "homeRouterWifi": "WiFi (Router doméstico, etc.)",
     "addWifi": "Adicionar WiFi",
     "passwordLabel": "Palavra-passe",
-    "confirmDeleteDevice": "Eliminar dispositivo \"{{name}}\"?"
+    "confirmDeleteDevice": "Eliminar dispositivo \"{{name}}\"?",
+    "nameDialog": {
+      "title": "Definir nome do dispositivo",
+      "description": "Configure o nome do dispositivo ESP32. Usado para identificá-lo via BLE/WiFi OTA.",
+      "waitingForBoot": "Aguardando o ESP32 inicializar...",
+      "waitingHint": "Aguarde enquanto a conclusão da inicialização é detectada",
+      "loadingDeviceInfo": "Carregando informações do dispositivo...",
+      "nameFieldLabel": "Nome do dispositivo (alfanumérico e hífens, 1-20 caracteres)",
+      "saving": "Salvando...",
+      "saved": "Salvo",
+      "macWarningTitle": "Para usuários de macOS",
+      "macWarningBody": "O macOS armazena em cache agressivamente os nomes de dispositivos BLE. Mesmo após mudar o nome, varreduras BLE podem mostrar o nome antigo (UUID) por algum tempo. Windows reflete as mudanças corretamente. Esta é uma limitação do macOS — o dispositivo em si salva o novo nome corretamente.",
+      "validation": {
+        "tooLong": "Insira 20 caracteres ou menos",
+        "invalidChar": "Apenas caracteres alfanuméricos e hífens (-) são permitidos",
+        "hyphenPosition": "Hífens não podem ficar no início ou no fim"
+      },
+      "status": {
+        "connecting": "Conectando ao ESP32...",
+        "connectFailed": "Falha na conexão.",
+        "resetting": "Reiniciando ESP32...",
+        "waitingBoot": "Aguardando inicialização...",
+        "bootTimeout": "Tempo esgotado para inicialização. Tente novamente.",
+        "applyingReset": "Reiniciando para aplicar o novo nome...",
+        "saveComplete": "Salvamento concluído. Nome BLE: {{bleName}}",
+        "saveCompleteResetTimeout": "Salvamento concluído. Tempo esgotado para reinicialização (o nome foi salvo).",
+        "saveFailed": "Falha ao salvar. Tente novamente.",
+        "error": "Ocorreu um erro."
+      }
+    }
   },
   "bluetooth": {
     "notSupported": "Bluetooth não é suportado",

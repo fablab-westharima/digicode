@@ -594,7 +594,36 @@
     "homeRouterWifi": "WiFi (Router doméstico, etc.)",
     "addWifi": "Agregar WiFi",
     "passwordLabel": "Contraseña",
-    "confirmDeleteDevice": "¿Eliminar dispositivo \"{{name}}\"?"
+    "confirmDeleteDevice": "¿Eliminar dispositivo \"{{name}}\"?",
+    "nameDialog": {
+      "title": "Configurar nombre del dispositivo",
+      "description": "Configura el nombre del dispositivo ESP32. Se usa para identificarlo vía BLE/WiFi OTA.",
+      "waitingForBoot": "Esperando a que arranque el ESP32...",
+      "waitingHint": "Espere mientras se detecta la finalización del arranque",
+      "loadingDeviceInfo": "Cargando información del dispositivo...",
+      "nameFieldLabel": "Nombre del dispositivo (alfanumérico y guiones, 1-20 caracteres)",
+      "saving": "Guardando...",
+      "saved": "Guardado",
+      "macWarningTitle": "Para usuarios de macOS",
+      "macWarningBody": "macOS almacena en caché los nombres de dispositivos BLE de forma agresiva. Al cambiar el nombre, el escaneo BLE podría mostrar el nombre antiguo (UUID) por un tiempo. Windows refleja los cambios correctamente. Esto es una limitación de macOS — el dispositivo sí guarda el nuevo nombre correctamente.",
+      "validation": {
+        "tooLong": "Por favor ingrese 20 caracteres o menos",
+        "invalidChar": "Solo se permiten caracteres alfanuméricos y guiones (-)",
+        "hyphenPosition": "Los guiones no pueden estar al principio o al final"
+      },
+      "status": {
+        "connecting": "Conectando al ESP32...",
+        "connectFailed": "Error de conexión.",
+        "resetting": "Reiniciando ESP32...",
+        "waitingBoot": "Esperando arranque...",
+        "bootTimeout": "Tiempo de espera de arranque agotado. Por favor, inténtelo de nuevo.",
+        "applyingReset": "Reiniciando para aplicar el nuevo nombre...",
+        "saveComplete": "Guardado completo. Nombre BLE: {{bleName}}",
+        "saveCompleteResetTimeout": "Guardado completo. Reinicio agotado (el nombre se guardó).",
+        "saveFailed": "Error al guardar. Por favor, inténtelo de nuevo.",
+        "error": "Ocurrió un error."
+      }
+    }
   },
   "bluetooth": {
     "notSupported": "Bluetooth no es compatible",

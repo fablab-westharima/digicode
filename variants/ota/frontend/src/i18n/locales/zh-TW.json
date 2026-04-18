@@ -594,7 +594,36 @@
     "homeRouterWifi": "WiFi（家用路由器等）",
     "addWifi": "新增 WiFi",
     "passwordLabel": "密碼",
-    "confirmDeleteDevice": "刪除裝置「{{name}}」？"
+    "confirmDeleteDevice": "刪除裝置「{{name}}」？",
+    "nameDialog": {
+      "title": "設定裝置名稱",
+      "description": "設定 ESP32 的裝置名稱。用於 BLE/WiFi OTA 時識別裝置。",
+      "waitingForBoot": "等待 ESP32 啟動中...",
+      "waitingHint": "請等待啟動完成偵測",
+      "loadingDeviceInfo": "載入裝置資訊中...",
+      "nameFieldLabel": "裝置名稱（英數字與連字號，1-20 字元）",
+      "saving": "儲存中...",
+      "saved": "已儲存",
+      "macWarningTitle": "macOS 使用者請注意",
+      "macWarningBody": "macOS 會強力快取 BLE 裝置名稱。即使變更名稱後，BLE 掃描時可能仍會顯示舊名稱（UUID）一段時間。Windows 可正確反映變更。這是 macOS 的特性 — 裝置本身已正確儲存新名稱。",
+      "validation": {
+        "tooLong": "請輸入 20 個字元以內",
+        "invalidChar": "僅允許英數字與連字號 (-)",
+        "hyphenPosition": "連字號不可置於開頭或結尾"
+      },
+      "status": {
+        "connecting": "連線至 ESP32 中...",
+        "connectFailed": "連線失敗。",
+        "resetting": "重設 ESP32 中...",
+        "waitingBoot": "等待啟動中...",
+        "bootTimeout": "啟動逾時。請再試一次。",
+        "applyingReset": "重新啟動以套用新名稱...",
+        "saveComplete": "儲存完成。BLE 名稱：{{bleName}}",
+        "saveCompleteResetTimeout": "儲存完成。重新啟動逾時（名稱已儲存）。",
+        "saveFailed": "儲存失敗。請再試一次。",
+        "error": "發生錯誤。"
+      }
+    }
   },
   "bluetooth": {
     "notSupported": "不支持藍牙",

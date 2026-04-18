@@ -594,7 +594,36 @@
     "homeRouterWifi": "接続先WiFi（ホームルーター等）",
     "addWifi": "WiFiを追加",
     "passwordLabel": "パスワード",
-    "confirmDeleteDevice": "デバイス「{{name}}」を削除しますか？"
+    "confirmDeleteDevice": "デバイス「{{name}}」を削除しますか？",
+    "nameDialog": {
+      "title": "デバイス名の設定",
+      "description": "ESP32のデバイス名を設定します。BLE/WiFi OTAでデバイスを識別する名前になります。",
+      "waitingForBoot": "ESP32起動待ち中...",
+      "waitingHint": "起動完了を検知するまでお待ちください",
+      "loadingDeviceInfo": "デバイス情報を読み込み中...",
+      "nameFieldLabel": "デバイス名（英数字とハイフン、1-20文字）",
+      "saving": "保存中...",
+      "saved": "保存完了",
+      "macWarningTitle": "macOSをお使いの方へ",
+      "macWarningBody": "macOSはBLEデバイス名を強力にキャッシュするため、名前を変更してもBLEスキャン時に旧名（UUID表示）のまま表示される場合があります。Windowsでは正しく反映されます。これはmacOS側の仕様であり、デバイスには正しく保存されています。",
+      "validation": {
+        "tooLong": "20文字以内で入力してください",
+        "invalidChar": "英数字とハイフン(-)のみ使用できます",
+        "hyphenPosition": "先頭・末尾にハイフンは使えません"
+      },
+      "status": {
+        "connecting": "ESP32に接続中...",
+        "connectFailed": "接続に失敗しました。",
+        "resetting": "ESP32をリセット中...",
+        "waitingBoot": "起動を待っています...",
+        "bootTimeout": "起動タイムアウト。もう一度試してください。",
+        "applyingReset": "再起動して新しい名前を適用中...",
+        "saveComplete": "保存完了。BLE名: {{bleName}}",
+        "saveCompleteResetTimeout": "保存完了。再起動のタイムアウト（名前は保存済み）。",
+        "saveFailed": "保存に失敗しました。もう一度試してください。",
+        "error": "エラーが発生しました。"
+      }
+    }
   },
   "bluetooth": {
     "notSupported": "Web Bluetooth APIがサポートされていません",

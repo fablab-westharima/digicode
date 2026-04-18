@@ -594,7 +594,36 @@
     "homeRouterWifi": "WiFi (Home Router, etc.)",
     "addWifi": "Add WiFi",
     "passwordLabel": "Password",
-    "confirmDeleteDevice": "Delete device \"{{name}}\"?"
+    "confirmDeleteDevice": "Delete device \"{{name}}\"?",
+    "nameDialog": {
+      "title": "Set Device Name",
+      "description": "Configure the ESP32 device name. Used for identification via BLE/WiFi OTA.",
+      "waitingForBoot": "Waiting for ESP32 to boot...",
+      "waitingHint": "Please wait while boot completion is detected",
+      "loadingDeviceInfo": "Loading device info...",
+      "nameFieldLabel": "Device name (alphanumeric and hyphens, 1–20 characters)",
+      "saving": "Saving...",
+      "saved": "Saved",
+      "macWarningTitle": "For macOS users",
+      "macWarningBody": "macOS aggressively caches BLE device names. Even after changing the name, BLE scans may show the old name (UUID-based) for some time. Windows reflects changes correctly. This is a macOS limitation — the device itself saves the new name properly.",
+      "validation": {
+        "tooLong": "Please enter 20 characters or fewer",
+        "invalidChar": "Only alphanumeric characters and hyphens (-) are allowed",
+        "hyphenPosition": "Hyphens cannot be at the start or end"
+      },
+      "status": {
+        "connecting": "Connecting to ESP32...",
+        "connectFailed": "Connection failed.",
+        "resetting": "Resetting ESP32...",
+        "waitingBoot": "Waiting for boot...",
+        "bootTimeout": "Boot timeout. Please try again.",
+        "applyingReset": "Restarting to apply the new name...",
+        "saveComplete": "Save complete. BLE name: {{bleName}}",
+        "saveCompleteResetTimeout": "Save complete. Restart timed out (name was saved).",
+        "saveFailed": "Save failed. Please try again.",
+        "error": "An error occurred."
+      }
+    }
   },
   "bluetooth": {
     "notSupported": "Web Bluetooth API is not supported",
