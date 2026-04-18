@@ -57,6 +57,7 @@ export default function PlanPage() {
   }, [searchParams, checkAuth]);
 
   const currentPlan = user?.plan || status?.planType || 'free';
+  const isAdmin = !!user?.isAdmin;
 
   const handleCheckout = async (planId: string) => {
     const priceId = PRICE_IDS[planId];
@@ -132,7 +133,12 @@ export default function PlanPage() {
           <p className={`text-xl font-bold mt-1 ${PLAN_DISPLAY[currentPlan]?.color || ''}`}>
             {PLAN_DISPLAY[currentPlan]?.badge || currentPlan}
           </p>
-          {status?.hasStripeSubscription && (
+          {isAdmin && (
+            <p className="mt-2 text-sm text-muted-foreground">
+              管理者アカウント — プランは Admin 画面で管理されています
+            </p>
+          )}
+          {!isAdmin && status?.hasStripeSubscription && (
             <button
               onClick={handlePortal}
               disabled={actionLoading === 'portal'}
@@ -188,8 +194,8 @@ export default function PlanPage() {
                   ))}
                 </ul>
 
-                {/* アクションボタン */}
-                {canCheckout && !status?.hasStripeSubscription && (
+                {/* アクションボタン（管理者には表示しない） */}
+                {canCheckout && !isAdmin && !status?.hasStripeSubscription && (
                   <button
                     onClick={() => handleCheckout(planId)}
                     disabled={!!actionLoading}
@@ -199,7 +205,7 @@ export default function PlanPage() {
                     このプランにする
                   </button>
                 )}
-                {canCheckout && status?.hasStripeSubscription && (
+                {canCheckout && !isAdmin && status?.hasStripeSubscription && (
                   <button
                     onClick={handlePortal}
                     disabled={!!actionLoading}
