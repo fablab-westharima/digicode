@@ -59,7 +59,10 @@ export default function PlanPage() {
   const currentPlan = user?.plan || status?.planType || 'free';
   const isAdmin = !!user?.isAdmin;
   const isInvited = user?.planSource === 'admin_granted';
-  const hideCheckout = isAdmin || isInvited;
+  const [inviteConfirmPlan, setInviteConfirmPlan] = useState<string | null>(null);
+
+  const planRank = (p: string) => PLAN_ORDER.indexOf(p as any);
+  const isHigherPlan = (planId: string) => planRank(planId) > planRank(currentPlan);
 
   const handleCheckout = async (planId: string) => {
     const priceId = PRICE_IDS[planId];
@@ -136,7 +139,7 @@ export default function PlanPage() {
             <>
               <p className="text-xl font-bold mt-1 text-foreground">招待アカウント</p>
               <p className="mt-2 text-sm text-destructive">
-                ファブラボ西播磨から招待され、{PLAN_DISPLAY[currentPlan]?.badge || currentPlan} プラン相当の権限が付与されています
+                ファブラボ西播磨から {PLAN_DISPLAY[currentPlan]?.badge || currentPlan} プラン相当の権限が付与されています
               </p>
             </>
           ) : (
@@ -200,35 +203,106 @@ export default function PlanPage() {
                   ))}
                 </ul>
 
-                {/* アクションボタン（招待・管理者には表示しない） */}
-                {canCheckout && !hideCheckout && !status?.hasStripeSubscription && (
-                  <button
-                    onClick={() => handleCheckout(planId)}
-                    disabled={!!actionLoading}
-                    className="w-full py-2 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2"
-                  >
-                    {actionLoading === planId && <Loader2 className="w-3 h-3 animate-spin" />}
-                    このプランにする
-                  </button>
-                )}
-                {canCheckout && !hideCheckout && status?.hasStripeSubscription && (
-                  <button
-                    onClick={handlePortal}
-                    disabled={!!actionLoading}
-                    className="w-full py-2 text-sm rounded border border-primary text-primary hover:bg-primary/10 disabled:opacity-50 flex items-center justify-center gap-2"
-                  >
-                    {actionLoading === 'portal' && <Loader2 className="w-3 h-3 animate-spin" />}
-                    <ExternalLink className="w-3 h-3" />
-                    プランを変更する
-                  </button>
-                )}
-                {planId !== 'free' && !priceId && !isCurrent && (
-                  <p className="text-xs text-muted-foreground text-center">準備中</p>
-                )}
+                {/* アクションボタン */}
+                {(() => {
+                  if (isAdmin || isCurrent || planId === 'free' || !priceId) {
+                    // 管理者 / 現在のプラン / Free / Price未設定 → ボタンなし
+                    if (planId !== 'free' && !priceId && !isCurrent) {
+                      return <p className="text-xs text-muted-foreground text-center">準備中</p>;
+                    }
+                    return null;
+                  }
+
+                  if (isInvited && isHigherPlan(planId)) {
+                    // 招待ユーザー: 上位プランのみ表示（確認ダイアログ付き）
+                    return (
+                      <button
+                        onClick={() => setInviteConfirmPlan(planId)}
+                        disabled={!!actionLoading}
+                        className="w-full py-2 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2"
+                      >
+                        このプランに自分で契約する
+                      </button>
+                    );
+                  }
+
+                  if (isInvited) {
+                    // 招待ユーザー: 下位プランはボタンなし
+                    return null;
+                  }
+
+                  // 通常ユーザー
+                  if (status?.hasStripeSubscription) {
+                    return (
+                      <button
+                        onClick={handlePortal}
+                        disabled={!!actionLoading}
+                        className="w-full py-2 text-sm rounded border border-primary text-primary hover:bg-primary/10 disabled:opacity-50 flex items-center justify-center gap-2"
+                      >
+                        {actionLoading === 'portal' && <Loader2 className="w-3 h-3 animate-spin" />}
+                        <ExternalLink className="w-3 h-3" />
+                        プランを変更する
+                      </button>
+                    );
+                  }
+
+                  return (
+                    <button
+                      onClick={() => handleCheckout(planId)}
+                      disabled={!!actionLoading}
+                      className="w-full py-2 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {actionLoading === planId && <Loader2 className="w-3 h-3 animate-spin" />}
+                      このプランにする
+                    </button>
+                  );
+                })()}
               </div>
             );
           })}
         </div>
+
+        {/* 招待ユーザーの上位プラン契約確認ダイアログ */}
+        {inviteConfirmPlan && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-card border border-border rounded-lg p-6 max-w-md mx-4">
+              <h2 className="text-lg font-bold text-foreground mb-3">
+                {PLAN_DISPLAY[inviteConfirmPlan]?.badge} プランに契約しますか？
+              </h2>
+              <div className="p-3 rounded-md bg-destructive/10 border border-destructive/30 mb-4">
+                <p className="text-sm text-foreground">
+                  現在、ファブラボ西播磨から {PLAN_DISPLAY[currentPlan]?.badge} プラン相当の権限が付与されていますが、
+                  ご自身で {PLAN_DISPLAY[inviteConfirmPlan]?.badge} プランを契約すると、
+                  <strong className="text-destructive">ファブラボ西播磨からの権限付与は解除</strong>されます。
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  以降はご自身の契約に基づくプランが適用されます。
+                </p>
+              </div>
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={() => setInviteConfirmPlan(null)}
+                  disabled={!!actionLoading}
+                  className="px-4 py-2 text-sm rounded border border-border text-foreground hover:bg-accent disabled:opacity-50"
+                >
+                  キャンセル
+                </button>
+                <button
+                  onClick={() => {
+                    const planId = inviteConfirmPlan;
+                    setInviteConfirmPlan(null);
+                    handleCheckout(planId);
+                  }}
+                  disabled={!!actionLoading}
+                  className="px-4 py-2 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {actionLoading && <Loader2 className="w-3 h-3 animate-spin" />}
+                  契約する
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
