@@ -14,6 +14,17 @@
     "optional": "省略可",
     "goToHome": "ホームへ"
   },
+  "status": {
+    "ready": "準備完了",
+    "compiling": "コンパイル中...",
+    "uploading": "アップロード中...",
+    "error": "エラー",
+    "success": "成功",
+    "compilingCode": "コードをコンパイル中...",
+    "compileSuccess": "コンパイル成功",
+    "compileFailed": "コンパイル失敗",
+    "unknownError": "不明なエラー"
+  },
   "helper": {
     "status": {
       "checking": "Helperの状態を確認中...",

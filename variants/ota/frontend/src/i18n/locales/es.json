@@ -14,6 +14,17 @@
     "optional": "Opcional",
     "goToHome": "Ir al inicio"
   },
+  "status": {
+    "ready": "Listo",
+    "compiling": "Compilando...",
+    "uploading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "compilingCode": "Compilando código...",
+    "compileSuccess": "Compilación exitosa",
+    "compileFailed": "Error de compilación",
+    "unknownError": "Error desconocido"
+  },
   "helper": {
     "status": {
       "checking": "Verificando estado de Helper...",

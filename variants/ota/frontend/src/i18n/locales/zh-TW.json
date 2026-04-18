@@ -14,6 +14,17 @@
     "optional": "選填",
     "goToHome": "返回首頁"
   },
+  "status": {
+    "ready": "就緒",
+    "compiling": "編譯中...",
+    "uploading": "上傳中...",
+    "error": "錯誤",
+    "success": "成功",
+    "compilingCode": "編譯程式碼中...",
+    "compileSuccess": "編譯成功",
+    "compileFailed": "編譯失敗",
+    "unknownError": "未知錯誤"
+  },
   "helper": {
     "status": {
       "checking": "正在檢查 Helper 狀態...",
