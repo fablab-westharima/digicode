@@ -46,10 +46,15 @@ export default function PlanPage() {
           setSuccessMessage('プランの変更が完了しました。反映まで数秒かかる場合があります。');
           await checkAuth();
         }
+      } catch {
+        // checkAuth 失敗は無視（ProtectedRoute が処理）
+      }
+      try {
         const s = await getSubscriptionStatus();
         setStatus(s);
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'エラーが発生しました');
+        // status 取得失敗でもページは表示する（user.plan で代替）
+        console.warn('getSubscriptionStatus failed:', e);
       } finally {
         setLoading(false);
       }
