@@ -328,6 +328,7 @@ auth.get('/me', authMiddleware, async (c) => {
         passkeyOnly: user.passkey_only,
         isAdmin: user.is_admin === 1,
         plan: user.plan || user.plan_type || 'free',
+        planSource: user.plan_source || null,
         accountType: user.account_type || 'regular',
         createdAt: user.created_at,
         subscription: {

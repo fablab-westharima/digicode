@@ -6,6 +6,7 @@ interface User {
   email: string;
   passkeyOnly?: number;
   plan?: string;
+  planSource?: string | null;
   isAdmin?: boolean;
   accountType?: string;
 }

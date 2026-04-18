@@ -58,6 +58,8 @@ export default function PlanPage() {
 
   const currentPlan = user?.plan || status?.planType || 'free';
   const isAdmin = !!user?.isAdmin;
+  const isInvited = user?.planSource === 'admin_granted';
+  const hideCheckout = isAdmin || isInvited;
 
   const handleCheckout = async (planId: string) => {
     const priceId = PRICE_IDS[planId];
@@ -130,15 +132,19 @@ export default function PlanPage() {
         {/* 現在のプラン */}
         <div className="mb-8 p-4 rounded-md bg-card border border-border">
           <p className="text-sm text-muted-foreground">現在のプラン</p>
-          <p className={`text-xl font-bold mt-1 ${PLAN_DISPLAY[currentPlan]?.color || ''}`}>
-            {PLAN_DISPLAY[currentPlan]?.badge || currentPlan}
-          </p>
-          {isAdmin && (
-            <p className="mt-2 text-sm text-destructive">
-              管理者アカウント — プランは Admin 画面で管理されています
+          {hideCheckout ? (
+            <>
+              <p className="text-xl font-bold mt-1 text-foreground">招待アカウント</p>
+              <p className="mt-2 text-sm text-destructive">
+                ファブラボ西播磨から招待され、{PLAN_DISPLAY[currentPlan]?.badge || currentPlan} プラン相当の権限が付与されています
+              </p>
+            </>
+          ) : (
+            <p className={`text-xl font-bold mt-1 ${PLAN_DISPLAY[currentPlan]?.color || ''}`}>
+              {PLAN_DISPLAY[currentPlan]?.badge || currentPlan}
             </p>
           )}
-          {!isAdmin && status?.hasStripeSubscription && (
+          {!hideCheckout && status?.hasStripeSubscription && (
             <button
               onClick={handlePortal}
               disabled={actionLoading === 'portal'}
@@ -194,8 +200,8 @@ export default function PlanPage() {
                   ))}
                 </ul>
 
-                {/* アクションボタン（管理者には表示しない） */}
-                {canCheckout && !isAdmin && !status?.hasStripeSubscription && (
+                {/* アクションボタン（招待・管理者には表示しない） */}
+                {canCheckout && !hideCheckout && !status?.hasStripeSubscription && (
                   <button
                     onClick={() => handleCheckout(planId)}
                     disabled={!!actionLoading}
@@ -205,7 +211,7 @@ export default function PlanPage() {
                     このプランにする
                   </button>
                 )}
-                {canCheckout && !isAdmin && status?.hasStripeSubscription && (
+                {canCheckout && !hideCheckout && status?.hasStripeSubscription && (
                   <button
                     onClick={handlePortal}
                     disabled={!!actionLoading}
