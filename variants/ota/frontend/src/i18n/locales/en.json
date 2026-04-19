@@ -445,7 +445,19 @@
       "registerHint": "Register a device from \"Connection\" → \"WiFi Setup\"",
       "searchHint": "Make sure the device is powered on, then search",
       "noIp": "IP address not set",
-      "startFlash": "Start Flash"
+      "startFlash": "Start Flash",
+      "titleBatch": "Select WiFi Devices (Batch Update)",
+      "batchDescription": "Check the devices to update",
+      "clipboardDescription": "Paste device info copied from DigiCode Finder",
+      "selectAll": "Select All",
+      "deselectAll": "Deselect All",
+      "new": "New",
+      "devicesSelected": "{{selected}} / {{total}} selected",
+      "clipboardHint": "Click \"Copy device info\" in DigiCode Finder",
+      "startBatchFlash": "Start writing to {{count}} devices",
+      "launchFinderTitle": "Launch DigiCode Finder (select target devices)",
+      "readClipboard": "Read clipboard (apply selection)",
+      "downloadFinder": "Download DigiCode Finder"
     },
     "adc2Warning": {
       "title": "ADC2 Pin Usage Warning",
@@ -606,6 +618,18 @@
     "addWifi": "Add WiFi",
     "passwordLabel": "Password",
     "confirmDeleteDevice": "Delete device \"{{name}}\"?",
+    "recheckOnline": "Recheck online status",
+    "batchUpdate": {
+      "waiting": "Waiting...",
+      "updatingProgress": "Batch OTA update in progress... ({{completed}}/{{total}})",
+      "completed": "Batch OTA update complete",
+      "preparing": "Preparing batch OTA update",
+      "overallProgress": "Overall progress",
+      "completeCount": "{{completed}} / {{total}} complete",
+      "successCount": "{{count}} succeeded",
+      "failCount": "{{count}} failed",
+      "warningDoNotPowerOff": "Do not turn off devices during the update"
+    },
     "nameDialog": {
       "title": "Set Device Name",
       "description": "Configure the ESP32 device name. Used for identification via BLE/WiFi OTA.",
@@ -746,6 +770,25 @@
     "accountDelete": "Delete Account",
     "documentation": "Documentation",
     "hint": "Click left arrow to collapse sidebar"
+  },
+  "wifiSetup": {
+    "bootTimeout": "ESP32 boot timed out",
+    "connectingSuccess": "WiFi connection successful. Pinning the DHCP-acquired IP as static...",
+    "waitingSystemReady": "Please wait until \"System Ready!\" is detected",
+    "staticIpConfirmed": "Static IP settings (confirmed)",
+    "staticIpAutoHint": "💡 Reset on restart; the IP newly acquired via DHCP will be pinned automatically"
+  },
+  "wifiPrerequisites": {
+    "title": "Required Software",
+    "description": "The following software is required to write programs via WiFi OTA.",
+    "finderDesc": "A desktop app that automatically discovers DigiCode devices on the network. Used to obtain the device's IP address during WiFi OTA writing.",
+    "supportedOs": "Supported OS: Windows / macOS / Linux",
+    "download": "Download",
+    "launch": "Launch",
+    "windowsOnly": "Windows only",
+    "bonjourDesc": "The mDNS service required for DigiCode Finder to discover devices. Not needed on macOS/Linux (pre-installed).",
+    "restartRequired": "⚠ A PC restart is required after installation.",
+    "downloadApple": "Download (Apple official)"
   },
   "mobileWarning": {
     "title": "Please Use the Desktop Version",

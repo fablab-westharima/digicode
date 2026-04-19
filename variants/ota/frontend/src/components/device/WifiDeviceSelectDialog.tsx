@@ -272,13 +272,13 @@ export function WifiDeviceSelectDialog({
           <DialogTitle className="flex items-center gap-2">
             <Wifi className={`h-5 w-5 ${multiSelect ? 'text-orange-500' : 'text-purple-500'}`} />
             {multiSelect
-              ? t('editor.wifiDeviceSelect.titleBatch', 'WiFiデバイスを選択（一括更新）')
+              ? t('editor.wifiDeviceSelect.titleBatch', { defaultValue: 'WiFiデバイスを選択（一括更新）' })
               : t('editor.wifiDeviceSelect.title')}
           </DialogTitle>
           <DialogDescription>
             {multiSelect
-              ? t('editor.wifiDeviceSelect.batchDescription', '更新するデバイスをチェックしてください')
-              : t('editor.wifiDeviceSelect.clipboardDescription', 'DigiCode Finderでコピーしたデバイス情報を貼り付けてください')}
+              ? t('editor.wifiDeviceSelect.batchDescription', { defaultValue: '更新するデバイスをチェックしてください' })
+              : t('editor.wifiDeviceSelect.clipboardDescription', { defaultValue: 'DigiCode Finderでコピーしたデバイス情報を貼り付けてください' })}
           </DialogDescription>
         </DialogHeader>
 
@@ -297,7 +297,7 @@ export function WifiDeviceSelectDialog({
                 className="w-full"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
-                DigiCode Finder を起動（書込みデバイス選択）
+                {t('editor.wifiDeviceSelect.launchFinderTitle', { defaultValue: 'DigiCode Finder を起動（書込みデバイス選択）' })}
               </Button>
 
               {/* Step 2: クリップボード読み込み */}
@@ -308,7 +308,7 @@ export function WifiDeviceSelectDialog({
                 className="w-full"
               >
                 <Clipboard className="w-4 h-4 mr-2" />
-                クリップボードを読み込み（選択反映）
+                {t('editor.wifiDeviceSelect.readClipboard', { defaultValue: 'クリップボードを読み込み（選択反映）' })}
               </Button>
 
               {/* デバイスリスト */}
@@ -324,7 +324,7 @@ export function WifiDeviceSelectDialog({
                         className="flex-1 text-xs"
                       >
                         <CheckSquare className="w-3 h-3 mr-1" />
-                        {t('editor.wifiDeviceSelect.selectAll', '全選択')}
+                        {t('editor.wifiDeviceSelect.selectAll', { defaultValue: '全選択' })}
                       </Button>
                       <Button
                         variant="outline"
@@ -333,7 +333,7 @@ export function WifiDeviceSelectDialog({
                         className="flex-1 text-xs"
                       >
                         <Square className="w-3 h-3 mr-1" />
-                        {t('editor.wifiDeviceSelect.deselectAll', '全解除')}
+                        {t('editor.wifiDeviceSelect.deselectAll', { defaultValue: '全解除' })}
                       </Button>
                     </div>
                   )}
@@ -380,7 +380,7 @@ export function WifiDeviceSelectDialog({
                           {/* 新規バッジ */}
                           {isFromClipboard && (
                             <span className="text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-1.5 py-0.5 rounded flex-shrink-0">
-                              {t('editor.wifiDeviceSelect.new', '新規')}
+                              {t('editor.wifiDeviceSelect.new', { defaultValue: '新規' })}
                             </span>
                           )}
                         </button>
@@ -391,14 +391,14 @@ export function WifiDeviceSelectDialog({
                   {/* 選択数表示（複数選択モード） */}
                   {multiSelect && (
                     <div className="text-xs text-gray-500 dark:text-gray-400 text-center pt-1">
-                      {selectedIps.size} / {devices.length} {t('editor.wifiDeviceSelect.devicesSelected', '台選択中')}
+                      {t('editor.wifiDeviceSelect.devicesSelected', { selected: selectedIps.size, total: devices.length, defaultValue: '{{selected}} / {{total}} 台選択中' })}
                     </div>
                   )}
                 </div>
               ) : (
                 <div className="text-center py-4 text-gray-500 dark:text-gray-400">
                   <p className="text-xs">
-                    {t('editor.wifiDeviceSelect.clipboardHint', 'DigiCode Finderで「書込みデバイス情報を取得」をクリックしてください')}
+                    {t('editor.wifiDeviceSelect.clipboardHint', { defaultValue: 'DigiCode Finderで「書込みデバイス情報を取得」をクリックしてください' })}
                   </p>
                 </div>
               )}
@@ -412,7 +412,7 @@ export function WifiDeviceSelectDialog({
                   className={`inline-flex items-center gap-1 text-xs ${multiSelect ? 'text-orange-600 dark:text-orange-400' : 'text-purple-600 dark:text-purple-400'} hover:underline`}
                 >
                   <Download className="w-3 h-3" />
-                  DigiCode Finder をダウンロード
+                  {t('editor.wifiDeviceSelect.downloadFinder', { defaultValue: 'DigiCode Finder をダウンロード' })}
                 </a>
               </div>
             </>
@@ -429,7 +429,7 @@ export function WifiDeviceSelectDialog({
             className={multiSelect ? "bg-orange-600 hover:bg-orange-700" : "bg-purple-600 hover:bg-purple-700"}
           >
             {multiSelect
-              ? t('editor.wifiDeviceSelect.startBatchFlash', `${selectedIps.size}台に書込み開始`)
+              ? t('editor.wifiDeviceSelect.startBatchFlash', { count: selectedIps.size, defaultValue: '{{count}}台に書込み開始' })
               : t('editor.wifiDeviceSelect.startFlash')}
           </Button>
         </DialogFooter>

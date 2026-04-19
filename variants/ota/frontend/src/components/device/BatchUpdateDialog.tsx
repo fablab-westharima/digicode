@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -32,6 +33,7 @@ export function BatchUpdateDialog({
   binData,
   onComplete,
 }: BatchUpdateDialogProps) {
+  const { t } = useTranslation();
   const [isUpdating, setIsUpdating] = useState(false);
   const [deviceStatuses, setDeviceStatuses] = useState<Map<string, DeviceStatus>>(new Map());
   const [completedCount, setCompletedCount] = useState(0);
@@ -50,7 +52,7 @@ export function BatchUpdateDialog({
     const initialStatuses = new Map<string, DeviceStatus>();
     devices.forEach((device) => {
       initialStatuses.set(device.url, {
-        progress: { stage: 'connecting', percent: 0, message: '待機中...' },
+        progress: { stage: 'connecting', percent: 0, message: t('device.batchUpdate.waiting', { defaultValue: '待機中...' }) },
         completed: false,
       });
     });
@@ -117,10 +119,10 @@ export function BatchUpdateDialog({
         <DialogHeader>
           <DialogTitle>
             {isUpdating
-              ? `一括OTA更新中... (${completedCount}/${devices.length})`
+              ? t('device.batchUpdate.updatingProgress', { completed: completedCount, total: devices.length, defaultValue: '一括OTA更新中... ({{completed}}/{{total}})' })
               : results
-              ? '一括OTA更新完了'
-              : '一括OTA更新準備中'
+              ? t('device.batchUpdate.completed', { defaultValue: '一括OTA更新完了' })
+              : t('device.batchUpdate.preparing', { defaultValue: '一括OTA更新準備中' })
             }
           </DialogTitle>
         </DialogHeader>
@@ -129,8 +131,8 @@ export function BatchUpdateDialog({
           {/* 全体進捗 */}
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span>全体進捗</span>
-              <span>{completedCount} / {devices.length} 台完了</span>
+              <span>{t('device.batchUpdate.overallProgress', { defaultValue: '全体進捗' })}</span>
+              <span>{t('device.batchUpdate.completeCount', { completed: completedCount, total: devices.length, defaultValue: '{{completed}} / {{total}} 台完了' })}</span>
             </div>
             <Progress value={(completedCount / devices.length) * 100} />
           </div>
@@ -140,12 +142,12 @@ export function BatchUpdateDialog({
             <div className="flex gap-4 justify-center py-2 border rounded-lg bg-muted/50">
               <div className="flex items-center gap-2 text-green-600">
                 <CheckCircle2 className="h-5 w-5" />
-                <span className="font-medium">{successCount} 台成功</span>
+                <span className="font-medium">{t('device.batchUpdate.successCount', { count: successCount, defaultValue: '{{count}} 台成功' })}</span>
               </div>
               {failCount > 0 && (
                 <div className="flex items-center gap-2 text-red-500">
                   <XCircle className="h-5 w-5" />
-                  <span className="font-medium">{failCount} 台失敗</span>
+                  <span className="font-medium">{t('device.batchUpdate.failCount', { count: failCount, defaultValue: '{{count}} 台失敗' })}</span>
                 </div>
               )}
             </div>
@@ -199,14 +201,14 @@ export function BatchUpdateDialog({
           {/* 閉じるボタン */}
           {results && (
             <Button onClick={handleClose} className="w-full">
-              閉じる
+              {t('common.close', { defaultValue: '閉じる' })}
             </Button>
           )}
 
           {/* 更新中の警告 */}
           {isUpdating && (
             <p className="text-xs text-center text-muted-foreground">
-              更新中はデバイスの電源を切らないでください
+              {t('device.batchUpdate.warningDoNotPowerOff', { defaultValue: '更新中はデバイスの電源を切らないでください' })}
             </p>
           )}
         </div>

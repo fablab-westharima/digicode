@@ -120,7 +120,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
     if (status === 'connected' && open && !hasResetOnConnect.current) {
       hasResetOnConnect.current = true;
       console.log('[WifiSetupDialog] Resetting ESP32 after connection');
-      setWifiMessage('ESP32をリセット中...');
+      setWifiMessage(t('device.nameDialog.status.resetting', { defaultValue: 'ESP32をリセット中...' }));
       resetESP32();
     }
   }, [status, open, resetESP32]);
@@ -642,7 +642,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
 
       if (!ready) {
         console.warn('[saveAndRestart] System Ready! timeout');
-        setWifiMessage('ESP32の起動がタイムアウトしました');
+        setWifiMessage(t('wifiSetup.bootTimeout', { defaultValue: 'ESP32の起動がタイムアウトしました' }));
         return;
       }
 
@@ -657,7 +657,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       // WiFi接続成功時は自動的にDHCP IPを固定化
       const isWifiConnected = wifiEntries.some(w => w.isConnected);
       if (isWifiConnected) {
-        setWifiMessage('WiFi接続成功。DHCPで取得したIPを固定化中...');
+        setWifiMessage(t('wifiSetup.connectingSuccess', { defaultValue: 'WiFi接続成功。DHCPで取得したIPを固定化中...' }));
         await autoSetStaticIp();
       }
 
@@ -773,8 +773,8 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
               <div className="flex items-center gap-3">
                 <div className="animate-spin h-5 w-5 border-2 border-yellow-500 border-t-transparent rounded-full" />
                 <div>
-                  <p className="text-sm font-medium text-yellow-400">ESP32起動待ち中...</p>
-                  <p className="text-xs text-[#8B949E]">「System Ready!」を検知するまでお待ちください</p>
+                  <p className="text-sm font-medium text-yellow-400">{t('device.nameDialog.waitingForBoot', { defaultValue: 'ESP32起動待ち中...' })}</p>
+                  <p className="text-xs text-[#8B949E]">{t('wifiSetup.waitingSystemReady', { defaultValue: '「System Ready!」を検知するまでお待ちください' })}</p>
                 </div>
               </div>
             </div>
@@ -932,7 +932,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
                 {/* 固定IP情報の表示 */}
                 {staticIp && (
                   <div className="pt-3 border-t border-[#2E333D]">
-                    <Label className="text-xs text-[#8B949E] mb-2 block">固定IP設定（確定済み）</Label>
+                    <Label className="text-xs text-[#8B949E] mb-2 block">{t('wifiSetup.staticIpConfirmed', { defaultValue: '固定IP設定（確定済み）' })}</Label>
                     <div className="space-y-1.5 text-xs">
                       <div className="flex items-center justify-between bg-[#161B22] px-3 py-2 rounded border border-[#2E333D]">
                         <span className="text-[#8B949E]">Static IP:</span>
@@ -951,7 +951,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
                         </div>
                       )}
                       <p className="text-xs text-[#8B949E] mt-2 italic">
-                        💡 再起動時にリセットされ、DHCPで新規取得したIPが自動的に固定化されます
+                        {t('wifiSetup.staticIpAutoHint', { defaultValue: '💡 再起動時にリセットされ、DHCPで新規取得したIPが自動的に固定化されます' })}
                       </p>
                     </div>
                   </div>

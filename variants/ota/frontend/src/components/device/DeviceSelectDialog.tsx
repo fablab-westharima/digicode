@@ -361,7 +361,7 @@ export function DeviceSelectDialog({ open, onOpenChange, onSelect, multiSelect =
                 size="sm"
                 onClick={() => checkDevicesOnline(devices)}
                 disabled={scanning || checkingStatus}
-                title="オンライン状態を再確認"
+                title={t('device.recheckOnline', { defaultValue: 'オンライン状態を再確認' })}
               >
                 {checkingStatus ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -482,8 +482,8 @@ export function DeviceSelectDialog({ open, onOpenChange, onSelect, multiSelect =
               >
                 <Users className="h-4 w-4 mr-2" />
                 {selectedUrls.size > 0
-                  ? `${selectedUrls.size}台のデバイスに書き込む`
-                  : 'デバイスを選択してください'
+                  ? t('device.writeToDevices', { count: selectedUrls.size, defaultValue: '{{count}}台のデバイスに書き込む' })
+                  : t('device.selectDevicesFirst', { defaultValue: 'デバイスを選択してください' })
                 }
               </Button>
             </div>
@@ -491,10 +491,10 @@ export function DeviceSelectDialog({ open, onOpenChange, onSelect, multiSelect =
 
           {/* 新しいデバイスを追加 */}
           <div className="border-t pt-4">
-            <div className="text-sm font-medium mb-2">手動でデバイスを追加</div>
+            <div className="text-sm font-medium mb-2">{t('device.manualAddDevice', { defaultValue: '手動でデバイスを追加' })}</div>
             <div className="flex gap-2">
               <Input
-                placeholder="192.168.x.x または *.local"
+                placeholder={t('device.ipOrHostnamePlaceholder', { defaultValue: '192.168.x.x または *.local' })}
                 value={newDeviceUrl}
                 onChange={(e) => setNewDeviceUrl(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addDevice()}

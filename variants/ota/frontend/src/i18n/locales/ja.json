@@ -446,7 +446,19 @@
       "registerHint": "「接続」→「無線LAN接続」からデバイスを登録してください",
       "searchHint": "デバイスの電源が入っていることを確認し、検索してください",
       "noIp": "IPアドレス未設定",
-      "startFlash": "書込み開始"
+      "startFlash": "書込み開始",
+      "titleBatch": "WiFiデバイスを選択（一括更新）",
+      "batchDescription": "更新するデバイスをチェックしてください",
+      "clipboardDescription": "DigiCode Finderでコピーしたデバイス情報を貼り付けてください",
+      "selectAll": "全選択",
+      "deselectAll": "全解除",
+      "new": "新規",
+      "devicesSelected": "{{selected}} / {{total}} 台選択中",
+      "clipboardHint": "DigiCode Finderで「書込みデバイス情報を取得」をクリックしてください",
+      "startBatchFlash": "{{count}}台に書込み開始",
+      "launchFinderTitle": "DigiCode Finder を起動（書込みデバイス選択）",
+      "readClipboard": "クリップボードを読み込み（選択反映）",
+      "downloadFinder": "DigiCode Finder をダウンロード"
     },
     "adc2Warning": {
       "title": "ADC2ピン使用の警告",
@@ -606,6 +618,18 @@
     "addWifi": "WiFiを追加",
     "passwordLabel": "パスワード",
     "confirmDeleteDevice": "デバイス「{{name}}」を削除しますか？",
+    "recheckOnline": "オンライン状態を再確認",
+    "batchUpdate": {
+      "waiting": "待機中...",
+      "updatingProgress": "一括OTA更新中... ({{completed}}/{{total}})",
+      "completed": "一括OTA更新完了",
+      "preparing": "一括OTA更新準備中",
+      "overallProgress": "全体進捗",
+      "completeCount": "{{completed}} / {{total}} 台完了",
+      "successCount": "{{count}} 台成功",
+      "failCount": "{{count}} 台失敗",
+      "warningDoNotPowerOff": "更新中はデバイスの電源を切らないでください"
+    },
     "nameDialog": {
       "title": "デバイス名の設定",
       "description": "ESP32のデバイス名を設定します。BLE/WiFi OTAでデバイスを識別する名前になります。",
@@ -746,6 +770,25 @@
     "accountDelete": "アカウント削除",
     "documentation": "ドキュメント",
     "hint": "サイドバーを折りたたむには左矢印をクリック"
+  },
+  "wifiSetup": {
+    "bootTimeout": "ESP32の起動がタイムアウトしました",
+    "connectingSuccess": "WiFi接続成功。DHCPで取得したIPを固定化中...",
+    "waitingSystemReady": "「System Ready!」を検知するまでお待ちください",
+    "staticIpConfirmed": "固定IP設定（確定済み）",
+    "staticIpAutoHint": "💡 再起動時にリセットされ、DHCPで新規取得したIPが自動的に固定化されます"
+  },
+  "wifiPrerequisites": {
+    "title": "必要ソフトの準備",
+    "description": "WiFi OTAでプログラムを書き込むには、以下のソフトウェアが必要です。",
+    "finderDesc": "ネットワーク上のDigiCodeデバイスを自動検出するデスクトップアプリ。WiFi OTA書き込み時にデバイスのIPアドレスを取得するために使用します。",
+    "supportedOs": "対応OS: Windows / macOS / Linux",
+    "download": "ダウンロード",
+    "launch": "起動",
+    "windowsOnly": "Windowsのみ",
+    "bonjourDesc": "DigiCode Finderがデバイスを検出するために必要なmDNSサービス。macOS/Linuxでは標準搭載のため不要です。",
+    "restartRequired": "⚠ インストール後、PCの再起動が必要です。",
+    "downloadApple": "ダウンロード（Apple公式）"
   },
   "mobileWarning": {
     "title": "デスクトップ版をご利用ください",
