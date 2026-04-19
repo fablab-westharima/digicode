@@ -9,6 +9,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePinPresetStore, type PinPreset, type ServoConfig, type ServoType, SERVO_TYPE_DEFAULTS } from '@/stores/pinPresetStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useFeatureFlagStore } from '@/stores/featureFlagStore';
@@ -33,6 +34,7 @@ interface PinPresetDialogProps {
 }
 
 export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
+  const { t } = useTranslation();
   const { getCurrentPreset, presets, setCurrentPreset, addCustomPreset, updatePreset, deletePreset } = usePinPresetStore();
   const user = useAuthStore((s) => s.user);
   const { canUsePinAssign, isFreeOpenNow, getFreeUntil, fetchFlags } = useFeatureFlagStore();
@@ -49,7 +51,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
   const handleCreateNew = () => {
     const newPreset: PinPreset = {
       id: `custom_${Date.now()}`,
-      name: '新規プリセット',
+      name: t('pinPreset.newPresetName', { defaultValue: '新規プリセット' }),
       isPremium: true,
       isCustom: true,
       servoConfig: { ...currentPreset.servoConfig },
@@ -91,7 +93,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
   };
 
   const handleDelete = (presetId: string) => {
-    if (confirm('このプリセットを削除しますか？')) {
+    if (confirm(t('pinPreset.deleteConfirm', { defaultValue: 'このプリセットを削除しますか？' }))) {
       deletePreset(presetId);
     }
   };
@@ -135,9 +137,9 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>ピンプリセット管理</DialogTitle>
+          <DialogTitle>{t('pinPreset.title', { defaultValue: 'ピンプリセット管理' })}</DialogTitle>
           <DialogDescription>
-            デフォルトのピン番号プリセットを選択、または独自のプリセットを作成できます
+            {t('pinPreset.description', { defaultValue: 'デフォルトのピン番号プリセットを選択、または独自のプリセットを作成できます' })}
           </DialogDescription>
         </DialogHeader>
 
@@ -145,10 +147,10 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
           // Preset List View
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-medium">利用可能なプリセット</h3>
+              <h3 className="text-sm font-medium">{t('pinPreset.availablePresets', { defaultValue: '利用可能なプリセット' })}</h3>
               <Button onClick={handleCreateNew} size="sm" disabled={!isPremiumEnabled}>
                 {!isPremiumEnabled && <span className="mr-2">🔒</span>}
-                新規作成{!isPremiumEnabled && '（プレミアム）'}
+                {t('pinPreset.createNew', { defaultValue: '新規作成' })}{!isPremiumEnabled && t('pinPreset.premiumSuffix', { defaultValue: '（プレミアム）' })}
               </Button>
             </div>
 
@@ -169,12 +171,12 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                         <h4 className="font-medium">{preset.name}</h4>
                         {preset.isPremium && (
                           <Badge variant="secondary" className="text-xs">
-                            プレミアム
+                            {t('pinPreset.premiumBadge', { defaultValue: 'プレミアム' })}
                           </Badge>
                         )}
                         {currentPreset.id === preset.id && (
                           <Badge variant="default" className="text-xs">
-                            使用中
+                            {t('pinPreset.inUseBadge', { defaultValue: '使用中' })}
                           </Badge>
                         )}
                       </div>
@@ -187,7 +189,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                             handleView(preset);
                           }}
                         >
-                          詳細を見る
+                          {t('pinPreset.viewDetails', { defaultValue: '詳細を見る' })}
                         </Button>
                         {preset.isCustom && (
                           <>
@@ -200,7 +202,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                               }}
                               disabled={!isPremiumEnabled}
                             >
-                              編集
+                              {t('pinPreset.edit', { defaultValue: '編集' })}
                             </Button>
                             <Button
                               variant="destructive"
@@ -211,14 +213,16 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                               }}
                               disabled={!isPremiumEnabled}
                             >
-                              削除
+                              {t('pinPreset.deleteBtn', { defaultValue: '削除' })}
                             </Button>
                           </>
                         )}
                       </div>
                     </div>
                     <p className="text-xs text-gray-600 mt-2">
-                      {preset.isCustom ? 'カスタムプリセット' : 'デフォルトプリセット'}
+                      {preset.isCustom
+                        ? t('pinPreset.customPreset', { defaultValue: 'カスタムプリセット' })
+                        : t('pinPreset.defaultPreset', { defaultValue: 'デフォルトプリセット' })}
                     </p>
                   </div>
                 ))}
@@ -231,33 +235,37 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">
-                  {isViewMode ? 'プリセット詳細' : isCreating ? '新規プリセット作成' : 'プリセット編集'}
+                  {isViewMode
+                    ? t('pinPreset.presetDetails', { defaultValue: 'プリセット詳細' })
+                    : isCreating
+                      ? t('pinPreset.createNewPreset', { defaultValue: '新規プリセット作成' })
+                      : t('pinPreset.editPreset', { defaultValue: 'プリセット編集' })}
                 </h3>
               </div>
               <div>
-                <Label htmlFor="preset-name">プリセット名</Label>
+                <Label htmlFor="preset-name">{t('pinPreset.presetName', { defaultValue: 'プリセット名' })}</Label>
                 <Input
                   id="preset-name"
                   value={editingPreset.name}
                   onChange={(e) => setEditingPreset({ ...editingPreset, name: e.target.value })}
-                  placeholder="プリセット名を入力"
+                  placeholder={t('pinPreset.presetNamePlaceholder', { defaultValue: 'プリセット名を入力' })}
                   disabled={isViewMode}
                 />
               </div>
 
               <TabsList className="grid grid-cols-4 w-full">
-                <TabsTrigger value="otto">OTTO</TabsTrigger>
-                <TabsTrigger value="sensors">センサー</TabsTrigger>
-                <TabsTrigger value="peripherals">周辺機器</TabsTrigger>
-                <TabsTrigger value="display">ディスプレイ</TabsTrigger>
+                <TabsTrigger value="otto">{t('pinPreset.tabs.otto', { defaultValue: 'OTTO' })}</TabsTrigger>
+                <TabsTrigger value="sensors">{t('pinPreset.tabs.sensors', { defaultValue: 'センサー' })}</TabsTrigger>
+                <TabsTrigger value="peripherals">{t('pinPreset.tabs.peripherals', { defaultValue: '周辺機器' })}</TabsTrigger>
+                <TabsTrigger value="display">{t('pinPreset.tabs.display', { defaultValue: 'ディスプレイ' })}</TabsTrigger>
               </TabsList>
 
               <ScrollArea className="h-[350px]">
                 <TabsContent value="otto" className="space-y-4 pr-4">
-                  <h4 className="font-medium mb-2">OTTO ロボット</h4>
+                  <h4 className="font-medium mb-2">{t('pinPreset.sections.ottoRobot', { defaultValue: 'OTTO ロボット' })}</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>左足 (Left Leg)</Label>
+                      <Label>{t('pinPreset.pins.leftLeg', { defaultValue: '左足 (Left Leg)' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -267,7 +275,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                       />
                     </div>
                     <div>
-                      <Label>右足 (Right Leg)</Label>
+                      <Label>{t('pinPreset.pins.rightLeg', { defaultValue: '右足 (Right Leg)' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -277,7 +285,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                       />
                     </div>
                     <div>
-                      <Label>左足首 (Left Foot)</Label>
+                      <Label>{t('pinPreset.pins.leftFoot', { defaultValue: '左足首 (Left Foot)' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -287,7 +295,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                       />
                     </div>
                     <div>
-                      <Label>右足首 (Right Foot)</Label>
+                      <Label>{t('pinPreset.pins.rightFoot', { defaultValue: '右足首 (Right Foot)' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -298,10 +306,10 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                     </div>
                   </div>
 
-                  <h4 className="font-medium mb-2 mt-4">OTTO Wheel</h4>
+                  <h4 className="font-medium mb-2 mt-4">{t('pinPreset.sections.ottoWheel', { defaultValue: 'OTTO Wheel' })}</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>左車輪 (Left Wheel)</Label>
+                      <Label>{t('pinPreset.pins.leftWheel', { defaultValue: '左車輪 (Left Wheel)' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -311,7 +319,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                       />
                     </div>
                     <div>
-                      <Label>右車輪 (Right Wheel)</Label>
+                      <Label>{t('pinPreset.pins.rightWheel', { defaultValue: '右車輪 (Right Wheel)' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -322,10 +330,10 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                     </div>
                   </div>
 
-                  <h4 className="font-medium mb-2 mt-4">OTTO Ninja</h4>
+                  <h4 className="font-medium mb-2 mt-4">{t('pinPreset.sections.ottoNinja', { defaultValue: 'OTTO Ninja' })}</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>左足 (Left Leg)</Label>
+                      <Label>{t('pinPreset.pins.leftLeg', { defaultValue: '左足 (Left Leg)' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -335,7 +343,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                       />
                     </div>
                     <div>
-                      <Label>右足 (Right Leg)</Label>
+                      <Label>{t('pinPreset.pins.rightLeg', { defaultValue: '右足 (Right Leg)' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -345,7 +353,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                       />
                     </div>
                     <div>
-                      <Label>左足 (Left Foot)</Label>
+                      <Label>{t('pinPreset.pins.leftFoot', { defaultValue: '左足首 (Left Foot)' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -355,7 +363,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                       />
                     </div>
                     <div>
-                      <Label>右足 (Right Foot)</Label>
+                      <Label>{t('pinPreset.pins.rightFoot', { defaultValue: '右足首 (Right Foot)' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -368,10 +376,10 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                 </TabsContent>
 
                 <TabsContent value="sensors" className="space-y-4 pr-4">
-                  <h4 className="font-medium mb-2">RUS-04 超音波センサー (RGB付き)</h4>
+                  <h4 className="font-medium mb-2">{t('pinPreset.sections.rus04', { defaultValue: 'RUS-04 超音波センサー (RGB付き)' })}</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>RGB ピン</Label>
+                      <Label>{t('pinPreset.pins.rgb', { defaultValue: 'RGB ピン' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -381,7 +389,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                       />
                     </div>
                     <div>
-                      <Label>I/O ピン</Label>
+                      <Label>{t('pinPreset.pins.io', { defaultValue: 'I/O ピン' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -392,10 +400,10 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                     </div>
                   </div>
 
-                  <h4 className="font-medium mb-2 mt-4">その他のセンサー</h4>
+                  <h4 className="font-medium mb-2 mt-4">{t('pinPreset.sections.otherSensors', { defaultValue: 'その他のセンサー' })}</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>ブザー</Label>
+                      <Label>{t('pinPreset.pins.buzzer', { defaultValue: 'ブザー' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -405,7 +413,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                       />
                     </div>
                     <div>
-                      <Label>NeoPixel Ring</Label>
+                      <Label>{t('pinPreset.pins.neopixelRing', { defaultValue: 'NeoPixel Ring' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -418,10 +426,10 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                 </TabsContent>
 
                 <TabsContent value="peripherals" className="space-y-4 pr-4">
-                  <h4 className="font-medium mb-2">サーボモーター</h4>
+                  <h4 className="font-medium mb-2">{t('pinPreset.sections.servoMotor', { defaultValue: 'サーボモーター' })}</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>サーボ 1 ピン</Label>
+                      <Label>{t('pinPreset.pins.servo1', { defaultValue: 'サーボ 1 ピン' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -432,7 +440,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                       />
                     </div>
                     <div>
-                      <Label>サーボ 2 ピン</Label>
+                      <Label>{t('pinPreset.pins.servo2', { defaultValue: 'サーボ 2 ピン' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -446,14 +454,14 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
 
                   {/* サーボパルス幅設定 */}
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
-                    <h4 className="font-medium mb-3 text-sm">サーボパルス幅設定</h4>
+                    <h4 className="font-medium mb-3 text-sm">{t('pinPreset.sections.servoPulse', { defaultValue: 'サーボパルス幅設定' })}</h4>
                     <p className="text-xs text-gray-500 mb-3">
-                      使用するサーボモーターの種類を選択してください。パルス幅は自動で設定されますが、必要に応じて微調整も可能です。
+                      {t('pinPreset.sections.servoPulseDesc', { defaultValue: '使用するサーボモーターの種類を選択してください。パルス幅は自動で設定されますが、必要に応じて微調整も可能です。' })}
                     </p>
 
                     {/* サーボタイプ選択 */}
                     <div className="mb-4">
-                      <Label className="text-sm">サーボの種類</Label>
+                      <Label className="text-sm">{t('pinPreset.sections.servoType', { defaultValue: 'サーボの種類' })}</Label>
                       <div className="grid grid-cols-3 gap-2 mt-2">
                         <button
                           type="button"
@@ -465,8 +473,8 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                           onClick={() => handleServoTypeChange('180')}
                           disabled={isViewMode}
                         >
-                          <div className="font-medium">180度</div>
-                          <div className="text-xs text-gray-500">SG90等</div>
+                          <div className="font-medium">{t('pinPreset.sections.servo180', { defaultValue: '180度' })}</div>
+                          <div className="text-xs text-gray-500">{t('pinPreset.sections.servo180Example', { defaultValue: 'SG90等' })}</div>
                         </button>
                         <button
                           type="button"
@@ -478,8 +486,8 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                           onClick={() => handleServoTypeChange('270')}
                           disabled={isViewMode}
                         >
-                          <div className="font-medium">270度</div>
-                          <div className="text-xs text-gray-500">ASMC-04B等</div>
+                          <div className="font-medium">{t('pinPreset.sections.servo270', { defaultValue: '270度' })}</div>
+                          <div className="text-xs text-gray-500">{t('pinPreset.sections.servo270Example', { defaultValue: 'ASMC-04B等' })}</div>
                         </button>
                         <button
                           type="button"
@@ -491,8 +499,8 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                           onClick={() => handleServoTypeChange('360')}
                           disabled={isViewMode}
                         >
-                          <div className="font-medium">360度</div>
-                          <div className="text-xs text-gray-500">SG90-HV等</div>
+                          <div className="font-medium">{t('pinPreset.sections.servo360', { defaultValue: '360度' })}</div>
+                          <div className="text-xs text-gray-500">{t('pinPreset.sections.servo360Example', { defaultValue: 'SG90-HV等' })}</div>
                         </button>
                       </div>
                     </div>
@@ -500,7 +508,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                     {/* パルス幅微調整 */}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label className="text-xs text-gray-500">最小パルス (μs)</Label>
+                        <Label className="text-xs text-gray-500">{t('pinPreset.sections.minPulse', { defaultValue: '最小パルス (μs)' })}</Label>
                         <Input
                           type="number"
                           min={100}
@@ -513,7 +521,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                         />
                       </div>
                       <div>
-                        <Label className="text-xs text-gray-500">最大パルス (μs)</Label>
+                        <Label className="text-xs text-gray-500">{t('pinPreset.sections.maxPulse', { defaultValue: '最大パルス (μs)' })}</Label>
                         <Input
                           type="number"
                           min={100}
@@ -528,9 +536,9 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                     </div>
                   </div>
 
-                  <h4 className="font-medium mb-2 mt-4">DCモーター (L298N)</h4>
+                  <h4 className="font-medium mb-2 mt-4">{t('pinPreset.sections.dcMotor', { defaultValue: 'DCモーター (L298N)' })}</h4>
                   <div className="space-y-2">
-                    <Label>モーター A</Label>
+                    <Label>{t('pinPreset.sections.motorA', { defaultValue: 'モーター A' })}</Label>
                     <div className="grid grid-cols-3 gap-2">
                       <div>
                         <Label className="text-xs">IN1</Label>
@@ -566,7 +574,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>モーター B</Label>
+                    <Label>{t('pinPreset.sections.motorB', { defaultValue: 'モーター B' })}</Label>
                     <div className="grid grid-cols-3 gap-2">
                       <div>
                         <Label className="text-xs">IN1</Label>
@@ -601,7 +609,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                     </div>
                   </div>
 
-                  <h4 className="font-medium mb-2 mt-4">ステッピングモーター (28BYJ-48)</h4>
+                  <h4 className="font-medium mb-2 mt-4">{t('pinPreset.sections.stepper', { defaultValue: 'ステッピングモーター (28BYJ-48)' })}</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>IN1</Label>
@@ -647,10 +655,10 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                 </TabsContent>
 
                 <TabsContent value="display" className="space-y-4 pr-4">
-                  <h4 className="font-medium mb-2">I2C OLED ディスプレイ</h4>
+                  <h4 className="font-medium mb-2">{t('pinPreset.sections.oled', { defaultValue: 'I2C OLED ディスプレイ' })}</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>SDA ピン</Label>
+                      <Label>{t('pinPreset.pins.sda', { defaultValue: 'SDA ピン' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -660,7 +668,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                       />
                     </div>
                     <div>
-                      <Label>SCL ピン</Label>
+                      <Label>{t('pinPreset.pins.scl', { defaultValue: 'SCL ピン' })}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -676,12 +684,17 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
 
             <DialogFooter className="mt-4">
               <Button variant="outline" onClick={handleCancel}>
-                {isViewMode ? '戻る' : 'キャンセル'}
+                {isViewMode
+                  ? t('common.back', { defaultValue: '戻る' })
+                  : t('common.cancel', { defaultValue: 'キャンセル' })}
               </Button>
               {!isViewMode && (
                 <Button onClick={handleSave} disabled={!isPremiumEnabled}>
                   {!isPremiumEnabled && <span className="mr-2">🔒</span>}
-                  {isCreating ? '作成' : '保存'}{!isPremiumEnabled && '（プレミアム）'}
+                  {isCreating
+                    ? t('pinPreset.create', { defaultValue: '作成' })
+                    : t('common.save', { defaultValue: '保存' })
+                  }{!isPremiumEnabled && t('pinPreset.premiumSuffix', { defaultValue: '（プレミアム）' })}
                 </Button>
               )}
             </DialogFooter>
@@ -690,7 +703,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
 
         {!editingPreset && (
           <DialogFooter>
-            <Button onClick={() => onOpenChange(false)}>閉じる</Button>
+            <Button onClick={() => onOpenChange(false)}>{t('common.close', { defaultValue: '閉じる' })}</Button>
           </DialogFooter>
         )}
       </DialogContent>
