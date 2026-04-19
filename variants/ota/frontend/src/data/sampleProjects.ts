@@ -1316,10 +1316,10 @@ export const sampleProjects: SampleProject[] = [
             <value name="RED">
               <block type="ha_light_rgb_r"></block>
             </value>
-            <value name="G">
+            <value name="GREEN">
               <block type="ha_light_rgb_g"></block>
             </value>
-            <value name="B">
+            <value name="BLUE">
               <block type="ha_light_rgb_b"></block>
             </value>
             <next>
