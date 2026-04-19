@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { getTutorialById } from '@/data/tutorials';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import { ChevronLeft, ChevronRight, X, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function TutorialOverlay() {
+  const { t } = useTranslation();
   const {
     currentTutorial,
     currentStep,
@@ -56,16 +58,7 @@ export function TutorialOverlay() {
           if (step.highlight.target === 'compile') {
             element = document.querySelector('button:has(.lucide-zap)');
           } else if (step.highlight.target === 'serial-monitor') {
-            element = document.querySelector('button:contains("モニター")');
-            if (!element) {
-              const buttons = document.querySelectorAll('button');
-              for (const btn of buttons) {
-                if (btn.textContent?.includes('モニター')) {
-                  element = btn;
-                  break;
-                }
-              }
-            }
+            element = document.querySelector('[data-tutorial-target="serial-monitor"]');
           }
           break;
         case 'area':
@@ -175,7 +168,7 @@ export function TutorialOverlay() {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-500">
-              ステップ {currentStep + 1} / {tutorial.steps.length}
+              {t('tutorial.step', { defaultValue: 'ステップ {{current}} / {{total}}', current: currentStep + 1, total: tutorial.steps.length })}
             </span>
           </div>
           <Button
@@ -212,7 +205,7 @@ export function TutorialOverlay() {
             className="text-xs"
           >
             <ChevronLeft className="w-3 h-3 mr-1" />
-            戻る
+            {t('tutorial.back', { defaultValue: '戻る' })}
           </Button>
 
           <Button
@@ -221,7 +214,7 @@ export function TutorialOverlay() {
             onClick={skipTutorial}
             className="text-xs text-gray-500"
           >
-            スキップ
+            {t('tutorial.skip', { defaultValue: 'スキップ' })}
           </Button>
 
           <Button
@@ -236,11 +229,11 @@ export function TutorialOverlay() {
             {isLastStep ? (
               <>
                 <CheckCircle className="w-3 h-3 mr-1" />
-                完了
+                {t('tutorial.complete', { defaultValue: '完了' })}
               </>
             ) : (
               <>
-                次へ
+                {t('tutorial.next', { defaultValue: '次へ' })}
                 <ChevronRight className="w-3 h-3 ml-1" />
               </>
             )}

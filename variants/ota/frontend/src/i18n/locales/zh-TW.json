@@ -803,7 +803,12 @@
     "again": "重試",
     "start": "開始",
     "progress": "已完成教學：{{completed}} / {{total}}",
-    "resetProgress": "重設進度"
+    "resetProgress": "重設進度",
+    "step": "步驟 {{current}} / {{total}}",
+    "back": "返回",
+    "skip": "跳過",
+    "complete": "完成",
+    "next": "下一步"
   },
   "blocks": {
     "basic": "Basic",
@@ -3367,5 +3372,9 @@
     "tooShort": "新密碼至少需 4 個字元",
     "mismatch": "新密碼不一致",
     "error": "變更密碼失敗"
+  },
+  "firmwareInstaller": {
+    "browserUnsupported": "您的瀏覽器不受支援。<br/>請使用 Chrome 或 Edge。",
+    "notAllowedHttps": "僅在 HTTPS 或 localhost 上運作。"
   }
 }

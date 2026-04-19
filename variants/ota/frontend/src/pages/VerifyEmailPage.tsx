@@ -18,7 +18,7 @@ export function VerifyEmailPage() {
   useEffect(() => {
     const verify = async () => {
       if (!token) {
-        setError(t('auth.verification.invalidToken', '無効な確認リンクです'));
+        setError(t('auth.verification.invalidToken', { defaultValue: '無効な確認リンクです' }));
         setIsVerifying(false);
         return;
       }
@@ -28,13 +28,13 @@ export function VerifyEmailPage() {
         if (result.verified) {
           setSuccess(true);
         } else {
-          setError(result.message || t('auth.verification.failed', 'メール確認に失敗しました'));
+          setError(result.message || t('auth.verification.failed', { defaultValue: 'メール確認に失敗しました' }));
         }
       } catch (err) {
         setError(
           err instanceof Error
             ? err.message
-            : t('auth.verification.failed', 'メール確認に失敗しました')
+            : t('auth.verification.failed', { defaultValue: 'メール確認に失敗しました' })
         );
       } finally {
         setIsVerifying(false);
@@ -52,7 +52,7 @@ export function VerifyEmailPage() {
             <div className="flex flex-col items-center justify-center py-8 space-y-4">
               <Loader2 className="h-12 w-12 animate-spin text-green-500" />
               <p className="text-[#E6EDF3]">
-                {t('auth.verification.verifying', 'メールアドレスを確認中...')}
+                {t('auth.verification.verifying', { defaultValue: 'メールアドレスを確認中...' })}
               </p>
             </div>
           </CardContent>
@@ -70,21 +70,21 @@ export function VerifyEmailPage() {
               <CheckCircle className="h-6 w-6 text-green-600" />
             </div>
             <CardTitle className="text-2xl text-[#E6EDF3]">
-              {t('auth.verification.successTitle', 'メール確認完了')}
+              {t('auth.verification.successTitle', { defaultValue: 'メール確認完了' })}
             </CardTitle>
             <CardDescription className="text-[#8B949E]">
-              {t('auth.verification.successDesc', 'メールアドレスが確認されました')}
+              {t('auth.verification.successDesc', { defaultValue: 'メールアドレスが確認されました' })}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-[#8B949E] text-center">
-              {t('auth.verification.canLoginNow', 'ログインしてご利用ください。')}
+              {t('auth.verification.canLoginNow', { defaultValue: 'ログインしてご利用ください。' })}
             </p>
             <Button
               className="w-full"
               onClick={() => navigate('/auth')}
             >
-              {t('auth.login', 'ログイン')}
+              {t('auth.login', { defaultValue: 'ログイン' })}
             </Button>
           </CardContent>
         </Card>
@@ -100,21 +100,21 @@ export function VerifyEmailPage() {
             <XCircle className="h-6 w-6 text-red-600" />
           </div>
           <CardTitle className="text-2xl text-[#E6EDF3]">
-            {t('auth.verification.errorTitle', 'メール確認エラー')}
+            {t('auth.verification.errorTitle', { defaultValue: 'メール確認エラー' })}
           </CardTitle>
           <CardDescription className="text-[#8B949E]">
-            {error || t('auth.verification.failed', 'メール確認に失敗しました')}
+            {error || t('auth.verification.failed', { defaultValue: 'メール確認に失敗しました' })}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-[#8B949E] text-center">
-            {t('auth.verification.errorInstruction', 'リンクが無効または期限切れの可能性があります。')}
+            {t('auth.verification.errorInstruction', { defaultValue: 'リンクが無効または期限切れの可能性があります。' })}
           </p>
           <Button
             className="w-full"
             onClick={() => navigate('/auth')}
           >
-            {t('auth.backToLogin', 'ログインに戻る')}
+            {t('auth.backToLogin', { defaultValue: 'ログインに戻る' })}
           </Button>
         </CardContent>
       </Card>

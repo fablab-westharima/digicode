@@ -1024,7 +1024,12 @@
     "again": "もう一度",
     "start": "開始",
     "progress": "完了したチュートリアル: {{completed}} / {{total}}",
-    "resetProgress": "進捗をリセット"
+    "resetProgress": "進捗をリセット",
+    "step": "ステップ {{current}} / {{total}}",
+    "back": "戻る",
+    "skip": "スキップ",
+    "complete": "完了",
+    "next": "次へ"
   },
   "blocks": {
     "basic": "基本",
@@ -3357,5 +3362,9 @@
     "tooShort": "新しいパスワードは4文字以上にしてください",
     "mismatch": "新しいパスワードが一致しません",
     "error": "パスワード変更に失敗しました"
+  },
+  "firmwareInstaller": {
+    "browserUnsupported": "お使いのブラウザはサポートされていません。<br/>Chrome または Edge をお使いください。",
+    "notAllowedHttps": "HTTPSまたはlocalhostでのみ動作します。"
   }
 }

@@ -20,7 +20,7 @@ export function RecoveryPage() {
   useEffect(() => {
     const recover = async () => {
       if (!token) {
-        setError(t('auth.recovery.invalidToken', '無効なリカバリーリンクです'));
+        setError(t('auth.recovery.invalidToken', { defaultValue: '無効なリカバリーリンクです' }));
         setIsRecovering(false);
         return;
       }
@@ -36,7 +36,7 @@ export function RecoveryPage() {
         setError(
           err instanceof Error
             ? err.message
-            : t('auth.recovery.failed', 'アカウントリカバリーに失敗しました')
+            : t('auth.recovery.failed', { defaultValue: 'アカウントリカバリーに失敗しました' })
         );
       } finally {
         setIsRecovering(false);
@@ -68,7 +68,7 @@ export function RecoveryPage() {
             <div className="flex flex-col items-center justify-center py-8 space-y-4">
               <Loader2 className="h-12 w-12 animate-spin text-green-500" />
               <p className="text-[#E6EDF3]">
-                {t('auth.recovery.recovering', 'アカウントを復旧中...')}
+                {t('auth.recovery.recovering', { defaultValue: 'アカウントを復旧中...' })}
               </p>
             </div>
           </CardContent>
@@ -86,18 +86,16 @@ export function RecoveryPage() {
               <CheckCircle className="h-6 w-6 text-green-600" />
             </div>
             <CardTitle className="text-2xl text-[#E6EDF3]">
-              {t('auth.recovery.successTitle', 'リカバリー完了')}
+              {t('auth.recovery.successTitle', { defaultValue: 'リカバリー完了' })}
             </CardTitle>
             <CardDescription className="text-[#8B949E]">
-              {t('auth.recovery.successDesc', 'アカウントが復旧され、ログインしました')}
+              {t('auth.recovery.successDesc', { defaultValue: 'アカウントが復旧され、ログインしました' })}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="rounded-lg bg-[#0D1117] p-4 space-y-2 text-center">
               <p className="text-sm text-[#8B949E]">
-                {t('auth.recovery.redirecting', '{count}秒後に自動的にホームページに移動します', {
-                  count: redirectCountdown,
-                })}
+                {t('auth.recovery.redirecting', { defaultValue: '{count}秒後に自動的にホームページに移動します', count: redirectCountdown, })}
               </p>
               <div className="w-full bg-[#2E333D] rounded-full h-2">
                 <div
@@ -111,11 +109,11 @@ export function RecoveryPage() {
               className="w-full"
               onClick={() => { window.location.href = '/'; }}
             >
-              {t('common.goToHome', 'ホームへ')}
+              {t('common.goToHome', { defaultValue: 'ホームへ' })}
             </Button>
 
             <p className="text-xs text-[#8B949E] text-center">
-              {t('auth.recovery.registerPasskeyRecommendation', 'セキュリティのため、新しいパスキーを登録することをお勧めします。')}
+              {t('auth.recovery.registerPasskeyRecommendation', { defaultValue: 'セキュリティのため、新しいパスキーを登録することをお勧めします。' })}
             </p>
           </CardContent>
         </Card>
@@ -131,21 +129,21 @@ export function RecoveryPage() {
             <XCircle className="h-6 w-6 text-red-600" />
           </div>
           <CardTitle className="text-2xl text-[#E6EDF3]">
-            {t('auth.recovery.errorTitle', 'リカバリーエラー')}
+            {t('auth.recovery.errorTitle', { defaultValue: 'リカバリーエラー' })}
           </CardTitle>
           <CardDescription className="text-[#8B949E]">
-            {error || t('auth.recovery.failed', 'アカウントリカバリーに失敗しました')}
+            {error || t('auth.recovery.failed', { defaultValue: 'アカウントリカバリーに失敗しました' })}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-[#8B949E] text-center">
-            {t('auth.recovery.errorInstruction', 'リンクが無効または期限切れの可能性があります。')}
+            {t('auth.recovery.errorInstruction', { defaultValue: 'リンクが無効または期限切れの可能性があります。' })}
           </p>
           <Button
             className="w-full"
             onClick={() => navigate('/auth')}
           >
-            {t('auth.backToLogin', 'ログインに戻る')}
+            {t('auth.backToLogin', { defaultValue: 'ログインに戻る' })}
           </Button>
         </CardContent>
       </Card>

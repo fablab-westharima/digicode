@@ -47,27 +47,22 @@ export function FirmwareInstaller() {
     activateButton.textContent = 'INSTALL';
     installButton.appendChild(activateButton);
 
-    // 非サポートメッセージ
+    const unsupportedMsg = t('firmwareInstaller.browserUnsupported', { defaultValue: 'お使いのブラウザはサポートされていません。<br/>Chrome または Edge をお使いください。' });
     const unsupportedSpan = document.createElement('span');
     unsupportedSpan.setAttribute('slot', 'unsupported');
     unsupportedSpan.innerHTML = `
       <div class="bg-red-50 border border-red-200 p-4 rounded-lg text-center">
-        <p class="text-red-700 text-sm">
-          お使いのブラウザはサポートされていません。<br/>
-          Chrome または Edge をお使いください。
-        </p>
+        <p class="text-red-700 text-sm">${unsupportedMsg}</p>
       </div>
     `;
     installButton.appendChild(unsupportedSpan);
 
-    // 許可されていないメッセージ
+    const notAllowedMsg = t('firmwareInstaller.notAllowedHttps', { defaultValue: 'HTTPSまたはlocalhostでのみ動作します。' });
     const notAllowedSpan = document.createElement('span');
     notAllowedSpan.setAttribute('slot', 'not-allowed');
     notAllowedSpan.innerHTML = `
       <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg text-center">
-        <p class="text-yellow-700 text-sm">
-          HTTPSまたはlocalhostでのみ動作します。
-        </p>
+        <p class="text-yellow-700 text-sm">${notAllowedMsg}</p>
       </div>
     `;
     installButton.appendChild(notAllowedSpan);
@@ -80,7 +75,7 @@ export function FirmwareInstaller() {
 
     container.innerHTML = '';
     container.appendChild(installButton);
-  }, [espToolsReady, containerElement, firmwareType]);
+  }, [espToolsReady, containerElement, firmwareType, t]);
 
   const handleGoToEditor = () => {
     navigate('/editor');

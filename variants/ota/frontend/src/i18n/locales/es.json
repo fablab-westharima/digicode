@@ -803,7 +803,12 @@
     "again": "Reintentar",
     "start": "Iniciar",
     "progress": "Tutoriales completados: {{completed}} / {{total}}",
-    "resetProgress": "Restablecer progreso"
+    "resetProgress": "Restablecer progreso",
+    "step": "Paso {{current}} / {{total}}",
+    "back": "Atrás",
+    "skip": "Saltar",
+    "complete": "Completar",
+    "next": "Siguiente"
   },
   "blocks": {
     "basic": "Basic",
@@ -3367,5 +3372,9 @@
     "tooShort": "La nueva contraseña debe tener al menos 4 caracteres",
     "mismatch": "Las nuevas contraseñas no coinciden",
     "error": "Error al cambiar la contraseña"
+  },
+  "firmwareInstaller": {
+    "browserUnsupported": "Tu navegador no es compatible.<br/>Utiliza Chrome o Edge.",
+    "notAllowedHttps": "Solo funciona en HTTPS o localhost."
   }
 }

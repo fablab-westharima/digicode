@@ -803,7 +803,12 @@
     "again": "Tentar novamente",
     "start": "Iniciar",
     "progress": "Tutoriais concluídos: {{completed}} / {{total}}",
-    "resetProgress": "Repor progresso"
+    "resetProgress": "Repor progresso",
+    "step": "Passo {{current}} / {{total}}",
+    "back": "Voltar",
+    "skip": "Saltar",
+    "complete": "Concluir",
+    "next": "Seguinte"
   },
   "blocks": {
     "basic": "Basic",
@@ -3367,5 +3372,9 @@
     "tooShort": "A nova palavra-passe deve ter pelo menos 4 caracteres",
     "mismatch": "As novas palavras-passe não coincidem",
     "error": "Falha ao alterar a palavra-passe"
+  },
+  "firmwareInstaller": {
+    "browserUnsupported": "O seu navegador não é suportado.<br/>Utilize Chrome ou Edge.",
+    "notAllowedHttps": "Apenas funciona em HTTPS ou localhost."
   }
 }

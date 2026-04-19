@@ -1024,7 +1024,12 @@
     "again": "Retry",
     "start": "Start",
     "progress": "Completed tutorials: {{completed}} / {{total}}",
-    "resetProgress": "Reset Progress"
+    "resetProgress": "Reset Progress",
+    "step": "Step {{current}} / {{total}}",
+    "back": "Back",
+    "skip": "Skip",
+    "complete": "Complete",
+    "next": "Next"
   },
   "blocks": {
     "basic": "Basic",
@@ -3367,5 +3372,9 @@
     "tooShort": "New password must be at least 4 characters",
     "mismatch": "New passwords do not match",
     "error": "Failed to change password"
+  },
+  "firmwareInstaller": {
+    "browserUnsupported": "Your browser is not supported.<br/>Please use Chrome or Edge.",
+    "notAllowedHttps": "Works only on HTTPS or localhost."
   }
 }

@@ -1417,6 +1417,7 @@ export function EditorPage() {
           <DropdownMenuCheckboxItem
             checked={showSerialMonitor}
             onCheckedChange={setShowSerialMonitor}
+            data-tutorial-target="serial-monitor"
           >
             <Terminal className="w-4 h-4 mr-2" />
             {t('editor.menu.serialMonitor')}
