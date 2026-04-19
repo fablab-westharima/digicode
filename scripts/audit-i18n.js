@@ -61,6 +61,9 @@ for (const lang of ['ja', 'en', 'es', 'pt-PT', 'zh-TW']) {
 // - toolbox 各種: Blockly ツールボックス生成（別議論）
 // - i18n/: 翻訳ファイル自体
 // - blocklyI18n/Messages: Blockly i18n ヘルパー
+// - *I18n.ts / AboutPage{En,Es,Pt,Zh}: 非 JA ロケール override ファイル
+//   （canonical JA は tutorials.ts / sampleProjects.ts / AboutPageJa.tsx で
+//   HC 計上されるが意図的。これらの override は翻訳済み文字列なので HC 対象外）
 const EXCLUDE_PATTERNS = [
   '/blocks/',
   '/__tests__/',
@@ -76,6 +79,12 @@ const EXCLUDE_PATTERNS = [
   '/i18n/',
   '/utils/blocklyI18n.ts',
   '/utils/blocklyMessages.ts',
+  '/data/tutorialsI18n',
+  '/data/sampleProjectsI18n',
+  '/pages/about/AboutPageEn',
+  '/pages/about/AboutPageEs',
+  '/pages/about/AboutPagePt',
+  '/pages/about/AboutPageZh',
 ];
 
 function walk(dir) {
@@ -178,12 +187,27 @@ for (const key of allStaticKeys) {
 }
 
 // defaultValue と ja.json の不一致を検出
+// 注: コード側 defaultValue はソース原文の escape sequences（\n, \t, \r 等）がそのまま
+// 2 文字として取得されるため、ja.json の JSON-decoded 値と比較する前に正規化する
+// （正規化しないと改行を含む defaultValue で常に false positive が発生する）
+function normalizeEscapes(s) {
+  return s
+    .replace(/\\n/g, '\n')
+    .replace(/\\t/g, '\t')
+    .replace(/\\r/g, '\r')
+    .replace(/\\\\/g, '\\')
+    .replace(/\\'/g, "'")
+    .replace(/\\"/g, '"')
+    .replace(/\\`/g, '`');
+}
+
 const dvMismatch = [];
 for (const [file, r] of Object.entries(report)) {
   for (const c of r.staticCalls) {
     if (c.defaultValue && keyStatus[c.key] && keyStatus[c.key].ja) {
       const jaValue = locales.ja[c.key];
-      if (typeof jaValue === 'string' && jaValue !== c.defaultValue) {
+      const normalizedCode = normalizeEscapes(c.defaultValue);
+      if (typeof jaValue === 'string' && jaValue !== normalizedCode) {
         dvMismatch.push({ file, key: c.key, line: c.line, codeDefault: c.defaultValue, jaValue });
       }
     }
