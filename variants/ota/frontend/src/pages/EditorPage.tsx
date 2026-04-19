@@ -370,11 +370,17 @@ export function EditorPage() {
 
   // サンプルプロジェクト選択
   const handleSampleSelect = (sample: SampleProject) => {
+    console.log('[handleSampleSelect] sample:', sample.id, 'xml length:', sample.blocklyXml?.length);
+    console.log('[handleSampleSelect] blocklyEditorRef.current:', !!blocklyEditorRef.current);
     // XMLを読み込み
     setWorkspaceXml(sample.blocklyXml);
     setIsDirty(false);
     if (blocklyEditorRef.current) {
+      console.log('[handleSampleSelect] calling loadXml...');
       blocklyEditorRef.current.loadXml(sample.blocklyXml);
+      console.log('[handleSampleSelect] loadXml returned');
+    } else {
+      console.error('[handleSampleSelect] blocklyEditorRef.current is NULL - loadXml skipped!');
     }
     // 現在のプロジェクトをクリア
     setCurrentProject(null);
