@@ -1616,39 +1616,14 @@ export function EditorPage() {
             </div>
 
             {/* 下部パネル（シリアルモニター/プロッター） */}
-            {(showSerialMonitor || showSerialPlotter) && (
-              <div className="h-64 border-t border-[#2E333D] flex">
-                <Tabs defaultValue="monitor" className="flex-1 flex flex-col">
-                  <div className="flex items-center justify-end px-2 border-b border-[#2E333D] bg-[#1C1F26]">
-                    <TabsList className="h-9 bg-transparent">
-                      {showSerialMonitor && (
-                        <TabsTrigger value="monitor" className="text-xs px-3">
-                          <Terminal className="w-3 h-3 mr-1" />
-                          {t('editor.bottom.monitor')}
-                        </TabsTrigger>
-                      )}
-                      {showSerialPlotter && (
-                        <TabsTrigger value="plotter" className="text-xs px-3">
-                          <LineChart className="w-3 h-3 mr-1" />
-                          {t('editor.bottom.plotter')}
-                        </TabsTrigger>
-                      )}
-                    </TabsList>
-                  </div>
-
-                  <div className="flex-1 overflow-hidden">
-                    {showSerialMonitor && (
-                      <TabsContent value="monitor" className="h-full m-0 p-0">
-                        <SerialMonitor className="h-full" />
-                      </TabsContent>
-                    )}
-                    {showSerialPlotter && (
-                      <TabsContent value="plotter" className="h-full m-0 p-0">
-                        <SerialPlotter className="h-full" />
-                      </TabsContent>
-                    )}
-                  </div>
-                </Tabs>
+            {showSerialMonitor && (
+              <div className="h-64 border-t border-[#2E333D]">
+                <SerialMonitor className="h-full" />
+              </div>
+            )}
+            {showSerialPlotter && (
+              <div className="h-64 border-t border-[#2E333D]">
+                <SerialPlotter className="h-full" />
               </div>
             )}
           </div>
