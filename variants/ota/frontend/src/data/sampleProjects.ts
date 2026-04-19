@@ -22,13 +22,15 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="esp32_pin_mode">
             <field name="PIN">2</field>
             <field name="MODE">OUTPUT</field>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="esp32_digital_write">
             <field name="PIN">2</field>
             <field name="VALUE">HIGH</field>
@@ -58,7 +60,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   },
   {
@@ -69,12 +71,14 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="esp32_serial_begin">
             <field name="BAUD">115200</field>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="esp32_serial_println">
             <value name="TEXT">
               <block type="text">
@@ -92,7 +96,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   },
   // Sensor examples
@@ -104,7 +108,7 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="esp32_serial_begin">
             <field name="BAUD">115200</field>
             <next>
@@ -115,7 +119,9 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="esp32_serial_print">
             <value name="TEXT">
               <block type="text">
@@ -149,7 +155,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   },
   {
@@ -160,7 +166,7 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="esp32_serial_begin">
             <field name="BAUD">115200</field>
             <next>
@@ -171,7 +177,9 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="esp32_serial_print">
             <value name="TEXT">
               <block type="text">
@@ -221,7 +229,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   },
   // Motor examples
@@ -233,12 +241,14 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="servo_attach">
             <field name="PIN">13</field>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="controls_for">
             <field name="VAR">angle</field>
             <value name="FROM">
@@ -316,7 +326,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   },
   {
@@ -327,13 +337,15 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="neopixel_init">
             <field name="PIN">5</field>
             <field name="NUM">8</field>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="neopixel_set_color">
             <field name="INDEX">0</field>
             <field name="COLOR">#ff0000</field>
@@ -394,7 +406,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   },
   // OTTO examples
@@ -406,7 +418,7 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="otto_wheel_init">
             <field name="PIN_L">14</field>
             <field name="PIN_R">13</field>
@@ -418,7 +430,9 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="controls_if">
             <value name="IF0">
               <block type="logic_compare">
@@ -480,7 +494,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   },
   {
@@ -491,7 +505,7 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="otto_ninja_init">
             <field name="PIN_LL">27</field>
             <field name="PIN_RL">15</field>
@@ -499,7 +513,9 @@ export const sampleProjects: SampleProject[] = [
             <field name="PIN_RF">13</field>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="otto_ninja_transform">
             <field name="MODE">walk</field>
             <next>
@@ -559,7 +575,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   },
   {
@@ -570,7 +586,7 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="otto_init">
             <field name="PIN_LL">27</field>
             <field name="PIN_RL">15</field>
@@ -578,7 +594,9 @@ export const sampleProjects: SampleProject[] = [
             <field name="PIN_RF">13</field>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="otto_home">
             <next>
               <block type="esp32_delay">
@@ -621,7 +639,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   },
   // Competition robot examples
@@ -633,7 +651,7 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="esp32_serial_begin">
             <field name="BAUD">115200</field>
             <next>
@@ -677,7 +695,9 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="variables_set">
             <field name="VAR">position</field>
             <value name="VALUE">
@@ -785,7 +805,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   },
   {
@@ -796,7 +816,7 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="esp32_serial_begin">
             <field name="BAUD">115200</field>
             <next>
@@ -825,7 +845,9 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="variables_set">
             <field name="VAR">frontWall</field>
             <value name="VALUE">
@@ -955,7 +977,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   },
   // IoT / Home Assistant examples
@@ -967,7 +989,7 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="mqtt_setup">
             <field name="SSID">your_ssid</field>
             <field name="PASSWORD">your_password</field>
@@ -993,7 +1015,9 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="mqtt_loop">
             <next>
               <block type="controls_if">
@@ -1045,7 +1069,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   },
   {
@@ -1056,7 +1080,7 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="mqtt_setup">
             <field name="SSID">your_ssid</field>
             <field name="PASSWORD">your_password</field>
@@ -1087,7 +1111,9 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="mqtt_loop">
             <next>
               <block type="mqtt_on_message">
@@ -1161,7 +1187,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   },
   // Home Assistant Auto Discovery サンプル
@@ -1173,7 +1199,7 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="esp32_serial_begin">
             <field name="BAUD">115200</field>
             <next>
@@ -1196,7 +1222,9 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="ha_report_interval">
             <value name="INTERVAL">
               <block type="math_number">
@@ -1218,7 +1246,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   },
   {
@@ -1229,7 +1257,7 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="esp32_serial_begin">
             <field name="BAUD">115200</field>
             <next>
@@ -1257,10 +1285,12 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="ha_loop"></block>
         </statement>
-      </block>
+</block>
       <block type="ha_switch_on_command" x="50" y="400">
         <field name="SWITCH_ID">relay</field>
         <statement name="ON_CALLBACK">
@@ -1286,7 +1316,7 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="esp32_serial_begin">
             <field name="BAUD">115200</field>
             <next>
@@ -1313,10 +1343,12 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="ha_loop"></block>
         </statement>
-      </block>
+</block>
       <block type="ha_light_on_rgb_command" x="50" y="400">
         <field name="LIGHT_ID">rgb_led</field>
         <statement name="CALLBACK">
@@ -1347,7 +1379,7 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="esp32_serial_begin">
             <field name="BAUD">115200</field>
             <next>
@@ -1378,10 +1410,12 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="ha_loop"></block>
         </statement>
-      </block>
+</block>
       <block type="ha_number_on_command" x="50" y="400">
         <field name="NUMBER_ID">servo_angle</field>
         <statement name="CALLBACK">
@@ -1403,7 +1437,7 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-        <statement name="SETUP">
+<statement name="SETUP">
           <block type="esp32_serial_begin">
             <field name="BAUD">115200</field>
             <next>
@@ -1447,7 +1481,9 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-        <statement name="LOOP">
+</block>
+<block type="arduino_loop" x="50" y="250">
+<statement name="LOOP">
           <block type="ha_report_interval">
             <value name="INTERVAL">
               <block type="math_number">
@@ -1489,7 +1525,7 @@ export const sampleProjects: SampleProject[] = [
             </next>
           </block>
         </statement>
-      </block>
+</block>
     </xml>`
   }
 ];
