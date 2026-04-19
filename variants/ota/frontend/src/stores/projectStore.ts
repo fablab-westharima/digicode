@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import i18n from '@/i18n';
 import { api } from '@/lib/api';
 
 // Arduino C++ のみをサポート
@@ -52,7 +53,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const response = await api.projects.list();
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'プロジェクト一覧の取得に失敗しました');
+        throw new Error(data.error || i18n.t('errors.project.listFailed', { defaultValue: 'プロジェクト一覧の取得に失敗しました' }));
       }
       const data = await response.json();
       // スネークケースからキャメルケースに変換
@@ -69,7 +70,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       set({ projects, isLoading: false });
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'エラーが発生しました',
+        error: error instanceof Error ? error.message : i18n.t('errors.generic', { defaultValue: 'エラーが発生しました' }),
         isLoading: false,
       });
     }
@@ -81,7 +82,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const response = await api.projects.get(id);
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'プロジェクトの取得に失敗しました');
+        throw new Error(data.error || i18n.t('errors.project.getFailed', { defaultValue: 'プロジェクトの取得に失敗しました' }));
       }
       const data = await response.json();
       const p = data.project;
@@ -99,7 +100,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       return project;
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'エラーが発生しました',
+        error: error instanceof Error ? error.message : i18n.t('errors.generic', { defaultValue: 'エラーが発生しました' }),
         isLoading: false,
       });
       return null;
@@ -112,7 +113,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const response = await api.projects.create(data);
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.error || 'プロジェクトの作成に失敗しました');
+        throw new Error(result.error || i18n.t('errors.project.createFailed', { defaultValue: 'プロジェクトの作成に失敗しました' }));
       }
       const result = await response.json();
       const p = result.project;
@@ -134,7 +135,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       return project;
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'エラーが発生しました',
+        error: error instanceof Error ? error.message : i18n.t('errors.generic', { defaultValue: 'エラーが発生しました' }),
         isLoading: false,
       });
       return null;
@@ -144,7 +145,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   saveProject: async (blocklyXml: string, generatedCode: string, language?: CodeLanguage) => {
     const { currentProject } = get();
     if (!currentProject) {
-      set({ error: 'プロジェクトが選択されていません' });
+      set({ error: i18n.t('errors.project.notSelected', { defaultValue: 'プロジェクトが選択されていません' }) });
       return false;
     }
 
@@ -157,7 +158,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       });
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'プロジェクトの保存に失敗しました');
+        throw new Error(data.error || i18n.t('errors.project.saveFailed', { defaultValue: 'プロジェクトの保存に失敗しました' }));
       }
       const data = await response.json();
       const p = data.project;
@@ -181,7 +182,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       return true;
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'エラーが発生しました',
+        error: error instanceof Error ? error.message : i18n.t('errors.generic', { defaultValue: 'エラーが発生しました' }),
         isLoading: false,
       });
       return false;
@@ -194,7 +195,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const response = await api.projects.delete(id);
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'プロジェクトの削除に失敗しました');
+        throw new Error(data.error || i18n.t('errors.project.deleteFailed', { defaultValue: 'プロジェクトの削除に失敗しました' }));
       }
       set((state) => ({
         currentProject: state.currentProject?.id === id ? null : state.currentProject,
@@ -204,7 +205,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       return true;
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'エラーが発生しました',
+        error: error instanceof Error ? error.message : i18n.t('errors.generic', { defaultValue: 'エラーが発生しました' }),
         isLoading: false,
       });
       return false;

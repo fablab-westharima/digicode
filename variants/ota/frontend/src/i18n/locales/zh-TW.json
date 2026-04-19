@@ -3376,5 +3376,59 @@
   "firmwareInstaller": {
     "browserUnsupported": "您的瀏覽器不受支援。<br/>請使用 Chrome 或 Edge。",
     "notAllowedHttps": "僅在 HTTPS 或 localhost 上運作。"
+  },
+  "errors": {
+    "auth": {
+      "registerFailed": "帳戶註冊失敗",
+      "loginFailed": "登入失敗",
+      "loginRequired": "需要登入",
+      "logoutAllFailed": "所有裝置登出失敗",
+      "userInfoFailed": "無法取得使用者資訊",
+      "refreshFailed": "Token 更新失敗",
+      "refreshTokenMissing": "找不到更新用的 token",
+      "forgotPasswordFailed": "密碼重設申請失敗",
+      "resetPasswordFailed": "密碼重設失敗",
+      "verifyEmailSendFailed": "驗證郵件發送失敗",
+      "verifyEmailFailed": "電子郵件驗證失敗",
+      "recoveryRequestFailed": "復原申請失敗",
+      "recoveryFailed": "復原失敗",
+      "authFailed": "認證失敗",
+      "otpVerifyFailed": "OTP 驗證失敗",
+      "otpResendFailed": "OTP 重新發送失敗",
+      "twoFactorStatusFailed": "無法取得 2FA 狀態",
+      "twoFactorEnableFailed": "啟用 2FA 失敗",
+      "twoFactorDisableFailed": "停用 2FA 失敗"
+    },
+    "passkey": {
+      "listFailed": "無法取得通行金鑰清單",
+      "registerOptionsFailed": "無法取得通行金鑰註冊選項",
+      "registerCanceled": "通行金鑰註冊已取消",
+      "verifyFailed": "通行金鑰驗證失敗",
+      "deleteFailed": "通行金鑰刪除失敗",
+      "authOptionsFailed": "無法取得通行金鑰認證選項",
+      "authCanceled": "通行金鑰認證已取消",
+      "authFailed": "通行金鑰認證失敗",
+      "onlyModeFailed": "僅通行金鑰模式設定失敗",
+      "recoveryCodeGenerateFailed": "產生復原代碼失敗",
+      "recoveryCodeRegenerateFailed": "重新產生復原代碼失敗",
+      "recoveryCodeVerifyFailed": "復原代碼驗證失敗",
+      "recoveryCodeCountFailed": "無法取得復原代碼數量"
+    },
+    "project": {
+      "listFailed": "無法取得專案清單",
+      "getFailed": "無法取得專案",
+      "createFailed": "專案建立失敗",
+      "saveFailed": "專案儲存失敗",
+      "deleteFailed": "專案刪除失敗",
+      "notSelected": "未選擇專案"
+    },
+    "subscription": {
+      "infoFailed": "無法取得訂閱資訊",
+      "planFailed": "無法取得方案資訊",
+      "checkoutFailed": "建立 Checkout 工作階段失敗",
+      "portalFailed": "建立入口工作階段失敗"
+    },
+    "generic": "發生錯誤",
+    "registerFailed": "註冊失敗"
   }
 }

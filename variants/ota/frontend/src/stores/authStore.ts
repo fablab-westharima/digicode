@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import i18n from '@/i18n';
 import { api, setTokens, removeToken, getRefreshToken } from '@/lib/api';
 
 interface User {
@@ -39,7 +40,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'ログインに失敗しました');
+        throw new Error(data.error || i18n.t('errors.auth.loginFailed', { defaultValue: 'ログインに失敗しました' }));
       }
 
       setTokens(data.accessToken, data.refreshToken, data.expiresIn);
@@ -52,7 +53,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'ログインに失敗しました',
+        error: error instanceof Error ? error.message : i18n.t('errors.auth.loginFailed', { defaultValue: 'ログインに失敗しました' }),
         isLoading: false,
       });
       throw error;
@@ -66,7 +67,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || '登録に失敗しました');
+        throw new Error(data.error || i18n.t('errors.registerFailed', { defaultValue: '登録に失敗しました' }));
       }
 
       // Phase 1.6.5: 登録後は即座にログインせず、メール確認を待つ
@@ -76,7 +77,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : '登録に失敗しました',
+        error: error instanceof Error ? error.message : i18n.t('errors.registerFailed', { defaultValue: '登録に失敗しました' }),
         isLoading: false,
       });
       throw error;
@@ -110,7 +111,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error('認証に失敗しました');
+        throw new Error(i18n.t('errors.auth.authFailed', { defaultValue: '認証に失敗しました' }));
       }
 
       localStorage.setItem('user', JSON.stringify(data.user));

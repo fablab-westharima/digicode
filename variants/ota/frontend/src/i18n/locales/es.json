@@ -3376,5 +3376,59 @@
   "firmwareInstaller": {
     "browserUnsupported": "Tu navegador no es compatible.<br/>Utiliza Chrome o Edge.",
     "notAllowedHttps": "Solo funciona en HTTPS o localhost."
+  },
+  "errors": {
+    "auth": {
+      "registerFailed": "Error al registrar la cuenta",
+      "loginFailed": "Error al iniciar sesión",
+      "loginRequired": "Se requiere iniciar sesión",
+      "logoutAllFailed": "Error al cerrar sesión en todos los dispositivos",
+      "userInfoFailed": "Error al obtener la información del usuario",
+      "refreshFailed": "Error al renovar el token",
+      "refreshTokenMissing": "No hay token de actualización",
+      "forgotPasswordFailed": "Error al solicitar el restablecimiento de contraseña",
+      "resetPasswordFailed": "Error al restablecer la contraseña",
+      "verifyEmailSendFailed": "Error al enviar el email de verificación",
+      "verifyEmailFailed": "Error al verificar el email",
+      "recoveryRequestFailed": "Error al solicitar la recuperación",
+      "recoveryFailed": "Error en la recuperación",
+      "authFailed": "Error de autenticación",
+      "otpVerifyFailed": "Error al verificar el OTP",
+      "otpResendFailed": "Error al reenviar el OTP",
+      "twoFactorStatusFailed": "Error al obtener el estado de 2FA",
+      "twoFactorEnableFailed": "Error al activar 2FA",
+      "twoFactorDisableFailed": "Error al desactivar 2FA"
+    },
+    "passkey": {
+      "listFailed": "Error al obtener las passkeys",
+      "registerOptionsFailed": "Error al obtener las opciones de registro de passkey",
+      "registerCanceled": "Se canceló el registro de passkey",
+      "verifyFailed": "Error al verificar la passkey",
+      "deleteFailed": "Error al eliminar la passkey",
+      "authOptionsFailed": "Error al obtener las opciones de autenticación de passkey",
+      "authCanceled": "Se canceló la autenticación con passkey",
+      "authFailed": "Error de autenticación con passkey",
+      "onlyModeFailed": "Error al configurar el modo solo passkey",
+      "recoveryCodeGenerateFailed": "Error al generar los códigos de recuperación",
+      "recoveryCodeRegenerateFailed": "Error al regenerar los códigos de recuperación",
+      "recoveryCodeVerifyFailed": "Error al verificar el código de recuperación",
+      "recoveryCodeCountFailed": "Error al obtener el número de códigos de recuperación"
+    },
+    "project": {
+      "listFailed": "Error al obtener la lista de proyectos",
+      "getFailed": "Error al obtener el proyecto",
+      "createFailed": "Error al crear el proyecto",
+      "saveFailed": "Error al guardar el proyecto",
+      "deleteFailed": "Error al eliminar el proyecto",
+      "notSelected": "Ningún proyecto seleccionado"
+    },
+    "subscription": {
+      "infoFailed": "Error al obtener la información de suscripción",
+      "planFailed": "Error al obtener la información del plan",
+      "checkoutFailed": "Error al crear la sesión de Checkout",
+      "portalFailed": "Error al crear la sesión del portal"
+    },
+    "generic": "Se produjo un error",
+    "registerFailed": "Error de registro"
   }
 }

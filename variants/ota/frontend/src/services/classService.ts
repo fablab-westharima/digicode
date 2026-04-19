@@ -1,3 +1,4 @@
+import i18n from '@/i18n';
 import { fetchWithAuth } from '@/lib/api';
 
 // --- Types ---
@@ -62,7 +63,7 @@ export function daysUntilExpiry(expiresAt: string | null): number | null {
 }
 
 async function parseErrorOrThrow(response: Response): Promise<never> {
-  let message = 'エラーが発生しました';
+  let message = i18n.t('errors.generic', { defaultValue: 'エラーが発生しました' });
   try {
     const data = await response.json();
     if (data.error) message = data.error;

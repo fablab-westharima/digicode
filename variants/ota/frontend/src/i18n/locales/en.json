@@ -3376,5 +3376,59 @@
   "firmwareInstaller": {
     "browserUnsupported": "Your browser is not supported.<br/>Please use Chrome or Edge.",
     "notAllowedHttps": "Works only on HTTPS or localhost."
+  },
+  "errors": {
+    "auth": {
+      "registerFailed": "Failed to register account",
+      "loginFailed": "Failed to sign in",
+      "loginRequired": "Login required",
+      "logoutAllFailed": "Failed to sign out from all devices",
+      "userInfoFailed": "Failed to fetch user info",
+      "refreshFailed": "Failed to refresh token",
+      "refreshTokenMissing": "Refresh token is missing",
+      "forgotPasswordFailed": "Failed to request password reset",
+      "resetPasswordFailed": "Failed to reset password",
+      "verifyEmailSendFailed": "Failed to send verification email",
+      "verifyEmailFailed": "Failed to verify email",
+      "recoveryRequestFailed": "Failed to request recovery",
+      "recoveryFailed": "Recovery failed",
+      "authFailed": "Authentication failed",
+      "otpVerifyFailed": "Failed to verify OTP",
+      "otpResendFailed": "Failed to resend OTP",
+      "twoFactorStatusFailed": "Failed to fetch 2FA status",
+      "twoFactorEnableFailed": "Failed to enable 2FA",
+      "twoFactorDisableFailed": "Failed to disable 2FA"
+    },
+    "passkey": {
+      "listFailed": "Failed to fetch passkeys",
+      "registerOptionsFailed": "Failed to fetch passkey registration options",
+      "registerCanceled": "Passkey registration was canceled",
+      "verifyFailed": "Failed to verify passkey",
+      "deleteFailed": "Failed to delete passkey",
+      "authOptionsFailed": "Failed to fetch passkey authentication options",
+      "authCanceled": "Passkey authentication was canceled",
+      "authFailed": "Passkey authentication failed",
+      "onlyModeFailed": "Failed to set passkey-only mode",
+      "recoveryCodeGenerateFailed": "Failed to generate recovery codes",
+      "recoveryCodeRegenerateFailed": "Failed to regenerate recovery codes",
+      "recoveryCodeVerifyFailed": "Failed to verify recovery code",
+      "recoveryCodeCountFailed": "Failed to fetch recovery code count"
+    },
+    "project": {
+      "listFailed": "Failed to fetch projects",
+      "getFailed": "Failed to fetch project",
+      "createFailed": "Failed to create project",
+      "saveFailed": "Failed to save project",
+      "deleteFailed": "Failed to delete project",
+      "notSelected": "No project selected"
+    },
+    "subscription": {
+      "infoFailed": "Failed to fetch subscription info",
+      "planFailed": "Failed to fetch plan info",
+      "checkoutFailed": "Failed to create Checkout session",
+      "portalFailed": "Failed to create portal session"
+    },
+    "generic": "An error occurred",
+    "registerFailed": "Registration failed"
   }
 }

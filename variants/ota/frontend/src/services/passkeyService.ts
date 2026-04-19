@@ -7,6 +7,7 @@ import {
   type RegistrationResponseJSON,
   type AuthenticationResponseJSON,
 } from '@simplewebauthn/browser';
+import i18n from '@/i18n';
 
 // Cloudflare Pagesでは環境変数が使えないため、hostnameで判定
 const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
@@ -29,7 +30,7 @@ export async function registerPasskey(deviceName?: string): Promise<number> {
   const accessToken = localStorage.getItem('accessToken');
 
   if (!accessToken) {
-    throw new Error('ログインが必要です');
+    throw new Error(i18n.t('errors.auth.loginRequired', { defaultValue: 'ログインが必要です' }));
   }
 
   // Step 1: 登録オプションを取得
@@ -43,7 +44,7 @@ export async function registerPasskey(deviceName?: string): Promise<number> {
 
   if (!optionsResponse.ok) {
     const error = await optionsResponse.json();
-    throw new Error(error.error || 'パスキー登録オプションの取得に失敗しました');
+    throw new Error(error.error || i18n.t('errors.passkey.registerOptionsFailed', { defaultValue: 'パスキー登録オプションの取得に失敗しました' }));
   }
 
   const options: PublicKeyCredentialCreationOptionsJSON = await optionsResponse.json();
@@ -54,7 +55,7 @@ export async function registerPasskey(deviceName?: string): Promise<number> {
     credential = await startRegistration({ optionsJSON: options });
   } catch (error) {
     if (error instanceof Error && error.name === 'NotAllowedError') {
-      throw new Error('パスキー登録がキャンセルされました');
+      throw new Error(i18n.t('errors.passkey.registerCanceled', { defaultValue: 'パスキー登録がキャンセルされました' }));
     }
     throw error;
   }
@@ -74,7 +75,7 @@ export async function registerPasskey(deviceName?: string): Promise<number> {
 
   if (!verifyResponse.ok) {
     const error = await verifyResponse.json();
-    throw new Error(error.error || 'パスキーの検証に失敗しました');
+    throw new Error(error.error || i18n.t('errors.passkey.verifyFailed', { defaultValue: 'パスキーの検証に失敗しました' }));
   }
 
   const result = await verifyResponse.json();
@@ -103,7 +104,7 @@ export async function authenticateWithPasskey(email: string): Promise<{
 
   if (!optionsResponse.ok) {
     const error = await optionsResponse.json();
-    throw new Error(error.error || 'パスキー認証オプションの取得に失敗しました');
+    throw new Error(error.error || i18n.t('errors.passkey.authOptionsFailed', { defaultValue: 'パスキー認証オプションの取得に失敗しました' }));
   }
 
   const options: PublicKeyCredentialRequestOptionsJSON = await optionsResponse.json();
@@ -114,7 +115,7 @@ export async function authenticateWithPasskey(email: string): Promise<{
     credential = await startAuthentication({ optionsJSON: options });
   } catch (error) {
     if (error instanceof Error && error.name === 'NotAllowedError') {
-      throw new Error('パスキー認証がキャンセルされました');
+      throw new Error(i18n.t('errors.passkey.authCanceled', { defaultValue: 'パスキー認証がキャンセルされました' }));
     }
     throw error;
   }
@@ -133,7 +134,7 @@ export async function authenticateWithPasskey(email: string): Promise<{
 
   if (!verifyResponse.ok) {
     const error = await verifyResponse.json();
-    throw new Error(error.error || 'パスキー認証に失敗しました');
+    throw new Error(error.error || i18n.t('errors.passkey.authFailed', { defaultValue: 'パスキー認証に失敗しました' }));
   }
 
   const result = await verifyResponse.json();
@@ -157,7 +158,7 @@ export async function listPasskeys(): Promise<Array<{
   const accessToken = localStorage.getItem('accessToken');
 
   if (!accessToken) {
-    throw new Error('ログインが必要です');
+    throw new Error(i18n.t('errors.auth.loginRequired', { defaultValue: 'ログインが必要です' }));
   }
 
   const response = await fetch(`${API_BASE_URL}/api/auth/passkey/list`, {
@@ -169,7 +170,7 @@ export async function listPasskeys(): Promise<Array<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'パスキー一覧の取得に失敗しました');
+    throw new Error(error.error || i18n.t('errors.passkey.listFailed', { defaultValue: 'パスキー一覧の取得に失敗しました' }));
   }
 
   const result = await response.json();
@@ -184,7 +185,7 @@ export async function deletePasskey(id: number): Promise<void> {
   const accessToken = localStorage.getItem('accessToken');
 
   if (!accessToken) {
-    throw new Error('ログインが必要です');
+    throw new Error(i18n.t('errors.auth.loginRequired', { defaultValue: 'ログインが必要です' }));
   }
 
   const response = await fetch(`${API_BASE_URL}/api/auth/passkey/${id}`, {
@@ -196,7 +197,7 @@ export async function deletePasskey(id: number): Promise<void> {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'パスキーの削除に失敗しました');
+    throw new Error(error.error || i18n.t('errors.passkey.deleteFailed', { defaultValue: 'パスキーの削除に失敗しました' }));
   }
 }
 
@@ -208,7 +209,7 @@ export async function setPasskeyOnlyMode(enabled: boolean): Promise<void> {
   const accessToken = localStorage.getItem('accessToken');
 
   if (!accessToken) {
-    throw new Error('ログインが必要です');
+    throw new Error(i18n.t('errors.auth.loginRequired', { defaultValue: 'ログインが必要です' }));
   }
 
   const response = await fetch(`${API_BASE_URL}/api/auth/passkey/set-only-mode`, {
@@ -222,7 +223,7 @@ export async function setPasskeyOnlyMode(enabled: boolean): Promise<void> {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'パスキーのみモードの設定に失敗しました');
+    throw new Error(error.error || i18n.t('errors.passkey.onlyModeFailed', { defaultValue: 'パスキーのみモードの設定に失敗しました' }));
   }
 }
 
@@ -234,7 +235,7 @@ export async function generateRecoveryCodes(): Promise<string[]> {
   const accessToken = localStorage.getItem('accessToken');
 
   if (!accessToken) {
-    throw new Error('ログインが必要です');
+    throw new Error(i18n.t('errors.auth.loginRequired', { defaultValue: 'ログインが必要です' }));
   }
 
   const response = await fetch(`${API_BASE_URL}/api/auth/recovery-codes/generate`, {
@@ -246,7 +247,7 @@ export async function generateRecoveryCodes(): Promise<string[]> {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'リカバリーコードの生成に失敗しました');
+    throw new Error(error.error || i18n.t('errors.passkey.recoveryCodeGenerateFailed', { defaultValue: 'リカバリーコードの生成に失敗しました' }));
   }
 
   const result = await response.json();
@@ -261,7 +262,7 @@ export async function getRecoveryCodesCount(): Promise<number> {
   const accessToken = localStorage.getItem('accessToken');
 
   if (!accessToken) {
-    throw new Error('ログインが必要です');
+    throw new Error(i18n.t('errors.auth.loginRequired', { defaultValue: 'ログインが必要です' }));
   }
 
   const response = await fetch(`${API_BASE_URL}/api/auth/recovery-codes/count`, {
@@ -273,7 +274,7 @@ export async function getRecoveryCodesCount(): Promise<number> {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'リカバリーコード数の取得に失敗しました');
+    throw new Error(error.error || i18n.t('errors.passkey.recoveryCodeCountFailed', { defaultValue: 'リカバリーコード数の取得に失敗しました' }));
   }
 
   const result = await response.json();
@@ -303,7 +304,7 @@ export async function verifyRecoveryCode(email: string, code: string): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'リカバリーコードの検証に失敗しました');
+    throw new Error(error.error || i18n.t('errors.passkey.recoveryCodeVerifyFailed', { defaultValue: 'リカバリーコードの検証に失敗しました' }));
   }
 
   return response.json();
@@ -317,7 +318,7 @@ export async function regenerateRecoveryCodes(): Promise<string[]> {
   const accessToken = localStorage.getItem('accessToken');
 
   if (!accessToken) {
-    throw new Error('ログインが必要です');
+    throw new Error(i18n.t('errors.auth.loginRequired', { defaultValue: 'ログインが必要です' }));
   }
 
   const response = await fetch(`${API_BASE_URL}/api/auth/recovery-codes/regenerate`, {
@@ -329,7 +330,7 @@ export async function regenerateRecoveryCodes(): Promise<string[]> {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'リカバリーコードの再生成に失敗しました');
+    throw new Error(error.error || i18n.t('errors.passkey.recoveryCodeRegenerateFailed', { defaultValue: 'リカバリーコードの再生成に失敗しました' }));
   }
 
   const result = await response.json();

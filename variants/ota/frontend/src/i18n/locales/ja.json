@@ -3366,5 +3366,59 @@
   "firmwareInstaller": {
     "browserUnsupported": "お使いのブラウザはサポートされていません。<br/>Chrome または Edge をお使いください。",
     "notAllowedHttps": "HTTPSまたはlocalhostでのみ動作します。"
+  },
+  "errors": {
+    "auth": {
+      "registerFailed": "アカウント登録に失敗しました",
+      "loginFailed": "ログインに失敗しました",
+      "loginRequired": "ログインが必要です",
+      "logoutAllFailed": "全デバイスからのログアウトに失敗しました",
+      "userInfoFailed": "ユーザー情報の取得に失敗しました",
+      "refreshFailed": "トークンのリフレッシュに失敗しました",
+      "refreshTokenMissing": "リフレッシュトークンがありません",
+      "forgotPasswordFailed": "パスワードリセット申請に失敗しました",
+      "resetPasswordFailed": "パスワードリセットに失敗しました",
+      "verifyEmailSendFailed": "確認メール送信に失敗しました",
+      "verifyEmailFailed": "メール確認に失敗しました",
+      "recoveryRequestFailed": "リカバリー申請に失敗しました",
+      "recoveryFailed": "リカバリーに失敗しました",
+      "authFailed": "認証に失敗しました",
+      "otpVerifyFailed": "OTP検証に失敗しました",
+      "otpResendFailed": "OTP再送信に失敗しました",
+      "twoFactorStatusFailed": "2FA設定の取得に失敗しました",
+      "twoFactorEnableFailed": "2FA有効化に失敗しました",
+      "twoFactorDisableFailed": "2FA無効化に失敗しました"
+    },
+    "passkey": {
+      "listFailed": "パスキー一覧の取得に失敗しました",
+      "registerOptionsFailed": "パスキー登録オプションの取得に失敗しました",
+      "registerCanceled": "パスキー登録がキャンセルされました",
+      "verifyFailed": "パスキーの検証に失敗しました",
+      "deleteFailed": "パスキーの削除に失敗しました",
+      "authOptionsFailed": "パスキー認証オプションの取得に失敗しました",
+      "authCanceled": "パスキー認証がキャンセルされました",
+      "authFailed": "パスキー認証に失敗しました",
+      "onlyModeFailed": "パスキーのみモードの設定に失敗しました",
+      "recoveryCodeGenerateFailed": "リカバリーコードの生成に失敗しました",
+      "recoveryCodeRegenerateFailed": "リカバリーコードの再生成に失敗しました",
+      "recoveryCodeVerifyFailed": "リカバリーコードの検証に失敗しました",
+      "recoveryCodeCountFailed": "リカバリーコード数の取得に失敗しました"
+    },
+    "project": {
+      "listFailed": "プロジェクト一覧の取得に失敗しました",
+      "getFailed": "プロジェクトの取得に失敗しました",
+      "createFailed": "プロジェクトの作成に失敗しました",
+      "saveFailed": "プロジェクトの保存に失敗しました",
+      "deleteFailed": "プロジェクトの削除に失敗しました",
+      "notSelected": "プロジェクトが選択されていません"
+    },
+    "subscription": {
+      "infoFailed": "サブスクリプション情報の取得に失敗しました",
+      "planFailed": "プラン情報の取得に失敗しました",
+      "checkoutFailed": "Checkout セッションの作成に失敗しました",
+      "portalFailed": "ポータルセッションの作成に失敗しました"
+    },
+    "generic": "エラーが発生しました",
+    "registerFailed": "登録に失敗しました"
   }
 }

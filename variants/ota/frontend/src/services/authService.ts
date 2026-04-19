@@ -1,3 +1,5 @@
+import i18n from '@/i18n';
+
 // Cloudflare Pagesでは環境変数が使えないため、hostnameで判定
 const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
   ? 'http://localhost:8787'
@@ -22,7 +24,7 @@ export async function register(email: string, password: string): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'アカウント登録に失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.registerFailed', { defaultValue: 'アカウント登録に失敗しました' }));
   }
 
   return await response.json();
@@ -47,7 +49,7 @@ export async function login(email: string, password: string): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'ログインに失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.loginFailed', { defaultValue: 'ログインに失敗しました' }));
   }
 
   const result = await response.json();
@@ -91,7 +93,7 @@ export async function logoutAll(): Promise<void> {
   const accessToken = localStorage.getItem('accessToken');
 
   if (!accessToken) {
-    throw new Error('ログインが必要です');
+    throw new Error(i18n.t('errors.auth.loginRequired', { defaultValue: 'ログインが必要です' }));
   }
 
   const response = await fetch(`${API_BASE_URL}/api/auth/logout-all`, {
@@ -103,7 +105,7 @@ export async function logoutAll(): Promise<void> {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || '全デバイスからのログアウトに失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.logoutAllFailed', { defaultValue: '全デバイスからのログアウトに失敗しました' }));
   }
 
   // ローカルのトークンを削除
@@ -128,7 +130,7 @@ export async function getMe(): Promise<{
   const accessToken = localStorage.getItem('accessToken');
 
   if (!accessToken) {
-    throw new Error('ログインが必要です');
+    throw new Error(i18n.t('errors.auth.loginRequired', { defaultValue: 'ログインが必要です' }));
   }
 
   const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
@@ -140,7 +142,7 @@ export async function getMe(): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'ユーザー情報の取得に失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.userInfoFailed', { defaultValue: 'ユーザー情報の取得に失敗しました' }));
   }
 
   return await response.json();
@@ -157,7 +159,7 @@ export async function refreshToken(): Promise<{
   const refreshToken = localStorage.getItem('refreshToken');
 
   if (!refreshToken) {
-    throw new Error('リフレッシュトークンがありません');
+    throw new Error(i18n.t('errors.auth.refreshTokenMissing', { defaultValue: 'リフレッシュトークンがありません' }));
   }
 
   const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
@@ -173,7 +175,7 @@ export async function refreshToken(): Promise<{
     // リフレッシュトークンが無効な場合はログアウト
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    throw new Error(error.error || 'トークンのリフレッシュに失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.refreshFailed', { defaultValue: 'トークンのリフレッシュに失敗しました' }));
   }
 
   const result = await response.json();
@@ -203,7 +205,7 @@ export async function forgotPassword(email: string): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'パスワードリセット申請に失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.forgotPasswordFailed', { defaultValue: 'パスワードリセット申請に失敗しました' }));
   }
 
   return await response.json();
@@ -225,7 +227,7 @@ export async function resetPassword(token: string, password: string): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'パスワードリセットに失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.resetPasswordFailed', { defaultValue: 'パスワードリセットに失敗しました' }));
   }
 
   return await response.json();
@@ -249,7 +251,7 @@ export async function sendVerificationEmail(email: string): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || '確認メール送信に失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.verifyEmailSendFailed', { defaultValue: '確認メール送信に失敗しました' }));
   }
 
   return await response.json();
@@ -271,7 +273,7 @@ export async function verifyEmail(token: string): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'メール確認に失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.verifyEmailFailed', { defaultValue: 'メール確認に失敗しました' }));
   }
 
   return await response.json();
@@ -295,7 +297,7 @@ export async function requestRecovery(email: string): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'リカバリー申請に失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.recoveryRequestFailed', { defaultValue: 'リカバリー申請に失敗しました' }));
   }
 
   return await response.json();
@@ -321,7 +323,7 @@ export async function verifyRecovery(token: string): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'リカバリーに失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.recoveryFailed', { defaultValue: 'リカバリーに失敗しました' }));
   }
 
   const result = await response.json();
@@ -363,7 +365,7 @@ export async function sendOtp(email: string, password: string): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || '認証に失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.authFailed', { defaultValue: '認証に失敗しました' }));
   }
 
   const result = await response.json();
@@ -398,7 +400,7 @@ export async function verifyOtp(email: string, code: string, trustDevice?: boole
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'OTP検証に失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.otpVerifyFailed', { defaultValue: 'OTP検証に失敗しました' }));
   }
 
   const result = await response.json();
@@ -428,7 +430,7 @@ export async function resendOtp(email: string): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'OTP再送信に失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.otpResendFailed', { defaultValue: 'OTP再送信に失敗しました' }));
   }
 
   return await response.json();
@@ -444,7 +446,7 @@ export async function getTwoFactorStatus(): Promise<{
   const accessToken = localStorage.getItem('accessToken');
 
   if (!accessToken) {
-    throw new Error('ログインが必要です');
+    throw new Error(i18n.t('errors.auth.loginRequired', { defaultValue: 'ログインが必要です' }));
   }
 
   const response = await fetch(`${API_BASE_URL}/api/auth/2fa/status`, {
@@ -456,7 +458,7 @@ export async function getTwoFactorStatus(): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || '2FA設定の取得に失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.twoFactorStatusFailed', { defaultValue: '2FA設定の取得に失敗しました' }));
   }
 
   return await response.json();
@@ -472,7 +474,7 @@ export async function enableTwoFactor(): Promise<{
   const accessToken = localStorage.getItem('accessToken');
 
   if (!accessToken) {
-    throw new Error('ログインが必要です');
+    throw new Error(i18n.t('errors.auth.loginRequired', { defaultValue: 'ログインが必要です' }));
   }
 
   const response = await fetch(`${API_BASE_URL}/api/auth/2fa/enable`, {
@@ -484,7 +486,7 @@ export async function enableTwoFactor(): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || '2FA有効化に失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.twoFactorEnableFailed', { defaultValue: '2FA有効化に失敗しました' }));
   }
 
   return await response.json();
@@ -500,7 +502,7 @@ export async function disableTwoFactor(password: string): Promise<{
   const accessToken = localStorage.getItem('accessToken');
 
   if (!accessToken) {
-    throw new Error('ログインが必要です');
+    throw new Error(i18n.t('errors.auth.loginRequired', { defaultValue: 'ログインが必要です' }));
   }
 
   const response = await fetch(`${API_BASE_URL}/api/auth/2fa/disable`, {
@@ -514,7 +516,7 @@ export async function disableTwoFactor(password: string): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || '2FA無効化に失敗しました');
+    throw new Error(error.error || i18n.t('errors.auth.twoFactorDisableFailed', { defaultValue: '2FA無効化に失敗しました' }));
   }
 
   return await response.json();

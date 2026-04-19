@@ -3376,5 +3376,59 @@
   "firmwareInstaller": {
     "browserUnsupported": "O seu navegador não é suportado.<br/>Utilize Chrome ou Edge.",
     "notAllowedHttps": "Apenas funciona em HTTPS ou localhost."
+  },
+  "errors": {
+    "auth": {
+      "registerFailed": "Falha ao registar a conta",
+      "loginFailed": "Falha no início de sessão",
+      "loginRequired": "É necessário iniciar sessão",
+      "logoutAllFailed": "Falha ao terminar sessão em todos os dispositivos",
+      "userInfoFailed": "Falha ao obter informação do utilizador",
+      "refreshFailed": "Falha ao atualizar o token",
+      "refreshTokenMissing": "Não há token de atualização",
+      "forgotPasswordFailed": "Falha ao solicitar redefinição de palavra-passe",
+      "resetPasswordFailed": "Falha ao redefinir a palavra-passe",
+      "verifyEmailSendFailed": "Falha ao enviar email de verificação",
+      "verifyEmailFailed": "Falha ao verificar o email",
+      "recoveryRequestFailed": "Falha ao solicitar recuperação",
+      "recoveryFailed": "Falha na recuperação",
+      "authFailed": "Falha de autenticação",
+      "otpVerifyFailed": "Falha ao verificar o OTP",
+      "otpResendFailed": "Falha ao reenviar o OTP",
+      "twoFactorStatusFailed": "Falha ao obter o estado do 2FA",
+      "twoFactorEnableFailed": "Falha ao ativar 2FA",
+      "twoFactorDisableFailed": "Falha ao desativar 2FA"
+    },
+    "passkey": {
+      "listFailed": "Falha ao obter as chaves de acesso",
+      "registerOptionsFailed": "Falha ao obter opções de registo da chave de acesso",
+      "registerCanceled": "O registo da chave de acesso foi cancelado",
+      "verifyFailed": "Falha ao verificar a chave de acesso",
+      "deleteFailed": "Falha ao eliminar a chave de acesso",
+      "authOptionsFailed": "Falha ao obter opções de autenticação da chave de acesso",
+      "authCanceled": "A autenticação com chave de acesso foi cancelada",
+      "authFailed": "Falha na autenticação com chave de acesso",
+      "onlyModeFailed": "Falha ao definir o modo só com chave de acesso",
+      "recoveryCodeGenerateFailed": "Falha ao gerar códigos de recuperação",
+      "recoveryCodeRegenerateFailed": "Falha ao regenerar códigos de recuperação",
+      "recoveryCodeVerifyFailed": "Falha ao verificar o código de recuperação",
+      "recoveryCodeCountFailed": "Falha ao obter a contagem de códigos de recuperação"
+    },
+    "project": {
+      "listFailed": "Falha ao obter a lista de projetos",
+      "getFailed": "Falha ao obter o projeto",
+      "createFailed": "Falha ao criar o projeto",
+      "saveFailed": "Falha ao guardar o projeto",
+      "deleteFailed": "Falha ao eliminar o projeto",
+      "notSelected": "Nenhum projeto selecionado"
+    },
+    "subscription": {
+      "infoFailed": "Falha ao obter informação da subscrição",
+      "planFailed": "Falha ao obter informação do plano",
+      "checkoutFailed": "Falha ao criar a sessão de Checkout",
+      "portalFailed": "Falha ao criar a sessão do portal"
+    },
+    "generic": "Ocorreu um erro",
+    "registerFailed": "Falha no registo"
   }
 }
