@@ -73,6 +73,44 @@ export default function AboutPageJa() {
         </div>
       </section>
 
+      {/* クラス機能（Enterprise 専用） */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">
+          クラス機能（Enterprise 専用）
+        </h2>
+        <p className="text-[#8B949E] mb-6 leading-relaxed">
+          教育機関・ワークショップ・社内研修向けのクラス管理機能。講師（管理者）がクラスを作成し、
+          生徒アカウントを代理発行、課題を配布、提出された答案を採点するまでを一貫して行えます。
+          TinkerCAD Classroom を参考にしつつ、マイコン・ロボットのハードウェア教育に特化した機能を揃えました。
+        </p>
+        <div className="grid gap-6 md:grid-cols-2">
+          <FeatureCard
+            title="クラス作成・管理"
+            description="WS（1ヶ月）/ 教室（4ヶ月）の 2 種別から選択。1 管理者あたり最大 3 クラス × 40 人、合計 120 人まで。期限切れで自動削除、期限前には警告バナーで通知します。"
+          />
+          <FeatureCard
+            title="生徒アカウント一括作成"
+            description="管理者が名前リストを貼り付けるだけで、ログイン ID と初期パスワードを自動生成。CSV / HTML 形式でまとめてダウンロードでき、配布に便利です。生徒は自分でパスワードを変更できます。"
+          />
+          <FeatureCard
+            title="課題配布（Blockly + PDF）"
+            description="管理者がエディタで作成した課題テンプレート（Blockly XML）と PDF の補足資料を、クラス全員に一斉配布。期限を年/月/日で指定できます。生徒は自分専用の答案ファイルのみ編集可能（カンニング防止）。"
+          />
+          <FeatureCard
+            title="答案・採点・差戻しワークフロー"
+            description="生徒は答案を何度でも保存でき、完成したら「提出」で管理者に送信。管理者は進捗ダッシュボードで一覧確認、読み取り専用 Blockly ビューアで答案を閲覧、スコア（0-100）+ コメントで採点、または差戻しで再提出を要求できます。生徒は専用の「採点結果」メニューで結果を確認。"
+          />
+          <FeatureCard
+            title="クラス複製・記録エクスポート"
+            description="既存クラスの課題テンプレート（PDF 添付含む）を新クラスにワンクリック複製。新しいコホート向けに教材を使い回せます。完了したクラスは ZIP でまとめてダウンロード（課題・答案・成績 CSV・生徒一覧を含む記録アーカイブ）。"
+          />
+          <FeatureCard
+            title="ライフサイクル管理"
+            description="期限切れクラスは毎日 JST 0 時に自動削除、期限 7 日前からヘッダーに警告バナー表示。解約時は 1 ヶ月の猶予期間付きで削除。生徒のコンパイルは管理者の Enterprise プラン枠（無制限）から消費するため、生徒数を気にせず授業できます。"
+          />
+        </div>
+      </section>
+
       {/* 他のブロックエディタにない機能 */}
       <section className="mb-16">
         <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">
@@ -160,6 +198,11 @@ export default function AboutPageJa() {
             description="LED点滅、センサー、サーボ、OTTO歩行、障害物回避、ライントレース、マイクロマウスなど11種類のチュートリアルを内蔵。選択するとサンプルプロジェクトが読み込まれ、説明を見ながらすぐに試せます。"
             tag="学習支援"
           />
+          <UniqueFeature
+            title="ローカルコンパイルサーバー（Docker）"
+            description="公開 Docker イメージ（ghcr.io/fablab-westharima/digicode-compile-server）を手元で起動すれば、コンパイルを自分の PC で行えます。オフラインでも動作し、クラウドのコンパイル枠を消費しません（無制限）。学校・社内ネットワークで外部接続が制限される環境や、コンパイル頻度が高い開発者に最適。"
+            tag="オフライン対応"
+          />
         </div>
       </section>
 
@@ -196,7 +239,7 @@ export default function AboutPageJa() {
 
       {/* ご利用について */}
       <section className="mb-16">
-        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">ご利用について</h2>
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">ご利用プラン</h2>
         <div className="space-y-6 text-[#C9D1D9]">
           {/* プラン表 */}
           <div className="overflow-x-auto">
@@ -204,28 +247,57 @@ export default function AboutPageJa() {
               <thead>
                 <tr className="border-b border-[#30363D]">
                   <th className="text-left py-3 pr-4 text-[#8B949E] font-medium">機能</th>
-                  <th className="text-center py-3 px-4 text-[#8B949E] font-medium">ゲスト<br/><span className="text-xs font-normal">（未登録）</span></th>
-                  <th className="text-center py-3 px-4 text-[#8B949E] font-medium">Free<br/><span className="text-xs font-normal">（無料登録）</span></th>
-                  <th className="text-center py-3 px-4 text-[#F85149] font-medium">Pro</th>
+                  <th className="text-center py-3 px-3 text-[#8B949E] font-medium">
+                    ゲスト<br/><span className="text-xs font-normal">$0（未登録）</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#8B949E] font-medium">
+                    Free<br/><span className="text-xs font-normal">$0</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#8B949E] font-medium">
+                    Lite<br/><span className="text-xs font-normal">$5/月</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#F85149] font-medium">
+                    Pro<br/><span className="text-xs font-normal">$10/月</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#F85149] font-medium">
+                    Enterprise<br/><span className="text-xs font-normal">$20/月</span>
+                  </th>
                 </tr>
               </thead>
               <tbody className="text-[#C9D1D9]">
-                <PlanRow feature="ブロックプログラミング（500以上のブロック）" guest pro free />
-                <PlanRow feature="クラウドコンパイル" guest pro free />
-                <PlanRow feature="USB / BLE / WiFi 書き込み" guest pro free />
-                <PlanRow feature="サーボトリム・PIDチューニング" guest pro free />
-                <PlanRow feature="シリアルプロッター" guest pro free />
-                <PlanRow feature="お気に入りブロック・ロボットモード" guest pro free />
-                <PlanRow feature="サンプルプロジェクト・チュートリアル" guest pro free />
-                <PlanRow feature="MQTT / Home Assistant連携" guest pro free />
-                <PlanRow feature="プロジェクト保存" guest={false} pro free note="ゲストはローカル保存のみ" />
-                <PlanRow feature="拡張機能（ピンアサイン・サーボパルス幅設定）" guest={false} free={false} pro />
+                <PlanRow
+                  feature="クラウドコンパイル枠（月）"
+                  guest="50 回"
+                  free="50 回"
+                  lite="250 回"
+                  pro="500 回"
+                  enterprise="無制限"
+                />
+                <PlanRow feature="ブロックプログラミング（500以上のブロック）" guest free lite pro enterprise />
+                <PlanRow feature="USB / BLE / WiFi 書き込み" guest free lite pro enterprise />
+                <PlanRow feature="サーボトリム・PIDチューニング" guest free lite pro enterprise />
+                <PlanRow feature="シリアルプロッター" guest free lite pro enterprise />
+                <PlanRow feature="お気に入りブロック・ロボットモード" guest free lite pro enterprise />
+                <PlanRow feature="サンプルプロジェクト・チュートリアル" guest free lite pro enterprise />
+                <PlanRow feature="MQTT / Home Assistant連携" guest free lite pro enterprise />
+                <PlanRow
+                  feature="プロジェクト保存（ローカル JSON ファイル）"
+                  guest free lite pro enterprise
+                  note="全ユーザー共通でローカル保存。PC 移行時はファイルコピーで OK"
+                />
+                <PlanRow feature="ローカルコンパイルサーバー（Docker）" guest free lite pro enterprise />
+                <PlanRow feature="拡張機能（ピンアサイン・サーボパルス幅設定）" pro enterprise />
+                <PlanRow feature="クラス機能（教育機関・WS 向け）" enterprise />
               </tbody>
             </table>
           </div>
 
           <p className="text-sm text-[#8B949E]">
-            PRO機能は無料開放期間を設けることがあります。開放中は全ユーザーがお使いいただけます。
+            PRO / Enterprise 機能は無料開放期間を設けることがあります。開放中は対象機能を全ユーザーがお使いいただけます。
+          </p>
+
+          <p className="text-sm text-[#8B949E]">
+            プラン変更・解約は Stripe のセルフサービス決済で完結します。請求書・領収書のダウンロードにも対応。ログイン後「プラン・お支払い」からアクセス。
           </p>
 
           <p>

@@ -71,6 +71,44 @@ export default function AboutPageEs() {
         </div>
       </section>
 
+      {/* Funciones de clase (solo Enterprise) */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">
+          Funciones de clase (solo Enterprise)
+        </h2>
+        <p className="text-[#8B949E] mb-6 leading-relaxed">
+          Gestión de clases para instituciones educativas, talleres y formación corporativa. El docente (administrador) crea la clase,
+          provisiona cuentas de alumnos, distribuye tareas y califica las entregas — todo en un mismo lugar.
+          Inspirado en TinkerCAD Classroom, con funciones diseñadas específicamente para la educación en microcontroladores y robótica.
+        </p>
+        <div className="grid gap-6 md:grid-cols-2">
+          <FeatureCard
+            title="Creación y gestión de clases"
+            description="Elige entre dos tipos: Taller (1 mes) o Aula (4 meses). Hasta 3 clases × 40 alumnos por administrador (máx. 120 alumnos). Las clases caducadas se eliminan automáticamente y muestran un aviso 7 días antes."
+          />
+          <FeatureCard
+            title="Creación masiva de cuentas de alumnos"
+            description="El administrador pega una lista de nombres y el sistema genera automáticamente IDs de inicio de sesión y contraseñas iniciales. Descarga la lista completa en CSV o HTML para distribuirla fácilmente. Los alumnos pueden cambiar su contraseña después."
+          />
+          <FeatureCard
+            title="Distribución de tareas (Blockly + PDF)"
+            description="Los administradores crean plantillas de tareas (Blockly XML) en el editor y las distribuyen a toda la clase, junto con material de referencia en PDF opcional. Las fechas de entrega son configurables. Los alumnos solo pueden editar su propio archivo de respuesta — no crear ni importar archivos (prevención de copia)."
+          />
+          <FeatureCard
+            title="Flujo de entrega / calificación / devolución"
+            description="Los alumnos pueden guardar cuantas veces quieran y enviar cuando estén listos. Los administradores ven el progreso en un dashboard, abren las respuestas en un visor Blockly de solo lectura, califican (puntaje 0-100 + comentario) o devuelven para reenvío. Los alumnos ven sus resultados en un menú dedicado 'Calificaciones'."
+          />
+          <FeatureCard
+            title="Duplicación y exportación de registros"
+            description="Duplica las tareas de una clase existente (incluidos PDFs adjuntos) a una nueva clase con un clic — perfecto para reutilizar material didáctico entre cohortes. Las clases completadas se pueden descargar como un archivo ZIP (tareas, respuestas, CSV de notas, lista de alumnos)."
+          />
+          <FeatureCard
+            title="Gestión del ciclo de vida"
+            description="Las clases caducadas se eliminan automáticamente todos los días a las 00:00 JST, con avisos desde 7 días antes. Al cancelar la suscripción, se concede un mes de gracia antes de la eliminación. El uso de compilación de los alumnos se descuenta del cupo Enterprise del administrador (ilimitado), por lo que el tamaño de la clase no importa."
+          />
+        </div>
+      </section>
+
       {/* Funciones únicas */}
       <section className="mb-16">
         <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">
@@ -158,6 +196,11 @@ export default function AboutPageEs() {
             description="11 tutoriales integrados como parpadeo de LED, sensores, servos, caminar con OTTO, evasión de obstáculos, seguimiento de línea y micromouse. Al seleccionar uno se carga un proyecto de ejemplo para que puedas seguirlo mientras lees la explicación."
             tag="Apoyo al aprendizaje"
           />
+          <UniqueFeature
+            title="Servidor de compilación local (Docker)"
+            description="Ejecuta la imagen Docker pública (ghcr.io/fablab-westharima/digicode-compile-server) en tu propio equipo para compilar localmente. Funciona sin conexión y no consume tu cuota de compilación en la nube (ilimitada). Ideal para aulas con acceso a Internet restringido o desarrolladores que compilan con frecuencia."
+            tag="Funcionamiento sin conexión"
+          />
         </div>
       </section>
 
@@ -192,37 +235,66 @@ export default function AboutPageEs() {
         </div>
       </section>
 
-      {/* Sobre el uso */}
+      {/* Planes */}
       <section className="mb-16">
-        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">Planes y uso</h2>
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">Planes</h2>
         <div className="space-y-6 text-[#C9D1D9]">
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="border-b border-[#30363D]">
                   <th className="text-left py-3 pr-4 text-[#8B949E] font-medium">Característica</th>
-                  <th className="text-center py-3 px-4 text-[#8B949E] font-medium">Invitado<br/><span className="text-xs font-normal">(sin registro)</span></th>
-                  <th className="text-center py-3 px-4 text-[#8B949E] font-medium">Gratis<br/><span className="text-xs font-normal">(registrado)</span></th>
-                  <th className="text-center py-3 px-4 text-[#F85149] font-medium">Pro</th>
+                  <th className="text-center py-3 px-3 text-[#8B949E] font-medium">
+                    Invitado<br/><span className="text-xs font-normal">$0 (sin registro)</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#8B949E] font-medium">
+                    Gratis<br/><span className="text-xs font-normal">$0</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#8B949E] font-medium">
+                    Lite<br/><span className="text-xs font-normal">$5/mes</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#F85149] font-medium">
+                    Pro<br/><span className="text-xs font-normal">$10/mes</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#F85149] font-medium">
+                    Enterprise<br/><span className="text-xs font-normal">$20/mes</span>
+                  </th>
                 </tr>
               </thead>
               <tbody className="text-[#C9D1D9]">
-                <PlanRow feature="Programación por bloques (más de 500 bloques)" guest pro free />
-                <PlanRow feature="Compilación en la nube" guest pro free />
-                <PlanRow feature="Grabación USB / BLE / WiFi" guest pro free />
-                <PlanRow feature="Trim de servos / Ajuste PID" guest pro free />
-                <PlanRow feature="Graficador serial" guest pro free />
-                <PlanRow feature="Bloques favoritos / Modos de robot" guest pro free />
-                <PlanRow feature="Proyectos de ejemplo / Tutoriales" guest pro free />
-                <PlanRow feature="Integración MQTT / Home Assistant" guest pro free />
-                <PlanRow feature="Guardado de proyectos" guest={false} pro free note="Invitado: solo guardado local" />
-                <PlanRow feature="Extensiones (Asignación de pines / Ancho de pulso de servo)" guest={false} free={false} pro />
+                <PlanRow
+                  feature="Cuota de compilación en la nube (al mes)"
+                  guest="50"
+                  free="50"
+                  lite="250"
+                  pro="500"
+                  enterprise="Ilimitada"
+                />
+                <PlanRow feature="Programación por bloques (más de 500 bloques)" guest free lite pro enterprise />
+                <PlanRow feature="Grabación USB / BLE / WiFi" guest free lite pro enterprise />
+                <PlanRow feature="Trim de servos / Ajuste PID" guest free lite pro enterprise />
+                <PlanRow feature="Graficador serial" guest free lite pro enterprise />
+                <PlanRow feature="Bloques favoritos / Modos de robot" guest free lite pro enterprise />
+                <PlanRow feature="Proyectos de ejemplo / Tutoriales" guest free lite pro enterprise />
+                <PlanRow feature="Integración MQTT / Home Assistant" guest free lite pro enterprise />
+                <PlanRow
+                  feature="Guardado de proyectos (archivo JSON local)"
+                  guest free lite pro enterprise
+                  note="Todos los usuarios guardan localmente. Para migrar a otro PC basta copiar el archivo."
+                />
+                <PlanRow feature="Servidor de compilación local (Docker)" guest free lite pro enterprise />
+                <PlanRow feature="Extensiones (Asignación de pines / Ancho de pulso de servo)" pro enterprise />
+                <PlanRow feature="Funciones de clase (para centros educativos y talleres)" enterprise />
               </tbody>
             </table>
           </div>
 
           <p className="text-sm text-[#8B949E]">
-            Las funciones PRO pueden habilitarse gratuitamente para todos los usuarios durante períodos promocionales.
+            Las funciones PRO / Enterprise pueden habilitarse gratuitamente para todos los usuarios durante períodos promocionales.
+          </p>
+
+          <p className="text-sm text-[#8B949E]">
+            Los cambios de plan y la cancelación se gestionan con autoservicio vía Stripe. Las facturas y recibos se pueden descargar desde el portal de cliente. Accede desde "Plan y facturación" tras iniciar sesión.
           </p>
 
           <p>

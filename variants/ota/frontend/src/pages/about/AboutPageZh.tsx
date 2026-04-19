@@ -70,6 +70,43 @@ export default function AboutPageZh() {
         </div>
       </section>
 
+      {/* 班級管理功能(Enterprise 專屬) */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">
+          班級管理功能(Enterprise 專屬)
+        </h2>
+        <p className="text-[#8B949E] mb-6 leading-relaxed">
+          專為教育機構、工作坊、企業內部訓練設計的班級管理功能。講師(管理者)可建立班級、代為建立學生帳號、發送課題、批改答案,
+          整個流程一站式完成。參考 TinkerCAD Classroom 的概念,並針對微控制器與機器人教育場景特別強化相關功能。
+        </p>
+        <div className="grid gap-6 md:grid-cols-2">
+          <FeatureCard
+            title="班級建立與管理"
+            description="可選擇兩種班級類型:工作坊(1 個月)或課堂(4 個月)。每位管理者最多可同時開設 3 個班級 × 40 名學生(上限 120 人)。期限到期自動刪除,到期前 7 天起顯示警告橫幅。"
+          />
+          <FeatureCard
+            title="學生帳號批次建立"
+            description="管理者貼上名單即可自動產生登入 ID 與初始密碼。可下載 CSV 或 HTML 格式的整份名冊,方便發放。學生日後可自行修改密碼。"
+          />
+          <FeatureCard
+            title="課題派發(Blockly + PDF)"
+            description="管理者在編輯器中建立課題範本(Blockly XML),可附帶 PDF 補充資料,一鍵派發給全班。期限可自訂。學生僅能編輯自己的答案檔案,無法建立或匯入新檔(防止抄襲)。"
+          />
+          <FeatureCard
+            title="提交 / 批改 / 退回流程"
+            description="學生可隨時儲存,完成後按「提交」交給管理者。管理者在儀表板上查看全班進度,透過唯讀 Blockly 檢視器檢閱答案,評分(0-100 分 + 評語)或退回要求重新提交。學生從專屬的「批改結果」選單查看成績。"
+          />
+          <FeatureCard
+            title="班級複製與記錄匯出"
+            description="可一鍵複製現有班級的課題範本(含 PDF 附件)到新班級,非常適合在不同屆別之間重複使用教材。結束的班級可打包下載為 ZIP 檔(包含課題、答案、成績 CSV、學生名冊)。"
+          />
+          <FeatureCard
+            title="生命週期管理"
+            description="到期班級每天 JST 00:00 自動刪除,從 7 天前開始顯示警告橫幅。取消訂閱時有 1 個月的寬限期才會刪除資料。學生的編譯用量從管理者的 Enterprise 方案額度(無限)扣除,因此班級規模不影響額度。"
+          />
+        </div>
+      </section>
+
       {/* 其他積木編輯器所沒有的功能 */}
       <section className="mb-16">
         <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">
@@ -157,6 +194,11 @@ export default function AboutPageZh() {
             description="內建 LED 閃爍、感測器、伺服、OTTO 行走、避障、循線、微型鼠等 11 個教學引導。選取後即載入範例專案,可一邊閱讀說明一邊立即試用。"
             tag="學習支援"
           />
+          <UniqueFeature
+            title="本機編譯伺服器(Docker)"
+            description="在自己的電腦上執行公開的 Docker 映像(ghcr.io/fablab-westharima/digicode-compile-server)即可於本機編譯。離線也可使用,不會消耗雲端編譯額度(無限次)。適合對外連線受限的校園、公司環境,或編譯頻率高的開發者。"
+            tag="離線對應"
+          />
         </div>
       </section>
 
@@ -191,37 +233,66 @@ export default function AboutPageZh() {
         </div>
       </section>
 
-      {/* 使用說明 */}
+      {/* 方案 */}
       <section className="mb-16">
-        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">方案與使用</h2>
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">方案</h2>
         <div className="space-y-6 text-[#C9D1D9]">
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="border-b border-[#30363D]">
                   <th className="text-left py-3 pr-4 text-[#8B949E] font-medium">功能</th>
-                  <th className="text-center py-3 px-4 text-[#8B949E] font-medium">訪客<br/><span className="text-xs font-normal">(未註冊)</span></th>
-                  <th className="text-center py-3 px-4 text-[#8B949E] font-medium">免費<br/><span className="text-xs font-normal">(已註冊)</span></th>
-                  <th className="text-center py-3 px-4 text-[#F85149] font-medium">Pro</th>
+                  <th className="text-center py-3 px-3 text-[#8B949E] font-medium">
+                    訪客<br/><span className="text-xs font-normal">$0(未註冊)</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#8B949E] font-medium">
+                    免費<br/><span className="text-xs font-normal">$0</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#8B949E] font-medium">
+                    Lite<br/><span className="text-xs font-normal">$5/月</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#F85149] font-medium">
+                    Pro<br/><span className="text-xs font-normal">$10/月</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#F85149] font-medium">
+                    Enterprise<br/><span className="text-xs font-normal">$20/月</span>
+                  </th>
                 </tr>
               </thead>
               <tbody className="text-[#C9D1D9]">
-                <PlanRow feature="積木程式設計(超過 500 個積木)" guest pro free />
-                <PlanRow feature="雲端編譯" guest pro free />
-                <PlanRow feature="USB / BLE / WiFi 燒錄" guest pro free />
-                <PlanRow feature="伺服 Trim / PID 調整" guest pro free />
-                <PlanRow feature="序列繪圖器" guest pro free />
-                <PlanRow feature="我的最愛積木 / 機器人模式" guest pro free />
-                <PlanRow feature="範例專案 / 教學引導" guest pro free />
-                <PlanRow feature="MQTT / Home Assistant 整合" guest pro free />
-                <PlanRow feature="專案儲存" guest={false} pro free note="訪客僅可本機儲存" />
-                <PlanRow feature="擴充功能(腳位配置 / 伺服脈寬設定)" guest={false} free={false} pro />
+                <PlanRow
+                  feature="雲端編譯額度(每月)"
+                  guest="50 次"
+                  free="50 次"
+                  lite="250 次"
+                  pro="500 次"
+                  enterprise="無限"
+                />
+                <PlanRow feature="積木程式設計(超過 500 個積木)" guest free lite pro enterprise />
+                <PlanRow feature="USB / BLE / WiFi 燒錄" guest free lite pro enterprise />
+                <PlanRow feature="伺服 Trim / PID 調整" guest free lite pro enterprise />
+                <PlanRow feature="序列繪圖器" guest free lite pro enterprise />
+                <PlanRow feature="我的最愛積木 / 機器人模式" guest free lite pro enterprise />
+                <PlanRow feature="範例專案 / 教學引導" guest free lite pro enterprise />
+                <PlanRow feature="MQTT / Home Assistant 整合" guest free lite pro enterprise />
+                <PlanRow
+                  feature="專案儲存(本機 JSON 檔案)"
+                  guest free lite pro enterprise
+                  note="所有使用者皆為本機儲存。換電腦時複製檔案即可。"
+                />
+                <PlanRow feature="本機編譯伺服器(Docker)" guest free lite pro enterprise />
+                <PlanRow feature="擴充功能(腳位配置 / 伺服脈寬設定)" pro enterprise />
+                <PlanRow feature="班級管理功能(教育機構・工作坊用)" enterprise />
               </tbody>
             </table>
           </div>
 
           <p className="text-sm text-[#8B949E]">
-            PRO 功能在推廣期間可能暫時開放給所有使用者免費使用。
+            PRO / Enterprise 功能在推廣期間可能暫時開放給所有使用者免費使用。
+          </p>
+
+          <p className="text-sm text-[#8B949E]">
+            方案變更與取消皆透過 Stripe 自助式結帳完成,發票與收據可於客戶入口下載。登入後從「方案・付款」進入。
           </p>
 
           <p>

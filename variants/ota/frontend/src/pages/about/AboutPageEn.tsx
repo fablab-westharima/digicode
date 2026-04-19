@@ -71,6 +71,44 @@ export default function AboutPageEn() {
         </div>
       </section>
 
+      {/* Class Features (Enterprise only) */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">
+          Class Features (Enterprise only)
+        </h2>
+        <p className="text-[#8B949E] mb-6 leading-relaxed">
+          Class management for schools, workshops, and in-house training. Teachers (admins) create classes,
+          provision student accounts, distribute assignments, and grade submissions — all in one place.
+          Inspired by TinkerCAD Classroom, with features tailored specifically for microcontroller and robotics education.
+        </p>
+        <div className="grid gap-6 md:grid-cols-2">
+          <FeatureCard
+            title="Class Creation & Management"
+            description="Choose between two class types: Workshop (1 month) or Classroom (4 months). Up to 3 classes × 40 students per admin (120 students max). Expired classes are auto-deleted, with warning banners shown 7 days in advance."
+          />
+          <FeatureCard
+            title="Bulk Student Account Creation"
+            description="Admin pastes a list of names, and login IDs + initial passwords are auto-generated. Download the whole roster as CSV or HTML for easy distribution. Students can change their own passwords afterwards."
+          />
+          <FeatureCard
+            title="Assignment Distribution (Blockly + PDF)"
+            description="Admins create assignment templates (Blockly XML) in the editor and distribute them to the whole class, along with optional PDF reference materials. Due dates are configurable. Students can only edit their own answer file — no new files, no imports (cheating prevention)."
+          />
+          <FeatureCard
+            title="Submit / Grade / Return Workflow"
+            description="Students can save any time and submit when ready. Admins view progress on a dashboard, open answers in a read-only Blockly viewer, grade (0-100 score + comment), or return for resubmission. Students check their results in a dedicated 'Graded' menu."
+          />
+          <FeatureCard
+            title="Class Duplication & Record Export"
+            description="Duplicate an existing class's assignments (including PDF attachments) to a new class with one click — perfect for reusing teaching materials across cohorts. Finished classes can be downloaded as a ZIP archive (assignments, answers, grade CSV, student roster)."
+          />
+          <FeatureCard
+            title="Lifecycle Management"
+            description="Expired classes are auto-deleted daily at JST 00:00, with warning banners from 7 days out. On plan cancellation, classes are preserved for a 1-month grace period before deletion. Student compile usage is deducted from the admin's Enterprise quota (unlimited), so class size never matters."
+          />
+        </div>
+      </section>
+
       {/* Unique Features */}
       <section className="mb-16">
         <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">
@@ -158,6 +196,11 @@ export default function AboutPageEn() {
             description="11 built-in tutorials including LED blink, sensors, servos, OTTO walking, obstacle avoidance, line tracing, and micromouse. Selecting one loads a sample project so you can follow along while reading the explanation."
             tag="Learning Support"
           />
+          <UniqueFeature
+            title="Local Compile Server (Docker)"
+            description="Run the public Docker image (ghcr.io/fablab-westharima/digicode-compile-server) on your own machine to compile locally. Works offline and doesn't consume your cloud compile quota (unlimited). Ideal for classrooms with restricted internet access or developers who compile frequently."
+            tag="Offline Ready"
+          />
         </div>
       </section>
 
@@ -192,9 +235,9 @@ export default function AboutPageEn() {
         </div>
       </section>
 
-      {/* Usage */}
+      {/* Plans */}
       <section className="mb-16">
-        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">Plans & Usage</h2>
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">Plans</h2>
         <div className="space-y-6 text-[#C9D1D9]">
           {/* Plan table */}
           <div className="overflow-x-auto">
@@ -202,28 +245,57 @@ export default function AboutPageEn() {
               <thead>
                 <tr className="border-b border-[#30363D]">
                   <th className="text-left py-3 pr-4 text-[#8B949E] font-medium">Feature</th>
-                  <th className="text-center py-3 px-4 text-[#8B949E] font-medium">Guest<br/><span className="text-xs font-normal">(unregistered)</span></th>
-                  <th className="text-center py-3 px-4 text-[#8B949E] font-medium">Free<br/><span className="text-xs font-normal">(registered)</span></th>
-                  <th className="text-center py-3 px-4 text-[#F85149] font-medium">Pro</th>
+                  <th className="text-center py-3 px-3 text-[#8B949E] font-medium">
+                    Guest<br/><span className="text-xs font-normal">$0 (unregistered)</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#8B949E] font-medium">
+                    Free<br/><span className="text-xs font-normal">$0</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#8B949E] font-medium">
+                    Lite<br/><span className="text-xs font-normal">$5/mo</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#F85149] font-medium">
+                    Pro<br/><span className="text-xs font-normal">$10/mo</span>
+                  </th>
+                  <th className="text-center py-3 px-3 text-[#F85149] font-medium">
+                    Enterprise<br/><span className="text-xs font-normal">$20/mo</span>
+                  </th>
                 </tr>
               </thead>
               <tbody className="text-[#C9D1D9]">
-                <PlanRow feature="Block Programming (500+ blocks)" guest pro free />
-                <PlanRow feature="Cloud Compilation" guest pro free />
-                <PlanRow feature="USB / BLE / WiFi Flashing" guest pro free />
-                <PlanRow feature="Servo Trim / PID Tuning" guest pro free />
-                <PlanRow feature="Serial Plotter" guest pro free />
-                <PlanRow feature="Favorite Blocks / Robot Modes" guest pro free />
-                <PlanRow feature="Sample Projects / Tutorials" guest pro free />
-                <PlanRow feature="MQTT / Home Assistant Integration" guest pro free />
-                <PlanRow feature="Project Storage" guest={false} pro free note="Guest: local save only" />
-                <PlanRow feature="Extensions (Pin Assignments / Servo Pulse Width)" guest={false} free={false} pro />
+                <PlanRow
+                  feature="Cloud compile quota (per month)"
+                  guest="50"
+                  free="50"
+                  lite="250"
+                  pro="500"
+                  enterprise="Unlimited"
+                />
+                <PlanRow feature="Block Programming (500+ blocks)" guest free lite pro enterprise />
+                <PlanRow feature="USB / BLE / WiFi Flashing" guest free lite pro enterprise />
+                <PlanRow feature="Servo Trim / PID Tuning" guest free lite pro enterprise />
+                <PlanRow feature="Serial Plotter" guest free lite pro enterprise />
+                <PlanRow feature="Favorite Blocks / Robot Modes" guest free lite pro enterprise />
+                <PlanRow feature="Sample Projects / Tutorials" guest free lite pro enterprise />
+                <PlanRow feature="MQTT / Home Assistant Integration" guest free lite pro enterprise />
+                <PlanRow
+                  feature="Project Storage (local JSON file)"
+                  guest free lite pro enterprise
+                  note="All users save locally. Migrate to another PC by copying the file."
+                />
+                <PlanRow feature="Local Compile Server (Docker)" guest free lite pro enterprise />
+                <PlanRow feature="Extensions (Pin Assignments / Servo Pulse Width)" pro enterprise />
+                <PlanRow feature="Class Features (for schools & workshops)" enterprise />
               </tbody>
             </table>
           </div>
 
           <p className="text-sm text-[#8B949E]">
-            PRO features may be temporarily unlocked for everyone during promotional periods.
+            PRO / Enterprise features may be temporarily unlocked for everyone during promotional periods.
+          </p>
+
+          <p className="text-sm text-[#8B949E]">
+            Plan changes and cancellations are self-service via Stripe. Invoices and receipts can be downloaded from the customer portal. Access it from "Plan & Billing" after signing in.
           </p>
 
           <p>

@@ -91,24 +91,36 @@ export function UniqueFeature({ title, description, tag, pricing = 'free' }: Uni
 
 interface PlanRowProps {
   feature: string;
-  guest: boolean;
-  free: boolean;
-  pro: boolean;
+  guest?: boolean | string;
+  free?: boolean | string;
+  lite?: boolean | string;
+  pro?: boolean | string;
+  enterprise?: boolean | string;
   note?: string;
 }
 
-export function PlanRow({ feature, guest, free, pro, note }: PlanRowProps) {
-  const check = <span className="text-[#3FB950]">&#10003;</span>;
-  const dash = <span className="text-[#484F58]">&#8212;</span>;
+function renderCell(value: boolean | string | undefined) {
+  if (typeof value === 'string') {
+    return <span className="text-[#C9D1D9] text-xs">{value}</span>;
+  }
+  if (value === true) {
+    return <span className="text-[#3FB950]">&#10003;</span>;
+  }
+  return <span className="text-[#484F58]">&#8212;</span>;
+}
+
+export function PlanRow({ feature, guest, free, lite, pro, enterprise, note }: PlanRowProps) {
   return (
     <tr className="border-b border-[#21262D]">
       <td className="py-2.5 pr-4">
         {feature}
         {note && <span className="block text-xs text-[#8B949E]">{note}</span>}
       </td>
-      <td className="text-center py-2.5 px-4">{guest ? check : dash}</td>
-      <td className="text-center py-2.5 px-4">{free ? check : dash}</td>
-      <td className="text-center py-2.5 px-4">{pro ? check : dash}</td>
+      <td className="text-center py-2.5 px-3">{renderCell(guest)}</td>
+      <td className="text-center py-2.5 px-3">{renderCell(free)}</td>
+      <td className="text-center py-2.5 px-3">{renderCell(lite)}</td>
+      <td className="text-center py-2.5 px-3">{renderCell(pro)}</td>
+      <td className="text-center py-2.5 px-3">{renderCell(enterprise)}</td>
     </tr>
   );
 }
