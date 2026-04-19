@@ -13,7 +13,8 @@
     "no": "No",
     "optional": "Optional",
     "goToHome": "Go to Home",
-    "back": "Back"
+    "back": "Back",
+    "saving": "Saving..."
   },
   "status": {
     "ready": "Ready",
@@ -2879,7 +2880,30 @@
       "save": "Save",
       "saveNote": "Settings are saved to the device and persist even after power off",
       "angleTrim": "Angle Trim",
-      "speedTrim": "Speed Adj"
+      "speedTrim": "Speed Adj",
+      "nameInputPlaceholder": "Name",
+      "presets": {
+        "otto-diy": "OTTO DIY Bipedal (4 servos)",
+        "otto-diy-plus": "OTTO DIY+ Bipedal (6 servos)",
+        "otto-wheel": "OTTO Wheel (2 servos)",
+        "otto-ninja": "OTTO Ninja (4 servos)",
+        "custom": "Custom"
+      },
+      "parts": {
+        "leftFoot": "Left Foot",
+        "rightFoot": "Right Foot",
+        "leftAnkle": "Left Ankle",
+        "rightAnkle": "Right Ankle",
+        "leftArm": "Left Arm",
+        "rightArm": "Right Arm",
+        "leftWheel": "Left Wheel",
+        "rightWheel": "Right Wheel",
+        "servo1": "Servo 1",
+        "servo2": "Servo 2",
+        "servo3": "Servo 3",
+        "servo4": "Servo 4",
+        "servoN": "Servo {{n}}"
+      }
     }
   },
   "accountDelete": {

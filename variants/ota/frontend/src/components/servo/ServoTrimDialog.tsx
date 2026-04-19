@@ -3,7 +3,7 @@
  * ESP32に接続してサーボのトリム値をリアルタイムで調整
  * プリセット選択 + 任意のピン番号編集に対応
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Dialog,
@@ -39,62 +39,57 @@ interface ServoItem {
   type: '180' | '360'; // 180度サーボ or 360度（連続回転）サーボ
 }
 
-interface ServoPreset {
+// プリセット定義（i18n 対応: パーツ名は nameKey で管理し、レンダリング時に t() で解決）
+// servo.trim.parts.* のキーを参照。
+interface ServoPresetDef {
   id: string;
-  name: string;
-  servos: ServoItem[];
+  servos: Array<{ nameKey: string; pin: number; type: '180' | '360' }>;
 }
 
-// プリセット定義
-const SERVO_PRESETS: ServoPreset[] = [
+const SERVO_PRESETS_DEF: ServoPresetDef[] = [
   {
     id: 'otto-diy',
-    name: 'OTTO DIY 2足歩行 (4サーボ)',
     servos: [
-      { name: '左足', pin: 27, type: '180' },
-      { name: '右足', pin: 15, type: '180' },
-      { name: '左足首', pin: 14, type: '180' },
-      { name: '右足首', pin: 13, type: '180' },
+      { nameKey: 'leftFoot', pin: 27, type: '180' },
+      { nameKey: 'rightFoot', pin: 15, type: '180' },
+      { nameKey: 'leftAnkle', pin: 14, type: '180' },
+      { nameKey: 'rightAnkle', pin: 13, type: '180' },
     ],
   },
   {
     id: 'otto-diy-plus',
-    name: 'OTTO DIY+ 2足歩行 (6サーボ)',
     servos: [
-      { name: '左足', pin: 27, type: '180' },
-      { name: '右足', pin: 15, type: '180' },
-      { name: '左足首', pin: 14, type: '180' },
-      { name: '右足首', pin: 13, type: '180' },
-      { name: '左腕', pin: 12, type: '180' },
-      { name: '右腕', pin: 26, type: '180' },
+      { nameKey: 'leftFoot', pin: 27, type: '180' },
+      { nameKey: 'rightFoot', pin: 15, type: '180' },
+      { nameKey: 'leftAnkle', pin: 14, type: '180' },
+      { nameKey: 'rightAnkle', pin: 13, type: '180' },
+      { nameKey: 'leftArm', pin: 12, type: '180' },
+      { nameKey: 'rightArm', pin: 26, type: '180' },
     ],
   },
   {
     id: 'otto-wheel',
-    name: 'OTTO Wheel (2サーボ)',
     servos: [
-      { name: '左車輪', pin: 14, type: '360' },
-      { name: '右車輪', pin: 13, type: '360' },
+      { nameKey: 'leftWheel', pin: 14, type: '360' },
+      { nameKey: 'rightWheel', pin: 13, type: '360' },
     ],
   },
   {
     id: 'otto-ninja',
-    name: 'OTTO Ninja (4サーボ)',
     servos: [
-      { name: '左足', pin: 27, type: '180' },
-      { name: '右足', pin: 15, type: '180' },
-      { name: '左足首', pin: 14, type: '360' },
-      { name: '右足首', pin: 13, type: '360' },
+      { nameKey: 'leftFoot', pin: 27, type: '180' },
+      { nameKey: 'rightFoot', pin: 15, type: '180' },
+      { nameKey: 'leftAnkle', pin: 14, type: '360' },
+      { nameKey: 'rightAnkle', pin: 13, type: '360' },
     ],
   },
   {
     id: 'custom',
-    name: 'カスタム',
     servos: [
-      { name: 'サーボ1', pin: 2, type: '180' },
-      { name: 'サーボ2', pin: 3, type: '180' },
-      { name: 'サーボ3', pin: 4, type: '180' },
-      { name: 'サーボ4', pin: 5, type: '180' },
+      { nameKey: 'servo1', pin: 2, type: '180' },
+      { nameKey: 'servo2', pin: 3, type: '180' },
+      { nameKey: 'servo3', pin: 4, type: '180' },
+      { nameKey: 'servo4', pin: 5, type: '180' },
     ],
   },
 ];
@@ -103,20 +98,30 @@ const SERVO_PRESETS: ServoPreset[] = [
 const STORAGE_KEY = 'digicode_servo_trim_config';
 const PRESET_KEY = 'digicode_servo_trim_preset';
 
-function loadServoConfig(): { preset: string; servos: ServoItem[] } {
+type TFunc = (key: string, options?: Record<string, unknown>) => string;
+
+// プリセット定義からサーボ配列を構築（t() 経由で多言語対応）
+function buildServosFromPreset(presetId: string, t: TFunc): ServoItem[] {
+  const def = SERVO_PRESETS_DEF.find(p => p.id === presetId) || SERVO_PRESETS_DEF[0];
+  return def.servos.map(s => ({
+    name: t(`servo.trim.parts.${s.nameKey}`),
+    pin: s.pin,
+    type: s.type,
+  }));
+}
+
+function loadServoConfig(t: TFunc): { preset: string; servos: ServoItem[] } {
   try {
     const savedPreset = localStorage.getItem(PRESET_KEY) || 'otto-diy';
     const savedServos = localStorage.getItem(STORAGE_KEY);
     if (savedServos) {
       return { preset: savedPreset, servos: JSON.parse(savedServos) };
     }
-    // プリセットからデフォルト取得
-    const preset = SERVO_PRESETS.find(p => p.id === savedPreset) || SERVO_PRESETS[0];
-    return { preset: savedPreset, servos: [...preset.servos] };
+    return { preset: savedPreset, servos: buildServosFromPreset(savedPreset, t) };
   } catch {
     // ignore
   }
-  return { preset: 'otto-diy', servos: [...SERVO_PRESETS[0].servos] };
+  return { preset: 'otto-diy', servos: buildServosFromPreset('otto-diy', t) };
 }
 
 function saveServoConfig(preset: string, servos: ServoItem[]) {
@@ -132,8 +137,14 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
   const { t } = useTranslation();
   const { status: wifiStatus, getDeviceUrl, host } = useWifiStore();
 
-  const [selectedPreset, setSelectedPreset] = useState<string>(() => loadServoConfig().preset);
-  const [servos, setServos] = useState<ServoItem[]>(() => loadServoConfig().servos);
+  // プリセット表示名リスト（t() で現在の言語に解決）
+  const SERVO_PRESETS = useMemo(() => SERVO_PRESETS_DEF.map(p => ({
+    id: p.id,
+    name: t(`servo.trim.presets.${p.id}`),
+  })), [t]);
+
+  const [selectedPreset, setSelectedPreset] = useState<string>(() => loadServoConfig(t).preset);
+  const [servos, setServos] = useState<ServoItem[]>(() => loadServoConfig(t).servos);
   const [trims, setTrims] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -142,13 +153,9 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
   // プリセット変更時の処理
   const handlePresetChange = (presetId: string) => {
     setSelectedPreset(presetId);
-    const preset = SERVO_PRESETS.find(p => p.id === presetId);
-    if (preset) {
-      // プリセットのサーボ設定をコピー（deep copy）
-      setServos(preset.servos.map(s => ({ ...s })));
-      // トリム値もリセット
-      setTrims(preset.servos.map(() => 0));
-    }
+    const newServos = buildServosFromPreset(presetId, t);
+    setServos(newServos);
+    setTrims(newServos.map(() => 0));
   };
 
   // サーボ数変更時にトリム配列を調整
@@ -186,7 +193,7 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
       }
     } catch (err) {
       console.error('Failed to load trims:', err);
-      setError(t('servo.trim.loadError', 'トリム値の読み込みに失敗しました'));
+      setError(t('servo.trim.loadError', { defaultValue: 'トリム値の読み込みに失敗しました' }));
     } finally {
       setIsLoading(false);
     }
@@ -215,7 +222,7 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
       await trimService.testServo(deviceUrl, action, index);
     } catch (err) {
       console.error('Failed to test servo:', err);
-      setError(t('servo.trim.testError', 'テスト動作に失敗しました'));
+      setError(t('servo.trim.testError', { defaultValue: 'テスト動作に失敗しました' }));
     }
   };
 
@@ -234,7 +241,7 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
       setError(null);
     } catch (err) {
       console.error('Failed to save trims:', err);
-      setError(t('servo.trim.saveError', '保存に失敗しました'));
+      setError(t('servo.trim.saveError', { defaultValue: '保存に失敗しました' }));
     } finally {
       setIsSaving(false);
     }
@@ -248,7 +255,11 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
   const addServo = () => {
     if (servos.length >= 16) return;
     const newIndex = servos.length + 1;
-    setServos([...servos, { name: `サーボ${newIndex}`, pin: 2, type: '180' }]);
+    setServos([...servos, {
+      name: t('servo.trim.parts.servoN', { n: newIndex, defaultValue: 'サーボ{{n}}' }),
+      pin: 2,
+      type: '180',
+    }]);
     setSelectedPreset('custom'); // カスタムに切り替え
   };
 
@@ -295,10 +306,10 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-[#E6EDF3]">
             <SlidersHorizontal className="w-5 h-5" />
-            {t('servo.trim.title', 'サーボトリム設定')}
+            {t('servo.trim.title', { defaultValue: 'サーボトリム設定' })}
           </DialogTitle>
           <DialogDescription className="text-[#8B949E]">
-            {t('servo.trim.description', 'サーボモーターのトリム（オフセット）値を調整します')}
+            {t('servo.trim.description', { defaultValue: 'サーボモーターのトリム（オフセット）値を調整します' })}
           </DialogDescription>
         </DialogHeader>
 
@@ -315,8 +326,8 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
                   )}
                   <span className={`text-sm ${isConnected ? 'text-green-500' : 'text-red-500'}`}>
                     {isConnected
-                      ? t('servo.trim.connected', '接続済み') + `: ${host}`
-                      : t('servo.trim.notConnected', 'デバイスに接続してください')}
+                      ? t('servo.trim.connected', { defaultValue: '接続済み' }) + `: ${host}`
+                      : t('servo.trim.notConnected', { defaultValue: 'デバイスに接続してください' })}
                   </span>
                 </div>
                 {isConnected && (
@@ -327,7 +338,9 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
                     disabled={isLoading}
                     className="border-[#2E333D] text-[#E6EDF3] hover:bg-[#2E333D]"
                   >
-                    {isLoading ? t('common.loading', '読込中...') : t('servo.trim.reload', '再読込')}
+                    {isLoading
+                      ? t('common.loading', { defaultValue: '読込中...' })
+                      : t('servo.trim.reload', { defaultValue: '再読込' })}
                   </Button>
                 )}
               </div>
@@ -346,7 +359,7 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <span className="text-sm text-[#8B949E] whitespace-nowrap">
-                  {t('servo.trim.preset', 'プリセット')}:
+                  {t('servo.trim.preset', { defaultValue: 'プリセット' })}:
                 </span>
                 <Select value={selectedPreset} onValueChange={handlePresetChange}>
                   <SelectTrigger className="flex-1 bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]">
@@ -372,7 +385,7 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
           <Card className="bg-[#0D1117] border-[#2E333D]">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-[#E6EDF3] flex items-center justify-between">
-                <span>{t('servo.trim.servoList', 'サーボ設定')} ({servos.length})</span>
+                <span>{t('servo.trim.servoList', { defaultValue: 'サーボ設定' })} ({servos.length})</span>
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
@@ -404,7 +417,7 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
                     <Input
                       value={servo.name}
                       onChange={(e) => updateServoName(index, e.target.value)}
-                      placeholder="名前"
+                      placeholder={t('servo.trim.nameInputPlaceholder', { defaultValue: '名前' })}
                       className="flex-1 h-8 text-sm bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]"
                     />
                     <Select value={servo.type} onValueChange={(v) => updateServoType(index, v as '180' | '360')}>
@@ -439,8 +452,8 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-[#8B949E] w-16 shrink-0">
                       {servo.type === '180'
-                        ? t('servo.trim.angleTrim', '角度トリム')
-                        : t('servo.trim.speedTrim', '速度調整')}
+                        ? t('servo.trim.angleTrim', { defaultValue: '角度トリム' })
+                        : t('servo.trim.speedTrim', { defaultValue: '速度調整' })}
                     </span>
                     <Button
                       variant="outline"
@@ -477,7 +490,7 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
                       size="sm"
                       onClick={() => handleTest('sweep', index)}
                       disabled={!isConnected}
-                      title={t('servo.trim.testServo', '個別テスト')}
+                      title={t('servo.trim.testServo', { defaultValue: '個別テスト' })}
                       className="text-[#8B949E] hover:bg-[#2E333D] h-7 w-7 p-0"
                     >
                       <Play className="w-4 h-4" />
@@ -497,7 +510,7 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
               className="border-[#2E333D] text-[#E6EDF3] hover:bg-[#2E333D]"
             >
               <Home className="w-4 h-4 mr-1" />
-              {t('servo.trim.home', 'ホーム位置')}
+              {t('servo.trim.home', { defaultValue: 'ホーム位置' })}
             </Button>
             <Button
               variant="outline"
@@ -506,7 +519,7 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
               className="border-[#2E333D] text-[#E6EDF3] hover:bg-[#2E333D]"
             >
               <Play className="w-4 h-4 mr-1" />
-              {t('servo.trim.test', 'テスト')}
+              {t('servo.trim.test', { defaultValue: 'テスト' })}
             </Button>
             <Button
               variant="outline"
@@ -514,13 +527,13 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
               className="border-[#2E333D] text-[#E6EDF3] hover:bg-[#2E333D]"
             >
               <RotateCcw className="w-4 h-4 mr-1" />
-              {t('servo.trim.reset', 'リセット')}
+              {t('servo.trim.reset', { defaultValue: 'リセット' })}
             </Button>
           </div>
 
           {/* 保存注意書き */}
           <p className="text-xs text-[#8B949E]">
-            {t('servo.trim.saveNote', '保存するとデバイスのNVSに書き込まれ、再起動後も保持されます')}
+            {t('servo.trim.saveNote', { defaultValue: '保存するとデバイスのNVSに書き込まれ、再起動後も保持されます' })}
           </p>
         </div>
 
@@ -530,14 +543,16 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
             onClick={() => onOpenChange(false)}
             className="border-[#2E333D] text-[#E6EDF3] hover:bg-[#2E333D]"
           >
-            {t('common.close', '閉じる')}
+            {t('common.close', { defaultValue: '閉じる' })}
           </Button>
           <Button
             onClick={handleSave}
             disabled={!isConnected || isSaving}
           >
             <Save className="w-4 h-4 mr-1" />
-            {isSaving ? t('common.saving', '保存中...') : t('servo.trim.save', '保存')}
+            {isSaving
+              ? t('common.saving', { defaultValue: '保存中...' })
+              : t('servo.trim.save', { defaultValue: '保存' })}
           </Button>
         </DialogFooter>
       </DialogContent>

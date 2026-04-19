@@ -13,7 +13,8 @@
     "no": "いいえ",
     "optional": "省略可",
     "goToHome": "ホームへ",
-    "back": "戻る"
+    "back": "戻る",
+    "saving": "保存中..."
   },
   "status": {
     "ready": "準備完了",
@@ -2869,7 +2870,30 @@
       "save": "保存",
       "saveNote": "保存するとデバイス本体に書き込まれ、電源を切っても設定が保持されます",
       "angleTrim": "角度トリム",
-      "speedTrim": "速度調整"
+      "speedTrim": "速度調整",
+      "nameInputPlaceholder": "名前",
+      "presets": {
+        "otto-diy": "OTTO DIY 2足歩行 (4サーボ)",
+        "otto-diy-plus": "OTTO DIY+ 2足歩行 (6サーボ)",
+        "otto-wheel": "OTTO Wheel (2サーボ)",
+        "otto-ninja": "OTTO Ninja (4サーボ)",
+        "custom": "カスタム"
+      },
+      "parts": {
+        "leftFoot": "左足",
+        "rightFoot": "右足",
+        "leftAnkle": "左足首",
+        "rightAnkle": "右足首",
+        "leftArm": "左腕",
+        "rightArm": "右腕",
+        "leftWheel": "左車輪",
+        "rightWheel": "右車輪",
+        "servo1": "サーボ1",
+        "servo2": "サーボ2",
+        "servo3": "サーボ3",
+        "servo4": "サーボ4",
+        "servoN": "サーボ{{n}}"
+      }
     }
   },
   "accountDelete": {

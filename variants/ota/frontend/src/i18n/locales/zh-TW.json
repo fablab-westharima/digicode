@@ -13,7 +13,8 @@
     "no": "否",
     "optional": "選填",
     "goToHome": "返回首頁",
-    "back": "返回"
+    "back": "返回",
+    "saving": "儲存中..."
   },
   "status": {
     "ready": "就緒",
@@ -2879,7 +2880,30 @@
       "save": "儲存",
       "saveNote": "設定會儲存到裝置中，即使關閉電源也會保留",
       "angleTrim": "角度微調",
-      "speedTrim": "速度調整"
+      "speedTrim": "速度調整",
+      "nameInputPlaceholder": "名稱",
+      "presets": {
+        "otto-diy": "OTTO DIY 雙足 (4 伺服)",
+        "otto-diy-plus": "OTTO DIY+ 雙足 (6 伺服)",
+        "otto-wheel": "OTTO Wheel (2 伺服)",
+        "otto-ninja": "OTTO Ninja (4 伺服)",
+        "custom": "自訂"
+      },
+      "parts": {
+        "leftFoot": "左腳",
+        "rightFoot": "右腳",
+        "leftAnkle": "左腳踝",
+        "rightAnkle": "右腳踝",
+        "leftArm": "左臂",
+        "rightArm": "右臂",
+        "leftWheel": "左輪",
+        "rightWheel": "右輪",
+        "servo1": "伺服 1",
+        "servo2": "伺服 2",
+        "servo3": "伺服 3",
+        "servo4": "伺服 4",
+        "servoN": "伺服 {{n}}"
+      }
     }
   },
   "accountDelete": {

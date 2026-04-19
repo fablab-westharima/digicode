@@ -13,7 +13,8 @@
     "no": "Não",
     "optional": "Opcional",
     "goToHome": "Ir para início",
-    "back": "Voltar"
+    "back": "Voltar",
+    "saving": "Salvando..."
   },
   "status": {
     "ready": "Pronto",
@@ -2879,7 +2880,30 @@
       "save": "Guardar",
       "saveNote": "As definições são guardadas no dispositivo e persistem mesmo após desligar",
       "angleTrim": "Ajuste de Ângulo",
-      "speedTrim": "Ajuste de Velocidade"
+      "speedTrim": "Ajuste de Velocidade",
+      "nameInputPlaceholder": "Nome",
+      "presets": {
+        "otto-diy": "OTTO DIY Bípede (4 servos)",
+        "otto-diy-plus": "OTTO DIY+ Bípede (6 servos)",
+        "otto-wheel": "OTTO Wheel (2 servos)",
+        "otto-ninja": "OTTO Ninja (4 servos)",
+        "custom": "Personalizado"
+      },
+      "parts": {
+        "leftFoot": "Pé esquerdo",
+        "rightFoot": "Pé direito",
+        "leftAnkle": "Tornozelo esquerdo",
+        "rightAnkle": "Tornozelo direito",
+        "leftArm": "Braço esquerdo",
+        "rightArm": "Braço direito",
+        "leftWheel": "Roda esquerda",
+        "rightWheel": "Roda direita",
+        "servo1": "Servo 1",
+        "servo2": "Servo 2",
+        "servo3": "Servo 3",
+        "servo4": "Servo 4",
+        "servoN": "Servo {{n}}"
+      }
     }
   },
   "accountDelete": {
