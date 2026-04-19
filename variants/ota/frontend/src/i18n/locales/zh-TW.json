@@ -236,6 +236,7 @@
       "trustDevice": "信任此裝置（30天）"
     },
     "emailOrLoginIdPlaceholder": "電子郵件或登入ID",
+    "forgotPasswordLink": "忘記密碼？",
     "forgotPasswordHint": "將重設連結發送至您已註冊的電子郵件",
     "passkeyOnlyModeNotice": "此帳號僅可使用通行金鑰登入。",
     "passkeyOnlyRecoveryHint": "若無法使用通行金鑰,請使用「復原」分頁。",
@@ -321,6 +322,7 @@
     "title": "項目",
     "searchPlaceholder": "搜索項目...",
     "projectsCount": "項目",
+    "noProjects": "尚無專案",
     "noSearchResults": "無搜索結果",
     "tryDifferentSearch": "嘗試不同的搜索",
     "createFirstProject": "創建您的第一個項目",

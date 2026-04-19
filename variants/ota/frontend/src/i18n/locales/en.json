@@ -236,6 +236,7 @@
       "trustDevice": "Trust this device (30 days)"
     },
     "emailOrLoginIdPlaceholder": "Email or Login ID",
+    "forgotPasswordLink": "Forgot your password?",
     "forgotPasswordHint": "Send a reset link to your registered email address",
     "passkeyOnlyModeNotice": "This account can only be accessed with a passkey.",
     "passkeyOnlyRecoveryHint": "If you cannot use your passkey, please use the \"Recovery\" tab.",
@@ -321,6 +322,7 @@
     "title": "Project List",
     "searchPlaceholder": "Search projects...",
     "projectsCount": "projects",
+    "noProjects": "No projects yet",
     "noSearchResults": "No search results found",
     "tryDifferentSearch": "Try searching with different keywords",
     "createFirstProject": "Let's create your first project",

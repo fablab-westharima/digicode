@@ -236,6 +236,7 @@
       "trustDevice": "このデバイスを信頼する（30日間）"
     },
     "emailOrLoginIdPlaceholder": "メールアドレスまたはログインID",
+    "forgotPasswordLink": "パスワードをお忘れですか？",
     "forgotPasswordHint": "登録済みメールアドレスにリセットリンクを送信します",
     "passkeyOnlyModeNotice": "このアカウントはパスキーのみでログイン可能です。",
     "passkeyOnlyRecoveryHint": "パスキーが使えない場合は「復旧」タブをご利用ください。",
@@ -321,6 +322,7 @@
     "title": "プロジェクト一覧",
     "searchPlaceholder": "プロジェクトを検索...",
     "projectsCount": "個のプロジェクト",
+    "noProjects": "プロジェクトがまだありません",
     "noSearchResults": "検索結果が見つかりません",
     "tryDifferentSearch": "別のキーワードで検索してみてください",
     "createFirstProject": "最初のプロジェクトを作成しましょう",

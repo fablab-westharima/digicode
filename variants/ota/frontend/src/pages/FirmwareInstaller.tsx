@@ -10,7 +10,6 @@ export function FirmwareInstaller() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
-  const [firmwareType, setFirmwareType] = useState<'arduino' | 'micropython'>('arduino');
   const [espToolsReady, setEspToolsReady] = useState(false);
 
   // callback ref - DOM要素がマウントされたら呼ばれる
@@ -35,10 +34,7 @@ export function FirmwareInstaller() {
 
     // カスタム要素を動的に作成
     const installButton = document.createElement('esp-web-install-button');
-    const manifestPath = firmwareType === 'arduino'
-      ? '/firmware/manifest-arduino.json'
-      : '/firmware/manifest-micropython.json';
-    installButton.setAttribute('manifest', manifestPath);
+    installButton.setAttribute('manifest', '/firmware/manifest-arduino.json');
 
     // アクティベートボタン
     const activateButton = document.createElement('button');
@@ -75,7 +71,7 @@ export function FirmwareInstaller() {
 
     container.innerHTML = '';
     container.appendChild(installButton);
-  }, [espToolsReady, containerElement, firmwareType, t]);
+  }, [espToolsReady, containerElement, t]);
 
   const handleGoToEditor = () => {
     navigate('/editor');
@@ -138,21 +134,7 @@ export function FirmwareInstaller() {
             </h3>
             <div className="space-y-2">
               {/* Arduino C++ */}
-              <label
-                className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                  firmwareType === 'arduino'
-                    ? 'border-[#58A6F9] bg-[#0D1117]'
-                    : 'border-[#2E333D] bg-[#0D1117] hover:border-[#3E434D]'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="firmware"
-                  value="arduino"
-                  checked={firmwareType === 'arduino'}
-                  onChange={(e) => setFirmwareType(e.target.value as 'arduino')}
-                  className="mt-1"
-                />
+              <div className="flex items-start gap-3 p-4 rounded-lg border-2 border-[#58A6F9] bg-[#0D1117]">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-bold">🏆</span>
@@ -160,32 +142,7 @@ export function FirmwareInstaller() {
                   </div>
                   <p className="text-xs text-[#8B949E] mt-1">{t('firmware.arduinoDesc')}</p>
                 </div>
-              </label>
-
-              {/* MicroPython */}
-              <label
-                className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                  firmwareType === 'micropython'
-                    ? 'border-[#58A6F9] bg-[#0D1117]'
-                    : 'border-[#2E333D] bg-[#0D1117] hover:border-[#3E434D]'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="firmware"
-                  value="micropython"
-                  checked={firmwareType === 'micropython'}
-                  onChange={(e) => setFirmwareType(e.target.value as 'micropython')}
-                  className="mt-1"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold">📚</span>
-                    <p className="font-semibold text-[#E6EDF3]">{t('firmware.micropythonTitle')}</p>
-                  </div>
-                  <p className="text-xs text-[#8B949E] mt-1">{t('firmware.micropythonDesc')}</p>
-                </div>
-              </label>
+              </div>
             </div>
           </div>
 

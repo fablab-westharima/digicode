@@ -39,7 +39,7 @@ export function RecoveryTab() {
           onClick={() => setShowForgotPasswordDialog(true)}
         >
           <Mail className="mr-2 h-4 w-4" />
-          {t('auth.forgotPassword', { defaultValue: 'パスワードをお忘れですか？' })}
+          {t('auth.forgotPasswordLink', { defaultValue: 'パスワードをお忘れですか？' })}
         </Button>
         <p className="text-xs text-muted-foreground pl-1">
           {t('auth.forgotPasswordHint', { defaultValue: '登録済みメールアドレスにリセットリンクを送信します' })}

@@ -320,7 +320,7 @@ function getFallbackFeatures(planId: string, t: (key: string) => string): string
     free: [t('plan.features.cloudCompile50'), t('plan.features.basicBlocks')],
     lite: [t('plan.features.cloudCompile250'), t('plan.features.basicBlocks')],
     pro: [t('plan.features.cloudCompile500'), t('plan.features.allBlocks'), t('plan.features.pinAssign')],
-    enterprise: [t('plan.features.unlimitedCompile'), t('plan.features.allFeatures'), t('plan.features.classFeature')],
+    enterprise: [t('plan.features.cloudCompileUnlimited'), t('plan.features.allFeatures'), t('plan.features.classFeature')],
   };
   return map[planId] || [];
 }

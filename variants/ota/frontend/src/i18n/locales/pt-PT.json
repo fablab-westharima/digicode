@@ -236,6 +236,7 @@
       "trustDevice": "Confiar neste dispositivo (30 dias)"
     },
     "emailOrLoginIdPlaceholder": "Email ou ID de início de sessão",
+    "forgotPasswordLink": "Esqueceu-se da palavra-passe?",
     "forgotPasswordHint": "Enviar um link de redefinição para o seu email registado",
     "passkeyOnlyModeNotice": "Esta conta só pode ser acedida com uma chave de acesso.",
     "passkeyOnlyRecoveryHint": "Se não conseguir usar a chave de acesso, utilize o separador \"Recuperação\".",
@@ -321,6 +322,7 @@
     "title": "Projetos",
     "searchPlaceholder": "Pesquisar projetos...",
     "projectsCount": "Projetos",
+    "noProjects": "Ainda não há projetos",
     "noSearchResults": "Sem resultados de pesquisa",
     "tryDifferentSearch": "Tente uma pesquisa diferente",
     "createFirstProject": "Crie seu primeiro projeto",
