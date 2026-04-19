@@ -11,6 +11,7 @@
 
 import { ESPLoader, Transport } from 'esptool-js';
 import type { FullPackage } from './compileService';
+import i18n from '@/i18n';
 
 export type UsbFlashStage = 'connecting' | 'preparing' | 'flashing' | 'verifying' | 'complete' | 'error';
 
@@ -65,7 +66,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: 'Web Serial APIはこのブラウザでサポートされていません。Chrome または Edge を使用してください。'
+        message: i18n.t('firmware.status.webSerialUnsupported', { defaultValue: 'Web Serial APIはこのブラウザでサポートされていません。Chrome または Edge を使用してください。' })
       });
       return null;
     }
@@ -74,7 +75,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 0,
-        message: 'デバイスを選択してください...'
+        message: i18n.t('firmware.status.selectDevice', { defaultValue: 'デバイスを選択してください...' })
       });
 
       // Web Serial APIでポート選択
@@ -92,7 +93,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 10,
-        message: 'ポートを開いています...'
+        message: i18n.t('firmware.status.openingPort', { defaultValue: 'ポートを開いています...' })
       });
 
       // Transportを初期化
@@ -101,7 +102,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 20,
-        message: 'ESPLoaderを初期化中...'
+        message: i18n.t('firmware.status.initEspLoader', { defaultValue: 'ESPLoaderを初期化中...' })
       });
 
       // esptool-js初期化
@@ -120,7 +121,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 30,
-        message: 'ESP32と接続中...'
+        message: i18n.t('firmware.status.connectingEsp32', { defaultValue: 'ESP32と接続中...' })
       });
 
       // ESP32と接続・検出
@@ -129,7 +130,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 40,
-        message: 'チップ情報を取得中...'
+        message: i18n.t('firmware.status.fetchChipInfo', { defaultValue: 'チップ情報を取得中...' })
       });
 
       // chipオブジェクトからMAC addressとfeaturesを取得
@@ -139,7 +140,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 50,
-        message: `接続成功: ${chipName}`
+        message: i18n.t('firmware.status.connectedTo', { defaultValue: '接続成功: {{name}}', name: chipName })
       });
 
       return {
@@ -152,7 +153,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: `接続エラー: ${(error as Error).message}`
+        message: i18n.t('firmware.status.connectError', { defaultValue: '接続エラー: {{message}}', message: (error as Error).message })
       });
       return null;
     }
@@ -178,7 +179,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: '先に接続してください'
+        message: i18n.t('firmware.status.connectFirst', { defaultValue: '先に接続してください' })
       });
       return false;
     }
@@ -187,7 +188,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'preparing',
         percent: 5,
-        message: 'ファームウェアを準備中...'
+        message: i18n.t('firmware.status.preparingFirmware', { defaultValue: 'ファームウェアを準備中...' })
       });
 
       // 各BlobをArrayBufferに変換してbinaryStringに
@@ -199,7 +200,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'preparing',
         percent: 20,
-        message: 'ファームウェア準備完了'
+        message: i18n.t('firmware.status.firmwareReady', { defaultValue: 'ファームウェア準備完了' })
       });
 
       // 教訓: eraseFlash()を使わない（NVS保護）
@@ -208,7 +209,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'flashing',
         percent: 25,
-        message: '書き込み開始...'
+        message: i18n.t('firmware.status.writeStart', { defaultValue: '書き込み開始...' })
       });
 
       // 4ファイル全部書き込み（ESP32の正しいアドレスマップ）
@@ -232,7 +233,7 @@ class UsbFirmwareService {
             stage: 'flashing',
             file: fileName,
             percent: filePercent,
-            message: `${fileName} を書き込み中... ${Math.floor((written / total) * 100)}%`
+            message: i18n.t('firmware.status.writingFile', { defaultValue: '{{file}} を書き込み中... {{percent}}%', file: fileName, percent: Math.floor((written / total) * 100) })
           });
         }
       });
@@ -240,7 +241,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'verifying',
         percent: 92,
-        message: 'ESP32をリセット中...'
+        message: i18n.t('firmware.status.resetEsp32', { defaultValue: 'ESP32をリセット中...' })
       });
 
       // Hard reset
@@ -249,7 +250,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'complete',
         percent: 100,
-        message: '✅ USB書き込みが完了しました！'
+        message: i18n.t('firmware.status.writeSuccessUsb', { defaultValue: '✅ USB書き込みが完了しました！' })
       });
 
       return true;
@@ -258,7 +259,7 @@ class UsbFirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: `書き込みエラー: ${(error as Error).message}`
+        message: i18n.t('firmware.status.writeError', { defaultValue: '書き込みエラー: {{message}}', message: (error as Error).message })
       });
       return false;
     }

@@ -1,6 +1,7 @@
 import { ESPLoader, Transport } from 'esptool-js';
 import { getCompileServerUrl } from '@/config/servers';
 import type { FullPackage } from './compileService';
+import i18n from '@/i18n';
 
 export type FlashStage = 'connecting' | 'preparing' | 'erasing' | 'flashing' | 'verifying' | 'complete' | 'error';
 
@@ -57,7 +58,7 @@ class FirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: 'Web Serial APIはこのブラウザでサポートされていません。Chrome または Edge を使用してください。'
+        message: i18n.t('firmware.status.webSerialUnsupported', { defaultValue: 'Web Serial APIはこのブラウザでサポートされていません。Chrome または Edge を使用してください。' })
       });
       return null;
     }
@@ -66,7 +67,7 @@ class FirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 0,
-        message: 'デバイスを選択してください...'
+        message: i18n.t('firmware.status.selectDevice', { defaultValue: 'デバイスを選択してください...' })
       });
 
       // Web Serial APIでポート選択
@@ -84,7 +85,7 @@ class FirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 10,
-        message: 'ポートを開いています...'
+        message: i18n.t('firmware.status.openingPort', { defaultValue: 'ポートを開いています...' })
       });
 
       // Transportを初期化
@@ -93,7 +94,7 @@ class FirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 20,
-        message: 'ESPLoaderを初期化中...'
+        message: i18n.t('firmware.status.initEspLoader', { defaultValue: 'ESPLoaderを初期化中...' })
       });
 
       // esptool-js初期化
@@ -111,7 +112,7 @@ class FirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 30,
-        message: 'ESP32と接続中...'
+        message: i18n.t('firmware.status.connectingEsp32', { defaultValue: 'ESP32と接続中...' })
       });
 
       // ESP32と接続・検出
@@ -120,7 +121,7 @@ class FirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 40,
-        message: 'チップ情報を取得中...'
+        message: i18n.t('firmware.status.fetchChipInfo', { defaultValue: 'チップ情報を取得中...' })
       });
 
       // chipオブジェクトからMAC addressとfeaturesを取得
@@ -130,7 +131,7 @@ class FirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 50,
-        message: `接続成功: ${chipName}`
+        message: i18n.t('firmware.status.connectedTo', { defaultValue: '接続成功: {{name}}', name: chipName })
       });
 
       return {
@@ -143,7 +144,7 @@ class FirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: `接続エラー: ${(error as Error).message}`
+        message: i18n.t('firmware.status.connectError', { defaultValue: '接続エラー: {{message}}', message: (error as Error).message })
       });
       return null;
     }
@@ -159,7 +160,7 @@ class FirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: '先に接続してください'
+        message: i18n.t('firmware.status.connectFirst', { defaultValue: '先に接続してください' })
       });
       return false;
     }
@@ -173,7 +174,7 @@ class FirmwareService {
       onProgress({
         stage: 'erasing',
         percent: 10,
-        message: 'ファームウェアファイルを読み込み中...'
+        message: i18n.t('firmware.status.loadingFirmware', { defaultValue: 'ファームウェアファイルを読み込み中...' })
       });
 
       // 全ファイルを読み込み
@@ -187,12 +188,12 @@ class FirmwareService {
           stage: 'erasing',
           file: file.name,
           percent: progressPercent,
-          message: `${file.name} を読み込み中...`
+          message: i18n.t('firmware.status.loadingFile', { defaultValue: '{{file}} を読み込み中...', file: file.name })
         });
 
         const response = await fetch(`/firmware/esp32/${file.name}`);
         if (!response.ok) {
-          throw new Error(`${file.name} の読み込みに失敗しました (${response.status})`);
+          throw new Error(i18n.t('firmware.status.loadFileError', { defaultValue: '{{file}} の読み込みに失敗しました ({{status}})', file: file.name, status: response.status }));
         }
 
         const arrayBuffer = await response.arrayBuffer();
@@ -212,7 +213,7 @@ class FirmwareService {
       onProgress({
         stage: 'erasing',
         percent: 30,
-        message: 'フラッシュメモリを消去中...'
+        message: i18n.t('firmware.status.erasingFlash', { defaultValue: 'フラッシュメモリを消去中...' })
       });
 
       // MicroPython推奨: フラッシュ全体を消去
@@ -221,7 +222,7 @@ class FirmwareService {
       onProgress({
         stage: 'flashing',
         percent: 40,
-        message: '書き込み準備完了'
+        message: i18n.t('firmware.status.writeReady', { defaultValue: '書き込み準備完了' })
       });
 
       // writeFlashを使用して一括書き込み（公式例に従う）
@@ -234,12 +235,12 @@ class FirmwareService {
         compress: true,  // 公式例に従って圧縮を有効化
         reportProgress: (fileIndex: number, written: number, total: number) => {
           const filePercent = 40 + (written / total) * 50;
-          const fileName = files[fileIndex]?.name || 'ファイル';
+          const fileName = files[fileIndex]?.name || i18n.t('firmware.status.fileLabel', { defaultValue: 'ファイル' });
           onProgress({
             stage: 'flashing',
             file: fileName,
             percent: filePercent,
-            message: `${fileName} を書き込み中... ${Math.floor((written / total) * 100)}%`
+            message: i18n.t('firmware.status.writingFile', { defaultValue: '{{file}} を書き込み中... {{percent}}%', file: fileName, percent: Math.floor((written / total) * 100) })
           });
         }
       });
@@ -247,7 +248,7 @@ class FirmwareService {
       onProgress({
         stage: 'verifying',
         percent: 95,
-        message: 'ESP32をリセット中...'
+        message: i18n.t('firmware.status.resetEsp32', { defaultValue: 'ESP32をリセット中...' })
       });
 
       // Hard reset to boot into MicroPython
@@ -257,7 +258,7 @@ class FirmwareService {
       onProgress({
         stage: 'complete',
         percent: 100,
-        message: '✅ ファームウェアの書き込みが完了しました！ESP32がMicroPythonで起動します。'
+        message: i18n.t('firmware.status.writeSuccessMicropython', { defaultValue: '✅ ファームウェアの書き込みが完了しました！ESP32がMicroPythonで起動します。' })
       });
 
       return true;
@@ -266,7 +267,7 @@ class FirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: `書き込みエラー: ${(error as Error).message}`
+        message: i18n.t('firmware.status.writeError', { defaultValue: '書き込みエラー: {{message}}', message: (error as Error).message })
       });
       return false;
     }
@@ -340,7 +341,7 @@ class FirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: '先に接続してください'
+        message: i18n.t('firmware.status.connectFirst', { defaultValue: '先に接続してください' })
       });
       return false;
     }
@@ -349,7 +350,7 @@ class FirmwareService {
       onProgress({
         stage: 'erasing',
         percent: 5,
-        message: 'ファームウェアを準備中...'
+        message: i18n.t('firmware.status.preparingFirmware', { defaultValue: 'ファームウェアを準備中...' })
       });
 
       // Convert all Blobs to binary strings
@@ -361,7 +362,7 @@ class FirmwareService {
       onProgress({
         stage: 'erasing',
         percent: 20,
-        message: 'フラッシュメモリを消去中...'
+        message: i18n.t('firmware.status.erasingFlash', { defaultValue: 'フラッシュメモリを消去中...' })
       });
 
       // Erase flash
@@ -370,7 +371,7 @@ class FirmwareService {
       onProgress({
         stage: 'flashing',
         percent: 30,
-        message: '書き込み準備完了'
+        message: i18n.t('firmware.status.writeReady', { defaultValue: '書き込み準備完了' })
       });
 
       // Write all 4 files to their respective addresses
@@ -394,7 +395,7 @@ class FirmwareService {
             stage: 'flashing',
             file: fileName,
             percent: filePercent,
-            message: `${fileName} を書き込み中... ${Math.floor((written / total) * 100)}%`
+            message: i18n.t('firmware.status.writingFile', { defaultValue: '{{file}} を書き込み中... {{percent}}%', file: fileName, percent: Math.floor((written / total) * 100) })
           });
         }
       });
@@ -402,7 +403,7 @@ class FirmwareService {
       onProgress({
         stage: 'verifying',
         percent: 95,
-        message: 'ESP32をリセット中...'
+        message: i18n.t('firmware.status.resetEsp32', { defaultValue: 'ESP32をリセット中...' })
       });
 
       // Hard reset
@@ -411,7 +412,7 @@ class FirmwareService {
       onProgress({
         stage: 'complete',
         percent: 100,
-        message: '✅ ファームウェアの書き込みが完了しました！'
+        message: i18n.t('firmware.status.writeSuccess', { defaultValue: '✅ ファームウェアの書き込みが完了しました！' })
       });
 
       return true;
@@ -420,7 +421,7 @@ class FirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: `書き込みエラー: ${(error as Error).message}`
+        message: i18n.t('firmware.status.writeError', { defaultValue: '書き込みエラー: {{message}}', message: (error as Error).message })
       });
       return false;
     }
@@ -451,7 +452,7 @@ class FirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: '先に接続してください'
+        message: i18n.t('firmware.status.connectFirst', { defaultValue: '先に接続してください' })
       });
       return false;
     }
@@ -460,7 +461,7 @@ class FirmwareService {
       onProgress({
         stage: 'erasing',
         percent: 10,
-        message: 'ファームウェアを準備中...'
+        message: i18n.t('firmware.status.preparingFirmware', { defaultValue: 'ファームウェアを準備中...' })
       });
 
       // FullPackageかArrayBufferかを判定
@@ -494,7 +495,7 @@ class FirmwareService {
         onProgress({
           stage: 'erasing',
           percent: 30,
-          message: 'フラッシュメモリを消去中...'
+          message: i18n.t('firmware.status.erasingFlash', { defaultValue: 'フラッシュメモリを消去中...' })
         });
 
         // フラッシュ消去
@@ -503,7 +504,7 @@ class FirmwareService {
         onProgress({
           stage: 'flashing',
           percent: 40,
-          message: '書き込み準備完了'
+          message: i18n.t('firmware.status.writeReady', { defaultValue: '書き込み準備完了' })
         });
 
         // 4ファイル全部書き込み（ESP32の正しいアドレスマップ）
@@ -524,7 +525,7 @@ class FirmwareService {
             onProgress({
               stage: 'flashing',
               percent: filePercent,
-              message: `書き込み中... ${Math.floor((written / total) * 100)}%`
+              message: i18n.t('firmware.status.writingPercent', { defaultValue: '書き込み中... {{percent}}%', percent: Math.floor((written / total) * 100) })
             });
           }
         });
@@ -539,7 +540,7 @@ class FirmwareService {
         onProgress({
           stage: 'erasing',
           percent: 30,
-          message: 'フラッシュメモリを消去中...'
+          message: i18n.t('firmware.status.erasingFlash', { defaultValue: 'フラッシュメモリを消去中...' })
         });
 
         // フラッシュ消去
@@ -548,7 +549,7 @@ class FirmwareService {
         onProgress({
           stage: 'flashing',
           percent: 40,
-          message: '書き込み準備完了'
+          message: i18n.t('firmware.status.writeReady', { defaultValue: '書き込み準備完了' })
         });
 
         // Arduino binファイルを0x10000番地に書き込み
@@ -569,7 +570,7 @@ class FirmwareService {
             onProgress({
               stage: 'flashing',
               percent: filePercent,
-              message: `書き込み中... ${Math.floor((written / total) * 100)}%`
+              message: i18n.t('firmware.status.writingPercent', { defaultValue: '書き込み中... {{percent}}%', percent: Math.floor((written / total) * 100) })
             });
           }
         });
@@ -578,7 +579,7 @@ class FirmwareService {
       onProgress({
         stage: 'verifying',
         percent: 95,
-        message: 'ESP32をリセット中...'
+        message: i18n.t('firmware.status.resetEsp32', { defaultValue: 'ESP32をリセット中...' })
       });
 
       // Hard reset
@@ -587,7 +588,7 @@ class FirmwareService {
       onProgress({
         stage: 'complete',
         percent: 100,
-        message: '✅ ファームウェアの書き込みが完了しました！'
+        message: i18n.t('firmware.status.writeSuccess', { defaultValue: '✅ ファームウェアの書き込みが完了しました！' })
       });
 
       return true;
@@ -596,7 +597,7 @@ class FirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: `書き込みエラー: ${(error as Error).message}`
+        message: i18n.t('firmware.status.writeError', { defaultValue: '書き込みエラー: {{message}}', message: (error as Error).message })
       });
       return false;
     }
@@ -650,7 +651,7 @@ class FirmwareService {
         onProgress({
           stage: 'connecting',
           percent: 0,
-          message: `mDNSでデバイスを検索中...`
+          message: i18n.t('firmware.status.mdnsSearching', { defaultValue: 'mDNSでデバイスを検索中...' })
         });
 
         // URLからホスト名を抽出
@@ -662,14 +663,14 @@ class FirmwareService {
           resolvedUrl = `http://${resolvedIp}`;
           console.log(`[OTA] Using resolved IP: ${resolvedUrl}`);
         } else {
-          throw new Error(`mDNS解決に失敗: ${hostname}`);
+          throw new Error(i18n.t('firmware.status.mdnsResolveFailed', { defaultValue: 'mDNS解決に失敗: {{hostname}}', hostname }));
         }
       }
 
       onProgress({
         stage: 'connecting',
         percent: 5,
-        message: `${resolvedUrl} に接続中...`
+        message: i18n.t('firmware.status.connectingToUrl', { defaultValue: '{{url}} に接続中...', url: resolvedUrl })
       });
 
       // デバイスの疎通確認（リトライ機能付き）
@@ -683,8 +684,8 @@ class FirmwareService {
             stage: 'connecting',
             percent: 5 + (attempt * 2),
             message: attempt > 0
-              ? `接続を再試行中... (${attempt + 1}/${maxConnectRetries})`
-              : `${resolvedUrl} に接続中...`
+              ? i18n.t('firmware.status.retryingConnection', { defaultValue: '接続を再試行中... ({{attempt}}/{{total}})', attempt: attempt + 1, total: maxConnectRetries })
+              : i18n.t('firmware.status.connectingToUrl', { defaultValue: '{{url}} に接続中...', url: resolvedUrl })
           });
 
           const pingResponse = await fetch(resolvedUrl, {
@@ -705,13 +706,13 @@ class FirmwareService {
       }
 
       if (!connected) {
-        throw new Error(`デバイスに接続できません: ${resolvedUrl}\n再起動直後の場合は、10秒程度待ってから再試行してください。`);
+        throw new Error(i18n.t('firmware.status.cannotConnect', { defaultValue: 'デバイスに接続できません: {{url}}\n再起動直後の場合は、10秒程度待ってから再試行してください。', url: resolvedUrl }));
       }
 
       onProgress({
         stage: 'connecting',
         percent: 10,
-        message: 'デバイスに接続しました'
+        message: i18n.t('firmware.status.deviceConnected', { defaultValue: 'デバイスに接続しました' })
       });
 
       // FormDataでバイナリを送信
@@ -721,7 +722,7 @@ class FirmwareService {
       onProgress({
         stage: 'flashing',
         percent: 20,
-        message: 'ファームウェアをアップロード中...'
+        message: i18n.t('firmware.status.uploadingFirmware', { defaultValue: 'ファームウェアをアップロード中...' })
       });
 
       // XMLHttpRequestを使用して進捗を取得
@@ -735,7 +736,7 @@ class FirmwareService {
             onProgress({
               stage: 'flashing',
               percent: Math.round(percent),
-              message: `アップロード中... ${Math.round((event.loaded / event.total) * 100)}%`
+              message: i18n.t('firmware.status.uploadingPercent', { defaultValue: 'アップロード中... {{percent}}%', percent: Math.round((event.loaded / event.total) * 100) })
             });
           }
         };
@@ -745,17 +746,17 @@ class FirmwareService {
         };
 
         xhr.onerror = () => {
-          reject(new Error('ネットワークエラー'));
+          reject(new Error(i18n.t('firmware.status.networkError', { defaultValue: 'ネットワークエラー' })));
         };
 
         xhr.ontimeout = () => {
-          reject(new Error(`タイムアウト（${timeoutMs / 1000}秒）`));
+          reject(new Error(i18n.t('firmware.status.timeoutSec', { defaultValue: 'タイムアウト（{{sec}}秒）', sec: timeoutMs / 1000 })));
         };
 
         // AbortControllerのシグナルを監視
         controller.signal.addEventListener('abort', () => {
           xhr.abort();
-          reject(new Error(`タイムアウト（${timeoutMs / 1000}秒）`));
+          reject(new Error(i18n.t('firmware.status.timeoutSec', { defaultValue: 'タイムアウト（{{sec}}秒）', sec: timeoutMs / 1000 })));
         });
 
         xhr.open('POST', `${resolvedUrl}/doUpdate`);
@@ -764,13 +765,13 @@ class FirmwareService {
       });
 
       if (!uploadResult.ok) {
-        throw new Error(`OTA更新に失敗: ${uploadResult.status} ${uploadResult.text}`);
+        throw new Error(i18n.t('firmware.status.otaFailedStatus', { defaultValue: 'OTA更新に失敗: {{status}} {{text}}', status: uploadResult.status, text: uploadResult.text }));
       }
 
       onProgress({
         stage: 'verifying',
         percent: 75,
-        message: 'アップロード完了、デバイスが再起動中...'
+        message: i18n.t('firmware.status.uploadCompleteRebooting', { defaultValue: 'アップロード完了、デバイスが再起動中...' })
       });
 
       // デバイスの再起動を待つ（進捗表示付き）
@@ -783,7 +784,7 @@ class FirmwareService {
         onProgress({
           stage: 'verifying',
           percent: 75 + ((i + 1) / rebootSteps) * 15, // 75% - 90%
-          message: `デバイス再起動中... (${i + 1}/${rebootSteps})`
+          message: i18n.t('firmware.status.rebootingDevice', { defaultValue: 'デバイス再起動中... ({{current}}/{{total}})', current: i + 1, total: rebootSteps })
         });
       }
 
@@ -793,7 +794,7 @@ class FirmwareService {
       onProgress({
         stage: 'verifying',
         percent: 90,
-        message: 'デバイスの復帰を確認中...'
+        message: i18n.t('firmware.status.checkingRevival', { defaultValue: 'デバイスの復帰を確認中...' })
       });
 
       let deviceVerified = false;
@@ -805,7 +806,7 @@ class FirmwareService {
           onProgress({
             stage: 'verifying',
             percent: 90 + ((retry + 1) / maxRetries) * 8, // 90% - 98%
-            message: `デバイス確認中... (${retry + 1}/${maxRetries})`
+            message: i18n.t('firmware.status.checkingDevice', { defaultValue: 'デバイス確認中... ({{current}}/{{total}})', current: retry + 1, total: maxRetries })
           });
           const verifyResponse = await fetch(resolvedUrl, {
             signal: AbortSignal.timeout(30000),
@@ -824,7 +825,7 @@ class FirmwareService {
         onProgress({
           stage: 'complete',
           percent: 100,
-          message: '✓ OTA更新が完了しました！デバイスが正常に再起動しました。'
+          message: i18n.t('firmware.status.otaSuccess', { defaultValue: '✓ OTA更新が完了しました！デバイスが正常に再起動しました。' })
         });
         return true;
       } else {
@@ -833,7 +834,7 @@ class FirmwareService {
         onProgress({
           stage: 'error',
           percent: 100,
-          message: '⚠️ アップロードは完了しましたが、デバイスが応答しません。デバイスの電源とWiFi接続を確認してください。'
+          message: i18n.t('firmware.status.otaNoResponse', { defaultValue: '⚠️ アップロードは完了しましたが、デバイスが応答しません。デバイスの電源とWiFi接続を確認してください。' })
         });
         return false;  // 検証失敗は成功とみなさない
       }
@@ -842,17 +843,17 @@ class FirmwareService {
       const errorMessage = error instanceof Error ? error.message : String(error);
 
       // タイムアウトエラーの判定
-      if (errorMessage.includes('タイムアウト') || errorMessage.includes('abort')) {
+      if (errorMessage.includes(i18n.t('firmware.status.timeout', { defaultValue: 'タイムアウト' })) || errorMessage.includes('abort')) {
         onProgress({
           stage: 'error',
           percent: 0,
-          message: `OTA更新タイムアウト: ${timeoutMs / 1000}秒以内に完了しませんでした。デバイスの電源を確認してください。`
+          message: i18n.t('firmware.status.otaTimeout', { defaultValue: 'OTA更新タイムアウト: {{sec}}秒以内に完了しませんでした。デバイスの電源を確認してください。', sec: timeoutMs / 1000 })
         });
       } else {
         onProgress({
           stage: 'error',
           percent: 0,
-          message: `OTA更新エラー: ${errorMessage}`
+          message: i18n.t('firmware.status.otaError', { defaultValue: 'OTA更新エラー: {{message}}', message: errorMessage })
         });
       }
       return false;
@@ -915,7 +916,7 @@ class FirmwareService {
         onProgress(device.url, {
           stage: 'error',
           percent: 0,
-          message: 'OTA更新に失敗しました'
+          message: i18n.t('firmware.status.otaFailedGeneric', { defaultValue: 'OTA更新に失敗しました' })
         });
       }
 

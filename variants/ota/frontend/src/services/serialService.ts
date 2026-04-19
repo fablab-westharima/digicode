@@ -1,3 +1,5 @@
+import i18n from '@/i18n';
+
 // Web Serial API Service for ESP32 Connection
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
@@ -47,7 +49,7 @@ class SerialService {
 
   async connect(options: SerialServiceOptions = {}): Promise<boolean> {
     if (!this.isSupported) {
-      const error = new Error('Web Serial APIはこのブラウザでサポートされていません。Chrome または Edge を使用してください。');
+      const error = new Error(i18n.t('firmware.status.webSerialUnsupported', { defaultValue: 'Web Serial APIはこのブラウザでサポートされていません。Chrome または Edge を使用してください。' }));
       options.onError?.(error);
       return false;
     }
@@ -312,7 +314,7 @@ class SerialService {
    */
   async forceReleaseAllPorts(): Promise<number> {
     if (!this.isSupported) {
-      throw new Error('Web Serial APIはこのブラウザでサポートされていません');
+      throw new Error(i18n.t('firmware.status.webSerialUnsupportedShort', { defaultValue: 'Web Serial APIはこのブラウザでサポートされていません' }));
     }
 
     // 現在の接続を切断

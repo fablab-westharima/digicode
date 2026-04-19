@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { serialService } from '@/services/serialService';
 import type { ConnectionStatus } from '@/services/serialService';
+import i18n from '@/i18n';
 
 interface SerialState {
   status: ConnectionStatus;
@@ -103,7 +104,7 @@ export const useSerialStore = create<SerialState>((set, get) => ({
       onError: (error) => {
         console.error('Serial error:', error);
         set((state) => ({
-          output: [...state.output, `[エラー] ${error.message}`],
+          output: [...state.output, i18n.t('firmware.serial.errorPrefix', { defaultValue: '[エラー] {{message}}', message: error.message })],
         }));
       },
     });
@@ -129,12 +130,12 @@ export const useSerialStore = create<SerialState>((set, get) => ({
 
   executeCode: async (code: string) => {
     set((state) => ({
-      output: [...state.output, '[コード実行中...]'],
+      output: [...state.output, i18n.t('firmware.serial.running', { defaultValue: '[コード実行中...]' })],
     }));
     const success = await serialService.executeCode(code);
     if (!success) {
       set((state) => ({
-        output: [...state.output, '[コード実行失敗]'],
+        output: [...state.output, i18n.t('firmware.serial.runFailed', { defaultValue: '[コード実行失敗]' })],
       }));
     }
     return success;
@@ -152,7 +153,7 @@ export const useSerialStore = create<SerialState>((set, get) => ({
   resetESP32: async () => {
     await serialService.resetESP32();
     set((state) => ({
-      output: [...state.output, '[ESP32をリセットしました]'],
+      output: [...state.output, i18n.t('firmware.serial.resetDone', { defaultValue: '[ESP32をリセットしました]' })],
     }));
   },
 

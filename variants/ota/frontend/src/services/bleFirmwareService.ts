@@ -1,3 +1,5 @@
+import i18n from '@/i18n';
+
 /**
  * BLE書き込み専用サービス
  *
@@ -196,7 +198,7 @@ class BleFirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: 'Web Bluetooth APIはこのブラウザでサポートされていません。Chrome または Edge を使用してください。'
+        message: i18n.t('firmware.status.webBluetoothUnsupported', { defaultValue: 'Web Bluetooth APIはこのブラウザでサポートされていません。Chrome または Edge を使用してください。' })
       });
       return null;
     }
@@ -205,7 +207,7 @@ class BleFirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 0,
-        message: 'BLEデバイスを検索中...'
+        message: i18n.t('firmware.status.searchingBle', { defaultValue: 'BLEデバイスを検索中...' })
       });
 
       // デバイス選択（ユーザージェスチャー内で実行必須）
@@ -219,7 +221,7 @@ class BleFirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 20,
-        message: 'デバイスに接続中...'
+        message: i18n.t('firmware.status.connectingDevice', { defaultValue: 'デバイスに接続中...' })
       });
 
       // GATT接続
@@ -229,7 +231,7 @@ class BleFirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 40,
-        message: 'OTAサービスを取得中...'
+        message: i18n.t('firmware.status.fetchOtaService', { defaultValue: 'OTAサービスを取得中...' })
       });
 
       // OTAサービス取得
@@ -239,7 +241,7 @@ class BleFirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 50,
-        message: 'Characteristicsを取得中...'
+        message: i18n.t('firmware.status.fetchCharacteristics', { defaultValue: 'Characteristicsを取得中...' })
       });
 
       // Characteristics取得
@@ -251,7 +253,7 @@ class BleFirmwareService {
       onProgress({
         stage: 'connecting',
         percent: 60,
-        message: `接続成功: ${this.device.name}`
+        message: i18n.t('firmware.status.connectedTo', { defaultValue: '接続成功: {{name}}', name: this.device.name })
       });
 
       return {
@@ -263,7 +265,7 @@ class BleFirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: `接続エラー: ${(error as Error).message}`
+        message: i18n.t('firmware.status.connectError', { defaultValue: '接続エラー: {{message}}', message: (error as Error).message })
       });
       return null;
     }
@@ -313,7 +315,7 @@ class BleFirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: '先に接続してください'
+        message: i18n.t('firmware.status.connectFirst', { defaultValue: '先に接続してください' })
       });
       return false;
     }
@@ -322,7 +324,7 @@ class BleFirmwareService {
       onProgress({
         stage: 'preparing',
         percent: 5,
-        message: 'ファームウェアを準備中...'
+        message: i18n.t('firmware.status.preparingFirmware', { defaultValue: 'ファームウェアを準備中...' })
       });
 
       // ファームウェアをArrayBufferに変換
@@ -351,7 +353,7 @@ class BleFirmwareService {
       onProgress({
         stage: 'preparing',
         percent: 10,
-        message: `ファームウェア: ${(firmwareSize / 1024).toFixed(1)} KB (${sectors.length}セクター)`
+        message: i18n.t('firmware.status.firmwareInfo', { defaultValue: 'ファームウェア: {{sizeKb}} KB ({{sectors}}セクター)', sizeKb: (firmwareSize / 1024).toFixed(1), sectors: sectors.length })
       });
 
       // 通知を設定
@@ -361,7 +363,7 @@ class BleFirmwareService {
       onProgress({
         stage: 'preparing',
         percent: 12,
-        message: 'OTA開始コマンド送信中...'
+        message: i18n.t('firmware.status.sendingOtaStart', { defaultValue: 'OTA開始コマンド送信中...' })
       });
 
       // STARTコマンド送信（20バイト）
@@ -403,7 +405,7 @@ class BleFirmwareService {
       onProgress({
         stage: 'flashing',
         percent: 15,
-        message: '書き込み開始...'
+        message: i18n.t('firmware.status.writeStart', { defaultValue: '書き込み開始...' })
       });
 
       // セクター送信
@@ -429,7 +431,7 @@ class BleFirmwareService {
           onProgress({
             stage: 'flashing',
             percent,
-            message: `書き込み中... ${sectorIndex + 1}/${totalSectors} セクター`
+            message: i18n.t('firmware.status.writingSectors', { defaultValue: '書き込み中... {{current}}/{{total}} セクター', current: sectorIndex + 1, total: totalSectors })
           });
 
           if (isLastSector) {
@@ -457,7 +459,7 @@ class BleFirmwareService {
       onProgress({
         stage: 'complete',
         percent: 100,
-        message: 'BLE書き込みが完了しました！'
+        message: i18n.t('firmware.status.writeSuccessBle', { defaultValue: 'BLE書き込みが完了しました！' })
       });
 
       this.log('BLE OTA write completed successfully');
@@ -471,7 +473,7 @@ class BleFirmwareService {
       onProgress({
         stage: 'error',
         percent: 0,
-        message: `書き込みエラー: ${(error as Error).message}`
+        message: i18n.t('firmware.status.writeError', { defaultValue: '書き込みエラー: {{message}}', message: (error as Error).message })
       });
 
       // クリーンアップ
