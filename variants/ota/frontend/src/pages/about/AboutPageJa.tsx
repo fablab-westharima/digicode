@@ -1,0 +1,256 @@
+import { AboutShell, FeatureCard, UniqueFeature, PlanRow, BoardCategory } from './components';
+
+export default function AboutPageJa() {
+  return (
+    <AboutShell backLabel="エディタに戻る" labels={{ freeLabel: '無料', proLabel: 'PRO' }}>
+      {/* Hero */}
+      <section className="mb-16 text-center">
+        <h1 className="text-4xl font-bold mb-4">DigiCode</h1>
+        <p className="text-xl text-[#8B949E] mb-2">
+          ブラウザだけで完結するマイコン向けブロックプログラミングエディタ
+        </p>
+        <p className="text-sm text-[#8B949E]">
+          Arduino IDE不要 / USB・BLE・WiFiで書き込み / 30種類以上のボード対応
+        </p>
+      </section>
+
+      {/* 開発の経緯 */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">開発の経緯</h2>
+        <div className="space-y-4 text-[#C9D1D9] leading-relaxed">
+          <p>
+            DigiCodeは、ファブラボ西播磨で教育用ロボットやIoTデバイスのハード設計（基板設計・筐体設計）をする中で生まれました。
+          </p>
+          <p>
+            既存のブロックプログラミングツール（OttoBlocklyなど）を使っていると、対応ボードやピン配置がエディタ側の仕様で決まっているため、
+            <strong className="text-[#E6EDF3]">ハード設計をソフトの都合に合わせなければならない</strong>
+            という制約がありました。
+            自分でオリジナルのマイコンボードやブレイクアウトボードを設計しても、エディタが対応していなければ使えません。
+          </p>
+          <p>
+            <strong className="text-[#E6EDF3]">ならばエディタ側も自分で作ってしまおう。</strong>
+            これが開発のきっかけです。
+          </p>
+          <p>
+            加えて、既存ツールではArduino IDEのインストールが前提だったり、
+            書き込みがUSBケーブルのみだったりと、教育現場やワークショップで不便な場面が多かったため、
+            ブラウザだけで完結し、ワイヤレス書き込みにも対応する環境を目指しました。
+          </p>
+          <p className="text-sm text-[#8B949E]">
+            ソフトウェア開発はAI（Claude）との協業で進めています。
+          </p>
+        </div>
+      </section>
+
+      {/* 基本機能 */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">基本機能</h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          <FeatureCard
+            title="ブラウザだけで完結"
+            description="Arduino IDEなどのソフトのインストールは不要。ブロックを組む、コンパイル、書き込みまですべてブラウザ上で行えます。クラウドコンパイルサーバでビルドするため、PCのスペックも問いません。"
+          />
+          <FeatureCard
+            title="3つの書き込み方式"
+            description="USB有線書き込みに加え、BLE（Bluetooth Low Energy）とWiFi経由の無線書き込み（OTA）にも対応。ケーシング済みロボットの更新や、教室での複数台同時書き込みに便利です。"
+          />
+          <FeatureCard
+            title="30種類以上のボード対応"
+            description="ESP32シリーズ（無印/S3/C3/C6）、M5Stackシリーズ（Basic, StickC Plus, ATOM, Stamp等）、Seeed XIAOシリーズ（C3/S3/C6/RP2040）、Raspberry Pi Pico/Pico W、Arduino（Uno/Nano/Mega）、ESP8266に対応。"
+          />
+          <FeatureCard
+            title="500以上のブロック"
+            description="ロジック、ループ、数学、テキストなどの基本ブロックに加え、センサー、モーター、サーボ、NeoPixel、OLED、ブザー、MQTT、Home Assistantなど、ハードウェア制御のブロックを豊富に揃えています。"
+          />
+          <FeatureCard
+            title="OTTOベースのロボット対応"
+            description="OTTOをベースにしたファブラボ西播磨オリジナルのロボット向けに、2足歩行・ホイール・Ninjaの3バリアントの専用ブロックを用意。歩行、ダンス、ジェスチャー表現までブロックだけで制御できます。（OTTO公式とは無関係のフォークです）"
+          />
+          <FeatureCard
+            title="5言語対応"
+            description="日本語・英語・スペイン語・ポルトガル語・繁体字中国語に対応。ブロックのラベルやUIすべてが翻訳されています。"
+          />
+        </div>
+      </section>
+
+      {/* 他のブロックエディタにない機能 */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">
+          他のブロックエディタにはない機能
+        </h2>
+        <p className="text-[#8B949E] mb-4">
+          DigiCodeは、既存のブロックエディタ（OttoBlockly, mBlock, ArduBlockなど）にはない機能を多数搭載しています。
+        </p>
+        <div className="flex items-center gap-4 mb-8 text-sm text-[#8B949E]">
+          <span className="flex items-center gap-1.5">
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#238636]" />
+            <span className="text-[#3FB950] font-medium">無料</span> = 全ユーザー利用可能
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#DA3633]" />
+            <span className="text-[#F85149] font-medium">PRO</span> = Pro / Enterprise プラン（無料開放期間あり）
+          </span>
+        </div>
+
+        <div className="space-y-8">
+          <UniqueFeature
+            title="ピンアサインのカスタマイズ"
+            description="ブロック配置時のデフォルトGPIOピン番号を、ハードの設計に合わせて自由に設定できます。プリセットとして保存し、プロジェクトや基板ごとに切り替え可能。既存のブロックエディタでは「エディタが決めたピン番号にハードを合わせる」のが当たり前ですが、DigiCodeではハード側の設計を優先できます。"
+            tag="設計自由度"
+            pricing="pro"
+          />
+          <UniqueFeature
+            title="サーボパルス幅の個別設定"
+            description="サーボモーターのパルス幅（min/max）をピンごとに個別設定できます。180度・270度・360度サーボのプリセットに加え、任意のマイクロ秒値を直接指定可能。異なるメーカーのサーボを混在させるロボットでも、1台ごとに最適な設定ができます。"
+            tag="ハード対応力"
+            pricing="pro"
+          />
+          <UniqueFeature
+            title="サーボトリム調整"
+            description="OTTOロボット用サーボのトリム（オフセット）をGUIのスライダーで微調整。調整値はESP32のNVS（不揮発メモリ）に保存され、電源を切っても保持されます。個別サーボのテスト（スイープ、ホームポジション、歩行テスト）もブラウザから実行できます。"
+            tag="調整・チューニング"
+          />
+          <UniqueFeature
+            title="PIDチューニングツール"
+            description="ライントレース、壁制御、速度制御、角度制御のPIDパラメータ（Kp, Ki, Kd）をスライダーと直接入力で調整できるGUIツール。プリセットとして保存・読み込みでき、シリアル接続中のESP32にリアルタイム送信可能。ロボット競技の調整作業を大幅に効率化します。"
+            tag="競技向け"
+          />
+          <UniqueFeature
+            title="お気に入りブロック"
+            description="35以上あるブロックカテゴリから、よく使うものだけを選んで「お気に入り」として登録可能。カテゴリが多すぎて目的のブロックが見つからない問題を解消します。"
+            tag="使いやすさ"
+          />
+          <UniqueFeature
+            title="ロボットモードセレクター"
+            description="OTTO 2足歩行、OTTO Wheel、OTTO Ninja、マイクロマウス、ライントレース、Home Assistant、汎用デバイスなど、9種類のモードを切り替えるだけで、そのロボット/用途に必要なブロックだけが表示されます。初心者が大量のブロックに圧倒されるのを防ぎます。"
+            tag="使いやすさ"
+          />
+          <UniqueFeature
+            title="シリアルプロッター"
+            description="ESP32からのシリアルデータをリアルタイムでグラフ表示。複数チャンネル自動検出、ラベル付き値（sensor1:123,sensor2:456）に対応。Y軸レンジ設定、一時停止、データダウンロード機能付き。センサーの動作確認やPIDの挙動観察に便利です。"
+            tag="デバッグ"
+          />
+          <UniqueFeature
+            title="生成コードのリアルタイム確認"
+            description="ブロックから生成されるArduino C++コードをリアルタイムで確認できます。ブロックを追加・変更するたびにコードが更新されるので、「このブロックがどんなコードになるのか」を学びながらテキストプログラミングへステップアップできます。"
+            tag="学習支援"
+          />
+          <UniqueFeature
+            title="ADC2ピン競合の自動検出"
+            description="ESP32ではWiFi使用中にADC2ピンがアナログ入力として使えないという制約がありますが、DigiCodeはコード生成時にADC2ピンの使用を自動検出し、警告を表示します。ハマりやすい落とし穴を未然に防ぎます。"
+            tag="ESP32特化"
+          />
+          <UniqueFeature
+            title="複数台同時OTA書き込み（バッチ更新）"
+            description="WiFi OTAで複数のESP32デバイスに同時にプログラムを書き込めます。教室やワークショップで10台、20台のロボットを一斉にアップデートする場面に対応。デバイスごとの進捗がリアルタイムで表示されます。"
+            tag="教育現場向け"
+          />
+          <UniqueFeature
+            title="MQTT / Home Assistant連携ブロック"
+            description="MQTT通信ブロック（21個）とHome Assistant Auto Discoveryブロック（43個）を搭載。センサー、スイッチ、ライト、ファン、カバーなどのエンティティをブロックだけで定義でき、Home Assistantに自動登録されます。ESP32をスマートホームデバイスに変えるIoTプロジェクトに。"
+            tag="IoT"
+          />
+          <UniqueFeature
+            title="サンプルプロジェクト"
+            description="基本、センサー、モーター、OTTO、応用、競技、IoTの各カテゴリに分類されたサンプルプロジェクトを内蔵。ワンクリックで読み込んですぐに試せます。"
+            tag="学習支援"
+          />
+          <UniqueFeature
+            title="チュートリアル"
+            description="LED点滅、センサー、サーボ、OTTO歩行、障害物回避、ライントレース、マイクロマウスなど11種類のチュートリアルを内蔵。選択するとサンプルプロジェクトが読み込まれ、説明を見ながらすぐに試せます。"
+            tag="学習支援"
+          />
+        </div>
+      </section>
+
+      {/* 対応ボード一覧 */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">対応ボード</h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          <BoardCategory
+            title="汎用 ESP32"
+            boards={['ESP32（無印）', 'ESP32-S3', 'ESP32-C3', 'ESP32-C6']}
+          />
+          <BoardCategory
+            title="M5Stack シリーズ"
+            boards={['M5Stack Basic/Gray/Fire', 'M5StickC Plus', 'ATOM Lite', 'ATOM Matrix', 'M5Stamp Pico', 'M5Stamp C3/C3U']}
+          />
+          <BoardCategory
+            title="Seeed XIAO シリーズ"
+            boards={['XIAO ESP32C3', 'XIAO ESP32S3', 'XIAO ESP32C6', 'XIAO RP2040']}
+          />
+          <BoardCategory
+            title="Raspberry Pi / RP2040"
+            boards={['Raspberry Pi Pico', 'Raspberry Pi Pico W', 'Adafruit KB2040', 'Arduino Nano RP2040 Connect']}
+          />
+          <BoardCategory
+            title="Arduino"
+            boards={['Arduino Uno', 'Arduino Nano', 'Arduino Mega 2560']}
+          />
+          <BoardCategory
+            title="ESP8266"
+            boards={['ESP8266 Generic', 'NodeMCU 1.0', 'WEMOS D1 Mini']}
+          />
+        </div>
+      </section>
+
+      {/* ご利用について */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">ご利用について</h2>
+        <div className="space-y-6 text-[#C9D1D9]">
+          {/* プラン表 */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="border-b border-[#30363D]">
+                  <th className="text-left py-3 pr-4 text-[#8B949E] font-medium">機能</th>
+                  <th className="text-center py-3 px-4 text-[#8B949E] font-medium">ゲスト<br/><span className="text-xs font-normal">（未登録）</span></th>
+                  <th className="text-center py-3 px-4 text-[#8B949E] font-medium">Free<br/><span className="text-xs font-normal">（無料登録）</span></th>
+                  <th className="text-center py-3 px-4 text-[#F85149] font-medium">Pro</th>
+                </tr>
+              </thead>
+              <tbody className="text-[#C9D1D9]">
+                <PlanRow feature="ブロックプログラミング（500以上のブロック）" guest pro free />
+                <PlanRow feature="クラウドコンパイル" guest pro free />
+                <PlanRow feature="USB / BLE / WiFi 書き込み" guest pro free />
+                <PlanRow feature="サーボトリム・PIDチューニング" guest pro free />
+                <PlanRow feature="シリアルプロッター" guest pro free />
+                <PlanRow feature="お気に入りブロック・ロボットモード" guest pro free />
+                <PlanRow feature="サンプルプロジェクト・チュートリアル" guest pro free />
+                <PlanRow feature="MQTT / Home Assistant連携" guest pro free />
+                <PlanRow feature="プロジェクト保存" guest={false} pro free note="ゲストはローカル保存のみ" />
+                <PlanRow feature="拡張機能（ピンアサイン・サーボパルス幅設定）" guest={false} free={false} pro />
+              </tbody>
+            </table>
+          </div>
+
+          <p className="text-sm text-[#8B949E]">
+            PRO機能は無料開放期間を設けることがあります。開放中は全ユーザーがお使いいただけます。
+          </p>
+
+          <p>
+            対応ブラウザは <strong className="text-[#E6EDF3]">Chrome / Edge</strong> です（Web Bluetooth API、Web Serial APIを使用するため）。
+          </p>
+          <p className="text-[#8B949E]">
+            ご意見・ご要望がありましたら、お気軽にお寄せください。
+          </p>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="text-center text-sm text-[#8B949E] pt-8 border-t border-[#30363D]">
+        <p>DigiCode - ファブラボ西播磨</p>
+        <p className="mt-1">
+          <a
+            href="https://github.com/fablab-westharima/DigiCode-Finder/releases"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#58A6FF] hover:underline"
+          >
+            DigiCode Finder（WiFi OTA用デバイス検出アプリ）
+          </a>
+        </p>
+      </footer>
+    </AboutShell>
+  );
+}
