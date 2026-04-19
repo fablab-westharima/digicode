@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -14,12 +15,12 @@ interface RecoveryCodeInputDialogProps {
 }
 
 export function RecoveryCodeInputDialog({ open, onOpenChange, email: initialEmail }: RecoveryCodeInputDialogProps) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState(initialEmail);
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // initialEmailが変更されたらemailステートを更新
   useEffect(() => {
     setEmail(initialEmail);
   }, [initialEmail]);
@@ -28,12 +29,12 @@ export function RecoveryCodeInputDialog({ open, onOpenChange, email: initialEmai
     e.preventDefault();
 
     if (!email.trim()) {
-      setError('メールアドレスを入力してください');
+      setError(t('auth.recoveryCode.emailRequired', { defaultValue: 'メールアドレスを入力してください' }));
       return;
     }
 
     if (!code.trim()) {
-      setError('リカバリーコードを入力してください');
+      setError(t('auth.recoveryCode.codeRequired', { defaultValue: 'リカバリーコードを入力してください' }));
       return;
     }
 
@@ -43,30 +44,22 @@ export function RecoveryCodeInputDialog({ open, onOpenChange, email: initialEmai
     try {
       const result = await verifyRecoveryCode(email, code);
 
-      // トークン保存
       setTokens(result.accessToken, result.refreshToken, result.expiresIn);
       localStorage.setItem('user', JSON.stringify(result.user));
 
-      // ログイン成功、ページリロード
       window.location.href = '/';
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'リカバリーコードの検証に失敗しました');
+      setError(error instanceof Error ? error.message : t('auth.recoveryCode.verifyFailed', { defaultValue: 'リカバリーコードの検証に失敗しました' }));
     } finally {
       setIsLoading(false);
     }
   };
 
   const formatCode = (value: string) => {
-    // ハイフンと英数字以外を除去
     const cleaned = value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
-
-    // ハイフンを除去した文字列
     const withoutHyphens = cleaned.replace(/-/g, '');
-
-    // 12文字まで制限
     const limited = withoutHyphens.slice(0, 12);
 
-    // XXXX-XXXX-XXXX形式に整形
     if (limited.length <= 4) {
       return limited;
     } else if (limited.length <= 8) {
@@ -87,30 +80,30 @@ export function RecoveryCodeInputDialog({ open, onOpenChange, email: initialEmai
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <KeyRound className="h-5 w-5" />
-            リカバリーコードでログイン
+            {t('auth.recoveryCode.title', { defaultValue: 'リカバリーコードでログイン' })}
           </DialogTitle>
           <DialogDescription>
-            パスキーを紛失した場合、リカバリーコードを使用してログインできます。
+            {t('auth.recoveryCode.description1', { defaultValue: 'パスキーを紛失した場合、リカバリーコードを使用してログインできます。' })}
             <br />
-            各コードは1回のみ使用可能です。
+            {t('auth.recoveryCode.description2', { defaultValue: '各コードは1回のみ使用可能です。' })}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="email">メールアドレス</Label>
+            <Label htmlFor="email">{t('auth.email', { defaultValue: 'メールアドレス' })}</Label>
             <Input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="例: user@example.com"
+              placeholder={t('auth.emailExample', { defaultValue: '例: user@example.com' })}
               required
             />
           </div>
 
           <div>
-            <Label htmlFor="recovery-code">リカバリーコード</Label>
+            <Label htmlFor="recovery-code">{t('auth.recoveryCode.codeLabel', { defaultValue: 'リカバリーコード' })}</Label>
             <Input
               id="recovery-code"
               type="text"
@@ -118,12 +111,12 @@ export function RecoveryCodeInputDialog({ open, onOpenChange, email: initialEmai
               onChange={handleCodeChange}
               placeholder="XXXX-XXXX-XXXX"
               className="font-mono text-lg tracking-wider"
-              maxLength={14} // 12文字 + 2ハイフン
+              maxLength={14}
               autoComplete="off"
               autoFocus
             />
             <p className="text-xs text-muted-foreground mt-1">
-              形式: XXXX-XXXX-XXXX（大文字英数字12文字）
+              {t('auth.recoveryCode.codeFormat', { defaultValue: '形式: XXXX-XXXX-XXXX（大文字英数字12文字）' })}
             </p>
           </div>
 
@@ -135,7 +128,7 @@ export function RecoveryCodeInputDialog({ open, onOpenChange, email: initialEmai
 
           <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
             <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              ⚠️ ログイン後、新しいパスキーを登録してください
+              {t('auth.recoveryCode.registerNewPasskeyWarning', { defaultValue: '⚠️ ログイン後、新しいパスキーを登録してください' })}
             </p>
           </div>
 
@@ -147,7 +140,7 @@ export function RecoveryCodeInputDialog({ open, onOpenChange, email: initialEmai
               disabled={isLoading}
               className="flex-1"
             >
-              キャンセル
+              {t('common.cancel', { defaultValue: 'キャンセル' })}
             </Button>
             <Button
               type="submit"
@@ -155,7 +148,7 @@ export function RecoveryCodeInputDialog({ open, onOpenChange, email: initialEmai
               className="flex-1"
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              ログイン
+              {t('common.login', { defaultValue: 'ログイン' })}
             </Button>
           </div>
         </form>

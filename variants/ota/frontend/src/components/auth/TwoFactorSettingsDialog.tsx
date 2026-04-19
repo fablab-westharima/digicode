@@ -26,10 +26,10 @@ export function TwoFactorSettingsDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
-            {t('auth.2fa.dialogTitle', '2段階認証設定')}
+            {t('auth.2fa.dialogTitle', { defaultValue: '2段階認証設定' })}
           </DialogTitle>
           <DialogDescription>
-            {t('auth.2fa.dialogDescription', 'パスワードログイン時のセキュリティを強化します。')}
+            {t('auth.2fa.dialogDescription', { defaultValue: 'パスワードログイン時のセキュリティを強化します。' })}
           </DialogDescription>
         </DialogHeader>
 

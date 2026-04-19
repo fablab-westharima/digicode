@@ -42,7 +42,7 @@ export function AuthPage({
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="login">{t('auth.login')}</TabsTrigger>
               <TabsTrigger value="register">{t('auth.register')}</TabsTrigger>
-              <TabsTrigger value="recovery">復旧</TabsTrigger>
+              <TabsTrigger value="recovery">{t('auth.recoveryTab', { defaultValue: '復旧' })}</TabsTrigger>
             </TabsList>
             <TabsContent value="login" className="mt-4">
               <LoginForm

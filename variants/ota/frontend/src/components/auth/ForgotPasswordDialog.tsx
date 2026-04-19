@@ -33,7 +33,7 @@ export function ForgotPasswordDialog({
 
   const handleRequest = async () => {
     if (!email.trim()) {
-      setError(t('auth.emailRequired', 'メールアドレスを入力してください'));
+      setError(t('auth.emailRequired', { defaultValue: 'メールアドレスを入力してください' }));
       return;
     }
 
@@ -47,7 +47,7 @@ export function ForgotPasswordDialog({
       setError(
         error instanceof Error
           ? error.message
-          : t('auth.forgotPassword.requestFailed', 'パスワードリセット申請に失敗しました')
+          : t('auth.forgotPassword.requestFailed', { defaultValue: 'パスワードリセット申請に失敗しました' })
       );
     } finally {
       setIsLoading(false);
@@ -72,33 +72,30 @@ export function ForgotPasswordDialog({
               <CheckCircle className="h-6 w-6 text-green-600" />
             </div>
             <DialogTitle className="text-center">
-              {t('auth.forgotPassword.requestSuccessTitle', 'パスワードリセットメール送信完了')}
+              {t('auth.forgotPassword.requestSuccessTitle', { defaultValue: 'パスワードリセットメール送信完了' })}
             </DialogTitle>
             <DialogDescription className="text-center">
-              {t(
-                'auth.forgotPassword.requestSuccessDesc',
-                'パスワードリセット用のリンクをメールで送信しました'
-              )}
+              {t('auth.forgotPassword.requestSuccessDesc', { defaultValue: 'パスワードリセット用のリンクをメールで送信しました' })}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="rounded-lg bg-muted p-4 space-y-2">
               <p className="text-sm">
-                {t('auth.forgotPassword.emailSentTo', '以下のメールアドレスにリセットリンクを送信しました：')}
+                {t('auth.forgotPassword.emailSentTo', { defaultValue: '以下のメールアドレスにリセットリンクを送信しました：' })}
               </p>
               <p className="text-sm font-medium text-green-600">{email}</p>
             </div>
 
             <div className="space-y-2 text-sm text-muted-foreground">
-              <p>{t('auth.forgotPassword.instruction1', 'メール内のリンクをクリックしてパスワードをリセットしてください。')}</p>
-              <p>{t('auth.forgotPassword.instruction2', 'リンクの有効期限は1時間です。')}</p>
+              <p>{t('auth.forgotPassword.instruction1', { defaultValue: 'メール内のリンクをクリックしてパスワードをリセットしてください。' })}</p>
+              <p>{t('auth.forgotPassword.instruction2', { defaultValue: 'リンクの有効期限は1時間です。' })}</p>
             </div>
           </div>
 
           <DialogFooter>
             <Button onClick={handleClose} className="w-full">
-              {t('common.close', '閉じる')}
+              {t('common.close', { defaultValue: '閉じる' })}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -112,13 +109,10 @@ export function ForgotPasswordDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <KeyRound className="h-5 w-5" />
-            {t('auth.forgotPassword.title', 'パスワードリセット')}
+            {t('auth.forgotPassword.title', { defaultValue: 'パスワードリセット' })}
           </DialogTitle>
           <DialogDescription>
-            {t(
-              'auth.forgotPassword.description',
-              'メールアドレスを入力してください。パスワードリセット用のリンクを送信します。'
-            )}
+            {t('auth.forgotPassword.description', { defaultValue: 'メールアドレスを入力してください。パスワードリセット用のリンクを送信します。' })}
           </DialogDescription>
         </DialogHeader>
 
@@ -145,13 +139,13 @@ export function ForgotPasswordDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={handleClose} disabled={isLoading}>
-            {t('common.cancel', 'キャンセル')}
+            {t('common.cancel', { defaultValue: 'キャンセル' })}
           </Button>
           <Button onClick={handleRequest} disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isLoading
-              ? t('auth.sending', '送信中...')
-              : t('auth.forgotPassword.sendLink', 'リセットリンクを送信')}
+              ? t('auth.sending', { defaultValue: '送信中...' })
+              : t('auth.forgotPassword.sendLink', { defaultValue: 'リセットリンクを送信' })}
           </Button>
         </DialogFooter>
       </DialogContent>

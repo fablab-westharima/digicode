@@ -15,7 +15,8 @@
     "goToHome": "ホームへ",
     "back": "戻る",
     "saving": "保存中...",
-    "add": "追加"
+    "add": "追加",
+    "login": "ログイン"
   },
   "status": {
     "ready": "準備完了",
@@ -60,9 +61,33 @@
     "confirmPassword": "パスワード（確認）",
     "confirmPasswordPlaceholder": "パスワードを再入力",
     "minChars": "8文字以上",
-    "forgotPassword": "パスワードをお忘れですか？",
+    "forgotPassword": {
+      "description": "メールアドレスを入力してください。パスワードリセット用のリンクを送信します。",
+      "emailSentTo": "以下のメールアドレスにリセットリンクを送信しました：",
+      "instruction1": "メール内のリンクをクリックしてパスワードをリセットしてください。",
+      "instruction2": "リンクの有効期限は1時間です。",
+      "requestFailed": "パスワードリセット申請に失敗しました",
+      "requestSuccessDesc": "パスワードリセット用のリンクをメールで送信しました",
+      "requestSuccessTitle": "パスワードリセットメール送信完了",
+      "sendLink": "リセットリンクを送信",
+      "title": "パスワードリセット"
+    },
     "forgotPasswordDesc": "登録済みメールアドレスにリセットリンクを送信します",
-    "resetPassword": "パスワードリセット",
+    "resetPassword": {
+      "invalidToken": "無効なリセットリンクです。メールのリンクから再度アクセスしてください。",
+      "tokenMissing": "トークンが見つかりません",
+      "failed": "パスワードのリセットに失敗しました",
+      "networkError": "通信エラーが発生しました",
+      "completeTitle": "パスワードリセット完了",
+      "completeDesc": "パスワードが正常に変更されました",
+      "loginPrompt": "新しいパスワードでログインしてください。",
+      "goToLogin": "ログインページへ",
+      "description": "新しいパスワードを入力してください",
+      "newPasswordLabel": "新しいパスワード",
+      "passwordPlaceholder": "8文字以上（大小英字・数字・特殊文字を含む）",
+      "resetting": "リセット中...",
+      "submit": "パスワードをリセット"
+    },
     "sendResetLink": "リセットリンクを送信",
     "backToLogin": "ログインに戻る",
     "loginError": "ログインに失敗しました",
@@ -131,7 +156,13 @@
       "noRecoveryCodes": "⚠️ リカバリーコードが生成されていません",
       "generateCodes": "リカバリーコードを生成",
       "generateCodesFailed": "リカバリーコードの生成に失敗しました",
-      "generateCodesRequirement": "※パスキーを最低1つ登録してから生成してください"
+      "generateCodesRequirement": "※パスキーを最低1つ登録してから生成してください",
+      "enablePasskeyOnlyMode": "パスキーのみモードを有効化",
+      "passkeyOnlyMode": "パスキーのみでログイン",
+      "passkeyOnlyModeDesc": "パスワードログインを無効化し、パスキーのみでログインします。セキュリティが大幅に向上します。",
+      "passkeyOnlyModeRequirement": "※パスキーを最低1つ登録してから有効化してください",
+      "recoveryNote": "※パスキーを失った場合は、リカバリーコードまたはメールで復旧できます",
+      "setOnlyModeFailed": "パスキーのみモードの設定に失敗しました"
     },
     "verification": {
       "title": "メールアドレスの確認",
@@ -202,6 +233,37 @@
       "dialogTitle": "2段階認証設定",
       "dialogDescription": "パスワードログイン時のセキュリティを強化します。",
       "trustDevice": "このデバイスを信頼する（30日間）"
+    },
+    "emailOrLoginIdPlaceholder": "メールアドレスまたはログインID",
+    "forgotPasswordHint": "登録済みメールアドレスにリセットリンクを送信します",
+    "passkeyOnlyModeNotice": "このアカウントはパスキーのみでログイン可能です。",
+    "passkeyOnlyRecoveryHint": "パスキーが使えない場合は「復旧」タブをご利用ください。",
+    "recoveryCodeHint": "事前に保存したリカバリーコードを使用してログインします",
+    "recoveryCodeLogin": "リカバリーコードでログイン",
+    "recoveryEmailHint": "復旧に使用するアカウントのメールアドレスを入力してください",
+    "recoveryTab": "復旧",
+    "recoveryCode": {
+      "title": "リカバリーコードでログイン",
+      "description1": "パスキーを紛失した場合、リカバリーコードを使用してログインできます。",
+      "description2": "各コードは1回のみ使用可能です。",
+      "emailRequired": "メールアドレスを入力してください",
+      "codeRequired": "リカバリーコードを入力してください",
+      "verifyFailed": "リカバリーコードの検証に失敗しました",
+      "codeLabel": "リカバリーコード",
+      "codeFormat": "形式: XXXX-XXXX-XXXX（大文字英数字12文字）",
+      "registerNewPasskeyWarning": "⚠️ ログイン後、新しいパスキーを登録してください"
+    },
+    "emailExample": "例: user@example.com",
+    "recoveryCodesDisplay": {
+      "title": "リカバリーコードを保存してください",
+      "description1": "パスキーを紛失した場合、これらのコードを使用してアカウントを復旧できます。",
+      "description2": "各コードは1回のみ使用可能です。安全な場所に保管してください。",
+      "warning": "⚠️ 重要: このコードは二度と表示されません。必ず保存してください。",
+      "downloadPdf": "PDFダウンロード",
+      "print": "印刷",
+      "copy": "コピー",
+      "copied": "コピー済み",
+      "saved": "保存しました"
     }
   },
   "home": {

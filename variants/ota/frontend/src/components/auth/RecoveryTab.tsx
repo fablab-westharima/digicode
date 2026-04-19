@@ -26,7 +26,7 @@ export function RecoveryTab() {
           onChange={(e) => setEmail(e.target.value)}
         />
         <p className="text-xs text-muted-foreground">
-          {t('auth.recoveryEmailHint', '復旧に使用するアカウントのメールアドレスを入力してください')}
+          {t('auth.recoveryEmailHint', { defaultValue: '復旧に使用するアカウントのメールアドレスを入力してください' })}
         </p>
       </div>
 
@@ -39,10 +39,10 @@ export function RecoveryTab() {
           onClick={() => setShowForgotPasswordDialog(true)}
         >
           <Mail className="mr-2 h-4 w-4" />
-          {t('auth.forgotPassword', 'パスワードをお忘れですか？')}
+          {t('auth.forgotPassword', { defaultValue: 'パスワードをお忘れですか？' })}
         </Button>
         <p className="text-xs text-muted-foreground pl-1">
-          {t('auth.forgotPasswordHint', '登録済みメールアドレスにリセットリンクを送信します')}
+          {t('auth.forgotPasswordHint', { defaultValue: '登録済みメールアドレスにリセットリンクを送信します' })}
         </p>
       </div>
 
@@ -55,10 +55,10 @@ export function RecoveryTab() {
           onClick={() => setShowRecoveryCodeDialog(true)}
         >
           <KeyRound className="mr-2 h-4 w-4" />
-          {t('auth.recoveryCodeLogin', 'リカバリーコードでログイン')}
+          {t('auth.recoveryCodeLogin', { defaultValue: 'リカバリーコードでログイン' })}
         </Button>
         <p className="text-xs text-muted-foreground pl-1">
-          {t('auth.recoveryCodeHint', '事前に保存したリカバリーコードを使用してログインします')}
+          {t('auth.recoveryCodeHint', { defaultValue: '事前に保存したリカバリーコードを使用してログインします' })}
         </p>
       </div>
 

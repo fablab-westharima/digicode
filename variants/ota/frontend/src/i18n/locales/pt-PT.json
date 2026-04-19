@@ -15,7 +15,8 @@
     "goToHome": "Ir para início",
     "back": "Voltar",
     "saving": "Salvando...",
-    "add": "Adicionar"
+    "add": "Adicionar",
+    "login": "Iniciar sessão"
   },
   "status": {
     "ready": "Pronto",
@@ -60,9 +61,33 @@
     "confirmPassword": "Confirmar senha",
     "confirmPasswordPlaceholder": "Reinsira a senha",
     "minChars": "8+ caracteres",
-    "forgotPassword": "Esqueceu sua senha?",
+    "forgotPassword": {
+      "description": "Introduza o seu endereço de email. Enviaremos-lhe um link para redefinir a palavra-passe.",
+      "emailSentTo": "Foi enviado um link de redefinição para:",
+      "instruction1": "Clique no link no email para redefinir a sua palavra-passe.",
+      "instruction2": "O link expira em 1 hora.",
+      "requestFailed": "Falha ao solicitar redefinição de palavra-passe",
+      "requestSuccessDesc": "Foi enviado por email um link para redefinir a palavra-passe",
+      "requestSuccessTitle": "Email de redefinição enviado",
+      "sendLink": "Enviar link de redefinição",
+      "title": "Redefinir palavra-passe"
+    },
     "forgotPasswordDesc": "Enviaremos um link de redefinição para seu e-mail registrado",
-    "resetPassword": "Redefinir senha",
+    "resetPassword": {
+      "invalidToken": "Link de redefinição inválido. Aceda novamente a partir do link no seu email.",
+      "tokenMissing": "Token não encontrado",
+      "failed": "Falha ao redefinir a palavra-passe",
+      "networkError": "Ocorreu um erro de rede",
+      "completeTitle": "Redefinição de palavra-passe concluída",
+      "completeDesc": "A sua palavra-passe foi alterada com sucesso",
+      "loginPrompt": "Inicie sessão com a sua nova palavra-passe.",
+      "goToLogin": "Ir para o login",
+      "description": "Introduza a sua nova palavra-passe",
+      "newPasswordLabel": "Nova palavra-passe",
+      "passwordPlaceholder": "8+ caracteres (maiúsculas/minúsculas, número, especial)",
+      "resetting": "A redefinir...",
+      "submit": "Redefinir palavra-passe"
+    },
     "sendResetLink": "Enviar link de redefinição",
     "backToLogin": "Voltar para login",
     "loginError": "Falha ao entrar",
@@ -131,7 +156,13 @@
       "noRecoveryCodes": "⚠️ Nenhum código de recuperação gerado",
       "generateCodes": "Gerar códigos de recuperação",
       "generateCodesFailed": "Falha ao gerar códigos de recuperação",
-      "generateCodesRequirement": "※Registe pelo menos uma passkey antes de gerar"
+      "generateCodesRequirement": "※Registe pelo menos uma passkey antes de gerar",
+      "enablePasskeyOnlyMode": "Ativar modo só com chave de acesso",
+      "passkeyOnlyMode": "Login só com chave de acesso",
+      "passkeyOnlyModeDesc": "Desativa o login com palavra-passe e inicia sessão só com chaves de acesso. Melhora significativamente a segurança.",
+      "passkeyOnlyModeRequirement": "* Registe pelo menos uma chave de acesso antes de ativar",
+      "recoveryNote": "* Se perder a chave de acesso, pode recuperar com códigos de recuperação ou por email",
+      "setOnlyModeFailed": "Falha ao definir modo só com chave de acesso"
     },
     "verification": {
       "title": "Verificação de e-mail",
@@ -202,6 +233,37 @@
       "dialogTitle": "Configurações de autenticação de dois fatores",
       "dialogDescription": "Melhore a segurança do login com senha.",
       "trustDevice": "Confiar neste dispositivo (30 dias)"
+    },
+    "emailOrLoginIdPlaceholder": "Email ou ID de início de sessão",
+    "forgotPasswordHint": "Enviar um link de redefinição para o seu email registado",
+    "passkeyOnlyModeNotice": "Esta conta só pode ser acedida com uma chave de acesso.",
+    "passkeyOnlyRecoveryHint": "Se não conseguir usar a chave de acesso, utilize o separador \"Recuperação\".",
+    "recoveryCodeHint": "Iniciar sessão com um código de recuperação que guardou anteriormente",
+    "recoveryCodeLogin": "Iniciar sessão com código de recuperação",
+    "recoveryEmailHint": "Introduza o email da conta que pretende recuperar",
+    "recoveryTab": "Recuperação",
+    "recoveryCode": {
+      "title": "Iniciar sessão com código de recuperação",
+      "description1": "Se perder a sua chave de acesso, pode iniciar sessão com um código de recuperação.",
+      "description2": "Cada código só pode ser utilizado uma vez.",
+      "emailRequired": "Introduza o seu endereço de email",
+      "codeRequired": "Introduza um código de recuperação",
+      "verifyFailed": "Falha ao verificar o código de recuperação",
+      "codeLabel": "Código de recuperação",
+      "codeFormat": "Formato: XXXX-XXXX-XXXX (12 caracteres alfanuméricos em maiúsculas)",
+      "registerNewPasskeyWarning": "⚠️ Registe uma nova chave de acesso após iniciar sessão"
+    },
+    "emailExample": "ex. user@example.com",
+    "recoveryCodesDisplay": {
+      "title": "Guarde os seus códigos de recuperação",
+      "description1": "Se perder a chave de acesso, pode recuperar a sua conta com estes códigos.",
+      "description2": "Cada código só pode ser utilizado uma vez. Guarde-os num local seguro.",
+      "warning": "⚠️ Importante: Estes códigos não serão mostrados novamente. Certifique-se de os guardar.",
+      "downloadPdf": "Descarregar PDF",
+      "print": "Imprimir",
+      "copy": "Copiar",
+      "copied": "Copiado",
+      "saved": "Guardei os códigos"
     }
   },
   "home": {

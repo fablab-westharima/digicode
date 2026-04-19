@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { jsPDF } from 'jspdf';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
@@ -11,6 +12,7 @@ interface RecoveryCodesDisplayProps {
 }
 
 export function RecoveryCodesDisplay({ open, onOpenChange, codes }: RecoveryCodesDisplayProps) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -122,17 +124,17 @@ export function RecoveryCodesDisplay({ open, onOpenChange, codes }: RecoveryCode
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>リカバリーコードを保存してください</DialogTitle>
+          <DialogTitle>{t('auth.recoveryCodesDisplay.title', { defaultValue: 'リカバリーコードを保存してください' })}</DialogTitle>
           <DialogDescription>
-            パスキーを紛失した場合、これらのコードを使用してアカウントを復旧できます。
+            {t('auth.recoveryCodesDisplay.description1', { defaultValue: 'パスキーを紛失した場合、これらのコードを使用してアカウントを復旧できます。' })}
             <br />
-            各コードは1回のみ使用可能です。安全な場所に保管してください。
+            {t('auth.recoveryCodesDisplay.description2', { defaultValue: '各コードは1回のみ使用可能です。安全な場所に保管してください。' })}
           </DialogDescription>
         </DialogHeader>
 
         <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 mb-4">
           <p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium">
-            ⚠️ 重要: このコードは二度と表示されません。必ず保存してください。
+            {t('auth.recoveryCodesDisplay.warning', { defaultValue: '⚠️ 重要: このコードは二度と表示されません。必ず保存してください。' })}
           </p>
         </div>
 
@@ -155,7 +157,7 @@ export function RecoveryCodesDisplay({ open, onOpenChange, codes }: RecoveryCode
               className="flex items-center gap-2"
             >
               <Download className="h-4 w-4" />
-              PDFダウンロード
+              {t('auth.recoveryCodesDisplay.downloadPdf', { defaultValue: 'PDFダウンロード' })}
             </Button>
             <Button
               variant="outline"
@@ -163,7 +165,7 @@ export function RecoveryCodesDisplay({ open, onOpenChange, codes }: RecoveryCode
               className="flex items-center gap-2"
             >
               <Printer className="h-4 w-4" />
-              印刷
+              {t('auth.recoveryCodesDisplay.print', { defaultValue: '印刷' })}
             </Button>
             <Button
               variant="outline"
@@ -173,12 +175,12 @@ export function RecoveryCodesDisplay({ open, onOpenChange, codes }: RecoveryCode
               {copied ? (
                 <>
                   <Check className="h-4 w-4" />
-                  コピー済み
+                  {t('auth.recoveryCodesDisplay.copied', { defaultValue: 'コピー済み' })}
                 </>
               ) : (
                 <>
                   <Copy className="h-4 w-4" />
-                  コピー
+                  {t('auth.recoveryCodesDisplay.copy', { defaultValue: 'コピー' })}
                 </>
               )}
             </Button>
@@ -188,7 +190,7 @@ export function RecoveryCodesDisplay({ open, onOpenChange, codes }: RecoveryCode
             onClick={() => onOpenChange(false)}
             className="w-full mt-2"
           >
-            保存しました
+            {t('auth.recoveryCodesDisplay.saved', { defaultValue: '保存しました' })}
           </Button>
         </div>
       </DialogContent>

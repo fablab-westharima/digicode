@@ -80,7 +80,7 @@ export function PasskeyManagementDialog({
       setError(
         error instanceof Error
           ? error.message
-          : t('auth.passkey.loadFailed', 'パスキー一覧の取得に失敗しました')
+          : t('auth.passkey.loadFailed', { defaultValue: 'パスキー一覧の取得に失敗しました' })
       );
     } finally {
       setIsLoading(false);
@@ -105,7 +105,7 @@ export function PasskeyManagementDialog({
       setError(
         error instanceof Error
           ? error.message
-          : t('auth.passkey.deleteFailed', 'パスキーの削除に失敗しました')
+          : t('auth.passkey.deleteFailed', { defaultValue: 'パスキーの削除に失敗しました' })
       );
     } finally {
       setIsDeleting(false);
@@ -136,7 +136,7 @@ export function PasskeyManagementDialog({
       setError(
         error instanceof Error
           ? error.message
-          : t('auth.passkey.setOnlyModeFailed', 'パスキーのみモードの設定に失敗しました')
+          : t('auth.passkey.setOnlyModeFailed', { defaultValue: 'パスキーのみモードの設定に失敗しました' })
       );
     } finally {
       setIsTogglingMode(false);
@@ -189,7 +189,7 @@ export function PasskeyManagementDialog({
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) {
-      return t('auth.passkey.neverUsed', '未使用');
+      return t('auth.passkey.neverUsed', { defaultValue: '未使用' });
     }
     return new Date(dateString).toLocaleString('ja-JP', {
       year: 'numeric',
@@ -207,15 +207,12 @@ export function PasskeyManagementDialog({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Fingerprint className="h-5 w-5" />
-              {t('auth.passkey.managePasskeys', 'パスキー管理')}
+              {t('auth.passkey.managePasskeys', { defaultValue: 'パスキー管理' })}
             </DialogTitle>
             <DialogDescription>
               {supported
-                ? t(
-                    'auth.passkey.manageDesc',
-                    '登録済みのパスキーを管理します。不要なパスキーは削除できます。'
-                  )
-                : t('auth.passkey.notSupported', 'お使いのブラウザはパスキーをサポートしていません')}
+                ? t('auth.passkey.manageDesc', { defaultValue: '登録済みのパスキーを管理します。不要なパスキーは削除できます。' })
+                : t('auth.passkey.notSupported', { defaultValue: 'お使いのブラウザはパスキーをサポートしていません' })}
             </DialogDescription>
           </DialogHeader>
 
@@ -234,13 +231,10 @@ export function PasskeyManagementDialog({
                     <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
                       <p className="font-medium text-red-800 dark:text-red-200">
-                        {t('auth.passkey.deleteConfirmTitle', 'パスキーを削除しますか？')}
+                        {t('auth.passkey.deleteConfirmTitle', { defaultValue: 'パスキーを削除しますか？' })}
                       </p>
                       <p className="text-sm text-red-600 dark:text-red-400 mt-1">
-                        {t(
-                          'auth.passkey.deleteConfirmDesc',
-                          'このパスキーを削除すると、このデバイスではパスキーでログインできなくなります。'
-                        )}
+                        {t('auth.passkey.deleteConfirmDesc', { defaultValue: 'このパスキーを削除すると、このデバイスではパスキーでログインできなくなります。' })}
                       </p>
                       <div className="flex gap-2 mt-3">
                         <Button
@@ -249,7 +243,7 @@ export function PasskeyManagementDialog({
                           onClick={() => setDeleteConfirm(null)}
                           disabled={isDeleting}
                         >
-                          {t('common.cancel', 'キャンセル')}
+                          {t('common.cancel', { defaultValue: 'キャンセル' })}
                         </Button>
                         <Button
                           variant="destructive"
@@ -258,7 +252,7 @@ export function PasskeyManagementDialog({
                           disabled={isDeleting}
                         >
                           {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                          {t('common.delete', '削除')}
+                          {t('common.delete', { defaultValue: '削除' })}
                         </Button>
                       </div>
                     </div>
@@ -273,7 +267,7 @@ export function PasskeyManagementDialog({
               ) : passkeys.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Fingerprint className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p>{t('auth.passkey.noPasskeys', 'パスキーが登録されていません')}</p>
+                  <p>{t('auth.passkey.noPasskeys', { defaultValue: 'パスキーが登録されていません' })}</p>
                 </div>
               ) : (
                 <div className="space-y-2 max-h-[400px] overflow-y-auto">
@@ -286,15 +280,15 @@ export function PasskeyManagementDialog({
                     >
                       <div className="flex-1">
                         <div className="font-medium">
-                          {passkey.deviceName || t('auth.passkey.unnamedDevice', '名前なし')}
+                          {passkey.deviceName || t('auth.passkey.unnamedDevice', { defaultValue: '名前なし' })}
                         </div>
                         <div className="text-xs text-muted-foreground space-y-1 mt-1">
                           <div>
-                            {t('auth.passkey.createdAt', '登録日時')}:{' '}
+                            {t('auth.passkey.createdAt', { defaultValue: '登録日時' })}:{' '}
                             {formatDate(passkey.createdAt)}
                           </div>
                           <div>
-                            {t('auth.passkey.lastUsedAt', '最終使用日時')}:{' '}
+                            {t('auth.passkey.lastUsedAt', { defaultValue: '最終使用日時' })}:{' '}
                             {formatDate(passkey.lastUsedAt)}
                           </div>
                         </div>
@@ -318,7 +312,7 @@ export function PasskeyManagementDialog({
                 disabled={isLoading}
               >
                 <Plus className="mr-2 h-4 w-4" />
-                {t('auth.passkey.registerNewPasskey', '新しいパスキーを登録')}
+                {t('auth.passkey.registerNewPasskey', { defaultValue: '新しいパスキーを登録' })}
               </Button>
 
               {/* パスキーのみモード設定 */}
@@ -327,10 +321,10 @@ export function PasskeyManagementDialog({
                   <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <h4 className="font-medium text-blue-900 dark:text-blue-100">
-                      {t('auth.passkey.passkeyOnlyMode', 'パスキーのみでログイン')}
+                      {t('auth.passkey.passkeyOnlyMode', { defaultValue: 'パスキーのみでログイン' })}
                     </h4>
                     <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                      {t('auth.passkey.passkeyOnlyModeDesc', 'パスワードログインを無効化し、パスキーのみでログインします。セキュリティが大幅に向上します。')}
+                      {t('auth.passkey.passkeyOnlyModeDesc', { defaultValue: 'パスワードログインを無効化し、パスキーのみでログインします。セキュリティが大幅に向上します。' })}
                     </p>
                     <div className="mt-3">
                       <label className="flex items-center gap-2 cursor-pointer">
@@ -342,16 +336,16 @@ export function PasskeyManagementDialog({
                           className="w-4 h-4 cursor-pointer"
                         />
                         <span className="text-sm font-medium">
-                          {t('auth.passkey.enablePasskeyOnlyMode', 'パスキーのみモードを有効化')}
+                          {t('auth.passkey.enablePasskeyOnlyMode', { defaultValue: 'パスキーのみモードを有効化' })}
                         </span>
                       </label>
                       {passkeys.length === 0 && (
                         <p className="text-xs text-red-600 mt-2">
-                          {t('auth.passkey.passkeyOnlyModeRequirement', '※パスキーを最低1つ登録してから有効化してください')}
+                          {t('auth.passkey.passkeyOnlyModeRequirement', { defaultValue: '※パスキーを最低1つ登録してから有効化してください' })}
                         </p>
                       )}
                       <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
-                        {t('auth.passkey.recoveryNote', '※パスキーを失った場合は、リカバリーコードまたはメールで復旧できます')}
+                        {t('auth.passkey.recoveryNote', { defaultValue: '※パスキーを失った場合は、リカバリーコードまたはメールで復旧できます' })}
                       </p>
                     </div>
                   </div>
@@ -420,7 +414,7 @@ export function PasskeyManagementDialog({
           {!supported && (
             <div className="flex justify-end">
               <Button onClick={() => onOpenChange(false)}>
-                {t('common.close', '閉じる')}
+                {t('common.close', { defaultValue: '閉じる' })}
               </Button>
             </div>
           )}

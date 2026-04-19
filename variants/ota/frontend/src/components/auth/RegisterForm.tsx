@@ -47,7 +47,7 @@ export function RegisterForm({ onSubmit, onSwitchToLogin, isLoading, error }: Re
     setValidationError(null);
 
     if (!allRequirementsMet) {
-      setValidationError(t('auth.passwordRequirementsNotMet', 'パスワードが要件を満たしていません'));
+      setValidationError(t('auth.passwordRequirementsNotMet', { defaultValue: 'パスワードが要件を満たしていません' }));
       return;
     }
 
@@ -93,32 +93,32 @@ export function RegisterForm({ onSubmit, onSwitchToLogin, isLoading, error }: Re
         {showRequirements && (
           <div className="bg-[#0D1117] border border-[#2E333D] rounded-md p-3 space-y-1.5 text-xs">
             <div className="text-[#8B949E] font-medium mb-2">
-              {t('auth.passwordRequirements', 'パスワードの要件:')}
+              {t('auth.passwordRequirements', { defaultValue: 'パスワードの要件:' })}
             </div>
 
             <div className={`flex items-center gap-2 ${requirements.minLength ? 'text-green-500' : 'text-[#8B949E]'}`}>
               {requirements.minLength ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
-              <span>{t('auth.req.minLength', '8文字以上')}</span>
+              <span>{t('auth.req.minLength', { defaultValue: '8文字以上' })}</span>
             </div>
 
             <div className={`flex items-center gap-2 ${requirements.hasLowercase ? 'text-green-500' : 'text-[#8B949E]'}`}>
               {requirements.hasLowercase ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
-              <span>{t('auth.req.lowercase', '小文字 (a-z) を含む')}</span>
+              <span>{t('auth.req.lowercase', { defaultValue: '小文字 (a-z) を含む' })}</span>
             </div>
 
             <div className={`flex items-center gap-2 ${requirements.hasUppercase ? 'text-green-500' : 'text-[#8B949E]'}`}>
               {requirements.hasUppercase ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
-              <span>{t('auth.req.uppercase', '大文字 (A-Z) を含む')}</span>
+              <span>{t('auth.req.uppercase', { defaultValue: '大文字 (A-Z) を含む' })}</span>
             </div>
 
             <div className={`flex items-center gap-2 ${requirements.hasNumber ? 'text-green-500' : 'text-[#8B949E]'}`}>
               {requirements.hasNumber ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
-              <span>{t('auth.req.number', '数字 (0-9) を含む')}</span>
+              <span>{t('auth.req.number', { defaultValue: '数字 (0-9) を含む' })}</span>
             </div>
 
             <div className={`flex items-center gap-2 ${requirements.hasSpecialChar ? 'text-green-500' : 'text-[#8B949E]'}`}>
               {requirements.hasSpecialChar ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
-              <span>{t('auth.req.special', '特殊文字 (!@#$%^&* など) を含む')}</span>
+              <span>{t('auth.req.special', { defaultValue: '特殊文字 (!@#$%^&* など) を含む' })}</span>
             </div>
           </div>
         )}

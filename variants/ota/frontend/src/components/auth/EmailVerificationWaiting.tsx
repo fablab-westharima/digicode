@@ -28,7 +28,7 @@ export function EmailVerificationWaiting({ email, onBackToLogin }: EmailVerifica
       setError(
         error instanceof Error
           ? error.message
-          : t('auth.verification.resendFailed', '確認メールの再送信に失敗しました')
+          : t('auth.verification.resendFailed', { defaultValue: '確認メールの再送信に失敗しました' })
       );
     } finally {
       setIsResending(false);
@@ -43,23 +43,23 @@ export function EmailVerificationWaiting({ email, onBackToLogin }: EmailVerifica
             <Mail className="h-6 w-6 text-green-600" />
           </div>
           <CardTitle className="text-2xl text-[#E6EDF3]">
-            {t('auth.verification.title', 'メールアドレスの確認')}
+            {t('auth.verification.title', { defaultValue: 'メールアドレスの確認' })}
           </CardTitle>
           <CardDescription className="text-[#8B949E]">
-            {t('auth.verification.description', '確認メールを送信しました')}
+            {t('auth.verification.description', { defaultValue: '確認メールを送信しました' })}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="rounded-lg bg-[#0D1117] p-4 space-y-2">
             <p className="text-sm text-[#E6EDF3]">
-              {t('auth.verification.emailSentTo', '以下のメールアドレスに確認メールを送信しました：')}
+              {t('auth.verification.emailSentTo', { defaultValue: '以下のメールアドレスに確認メールを送信しました：' })}
             </p>
             <p className="text-sm font-medium text-green-500">{email}</p>
           </div>
 
           <div className="space-y-2 text-sm text-[#8B949E]">
-            <p>{t('auth.verification.instruction1', 'メール内のリンクをクリックして、アカウントを有効化してください。')}</p>
-            <p>{t('auth.verification.instruction2', 'メールが届かない場合は、迷惑メールフォルダをご確認ください。')}</p>
+            <p>{t('auth.verification.instruction1', { defaultValue: 'メール内のリンクをクリックして、アカウントを有効化してください。' })}</p>
+            <p>{t('auth.verification.instruction2', { defaultValue: 'メールが届かない場合は、迷惑メールフォルダをご確認ください。' })}</p>
           </div>
 
           {error && (
@@ -71,7 +71,7 @@ export function EmailVerificationWaiting({ email, onBackToLogin }: EmailVerifica
           {resendSuccess && (
             <div className="text-sm text-green-600 bg-green-50 p-3 rounded-md flex items-center gap-2">
               <CheckCircle className="h-4 w-4" />
-              {t('auth.verification.resendSuccess', '確認メールを再送信しました')}
+              {t('auth.verification.resendSuccess', { defaultValue: '確認メールを再送信しました' })}
             </div>
           )}
 
@@ -83,7 +83,7 @@ export function EmailVerificationWaiting({ email, onBackToLogin }: EmailVerifica
               disabled={isResending || resendSuccess}
             >
               {isResending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('auth.verification.resend', '確認メールを再送信')}
+              {t('auth.verification.resend', { defaultValue: '確認メールを再送信' })}
             </Button>
 
             <Button
@@ -91,7 +91,7 @@ export function EmailVerificationWaiting({ email, onBackToLogin }: EmailVerifica
               className="w-full"
               onClick={onBackToLogin}
             >
-              {t('auth.backToLogin', 'ログインに戻る')}
+              {t('auth.backToLogin', { defaultValue: 'ログインに戻る' })}
             </Button>
           </div>
         </CardContent>

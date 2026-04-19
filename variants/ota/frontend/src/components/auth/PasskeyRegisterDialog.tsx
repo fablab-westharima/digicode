@@ -43,7 +43,7 @@ export function PasskeyRegisterDialog({
       setDeviceName('');
       onSuccess?.();
     } catch (error) {
-      setError(error instanceof Error ? error.message : t('auth.passkey.registerFailed', 'パスキーの登録に失敗しました'));
+      setError(error instanceof Error ? error.message : t('auth.passkey.registerFailed', { defaultValue: 'パスキーの登録に失敗しました' }));
     } finally {
       setIsLoading(false);
     }
@@ -63,15 +63,12 @@ export function PasskeyRegisterDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Fingerprint className="h-5 w-5" />
-            {t('auth.passkey.registerPasskey', 'パスキーを登録')}
+            {t('auth.passkey.registerPasskey', { defaultValue: 'パスキーを登録' })}
           </DialogTitle>
           <DialogDescription>
             {supported
-              ? t(
-                  'auth.passkey.registerDesc',
-                  'このデバイスにパスキーを登録すると、次回からパスワードなしでログインできます。'
-                )
-              : t('auth.passkey.notSupported', 'お使いのブラウザはパスキーをサポートしていません')}
+              ? t('auth.passkey.registerDesc', { defaultValue: 'このデバイスにパスキーを登録すると、次回からパスワードなしでログインできます。' })
+              : t('auth.passkey.notSupported', { defaultValue: 'お使いのブラウザはパスキーをサポートしていません' })}
           </DialogDescription>
         </DialogHeader>
 
@@ -80,14 +77,14 @@ export function PasskeyRegisterDialog({
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label htmlFor="device-name">
-                  {t('auth.passkey.deviceName', 'デバイス名')}
+                  {t('auth.passkey.deviceName', { defaultValue: 'デバイス名' })}
                   <span className="text-muted-foreground ml-1">
-                    ({t('common.optional', '省略可')})
+                    ({t('common.optional', { defaultValue: '省略可' })})
                   </span>
                 </Label>
                 <Input
                   id="device-name"
-                  placeholder={t('auth.passkey.deviceNamePlaceholder', '例: MacBook Pro')}
+                  placeholder={t('auth.passkey.deviceNamePlaceholder', { defaultValue: '例: MacBook Pro' })}
                   value={deviceName}
                   onChange={(e) => setDeviceName(e.target.value)}
                   disabled={isLoading}
@@ -104,13 +101,13 @@ export function PasskeyRegisterDialog({
 
             <DialogFooter>
               <Button variant="outline" onClick={handleClose} disabled={isLoading}>
-                {t('common.cancel', 'キャンセル')}
+                {t('common.cancel', { defaultValue: 'キャンセル' })}
               </Button>
               <Button onClick={handleRegister} disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLoading
-                  ? t('auth.passkey.registeringPasskey', 'パスキーを登録中...')
-                  : t('auth.passkey.registerPasskey', 'パスキーを登録')}
+                  ? t('auth.passkey.registeringPasskey', { defaultValue: 'パスキーを登録中...' })
+                  : t('auth.passkey.registerPasskey', { defaultValue: 'パスキーを登録' })}
               </Button>
             </DialogFooter>
           </>
@@ -118,7 +115,7 @@ export function PasskeyRegisterDialog({
 
         {!supported && (
           <DialogFooter>
-            <Button onClick={handleClose}>{t('common.close', '閉じる')}</Button>
+            <Button onClick={handleClose}>{t('common.close', { defaultValue: '閉じる' })}</Button>
           </DialogFooter>
         )}
       </DialogContent>

@@ -15,7 +15,8 @@
     "goToHome": "Go to Home",
     "back": "Back",
     "saving": "Saving...",
-    "add": "Add"
+    "add": "Add",
+    "login": "Sign In"
   },
   "status": {
     "ready": "Ready",
@@ -60,9 +61,33 @@
     "confirmPassword": "Confirm Password",
     "confirmPasswordPlaceholder": "Re-enter password",
     "minChars": "8+ characters",
-    "forgotPassword": "Forgot Password?",
+    "forgotPassword": {
+      "description": "Enter your email address. We will send you a password reset link.",
+      "emailSentTo": "A reset link has been sent to:",
+      "instruction1": "Click the link in the email to reset your password.",
+      "instruction2": "The link expires in 1 hour.",
+      "requestFailed": "Failed to request password reset",
+      "requestSuccessDesc": "A password reset link has been sent by email",
+      "requestSuccessTitle": "Password reset email sent",
+      "sendLink": "Send Reset Link",
+      "title": "Password Reset"
+    },
     "forgotPasswordDesc": "We'll send a reset link to your registered email",
-    "resetPassword": "Reset Password",
+    "resetPassword": {
+      "invalidToken": "Invalid reset link. Please access again from the link in your email.",
+      "tokenMissing": "Token not found",
+      "failed": "Failed to reset password",
+      "networkError": "A network error occurred",
+      "completeTitle": "Password Reset Complete",
+      "completeDesc": "Your password has been changed successfully",
+      "loginPrompt": "Please sign in with your new password.",
+      "goToLogin": "Go to Login",
+      "description": "Enter your new password",
+      "newPasswordLabel": "New Password",
+      "passwordPlaceholder": "8+ characters (with upper/lowercase, number, special)",
+      "resetting": "Resetting...",
+      "submit": "Reset Password"
+    },
     "sendResetLink": "Send Reset Link",
     "backToLogin": "Back to Login",
     "loginError": "Login failed",
@@ -120,7 +145,13 @@
       "noRecoveryCodes": "⚠️ No recovery codes generated",
       "generateCodes": "Generate recovery codes",
       "generateCodesFailed": "Failed to generate recovery codes",
-      "generateCodesRequirement": "※Register at least one passkey before generating"
+      "generateCodesRequirement": "※Register at least one passkey before generating",
+      "enablePasskeyOnlyMode": "Enable Passkey-Only Mode",
+      "passkeyOnlyMode": "Passkey-Only Login",
+      "passkeyOnlyModeDesc": "Disable password login and sign in with passkeys only. This significantly improves security.",
+      "passkeyOnlyModeRequirement": "* Register at least one passkey before enabling",
+      "recoveryNote": "* If you lose your passkey, you can recover with recovery codes or by email",
+      "setOnlyModeFailed": "Failed to set passkey-only mode"
     },
     "passwordRequirementsNotMet": "Password does not meet requirements",
     "req": {
@@ -202,6 +233,37 @@
       "dialogTitle": "Two-Factor Authentication Settings",
       "dialogDescription": "Enhance security for password login.",
       "trustDevice": "Trust this device (30 days)"
+    },
+    "emailOrLoginIdPlaceholder": "Email or Login ID",
+    "forgotPasswordHint": "Send a reset link to your registered email address",
+    "passkeyOnlyModeNotice": "This account can only be accessed with a passkey.",
+    "passkeyOnlyRecoveryHint": "If you cannot use your passkey, please use the \"Recovery\" tab.",
+    "recoveryCodeHint": "Sign in using a recovery code you saved earlier",
+    "recoveryCodeLogin": "Sign in with Recovery Code",
+    "recoveryEmailHint": "Enter the email address of the account to recover",
+    "recoveryTab": "Recovery",
+    "recoveryCode": {
+      "title": "Sign in with Recovery Code",
+      "description1": "If you lose your passkey, you can sign in using a recovery code.",
+      "description2": "Each code can be used only once.",
+      "emailRequired": "Please enter your email address",
+      "codeRequired": "Please enter a recovery code",
+      "verifyFailed": "Failed to verify recovery code",
+      "codeLabel": "Recovery Code",
+      "codeFormat": "Format: XXXX-XXXX-XXXX (12 uppercase alphanumeric characters)",
+      "registerNewPasskeyWarning": "⚠️ Please register a new passkey after signing in"
+    },
+    "emailExample": "e.g. user@example.com",
+    "recoveryCodesDisplay": {
+      "title": "Please Save Your Recovery Codes",
+      "description1": "If you lose your passkey, you can recover your account with these codes.",
+      "description2": "Each code can be used only once. Store them in a safe place.",
+      "warning": "⚠️ Important: These codes will never be shown again. Make sure to save them.",
+      "downloadPdf": "Download PDF",
+      "print": "Print",
+      "copy": "Copy",
+      "copied": "Copied",
+      "saved": "I Have Saved Them"
     }
   },
   "home": {

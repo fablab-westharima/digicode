@@ -52,7 +52,7 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
         window.location.href = '/';
       }
     } catch (err) {
-      setLoginError(err instanceof Error ? err.message : t('auth.loginError', 'ログインに失敗しました'));
+      setLoginError(err instanceof Error ? err.message : t('auth.loginError', { defaultValue: 'ログインに失敗しました' }));
     } finally {
       setIsSubmitting(false);
     }
@@ -113,7 +113,7 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
           <Input
             id="email"
             type="text"
-            placeholder={t('auth.emailOrLoginIdPlaceholder', 'メールアドレスまたはログインID')}
+            placeholder={t('auth.emailOrLoginIdPlaceholder', { defaultValue: 'メールアドレスまたはログインID' })}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -139,10 +139,10 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
         {passkeyOnlyMode && (
           <div className="p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
             <p className="text-sm text-blue-800 dark:text-blue-200">
-              {t('auth.passkeyOnlyModeNotice', 'このアカウントはパスキーのみでログイン可能です。')}
+              {t('auth.passkeyOnlyModeNotice', { defaultValue: 'このアカウントはパスキーのみでログイン可能です。' })}
             </p>
             <p className="text-xs text-blue-600 dark:text-blue-300 mt-2">
-              {t('auth.passkeyOnlyRecoveryHint', 'パスキーが使えない場合は「復旧」タブをご利用ください。')}
+              {t('auth.passkeyOnlyRecoveryHint', { defaultValue: 'パスキーが使えない場合は「復旧」タブをご利用ください。' })}
             </p>
           </div>
         )}

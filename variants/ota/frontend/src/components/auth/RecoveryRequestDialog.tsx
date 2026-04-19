@@ -31,7 +31,7 @@ export function RecoveryRequestDialog({
 
   const handleRequest = async () => {
     if (!email.trim()) {
-      setError(t('auth.emailRequired', 'メールアドレスを入力してください'));
+      setError(t('auth.emailRequired', { defaultValue: 'メールアドレスを入力してください' }));
       return;
     }
 
@@ -45,7 +45,7 @@ export function RecoveryRequestDialog({
       setError(
         error instanceof Error
           ? error.message
-          : t('auth.recovery.requestFailed', 'リカバリー申請に失敗しました')
+          : t('auth.recovery.requestFailed', { defaultValue: 'リカバリー申請に失敗しました' })
       );
     } finally {
       setIsLoading(false);
@@ -70,33 +70,30 @@ export function RecoveryRequestDialog({
               <CheckCircle className="h-6 w-6 text-green-600" />
             </div>
             <DialogTitle className="text-center">
-              {t('auth.recovery.requestSuccessTitle', 'リカバリーメール送信完了')}
+              {t('auth.recovery.requestSuccessTitle', { defaultValue: 'リカバリーメール送信完了' })}
             </DialogTitle>
             <DialogDescription className="text-center">
-              {t(
-                'auth.recovery.requestSuccessDesc',
-                'リカバリー用のリンクをメールで送信しました'
-              )}
+              {t('auth.recovery.requestSuccessDesc', { defaultValue: 'リカバリー用のリンクをメールで送信しました' })}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="rounded-lg bg-muted p-4 space-y-2">
               <p className="text-sm">
-                {t('auth.recovery.emailSentTo', '以下のメールアドレスにリカバリーリンクを送信しました：')}
+                {t('auth.recovery.emailSentTo', { defaultValue: '以下のメールアドレスにリカバリーリンクを送信しました：' })}
               </p>
               <p className="text-sm font-medium text-green-600">{email}</p>
             </div>
 
             <div className="space-y-2 text-sm text-muted-foreground">
-              <p>{t('auth.recovery.instruction1', 'メール内のリンクをクリックしてアカウントを復旧してください。')}</p>
-              <p>{t('auth.recovery.instruction2', 'リンクの有効期限は1時間です。')}</p>
+              <p>{t('auth.recovery.instruction1', { defaultValue: 'メール内のリンクをクリックしてアカウントを復旧してください。' })}</p>
+              <p>{t('auth.recovery.instruction2', { defaultValue: 'リンクの有効期限は1時間です。' })}</p>
             </div>
           </div>
 
           <DialogFooter>
             <Button onClick={handleClose} className="w-full">
-              {t('common.close', '閉じる')}
+              {t('common.close', { defaultValue: '閉じる' })}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -110,13 +107,10 @@ export function RecoveryRequestDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <KeyRound className="h-5 w-5" />
-            {t('auth.recovery.requestTitle', 'アカウントリカバリー')}
+            {t('auth.recovery.requestTitle', { defaultValue: 'アカウントリカバリー' })}
           </DialogTitle>
           <DialogDescription>
-            {t(
-              'auth.recovery.requestDesc',
-              'パスキーにアクセスできない場合、メールアドレスでアカウントを復旧できます'
-            )}
+            {t('auth.recovery.requestDesc', { defaultValue: 'パスキーにアクセスできない場合、メールアドレスでアカウントを復旧できます' })}
           </DialogDescription>
         </DialogHeader>
 
@@ -143,13 +137,13 @@ export function RecoveryRequestDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={handleClose} disabled={isLoading}>
-            {t('common.cancel', 'キャンセル')}
+            {t('common.cancel', { defaultValue: 'キャンセル' })}
           </Button>
           <Button onClick={handleRequest} disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isLoading
-              ? t('auth.sending', '送信中...')
-              : t('auth.recovery.sendLink', 'リカバリーリンクを送信')}
+              ? t('auth.sending', { defaultValue: '送信中...' })
+              : t('auth.recovery.sendLink', { defaultValue: 'リカバリーリンクを送信' })}
           </Button>
         </DialogFooter>
       </DialogContent>

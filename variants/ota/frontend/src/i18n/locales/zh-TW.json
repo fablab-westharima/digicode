@@ -15,7 +15,8 @@
     "goToHome": "返回首頁",
     "back": "返回",
     "saving": "儲存中...",
-    "add": "新增"
+    "add": "新增",
+    "login": "登入"
   },
   "status": {
     "ready": "就緒",
@@ -60,9 +61,33 @@
     "confirmPassword": "確認密碼",
     "confirmPasswordPlaceholder": "重新輸入密碼",
     "minChars": "8個或以上字符",
-    "forgotPassword": "忘記密碼？",
+    "forgotPassword": {
+      "description": "請輸入您的電子郵件地址,我們將發送密碼重設連結。",
+      "emailSentTo": "重設連結已發送至:",
+      "instruction1": "請點擊郵件中的連結來重設密碼。",
+      "instruction2": "連結有效期為1小時。",
+      "requestFailed": "密碼重設申請失敗",
+      "requestSuccessDesc": "密碼重設連結已通過電子郵件發送",
+      "requestSuccessTitle": "密碼重設郵件已發送",
+      "sendLink": "發送重設連結",
+      "title": "密碼重設"
+    },
     "forgotPasswordDesc": "我們將向您的已註冊電子郵件發送重置鏈接",
-    "resetPassword": "重置密碼",
+    "resetPassword": {
+      "invalidToken": "無效的重設連結。請從郵件中的連結重新存取。",
+      "tokenMissing": "找不到權杖",
+      "failed": "密碼重設失敗",
+      "networkError": "發生網路錯誤",
+      "completeTitle": "密碼重設完成",
+      "completeDesc": "密碼已成功變更",
+      "loginPrompt": "請使用新密碼登入。",
+      "goToLogin": "前往登入頁面",
+      "description": "請輸入新密碼",
+      "newPasswordLabel": "新密碼",
+      "passwordPlaceholder": "8個以上字元（包含大小寫、數字、特殊字元）",
+      "resetting": "重設中...",
+      "submit": "重設密碼"
+    },
     "sendResetLink": "發送重置鏈接",
     "backToLogin": "返回登入",
     "loginError": "登入失敗",
@@ -131,7 +156,13 @@
       "noRecoveryCodes": "⚠️ 尚未生成恢復碼",
       "generateCodes": "生成恢復碼",
       "generateCodesFailed": "生成恢復碼失敗",
-      "generateCodesRequirement": "※請先註冊至少一個密鑰再生成"
+      "generateCodesRequirement": "※請先註冊至少一個密鑰再生成",
+      "enablePasskeyOnlyMode": "啟用僅通行金鑰模式",
+      "passkeyOnlyMode": "僅使用通行金鑰登入",
+      "passkeyOnlyModeDesc": "停用密碼登入,僅使用通行金鑰登入。可大幅提升安全性。",
+      "passkeyOnlyModeRequirement": "※請先註冊至少一個通行金鑰後再啟用",
+      "recoveryNote": "※若遺失通行金鑰,可使用復原代碼或電子郵件復原",
+      "setOnlyModeFailed": "僅通行金鑰模式設定失敗"
     },
     "verification": {
       "title": "電子郵件驗證",
@@ -202,6 +233,37 @@
       "dialogTitle": "兩步驟驗證設定",
       "dialogDescription": "增強密碼登入的安全性。",
       "trustDevice": "信任此裝置（30天）"
+    },
+    "emailOrLoginIdPlaceholder": "電子郵件或登入ID",
+    "forgotPasswordHint": "將重設連結發送至您已註冊的電子郵件",
+    "passkeyOnlyModeNotice": "此帳號僅可使用通行金鑰登入。",
+    "passkeyOnlyRecoveryHint": "若無法使用通行金鑰,請使用「復原」分頁。",
+    "recoveryCodeHint": "使用您事先儲存的復原代碼登入",
+    "recoveryCodeLogin": "使用復原代碼登入",
+    "recoveryEmailHint": "請輸入要復原的帳號電子郵件",
+    "recoveryTab": "復原",
+    "recoveryCode": {
+      "title": "使用復原代碼登入",
+      "description1": "若遺失通行金鑰,可使用復原代碼登入。",
+      "description2": "每組代碼僅可使用一次。",
+      "emailRequired": "請輸入電子郵件地址",
+      "codeRequired": "請輸入復原代碼",
+      "verifyFailed": "復原代碼驗證失敗",
+      "codeLabel": "復原代碼",
+      "codeFormat": "格式: XXXX-XXXX-XXXX（12個大寫英數字元）",
+      "registerNewPasskeyWarning": "⚠️ 登入後請註冊新的通行金鑰"
+    },
+    "emailExample": "例: user@example.com",
+    "recoveryCodesDisplay": {
+      "title": "請妥善保存您的復原代碼",
+      "description1": "若遺失通行金鑰,可使用這些代碼復原帳號。",
+      "description2": "每組代碼僅可使用一次。請保管在安全的地方。",
+      "warning": "⚠️ 重要: 此代碼不會再次顯示。請務必保存。",
+      "downloadPdf": "下載 PDF",
+      "print": "列印",
+      "copy": "複製",
+      "copied": "已複製",
+      "saved": "已儲存"
     }
   },
   "home": {

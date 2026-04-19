@@ -15,7 +15,8 @@
     "goToHome": "Ir al inicio",
     "back": "Atrás",
     "saving": "Guardando...",
-    "add": "Añadir"
+    "add": "Añadir",
+    "login": "Iniciar sesión"
   },
   "status": {
     "ready": "Listo",
@@ -60,9 +61,33 @@
     "confirmPassword": "Confirmar contraseña",
     "confirmPasswordPlaceholder": "Reingrese la contraseña",
     "minChars": "8+ caracteres",
-    "forgotPassword": "¿Olvidó su contraseña?",
+    "forgotPassword": {
+      "description": "Introduce tu dirección de email. Te enviaremos un enlace para restablecer la contraseña.",
+      "emailSentTo": "Se ha enviado un enlace de restablecimiento a:",
+      "instruction1": "Haz clic en el enlace del email para restablecer tu contraseña.",
+      "instruction2": "El enlace caduca en 1 hora.",
+      "requestFailed": "Error al solicitar el restablecimiento de contraseña",
+      "requestSuccessDesc": "Se ha enviado por email un enlace para restablecer la contraseña",
+      "requestSuccessTitle": "Email de restablecimiento enviado",
+      "sendLink": "Enviar enlace de restablecimiento",
+      "title": "Restablecer contraseña"
+    },
     "forgotPasswordDesc": "Enviaremos un enlace de reinicio a su correo electrónico registrado",
-    "resetPassword": "Restablecer contraseña",
+    "resetPassword": {
+      "invalidToken": "Enlace de restablecimiento inválido. Acceda nuevamente desde el enlace en su correo.",
+      "tokenMissing": "Token no encontrado",
+      "failed": "Error al restablecer la contraseña",
+      "networkError": "Se produjo un error de red",
+      "completeTitle": "Restablecimiento de contraseña completo",
+      "completeDesc": "Su contraseña ha sido cambiada correctamente",
+      "loginPrompt": "Inicie sesión con su nueva contraseña.",
+      "goToLogin": "Ir al inicio de sesión",
+      "description": "Introduzca su nueva contraseña",
+      "newPasswordLabel": "Nueva contraseña",
+      "passwordPlaceholder": "8+ caracteres (mayúsculas/minúsculas, número, especial)",
+      "resetting": "Restableciendo...",
+      "submit": "Restablecer contraseña"
+    },
     "sendResetLink": "Enviar enlace de reinicio",
     "backToLogin": "Volver a iniciar sesión",
     "loginError": "Error al iniciar sesión",
@@ -131,7 +156,13 @@
       "noRecoveryCodes": "⚠️ No se han generado códigos de recuperación",
       "generateCodes": "Generar códigos de recuperación",
       "generateCodesFailed": "Error al generar los códigos de recuperación",
-      "generateCodesRequirement": "※Registre al menos un passkey antes de generar"
+      "generateCodesRequirement": "※Registre al menos un passkey antes de generar",
+      "enablePasskeyOnlyMode": "Activar modo solo con llave de acceso",
+      "passkeyOnlyMode": "Inicio solo con llave de acceso",
+      "passkeyOnlyModeDesc": "Desactiva el inicio con contraseña e inicia sesión solo con llaves de acceso. Mejora la seguridad significativamente.",
+      "passkeyOnlyModeRequirement": "* Registra al menos una llave de acceso antes de activar",
+      "recoveryNote": "* Si pierdes tu llave de acceso, puedes recuperar el acceso con códigos de recuperación o por email",
+      "setOnlyModeFailed": "Error al configurar el modo solo con llave de acceso"
     },
     "verification": {
       "title": "Verificación de correo electrónico",
@@ -202,6 +233,37 @@
       "dialogTitle": "Configuración de autenticación de dos factores",
       "dialogDescription": "Mejore la seguridad del inicio de sesión con contraseña.",
       "trustDevice": "Confiar en este dispositivo (30 días)"
+    },
+    "emailOrLoginIdPlaceholder": "Email o ID de inicio de sesión",
+    "forgotPasswordHint": "Enviar un enlace de restablecimiento a tu email registrado",
+    "passkeyOnlyModeNotice": "Esta cuenta solo puede iniciarse con una llave de acceso.",
+    "passkeyOnlyRecoveryHint": "Si no puedes usar tu llave de acceso, utiliza la pestaña \"Recuperación\".",
+    "recoveryCodeHint": "Inicia sesión con un código de recuperación que guardaste previamente",
+    "recoveryCodeLogin": "Iniciar sesión con código de recuperación",
+    "recoveryEmailHint": "Introduce el email de la cuenta que deseas recuperar",
+    "recoveryTab": "Recuperación",
+    "recoveryCode": {
+      "title": "Iniciar sesión con código de recuperación",
+      "description1": "Si pierdes tu llave de acceso, puedes iniciar sesión con un código de recuperación.",
+      "description2": "Cada código solo puede usarse una vez.",
+      "emailRequired": "Introduce tu dirección de email",
+      "codeRequired": "Introduce un código de recuperación",
+      "verifyFailed": "Error al verificar el código de recuperación",
+      "codeLabel": "Código de recuperación",
+      "codeFormat": "Formato: XXXX-XXXX-XXXX (12 caracteres alfanuméricos en mayúsculas)",
+      "registerNewPasskeyWarning": "⚠️ Registra una nueva llave de acceso después de iniciar sesión"
+    },
+    "emailExample": "ej. user@example.com",
+    "recoveryCodesDisplay": {
+      "title": "Guarda tus códigos de recuperación",
+      "description1": "Si pierdes tu llave de acceso, puedes recuperar tu cuenta con estos códigos.",
+      "description2": "Cada código solo puede usarse una vez. Guárdalos en un lugar seguro.",
+      "warning": "⚠️ Importante: Estos códigos no se mostrarán de nuevo. Asegúrate de guardarlos.",
+      "downloadPdf": "Descargar PDF",
+      "print": "Imprimir",
+      "copy": "Copiar",
+      "copied": "Copiado",
+      "saved": "He guardado los códigos"
     }
   },
   "home": {

@@ -95,7 +95,7 @@ export function OtpInputDialog({ open, onOpenChange, email, onSuccess }: OtpInpu
   const handleSubmit = async () => {
     const code = otp.join('');
     if (code.length !== 6) {
-      setError(t('auth.2fa.otpLengthError', '6桁のコードを入力してください'));
+      setError(t('auth.2fa.otpLengthError', { defaultValue: '6桁のコードを入力してください' }));
       return;
     }
 
@@ -117,7 +117,7 @@ export function OtpInputDialog({ open, onOpenChange, email, onSuccess }: OtpInpu
         window.location.href = '/';
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : t('auth.2fa.verifyError', 'OTP検証に失敗しました'));
+      setError(error instanceof Error ? error.message : t('auth.2fa.verifyError', { defaultValue: 'OTP検証に失敗しました' }));
       // エラー時は入力をクリア
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
@@ -138,7 +138,7 @@ export function OtpInputDialog({ open, onOpenChange, email, onSuccess }: OtpInpu
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
     } catch (error) {
-      setError(error instanceof Error ? error.message : t('auth.2fa.resendError', 'OTP再送信に失敗しました'));
+      setError(error instanceof Error ? error.message : t('auth.2fa.resendError', { defaultValue: 'OTP再送信に失敗しました' }));
     } finally {
       setIsResending(false);
     }
@@ -152,10 +152,10 @@ export function OtpInputDialog({ open, onOpenChange, email, onSuccess }: OtpInpu
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Mail className="h-5 w-5" />
-            {t('auth.2fa.title', '2段階認証')}
+            {t('auth.2fa.title', { defaultValue: '2段階認証' })}
           </DialogTitle>
           <DialogDescription>
-            {t('auth.2fa.description', '{{email}} に送信された6桁のコードを入力してください。', { email })}
+            {t('auth.2fa.description', { defaultValue: '{{email}} に送信された6桁のコードを入力してください。', email })}
           </DialogDescription>
         </DialogHeader>
 
@@ -188,7 +188,7 @@ export function OtpInputDialog({ open, onOpenChange, email, onSuccess }: OtpInpu
 
           {/* 有効期限の案内 */}
           <p className="text-xs text-muted-foreground text-center">
-            {t('auth.2fa.expiresIn', 'コードは10分間有効です')}
+            {t('auth.2fa.expiresIn', { defaultValue: 'コードは10分間有効です' })}
           </p>
 
           {/* このデバイスを信頼するチェックボックス */}
@@ -202,7 +202,7 @@ export function OtpInputDialog({ open, onOpenChange, email, onSuccess }: OtpInpu
               htmlFor="trustDevice"
               className="text-sm cursor-pointer"
             >
-              {t('auth.2fa.trustDevice', 'このデバイスを信頼する（30日間）')}
+              {t('auth.2fa.trustDevice', { defaultValue: 'このデバイスを信頼する（30日間）' })}
             </Label>
           </div>
 
@@ -213,7 +213,7 @@ export function OtpInputDialog({ open, onOpenChange, email, onSuccess }: OtpInpu
             className="w-full"
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {t('auth.2fa.verify', '確認')}
+            {t('auth.2fa.verify', { defaultValue: '確認' })}
           </Button>
 
           {/* 再送信リンク */}
@@ -227,8 +227,8 @@ export function OtpInputDialog({ open, onOpenChange, email, onSuccess }: OtpInpu
             >
               {isResending && <RefreshCw className="mr-2 h-4 w-4 animate-spin" />}
               {resendCooldown > 0
-                ? t('auth.2fa.resendCooldown', '{{seconds}}秒後に再送信可能', { seconds: resendCooldown })
-                : t('auth.2fa.resend', 'コードを再送信')
+                ? t('auth.2fa.resendCooldown', { defaultValue: '{{seconds}}秒後に再送信可能', seconds: resendCooldown })
+                : t('auth.2fa.resend', { defaultValue: 'コードを再送信' })
               }
             </Button>
           </div>

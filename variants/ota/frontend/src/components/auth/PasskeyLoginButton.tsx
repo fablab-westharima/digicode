@@ -31,7 +31,7 @@ export function PasskeyLoginButton({ onSuccess, onError }: PasskeyLoginButtonPro
     e.preventDefault();
 
     if (!email.trim()) {
-      onError(t('auth.emailRequired', 'メールアドレスを入力してください'));
+      onError(t('auth.emailRequired', { defaultValue: 'メールアドレスを入力してください' }));
       return;
     }
 
@@ -40,7 +40,7 @@ export function PasskeyLoginButton({ onSuccess, onError }: PasskeyLoginButtonPro
       const result = await authenticateWithPasskey(email);
       onSuccess(result);
     } catch (error) {
-      onError(error instanceof Error ? error.message : t('auth.passkeyLoginFailed', 'パスキーログインに失敗しました'));
+      onError(error instanceof Error ? error.message : t('auth.passkeyLoginFailed', { defaultValue: 'パスキーログインに失敗しました' }));
     } finally {
       setIsLoading(false);
     }
@@ -56,7 +56,7 @@ export function PasskeyLoginButton({ onSuccess, onError }: PasskeyLoginButtonPro
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">
-              {t('auth.or', 'または')}
+              {t('auth.or', { defaultValue: 'または' })}
             </span>
           </div>
         </div>
@@ -68,7 +68,7 @@ export function PasskeyLoginButton({ onSuccess, onError }: PasskeyLoginButtonPro
           onClick={() => setShowEmailInput(true)}
         >
           <Fingerprint className="mr-2 h-4 w-4" />
-          {t('auth.passkey.loginWithPasskey', 'パスキーでログイン')}
+          {t('auth.passkey.loginWithPasskey', { defaultValue: 'パスキーでログイン' })}
         </Button>
       </div>
     );
@@ -82,7 +82,7 @@ export function PasskeyLoginButton({ onSuccess, onError }: PasskeyLoginButtonPro
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-background px-2 text-muted-foreground">
-            {t('auth.passkey.loginWithPasskey', 'パスキーでログイン')}
+            {t('auth.passkey.loginWithPasskey', { defaultValue: 'パスキーでログイン' })}
           </span>
         </div>
       </div>
@@ -111,13 +111,13 @@ export function PasskeyLoginButton({ onSuccess, onError }: PasskeyLoginButtonPro
             }}
             disabled={isLoading}
           >
-            {t('common.cancel', 'キャンセル')}
+            {t('common.cancel', { defaultValue: 'キャンセル' })}
           </Button>
           <Button type="submit" className="flex-1" disabled={isLoading}>
             <Fingerprint className="mr-2 h-4 w-4" />
             {isLoading
-              ? t('auth.passkey.loggingInWithPasskey', 'パスキーでログイン中...')
-              : t('auth.passkey.loginWithPasskey', 'パスキーでログイン')}
+              ? t('auth.passkey.loggingInWithPasskey', { defaultValue: 'パスキーでログイン中...' })
+              : t('auth.passkey.loginWithPasskey', { defaultValue: 'パスキーでログイン' })}
           </Button>
         </div>
       </form>
