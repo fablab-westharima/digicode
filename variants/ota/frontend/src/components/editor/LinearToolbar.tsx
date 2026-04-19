@@ -26,6 +26,8 @@ import {
   Zap,
   Loader2,
   Menu,
+  Terminal,
+  LineChart,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -53,6 +55,12 @@ interface LinearToolbarProps {
 
   // ロボットモード切り替え
   onRobotModeChange?: () => void;
+
+  // シリアルモニタ / プロッター
+  showSerialMonitor?: boolean;
+  showSerialPlotter?: boolean;
+  onToggleSerialMonitor?: () => void;
+  onToggleSerialPlotter?: () => void;
 }
 
 export function LinearToolbar({
@@ -68,6 +76,10 @@ export function LinearToolbar({
   onCompile,
   onServerModeChange,
   onRobotModeChange,
+  showSerialMonitor = false,
+  showSerialPlotter = false,
+  onToggleSerialMonitor,
+  onToggleSerialPlotter,
 }: LinearToolbarProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -273,6 +285,32 @@ export function LinearToolbar({
 
       {/* 右側: 言語切替、設定、ヘルプ、ユーザーメニュー */}
       <div className="flex items-center gap-1">
+        {/* シリアルモニタ */}
+        {onToggleSerialMonitor && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`px-2 ${showSerialMonitor ? 'text-green-400 bg-[#2E333D]' : 'text-[#E6EDF3] hover:bg-[#2E333D]'}`}
+            onClick={onToggleSerialMonitor}
+            title={t('editor.menu.serialMonitor', { defaultValue: 'シリアルモニタ' })}
+          >
+            <Terminal className="w-4 h-4" />
+          </Button>
+        )}
+
+        {/* シリアルプロッター */}
+        {onToggleSerialPlotter && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`px-2 ${showSerialPlotter ? 'text-green-400 bg-[#2E333D]' : 'text-[#E6EDF3] hover:bg-[#2E333D]'}`}
+            onClick={onToggleSerialPlotter}
+            title={t('editor.menu.plotter', { defaultValue: 'プロッター' })}
+          >
+            <LineChart className="w-4 h-4" />
+          </Button>
+        )}
+
         {/* 言語切替 */}
         <LocaleSelector />
 

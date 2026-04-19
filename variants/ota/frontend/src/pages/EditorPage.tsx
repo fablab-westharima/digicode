@@ -1550,6 +1550,10 @@ export function EditorPage() {
         onRobotModeChange={() => {
           // ロボットモード変更時、BlocklyEditorが自動的にツールボックスを更新します
         }}
+        showSerialMonitor={showSerialMonitor}
+        showSerialPlotter={showSerialPlotter}
+        onToggleSerialMonitor={() => setShowSerialMonitor(prev => !prev)}
+        onToggleSerialPlotter={() => setShowSerialPlotter(prev => !prev)}
       />
 
       {/* メインコンテンツ */}
