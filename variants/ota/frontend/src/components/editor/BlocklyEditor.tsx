@@ -7,6 +7,7 @@ import { javascriptGenerator } from 'blockly/javascript';
 import { useTranslation } from 'react-i18next';
 import { useRobotModeStore } from '../../stores/robotModeStore';
 import { useFavoriteCategoriesStore } from '../../stores/favoriteCategoriesStore';
+import { useBoardStore } from '../../stores/boardStore';
 import { useBreakpoint } from '../../hooks/useMediaQuery';
 import { digiCodeTheme, digiCodeDarkTheme } from './blocklyTheme';
 import { populateBlocklyMessages } from '@/utils/blocklyMessages';
@@ -54,6 +55,7 @@ import '../../blocks/arduino/communication/arduinoHABlocks';
 import '../../blocks/arduino/communication/httpBlocks';
 import '../../blocks/arduino/communication/jsonBlocks';
 import '../../blocks/arduino/communication/otaBlocks';
+import '../../blocks/arduino/communication/wifiBlocks';
 import { generateToolbox } from './toolboxGenerator';
 
 // 日本語ロケールを設定
@@ -80,6 +82,11 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
     const languageChangeSavedRef = useRef<boolean>(false); // 言語変更でXML保存済みフラグ
     const { mode: robotMode } = useRobotModeStore();
     const { favorites } = useFavoriteCategoriesStore();
+    // ボード選択に応じてツールボックスの可視性フィルタが働く (BP1-2c)。
+    // selectedBoardId を購読することでボード切替時に currentToolbox が再計算される。
+    const selectedBoardId = useBoardStore(s => s.selectedBoardId);
+    const selectedBoard = useBoardStore.getState().getSelectedBoard();
+    void selectedBoardId; // 購読目的、lint 抑制
     const { isMobile } = useBreakpoint();
     const { i18n } = useTranslation();
     const [uiLanguage, setUiLanguage] = useState(i18n.language);
@@ -107,7 +114,7 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
     }, [i18n]);
 
     // Arduino C++専用（ロボットモードに応じたツールボックスを使用）
-    const currentToolbox = toolboxXml || generateToolbox(robotMode, favorites);
+    const currentToolbox = toolboxXml || generateToolbox(robotMode, favorites, selectedBoard);
     const currentGenerator = javascriptGenerator;
 
     // ワークスペースからXMLを取得

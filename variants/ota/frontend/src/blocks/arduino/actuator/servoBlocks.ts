@@ -9,6 +9,7 @@ import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
 import { pythonGenerator } from 'blockly/python';
 import { getServoPins, getServoPulseWidth } from '@/utils/pinHelper';
+import { useBoardStore } from '@/stores/boardStore';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -45,7 +46,13 @@ javascriptGenerator.forBlock['servo_attach'] = function(block: Blockly.Block) {
   const pinNum = parseInt(pin, 10);
   const pulseWidth = getServoPulseWidth(isNaN(pinNum) ? undefined : pinNum);
 
-  generator.definitions_['include_servo'] = '#include <ESP32Servo.h>';
+  // 選択中ボードによって Servo ライブラリの #include を分岐 (BP1-2d, 2026-04-20)。
+  // Servo クラス名 / attach(pin, min, max) / write(angle) の API は ESP32Servo と
+  // 標準 Servo.h で互換。ここでは include だけ切り替える。
+  const board = useBoardStore.getState().getSelectedBoard();
+  generator.definitions_['include_servo'] = board.category === 'rp2040'
+    ? '#include <Servo.h>'
+    : '#include <ESP32Servo.h>';
   generator.definitions_[`servo_${pin}_instance`] = `Servo servo${pin};`;
   return `  servo${pin}.attach(${pin}, ${pulseWidth.min}, ${pulseWidth.max});\n`;
 };

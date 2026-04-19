@@ -1,6 +1,7 @@
 // ロボットモードに応じたツールボックスを動的に生成
 import type { RobotMode } from '@/stores/robotModeStore';
 import { ROBOT_MODES } from '@/stores/robotModeStore';
+import type { BoardDefinition } from '@/stores/boardStore';
 import i18n from '@/i18n';
 
 // 翻訳ヘルパー関数
@@ -586,6 +587,15 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="json_simple"></block>
   </category>`,
 
+  // WiFi 接続 (BP1-2c, 2026-04-20 追加)
+  // supportsWifi が true のボード（ESP32 系 + Pico W + Nano RP2040 Connect）で表示。
+  // wifi_connect ブロック単体のカテゴリ。既存 wifi_is_connected / wifi_reconnect /
+  // wifi_get_ip / wifi_get_rssi は mqtt カテゴリ内に存続（リグレッション回避）。
+  wifi: `
+  <category id="wifi" name="${cat('wifi')}" colour="#00BCD4">
+    <block type="wifi_connect"></block>
+  </category>`,
+
   // OTA・ESP管理
   ota: `
   <category id="otaEsp" name="${cat('otaEsp')}" colour="#9C27B0">
@@ -882,7 +892,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
   homeassistant: [
     'arduino_core',
     'separator1',
-    // MQTT / Home Assistant
+    // WiFi / MQTT / Home Assistant
+    'wifi',
     'mqtt',
     'arduino_ha',
     'separator2',
@@ -938,6 +949,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'neopixel',
     'separator3',
     // IoT通信
+    'wifi',
     'mqtt',
     'arduino_ha',
     'http',
@@ -970,7 +982,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_qtr',
     'sensor_wall',
     'separator2',
-    // グループ3: Home Assistant
+    // グループ3: WiFi / Home Assistant
+    'wifi',
     'mqtt',
     'arduino_ha',
     'separator3',
@@ -1026,7 +1039,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_qtr',
     'sensor_wall',
     'separator3',
-    // グループ4: Home Assistant
+    // グループ4: WiFi / Home Assistant
+    'wifi',
     'mqtt',
     'arduino_ha',
     'separator4',
@@ -1073,8 +1087,14 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
  * 指定されたロボットモードに応じたツールボックスXMLを生成
  * @param mode ロボットモード
  * @param favoriteCategories お気に入りカテゴリのID配列（customモードの場合のみ使用）
+ * @param board 選択中ボードの定義（省略可）。指定時は supportsWifi/supportsOta/supportsBle
+ *              に応じて対応外カテゴリを除外する。省略時は全カテゴリ表示（既存挙動）。
  */
-export function generateToolbox(mode: RobotMode, favoriteCategories: string[] = []): string {
+export function generateToolbox(
+  mode: RobotMode,
+  favoriteCategories: string[] = [],
+  board?: BoardDefinition
+): string {
   let categories: string[];
 
   // お気に入りモードの場合、お気に入りカテゴリを使用
@@ -1083,6 +1103,19 @@ export function generateToolbox(mode: RobotMode, favoriteCategories: string[] = 
     categories = ['arduino_core', 'separator1', ...favoriteCategories];
   } else {
     categories = MODE_CATEGORY_ORDER[mode] || MODE_CATEGORY_ORDER.custom;
+  }
+
+  // 可視性フィルタ (2026-04-20 BP1-2c)
+  // ボード対応フラグに基づき、選択中ボードでサポートされないカテゴリを除外する。
+  // 将来 BLE 専用カテゴリ (BP4) が追加されたら BLE_CATEGORIES を同様に判定する。
+  if (board) {
+    const WIFI_CATEGORIES = new Set(['wifi', 'mqtt', 'arduino_ha', 'http']);
+    const OTA_CATEGORIES = new Set(['ota']);
+    categories = categories.filter(catId => {
+      if (!board.supportsWifi && WIFI_CATEGORIES.has(catId)) return false;
+      if (!board.supportsOta && OTA_CATEGORIES.has(catId)) return false;
+      return true;
+    });
   }
 
   // 毎回新しく翻訳を取得（言語切り替え時に対応）

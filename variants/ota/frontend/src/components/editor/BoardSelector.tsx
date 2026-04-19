@@ -29,9 +29,14 @@ const BOARD_I18N_KEYS: Record<string, string> = {
   'atom-matrix': 'atomMatrix',
   'm5stamp-pico': 'm5stampPico',
   'm5stamp-c3': 'm5stampC3',
+  'm5stamp-s3a': 'm5stampS3a',
   'xiao-esp32c3': 'xiaoEsp32C3',
   'xiao-esp32s3': 'xiaoEsp32S3',
   'xiao-esp32c6': 'xiaoEsp32C6',
+  'rp2040-pico': 'rp2040Pico',
+  'rp2040-pico-w': 'rp2040PicoW',
+  'rp2040-xiao': 'rp2040Xiao',
+  'rp2040-nano-connect': 'rp2040NanoConnect',
 };
 
 export function BoardSelector() {
@@ -59,12 +64,10 @@ export function BoardSelector() {
     return board.description;
   };
 
-  const arduinoBoards = SUPPORTED_BOARDS.filter(b => (b.category as string) === 'arduino');
-  const esp8266Boards = SUPPORTED_BOARDS.filter(b => (b.category as string) === 'esp8266');
   const genericBoards = SUPPORTED_BOARDS.filter(b => b.category === 'generic');
   const m5stackBoards = SUPPORTED_BOARDS.filter(b => b.category === 'm5stack');
   const xiaoBoards = SUPPORTED_BOARDS.filter(b => b.category === 'xiao');
-  const rp2040Boards = SUPPORTED_BOARDS.filter(b => (b.category as string) === 'rp2040');
+  const rp2040Boards = SUPPORTED_BOARDS.filter(b => b.category === 'rp2040');
 
   const renderBoardItem = (board: BoardDefinition) => (
     <SelectItem key={board.id} value={board.id}>
@@ -89,18 +92,6 @@ export function BoardSelector() {
           <SelectValue placeholder={t('editor.board.selectBoard')} />
         </SelectTrigger>
         <SelectContent>
-          {arduinoBoards.length > 0 && (
-            <SelectGroup>
-              <SelectLabel className="text-purple-600 font-semibold">{getCategoryLabel('arduino')}</SelectLabel>
-              {arduinoBoards.map(renderBoardItem)}
-            </SelectGroup>
-          )}
-          {esp8266Boards.length > 0 && (
-            <SelectGroup>
-              <SelectLabel className="text-cyan-600 font-semibold">{getCategoryLabel('esp8266')}</SelectLabel>
-              {esp8266Boards.map(renderBoardItem)}
-            </SelectGroup>
-          )}
           <SelectGroup>
             <SelectLabel className="text-blue-600 font-semibold">{getCategoryLabel('generic')}</SelectLabel>
             {genericBoards.map(renderBoardItem)}

@@ -1390,6 +1390,10 @@
       "publishQosTooltip": "Publish a message with specified QoS level"
     },
     "wifi": {
+      "connect": "📶 Ligar WiFi",
+      "connectTooltip": "Ligar a uma rede WiFi utilizando SSID e palavra-passe",
+      "ssid": "SSID",
+      "password": "Palavra-passe WiFi",
       "isConnected": "WiFi is Connected",
       "isConnectedTooltip": "Check if connected to WiFi",
       "reconnect": "WiFi Reconnect",
@@ -2308,6 +2312,7 @@
       "haAutoDiscovery": "🏡 HA Auto Discovery",
       "http": "🌐 HTTP",
       "json": "📋 JSON",
+      "wifi": "📶 WiFi",
       "otaEsp": "📡 OTA/ESP",
       "digitalSensor": "👆 Sensor Digital",
       "analogSensor": "📊 Sensor Analógico",
@@ -3006,7 +3011,8 @@
     "categories": {
       "generic": "ESP32 Genérico",
       "m5stack": "Série M5Stack",
-      "xiao": "Série Seeed Xiao"
+      "xiao": "Série Seeed Xiao",
+      "rp2040": "Raspberry Pi / RP2040"
     },
     "boards": {
       "esp32Generic": {
@@ -3049,6 +3055,10 @@
         "name": "M5Stamp C3/C3U",
         "description": "Formato selo com C3, OTA suportado"
       },
+      "m5stampS3a": {
+        "name": "M5StampS3A",
+        "description": "Passo 1,27 mm, ESP32-S3, OTA suportado"
+      },
       "xiaoEsp32C3": {
         "name": "XIAO ESP32C3",
         "description": "21x17.5mm, RISC-V, OTA suportado"
@@ -3060,6 +3070,22 @@
       "xiaoEsp32C6": {
         "name": "XIAO ESP32C6",
         "description": "21x17.5mm, WiFi 6, OTA suportado"
+      },
+      "rp2040Pico": {
+        "name": "Raspberry Pi Pico",
+        "description": "RP2040, apenas gravação USB"
+      },
+      "rp2040PicoW": {
+        "name": "Raspberry Pi Pico W",
+        "description": "RP2040 + CYW43439, WiFi/BLE, apenas gravação USB"
+      },
+      "rp2040Xiao": {
+        "name": "XIAO RP2040",
+        "description": "21x17.5mm, RP2040, apenas gravação USB"
+      },
+      "rp2040NanoConnect": {
+        "name": "Arduino Nano RP2040 Connect",
+        "description": "RP2040 + NINA-W102, WiFi/BLE, apenas gravação USB"
       },
       "esp32-generic": {
         "name": "ESP32",

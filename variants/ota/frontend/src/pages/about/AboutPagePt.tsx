@@ -10,7 +10,7 @@ export default function AboutPagePt() {
           Um editor de programação por blocos para microcontroladores, inteiramente no navegador
         </p>
         <p className="text-sm text-[#8B949E]">
-          Sem necessidade do Arduino IDE / Gravação por USB, BLE e WiFi / Mais de 30 placas compatíveis
+          Sem necessidade do Arduino IDE / Gravação por USB, BLE e WiFi / Compatível com as famílias ESP32 e RP2040
         </p>
       </section>
 
@@ -53,8 +53,8 @@ export default function AboutPagePt() {
             description="Além da gravação por cabo USB, suporta gravação sem fios por BLE (Bluetooth Low Energy) e WiFi (OTA). Útil para atualizar robôs já encapsulados ou gravar vários dispositivos em simultâneo numa sala de aula."
           />
           <FeatureCard
-            title="Mais de 30 placas compatíveis"
-            description="Compatível com a série ESP32 (padrão/S3/C3/C6), série M5Stack (Basic, StickC Plus, ATOM, Stamp, etc.), série Seeed XIAO (C3/S3/C6/RP2040), Raspberry Pi Pico/Pico W, Arduino (Uno/Nano/Mega) e ESP8266."
+            title="Principais placas ESP32 e RP2040"
+            description="Compatível com a família ESP32 (padrão / S3 / C3 / C6), a série M5Stack (Basic, StickC Plus, ATOM, Stamp, etc.), a série Seeed XIAO (C3 / S3 / C6), Raspberry Pi Pico / Pico W, XIAO RP2040 e Arduino Nano RP2040 Connect."
           />
           <FeatureCard
             title="Mais de 500 blocos"
@@ -214,23 +214,15 @@ export default function AboutPagePt() {
           />
           <BoardCategory
             title="Série M5Stack"
-            boards={['M5Stack Basic/Gray/Fire', 'M5StickC Plus', 'ATOM Lite', 'ATOM Matrix', 'M5Stamp Pico', 'M5Stamp C3/C3U']}
+            boards={['M5Stack Basic/Gray/Fire', 'M5StickC Plus', 'ATOM Lite', 'ATOM Matrix', 'M5Stamp Pico', 'M5Stamp C3/C3U', 'M5StampS3A']}
           />
           <BoardCategory
             title="Série Seeed XIAO"
-            boards={['XIAO ESP32C3', 'XIAO ESP32S3', 'XIAO ESP32C6', 'XIAO RP2040']}
+            boards={['XIAO ESP32C3', 'XIAO ESP32S3', 'XIAO ESP32C6']}
           />
           <BoardCategory
             title="Raspberry Pi / RP2040"
-            boards={['Raspberry Pi Pico', 'Raspberry Pi Pico W', 'Adafruit KB2040', 'Arduino Nano RP2040 Connect']}
-          />
-          <BoardCategory
-            title="Arduino"
-            boards={['Arduino Uno', 'Arduino Nano', 'Arduino Mega 2560']}
-          />
-          <BoardCategory
-            title="ESP8266"
-            boards={['ESP8266 Generic', 'NodeMCU 1.0', 'WEMOS D1 Mini']}
+            boards={['Raspberry Pi Pico', 'Raspberry Pi Pico W', 'XIAO RP2040', 'Arduino Nano RP2040 Connect']}
           />
         </div>
       </section>

@@ -1611,6 +1611,10 @@
       "publishQosTooltip": "QoSレベルを指定してメッセージを送信します"
     },
     "wifi": {
+      "connect": "📶 WiFi接続",
+      "connectTooltip": "SSIDとパスワードを指定してWiFiに接続します",
+      "ssid": "SSID",
+      "password": "WiFiパスワード",
       "isConnected": "WiFiが接続中",
       "isConnectedTooltip": "WiFiに接続中かどうかを返します",
       "reconnect": "WiFi再接続",
@@ -2519,6 +2523,7 @@
       "haAutoDiscovery": "🏡 HA Auto Discovery",
       "http": "🌐 HTTP",
       "json": "📋 JSON",
+      "wifi": "📶 WiFi",
       "otaEsp": "📡 OTA/ESP",
       "digitalSensor": "👆 デジタルセンサー",
       "analogSensor": "📊 アナログセンサー",
@@ -2996,7 +3001,8 @@
     "categories": {
       "generic": "汎用 ESP32",
       "m5stack": "M5Stack シリーズ",
-      "xiao": "Seeed Xiao シリーズ"
+      "xiao": "Seeed Xiao シリーズ",
+      "rp2040": "Raspberry Pi / RP2040"
     },
     "boards": {
       "esp32Generic": {
@@ -3039,6 +3045,10 @@
         "name": "M5Stamp C3/C3U",
         "description": "C3搭載スタンプ型、OTA可"
       },
+      "m5stampS3a": {
+        "name": "M5StampS3A",
+        "description": "1.27mmピッチ、ESP32-S3搭載、OTA可"
+      },
       "xiaoEsp32C3": {
         "name": "XIAO ESP32C3",
         "description": "21x17.5mm、RISC-V、OTA可"
@@ -3050,6 +3060,22 @@
       "xiaoEsp32C6": {
         "name": "XIAO ESP32C6",
         "description": "21x17.5mm、WiFi 6、OTA可"
+      },
+      "rp2040Pico": {
+        "name": "Raspberry Pi Pico",
+        "description": "RP2040、USB書き込みのみ"
+      },
+      "rp2040PicoW": {
+        "name": "Raspberry Pi Pico W",
+        "description": "RP2040 + CYW43439、WiFi/BLE対応、USB書き込みのみ"
+      },
+      "rp2040Xiao": {
+        "name": "XIAO RP2040",
+        "description": "21x17.5mm、RP2040、USB書き込みのみ"
+      },
+      "rp2040NanoConnect": {
+        "name": "Arduino Nano RP2040 Connect",
+        "description": "RP2040 + NINA-W102、WiFi/BLE対応、USB書き込みのみ"
       },
       "esp32-generic": {
         "name": "ESP32（無印）",

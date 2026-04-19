@@ -1611,6 +1611,10 @@
       "publishQosTooltip": "Publish a message with specified QoS level"
     },
     "wifi": {
+      "connect": "📶 Connect WiFi",
+      "connectTooltip": "Connect to a WiFi network using SSID and password",
+      "ssid": "SSID",
+      "password": "WiFi Password",
       "isConnected": "WiFi is Connected",
       "isConnectedTooltip": "Check if connected to WiFi",
       "reconnect": "WiFi Reconnect",
@@ -2529,6 +2533,7 @@
       "haAutoDiscovery": "🏡 HA Auto Discovery",
       "http": "🌐 HTTP",
       "json": "📋 JSON",
+      "wifi": "📶 WiFi",
       "otaEsp": "📡 OTA/ESP",
       "digitalSensor": "👆 Digital Sensor",
       "analogSensor": "📊 Analog Sensor",
@@ -3006,7 +3011,8 @@
     "categories": {
       "generic": "Generic ESP32",
       "m5stack": "M5Stack Series",
-      "xiao": "Seeed Xiao Series"
+      "xiao": "Seeed Xiao Series",
+      "rp2040": "Raspberry Pi / RP2040"
     },
     "boards": {
       "esp32Generic": {
@@ -3049,6 +3055,10 @@
         "name": "M5Stamp C3/C3U",
         "description": "C3-based stamp, OTA supported"
       },
+      "m5stampS3a": {
+        "name": "M5StampS3A",
+        "description": "1.27mm pitch, ESP32-S3, OTA supported"
+      },
       "xiaoEsp32C3": {
         "name": "XIAO ESP32C3",
         "description": "21x17.5mm, RISC-V, OTA supported"
@@ -3060,6 +3070,22 @@
       "xiaoEsp32C6": {
         "name": "XIAO ESP32C6",
         "description": "21x17.5mm, WiFi 6, OTA supported"
+      },
+      "rp2040Pico": {
+        "name": "Raspberry Pi Pico",
+        "description": "RP2040, USB flashing only"
+      },
+      "rp2040PicoW": {
+        "name": "Raspberry Pi Pico W",
+        "description": "RP2040 + CYW43439, WiFi/BLE, USB flashing only"
+      },
+      "rp2040Xiao": {
+        "name": "XIAO RP2040",
+        "description": "21x17.5mm, RP2040, USB flashing only"
+      },
+      "rp2040NanoConnect": {
+        "name": "Arduino Nano RP2040 Connect",
+        "description": "RP2040 + NINA-W102, WiFi/BLE, USB flashing only"
       },
       "esp32-generic": {
         "name": "ESP32",

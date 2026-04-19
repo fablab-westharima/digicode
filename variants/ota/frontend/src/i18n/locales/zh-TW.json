@@ -1390,6 +1390,10 @@
       "publishQosTooltip": "Publish a message with specified QoS level"
     },
     "wifi": {
+      "connect": "📶 連線 WiFi",
+      "connectTooltip": "使用 SSID 與密碼連線至 WiFi 網路",
+      "ssid": "SSID",
+      "password": "WiFi 密碼",
       "isConnected": "WiFi is Connected",
       "isConnectedTooltip": "Check if connected to WiFi",
       "reconnect": "WiFi Reconnect",
@@ -2308,6 +2312,7 @@
       "haAutoDiscovery": "🏡 HA自動發現",
       "http": "🌐 HTTP",
       "json": "📋 JSON",
+      "wifi": "📶 WiFi",
       "otaEsp": "📡 OTA/ESP",
       "digitalSensor": "👆 數位感測器",
       "analogSensor": "📊 類比感測器",
@@ -3006,7 +3011,8 @@
     "categories": {
       "generic": "通用 ESP32",
       "m5stack": "M5Stack 系列",
-      "xiao": "Seeed Xiao 系列"
+      "xiao": "Seeed Xiao 系列",
+      "rp2040": "Raspberry Pi / RP2040"
     },
     "boards": {
       "esp32Generic": {
@@ -3049,6 +3055,10 @@
         "name": "M5Stamp C3/C3U",
         "description": "C3郵票模組，支援OTA"
       },
+      "m5stampS3a": {
+        "name": "M5StampS3A",
+        "description": "1.27mm 間距、搭載 ESP32-S3、支援 OTA"
+      },
       "xiaoEsp32C3": {
         "name": "XIAO ESP32C3",
         "description": "21x17.5mm、RISC-V，支援OTA"
@@ -3060,6 +3070,22 @@
       "xiaoEsp32C6": {
         "name": "XIAO ESP32C6",
         "description": "21x17.5mm、WiFi 6，支援OTA"
+      },
+      "rp2040Pico": {
+        "name": "Raspberry Pi Pico",
+        "description": "RP2040，僅支援 USB 燒錄"
+      },
+      "rp2040PicoW": {
+        "name": "Raspberry Pi Pico W",
+        "description": "RP2040 + CYW43439、支援 WiFi/BLE，僅支援 USB 燒錄"
+      },
+      "rp2040Xiao": {
+        "name": "XIAO RP2040",
+        "description": "21x17.5mm、RP2040，僅支援 USB 燒錄"
+      },
+      "rp2040NanoConnect": {
+        "name": "Arduino Nano RP2040 Connect",
+        "description": "RP2040 + NINA-W102、支援 WiFi/BLE，僅支援 USB 燒錄"
       },
       "esp32-generic": {
         "name": "ESP32（標準）",
