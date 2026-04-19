@@ -1617,10 +1617,10 @@ export function EditorPage() {
 
             {/* 下部パネル（シリアルモニター/プロッター） */}
             {(showSerialMonitor || showSerialPlotter) && (
-              <div className="h-64 border-t flex">
+              <div className="h-64 border-t border-[#2E333D] flex">
                 <Tabs defaultValue="monitor" className="flex-1 flex flex-col">
-                  <div className="flex items-center justify-between px-2 border-b bg-gray-50">
-                    <TabsList className="h-9">
+                  <div className="flex items-center justify-end px-2 border-b border-[#2E333D] bg-[#1C1F26]">
+                    <TabsList className="h-9 bg-transparent">
                       {showSerialMonitor && (
                         <TabsTrigger value="monitor" className="text-xs px-3">
                           <Terminal className="w-3 h-3 mr-1" />

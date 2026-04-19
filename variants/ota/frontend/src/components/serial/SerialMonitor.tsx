@@ -56,9 +56,9 @@ export function SerialMonitor({ className }: SerialMonitorProps) {
   };
 
   return (
-    <div className={`flex flex-col h-full bg-card border border-border rounded-lg overflow-hidden ${className}`}>
+    <div className={`flex flex-col h-full bg-[#0D1117] border border-[#2E333D] overflow-hidden ${className}`}>
       {/* ヘッダー */}
-      <div className="flex items-center justify-between px-3 py-2 bg-muted border-b border-border">
+      <div className="flex items-center justify-between px-3 py-2 bg-[#161B22] border-b border-[#2E333D]">
         <span className="text-sm text-foreground font-medium">
           {t('editor.menu.serialMonitor', { defaultValue: 'シリアルモニター' })}
         </span>
@@ -86,7 +86,7 @@ export function SerialMonitor({ className }: SerialMonitorProps) {
       {/* 出力エリア */}
       <div
         ref={outputRef}
-        className="flex-1 p-3 overflow-y-auto font-mono text-sm text-foreground bg-muted"
+        className="flex-1 p-3 overflow-y-auto font-mono text-sm text-[#E6EDF3] bg-[#0D1117]"
         style={{ minHeight: '200px' }}
       >
         {output.length === 0 ? (
@@ -105,7 +105,7 @@ export function SerialMonitor({ className }: SerialMonitorProps) {
       </div>
 
       {/* 入力エリア */}
-      <div className="flex gap-2 p-2 bg-muted border-t border-border">
+      <div className="flex gap-2 p-2 bg-[#161B22] border-t border-[#2E333D]">
         <Input
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
