@@ -36,7 +36,7 @@ export const sampleProjects: SampleProject[] = [
             <field name="VALUE">HIGH</field>
             <next>
               <block type="esp32_delay">
-                <value name="MS">
+                <value name="TIME">
                   <block type="math_number">
                     <field name="NUM">1000</field>
                   </block>
@@ -47,7 +47,7 @@ export const sampleProjects: SampleProject[] = [
                     <field name="VALUE">LOW</field>
                     <next>
                       <block type="esp32_delay">
-                        <value name="MS">
+                        <value name="TIME">
                           <block type="math_number">
                             <field name="NUM">1000</field>
                           </block>
@@ -87,7 +87,7 @@ export const sampleProjects: SampleProject[] = [
             </value>
             <next>
               <block type="esp32_delay">
-                <value name="MS">
+                <value name="TIME">
                   <block type="math_number">
                     <field name="NUM">1000</field>
                   </block>
@@ -142,7 +142,7 @@ export const sampleProjects: SampleProject[] = [
                     </value>
                     <next>
                       <block type="esp32_delay">
-                        <value name="MS">
+                        <value name="TIME">
                           <block type="math_number">
                             <field name="NUM">500</field>
                           </block>
@@ -212,7 +212,7 @@ export const sampleProjects: SampleProject[] = [
                             </value>
                             <next>
                               <block type="esp32_delay">
-                                <value name="MS">
+                                <value name="TIME">
                                   <block type="math_number">
                                     <field name="NUM">2000</field>
                                   </block>
@@ -276,7 +276,7 @@ export const sampleProjects: SampleProject[] = [
                 </value>
                 <next>
                   <block type="esp32_delay">
-                    <value name="MS">
+                    <value name="TIME">
                       <block type="math_number">
                         <field name="NUM">50</field>
                       </block>
@@ -313,7 +313,7 @@ export const sampleProjects: SampleProject[] = [
                     </value>
                     <next>
                       <block type="esp32_delay">
-                        <value name="MS">
+                        <value name="TIME">
                           <block type="math_number">
                             <field name="NUM">50</field>
                           </block>
@@ -381,7 +381,7 @@ export const sampleProjects: SampleProject[] = [
                                           <block type="neopixel_show">
                                             <next>
                                               <block type="esp32_delay">
-                                                <value name="MS">
+                                                <value name="TIME">
                                                   <block type="math_number">
                                                     <field name="NUM">1000</field>
                                                   </block>
@@ -454,7 +454,7 @@ export const sampleProjects: SampleProject[] = [
                     <field name="SPEED">50</field>
                     <next>
                       <block type="esp32_delay">
-                        <value name="MS">
+                        <value name="TIME">
                           <block type="math_number">
                             <field name="NUM">500</field>
                           </block>
@@ -463,7 +463,7 @@ export const sampleProjects: SampleProject[] = [
                           <block type="otto_wheel_spin_right">
                             <next>
                               <block type="esp32_delay">
-                                <value name="MS">
+                                <value name="TIME">
                                   <block type="math_number">
                                     <field name="NUM">300</field>
                                   </block>
@@ -483,7 +483,7 @@ export const sampleProjects: SampleProject[] = [
                 <field name="SPEED">50</field>
                 <next>
                   <block type="esp32_delay">
-                    <value name="MS">
+                    <value name="TIME">
                       <block type="math_number">
                         <field name="NUM">100</field>
                       </block>
@@ -528,7 +528,7 @@ export const sampleProjects: SampleProject[] = [
                     <field name="SPEED">normal</field>
                     <next>
                       <block type="esp32_delay">
-                        <value name="MS">
+                        <value name="TIME">
                           <block type="math_number">
                             <field name="NUM">1000</field>
                           </block>
@@ -542,7 +542,7 @@ export const sampleProjects: SampleProject[] = [
                                 <field name="SPEED">normal</field>
                                 <next>
                                   <block type="esp32_delay">
-                                    <value name="MS">
+                                    <value name="TIME">
                                       <block type="math_number">
                                         <field name="NUM">2000</field>
                                       </block>
@@ -552,7 +552,7 @@ export const sampleProjects: SampleProject[] = [
                                         <field name="MODE">roll</field>
                                         <next>
                                           <block type="esp32_delay">
-                                            <value name="MS">
+                                            <value name="TIME">
                                               <block type="math_number">
                                                 <field name="NUM">1000</field>
                                               </block>
@@ -600,7 +600,7 @@ export const sampleProjects: SampleProject[] = [
           <block type="otto_home">
             <next>
               <block type="esp32_delay">
-                <value name="MS">
+                <value name="TIME">
                   <block type="math_number">
                     <field name="NUM">1000</field>
                   </block>
@@ -620,7 +620,7 @@ export const sampleProjects: SampleProject[] = [
                                 <field name="STEPS">2</field>
                                 <next>
                                   <block type="esp32_delay">
-                                    <value name="MS">
+                                    <value name="TIME">
                                       <block type="math_number">
                                         <field name="NUM">2000</field>
                                       </block>
@@ -1058,7 +1058,7 @@ export const sampleProjects: SampleProject[] = [
                 </statement>
                 <next>
                   <block type="esp32_delay">
-                    <value name="MS">
+                    <value name="TIME">
                       <block type="math_number">
                         <field name="NUM">10000</field>
                       </block>
