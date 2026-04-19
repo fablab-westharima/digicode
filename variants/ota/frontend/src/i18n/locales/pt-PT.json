@@ -14,7 +14,8 @@
     "optional": "Opcional",
     "goToHome": "Ir para início",
     "back": "Voltar",
-    "saving": "Salvando..."
+    "saving": "Salvando...",
+    "add": "Adicionar"
   },
   "status": {
     "ready": "Pronto",
@@ -2707,7 +2708,8 @@
       "servo2": "Pino Servo 2",
       "sda": "Pino SDA",
       "scl": "Pino SCL"
-    }
+    },
+    "defaultName": "Padrão"
   },
   "favoriteSettings": {
     "title": "⭐ Configuração de blocos favoritos",

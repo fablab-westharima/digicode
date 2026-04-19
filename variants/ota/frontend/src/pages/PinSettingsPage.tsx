@@ -279,7 +279,10 @@ export function PinSettingsPage() {
   };
 
   const handleDuplicatePreset = () => {
-    setNewPresetName(`${currentPreset.name}${t('pinSettings.copyOf')}`);
+    const baseName = currentPreset.id === 'default'
+      ? t('pinPreset.defaultName', { defaultValue: 'デフォルト' })
+      : currentPreset.name;
+    setNewPresetName(`${baseName}${t('pinSettings.copyOf')}`);
     setNewPresetDialogOpen(true);
   };
 
@@ -349,7 +352,7 @@ export function PinSettingsPage() {
                     onClick={() => setCurrentPreset(preset.id)}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-[#E6EDF3]">{preset.name}</span>
+                      <span className="font-medium text-[#E6EDF3]">{preset.id === 'default' ? t('pinPreset.defaultName', { defaultValue: 'デフォルト' }) : preset.name}</span>
                       {preset.isCustom && (
                         <Badge variant="secondary" className="text-xs bg-[#2E333D] text-[#E6EDF3]">{t('pinSettings.custom')}</Badge>
                       )}

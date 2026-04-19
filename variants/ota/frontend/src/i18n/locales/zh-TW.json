@@ -14,7 +14,8 @@
     "optional": "選填",
     "goToHome": "返回首頁",
     "back": "返回",
-    "saving": "儲存中..."
+    "saving": "儲存中...",
+    "add": "新增"
   },
   "status": {
     "ready": "就緒",
@@ -2707,7 +2708,8 @@
       "servo2": "伺服 2 接腳",
       "sda": "SDA 接腳",
       "scl": "SCL 接腳"
-    }
+    },
+    "defaultName": "預設"
   },
   "favoriteSettings": {
     "title": "⭐ 最愛積木設定",

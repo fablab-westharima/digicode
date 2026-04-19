@@ -168,7 +168,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <h4 className="font-medium">{preset.name}</h4>
+                        <h4 className="font-medium">{preset.id === 'default' ? t('pinPreset.defaultName', { defaultValue: 'デフォルト' }) : preset.name}</h4>
                         {preset.isPremium && (
                           <Badge variant="secondary" className="text-xs">
                             {t('pinPreset.premiumBadge', { defaultValue: 'プレミアム' })}

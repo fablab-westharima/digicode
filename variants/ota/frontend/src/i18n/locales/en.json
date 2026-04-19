@@ -14,7 +14,8 @@
     "optional": "Optional",
     "goToHome": "Go to Home",
     "back": "Back",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "add": "Add"
   },
   "status": {
     "ready": "Ready",
@@ -855,7 +856,8 @@
       "servo2": "Servo 2 Pin",
       "sda": "SDA Pin",
       "scl": "SCL Pin"
-    }
+    },
+    "defaultName": "Default"
   },
   "favoriteSettings": {
     "title": "⭐ Favorite Block Settings",

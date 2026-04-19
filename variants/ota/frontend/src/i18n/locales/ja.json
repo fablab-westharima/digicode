@@ -14,7 +14,8 @@
     "optional": "省略可",
     "goToHome": "ホームへ",
     "back": "戻る",
-    "saving": "保存中..."
+    "saving": "保存中...",
+    "add": "追加"
   },
   "status": {
     "ready": "準備完了",
@@ -855,7 +856,8 @@
       "servo2": "サーボ 2 ピン",
       "sda": "SDA ピン",
       "scl": "SCL ピン"
-    }
+    },
+    "defaultName": "デフォルト"
   },
   "favoriteSettings": {
     "title": "⭐ お気に入りブロック設定",
