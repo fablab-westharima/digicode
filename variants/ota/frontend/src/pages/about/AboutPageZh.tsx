@@ -24,7 +24,7 @@ export default function AboutPageZh() {
           <p>
             使用既有的積木程式設計工具(如 OttoBlockly)時,支援的開發板與腳位配置皆由編輯器端決定,因此有
             {' '}<strong className="text-[#E6EDF3]">必須讓硬體設計配合軟體限制</strong>
-            的約束。即使自行設計原創的微控制器板或擴展板,編輯器若不支援就無法使用。
+            的約束。即使自行研發微控制器板或擴展板,編輯器若不支援就無法使用。
           </p>
           <p>
             <strong className="text-[#E6EDF3]">既然如此,就連編輯器也自行開發吧。</strong>
@@ -61,7 +61,7 @@ export default function AboutPageZh() {
           />
           <FeatureCard
             title="支援 OTTO 系列機器人"
-            description="為西播磨 FabLab 以 OTTO 為基礎打造的原創機器人,提供雙足、輪型、Ninja 三種變體的專用積木。走路、跳舞、手勢表現都能只用積木控制。(本專案為獨立分支,與 OTTO 官方無關。)"
+            description="為西播磨 FabLab 以 OTTO 為基礎打造的自製機器人,提供雙足、輪型、Ninja 三種變體的專用積木。走路、跳舞、動作表現皆可僅用積木完成。(本專案為獨立分支,與 OTTO 官方無關。)"
           />
           <FeatureCard
             title="支援 5 種語言"
@@ -113,8 +113,8 @@ export default function AboutPageZh() {
             tag="競賽用途"
           />
           <UniqueFeature
-            title="積木我的最愛"
-            description="從 35 個以上的積木分類中,挑選最常使用的積木登錄為「最愛」。解決因為分類太多而找不到目的積木的問題。"
+            title="我的最愛積木"
+            description="從 35 個以上的積木分類中,挑選最常使用的積木收藏為「我的最愛」。解決因分類過多而難以找到目標積木的問題。"
             tag="易用性"
           />
           <UniqueFeature
@@ -129,7 +129,7 @@ export default function AboutPageZh() {
           />
           <UniqueFeature
             title="即時檢視產生的程式碼"
-            description="可即時檢視從積木產生的 Arduino C++ 程式碼。每次新增或修改積木時程式碼都會更新,能一邊學習「這個積木會變成甚麼樣的程式碼」,一邊向文字程式設計進階。"
+            description="可即時檢視從積木產生的 Arduino C++ 程式碼。每次新增或修改積木時程式碼都會更新,能一邊學習「這個積木會產生什麼樣的程式碼」,一邊邁向文字程式設計。"
             tag="學習支援"
           />
           <UniqueFeature
@@ -144,7 +144,7 @@ export default function AboutPageZh() {
           />
           <UniqueFeature
             title="MQTT / Home Assistant 整合積木"
-            description="內建 21 個 MQTT 通訊積木與 43 個 Home Assistant Auto Discovery 積木。僅用積木即可定義感測器、開關、燈具、風扇、窗簾等實體,並自動註冊到 Home Assistant。適合把 ESP32 變身為智慧家庭裝置的 IoT 專案。"
+            description="內建 21 個 MQTT 通訊積木與 43 個 Home Assistant Auto Discovery 積木。僅用積木即可定義感測器、開關、燈具、風扇、窗簾等實體,並自動註冊到 Home Assistant。適合將 ESP32 打造為智慧家庭裝置的 IoT 專案。"
             tag="IoT"
           />
           <UniqueFeature
@@ -166,7 +166,7 @@ export default function AboutPageZh() {
         <div className="grid gap-6 md:grid-cols-2">
           <BoardCategory
             title="通用 ESP32"
-            boards={['ESP32(標準)', 'ESP32-S3', 'ESP32-C3', 'ESP32-C6']}
+            boards={['ESP32', 'ESP32-S3', 'ESP32-C3', 'ESP32-C6']}
           />
           <BoardCategory
             title="M5Stack 系列"
@@ -193,7 +193,7 @@ export default function AboutPageZh() {
 
       {/* 使用說明 */}
       <section className="mb-16">
-        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">使用說明</h2>
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">方案與使用</h2>
         <div className="space-y-6 text-[#C9D1D9]">
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
@@ -211,7 +211,7 @@ export default function AboutPageZh() {
                 <PlanRow feature="USB / BLE / WiFi 燒錄" guest pro free />
                 <PlanRow feature="伺服 Trim / PID 調整" guest pro free />
                 <PlanRow feature="序列繪圖器" guest pro free />
-                <PlanRow feature="積木我的最愛 / 機器人模式" guest pro free />
+                <PlanRow feature="我的最愛積木 / 機器人模式" guest pro free />
                 <PlanRow feature="範例專案 / 教學引導" guest pro free />
                 <PlanRow feature="MQTT / Home Assistant 整合" guest pro free />
                 <PlanRow feature="專案儲存" guest={false} pro free note="訪客僅可本機儲存" />
@@ -221,7 +221,7 @@ export default function AboutPageZh() {
           </div>
 
           <p className="text-sm text-[#8B949E]">
-            PRO 功能有時會設置免費開放期間。開放期間所有使用者皆可使用。
+            PRO 功能在推廣期間可能暫時開放給所有使用者免費使用。
           </p>
 
           <p>
@@ -245,6 +245,9 @@ export default function AboutPageZh() {
           >
             DigiCode Finder(WiFi OTA 用裝置偵測應用程式)
           </a>
+        </p>
+        <p className="mt-4 text-xs text-[#484F58]">
+          非日文語言的翻譯由 AI 輔助產生。若發現錯誤,歡迎告知我們。
         </p>
       </footer>
     </AboutShell>

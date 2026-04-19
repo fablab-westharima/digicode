@@ -24,7 +24,7 @@ export default function AboutPagePt() {
           <p>
             Ao utilizar ferramentas de programação por blocos existentes (como o OttoBlockly), as placas suportadas e a atribuição de pinos são definidas pela própria ferramenta, obrigando a
             {' '}<strong className="text-[#E6EDF3]">adaptar o desenho de hardware às restrições do software</strong>.
-            Mesmo que desenhe uma placa de microcontrolador ou uma placa breakout originais, não as poderá usar se o editor não as suportar.
+            Mesmo que desenhe a sua própria placa de microcontrolador ou uma placa breakout personalizada, não as poderá usar se o editor não as suportar.
           </p>
           <p>
             <strong className="text-[#E6EDF3]">Decidimos então criar o nosso próprio editor.</strong>
@@ -46,7 +46,7 @@ export default function AboutPagePt() {
         <div className="grid gap-6 md:grid-cols-2">
           <FeatureCard
             title="Tudo no navegador"
-            description="Sem necessidade de instalar qualquer software (como o Arduino IDE). Montar blocos, compilar e gravar acontece tudo no navegador. A compilação corre num servidor na nuvem, portanto as especificações do seu PC não importam."
+            description="Sem necessidade de instalar qualquer software (como o Arduino IDE). Montar blocos, compilar e gravar — tudo isto acontece no navegador. A compilação corre num servidor na nuvem, portanto as especificações do seu PC não importam."
           />
           <FeatureCard
             title="Três métodos de gravação"
@@ -62,7 +62,7 @@ export default function AboutPagePt() {
           />
           <FeatureCard
             title="Suporte para robôs baseados em OTTO"
-            description="Blocos dedicados para três variantes dos robôs originais baseados em OTTO do FabLab Nishi-Harima: bípede, com rodas e Ninja. Andar, dançar e expressões gestuais podem ser controladas apenas com blocos. (É um fork independente, sem ligação ao projeto OTTO oficial.)"
+            description="Blocos dedicados para três variantes dos robôs próprios baseados em OTTO do FabLab Nishi-Harima: bípede, com rodas e Ninja. A marcha, a dança e os gestos podem ser controlados apenas com blocos. (É um fork independente, sem ligação ao projeto OTTO oficial.)"
           />
           <FeatureCard
             title="Suporte a 5 idiomas"
@@ -99,7 +99,7 @@ export default function AboutPagePt() {
           />
           <UniqueFeature
             title="Largura de impulso de servo por pino"
-            description="Configure a largura de impulso (min/max) do servo individualmente por pino. Além de predefinições para servos de 180°, 270° e 360°, pode especificar qualquer valor em microssegundos diretamente. Mesmo robôs que misturam servos de diferentes fabricantes podem ser afinados de forma ótima por unidade."
+            description="Configure a largura de impulso (min/max) do servo individualmente por pino. Além de predefinições para servos de 180°, 270° e 360°, pode especificar qualquer valor em microssegundos diretamente. Mesmo robôs que misturam servos de diferentes fabricantes podem ser afinados de forma ótima por cada servo."
             tag="Compatibilidade de hardware"
             pricing="pro"
           />
@@ -110,7 +110,7 @@ export default function AboutPagePt() {
           />
           <UniqueFeature
             title="Ferramenta de afinação PID"
-            description="Uma ferramenta gráfica para ajustar parâmetros PID (Kp, Ki, Kd) para seguimento de linha, controlo de parede, controlo de velocidade e controlo de ângulo — através de deslizadores ou introdução direta. Guarde e carregue predefinições, e envie valores a um ESP32 em tempo real por série. Acelera muito o trabalho de afinação em competições de robótica."
+            description="Uma ferramenta gráfica para ajustar parâmetros PID (Kp, Ki, Kd) para seguimento de linha, controlo de parede, controlo de velocidade e controlo de ângulo — através de deslizadores ou introdução direta. Guarde e carregue predefinições, e envie valores para um ESP32 em tempo real através da porta série. Acelera muito o trabalho de afinação em competições de robótica."
             tag="Para competições"
           />
           <UniqueFeature
@@ -120,12 +120,12 @@ export default function AboutPagePt() {
           />
           <UniqueFeature
             title="Seletor de modo de robô"
-            description="Com um único clique, alterne entre 9 modos — OTTO Bípede, OTTO com Rodas, OTTO Ninja, Micromouse, Seguidor de Linha, Home Assistant, Dispositivo Genérico, etc. — para mostrar apenas os blocos relevantes a esse robô ou caso de uso. Evita que os principiantes fiquem sobrecarregados por centenas de blocos."
+            description="Com um único clique, alterne entre 9 modos — OTTO Bípede, OTTO com Rodas, OTTO Ninja, Micromouse, Seguidor de Linha, Home Assistant, Dispositivo Genérico, etc. — para mostrar apenas os blocos relevantes para esse robô ou caso de uso. Evita que os principiantes fiquem sobrecarregados por centenas de blocos."
             tag="Facilidade de uso"
           />
           <UniqueFeature
             title="Plotter série"
-            description="Trace dados série do ESP32 em tempo real. Deteta automaticamente vários canais e suporta valores com etiquetas (por exemplo, sensor1:123,sensor2:456). Inclui ajuste de intervalo do eixo Y, pausa e descarregamento de dados. Útil para verificar sensores e observar o comportamento do PID."
+            description="Trace dados da porta série do ESP32 em tempo real. Deteta automaticamente vários canais e suporta valores com etiquetas (por exemplo, sensor1:123,sensor2:456). Inclui ajuste de intervalo do eixo Y, pausa e descarregamento de dados. Útil para verificar sensores e observar o comportamento do PID."
             tag="Depuração"
           />
           <UniqueFeature
@@ -140,12 +140,12 @@ export default function AboutPagePt() {
           />
           <UniqueFeature
             title="Gravação OTA em lote (vários dispositivos)"
-            description="Grave vários dispositivos ESP32 simultaneamente por WiFi OTA. Perfeito para atualizar 10 ou 20 robôs em simultâneo em salas de aula ou workshops. O progresso de cada dispositivo é exibido em tempo real."
+            description="Grave vários dispositivos ESP32 em simultâneo por WiFi OTA. Perfeito para atualizar 10 ou 20 robôs de uma só vez em salas de aula ou workshops. O progresso de cada dispositivo é exibido em tempo real."
             tag="Para salas de aula"
           />
           <UniqueFeature
             title="Blocos MQTT / Home Assistant"
-            description="Inclui 21 blocos de comunicação MQTT e 43 blocos de Home Assistant Auto Discovery. Defina entidades — sensores, interruptores, luzes, ventoinhas, estores — apenas com blocos, e são registadas automaticamente no Home Assistant. Ideal para projetos IoT que transformam um ESP32 num dispositivo smart-home."
+            description="Inclui 21 blocos de comunicação MQTT e 43 blocos de Home Assistant Auto Discovery. Defina entidades — sensores, interruptores, luzes, ventoinhas, estores — apenas com blocos, e são registadas automaticamente no Home Assistant. Ideal para projetos IoT que transformam um ESP32 num dispositivo de casa inteligente."
             tag="IoT"
           />
           <UniqueFeature
@@ -167,7 +167,7 @@ export default function AboutPagePt() {
         <div className="grid gap-6 md:grid-cols-2">
           <BoardCategory
             title="ESP32 genérico"
-            boards={['ESP32 (padrão)', 'ESP32-S3', 'ESP32-C3', 'ESP32-C6']}
+            boards={['ESP32', 'ESP32-S3', 'ESP32-C3', 'ESP32-C6']}
           />
           <BoardCategory
             title="Série M5Stack"
@@ -194,7 +194,7 @@ export default function AboutPagePt() {
 
       {/* Sobre a utilização */}
       <section className="mb-16">
-        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">Sobre a utilização</h2>
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">Planos e utilização</h2>
         <div className="space-y-6 text-[#C9D1D9]">
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
@@ -222,7 +222,7 @@ export default function AboutPagePt() {
           </div>
 
           <p className="text-sm text-[#8B949E]">
-            As funcionalidades PRO podem ser abertas gratuitamente a todos os utilizadores durante períodos promocionais. Durante esses períodos, qualquer pessoa pode utilizá-las.
+            As funcionalidades PRO podem ser disponibilizadas gratuitamente a todos os utilizadores durante períodos promocionais.
           </p>
 
           <p>
@@ -246,6 +246,9 @@ export default function AboutPagePt() {
           >
             DigiCode Finder (aplicação de deteção de dispositivos para WiFi OTA)
           </a>
+        </p>
+        <p className="mt-4 text-xs text-[#484F58]">
+          As traduções para idiomas diferentes do japonês são assistidas por IA. Agradecemos que nos reportem imprecisões.
         </p>
       </footer>
     </AboutShell>

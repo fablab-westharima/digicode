@@ -22,9 +22,9 @@ export default function AboutPageEs() {
             DigiCode nació en FabLab Nishi-Harima durante el diseño de hardware (placas y carcasas) de robots educativos y dispositivos IoT.
           </p>
           <p>
-            Al usar herramientas de programación por bloques existentes (como OttoBlockly), las placas compatibles y la asignación de pines vienen dictadas por la propia herramienta, obligando a
+            Al usar herramientas de programación por bloques existentes (como OttoBlockly), las placas compatibles y la asignación de pines están definidas por la propia herramienta, obligando a
             {' '}<strong className="text-[#E6EDF3]">adaptar el diseño de hardware a las restricciones del software</strong>.
-            Aunque diseñes una placa de microcontrolador o una breakout original, no puedes usarla si el editor no la admite.
+            Aunque diseñes tu propia placa de microcontrolador o una breakout personalizada, no puedes usarla si el editor no la admite.
           </p>
           <p>
             <strong className="text-[#E6EDF3]">Decidimos, entonces, crear nuestro propio editor.</strong>
@@ -62,7 +62,7 @@ export default function AboutPageEs() {
           />
           <FeatureCard
             title="Compatible con robots basados en OTTO"
-            description="Bloques dedicados para tres variantes de los robots originales basados en OTTO de FabLab Nishi-Harima: bípedo, con ruedas y Ninja. Controla caminar, bailar y gestos utilizando solo bloques. (Es un fork independiente, sin relación con el proyecto OTTO oficial.)"
+            description="Bloques dedicados para tres variantes de los robots propios basados en OTTO de FabLab Nishi-Harima: bípedo, con ruedas y Ninja. Controla la caminata, el baile y los gestos utilizando solo bloques. (Es un fork independiente, sin relación con el proyecto OTTO oficial.)"
           />
           <FeatureCard
             title="Soporte para 5 idiomas"
@@ -99,7 +99,7 @@ export default function AboutPageEs() {
           />
           <UniqueFeature
             title="Ancho de pulso de servo por pin"
-            description="Configura el ancho de pulso (min/max) del servo individualmente por pin. Además de preajustes para servos de 180°, 270° y 360°, puedes especificar cualquier valor en microsegundos directamente. Incluso robots que mezclan servos de distintos fabricantes pueden ajustarse de forma óptima por unidad."
+            description="Configura el ancho de pulso (min/max) del servo individualmente por pin. Además de preajustes para servos de 180°, 270° y 360°, puedes especificar cualquier valor en microsegundos directamente. Incluso robots que mezclan servos de distintos fabricantes pueden ajustarse de forma óptima por cada servo."
             tag="Compatibilidad de hardware"
             pricing="pro"
           />
@@ -125,7 +125,7 @@ export default function AboutPageEs() {
           />
           <UniqueFeature
             title="Graficador serial"
-            description="Grafica datos serial del ESP32 en tiempo real. Detecta automáticamente múltiples canales y admite valores etiquetados (por ejemplo, sensor1:123,sensor2:456). Incluye ajuste de rango del eje Y, pausa y descarga de datos. Útil para verificar sensores y observar el comportamiento del PID."
+            description="Grafica datos seriales del ESP32 en tiempo real. Detecta automáticamente múltiples canales y admite valores etiquetados (por ejemplo, sensor1:123,sensor2:456). Incluye ajuste de rango del eje Y, pausa y descarga de datos. Útil para verificar sensores y observar el comportamiento del PID."
             tag="Depuración"
           />
           <UniqueFeature
@@ -145,7 +145,7 @@ export default function AboutPageEs() {
           />
           <UniqueFeature
             title="Bloques MQTT / Home Assistant"
-            description="Incluye 21 bloques de comunicación MQTT y 43 bloques de Home Assistant Auto Discovery. Define entidades — sensores, interruptores, luces, ventiladores, persianas — solo con bloques, y se registran automáticamente en Home Assistant. Ideal para proyectos IoT que convierten un ESP32 en un dispositivo smart-home."
+            description="Incluye 21 bloques de comunicación MQTT y 43 bloques de Home Assistant Auto Discovery. Define entidades — sensores, interruptores, luces, ventiladores, persianas — solo con bloques, y se registran automáticamente en Home Assistant. Ideal para proyectos IoT que convierten un ESP32 en un dispositivo de hogar inteligente."
             tag="IoT"
           />
           <UniqueFeature
@@ -167,7 +167,7 @@ export default function AboutPageEs() {
         <div className="grid gap-6 md:grid-cols-2">
           <BoardCategory
             title="ESP32 genéricos"
-            boards={['ESP32 (estándar)', 'ESP32-S3', 'ESP32-C3', 'ESP32-C6']}
+            boards={['ESP32', 'ESP32-S3', 'ESP32-C3', 'ESP32-C6']}
           />
           <BoardCategory
             title="Serie M5Stack"
@@ -194,7 +194,7 @@ export default function AboutPageEs() {
 
       {/* Sobre el uso */}
       <section className="mb-16">
-        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">Sobre el uso</h2>
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">Planes y uso</h2>
         <div className="space-y-6 text-[#C9D1D9]">
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
@@ -222,7 +222,7 @@ export default function AboutPageEs() {
           </div>
 
           <p className="text-sm text-[#8B949E]">
-            Las funciones PRO pueden abrirse gratuitamente a todos los usuarios durante períodos promocionales. Durante esos períodos, cualquiera puede usarlas.
+            Las funciones PRO pueden habilitarse gratuitamente para todos los usuarios durante períodos promocionales.
           </p>
 
           <p>
@@ -244,8 +244,11 @@ export default function AboutPageEs() {
             rel="noopener noreferrer"
             className="text-[#58A6FF] hover:underline"
           >
-            DigiCode Finder (aplicación de descubrimiento de dispositivos para WiFi OTA)
+            DigiCode Finder (aplicación de detección de dispositivos para WiFi OTA)
           </a>
+        </p>
+        <p className="mt-4 text-xs text-[#484F58]">
+          Las traducciones a idiomas distintos del japonés son asistidas por IA. Agradecemos que nos reporten inexactitudes.
         </p>
       </footer>
     </AboutShell>

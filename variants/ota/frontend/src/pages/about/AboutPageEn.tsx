@@ -24,7 +24,7 @@ export default function AboutPageEn() {
           <p>
             When using existing block programming tools (such as OttoBlockly), the supported boards and pin assignments are dictated by the editor itself, forcing us to
             {' '}<strong className="text-[#E6EDF3]">adapt hardware design to software constraints</strong>.
-            Even if you design an original microcontroller board or breakout board, you can't use it unless the editor supports it.
+            Even if you design your own custom microcontroller board or breakout board, you can't use it unless the editor supports it.
           </p>
           <p>
             <strong className="text-[#E6EDF3]">So we decided to build our own editor.</strong>
@@ -35,7 +35,7 @@ export default function AboutPageEn() {
             We aimed for an environment that runs entirely in the browser and supports wireless flashing.
           </p>
           <p className="text-sm text-[#8B949E]">
-            Software development is done in collaboration with AI (Claude).
+            Software development is a collaboration with AI (Claude).
           </p>
         </div>
       </section>
@@ -46,11 +46,11 @@ export default function AboutPageEn() {
         <div className="grid gap-6 md:grid-cols-2">
           <FeatureCard
             title="Runs Entirely in the Browser"
-            description="No software installation required (such as Arduino IDE). Assembling blocks, compiling, and flashing all happen in the browser. Building is done on a cloud compile server, so your PC specs don't matter."
+            description="No software installation required — no Arduino IDE needed. Building with blocks, compiling, and flashing all happen in the browser. A cloud compile server handles the build, so your PC specs don't matter."
           />
           <FeatureCard
             title="Three Flashing Methods"
-            description="In addition to wired USB flashing, wireless flashing via BLE (Bluetooth Low Energy) and WiFi (OTA) is supported. Convenient for updating enclosed robots or flashing many devices at once in a classroom."
+            description="In addition to wired USB flashing, wireless flashing via BLE (Bluetooth Low Energy) and WiFi (OTA) is supported. Convenient for updating enclosed robots or flashing multiple devices at once in a classroom."
           />
           <FeatureCard
             title="30+ Supported Boards"
@@ -62,7 +62,7 @@ export default function AboutPageEn() {
           />
           <FeatureCard
             title="OTTO-based Robot Support"
-            description="Dedicated blocks for three variants of FabLab Nishi-Harima's original OTTO-based robots: bipedal, wheeled, and Ninja. Walking, dancing, and gesture expressions can all be controlled with blocks alone. (This is an independent fork, unaffiliated with the official OTTO project.)"
+            description="Dedicated blocks for three variants of FabLab Nishi-Harima's original OTTO-based robots: bipedal, wheeled, and Ninja. Walking, dancing, and gestures can all be controlled with blocks alone. (This is an independent fork, unaffiliated with the official OTTO project.)"
           />
           <FeatureCard
             title="5-Language Support"
@@ -99,7 +99,7 @@ export default function AboutPageEn() {
           />
           <UniqueFeature
             title="Per-Pin Servo Pulse Width"
-            description="Set servo motor pulse width (min/max) individually per pin. In addition to presets for 180°, 270°, and 360° servos, you can specify any microsecond value directly. Even robots mixing servos from different manufacturers can be tuned optimally per unit."
+            description="Set servo motor pulse width (min/max) individually per pin. In addition to presets for 180°, 270°, and 360° servos, you can specify any microsecond value directly. Even robots that mix servos from different manufacturers can be tuned optimally per servo."
             tag="Hardware Compatibility"
             pricing="pro"
           />
@@ -110,7 +110,7 @@ export default function AboutPageEn() {
           />
           <UniqueFeature
             title="PID Tuning Tool"
-            description="A GUI tool to adjust PID parameters (Kp, Ki, Kd) for line tracing, wall following, speed control, and angle control — via sliders or direct input. Save and load presets, and push values to an ESP32 in real time over serial. Greatly streamlines tuning for robot competitions."
+            description="A GUI tool to adjust PID parameters (Kp, Ki, Kd) for line tracing, wall following, speed control, and angle control — via sliders or direct input. Save and load presets, and send values to a connected ESP32 in real time over serial. Greatly streamlines tuning for robot competitions."
             tag="For Competitions"
           />
           <UniqueFeature
@@ -145,7 +145,7 @@ export default function AboutPageEn() {
           />
           <UniqueFeature
             title="MQTT / Home Assistant Blocks"
-            description="Includes 21 MQTT communication blocks and 43 Home Assistant Auto Discovery blocks. Define entities — sensors, switches, lights, fans, covers — with blocks alone, and they are automatically registered with Home Assistant. Great for IoT projects turning an ESP32 into a smart-home device."
+            description="Includes 21 MQTT communication blocks and 43 Home Assistant Auto Discovery blocks. Define entities — sensors, switches, lights, fans, covers — with blocks alone, and they are automatically registered with Home Assistant. Great for IoT projects that turn an ESP32 into a smart home device."
             tag="IoT"
           />
           <UniqueFeature
@@ -167,7 +167,7 @@ export default function AboutPageEn() {
         <div className="grid gap-6 md:grid-cols-2">
           <BoardCategory
             title="Generic ESP32"
-            boards={['ESP32 (Plain)', 'ESP32-S3', 'ESP32-C3', 'ESP32-C6']}
+            boards={['ESP32', 'ESP32-S3', 'ESP32-C3', 'ESP32-C6']}
           />
           <BoardCategory
             title="M5Stack Series"
@@ -194,7 +194,7 @@ export default function AboutPageEn() {
 
       {/* Usage */}
       <section className="mb-16">
-        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">About Usage</h2>
+        <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-[#30363D]">Plans & Usage</h2>
         <div className="space-y-6 text-[#C9D1D9]">
           {/* Plan table */}
           <div className="overflow-x-auto">
@@ -223,7 +223,7 @@ export default function AboutPageEn() {
           </div>
 
           <p className="text-sm text-[#8B949E]">
-            PRO features may be temporarily opened to everyone during promotional periods. During those periods, all users can access them.
+            PRO features may be temporarily unlocked for everyone during promotional periods.
           </p>
 
           <p>
@@ -247,6 +247,9 @@ export default function AboutPageEn() {
           >
             DigiCode Finder (device discovery app for WiFi OTA)
           </a>
+        </p>
+        <p className="mt-4 text-xs text-[#484F58]">
+          Translations for non-Japanese languages are AI-assisted. We welcome reports of inaccuracies.
         </p>
       </footer>
     </AboutShell>
