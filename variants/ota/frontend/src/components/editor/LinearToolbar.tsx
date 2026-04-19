@@ -290,11 +290,11 @@ export function LinearToolbar({
           <Button
             variant="ghost"
             size="sm"
-            className={`px-2 ${showSerialMonitor ? 'text-green-400 bg-[#2E333D]' : 'text-[#E6EDF3] hover:bg-[#2E333D]'}`}
+            className={`px-2 ${showSerialMonitor ? 'text-green-400 bg-[#2E333D]' : 'text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D]'}`}
             onClick={onToggleSerialMonitor}
-            title={t('editor.menu.serialMonitor', { defaultValue: 'シリアルモニタ' })}
           >
-            <Terminal className="w-4 h-4" />
+            <Terminal className="w-3.5 h-3.5 mr-1" />
+            <span className="text-xs">{t('editor.menu.serialMonitor', { defaultValue: 'モニター' })}</span>
           </Button>
         )}
 
@@ -303,11 +303,11 @@ export function LinearToolbar({
           <Button
             variant="ghost"
             size="sm"
-            className={`px-2 ${showSerialPlotter ? 'text-green-400 bg-[#2E333D]' : 'text-[#E6EDF3] hover:bg-[#2E333D]'}`}
+            className={`px-2 ${showSerialPlotter ? 'text-green-400 bg-[#2E333D]' : 'text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D]'}`}
             onClick={onToggleSerialPlotter}
-            title={t('editor.menu.plotter', { defaultValue: 'プロッター' })}
           >
-            <LineChart className="w-4 h-4" />
+            <LineChart className="w-3.5 h-3.5 mr-1" />
+            <span className="text-xs">{t('editor.menu.plotter', { defaultValue: 'プロッター' })}</span>
           </Button>
         )}
 
