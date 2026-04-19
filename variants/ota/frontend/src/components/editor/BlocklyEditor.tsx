@@ -170,6 +170,7 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         if (xml && xml !== '<xml></xml>') {
           const dom = Blockly.utils.xml.textToDom(xml);
           Blockly.Xml.domToWorkspace(dom, workspaceRef.current);
+          savedXmlRef.current = xml;
         }
       } catch (e) {
         console.error('Failed to load XML:', e);
