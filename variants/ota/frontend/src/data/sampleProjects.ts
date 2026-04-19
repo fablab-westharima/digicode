@@ -20,48 +20,7 @@ export const sampleProjects: SampleProject[] = [
     description: 'LEDを1秒間隔で点滅させる基本プログラム',
     category: 'basic',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
-      <block type="arduino_setup" x="50" y="50">
-<statement name="SETUP">
-          <block type="esp32_pin_mode">
-            <field name="PIN">2</field>
-            <field name="MODE">OUTPUT</field>
-          </block>
-        </statement>
-</block>
-<block type="arduino_loop" x="50" y="250">
-<statement name="LOOP">
-          <block type="esp32_digital_write">
-            <field name="PIN">2</field>
-            <field name="VALUE">HIGH</field>
-            <next>
-              <block type="esp32_delay">
-                <value name="TIME">
-                  <block type="math_number">
-                    <field name="NUM">1000</field>
-                  </block>
-                </value>
-                <next>
-                  <block type="esp32_digital_write">
-                    <field name="PIN">2</field>
-                    <field name="VALUE">LOW</field>
-                    <next>
-                      <block type="esp32_delay">
-                        <value name="TIME">
-                          <block type="math_number">
-                            <field name="NUM">1000</field>
-                          </block>
-                        </value>
-                      </block>
-                    </next>
-                  </block>
-                </next>
-              </block>
-            </next>
-          </block>
-        </statement>
-</block>
-    </xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_pin_mode"><field name="PIN">2</field><field name="MODE">OUTPUT</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">HIGH</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value><next><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">LOW</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value></block></next></block></next></block></next></block></statement></block></xml>`
   },
   {
     id: 'serial-hello',

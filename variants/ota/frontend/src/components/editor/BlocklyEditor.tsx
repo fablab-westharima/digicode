@@ -164,12 +164,16 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
 
     // XMLをワークスペースに読み込み
     const loadXml = useCallback((xml: string) => {
+      console.log('[loadXml] CALLED, xml length:', xml?.length, 'workspace:', !!workspaceRef.current);
       if (!workspaceRef.current) return;
       try {
         workspaceRef.current.clear();
         if (xml && xml !== '<xml></xml>') {
           const dom = Blockly.utils.xml.textToDom(xml);
+          console.log('[loadXml] DOM children:', dom.children.length);
           Blockly.Xml.domToWorkspace(dom, workspaceRef.current);
+          const blockCount = workspaceRef.current.getAllBlocks(false).length;
+          console.log('[loadXml] blocks loaded:', blockCount);
           savedXmlRef.current = xml;
         }
       } catch (e) {
