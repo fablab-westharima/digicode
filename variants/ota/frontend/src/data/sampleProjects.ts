@@ -80,7 +80,7 @@ export const sampleProjects: SampleProject[] = [
 <block type="arduino_loop" x="50" y="250">
 <statement name="LOOP">
           <block type="esp32_serial_println">
-            <value name="TEXT">
+            <value name="VALUE">
               <block type="text">
                 <field name="TEXT">Hello DigiCode!</field>
               </block>
@@ -123,19 +123,19 @@ export const sampleProjects: SampleProject[] = [
 <block type="arduino_loop" x="50" y="250">
 <statement name="LOOP">
           <block type="esp32_serial_print">
-            <value name="TEXT">
+            <value name="VALUE">
               <block type="text">
                 <field name="TEXT">Distance: </field>
               </block>
             </value>
             <next>
               <block type="esp32_serial_print">
-                <value name="TEXT">
+                <value name="VALUE">
                   <block type="ultrasonic_distance"></block>
                 </value>
                 <next>
                   <block type="esp32_serial_println">
-                    <value name="TEXT">
+                    <value name="VALUE">
                       <block type="text">
                         <field name="TEXT"> cm</field>
                       </block>
@@ -181,31 +181,31 @@ export const sampleProjects: SampleProject[] = [
 <block type="arduino_loop" x="50" y="250">
 <statement name="LOOP">
           <block type="esp32_serial_print">
-            <value name="TEXT">
+            <value name="VALUE">
               <block type="text">
                 <field name="TEXT">Temp: </field>
               </block>
             </value>
             <next>
               <block type="esp32_serial_print">
-                <value name="TEXT">
+                <value name="VALUE">
                   <block type="dht_temperature"></block>
                 </value>
                 <next>
                   <block type="esp32_serial_print">
-                    <value name="TEXT">
+                    <value name="VALUE">
                       <block type="text">
                         <field name="TEXT">C, Humidity: </field>
                       </block>
                     </value>
                     <next>
                       <block type="esp32_serial_print">
-                        <value name="TEXT">
+                        <value name="VALUE">
                           <block type="dht_humidity"></block>
                         </value>
                         <next>
                           <block type="esp32_serial_println">
-                            <value name="TEXT">
+                            <value name="VALUE">
                               <block type="text">
                                 <field name="TEXT">%</field>
                               </block>
@@ -266,7 +266,7 @@ export const sampleProjects: SampleProject[] = [
                 <field name="NUM">10</field>
               </block>
             </value>
-            <statement name="DO">
+            <statement name="CALLBACK">
               <block type="servo_write">
                 <field name="PIN">13</field>
                 <value name="ANGLE">
@@ -303,7 +303,7 @@ export const sampleProjects: SampleProject[] = [
                     <field name="NUM">10</field>
                   </block>
                 </value>
-                <statement name="DO">
+                <statement name="CALLBACK">
                   <block type="servo_write">
                     <field name="PIN">13</field>
                     <value name="ANGLE">
@@ -1038,14 +1038,14 @@ export const sampleProjects: SampleProject[] = [
                         </value>
                         <next>
                           <block type="esp32_serial_print">
-                            <value name="TEXT">
+                            <value name="VALUE">
                               <block type="text">
                                 <field name="TEXT">Published: Temp=</field>
                               </block>
                             </value>
                             <next>
                               <block type="esp32_serial_println">
-                                <value name="TEXT">
+                                <value name="VALUE">
                                   <block type="dht_temperature"></block>
                                 </value>
                               </block>
@@ -1117,16 +1117,16 @@ export const sampleProjects: SampleProject[] = [
           <block type="mqtt_loop">
             <next>
               <block type="mqtt_on_message">
-                <statement name="DO">
+                <statement name="CALLBACK">
                   <block type="esp32_serial_print">
-                    <value name="TEXT">
+                    <value name="VALUE">
                       <block type="text">
                         <field name="TEXT">Received: </field>
                       </block>
                     </value>
                     <next>
                       <block type="esp32_serial_println">
-                        <value name="TEXT">
+                        <value name="VALUE">
                           <block type="mqtt_message_value"></block>
                         </value>
                         <next>
@@ -1354,7 +1354,7 @@ export const sampleProjects: SampleProject[] = [
         <statement name="CALLBACK">
           <block type="neopixel_set_color">
             <field name="INDEX">0</field>
-            <value name="R">
+            <value name="RED">
               <block type="ha_light_rgb_r"></block>
             </value>
             <value name="G">
