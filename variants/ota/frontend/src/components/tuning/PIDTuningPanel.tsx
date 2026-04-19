@@ -147,7 +147,7 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
                 <SelectItem value="custom">{t('pidTuning.custom')}</SelectItem>
                 {presets.map((preset) => (
                   <SelectItem key={preset.id} value={preset.id}>
-                    {preset.name}
+                    {t(`pidTuning.presets.${preset.id}.name`, { defaultValue: preset.name })}
                   </SelectItem>
                 ))}
               </SelectContent>

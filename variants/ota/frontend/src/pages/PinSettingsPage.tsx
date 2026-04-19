@@ -428,8 +428,8 @@ export function PinSettingsPage() {
                   onClick={() => setRobotMode(modeInfo.id as RobotMode)}
                 >
                   <span className="text-2xl">{modeInfo.icon}</span>
-                  <span className="text-sm font-medium">{modeInfo.name}</span>
-                  <span className="text-xs text-muted-foreground">{modeInfo.description}</span>
+                  <span className="text-sm font-medium">{t(`modeSelector.modes.${modeInfo.id}.name`, { defaultValue: modeInfo.name })}</span>
+                  <span className="text-xs text-muted-foreground">{t(`modeSelector.modes.${modeInfo.id}.description`, { defaultValue: modeInfo.description })}</span>
                 </Button>
               ))}
             </div>

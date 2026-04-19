@@ -2936,8 +2936,8 @@
   },
   "modeSelector": {
     "groups": {
-      "otto": "Robot OTTO",
-      "competition": "Robot de competición",
+      "otto": "Robots OTTO",
+      "competition": "Robots de competición",
       "iot": "IoT / Hogar inteligente",
       "other": "Otros"
     },
@@ -2956,7 +2956,7 @@
       },
       "micromouse": {
         "name": "Micromouse",
-        "description": "Robot para laberintos"
+        "description": "Robot resolvedor de laberintos"
       },
       "lineTrace": {
         "name": "Seguidor de línea",
@@ -2964,11 +2964,11 @@
       },
       "homeassistant": {
         "name": "Home Assistant",
-        "description": "Integración IoT/hogar inteligente"
+        "description": "Integración IoT / Smart-home"
       },
       "generic": {
         "name": "Dispositivo genérico",
-        "description": "Para proyectos de microcontrolador"
+        "description": "Para proyectos con microcontroladores"
       },
       "allBlocks": {
         "name": "Todos los bloques",
@@ -2976,7 +2976,27 @@
       },
       "custom": {
         "name": "Favoritos",
-        "description": "Registrar bloques frecuentes"
+        "description": "Registra los bloques que usas a menudo"
+      },
+      "otto_bipedal": {
+        "name": "OTTO Bípedo",
+        "description": "Robot bípedo de 4 servos"
+      },
+      "otto_wheel": {
+        "name": "OTTO Wheel",
+        "description": "Robot de 2 ruedas"
+      },
+      "otto_ninja": {
+        "name": "OTTO Ninja",
+        "description": "Robot transformer de caminar/rodar"
+      },
+      "line_trace": {
+        "name": "Seguidor de línea",
+        "description": "Robot seguidor de líneas"
+      },
+      "all_blocks": {
+        "name": "Todos los bloques",
+        "description": "Muestra todos los bloques"
       }
     }
   },
@@ -3038,7 +3058,64 @@
       "xiaoEsp32C6": {
         "name": "XIAO ESP32C6",
         "description": "21x17.5mm, WiFi 6, OTA compatible"
+      },
+      "esp32-generic": {
+        "name": "ESP32",
+        "description": "ESP32-WROOM etc., OTA compatible"
+      },
+      "esp32-s3-generic": {
+        "name": "ESP32-S3",
+        "description": "USB OTG, cámara, OTA compatible"
+      },
+      "esp32-c3-generic": {
+        "name": "ESP32-C3",
+        "description": "RISC-V, bajo consumo, OTA compatible"
+      },
+      "esp32-c6-generic": {
+        "name": "ESP32-C6",
+        "description": "WiFi 6, Thread/Zigbee, OTA compatible"
+      },
+      "m5stack-basic": {
+        "name": "M5Stack Basic/Gray/Fire",
+        "description": "Pantalla 2.0\", 3 botones, OTA compatible"
+      },
+      "m5stickc-plus": {
+        "name": "M5StickC Plus",
+        "description": "Pantalla 1.14\", IMU, OTA compatible"
+      },
+      "atom-lite": {
+        "name": "ATOM Lite",
+        "description": "24x24mm, LED RGB, OTA compatible"
+      },
+      "atom-matrix": {
+        "name": "ATOM Matrix",
+        "description": "24x24mm, LED 5x5, IMU, OTA compatible"
+      },
+      "m5stamp-pico": {
+        "name": "M5Stamp Pico",
+        "description": "Formato stamp ultracompacto, OTA compatible"
+      },
+      "m5stamp-c3": {
+        "name": "M5Stamp C3/C3U",
+        "description": "Formato stamp con C3, OTA compatible"
+      },
+      "xiao-esp32c3": {
+        "name": "XIAO ESP32C3",
+        "description": "21x17.5mm, RISC-V, OTA compatible"
+      },
+      "xiao-esp32s3": {
+        "name": "XIAO ESP32S3",
+        "description": "21x17.5mm, cámara, OTA compatible"
+      },
+      "xiao-esp32c6": {
+        "name": "XIAO ESP32C6",
+        "description": "21x17.5mm, WiFi 6, OTA compatible"
       }
+    },
+    "families": {
+      "generic": "ESP32 genérico",
+      "m5stack": "Serie M5Stack",
+      "xiao": "Serie Seeed Xiao"
     }
   },
   "pidTuning": {
@@ -3061,7 +3138,25 @@
     "presetName": "Nombre del Preset",
     "presetNamePlaceholder": "ej., Trazado de Linea Rapido",
     "description": "Descripcion (opcional)",
-    "descriptionPlaceholder": "ej., Configuracion de alta velocidad"
+    "descriptionPlaceholder": "ej., Configuracion de alta velocidad",
+    "presets": {
+      "default-line-trace": {
+        "name": "Seguimiento de línea (estándar)",
+        "description": "Configuración estándar para seguimiento de línea"
+      },
+      "aggressive-line-trace": {
+        "name": "Seguimiento de línea (rápido)",
+        "description": "Configuración para conducción rápida"
+      },
+      "smooth-line-trace": {
+        "name": "Seguimiento de línea (suave)",
+        "description": "Configuración priorizando movimiento suave"
+      },
+      "micromouse-wall": {
+        "name": "Micromouse (seguimiento de pared)",
+        "description": "Configuración para control de seguimiento de pared"
+      }
+    }
   },
   "servo": {
     "trim": {

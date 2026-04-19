@@ -2955,7 +2955,7 @@
         "description": "步行/滾動變形機器人"
       },
       "micromouse": {
-        "name": "迷宮鼠",
+        "name": "Micromouse",
         "description": "迷宮探索機器人"
       },
       "lineTrace": {
@@ -2964,19 +2964,39 @@
       },
       "homeassistant": {
         "name": "Home Assistant",
-        "description": "IoT/智慧家庭整合"
+        "description": "IoT / 智慧家庭整合"
       },
       "generic": {
         "name": "通用裝置",
-        "description": "適用於微控制器專案"
+        "description": "微控制器與電子工作用途"
       },
       "allBlocks": {
         "name": "顯示所有積木",
         "description": "顯示所有積木"
       },
       "custom": {
-        "name": "收藏",
-        "description": "註冊常用積木"
+        "name": "我的最愛",
+        "description": "註冊常用區塊"
+      },
+      "otto_bipedal": {
+        "name": "OTTO 雙足",
+        "description": "4 伺服雙足機器人"
+      },
+      "otto_wheel": {
+        "name": "OTTO Wheel",
+        "description": "雙輪驅動機器人"
+      },
+      "otto_ninja": {
+        "name": "OTTO Ninja",
+        "description": "步行/滾動變形機器人"
+      },
+      "line_trace": {
+        "name": "循線機器人",
+        "description": "循線機器人"
+      },
+      "all_blocks": {
+        "name": "全部區塊",
+        "description": "顯示所有區塊"
       }
     }
   },
@@ -3038,7 +3058,64 @@
       "xiaoEsp32C6": {
         "name": "XIAO ESP32C6",
         "description": "21x17.5mm、WiFi 6，支援OTA"
+      },
+      "esp32-generic": {
+        "name": "ESP32（標準）",
+        "description": "ESP32-WROOM 等,支援 OTA"
+      },
+      "esp32-s3-generic": {
+        "name": "ESP32-S3",
+        "description": "USB OTG、支援相機、支援 OTA"
+      },
+      "esp32-c3-generic": {
+        "name": "ESP32-C3",
+        "description": "RISC-V、低功耗、支援 OTA"
+      },
+      "esp32-c6-generic": {
+        "name": "ESP32-C6",
+        "description": "WiFi 6、Thread/Zigbee、支援 OTA"
+      },
+      "m5stack-basic": {
+        "name": "M5Stack Basic/Gray/Fire",
+        "description": "2.0 吋螢幕、3 按鈕、支援 OTA"
+      },
+      "m5stickc-plus": {
+        "name": "M5StickC Plus",
+        "description": "1.14 吋螢幕、IMU、支援 OTA"
+      },
+      "atom-lite": {
+        "name": "ATOM Lite",
+        "description": "24x24mm、RGB LED、支援 OTA"
+      },
+      "atom-matrix": {
+        "name": "ATOM Matrix",
+        "description": "24x24mm、5x5 LED、IMU、支援 OTA"
+      },
+      "m5stamp-pico": {
+        "name": "M5Stamp Pico",
+        "description": "超小型郵票型、支援 OTA"
+      },
+      "m5stamp-c3": {
+        "name": "M5Stamp C3/C3U",
+        "description": "搭載 C3 郵票型、支援 OTA"
+      },
+      "xiao-esp32c3": {
+        "name": "XIAO ESP32C3",
+        "description": "21x17.5mm、RISC-V、支援 OTA"
+      },
+      "xiao-esp32s3": {
+        "name": "XIAO ESP32S3",
+        "description": "21x17.5mm、支援相機、支援 OTA"
+      },
+      "xiao-esp32c6": {
+        "name": "XIAO ESP32C6",
+        "description": "21x17.5mm、WiFi 6、支援 OTA"
       }
+    },
+    "families": {
+      "generic": "通用 ESP32",
+      "m5stack": "M5Stack 系列",
+      "xiao": "Seeed Xiao 系列"
     }
   },
   "pidTuning": {
@@ -3061,7 +3138,25 @@
     "presetName": "預設名稱",
     "presetNamePlaceholder": "例：快速循線",
     "description": "描述（選填）",
-    "descriptionPlaceholder": "例：競賽用高速設定"
+    "descriptionPlaceholder": "例：競賽用高速設定",
+    "presets": {
+      "default-line-trace": {
+        "name": "循線（標準）",
+        "description": "標準循線設定"
+      },
+      "aggressive-line-trace": {
+        "name": "循線（高速）",
+        "description": "高速行駛設定"
+      },
+      "smooth-line-trace": {
+        "name": "循線（流暢）",
+        "description": "優先流暢動作的設定"
+      },
+      "micromouse-wall": {
+        "name": "Micromouse（沿牆）",
+        "description": "沿牆控制設定"
+      }
+    }
   },
   "servo": {
     "trim": {

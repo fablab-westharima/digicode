@@ -2967,6 +2967,26 @@
       "custom": {
         "name": "お気に入り",
         "description": "よく使うブロックを登録"
+      },
+      "otto_bipedal": {
+        "name": "OTTO 二足歩行",
+        "description": "4サーボ二足歩行ロボット"
+      },
+      "otto_wheel": {
+        "name": "OTTO Wheel",
+        "description": "2輪駆動ロボット"
+      },
+      "otto_ninja": {
+        "name": "OTTO Ninja",
+        "description": "歩行/走行変形ロボット"
+      },
+      "line_trace": {
+        "name": "ロボトレース",
+        "description": "ライントレースロボット"
+      },
+      "all_blocks": {
+        "name": "全ブロック表示",
+        "description": "すべてのブロックを表示"
       }
     }
   },
@@ -3028,7 +3048,64 @@
       "xiaoEsp32C6": {
         "name": "XIAO ESP32C6",
         "description": "21x17.5mm、WiFi 6、OTA可"
+      },
+      "esp32-generic": {
+        "name": "ESP32（無印）",
+        "description": "ESP32-WROOM等、OTA可"
+      },
+      "esp32-s3-generic": {
+        "name": "ESP32-S3",
+        "description": "USB OTG、カメラ対応、OTA可"
+      },
+      "esp32-c3-generic": {
+        "name": "ESP32-C3",
+        "description": "RISC-V、省電力、OTA可"
+      },
+      "esp32-c6-generic": {
+        "name": "ESP32-C6",
+        "description": "WiFi 6、Thread/Zigbee、OTA可"
+      },
+      "m5stack-basic": {
+        "name": "M5Stack Basic/Gray/Fire",
+        "description": "2.0インチ画面、ボタン3個、OTA可"
+      },
+      "m5stickc-plus": {
+        "name": "M5StickC Plus",
+        "description": "1.14インチ画面、IMU搭載、OTA可"
+      },
+      "atom-lite": {
+        "name": "ATOM Lite",
+        "description": "24x24mm、RGB LED、OTA可"
+      },
+      "atom-matrix": {
+        "name": "ATOM Matrix",
+        "description": "24x24mm、5x5 LED、IMU、OTA可"
+      },
+      "m5stamp-pico": {
+        "name": "M5Stamp Pico",
+        "description": "超小型スタンプ型、OTA可"
+      },
+      "m5stamp-c3": {
+        "name": "M5Stamp C3/C3U",
+        "description": "C3搭載スタンプ型、OTA可"
+      },
+      "xiao-esp32c3": {
+        "name": "XIAO ESP32C3",
+        "description": "21x17.5mm、RISC-V、OTA可"
+      },
+      "xiao-esp32s3": {
+        "name": "XIAO ESP32S3",
+        "description": "21x17.5mm、カメラ対応、OTA可"
+      },
+      "xiao-esp32c6": {
+        "name": "XIAO ESP32C6",
+        "description": "21x17.5mm、WiFi 6、OTA可"
       }
+    },
+    "families": {
+      "generic": "汎用 ESP32",
+      "m5stack": "M5Stack シリーズ",
+      "xiao": "Seeed Xiao シリーズ"
     }
   },
   "pidTuning": {
@@ -3051,7 +3128,25 @@
     "presetName": "プリセット名",
     "presetNamePlaceholder": "例: 高速ライントレース",
     "description": "説明（任意）",
-    "descriptionPlaceholder": "例: 競技用の高速設定"
+    "descriptionPlaceholder": "例: 競技用の高速設定",
+    "presets": {
+      "default-line-trace": {
+        "name": "ライントレース（標準）",
+        "description": "標準的なライントレース用設定"
+      },
+      "aggressive-line-trace": {
+        "name": "ライントレース（高速）",
+        "description": "高速走行向けの設定"
+      },
+      "smooth-line-trace": {
+        "name": "ライントレース（スムーズ）",
+        "description": "滑らかな動きを優先した設定"
+      },
+      "micromouse-wall": {
+        "name": "マイクロマウス（壁追従）",
+        "description": "壁追従制御用の設定"
+      }
+    }
   },
   "servo": {
     "trim": {

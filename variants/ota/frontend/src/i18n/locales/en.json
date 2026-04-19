@@ -2936,10 +2936,10 @@
   },
   "modeSelector": {
     "groups": {
-      "otto": "OTTO Robot",
-      "competition": "Competition Robot",
+      "otto": "OTTO Robots",
+      "competition": "Competition Robots",
       "iot": "IoT / Smart Home",
-      "other": "Others"
+      "other": "Other"
     },
     "modes": {
       "ottoBipedal": {
@@ -2964,7 +2964,7 @@
       },
       "homeassistant": {
         "name": "Home Assistant",
-        "description": "IoT/Smart home integration"
+        "description": "IoT / Smart-home integration"
       },
       "generic": {
         "name": "Generic Device",
@@ -2977,6 +2977,26 @@
       "custom": {
         "name": "Favorites",
         "description": "Register frequently used blocks"
+      },
+      "otto_bipedal": {
+        "name": "OTTO Bipedal",
+        "description": "4-servo bipedal robot"
+      },
+      "otto_wheel": {
+        "name": "OTTO Wheel",
+        "description": "2-wheel drive robot"
+      },
+      "otto_ninja": {
+        "name": "OTTO Ninja",
+        "description": "Walk/roll transforming robot"
+      },
+      "line_trace": {
+        "name": "Line Tracer",
+        "description": "Line tracing robot"
+      },
+      "all_blocks": {
+        "name": "All Blocks",
+        "description": "Show all blocks"
       }
     }
   },
@@ -3038,7 +3058,64 @@
       "xiaoEsp32C6": {
         "name": "XIAO ESP32C6",
         "description": "21x17.5mm, WiFi 6, OTA supported"
+      },
+      "esp32-generic": {
+        "name": "ESP32",
+        "description": "ESP32-WROOM etc., OTA supported"
+      },
+      "esp32-s3-generic": {
+        "name": "ESP32-S3",
+        "description": "USB OTG, camera support, OTA supported"
+      },
+      "esp32-c3-generic": {
+        "name": "ESP32-C3",
+        "description": "RISC-V, low power, OTA supported"
+      },
+      "esp32-c6-generic": {
+        "name": "ESP32-C6",
+        "description": "WiFi 6, Thread/Zigbee, OTA supported"
+      },
+      "m5stack-basic": {
+        "name": "M5Stack Basic/Gray/Fire",
+        "description": "2.0-inch screen, 3 buttons, OTA supported"
+      },
+      "m5stickc-plus": {
+        "name": "M5StickC Plus",
+        "description": "1.14-inch screen, IMU, OTA supported"
+      },
+      "atom-lite": {
+        "name": "ATOM Lite",
+        "description": "24x24mm, RGB LED, OTA supported"
+      },
+      "atom-matrix": {
+        "name": "ATOM Matrix",
+        "description": "24x24mm, 5x5 LED, IMU, OTA supported"
+      },
+      "m5stamp-pico": {
+        "name": "M5Stamp Pico",
+        "description": "Ultra-compact stamp form, OTA supported"
+      },
+      "m5stamp-c3": {
+        "name": "M5Stamp C3/C3U",
+        "description": "C3-based stamp form, OTA supported"
+      },
+      "xiao-esp32c3": {
+        "name": "XIAO ESP32C3",
+        "description": "21x17.5mm, RISC-V, OTA supported"
+      },
+      "xiao-esp32s3": {
+        "name": "XIAO ESP32S3",
+        "description": "21x17.5mm, camera support, OTA supported"
+      },
+      "xiao-esp32c6": {
+        "name": "XIAO ESP32C6",
+        "description": "21x17.5mm, WiFi 6, OTA supported"
       }
+    },
+    "families": {
+      "generic": "Generic ESP32",
+      "m5stack": "M5Stack Series",
+      "xiao": "Seeed Xiao Series"
     }
   },
   "pidTuning": {
@@ -3061,7 +3138,25 @@
     "presetName": "Preset Name",
     "presetNamePlaceholder": "e.g., Fast Line Trace",
     "description": "Description (optional)",
-    "descriptionPlaceholder": "e.g., High-speed competition settings"
+    "descriptionPlaceholder": "e.g., High-speed competition settings",
+    "presets": {
+      "default-line-trace": {
+        "name": "Line Trace (Standard)",
+        "description": "Standard setting for line tracing"
+      },
+      "aggressive-line-trace": {
+        "name": "Line Trace (Fast)",
+        "description": "Setting for fast driving"
+      },
+      "smooth-line-trace": {
+        "name": "Line Trace (Smooth)",
+        "description": "Setting prioritizing smooth motion"
+      },
+      "micromouse-wall": {
+        "name": "Micromouse (Wall Follow)",
+        "description": "Setting for wall-follow control"
+      }
+    }
   },
   "servo": {
     "trim": {
