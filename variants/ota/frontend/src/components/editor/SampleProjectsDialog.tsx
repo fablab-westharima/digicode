@@ -9,7 +9,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { sampleProjects, sampleCategories, type SampleProject } from '@/data/sampleProjects';
+import { type SampleProject } from '@/data/sampleProjects';
+import { useLocalizedSampleProjects } from '@/data/sampleProjectsI18n';
 
 interface SampleProjectsDialogProps {
   open: boolean;
@@ -24,9 +25,10 @@ export function SampleProjectsDialog({
 }: SampleProjectsDialogProps) {
   const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState<string>('basic');
+  const { samples, categories: sampleCategories } = useLocalizedSampleProjects();
 
   const categories = Object.entries(sampleCategories);
-  const filteredProjects = sampleProjects.filter(p => p.category === selectedCategory);
+  const filteredProjects = samples.filter(p => p.category === selectedCategory);
 
   const handleSelect = (sample: SampleProject) => {
     onSelectSample(sample);

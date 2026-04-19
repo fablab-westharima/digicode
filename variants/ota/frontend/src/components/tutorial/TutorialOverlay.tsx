@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTutorialStore } from '@/stores/tutorialStore';
-import { getTutorialById } from '@/data/tutorials';
+import { useLocalizedTutorials } from '@/data/tutorialsI18n';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, X, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -20,7 +20,8 @@ export function TutorialOverlay() {
 
   const [highlightRect, setHighlightRect] = useState<DOMRect | null>(null);
 
-  const tutorial = currentTutorial ? getTutorialById(currentTutorial) : null;
+  const { getById } = useLocalizedTutorials();
+  const tutorial = currentTutorial ? getById(currentTutorial) : null;
   const step = tutorial?.steps[currentStep];
   const isLastStep = tutorial ? currentStep >= tutorial.steps.length - 1 : false;
   const isFirstStep = currentStep === 0;

@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { tutorials, tutorialCategories } from '@/data/tutorials';
+import { useLocalizedTutorials } from '@/data/tutorialsI18n';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { Clock, Star, CheckCircle, Play } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -19,6 +19,7 @@ interface TutorialSelectDialogProps {
 
 export function TutorialSelectDialog({ open, onOpenChange }: TutorialSelectDialogProps) {
   const { t } = useTranslation();
+  const { tutorials, categories: tutorialCategories } = useLocalizedTutorials();
   const { startTutorial, completedTutorials } = useTutorialStore();
 
   const handleStartTutorial = (tutorialId: string) => {
