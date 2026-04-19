@@ -303,7 +303,7 @@ export function PinSettingsPage() {
           <div className="flex items-center gap-3">
             <Button variant="ghost" onClick={() => navigate(-1)}>
               <ArrowLeft className="w-5 h-5 mr-2" />
-              {t('common.back', '戻る')}
+              {t('common.back', { defaultValue: '戻る' })}
             </Button>
             <h1 className="text-xl font-bold text-[#E6EDF3]">{t('home.pinSettings')}</h1>
           </div>

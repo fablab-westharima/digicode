@@ -12,7 +12,8 @@
     "yes": "是",
     "no": "否",
     "optional": "選填",
-    "goToHome": "返回首頁"
+    "goToHome": "返回首頁",
+    "back": "返回"
   },
   "status": {
     "ready": "就緒",
@@ -458,6 +459,15 @@
       "launchFinderTitle": "啟動 DigiCode Finder（選擇寫入裝置）",
       "readClipboard": "讀取剪貼簿（套用選擇）",
       "downloadFinder": "下載 DigiCode Finder"
+    },
+    "limitReached": {
+      "title": "已達編譯次數上限",
+      "description": "本月雲端編譯次數已達上限，請選擇以下其中一個選項。",
+      "option1Title": "選項 1：使用本機編譯環境",
+      "option1Desc": "使用 Docker 在本機啟動編譯伺服器後，即可免費無限制編譯。",
+      "option2Title": "選項 2：升級方案",
+      "option2Desc": "您也可以升級至可使用更多編譯次數的方案。",
+      "openSettings": "開啟編譯設定"
     },
     "adc2Warning": {
       "title": "ADC2 引腳使用警告",
@@ -2366,7 +2376,9 @@
       }
     },
     "subtitle": "管理引腳分配設定",
-    "default": "預設"
+    "default": "預設",
+    "perPinServoSettings": "每支腳位個別脈衝寬度設定",
+    "perPinServoDesc": "可依個別腳位覆寫脈衝寬度以配合伺服馬達的個體差異"
   },
   "docs": {
     "loadError": "無法載入文件。",
@@ -2627,6 +2639,22 @@
     "waitingSystemReady": "請等待偵測到「System Ready!」",
     "staticIpConfirmed": "固定 IP 設定（已確定）",
     "staticIpAutoHint": "💡 重新啟動時會重置，DHCP 新取得的 IP 將自動固定"
+  },
+  "favoriteSettings": {
+    "title": "⭐ 最愛積木設定",
+    "description": "請選擇您常用的積木類別。所選類別將顯示在「最愛」模式中。",
+    "selectedCount": "已選：{{count}} 個類別",
+    "groups": {
+      "otto": "OTTO 機器人",
+      "competition": "競賽機器人",
+      "homeAssistant": "Home Assistant",
+      "motors": "馬達與驅動",
+      "sensors": "感測器",
+      "actuators": "作動器",
+      "gpioAndSerial": "GPIO 與序列",
+      "communicationAndControl": "通訊與控制",
+      "logicBasic": "邏輯與基本"
+    }
   },
   "usbPortRelease": {
     "title": "釋放 USB 連接埠",

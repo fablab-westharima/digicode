@@ -315,7 +315,7 @@ export function PinSettingsDialog({ open, onOpenChange }: PinSettingsDialogProps
         <DialogHeader>
           <DialogTitle className="text-[#E6EDF3]">{t('home.pinSettings')}</DialogTitle>
           <DialogDescription className="text-[#8B949E]">
-            {t('pinSettings.settingsDesc', 'ピンアサインメント設定を管理します')}
+            {t('pinSettings.subtitle', { defaultValue: 'ピンアサインメント設定を管理します' })}
           </DialogDescription>
         </DialogHeader>
 

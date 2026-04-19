@@ -12,7 +12,8 @@
     "yes": "Sim",
     "no": "Não",
     "optional": "Opcional",
-    "goToHome": "Ir para início"
+    "goToHome": "Ir para início",
+    "back": "Voltar"
   },
   "status": {
     "ready": "Pronto",
@@ -458,6 +459,15 @@
       "launchFinderTitle": "Iniciar DigiCode Finder (selecionar dispositivos de destino)",
       "readClipboard": "Ler área de transferência (aplicar seleção)",
       "downloadFinder": "Baixar DigiCode Finder"
+    },
+    "limitReached": {
+      "title": "Limite de compilações atingido",
+      "description": "Você atingiu o limite de compilações em nuvem deste mês. Escolha uma das opções abaixo.",
+      "option1Title": "Opção 1: Usar o ambiente de compilação local",
+      "option1Desc": "Ao executar o servidor de compilação localmente com Docker, você pode compilar sem limites gratuitamente.",
+      "option2Title": "Opção 2: Atualizar seu plano",
+      "option2Desc": "Você também pode mudar para um plano que permita mais compilações.",
+      "openSettings": "Abrir configurações de compilação"
     },
     "adc2Warning": {
       "title": "Aviso de uso do pino ADC2",
@@ -2366,7 +2376,9 @@
       }
     },
     "subtitle": "Gerenciar configurações de atribuição de pinos",
-    "default": "Padrão"
+    "default": "Padrão",
+    "perPinServoSettings": "Ajustes de largura de pulso por pino",
+    "perPinServoDesc": "Sobrescreva a largura de pulso por pino para acomodar variações de servo"
   },
   "docs": {
     "loadError": "Falha ao carregar o documento.",
@@ -2627,6 +2639,22 @@
     "waitingSystemReady": "Aguarde até que \"System Ready!\" seja detectado",
     "staticIpConfirmed": "Configuração de IP estático (confirmada)",
     "staticIpAutoHint": "💡 Redefinido ao reiniciar; o IP obtido via DHCP será fixado automaticamente"
+  },
+  "favoriteSettings": {
+    "title": "⭐ Configuração de blocos favoritos",
+    "description": "Selecione as categorias de blocos que você usa com mais frequência. As categorias selecionadas aparecerão no modo \"Favoritos\".",
+    "selectedCount": "Selecionados: {{count}} categorias",
+    "groups": {
+      "otto": "Robôs OTTO",
+      "competition": "Robôs de competição",
+      "homeAssistant": "Home Assistant",
+      "motors": "Motores e acionamentos",
+      "sensors": "Sensores",
+      "actuators": "Atuadores",
+      "gpioAndSerial": "GPIO e Serial",
+      "communicationAndControl": "Comunicação e controle",
+      "logicBasic": "Lógica e básicos"
+    }
   },
   "usbPortRelease": {
     "title": "Liberar portas USB",

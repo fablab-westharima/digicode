@@ -12,7 +12,8 @@
     "yes": "はい",
     "no": "いいえ",
     "optional": "省略可",
-    "goToHome": "ホームへ"
+    "goToHome": "ホームへ",
+    "back": "戻る"
   },
   "status": {
     "ready": "準備完了",
@@ -460,6 +461,15 @@
       "readClipboard": "クリップボードを読み込み（選択反映）",
       "downloadFinder": "DigiCode Finder をダウンロード"
     },
+    "limitReached": {
+      "title": "コンパイル回数の上限に達しました",
+      "description": "今月のクラウドコンパイル回数が上限に達しました。以下のいずれかをお選びください。",
+      "option1Title": "選択肢 1: ローカルコンパイル環境を利用",
+      "option1Desc": "Dockerでローカルにコンパイルサーバーを起動すれば、回数制限なく無料でコンパイルできます。",
+      "option2Title": "選択肢 2: プランをアップグレード",
+      "option2Desc": "より多くのコンパイル回数を利用できるプランに変更することもできます。",
+      "openSettings": "コンパイル設定を開く"
+    },
     "adc2Warning": {
       "title": "ADC2ピン使用の警告",
       "description": "OTAファームウェアはWiFi常時接続のため、ADC2ピンのアナログ読み取りは正常に動作しません。",
@@ -777,6 +787,22 @@
     "waitingSystemReady": "「System Ready!」を検知するまでお待ちください",
     "staticIpConfirmed": "固定IP設定（確定済み）",
     "staticIpAutoHint": "💡 再起動時にリセットされ、DHCPで新規取得したIPが自動的に固定化されます"
+  },
+  "favoriteSettings": {
+    "title": "⭐ お気に入りブロック設定",
+    "description": "よく使うブロックカテゴリを選択してください。選択したカテゴリが「お気に入り」モードに表示されます。",
+    "selectedCount": "選択中: {{count}} カテゴリ",
+    "groups": {
+      "otto": "OTTO ロボット",
+      "competition": "競技ロボット",
+      "homeAssistant": "Home Assistant",
+      "motors": "モーター・駆動系",
+      "sensors": "センサー",
+      "actuators": "アクチュエーター",
+      "gpioAndSerial": "GPIO・通信",
+      "communicationAndControl": "通信・制御",
+      "logicBasic": "ロジック・基本"
+    }
   },
   "usbPortRelease": {
     "title": "USBポート解放",
@@ -2492,7 +2518,9 @@
       }
     },
     "subtitle": "ピンアサインメント設定を管理します",
-    "default": "デフォルト"
+    "default": "デフォルト",
+    "perPinServoSettings": "ピンごとの個別パルス幅設定",
+    "perPinServoDesc": "サーボの個体差に合わせて、ピンごとにパルス幅を上書きできます"
   },
   "docs": {
     "loadError": "ドキュメントの読み込みに失敗しました。",

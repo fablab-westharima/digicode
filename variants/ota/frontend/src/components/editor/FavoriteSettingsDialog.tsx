@@ -11,68 +11,90 @@ interface FavoriteSettingsDialogProps {
 }
 
 // 利用可能な全カテゴリ（arduino_coreは除外）
-const AVAILABLE_CATEGORIES = [
+// 多言語対応: 表示名は toolbox.categories.* の既存キーを流用、グループ名は favoriteSettings.groups.* を使用
+type GroupKey =
+  | 'otto'
+  | 'competition'
+  | 'homeAssistant'
+  | 'motors'
+  | 'sensors'
+  | 'actuators'
+  | 'gpioAndSerial'
+  | 'communicationAndControl'
+  | 'logicBasic';
+
+interface CategoryEntry {
+  id: string;
+  i18nKey: string;
+  groupKey: GroupKey;
+}
+
+const AVAILABLE_CATEGORIES: CategoryEntry[] = [
   // OTTO系ロボット
-  { id: 'otto_bipedal', name: '🤖 二足歩行', group: 'OTTO ロボット' },
-  { id: 'otto_wheel', name: '🛞 Wheel', group: 'OTTO ロボット' },
-  { id: 'otto_ninja', name: '🦾 Ninja', group: 'OTTO ロボット' },
+  { id: 'otto_bipedal', i18nKey: 'toolbox.categories.ottoBipedal', groupKey: 'otto' },
+  { id: 'otto_wheel', i18nKey: 'toolbox.categories.ottoWheel', groupKey: 'otto' },
+  { id: 'otto_ninja', i18nKey: 'toolbox.categories.ottoNinja', groupKey: 'otto' },
 
   // 競技ロボット
-  { id: 'sensor_line', name: '📍 ラインセンサー', group: '競技ロボット' },
-  { id: 'sensor_qtr', name: '🚀 QTRセンサー（高速）', group: '競技ロボット' },
-  { id: 'sensor_wall', name: '🧱 壁センサー', group: '競技ロボット' },
+  { id: 'sensor_line', i18nKey: 'toolbox.categories.lineSensor', groupKey: 'competition' },
+  { id: 'sensor_qtr', i18nKey: 'toolbox.categories.qtrSensor', groupKey: 'competition' },
+  { id: 'sensor_wall', i18nKey: 'toolbox.categories.wallSensor', groupKey: 'competition' },
 
   // Home Assistant
-  { id: 'mqtt', name: '📡 MQTT/HA', group: 'Home Assistant' },
-  { id: 'arduino_ha', name: '🏠 HA Auto Discovery', group: 'Home Assistant' },
+  { id: 'mqtt', i18nKey: 'toolbox.categories.mqttHa', groupKey: 'homeAssistant' },
+  { id: 'arduino_ha', i18nKey: 'toolbox.categories.haAutoDiscovery', groupKey: 'homeAssistant' },
 
   // モーター・駆動系
-  { id: 'motor', name: '🚗 モーター', group: 'モーター・駆動系' },
-  { id: 'diff_drive', name: '🔄 差動駆動', group: 'モーター・駆動系' },
-  { id: 'encoder', name: '📏 エンコーダー', group: 'モーター・駆動系' },
+  { id: 'motor', i18nKey: 'toolbox.categories.motor', groupKey: 'motors' },
+  { id: 'diff_drive', i18nKey: 'toolbox.categories.diffDrive', groupKey: 'motors' },
+  { id: 'encoder', i18nKey: 'toolbox.categories.encoder', groupKey: 'motors' },
 
   // センサー
-  { id: 'sensor_ultrasonic', name: '📡 超音波センサー', group: 'センサー' },
-  { id: 'sensor_dht', name: '🌡️ 温湿度', group: 'センサー' },
-  { id: 'sensor_digital', name: '👆 デジタルセンサー', group: 'センサー' },
-  { id: 'sensor_analog', name: '📊 アナログセンサー', group: 'センサー' },
+  { id: 'sensor_ultrasonic', i18nKey: 'toolbox.categories.ultrasonicSensor', groupKey: 'sensors' },
+  { id: 'sensor_dht', i18nKey: 'toolbox.categories.temperature', groupKey: 'sensors' },
+  { id: 'sensor_digital', i18nKey: 'toolbox.categories.digitalSensor', groupKey: 'sensors' },
+  { id: 'sensor_analog', i18nKey: 'toolbox.categories.analogSensor', groupKey: 'sensors' },
 
   // アクチュエーター
-  { id: 'servo', name: '🔧 サーボ', group: 'アクチュエーター' },
-  { id: 'stepper', name: '🔩 ステッピング', group: 'アクチュエーター' },
-  { id: 'buzzer', name: '🔊 ブザー', group: 'アクチュエーター' },
-  { id: 'neopixel', name: '💡 NeoPixel', group: 'アクチュエーター' },
-  { id: 'display', name: '📺 ディスプレイ', group: 'アクチュエーター' },
+  { id: 'servo', i18nKey: 'toolbox.categories.servo', groupKey: 'actuators' },
+  { id: 'stepper', i18nKey: 'toolbox.categories.stepper', groupKey: 'actuators' },
+  { id: 'buzzer', i18nKey: 'toolbox.categories.buzzer', groupKey: 'actuators' },
+  { id: 'neopixel', i18nKey: 'toolbox.categories.neopixel', groupKey: 'actuators' },
+  { id: 'display', i18nKey: 'toolbox.categories.display', groupKey: 'actuators' },
 
   // GPIO・通信
-  { id: 'gpio', name: '⚡ GPIO', group: 'GPIO・通信' },
-  { id: 'serial', name: '📟 シリアル', group: 'GPIO・通信' },
+  { id: 'gpio', i18nKey: 'toolbox.categories.gpio', groupKey: 'gpioAndSerial' },
+  { id: 'serial', i18nKey: 'toolbox.categories.serial', groupKey: 'gpioAndSerial' },
 
   // 通信・制御
-  { id: 'http', name: '🌐 HTTP', group: '通信・制御' },
-  { id: 'json', name: '📋 JSON', group: '通信・制御' },
-  { id: 'ota', name: '📡 OTA/ESP', group: '通信・制御' },
-  { id: 'pid', name: '🎛️ PID制御', group: '通信・制御' },
-  { id: 'time', name: '⏱️ 時間', group: '通信・制御' },
+  { id: 'http', i18nKey: 'toolbox.categories.http', groupKey: 'communicationAndControl' },
+  { id: 'json', i18nKey: 'toolbox.categories.json', groupKey: 'communicationAndControl' },
+  { id: 'ota', i18nKey: 'toolbox.categories.otaEsp', groupKey: 'communicationAndControl' },
+  { id: 'pid', i18nKey: 'toolbox.categories.pidControl', groupKey: 'communicationAndControl' },
+  { id: 'time', i18nKey: 'toolbox.categories.time', groupKey: 'communicationAndControl' },
 
   // ロジック・基本
-  { id: 'logic', name: '🧠 ロジック', group: 'ロジック・基本' },
-  { id: 'loops', name: '🔄 ループ', group: 'ロジック・基本' },
-  { id: 'math', name: '🔢 数学', group: 'ロジック・基本' },
-  { id: 'text', name: '📝 テキスト', group: 'ロジック・基本' },
-  { id: 'lists', name: '📋 配列', group: 'ロジック・基本' },
-  { id: 'variables', name: '📦 変数', group: 'ロジック・基本' },
-  { id: 'functions', name: '⚙️ 関数', group: 'ロジック・基本' },
+  { id: 'logic', i18nKey: 'toolbox.categories.logic', groupKey: 'logicBasic' },
+  { id: 'loops', i18nKey: 'toolbox.categories.loops', groupKey: 'logicBasic' },
+  { id: 'math', i18nKey: 'toolbox.categories.math', groupKey: 'logicBasic' },
+  { id: 'text', i18nKey: 'toolbox.categories.text', groupKey: 'logicBasic' },
+  { id: 'lists', i18nKey: 'toolbox.categories.lists', groupKey: 'logicBasic' },
+  { id: 'variables', i18nKey: 'toolbox.categories.variables', groupKey: 'logicBasic' },
+  { id: 'functions', i18nKey: 'toolbox.categories.functions', groupKey: 'logicBasic' },
 ];
 
-// グループごとにカテゴリを整理
-const groupedCategories = AVAILABLE_CATEGORIES.reduce((acc, cat) => {
-  if (!acc[cat.group]) {
-    acc[cat.group] = [];
-  }
-  acc[cat.group].push(cat);
-  return acc;
-}, {} as Record<string, typeof AVAILABLE_CATEGORIES>);
+// 表示順を固定するためのグループキーリスト
+const GROUP_ORDER: GroupKey[] = [
+  'otto',
+  'competition',
+  'homeAssistant',
+  'motors',
+  'sensors',
+  'actuators',
+  'gpioAndSerial',
+  'communicationAndControl',
+  'logicBasic',
+];
 
 export function FavoriteSettingsDialog({ open, onOpenChange }: FavoriteSettingsDialogProps) {
   const { favorites, toggleFavorite, isFavorite } = useFavoriteCategoriesStore();
@@ -82,22 +104,28 @@ export function FavoriteSettingsDialog({ open, onOpenChange }: FavoriteSettingsD
     toggleFavorite(categoryId);
   };
 
+  // グループごとにカテゴリを整理（GROUP_ORDER の順で表示）
+  const groupedCategories = GROUP_ORDER.map((groupKey) => ({
+    groupKey,
+    categories: AVAILABLE_CATEGORIES.filter((c) => c.groupKey === groupKey),
+  }));
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh]">
         <DialogHeader>
-          <DialogTitle className="text-xl">⭐ お気に入りブロック設定</DialogTitle>
+          <DialogTitle className="text-xl">{t('favoriteSettings.title', { defaultValue: '⭐ お気に入りブロック設定' })}</DialogTitle>
           <DialogDescription>
-            よく使うブロックカテゴリを選択してください。選択したカテゴリが「お気に入り」モードに表示されます。
+            {t('favoriteSettings.description', { defaultValue: 'よく使うブロックカテゴリを選択してください。選択したカテゴリが「お気に入り」モードに表示されます。' })}
           </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="h-[500px] pr-4">
           <div className="space-y-6">
-            {Object.entries(groupedCategories).map(([groupName, categories]) => (
-              <div key={groupName}>
+            {groupedCategories.map(({ groupKey, categories }) => (
+              <div key={groupKey}>
                 <h3 className="text-sm font-semibold text-[#E6EDF3] mb-3 pb-2 border-b border-[#2E333D]">
-                  {groupName}
+                  {t(`favoriteSettings.groups.${groupKey}`)}
                 </h3>
                 <div className="space-y-2">
                   {categories.map((category) => (
@@ -114,7 +142,7 @@ export function FavoriteSettingsDialog({ open, onOpenChange }: FavoriteSettingsD
                         htmlFor={category.id}
                         className="text-sm text-[#E6EDF3] cursor-pointer flex-1"
                       >
-                        {category.name}
+                        {t(category.i18nKey)}
                       </label>
                     </div>
                   ))}
@@ -126,10 +154,10 @@ export function FavoriteSettingsDialog({ open, onOpenChange }: FavoriteSettingsD
 
         <div className="flex justify-between items-center pt-4 border-t border-[#2E333D]">
           <div className="text-sm text-[#8B949E]">
-            選択中: {favorites.length} カテゴリ
+            {t('favoriteSettings.selectedCount', { count: favorites.length, defaultValue: '選択中: {{count}} カテゴリ' })}
           </div>
           <Button onClick={() => onOpenChange(false)}>
-            閉じる
+            {t('common.close', { defaultValue: '閉じる' })}
           </Button>
         </div>
       </DialogContent>

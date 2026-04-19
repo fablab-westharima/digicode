@@ -12,7 +12,8 @@
     "yes": "Yes",
     "no": "No",
     "optional": "Optional",
-    "goToHome": "Go to Home"
+    "goToHome": "Go to Home",
+    "back": "Back"
   },
   "status": {
     "ready": "Ready",
@@ -459,6 +460,15 @@
       "readClipboard": "Read clipboard (apply selection)",
       "downloadFinder": "Download DigiCode Finder"
     },
+    "limitReached": {
+      "title": "Compilation Limit Reached",
+      "description": "You have reached this month's cloud compilation limit. Please choose one of the options below.",
+      "option1Title": "Option 1: Use the local compilation environment",
+      "option1Desc": "By running the compilation server locally with Docker, you can compile without limits for free.",
+      "option2Title": "Option 2: Upgrade your plan",
+      "option2Desc": "You can switch to a plan that allows more compilations.",
+      "openSettings": "Open Compile Settings"
+    },
     "adc2Warning": {
       "title": "ADC2 Pin Usage Warning",
       "description": "OTA firmware uses WiFi continuously, so analog reads on ADC2 pins will not work correctly.",
@@ -777,6 +787,22 @@
     "waitingSystemReady": "Please wait until \"System Ready!\" is detected",
     "staticIpConfirmed": "Static IP settings (confirmed)",
     "staticIpAutoHint": "💡 Reset on restart; the IP newly acquired via DHCP will be pinned automatically"
+  },
+  "favoriteSettings": {
+    "title": "⭐ Favorite Block Settings",
+    "description": "Select the block categories you use frequently. Selected categories will appear in \"Favorites\" mode.",
+    "selectedCount": "Selected: {{count}} categories",
+    "groups": {
+      "otto": "OTTO Robots",
+      "competition": "Competition Robots",
+      "homeAssistant": "Home Assistant",
+      "motors": "Motors & Drives",
+      "sensors": "Sensors",
+      "actuators": "Actuators",
+      "gpioAndSerial": "GPIO & Serial",
+      "communicationAndControl": "Communication & Control",
+      "logicBasic": "Logic & Basics"
+    }
   },
   "usbPortRelease": {
     "title": "Release USB Ports",
@@ -2502,7 +2528,9 @@
       }
     },
     "subtitle": "Manage pin assignment settings",
-    "default": "Default"
+    "default": "Default",
+    "perPinServoSettings": "Per-Pin Servo Pulse Width Settings",
+    "perPinServoDesc": "Override the pulse width per pin to accommodate servo variations"
   },
   "docs": {
     "loadError": "Failed to load document.",
