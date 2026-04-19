@@ -45,11 +45,12 @@ export function UsbSetupDialog({ open, onOpenChange }: UsbSetupDialogProps) {
     try {
       setIsReleasingPorts(true);
       await firmwareService.releaseAllPorts();
-      alert('✓ すべてのポートを解放しました。\nページを再読み込みしてください。');
+      alert(t('usbPortRelease.successAlert', { defaultValue: '✓ すべてのポートを解放しました。\nページを再読み込みしてください。' }));
       // ページをリロード（状態をクリアするため）
       window.location.reload();
     } catch (error) {
-      alert(`✗ ポート解放エラー:\n${error instanceof Error ? error.message : '不明なエラー'}`);
+      const message = error instanceof Error ? error.message : t('usbPortRelease.unknownError', { defaultValue: '不明なエラー' });
+      alert(t('usbPortRelease.errorAlert', { message, defaultValue: '✗ ポート解放エラー:\n{{message}}' }));
     } finally {
       setIsReleasingPorts(false);
     }
@@ -151,10 +152,10 @@ export function UsbSetupDialog({ open, onOpenChange }: UsbSetupDialogProps) {
                   <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <p className="text-xs text-[#E6EDF3] font-medium mb-1">
-                      ポートが解放されない場合
+                      {t('usbSetup.portNotReleasedTitle', { defaultValue: 'ポートが解放されない場合' })}
                     </p>
                     <p className="text-xs text-[#8B949E] mb-2">
-                      Windowsでポートが解放されず接続できない場合、このボタンで強制解放できます。
+                      {t('usbSetup.portNotReleasedDesc', { defaultValue: 'Windowsでポートが解放されず接続できない場合、このボタンで強制解放できます。' })}
                     </p>
                     <Button
                       variant="outline"
@@ -164,7 +165,9 @@ export function UsbSetupDialog({ open, onOpenChange }: UsbSetupDialogProps) {
                       className="text-xs h-7 text-red-500 hover:text-red-600 border-red-500/30 hover:border-red-500/50"
                     >
                       <Trash2 className="w-3 h-3 mr-1" />
-                      {isReleasingPorts ? '解放中...' : 'すべてのポートを解放'}
+                      {isReleasingPorts
+                        ? t('usbPortRelease.releasing', { defaultValue: '解放中...' })
+                        : t('usbSetup.releaseAllPorts', { defaultValue: 'すべてのポートを解放' })}
                     </Button>
                   </div>
                 </div>

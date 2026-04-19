@@ -778,6 +778,55 @@
     "staticIpConfirmed": "Static IP settings (confirmed)",
     "staticIpAutoHint": "💡 Reset on restart; the IP newly acquired via DHCP will be pinned automatically"
   },
+  "usbPortRelease": {
+    "title": "Release USB Ports",
+    "description": "Force-release all USB ports",
+    "warning": "Use this on Windows when ports are not released and you cannot connect. The page will reload after execution.",
+    "success": "✓ All ports released. Reloading page...",
+    "releasing": "Releasing...",
+    "releaseAll": "Release all",
+    "successAlert": "✓ All ports released.\nPlease reload the page.",
+    "errorAlert": "✗ Port release error:\n{{message}}",
+    "unknownError": "Unknown error"
+  },
+  "usbSetup": {
+    "title": "USB Wired Connection",
+    "description": "Connect to the ESP32 via a USB cable",
+    "step1": {
+      "title": "USB Connection",
+      "description": "Connect the ESP32 to your PC with a USB cable"
+    },
+    "step2": {
+      "title": "Device Operations",
+      "description": "Operate the connected device"
+    },
+    "resetDevice": "Reset Device",
+    "resetDesc": "Restart the device. Use this to verify program behavior.",
+    "connected": "USB Connected",
+    "notConnected": "USB Not Connected",
+    "portNotReleasedTitle": "When ports are not released",
+    "portNotReleasedDesc": "On Windows, if ports cannot be released and you cannot connect, use this button to force-release.",
+    "releaseAllPorts": "Release all ports"
+  },
+  "usbDriver": {
+    "title": "USB Drivers",
+    "description": "If your device is not recognized, install the USB serial driver. Download the driver that matches the chip on your ESP32 board.",
+    "supportedChips": "Supported chips",
+    "linuxBuiltIn": "Included in the kernel (usually no installation needed)",
+    "tip": "💡 <strong>Tip:</strong> If you don't know which chip your board has, check the underside of the board or its product page. It's often printed near the USB connector.",
+    "cp210x": {
+      "chips": "CP2102, CP2104, etc.",
+      "description": "USB-UART bridge chip used in many ESP32 development boards"
+    },
+    "ch340": {
+      "chips": "CH340G, CH340C, CH340E, etc.",
+      "description": "USB-UART bridge chip commonly used in budget ESP32 development boards"
+    },
+    "ftdi": {
+      "chips": "FT232R, FT231X, etc.",
+      "description": "USB-UART bridge chip used in high-quality ESP32 development boards"
+    }
+  },
   "wifiPrerequisites": {
     "title": "Required Software",
     "description": "The following software is required to write programs via WiFi OTA.",

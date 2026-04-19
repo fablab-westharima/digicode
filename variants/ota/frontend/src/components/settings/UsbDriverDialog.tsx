@@ -4,7 +4,7 @@
  * ESP32開発ボード用のUSBシリアルドライバーのダウンロードリンクを提供
  */
 
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -27,24 +27,24 @@ export function UsbDriverDialog({ open, onOpenChange }: UsbDriverDialogProps) {
   const drivers = [
     {
       name: 'CP210x (Silicon Labs)',
-      chips: 'CP2102, CP2104など',
-      description: '多くのESP32開発ボードで使用されているUSB-UARTブリッジチップ',
+      chips: t('usbDriver.cp210x.chips', { defaultValue: 'CP2102, CP2104など' }),
+      description: t('usbDriver.cp210x.description', { defaultValue: '多くのESP32開発ボードで使用されているUSB-UARTブリッジチップ' }),
       windows: 'https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads',
       mac: 'https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads',
       linux: 'https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads',
     },
     {
       name: 'CH340 (WCH)',
-      chips: 'CH340G, CH340C, CH340Eなど',
-      description: '安価なESP32開発ボードでよく使用されるUSB-UARTブリッジチップ',
+      chips: t('usbDriver.ch340.chips', { defaultValue: 'CH340G, CH340C, CH340Eなど' }),
+      description: t('usbDriver.ch340.description', { defaultValue: '安価なESP32開発ボードでよく使用されるUSB-UARTブリッジチップ' }),
       windows: 'https://www.wch-ic.com/downloads/CH341SER_EXE.html',
       mac: 'https://www.wch-ic.com/downloads/CH341SER_MAC_ZIP.html',
-      linux: 'カーネルに含まれています（通常インストール不要）',
+      linux: t('usbDriver.linuxBuiltIn', { defaultValue: 'カーネルに含まれています（通常インストール不要）' }),
     },
     {
       name: 'FTDI',
-      chips: 'FT232R, FT231Xなど',
-      description: '高品質なESP32開発ボードで使用されるUSB-UARTブリッジチップ',
+      chips: t('usbDriver.ftdi.chips', { defaultValue: 'FT232R, FT231Xなど' }),
+      description: t('usbDriver.ftdi.description', { defaultValue: '高品質なESP32開発ボードで使用されるUSB-UARTブリッジチップ' }),
       windows: 'https://ftdichip.com/drivers/vcp-drivers/',
       mac: 'https://ftdichip.com/drivers/vcp-drivers/',
       linux: 'https://ftdichip.com/drivers/vcp-drivers/',
@@ -73,7 +73,7 @@ export function UsbDriverDialog({ open, onOpenChange }: UsbDriverDialogProps) {
               <CardHeader className="pb-3">
                 <CardTitle className="text-base">{driver.name}</CardTitle>
                 <CardDescription className="text-sm">
-                  <span className="font-medium">対応チップ:</span> {driver.chips}
+                  <span className="font-medium">{t('usbDriver.supportedChips', { defaultValue: '対応チップ' })}:</span> {driver.chips}
                   <br />
                   {driver.description}
                 </CardDescription>
@@ -164,8 +164,11 @@ export function UsbDriverDialog({ open, onOpenChange }: UsbDriverDialogProps) {
           <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
             <CardContent className="pt-4">
               <p className="text-sm text-blue-900 dark:text-blue-100">
-                💡 <strong>ヒント:</strong> お使いのボードに搭載されているチップがわからない場合は、
-                ボードの裏面や商品ページをご確認ください。多くの場合、USB端子付近に印字されています。
+                <Trans
+                  i18nKey="usbDriver.tip"
+                  components={{ strong: <strong /> }}
+                  defaults="💡 <strong>ヒント:</strong> お使いのボードに搭載されているチップがわからない場合は、ボードの裏面や商品ページをご確認ください。多くの場合、USB端子付近に印字されています。"
+                />
               </p>
             </CardContent>
           </Card>

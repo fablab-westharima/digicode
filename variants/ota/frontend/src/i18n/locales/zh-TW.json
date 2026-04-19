@@ -2628,6 +2628,55 @@
     "staticIpConfirmed": "固定 IP 設定（已確定）",
     "staticIpAutoHint": "💡 重新啟動時會重置，DHCP 新取得的 IP 將自動固定"
   },
+  "usbPortRelease": {
+    "title": "釋放 USB 連接埠",
+    "description": "強制釋放所有 USB 連接埠",
+    "warning": "Windows 上當連接埠未釋放而無法連線時使用。執行後頁面會重新載入。",
+    "success": "✓ 已釋放所有連接埠。正在重新載入頁面...",
+    "releasing": "釋放中...",
+    "releaseAll": "全部釋放",
+    "successAlert": "✓ 已釋放所有連接埠。\n請重新載入頁面。",
+    "errorAlert": "✗ 連接埠釋放錯誤：\n{{message}}",
+    "unknownError": "未知錯誤"
+  },
+  "usbSetup": {
+    "title": "USB 有線連接",
+    "description": "透過 USB 纜線連接至 ESP32",
+    "step1": {
+      "title": "USB 連接",
+      "description": "請用 USB 纜線將 ESP32 連接至 PC"
+    },
+    "step2": {
+      "title": "裝置操作",
+      "description": "操作連線中的裝置"
+    },
+    "resetDevice": "重設裝置",
+    "resetDesc": "重新啟動裝置。可用於驗證程式動作等。",
+    "connected": "USB 已連線",
+    "notConnected": "USB 未連線",
+    "portNotReleasedTitle": "連接埠未釋放時",
+    "portNotReleasedDesc": "Windows 上若連接埠未釋放而無法連線，可使用此按鈕強制釋放。",
+    "releaseAllPorts": "釋放所有連接埠"
+  },
+  "usbDriver": {
+    "title": "USB 驅動程式",
+    "description": "若裝置未被辨識，請安裝 USB 序列驅動程式。請下載對應您 ESP32 開發板上晶片的驅動程式。",
+    "supportedChips": "支援晶片",
+    "linuxBuiltIn": "已包含於核心中（通常無需安裝）",
+    "tip": "💡 <strong>提示：</strong>若不清楚您的開發板搭載哪種晶片，請查看開發板背面或商品頁面。通常會印在 USB 端子附近。",
+    "cp210x": {
+      "chips": "CP2102、CP2104 等",
+      "description": "許多 ESP32 開發板使用的 USB-UART 橋接晶片"
+    },
+    "ch340": {
+      "chips": "CH340G、CH340C、CH340E 等",
+      "description": "廉價 ESP32 開發板常用的 USB-UART 橋接晶片"
+    },
+    "ftdi": {
+      "chips": "FT232R、FT231X 等",
+      "description": "高品質 ESP32 開發板使用的 USB-UART 橋接晶片"
+    }
+  },
   "wifiPrerequisites": {
     "title": "所需軟體",
     "description": "透過 WiFi OTA 寫入程式需要以下軟體。",

@@ -2628,6 +2628,55 @@
     "staticIpConfirmed": "Configuración de IP estática (confirmada)",
     "staticIpAutoHint": "💡 Al reiniciar se restablece; la IP obtenida por DHCP se fijará automáticamente"
   },
+  "usbPortRelease": {
+    "title": "Liberar puertos USB",
+    "description": "Forzar la liberación de todos los puertos USB",
+    "warning": "Úselo en Windows cuando los puertos no se liberan y no puede conectar. La página se recargará tras la ejecución.",
+    "success": "✓ Todos los puertos liberados. Recargando página...",
+    "releasing": "Liberando...",
+    "releaseAll": "Liberar todo",
+    "successAlert": "✓ Todos los puertos liberados.\nPor favor, recargue la página.",
+    "errorAlert": "✗ Error al liberar puerto:\n{{message}}",
+    "unknownError": "Error desconocido"
+  },
+  "usbSetup": {
+    "title": "Conexión USB cableada",
+    "description": "Conectarse al ESP32 mediante cable USB",
+    "step1": {
+      "title": "Conexión USB",
+      "description": "Conecte el ESP32 a su PC con un cable USB"
+    },
+    "step2": {
+      "title": "Operaciones del dispositivo",
+      "description": "Operar el dispositivo conectado"
+    },
+    "resetDevice": "Reiniciar dispositivo",
+    "resetDesc": "Reinicia el dispositivo. Úselo para verificar el comportamiento del programa.",
+    "connected": "USB conectado",
+    "notConnected": "USB no conectado",
+    "portNotReleasedTitle": "Cuando los puertos no se liberan",
+    "portNotReleasedDesc": "En Windows, si los puertos no se liberan y no puede conectar, use este botón para forzar la liberación.",
+    "releaseAllPorts": "Liberar todos los puertos"
+  },
+  "usbDriver": {
+    "title": "Controladores USB",
+    "description": "Si su dispositivo no es reconocido, instale el controlador serie USB. Descargue el controlador que corresponda al chip de su placa ESP32.",
+    "supportedChips": "Chips compatibles",
+    "linuxBuiltIn": "Incluido en el kernel (generalmente no requiere instalación)",
+    "tip": "💡 <strong>Consejo:</strong> Si no sabe qué chip tiene su placa, compruebe la parte inferior de la placa o la página del producto. Suele estar impreso cerca del conector USB.",
+    "cp210x": {
+      "chips": "CP2102, CP2104, etc.",
+      "description": "Chip puente USB-UART usado en muchas placas de desarrollo ESP32"
+    },
+    "ch340": {
+      "chips": "CH340G, CH340C, CH340E, etc.",
+      "description": "Chip puente USB-UART comúnmente usado en placas de desarrollo ESP32 económicas"
+    },
+    "ftdi": {
+      "chips": "FT232R, FT231X, etc.",
+      "description": "Chip puente USB-UART usado en placas de desarrollo ESP32 de alta calidad"
+    }
+  },
   "wifiPrerequisites": {
     "title": "Software requerido",
     "description": "Se requiere el siguiente software para escribir programas vía WiFi OTA.",

@@ -778,6 +778,55 @@
     "staticIpConfirmed": "固定IP設定（確定済み）",
     "staticIpAutoHint": "💡 再起動時にリセットされ、DHCPで新規取得したIPが自動的に固定化されます"
   },
+  "usbPortRelease": {
+    "title": "USBポート解放",
+    "description": "すべてのUSBポートを強制的に解放します",
+    "warning": "Windowsでポートが解放されず接続できない場合に使用してください。実行後、ページが再読み込みされます。",
+    "success": "✓ すべてのポートを解放しました。ページを再読み込みします...",
+    "releasing": "解放中...",
+    "releaseAll": "すべて解放",
+    "successAlert": "✓ すべてのポートを解放しました。\nページを再読み込みしてください。",
+    "errorAlert": "✗ ポート解放エラー:\n{{message}}",
+    "unknownError": "不明なエラー"
+  },
+  "usbSetup": {
+    "title": "USB有線接続",
+    "description": "USBケーブルでESP32に接続します",
+    "step1": {
+      "title": "USB接続",
+      "description": "ESP32をUSBケーブルでPCに接続してください"
+    },
+    "step2": {
+      "title": "デバイス操作",
+      "description": "接続中のデバイスを操作します"
+    },
+    "resetDevice": "デバイスをリセット",
+    "resetDesc": "デバイスを再起動します。プログラムの動作確認などに使用してください。",
+    "connected": "USB接続中",
+    "notConnected": "USB未接続",
+    "portNotReleasedTitle": "ポートが解放されない場合",
+    "portNotReleasedDesc": "Windowsでポートが解放されず接続できない場合、このボタンで強制解放できます。",
+    "releaseAllPorts": "すべてのポートを解放"
+  },
+  "usbDriver": {
+    "title": "USBドライバー",
+    "description": "デバイスが認識されない場合、USBシリアルドライバーをインストールしてください。お使いのESP32ボードに搭載されているチップに対応したドライバーをダウンロードしてください。",
+    "supportedChips": "対応チップ",
+    "linuxBuiltIn": "カーネルに含まれています（通常インストール不要）",
+    "tip": "💡 <strong>ヒント:</strong> お使いのボードに搭載されているチップがわからない場合は、ボードの裏面や商品ページをご確認ください。多くの場合、USB端子付近に印字されています。",
+    "cp210x": {
+      "chips": "CP2102, CP2104など",
+      "description": "多くのESP32開発ボードで使用されているUSB-UARTブリッジチップ"
+    },
+    "ch340": {
+      "chips": "CH340G, CH340C, CH340Eなど",
+      "description": "安価なESP32開発ボードでよく使用されるUSB-UARTブリッジチップ"
+    },
+    "ftdi": {
+      "chips": "FT232R, FT231Xなど",
+      "description": "高品質なESP32開発ボードで使用されるUSB-UARTブリッジチップ"
+    }
+  },
   "wifiPrerequisites": {
     "title": "必要ソフトの準備",
     "description": "WiFi OTAでプログラムを書き込むには、以下のソフトウェアが必要です。",

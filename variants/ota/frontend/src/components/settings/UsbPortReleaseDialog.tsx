@@ -39,7 +39,8 @@ export function UsbPortReleaseDialog({ open, onOpenChange }: UsbPortReleaseDialo
         window.location.reload();
       }, 3000);
     } catch (error) {
-      alert(`✗ ポート解放エラー:\n${error instanceof Error ? error.message : '不明なエラー'}`);
+      const message = error instanceof Error ? error.message : t('usbPortRelease.unknownError', { defaultValue: '不明なエラー' });
+      alert(t('usbPortRelease.errorAlert', { message, defaultValue: '✗ ポート解放エラー:\n{{message}}' }));
       setIsReleasing(false);
     }
   };
