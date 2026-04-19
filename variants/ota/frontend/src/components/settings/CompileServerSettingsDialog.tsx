@@ -31,7 +31,7 @@ export function CompileServerSettingsDialog({
             {t('settings.compileSettings', { defaultValue: 'コンパイル設定' })}
           </DialogTitle>
           <DialogDescription>
-            {t('settings.compileServerDesc', { defaultValue: 'コンパイルに使用するサーバーを選択してください' })}
+            {t('settings.compileServerDesc', { defaultValue: 'プログラムのコンパイルに使用するサーバーを選択します' })}
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">

@@ -24,7 +24,7 @@ export function ClassesPage() {
       const data = await listClasses();
       setClasses(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('classes.fetchError', { defaultValue: 'クラス一覧の取得に失敗しました' }));
+      setError(err instanceof Error ? err.message : t('classes.fetchError', { defaultValue: 'データの取得に失敗しました' }));
     } finally {
       setLoading(false);
     }

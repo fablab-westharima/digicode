@@ -339,7 +339,7 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
                     className="border-[#2E333D] text-[#E6EDF3] hover:bg-[#2E333D]"
                   >
                     {isLoading
-                      ? t('common.loading', { defaultValue: '読込中...' })
+                      ? t('common.loading', { defaultValue: '読み込み中...' })
                       : t('servo.trim.reload', { defaultValue: '再読込' })}
                   </Button>
                 )}
@@ -533,7 +533,7 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
 
           {/* 保存注意書き */}
           <p className="text-xs text-[#8B949E]">
-            {t('servo.trim.saveNote', { defaultValue: '保存するとデバイスのNVSに書き込まれ、再起動後も保持されます' })}
+            {t('servo.trim.saveNote', { defaultValue: '保存するとデバイス本体に書き込まれ、電源を切っても設定が保持されます' })}
           </p>
         </div>
 

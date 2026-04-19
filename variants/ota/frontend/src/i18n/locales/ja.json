@@ -136,7 +136,7 @@
       "deleteSuccess": "パスキーを削除しました",
       "deleteError": "パスキーの削除に失敗しました",
       "loginError": "パスキーでのログインに失敗しました",
-      "notSupported": "お使いのブラウザはパスキーをサポートていません",
+      "notSupported": "お使いのブラウザはパスキーをサポートしていません",
       "orDivider": "または",
       "registerDesc": "このデバイスにパスキーを登録すると、次回からパスワードなしでログインできます。",
       "registerFailed": "パスキーの登録に失敗しました",

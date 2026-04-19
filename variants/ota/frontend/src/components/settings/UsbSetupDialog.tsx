@@ -76,7 +76,7 @@ export function UsbSetupDialog({ open, onOpenChange }: UsbSetupDialogProps) {
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              {t('device.webSerialNotSupported', { defaultValue: 'お使いのブラウザはWebSerialをサポートしていません。Chrome、Edge、またはOperaをお使いください。' })}
+              {t('device.webSerialNotSupported', { defaultValue: 'Web Serial APIはこのブラウザでサポートされていません。Chrome または Edge ブラウザをご使用ください。' })}
             </AlertDescription>
           </Alert>
         </DialogContent>
@@ -117,9 +117,9 @@ export function UsbSetupDialog({ open, onOpenChange }: UsbSetupDialogProps) {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-[#E6EDF3]">
-                      {status === 'connected' ? t('device.connectedToEsp32', { defaultValue: 'ESP32に接続中' }) :
-                       status === 'connecting' ? t('device.processing', { defaultValue: '処理中...' }) :
-                       t('device.connectEsp32Usb', { defaultValue: 'ESP32をUSBで接続' })}
+                      {status === 'connected' ? t('device.connectedToEsp32', { defaultValue: 'ESP32に接続済み' }) :
+                       status === 'connecting' ? t('device.processing', { defaultValue: '接続処理中...' }) :
+                       t('device.connectEsp32Usb', { defaultValue: 'ESP32をUSBケーブルで接続' })}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <div className={`w-2 h-2 rounded-full ${
@@ -129,7 +129,7 @@ export function UsbSetupDialog({ open, onOpenChange }: UsbSetupDialogProps) {
                       }`} />
                       <span className="text-xs text-[#8B949E]">
                         {status === 'connected' ? t('device.connected', { defaultValue: '接続済み' }) :
-                         status === 'connecting' ? t('device.processing', { defaultValue: '処理中...' }) :
+                         status === 'connecting' ? t('device.processing', { defaultValue: '接続処理中...' }) :
                          t('device.disconnected', { defaultValue: '未接続' })}
                       </span>
                     </div>
@@ -237,7 +237,7 @@ export function UsbSetupDialog({ open, onOpenChange }: UsbSetupDialogProps) {
                     className="bg-black text-green-400 font-mono text-xs p-3 rounded h-40 overflow-y-auto"
                   >
                     {output.length === 0 ? (
-                      <div className="text-gray-500">{t('device.waitingOutput', { defaultValue: '出力待ち...' })}</div>
+                      <div className="text-gray-500">{t('device.waitingOutput', { defaultValue: '出力待機中...' })}</div>
                     ) : (
                       output.map((line, index) => (
                         <div key={index}>{line}</div>

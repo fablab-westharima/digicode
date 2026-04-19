@@ -159,7 +159,7 @@ export const CompileServerSettings = () => {
                 ? 'opacity-50 cursor-not-allowed bg-gray-500/5'
                 : 'hover:bg-gray-500/10 cursor-pointer'
             }`}
-            title={cloudDisabled ? t('settings.loginRequiredForCloud', { defaultValue: 'ログインが必要です' }) : undefined}
+            title={cloudDisabled ? t('settings.loginRequiredForCloud', { defaultValue: 'クラウドコンパイルを利用するにはログインが必要です。ローカルコンパイルサーバーは引き続き利用できます。' }) : undefined}
           >
             <RadioGroupItem
               value="cloud"

@@ -117,7 +117,7 @@ export function OtpInputDialog({ open, onOpenChange, email, onSuccess }: OtpInpu
         window.location.href = '/';
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : t('auth.2fa.verifyError', { defaultValue: 'OTP検証に失敗しました' }));
+      setError(error instanceof Error ? error.message : t('auth.2fa.verifyError', { defaultValue: 'コードの確認に失敗しました' }));
       // エラー時は入力をクリア
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
@@ -138,7 +138,7 @@ export function OtpInputDialog({ open, onOpenChange, email, onSuccess }: OtpInpu
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
     } catch (error) {
-      setError(error instanceof Error ? error.message : t('auth.2fa.resendError', { defaultValue: 'OTP再送信に失敗しました' }));
+      setError(error instanceof Error ? error.message : t('auth.2fa.resendError', { defaultValue: 'コードの再送信に失敗しました' }));
     } finally {
       setIsResending(false);
     }

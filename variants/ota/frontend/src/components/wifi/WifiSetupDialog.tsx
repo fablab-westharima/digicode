@@ -904,7 +904,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
                   {/* mDNSホスト名プレビュー */}
                   {deviceName && !deviceNameError && (
                     <p className="text-xs text-green-400 mt-2 font-mono">
-                      {t('device.mdnsPreview', { name: deviceName, defaultValue: `mDNSホスト名: digicode-${deviceName}.local` })}
+                      {t('device.mdnsPreview', { name: deviceName, defaultValue: 'mDNSホスト名: digicode-{{name}}.local' })}
                     </p>
                   )}
 
