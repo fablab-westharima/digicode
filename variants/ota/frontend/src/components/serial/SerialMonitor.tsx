@@ -90,11 +90,11 @@ export function SerialMonitor({ className }: SerialMonitorProps) {
         style={{ minHeight: '200px' }}
       >
         {output.length === 0 ? (
-          <span className="text-muted-foreground">
+          <div className="h-full flex items-center justify-center text-[#8B949E] text-sm">
             {status === 'connected'
               ? t('editor.serial.waiting', { defaultValue: 'ESP32からのデータを待機中...' })
               : t('editor.serial.connectPrompt', { defaultValue: 'ESP32に接続してください' })}
-          </span>
+          </div>
         ) : (
           output.map((line, index) => (
             <div key={index} className={line.startsWith('>') ? 'text-green-400' : ''}>
