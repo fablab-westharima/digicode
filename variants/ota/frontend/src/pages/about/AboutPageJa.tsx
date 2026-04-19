@@ -220,11 +220,11 @@ export default function AboutPageJa() {
           />
           <BoardCategory
             title="Seeed XIAO シリーズ"
-            boards={['XIAO ESP32C3', 'XIAO ESP32S3', 'XIAO ESP32C6']}
+            boards={['XIAO ESP32C3', 'XIAO ESP32S3', 'XIAO ESP32C6', 'XIAO RP2040']}
           />
           <BoardCategory
             title="Raspberry Pi / RP2040"
-            boards={['Raspberry Pi Pico', 'Raspberry Pi Pico W', 'XIAO RP2040', 'Arduino Nano RP2040 Connect']}
+            boards={['Raspberry Pi Pico', 'Raspberry Pi Pico W', 'Arduino Nano RP2040 Connect']}
           />
         </div>
       </section>

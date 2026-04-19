@@ -3079,7 +3079,7 @@
         "name": "Raspberry Pi Pico W",
         "description": "RP2040 + CYW43439, WiFi/BLE, apenas gravação USB"
       },
-      "rp2040Xiao": {
+      "xiaoRp2040": {
         "name": "XIAO RP2040",
         "description": "21x17.5mm, RP2040, apenas gravação USB"
       },

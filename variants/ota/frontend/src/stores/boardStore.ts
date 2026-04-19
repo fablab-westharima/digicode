@@ -237,7 +237,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     name: 'XIAO RP2040',
     fqbn: 'rp2040:rp2040:seeed_xiao_rp2040',
     description: '21x17.5mm、RP2040、USB書き込みのみ',
-    category: 'rp2040',
+    category: 'xiao',
     supportsWifi: false,
     supportsOta: false,
     supportsBle: false,

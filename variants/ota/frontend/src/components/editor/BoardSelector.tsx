@@ -35,7 +35,7 @@ const BOARD_I18N_KEYS: Record<string, string> = {
   'xiao-esp32c6': 'xiaoEsp32C6',
   'rp2040-pico': 'rp2040Pico',
   'rp2040-pico-w': 'rp2040PicoW',
-  'rp2040-xiao': 'rp2040Xiao',
+  'rp2040-xiao': 'xiaoRp2040',
   'rp2040-nano-connect': 'rp2040NanoConnect',
 };
 
