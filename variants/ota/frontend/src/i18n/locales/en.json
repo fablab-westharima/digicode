@@ -16,7 +16,8 @@
     "back": "Back",
     "saving": "Saving...",
     "add": "Add",
-    "login": "Sign In"
+    "login": "Sign In",
+    "copy": "Copy"
   },
   "status": {
     "ready": "Ready",
@@ -3196,6 +3197,14 @@
       "nameRequired": "Please enter a class name",
       "nameTooLong": "Class name must be 100 characters or less",
       "error": "Failed to create class"
+    },
+    "csv": {
+      "headerName": "Name",
+      "headerLoginId": "Login ID",
+      "headerInitialPassword": "Initial Password",
+      "headerPassword": "Password",
+      "studentListTitle": "Student List",
+      "exportDate": "Export Date"
     }
   },
   "plan": {
@@ -3320,7 +3329,9 @@
       "submittedAt": "Submitted",
       "actions": "Actions",
       "urlError": "Invalid URL",
-      "fetchError": "An error occurred"
+      "fetchError": "An error occurred",
+      "gradedShort": "Graded",
+      "action": "Action"
     },
     "graded": {
       "empty": "No graded assignments yet",
@@ -3337,7 +3348,10 @@
       "submittedAt": "Submitted: {{date}}",
       "gradedAt": "Graded: {{date}}",
       "returnedNote": "This assignment has been returned. If you edit and resubmit, the previous grading will be cleared.",
-      "viewAnswer": "View submitted answer"
+      "viewAnswer": "View submitted answer",
+      "title": "Graded Results",
+      "fetchError": "Failed to fetch graded results",
+      "detailError": "Failed to fetch grading details"
     }
   },
   "changePassword": {

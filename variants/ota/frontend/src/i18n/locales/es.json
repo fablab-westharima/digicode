@@ -16,7 +16,8 @@
     "back": "Atrás",
     "saving": "Guardando...",
     "add": "Añadir",
-    "login": "Iniciar sesión"
+    "login": "Iniciar sesión",
+    "copy": "Copiar"
   },
   "status": {
     "ready": "Listo",
@@ -3196,6 +3197,14 @@
       "nameRequired": "Introduce un nombre de clase",
       "nameTooLong": "El nombre de la clase debe tener 100 caracteres o menos",
       "error": "Error al crear la clase"
+    },
+    "csv": {
+      "headerName": "Nombre",
+      "headerLoginId": "ID de inicio",
+      "headerInitialPassword": "Contraseña inicial",
+      "headerPassword": "Contraseña",
+      "studentListTitle": "Lista de estudiantes",
+      "exportDate": "Fecha de exportación"
     }
   },
   "plan": {
@@ -3320,7 +3329,9 @@
       "submittedAt": "Fecha de entrega",
       "actions": "Acciones",
       "urlError": "URL no válida",
-      "fetchError": "Se produjo un error"
+      "fetchError": "Se produjo un error",
+      "gradedShort": "Calificado",
+      "action": "Acción"
     },
     "graded": {
       "empty": "Aún no hay tareas calificadas",
@@ -3337,7 +3348,10 @@
       "submittedAt": "Fecha de entrega: {{date}}",
       "gradedAt": "Fecha de calificación: {{date}}",
       "returnedNote": "Esta tarea ha sido devuelta. Si editas y vuelves a entregar, la calificación anterior se borrará.",
-      "viewAnswer": "Ver respuesta enviada"
+      "viewAnswer": "Ver respuesta enviada",
+      "title": "Resultados calificados",
+      "fetchError": "Error al obtener los resultados calificados",
+      "detailError": "Error al obtener los detalles de calificación"
     }
   },
   "changePassword": {

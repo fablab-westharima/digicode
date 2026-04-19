@@ -36,8 +36,9 @@ function triggerDownload(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-function downloadStudentsCsv(students: StudentInfo[], className: string) {
-  const header = '名前,ログインID,初期パスワード\n';
+type CsvLabels = { name: string; loginId: string; initialPassword: string };
+function downloadStudentsCsv(students: StudentInfo[], className: string, labels: CsvLabels) {
+  const header = `${labels.name},${labels.loginId},${labels.initialPassword}\n`;
   const rows = students.map((s) =>
     `${s.displayName || ''},${s.loginId},${s.password || ''}`
   ).join('\n');
@@ -46,8 +47,17 @@ function downloadStudentsCsv(students: StudentInfo[], className: string) {
   triggerDownload(blob, `${className}_students_${new Date().toISOString().slice(0, 10)}.csv`);
 }
 
-function downloadStudentsHtml(students: StudentInfo[], className: string) {
-  const date = new Date().toLocaleDateString('ja-JP');
+type HtmlLabels = {
+  name: string;
+  loginId: string;
+  password: string;
+  studentListTitle: string;
+  exportDate: string;
+  htmlLang: string;
+  dateLocale: string;
+};
+function downloadStudentsHtml(students: StudentInfo[], className: string, labels: HtmlLabels) {
+  const date = new Date().toLocaleDateString(labels.dateLocale);
   const rows = students.map((s) =>
     `      <tr>
         <td>${s.displayName || ''}</td>
@@ -57,10 +67,10 @@ function downloadStudentsHtml(students: StudentInfo[], className: string) {
   ).join('\n');
 
   const html = `<!DOCTYPE html>
-<html lang="ja">
+<html lang="${labels.htmlLang}">
 <head>
   <meta charset="utf-8">
-  <title>${className} — 生徒一覧</title>
+  <title>${className} — ${labels.studentListTitle}</title>
   <style>
     body { font-family: sans-serif; margin: 2rem; color: #222; }
     h1 { font-size: 1.4rem; margin-bottom: 0.5rem; }
@@ -72,11 +82,11 @@ function downloadStudentsHtml(students: StudentInfo[], className: string) {
   </style>
 </head>
 <body>
-  <h1>${className} — 生徒一覧</h1>
-  <p>出力日: ${date}</p>
+  <h1>${className} — ${labels.studentListTitle}</h1>
+  <p>${labels.exportDate}: ${date}</p>
   <table>
     <thead>
-      <tr><th>名前</th><th>ログインID</th><th>パスワード</th></tr>
+      <tr><th>${labels.name}</th><th>${labels.loginId}</th><th>${labels.password}</th></tr>
     </thead>
     <tbody>
 ${rows}
@@ -93,7 +103,7 @@ export function ClassDetailPage() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { user } = useAuthStore();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [classInfo, setClassInfo] = useState<ClassInfo | null>(null);
   const [students, setStudents] = useState<StudentInfo[]>([]);
@@ -512,14 +522,26 @@ export function ClassDetailPage() {
               {students.length > 0 && (
                 <>
                   <button
-                    onClick={() => downloadStudentsCsv(students, classInfo.name)}
+                    onClick={() => downloadStudentsCsv(students, classInfo.name, {
+                      name: t('classes.csv.headerName', { defaultValue: '名前' }),
+                      loginId: t('classes.csv.headerLoginId', { defaultValue: 'ログインID' }),
+                      initialPassword: t('classes.csv.headerInitialPassword', { defaultValue: '初期パスワード' }),
+                    })}
                     className="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent"
                   >
                     <Download className="w-4 h-4" />
                     {t('classes.students.csv')}
                   </button>
                   <button
-                    onClick={() => downloadStudentsHtml(students, classInfo.name)}
+                    onClick={() => downloadStudentsHtml(students, classInfo.name, {
+                      name: t('classes.csv.headerName', { defaultValue: '名前' }),
+                      loginId: t('classes.csv.headerLoginId', { defaultValue: 'ログインID' }),
+                      password: t('classes.csv.headerPassword', { defaultValue: 'パスワード' }),
+                      studentListTitle: t('classes.csv.studentListTitle', { defaultValue: '生徒一覧' }),
+                      exportDate: t('classes.csv.exportDate', { defaultValue: '出力日' }),
+                      htmlLang: i18n.language || 'ja',
+                      dateLocale: i18n.language || 'ja-JP',
+                    })}
                     className="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-border text-foreground hover:bg-accent"
                   >
                     <Download className="w-4 h-4" />

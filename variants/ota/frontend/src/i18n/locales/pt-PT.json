@@ -16,7 +16,8 @@
     "back": "Voltar",
     "saving": "Salvando...",
     "add": "Adicionar",
-    "login": "Iniciar sessão"
+    "login": "Iniciar sessão",
+    "copy": "Copiar"
   },
   "status": {
     "ready": "Pronto",
@@ -3196,6 +3197,14 @@
       "nameRequired": "Introduza um nome de turma",
       "nameTooLong": "O nome da turma deve ter 100 caracteres ou menos",
       "error": "Falha ao criar turma"
+    },
+    "csv": {
+      "headerName": "Nome",
+      "headerLoginId": "ID de início",
+      "headerInitialPassword": "Palavra-passe inicial",
+      "headerPassword": "Palavra-passe",
+      "studentListTitle": "Lista de alunos",
+      "exportDate": "Data de exportação"
     }
   },
   "plan": {
@@ -3320,7 +3329,9 @@
       "submittedAt": "Data de entrega",
       "actions": "Ações",
       "urlError": "URL inválido",
-      "fetchError": "Ocorreu um erro"
+      "fetchError": "Ocorreu um erro",
+      "gradedShort": "Avaliado",
+      "action": "Ação"
     },
     "graded": {
       "empty": "Ainda não há trabalhos avaliados",
@@ -3337,7 +3348,10 @@
       "submittedAt": "Data de entrega: {{date}}",
       "gradedAt": "Data de avaliação: {{date}}",
       "returnedNote": "Este trabalho foi devolvido. Se editar e voltar a entregar, a avaliação anterior será apagada.",
-      "viewAnswer": "Ver resposta submetida"
+      "viewAnswer": "Ver resposta submetida",
+      "title": "Resultados avaliados",
+      "fetchError": "Falha ao obter os resultados avaliados",
+      "detailError": "Falha ao obter detalhes da avaliação"
     }
   },
   "changePassword": {

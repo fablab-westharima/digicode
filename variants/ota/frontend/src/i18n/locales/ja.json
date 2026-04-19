@@ -16,7 +16,8 @@
     "back": "戻る",
     "saving": "保存中...",
     "add": "追加",
-    "login": "ログイン"
+    "login": "ログイン",
+    "copy": "コピー"
   },
   "status": {
     "ready": "準備完了",
@@ -3186,6 +3187,14 @@
       "nameRequired": "クラス名を入力してください",
       "nameTooLong": "クラス名は100文字以内にしてください",
       "error": "クラスの作成に失敗しました"
+    },
+    "csv": {
+      "headerName": "名前",
+      "headerLoginId": "ログインID",
+      "headerInitialPassword": "初期パスワード",
+      "headerPassword": "パスワード",
+      "studentListTitle": "生徒一覧",
+      "exportDate": "出力日"
     }
   },
   "plan": {
@@ -3310,7 +3319,9 @@
       "submittedAt": "提出日時",
       "actions": "操作",
       "urlError": "無効な URL です",
-      "fetchError": "エラーが発生しました"
+      "fetchError": "エラーが発生しました",
+      "gradedShort": "採点済",
+      "action": "操作"
     },
     "graded": {
       "empty": "採点された課題はまだありません",
@@ -3327,7 +3338,10 @@
       "submittedAt": "提出日時: {{date}}",
       "gradedAt": "採点日時: {{date}}",
       "returnedNote": "この課題は差戻されています。編集して再提出すると、前回の採点はクリアされます。",
-      "viewAnswer": "提出した答案を見る"
+      "viewAnswer": "提出した答案を見る",
+      "title": "採点結果",
+      "fetchError": "採点結果の取得に失敗しました",
+      "detailError": "採点結果の詳細取得に失敗しました"
     }
   },
   "changePassword": {

@@ -16,7 +16,8 @@
     "back": "返回",
     "saving": "儲存中...",
     "add": "新增",
-    "login": "登入"
+    "login": "登入",
+    "copy": "複製"
   },
   "status": {
     "ready": "就緒",
@@ -3196,6 +3197,14 @@
       "nameRequired": "請輸入班級名稱",
       "nameTooLong": "班級名稱不得超過 100 個字元",
       "error": "建立班級失敗"
+    },
+    "csv": {
+      "headerName": "姓名",
+      "headerLoginId": "登入ID",
+      "headerInitialPassword": "初始密碼",
+      "headerPassword": "密碼",
+      "studentListTitle": "學生名單",
+      "exportDate": "匯出日期"
     }
   },
   "plan": {
@@ -3320,7 +3329,9 @@
       "submittedAt": "提交日期",
       "actions": "操作",
       "urlError": "無效的 URL",
-      "fetchError": "發生錯誤"
+      "fetchError": "發生錯誤",
+      "gradedShort": "已評分",
+      "action": "操作"
     },
     "graded": {
       "empty": "目前沒有已評分的作業",
@@ -3337,7 +3348,10 @@
       "submittedAt": "提交日期：{{date}}",
       "gradedAt": "評分日期：{{date}}",
       "returnedNote": "此作業已被退回。如果編輯並重新提交，前次評分將被清除。",
-      "viewAnswer": "查看提交的答案"
+      "viewAnswer": "查看提交的答案",
+      "title": "評分結果",
+      "fetchError": "無法取得評分結果",
+      "detailError": "無法取得評分詳細"
     }
   },
   "changePassword": {

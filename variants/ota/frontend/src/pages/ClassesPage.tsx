@@ -136,7 +136,7 @@ export function ClassesPage() {
                             handleCopyCode(cls.inviteCode);
                           }}
                           className="p-1 text-muted-foreground hover:text-foreground"
-                          title="コピー"
+                          title={t('common.copy', { defaultValue: 'コピー' })}
                         >
                           {copiedCode === cls.inviteCode ? (
                             <Check className="w-3 h-3 text-primary" />
