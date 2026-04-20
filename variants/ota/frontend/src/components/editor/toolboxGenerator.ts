@@ -363,6 +363,26 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="pid_reset"></block>
   </category>`,
 
+  // カメラ (BP7-1, 2026-04-20 追加)
+  camera: `
+  <category id="camera" name="${cat('camera')}" colour="#212121">
+    <block type="camera_init"></block>
+    <block type="camera_capture"></block>
+    <block type="camera_save_sd"></block>
+    <block type="camera_send_http"></block>
+    <block type="camera_stream_start"></block>
+  </category>`,
+
+  // CAN Bus (BP7-2, 2026-04-20 追加)
+  can_bus: `
+  <category id="canBus" name="${cat('canBus')}" colour="#37474F">
+    <block type="can_init"></block>
+    <block type="can_send"></block>
+    <block type="can_receive_available"></block>
+    <block type="can_get_received_id"></block>
+    <block type="can_get_received_data"></block>
+  </category>`,
+
   // IR リモコン (BP6-2, 2026-04-20 追加)
   ir_remote: `
   <category id="irRemote" name="${cat('irRemote')}" colour="#FF6F00">
@@ -1194,6 +1214,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'display',
     'separator6',
     // 時刻・保存・通信拡張
+    'camera',
+    'can_bus',
     'websocket',
     'ble',
     'uart_extra',

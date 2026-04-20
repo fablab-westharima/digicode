@@ -62,6 +62,8 @@ import '../../blocks/arduino/communication/webSocketBlocks';
 import '../../blocks/arduino/communication/uart2Blocks';
 import '../../blocks/arduino/communication/irBlocks';
 import '../../blocks/arduino/communication/rfidBlocks';
+import '../../blocks/arduino/communication/canBlocks';
+import '../../blocks/arduino/camera/cameraBlocks';
 import '../../blocks/arduino/audio/dfplayerBlocks';
 import '../../blocks/arduino/display/tftBlocks';
 import '../../blocks/arduino/core/interruptBlocks';
