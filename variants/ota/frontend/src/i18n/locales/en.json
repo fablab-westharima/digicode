@@ -1077,6 +1077,27 @@
       "transfer": "🔌 SPI Transfer",
       "transferTooltip": "Send a byte via SPI and receive a byte back"
     },
+    "interrupt": {
+      "attach": "Attach Interrupt",
+      "pin": "pin",
+      "mode": "mode",
+      "handler": "handler",
+      "attachTooltip": "Attach an interrupt handler to a pin. Handler runs when the pin state changes. Avoid delay() and Serial inside the handler.",
+      "detach": "Detach Interrupt",
+      "detachTooltip": "Remove the interrupt handler from a pin",
+      "check": "Check Interrupt",
+      "checkTooltip": "Check and execute the interrupt handler if triggered. Place this in the loop block."
+    },
+    "ticker": {
+      "attach": "Ticker Start",
+      "interval": "interval",
+      "handler": "handler",
+      "attachTooltip": "Execute handler code periodically at the specified interval (ESP32 only, uses Ticker.h)",
+      "detach": "Ticker Stop",
+      "detachTooltip": "Stop the periodic ticker",
+      "check": "Check Ticker",
+      "checkTooltip": "Check and execute the ticker handler if triggered. Place this in the loop block."
+    },
     "math_map": "map",
     "math_mapfrom": "from",
     "math_mapto": "to",
@@ -2578,6 +2599,7 @@
       "json": "📋 JSON",
       "wifi": "📶 WiFi",
       "i2cSpi": "📡 I2C/SPI",
+      "interrupt": "⚡ Interrupt",
       "otaEsp": "📡 OTA/ESP",
       "digitalSensor": "👆 Digital Sensor",
       "analogSensor": "📊 Analog Sensor",
@@ -2639,7 +2661,9 @@
       "generate": "Generate",
       "otaSettings": "OTA Settings",
       "espControl": "ESP Control",
-      "espInfo": "ESP Info"
+      "espInfo": "ESP Info",
+      "pinInterrupt": "Pin Interrupt",
+      "ticker": "Ticker (ESP32)"
     }
   },
   "pinSettings": {

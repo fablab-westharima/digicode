@@ -1077,6 +1077,27 @@
       "transfer": "🔌 SPI送受信",
       "transferTooltip": "SPIでバイトを送信し、応答バイトを受信します"
     },
+    "interrupt": {
+      "attach": "割り込み設定",
+      "pin": "ピン",
+      "mode": "モード",
+      "handler": "ハンドラ",
+      "attachTooltip": "ピンの状態が変化した時に実行するハンドラを設定します。ハンドラ内でdelay()やSerialは使わないでください。",
+      "detach": "割り込み解除",
+      "detachTooltip": "ピンの割り込みハンドラを解除します",
+      "check": "割り込み確認",
+      "checkTooltip": "割り込みフラグを確認し、トリガーされていればハンドラを実行します。loopブロック内に配置してください。"
+    },
+    "ticker": {
+      "attach": "タイマー開始",
+      "interval": "間隔",
+      "handler": "ハンドラ",
+      "attachTooltip": "指定した間隔でハンドラを定���的に実行します（ESP32専用、Ticker.h使用）",
+      "detach": "タイマー停止",
+      "detachTooltip": "定期タイマーを停止します",
+      "check": "タイマー確認",
+      "checkTooltip": "タイマーフラグを確認し、トリガーされていればハンドラを実行します。loopブロック内に配置してください。"
+    },
     "math_map": "map",
     "math_mapfrom": "入力",
     "math_mapto": "出力",
@@ -2568,6 +2589,7 @@
       "json": "📋 JSON",
       "wifi": "📶 WiFi",
       "i2cSpi": "📡 I2C/SPI",
+      "interrupt": "⚡ 割り込み",
       "otaEsp": "📡 OTA/ESP",
       "digitalSensor": "👆 デジタルセンサー",
       "analogSensor": "📊 アナログセンサー",
@@ -2629,7 +2651,9 @@
       "generate": "生成",
       "otaSettings": "OTA設定",
       "espControl": "ESP制御",
-      "espInfo": "ESP情報"
+      "espInfo": "ESP情報",
+      "pinInterrupt": "ピン割り込み",
+      "ticker": "タイマー (ESP32)"
     }
   },
   "pinSettings": {

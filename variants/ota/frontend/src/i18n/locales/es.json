@@ -856,6 +856,27 @@
       "transfer": "🔌 SPI Transferir",
       "transferTooltip": "Envía un byte por SPI y recibe un byte de vuelta"
     },
+    "interrupt": {
+      "attach": "Configurar Interrupción",
+      "pin": "pin",
+      "mode": "modo",
+      "handler": "manejador",
+      "attachTooltip": "Configura un manejador de interrupción en un pin. Se ejecuta cuando cambia el estado del pin. Evite delay() y Serial dentro del manejador.",
+      "detach": "Quitar Interrupción",
+      "detachTooltip": "Elimina el manejador de interrupción de un pin",
+      "check": "Verificar Interrupción",
+      "checkTooltip": "Verifica y ejecuta el manejador de interrupción si fue activado. Coloque esto en el bloque loop."
+    },
+    "ticker": {
+      "attach": "Iniciar Temporizador",
+      "interval": "intervalo",
+      "handler": "manejador",
+      "attachTooltip": "Ejecuta el manejador periódicamente en el intervalo especificado (solo ESP32, usa Ticker.h)",
+      "detach": "Detener Temporizador",
+      "detachTooltip": "Detiene el temporizador periódico",
+      "check": "Verificar Temporizador",
+      "checkTooltip": "Verifica y ejecuta el manejador del temporizador si fue activado. Coloque esto en el bloque loop."
+    },
     "math_map": "map",
     "math_mapfrom": "de",
     "math_mapto": "a",
@@ -2357,6 +2378,7 @@
       "json": "📋 JSON",
       "wifi": "📶 WiFi",
       "i2cSpi": "📡 I2C/SPI",
+      "interrupt": "⚡ Interrupción",
       "otaEsp": "📡 OTA/ESP",
       "digitalSensor": "👆 Sensor Digital",
       "analogSensor": "📊 Sensor Analógico",
@@ -2418,7 +2440,9 @@
       "generate": "Generar",
       "otaSettings": "Configuración OTA",
       "espControl": "Control ESP",
-      "espInfo": "Info ESP"
+      "espInfo": "Info ESP",
+      "pinInterrupt": "Interrupción de Pin",
+      "ticker": "Temporizador (ESP32)"
     }
   },
   "pinSettings": {

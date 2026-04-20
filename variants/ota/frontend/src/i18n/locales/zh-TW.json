@@ -856,6 +856,27 @@
       "transfer": "🔌 SPI 傳輸",
       "transferTooltip": "透過 SPI 傳送一個位元組並接收回傳位元組"
     },
+    "interrupt": {
+      "attach": "設定中斷",
+      "pin": "腳位",
+      "mode": "模式",
+      "handler": "處理程式",
+      "attachTooltip": "在腳位上設定中斷處理程式。當腳位狀態改變時執行。避免在處理程式中使用 delay() 和 Serial。",
+      "detach": "移除中斷",
+      "detachTooltip": "移除腳位的中斷處理程式",
+      "check": "檢查中斷",
+      "checkTooltip": "檢查並執行已觸發的中斷處理程式。請放在 loop 區塊中。"
+    },
+    "ticker": {
+      "attach": "啟動定時器",
+      "interval": "間隔",
+      "handler": "處理程式",
+      "attachTooltip": "以指定間隔定期執行處理程式（僅限 ESP32，使用 Ticker.h）",
+      "detach": "停止定時器",
+      "detachTooltip": "停止定期定時器",
+      "check": "檢查定時器",
+      "checkTooltip": "檢查並執行已觸發的定時器處理程式。請放在 loop 區塊中。"
+    },
     "math_map": "map",
     "math_mapfrom": "從",
     "math_mapto": "到",
@@ -2357,6 +2378,7 @@
       "json": "📋 JSON",
       "wifi": "📶 WiFi",
       "i2cSpi": "📡 I2C/SPI",
+      "interrupt": "⚡ 中斷",
       "otaEsp": "📡 OTA/ESP",
       "digitalSensor": "👆 數位感測器",
       "analogSensor": "📊 類比感測器",
@@ -2418,7 +2440,9 @@
       "generate": "生成",
       "otaSettings": "OTA設定",
       "espControl": "ESP控制",
-      "espInfo": "ESP資訊"
+      "espInfo": "ESP資訊",
+      "pinInterrupt": "腳位中斷",
+      "ticker": "定時器 (ESP32)"
     }
   },
   "pinSettings": {

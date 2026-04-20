@@ -972,6 +972,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'display',
     'separator6',
     // GPIO・通信
+    'interrupt',
     'gpio',
     'i2c_spi',
     'serial',
@@ -1009,6 +1010,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'ota',
     'separator4',
     // GPIO・通信
+    'interrupt',
     'gpio',
     'i2c_spi',
     'serial',
@@ -1059,6 +1061,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'display',
     'separator6',
     // グループ7: GPIO・通信
+    'interrupt',
     'gpio',
     'i2c_spi',
     'serial',
@@ -1117,6 +1120,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'display',
     'separator7',
     // グループ8: GPIO・通信
+    'interrupt',
     'gpio',
     'i2c_spi',
     'serial',
