@@ -3,6 +3,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -27,8 +28,11 @@ interface RobotModeSelectorProps {
   onModeChange?: (mode: RobotMode) => void;
 }
 
-// グループの表示順序
-const GROUP_ORDER: ModeGroup[] = ['robots', 'iot', 'other'];
+// グループの表示順序（メタモード → ドメインモードの順）
+const GROUP_ORDER: ModeGroup[] = ['other', 'robots', 'iot'];
+
+// 平坦化表示するグループ（サブメニューではなくトップレベルに個別表示）
+const FLATTEN_GROUPS: Set<ModeGroup> = new Set(['other']);
 
 export function RobotModeSelector({ onModeChange }: RobotModeSelectorProps) {
   const { mode, setMode } = useRobotModeStore();
@@ -81,40 +85,22 @@ export function RobotModeSelector({ onModeChange }: RobotModeSelectorProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56 bg-[#1C1F26] text-[#E6EDF3] border-[#2E333D]">
-        {GROUP_ORDER.map((groupId) => {
+        {GROUP_ORDER.map((groupId, idx) => {
           const groupInfo = MODE_GROUPS[groupId];
           const modesInGroup = modesByGroup[groupId];
 
           if (!modesInGroup || modesInGroup.length === 0) return null;
 
-          // グループ内に1つしかない場合はサブメニューにしない
-          if (modesInGroup.length === 1) {
-            const modeInfo = modesInGroup[0];
-            return (
-              <DropdownMenuItem
-                key={modeInfo.id}
-                onClick={() => handleModeChange(modeInfo.id)}
-                className="flex items-center gap-2 hover:bg-[#2E333D] focus:bg-[#2E333D]"
-              >
-                <span>{modeInfo.icon}</span>
-                <div className="flex-1">
-                  <div className="font-medium">{getModeName(modeInfo.id)}</div>
-                  <div className="text-xs text-gray-400">
-                    {getModeDescription(modeInfo.id)}
-                  </div>
-                </div>
-                {mode === modeInfo.id && <Check className="h-4 w-4" />}
-              </DropdownMenuItem>
-            );
-          }
+          // 平坦化グループ（その他）または 1 モードのみ のグループは、サブメニューにせず個別表示
+          const shouldFlatten = FLATTEN_GROUPS.has(groupId) || modesInGroup.length === 1;
 
-          return (
-            <DropdownMenuSub key={groupId}>
-              <DropdownMenuSubTrigger className="flex items-center gap-1.5 hover:bg-[#2E333D] focus:bg-[#2E333D]">
-                <span>{groupInfo.icon}</span>
-                <span>{getGroupName(groupId)}</span>
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="w-56 bg-[#1C1F26] text-[#E6EDF3] border-[#2E333D]">
+          // 前のグループとの境界にセパレータを入れる
+          const separator = idx > 0 ? <DropdownMenuSeparator key={`sep-${groupId}`} className="bg-[#2E333D]" /> : null;
+
+          if (shouldFlatten) {
+            return (
+              <div key={groupId}>
+                {separator}
                 {modesInGroup.map((modeInfo) => (
                   <DropdownMenuItem
                     key={modeInfo.id}
@@ -131,8 +117,38 @@ export function RobotModeSelector({ onModeChange }: RobotModeSelectorProps) {
                     {mode === modeInfo.id && <Check className="h-4 w-4" />}
                   </DropdownMenuItem>
                 ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
+              </div>
+            );
+          }
+
+          return (
+            <div key={groupId}>
+              {separator}
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="flex items-center gap-1.5 hover:bg-[#2E333D] focus:bg-[#2E333D]">
+                  <span>{groupInfo.icon}</span>
+                  <span>{getGroupName(groupId)}</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="w-56 bg-[#1C1F26] text-[#E6EDF3] border-[#2E333D]">
+                  {modesInGroup.map((modeInfo) => (
+                    <DropdownMenuItem
+                      key={modeInfo.id}
+                      onClick={() => handleModeChange(modeInfo.id)}
+                      className="flex items-center gap-2 hover:bg-[#2E333D] focus:bg-[#2E333D]"
+                    >
+                      <span>{modeInfo.icon}</span>
+                      <div className="flex-1">
+                        <div className="font-medium">{getModeName(modeInfo.id)}</div>
+                        <div className="text-xs text-gray-400">
+                          {getModeDescription(modeInfo.id)}
+                        </div>
+                      </div>
+                      {mode === modeInfo.id && <Check className="h-4 w-4" />}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            </div>
           );
         })}
       </DropdownMenuContent>
