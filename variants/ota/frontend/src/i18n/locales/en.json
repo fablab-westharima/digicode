@@ -1088,6 +1088,37 @@
       "check": "Check Interrupt",
       "checkTooltip": "Check and execute the interrupt handler if triggered. Place this in the loop block."
     },
+    "lcd": {
+      "init": "LCD Init",
+      "cols": "cols",
+      "rows": "rows",
+      "initTooltip": "Initialize LCD via I2C. Common addresses: 0x27 (PCF8574) or 0x3F (PCF8574A). Use I2C scanner to find your address.",
+      "print": "LCD Print",
+      "printTooltip": "Print text at the current cursor position on the LCD.",
+      "printAt": "LCD Print At",
+      "col": "col",
+      "row": "row",
+      "text": "text",
+      "printAtTooltip": "Move cursor to (col, row) and print text. Col 0 = leftmost, Row 0 = top row.",
+      "clear": "LCD Clear",
+      "clearTooltip": "Clear all text on the LCD and move cursor to home position (0, 0).",
+      "backlight": "LCD Backlight",
+      "backlightTooltip": "Turn the LCD backlight on or off."
+    },
+    "vl53l0x": {
+      "init": "VL53L0X Init",
+      "initTooltip": "Initialize VL53L0X ToF distance sensor via I2C (address 0x29). Returns true if found. Requires Adafruit VL53L0X library.",
+      "distance": "VL53L0X Distance (mm)",
+      "distanceTooltip": "Read distance in mm from VL53L0X. Returns 0 if out of range or error. Effective range: 30-1200mm."
+    },
+    "as5600": {
+      "init": "AS5600 Init",
+      "initTooltip": "Initialize AS5600 magnetic encoder via I2C (address 0x36). Returns true if magnet detected. Requires Seeed_Arduino_AS5600 library.",
+      "angle": "AS5600 Angle (°)",
+      "angleTooltip": "Read absolute angle (0-360°) from AS5600. 12-bit resolution (0.088°/step).",
+      "raw": "AS5600 Raw (0-4095)",
+      "rawTooltip": "Read raw 12-bit value (0-4095) from AS5600. Full rotation = 4096 steps."
+    },
     "mpu6050": {
       "init": "MPU6050 Init",
       "accelRange": "accel range",
@@ -2793,6 +2824,8 @@
       "i2cSpi": "📡 I2C/SPI",
       "interrupt": "⚡ Interrupt",
       "ble": "📶 BLE",
+      "sensorTof": "📏 ToF Distance",
+      "sensorEncoderMag": "🧲 Magnetic Encoder",
       "sensorMotion": "🎯 Motion & IMU",
       "sensorEnvironment": "🌡️ Environment",
       "ntpTime": "⏰ NTP Time",
@@ -2875,7 +2908,8 @@
       "eeprom": "EEPROM",
       "sdCard": "SD Card",
       "littlefs": "LittleFS (Internal Flash)",
-      "battery": "🔋 Battery"
+      "battery": "🔋 Battery",
+      "lcdI2c": "LCD I2C"
     }
   },
   "pinSettings": {

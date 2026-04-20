@@ -867,6 +867,37 @@
       "check": "Verificar Interrupción",
       "checkTooltip": "Verifica y ejecuta el manejador de interrupción si fue activado. Coloque esto en el bloque loop."
     },
+    "lcd": {
+      "init": "Inicializar LCD",
+      "cols": "columnas",
+      "rows": "filas",
+      "initTooltip": "Inicializa LCD via I2C. Direcciones comunes: 0x27 (PCF8574) o 0x3F (PCF8574A). Use el escáner I2C para encontrar su dirección.",
+      "print": "Imprimir LCD",
+      "printTooltip": "Imprime texto en la posición actual del cursor del LCD.",
+      "printAt": "LCD Imprimir En",
+      "col": "col",
+      "row": "fila",
+      "text": "texto",
+      "printAtTooltip": "Mueve el cursor a (col, fila) e imprime texto. Col 0 = izquierda, Fila 0 = arriba.",
+      "clear": "Limpiar LCD",
+      "clearTooltip": "Borra todo el texto del LCD y mueve el cursor al inicio (0, 0).",
+      "backlight": "Retroiluminación LCD",
+      "backlightTooltip": "Activa o desactiva la retroiluminación del LCD."
+    },
+    "vl53l0x": {
+      "init": "Inicializar VL53L0X",
+      "initTooltip": "Inicializa VL53L0X sensor ToF via I2C (dirección 0x29). Devuelve true si se encuentra. Requiere librería Adafruit VL53L0X.",
+      "distance": "Distancia VL53L0X (mm)",
+      "distanceTooltip": "Lee distancia en mm del VL53L0X. Devuelve 0 si fuera de rango o error. Rango efectivo: 30-1200mm."
+    },
+    "as5600": {
+      "init": "Inicializar AS5600",
+      "initTooltip": "Inicializa encoder magnético AS5600 via I2C (dirección 0x36). Devuelve true si se detecta imán. Requiere librería Seeed_Arduino_AS5600.",
+      "angle": "Ángulo AS5600 (°)",
+      "angleTooltip": "Lee ángulo absoluto (0-360°) del AS5600. Resolución 12-bit (0.088°/paso).",
+      "raw": "AS5600 Valor Crudo (0-4095)",
+      "rawTooltip": "Lee valor crudo 12-bit (0-4095) del AS5600. Vuelta completa = 4096 pasos."
+    },
     "mpu6050": {
       "init": "Inicializar MPU6050",
       "accelRange": "rango aceleróm.",
@@ -2572,6 +2603,8 @@
       "i2cSpi": "📡 I2C/SPI",
       "interrupt": "⚡ Interrupción",
       "ble": "📶 BLE",
+      "sensorTof": "📏 Distancia ToF",
+      "sensorEncoderMag": "🧲 Encoder Magnético",
       "sensorMotion": "🎯 Movimiento e IMU",
       "sensorEnvironment": "🌡️ Entorno",
       "ntpTime": "⏰ Hora NTP",
@@ -2654,7 +2687,8 @@
       "eeprom": "EEPROM",
       "sdCard": "Tarjeta SD",
       "littlefs": "LittleFS (Flash Interno)",
-      "battery": "🔋 Batería"
+      "battery": "🔋 Batería",
+      "lcdI2c": "LCD I2C"
     }
   },
   "pinSettings": {

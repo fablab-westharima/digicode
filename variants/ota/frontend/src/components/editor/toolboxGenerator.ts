@@ -546,10 +546,33 @@ const getToolboxCategories = (): Record<string, string> => ({
   // ディスプレイ
   display: `
   <category id="display" name="${cat('display')}" colour="#3F51B5">
+    <label text="OLED"></label>
     <block type="display_init"></block>
     <block type="display_text"></block>
     <block type="display_show"></block>
     <block type="display_clear"></block>
+    <sep></sep>
+    <label text="${label('lcdI2c') || 'LCD I2C'}"></label>
+    <block type="lcd_init"></block>
+    <block type="lcd_print"></block>
+    <block type="lcd_print_at"></block>
+    <block type="lcd_clear"></block>
+    <block type="lcd_backlight"></block>
+  </category>`,
+
+  // ToF 距離センサー VL53L0X (BP5-4, 2026-04-20 追加)
+  sensor_tof: `
+  <category id="sensorTof" name="${cat('sensorTof')}" colour="#795548">
+    <block type="vl53l0x_init"></block>
+    <block type="vl53l0x_read_distance_mm"></block>
+  </category>`,
+
+  // 磁気エンコーダ AS5600 (BP5-5, 2026-04-20 追加)
+  sensor_encoder_mag: `
+  <category id="sensorEncoderMag" name="${cat('sensorEncoderMag')}" colour="#880E4F">
+    <block type="as5600_init"></block>
+    <block type="as5600_read_angle"></block>
+    <block type="as5600_read_raw"></block>
   </category>`,
 
   // DHT温湿度センサー
@@ -1075,6 +1098,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'encoder',
     'separator4',
     // センサー
+    'sensor_tof',
+    'sensor_encoder_mag',
     'sensor_motion',
     'sensor_environment',
     'sensor_ultrasonic',
@@ -1115,6 +1140,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'arduino_core',
     'separator1',
     // センサー
+    'sensor_tof',
+    'sensor_encoder_mag',
     'sensor_motion',
     'sensor_environment',
     'sensor_ultrasonic',
@@ -1179,6 +1206,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'encoder',
     'separator4',
     // グループ5: センサー
+    'sensor_tof',
+    'sensor_encoder_mag',
     'sensor_motion',
     'sensor_environment',
     'sensor_ultrasonic',
@@ -1247,6 +1276,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'encoder',
     'separator5',
     // グループ6: センサー
+    'sensor_tof',
+    'sensor_encoder_mag',
     'sensor_motion',
     'sensor_environment',
     'sensor_ultrasonic',

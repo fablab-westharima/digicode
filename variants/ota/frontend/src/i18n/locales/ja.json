@@ -1088,6 +1088,37 @@
       "check": "割り込み確認",
       "checkTooltip": "割り込みフラグを確認し、トリガーされていればハンドラを実行します。loopブロック内に配置してください。"
     },
+    "lcd": {
+      "init": "LCD 初期化",
+      "cols": "列数",
+      "rows": "行数",
+      "initTooltip": "I2C 経由で LCD を初期化します。よくあるアドレス: 0x27（PCF8574）/ 0x3F（PCF8574A）。I2C スキャンで確認してください。",
+      "print": "LCD 出力",
+      "printTooltip": "現在のカーソル位置にテキストを出力します。",
+      "printAt": "LCD 座標指定出力",
+      "col": "列",
+      "row": "行",
+      "text": "テキスト",
+      "printAtTooltip": "（列, 行）にカーソルを移動してテキストを出力します。列0=左端、行0=上段。",
+      "clear": "LCD クリア",
+      "clearTooltip": "LCD の全テキストを消去し、カーソルをホーム位置（0, 0）に移動します。",
+      "backlight": "LCD バックライト",
+      "backlightTooltip": "LCD バックライトを ON / OFF します。"
+    },
+    "vl53l0x": {
+      "init": "VL53L0X 初期化",
+      "initTooltip": "I2C 経由で VL53L0X ToF 距離センサーを初期化します（アドレス 0x29）。磁石検出時 true を返します。Adafruit VL53L0X ライブラリが必要です。",
+      "distance": "VL53L0X 距離(mm)",
+      "distanceTooltip": "VL53L0X から距離（mm）を取得します。範囲外またはエラー時は 0 を返します。有効範囲: 30〜1200mm。"
+    },
+    "as5600": {
+      "init": "AS5600 初期化",
+      "initTooltip": "I2C 経由で AS5600 磁気エンコーダを初期化します（アドレス 0x36）。磁石検出時 true を返します。Seeed_Arduino_AS5600 ライブラリが必要です。",
+      "angle": "AS5600 角度(°)",
+      "angleTooltip": "AS5600 磁気エンコーダから絶対角度（0〜360°）を取得します。12bit 分解能（0.088°/ステップ）。",
+      "raw": "AS5600 生値(0-4095)",
+      "rawTooltip": "AS5600 から 12bit 生値（0〜4095）を取得します。1回転 = 4096 ステップ。"
+    },
     "mpu6050": {
       "init": "MPU6050 初期化",
       "accelRange": "加速度レンジ",
@@ -2783,6 +2814,8 @@
       "i2cSpi": "📡 I2C/SPI",
       "interrupt": "⚡ 割り込み",
       "ble": "📶 BLE",
+      "sensorTof": "📏 ToF 距離",
+      "sensorEncoderMag": "🧲 磁気エンコーダ",
       "sensorMotion": "🎯 姿勢・慣性",
       "sensorEnvironment": "🌡️ 環境センサー",
       "ntpTime": "⏰ NTP時刻",
@@ -2865,7 +2898,8 @@
       "eeprom": "EEPROM",
       "sdCard": "SDカード",
       "littlefs": "LittleFS（内部フラッシュ）",
-      "battery": "🔋 電池"
+      "battery": "🔋 電池",
+      "lcdI2c": "LCD I2C"
     }
   },
   "pinSettings": {

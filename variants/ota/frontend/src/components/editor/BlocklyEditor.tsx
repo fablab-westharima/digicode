@@ -64,6 +64,9 @@ import '../../blocks/arduino/storage/storageFsBlocks';
 import '../../blocks/arduino/storage/timeBlocks';
 import '../../blocks/arduino/sensor/sensorMotionBlocks';
 import '../../blocks/arduino/sensor/sensorEnvironmentBlocks';
+import '../../blocks/arduino/sensor/sensorTofBlocks';
+import '../../blocks/arduino/sensor/sensorMagEncoderBlocks';
+import '../../blocks/arduino/display/lcdBlocks';
 import { generateToolbox } from './toolboxGenerator';
 
 // 日本語ロケールを設定

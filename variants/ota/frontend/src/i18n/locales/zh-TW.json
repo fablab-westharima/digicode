@@ -867,6 +867,37 @@
       "check": "檢查中斷",
       "checkTooltip": "檢查並執行已觸發的中斷處理程式。請放在 loop 區塊中。"
     },
+    "lcd": {
+      "init": "LCD 初始化",
+      "cols": "欄數",
+      "rows": "行數",
+      "initTooltip": "透過I2C初始化LCD。常見位址：0x27（PCF8574）或0x3F（PCF8574A）。使用I2C掃描器確認您的位址。",
+      "print": "LCD 輸出",
+      "printTooltip": "在LCD當前游標位置輸出文字。",
+      "printAt": "LCD 座標輸出",
+      "col": "欄",
+      "row": "行",
+      "text": "文字",
+      "printAtTooltip": "移動游標至（欄, 行）並輸出文字。欄0=最左, 行0=頂行。",
+      "clear": "LCD 清除",
+      "clearTooltip": "清除LCD所有文字並將游標移至起始位置（0, 0）。",
+      "backlight": "LCD 背光",
+      "backlightTooltip": "開啟或關閉LCD背光。"
+    },
+    "vl53l0x": {
+      "init": "VL53L0X 初始化",
+      "initTooltip": "透過I2C初始化VL53L0X ToF距離感測器（位址0x29）。找到則回傳true。需要Adafruit VL53L0X函式庫。",
+      "distance": "VL53L0X 距離(mm)",
+      "distanceTooltip": "從VL53L0X讀取距離（mm）。超出範圍或錯誤時回傳0。有效範圍：30-1200mm。"
+    },
+    "as5600": {
+      "init": "AS5600 初始化",
+      "initTooltip": "透過I2C初始化AS5600磁性編碼器（位址0x36）。偵測到磁鐵時回傳true。需要Seeed_Arduino_AS5600函式庫。",
+      "angle": "AS5600 角度(°)",
+      "angleTooltip": "從AS5600讀取絕對角度（0-360°）。12bit解析度（0.088°/步）。",
+      "raw": "AS5600 原始值(0-4095)",
+      "rawTooltip": "從AS5600讀取12bit原始值（0-4095）。完整旋轉 = 4096步。"
+    },
     "mpu6050": {
       "init": "MPU6050 初始化",
       "accelRange": "加速度範圍",
@@ -2572,6 +2603,8 @@
       "i2cSpi": "📡 I2C/SPI",
       "interrupt": "⚡ 中斷",
       "ble": "📶 BLE",
+      "sensorTof": "📏 ToF 距離",
+      "sensorEncoderMag": "🧲 磁性編碼器",
       "sensorMotion": "🎯 姿態與IMU",
       "sensorEnvironment": "🌡️ 環境感測",
       "ntpTime": "⏰ NTP時間",
@@ -2654,7 +2687,8 @@
       "eeprom": "EEPROM",
       "sdCard": "SD卡",
       "littlefs": "LittleFS（內部快閃記憶體）",
-      "battery": "🔋 電池"
+      "battery": "🔋 電池",
+      "lcdI2c": "LCD I2C"
     }
   },
   "pinSettings": {
