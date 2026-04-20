@@ -363,6 +363,38 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="pid_reset"></block>
   </category>`,
 
+  // WebSocket (BP6-1, 2026-04-20 追加) — supportsWifi フィルタ対象
+  websocket: `
+  <category id="websocket" name="${cat('websocket')}" colour="#00BCD4">
+    <block type="websocket_connect"></block>
+    <block type="websocket_send"></block>
+    <block type="websocket_on_message"></block>
+    <block type="websocket_is_connected"></block>
+    <block type="websocket_disconnect"></block>
+  </category>`,
+
+  // UART 2 / Serial2 (BP6-3, 2026-04-20 追加)
+  uart_extra: `
+  <category id="uartExtra" name="${cat('uartExtra')}" colour="#607D8B">
+    <block type="serial2_begin"></block>
+    <block type="serial2_print"></block>
+    <block type="serial2_println"></block>
+    <block type="serial2_read"></block>
+    <block type="serial2_read_string_until"></block>
+    <block type="serial2_available"></block>
+  </category>`,
+
+  // DFPlayer MP3 (BP6-6, 2026-04-20 追加)
+  audio_dfplayer: `
+  <category id="audioDfplayer" name="${cat('audioDfplayer')}" colour="#FF5722">
+    <block type="dfplayer_init"></block>
+    <block type="dfplayer_play"></block>
+    <block type="dfplayer_pause"></block>
+    <block type="dfplayer_resume"></block>
+    <block type="dfplayer_stop"></block>
+    <block type="dfplayer_volume"></block>
+  </category>`,
+
   // BLE (BP4, 2026-04-20 追加) — supportsBle フィルタ対象、ESP32 専用
   ble: `
   <category id="ble" name="${cat('ble')}" colour="#2196F3">
@@ -1114,8 +1146,11 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'neopixel',
     'display',
     'separator6',
-    // 時刻・保存・BLE
+    // 時刻・保存・通信拡張
+    'websocket',
     'ble',
+    'uart_extra',
+    'audio_dfplayer',
     'ntp_time',
     'rtc',
     'storage_nvs',
@@ -1348,7 +1383,7 @@ export function generateToolbox(
   // ボード対応フラグに基づき、選択中ボードでサポートされないカテゴリを除外する。
   // 将来 BLE 専用カテゴリ (BP4) が追加されたら BLE_CATEGORIES を同様に判定する。
   if (board) {
-    const WIFI_CATEGORIES = new Set(['wifi', 'mqtt', 'arduino_ha', 'http', 'ntp_time']);
+    const WIFI_CATEGORIES = new Set(['wifi', 'mqtt', 'arduino_ha', 'http', 'ntp_time', 'websocket']);
     const OTA_CATEGORIES = new Set(['ota']);
     const BLE_CATEGORIES = new Set(['ble']);
     categories = categories.filter(catId => {
