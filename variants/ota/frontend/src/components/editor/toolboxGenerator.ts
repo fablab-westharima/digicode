@@ -115,60 +115,62 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="esp32_serial_println"></block>
   </category>`,
 
-  // OTTO 二足歩行
-  otto_bipedal: `
-  <category id="ottoBipedal" name="${cat('ottoBipedal')}" colour="#FF6B35">
-    <block type="otto_init"></block>
-    <block type="otto_home"></block>
+  // Humanoid ロボット（旧 OTTO 二足歩行）
+  robot_humanoid: `
+  <category id="robotHumanoid" name="${cat('humanoid')}" colour="#FF6B35">
+    <block type="humanoid_init"></block>
+    <block type="humanoid_home"></block>
     <sep></sep>
     <label text="${label('movement')}"></label>
-    <block type="otto_walk"></block>
-    <block type="otto_turn"></block>
-    <block type="otto_jump"></block>
-    <block type="otto_moonwalk"></block>
+    <block type="humanoid_walk"></block>
+    <block type="humanoid_turn"></block>
+    <block type="humanoid_jump"></block>
+    <block type="humanoid_moonwalk"></block>
     <sep></sep>
     <label text="${label('gesture')}"></label>
-    <block type="otto_dance"></block>
-    <block type="otto_swing"></block>
-    <block type="otto_bend"></block>
+    <block type="humanoid_dance"></block>
+    <block type="humanoid_swing"></block>
+    <block type="humanoid_bend"></block>
+    <block type="humanoid_gesture"></block>
+    <block type="humanoid_sound"></block>
   </category>`,
 
-  // OTTO Wheel
-  otto_wheel: `
-  <category id="ottoWheel" name="${cat('ottoWheel')}" colour="#4CAF50">
-    <block type="otto_wheel_init"></block>
+  // Wheel ロボット（旧 OTTO Wheel）
+  robot_wheel: `
+  <category id="robotWheel" name="${cat('wheelRobot')}" colour="#4CAF50">
+    <block type="wheel_init"></block>
     <sep></sep>
     <label text="${label('movement')}"></label>
-    <block type="otto_wheel_forward"></block>
-    <block type="otto_wheel_backward"></block>
-    <block type="otto_wheel_turn_left"></block>
-    <block type="otto_wheel_turn_right"></block>
-    <block type="otto_wheel_spin_left"></block>
-    <block type="otto_wheel_spin_right"></block>
-    <block type="otto_wheel_stop"></block>
+    <block type="wheel_forward"></block>
+    <block type="wheel_backward"></block>
+    <block type="wheel_turn_left"></block>
+    <block type="wheel_turn_right"></block>
+    <block type="wheel_spin_left"></block>
+    <block type="wheel_spin_right"></block>
+    <block type="wheel_stop"></block>
   </category>`,
 
-  // OTTO Ninja
-  otto_ninja: `
-  <category id="ottoNinja" name="${cat('ottoNinja')}" colour="#9C27B0">
+  // Transform ロボット（旧 OTTO Ninja）
+  robot_transform: `
+  <category id="robotTransform" name="${cat('transform')}" colour="#9C27B0">
     <label text="${label('init')}"></label>
-    <block type="otto_ninja_init"></block>
-    <block type="otto_ninja_mode"></block>
-    <block type="otto_ninja_transform"></block>
-    <block type="otto_ninja_home"></block>
+    <block type="transform_init"></block>
+    <block type="transform_mode"></block>
+    <block type="transform_shift"></block>
+    <block type="transform_home"></block>
     <sep></sep>
     <label text="${label('walk')}"></label>
-    <block type="otto_ninja_walk"></block>
-    <block type="otto_ninja_turn"></block>
-    <block type="otto_ninja_stop"></block>
+    <block type="transform_walk"></block>
+    <block type="transform_turn"></block>
+    <block type="transform_stop"></block>
     <sep></sep>
     <label text="${label('roll')}"></label>
-    <block type="otto_ninja_roll"></block>
-    <block type="otto_ninja_roll_rotate"></block>
+    <block type="transform_roll"></block>
+    <block type="transform_roll_rotate"></block>
     <sep></sep>
     <label text="${label('gesture')}"></label>
-    <block type="otto_ninja_pushup"></block>
-    <block type="otto_ninja_dance"></block>
+    <block type="transform_pushup"></block>
+    <block type="transform_dance"></block>
   </category>`,
 
   // センサー - 超音波
@@ -1012,27 +1014,31 @@ const getToolboxCategories = (): Record<string, string> => ({
 
 // 各モードで表示するカテゴリの順序
 const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
-  otto_bipedal: [
+  robots_humanoid: [
     'arduino_core',
-    'otto_bipedal',
+    'robot_humanoid',
     'separator1',
-    // センサー
-    'sensor_ultrasonic',
-    'sensor_dht',
+    // センサー（基本）
     'sensor_digital',
     'sensor_analog',
+    'sensor_ultrasonic',
+    'sensor_dht',
+    // センサー（応用）
+    'sensor_motion',
     'separator2',
-    // アクチュエーター
+    // アクチュエータ・表示・音声
     'servo',
     'buzzer',
     'neopixel',
     'display',
+    'audio_dfplayer',
     'separator3',
-    // 通信・時間
+    // 短距離無線
+    'ble',
+    'separator4',
+    // 基本プログラミング
     'serial',
     'time',
-    'separator4',
-    // ロジック
     'logic',
     'loops',
     'math',
@@ -1040,99 +1046,40 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'variables',
     'functions',
   ],
-  otto_wheel: [
+  robots_wheel: [
     'arduino_core',
-    'otto_wheel',
+    'robot_wheel',
     'separator1',
-    // モーター・駆動系
+    // モーター・駆動系・制御
     'motor',
     'diff_drive',
     'encoder',
+    'pid',
     'separator2',
-    // センサー
+    // センサー（基本）
+    'sensor_digital',
+    'sensor_analog',
     'sensor_ultrasonic',
+    'sensor_dht',
+    // センサー（応用: 競技ロボット）
     'sensor_line',
     'sensor_qtr',
-    'sensor_dht',
-    'sensor_digital',
-    'sensor_analog',
-    'separator3',
-    // アクチュエーター
-    'servo',
-    'buzzer',
-    'neopixel',
-    'display',
-    'separator4',
-    // 通信・時間
-    'serial',
-    'time',
-    'separator5',
-    // ロジック
-    'logic',
-    'loops',
-    'math',
-    'lists',
-    'variables',
-    'functions',
-  ],
-  otto_ninja: [
-    'arduino_core',
-    'otto_ninja',
-    'separator1',
-    // センサー
-    'sensor_ultrasonic',
-    'sensor_dht',
-    'sensor_digital',
-    'sensor_analog',
-    'separator2',
-    // アクチュエーター
-    'servo',
-    'buzzer',
-    'neopixel',
-    'display',
-    'separator3',
-    // 通信・時間
-    'serial',
-    'time',
-    'separator4',
-    // ロジック
-    'logic',
-    'loops',
-    'math',
-    'lists',
-    'variables',
-    'functions',
-  ],
-  micromouse: [
-    'arduino_core',
-    'separator1',
-    // モーター・駆動系
-    'motor',
-    'diff_drive',
-    'encoder',
-    'separator2',
-    // センサー
     'sensor_wall',
-    'sensor_ultrasonic',
-    'sensor_dht',
-    'sensor_digital',
-    'sensor_analog',
+    'sensor_motion',
     'separator3',
-    // アクチュエーター
+    // アクチュエータ・表示
     'servo',
     'stepper',
     'buzzer',
     'neopixel',
     'display',
     'separator4',
-    // 制御
-    'pid',
+    // 永続化
+    'storage_nvs',
     'separator5',
-    // 通信・時間
+    // 基本プログラミング
     'serial',
     'time',
-    'separator6',
-    // ロジック
     'logic',
     'loops',
     'math',
@@ -1140,37 +1087,30 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'variables',
     'functions',
   ],
-  line_trace: [
+  robots_transform: [
     'arduino_core',
+    'robot_transform',
     'separator1',
-    // モーター・駆動系
-    'motor',
-    'diff_drive',
-    'encoder',
-    'separator2',
-    // センサー
-    'sensor_line',
-    'sensor_qtr',
-    'sensor_ultrasonic',
-    'sensor_dht',
+    // センサー（基本）
     'sensor_digital',
     'sensor_analog',
-    'separator3',
-    // アクチュエーター
+    'sensor_ultrasonic',
+    'sensor_dht',
+    'sensor_motion',
+    'separator2',
+    // アクチュエータ・表示・音声
     'servo',
-    'stepper',
     'buzzer',
     'neopixel',
     'display',
+    'audio_dfplayer',
+    'separator3',
+    // 短距離無線
+    'ble',
     'separator4',
-    // 制御
-    'pid',
-    'separator5',
-    // 通信・時間
+    // 基本プログラミング
     'serial',
     'time',
-    'separator6',
-    // ロジック
     'logic',
     'loops',
     'math',
@@ -1178,6 +1118,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'variables',
     'functions',
   ],
+  // micromouse と line_trace は robots_wheel に統合済み
   homeassistant: [
     'arduino_core',
     'separator1',

@@ -1620,7 +1620,7 @@
       "getSpeed": "Current Speed",
       "getSpeedTooltip": "Get currently set motor speed"
     },
-    "ottoWheel": {
+    "wheelRobot": {
       "init": "OTTO Wheel Init",
       "initTooltip": "Initialize OTTO Wheel",
       "leftWheelPin": "Left Wheel Pin",
@@ -2041,7 +2041,7 @@
       "front": "front",
       "back": "back"
     },
-    "otto": {
+    "humanoid": {
       "init": {
         "label": "OTTO Init",
         "tooltip": "Initialize OTTO robot (pin numbers from preset)"
@@ -2147,7 +2147,7 @@
         "tooltip": "Move up and down"
       }
     },
-    "ottoNinja": {
+    "transform": {
       "init": {
         "label": "OTTO Ninja Init",
         "tooltip": "Initialize OTTO Ninja (pin numbers from preset)"
@@ -2529,7 +2529,7 @@
           "tooltip": "Control OTTO servo directly (0-180 degrees)"
         }
       },
-      "ottoNinja": {
+      "transform": {
         "init": {
           "label": "OTTO Ninja Init",
           "leftLeg": "Left Leg",
@@ -2617,7 +2617,7 @@
           "tooltip": "Make Ninja dance"
         }
       },
-      "ottoWheel": {
+      "wheelRobot": {
         "init": {
           "label": "OTTO Wheel Init",
           "leftWheel": "Left Wheel",
@@ -2709,9 +2709,9 @@
       "functions": "⚙️ 函式",
       "time": "⏱️ 時間",
       "serial": "📟 序列埠",
-      "ottoBipedal": "🤖 雙足步行",
-      "ottoWheel": "🛞 輪式",
-      "ottoNinja": "🦾 忍者",
+      "humanoid": "🤖 雙足步行",
+      "wheelRobot": "🛞 輪式",
+      "transform": "🦾 忍者",
       "ultrasonicSensor": "📡 超音波感測器",
       "motor": "🚗 馬達",
       "diffDrive": "🚗 差速驅動",
@@ -3154,9 +3154,9 @@
       "time": "⏱️ Time",
       "i2c": "🔌 I2C",
       "uart": "📡 UART",
-      "ottoBipedal": "🤖 OTTO Bipedal",
-      "ottoWheel": "🛞 OTTO Wheel",
-      "ottoNinja": "🐱 OTTO Ninja",
+      "humanoid": "🤖 OTTO Bipedal",
+      "wheelRobot": "🛞 OTTO Wheel",
+      "transform": "🐱 OTTO Ninja",
       "ultrasonic": "📡 Ultrasonic Sensor",
       "dht": "🌡️ Temperature/Humidity",
       "digitalSensor": "📟 Digital Sensor",
@@ -3271,8 +3271,8 @@
     },
     "sections": {
       "ottoRobot": "OTTO 機器人",
-      "ottoWheel": "OTTO Wheel",
-      "ottoNinja": "OTTO Ninja",
+      "wheelRobot": "OTTO Wheel",
+      "transform": "OTTO Ninja",
       "rus04": "RUS-04 超音波感測器 (含 RGB)",
       "otherSensors": "其他感測器",
       "servoMotor": "伺服馬達",
@@ -3316,8 +3316,8 @@
     "description": "請選擇您常用的積木類別。所選類別將顯示在「最愛」模式中。",
     "selectedCount": "已選：{{count}} 個類別",
     "groups": {
-      "otto": "OTTO 機器人",
-      "competition": "競賽機器人",
+      "robots": "Robots",
+      "_deleted_competition": "",
       "homeAssistant": "Home Assistant",
       "motors": "馬達與驅動",
       "sensors": "感測器",
@@ -3404,21 +3404,21 @@
   },
   "modeSelector": {
     "groups": {
-      "otto": "OTTO 機器人",
-      "competition": "競賽機器人",
+      "robots": "Robots",
+      "_deleted_competition": "",
       "iot": "IoT / 智慧家庭",
       "other": "其他"
     },
     "modes": {
-      "ottoBipedal": {
+      "humanoid": {
         "name": "OTTO 雙足步行",
         "description": "4伺服雙足機器人"
       },
-      "ottoWheel": {
+      "wheelRobot": {
         "name": "OTTO Wheel",
         "description": "兩輪驅動機器人"
       },
-      "ottoNinja": {
+      "transform": {
         "name": "OTTO Ninja",
         "description": "步行/滾動變形機器人"
       },

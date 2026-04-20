@@ -306,7 +306,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                     </div>
                   </div>
 
-                  <h4 className="font-medium mb-2 mt-4">{t('pinPreset.sections.ottoWheel', { defaultValue: 'OTTO Wheel' })}</h4>
+                  <h4 className="font-medium mb-2 mt-4">{t('pinPreset.sections.wheelRobot', { defaultValue: 'Wheel' })}</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>{t('pinPreset.pins.leftWheel', { defaultValue: '左車輪 (Left Wheel)' })}</Label>
@@ -330,7 +330,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                     </div>
                   </div>
 
-                  <h4 className="font-medium mb-2 mt-4">{t('pinPreset.sections.ottoNinja', { defaultValue: 'OTTO Ninja' })}</h4>
+                  <h4 className="font-medium mb-2 mt-4">{t('pinPreset.sections.transform', { defaultValue: 'Transform' })}</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>{t('pinPreset.pins.leftLeg', { defaultValue: '左足 (Left Leg)' })}</Label>

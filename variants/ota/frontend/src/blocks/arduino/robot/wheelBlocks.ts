@@ -1,7 +1,7 @@
 /**
- * DigiCodeOttoWheel Blockly Blocks
+ * Wheel Robot Blockly Blocks
  *
- * Blocks for controlling OTTO Wheel wheeled robots.
+ * Blocks for controlling Wheel wheeled robots.
  * Supports both Arduino C++ and MicroPython.
  *
  * i18n: Uses Blockly.Msg.* for dynamic language switching
@@ -20,11 +20,11 @@ const pyGen = pythonGenerator as any;
 const WHEEL_COLOR = '#4CAF50';  // Green color for Wheel blocks
 
 // ===== Init =====
-Blockly.Blocks['otto_wheel_init'] = {
+Blockly.Blocks['wheel_init'] = {
   init: function() {
     const pins = getOttoWheelPins();
     this.appendDummyInput()
-        .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_INIT || 'OTTO Wheel Init'))
+        .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_INIT || 'Wheel Init'))
         .appendField((Blockly.Msg as any).BLOCKS_OTTOWHEEL_LEFTWHEELPIN || 'Left Wheel Pin')
         .appendField(new Blockly.FieldNumber(pins.left, 0, 39), 'PIN_L')
         .appendField((Blockly.Msg as any).BLOCKS_OTTOWHEEL_RIGHTWHEELPIN || 'Right Wheel Pin')
@@ -32,31 +32,31 @@ Blockly.Blocks['otto_wheel_init'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WHEEL_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTOWHEEL_INITTOOLTIP || 'Initialize OTTO Wheel');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTOWHEEL_INITTOOLTIP || 'Initialize Wheel');
   }
 };
 
-javascriptGenerator.forBlock['otto_wheel_init'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['wheel_init'] = function(block: Blockly.Block) {
   const pinL = block.getFieldValue('PIN_L');
   const pinR = block.getFieldValue('PIN_R');
   generator.definitions_['include_otto_wheel'] = '#include <DigiCodeOttoWheel.h>';
-  generator.definitions_['otto_wheel_instance'] = 'DigiCodeOttoWheel ottoWheel;';
+  generator.definitions_['wheel_instance'] = 'DigiCodeOttoWheel ottoWheel;';
   return `  ottoWheel.init(${pinL}, ${pinR});\n`;
 };
 
-pythonGenerator.forBlock['otto_wheel_init'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['wheel_init'] = function(block: Blockly.Block) {
   const pinL = block.getFieldValue('PIN_L');
   const pinR = block.getFieldValue('PIN_R');
   pyGen.definitions_['import_otto_wheel'] = 'from digicode_otto_wheel import DigiCodeOttoWheel';
-  pyGen.definitions_['otto_wheel_instance'] = 'otto_wheel = DigiCodeOttoWheel()';
+  pyGen.definitions_['wheel_instance'] = 'otto_wheel = DigiCodeOttoWheel()';
   return `otto_wheel.init(${pinL}, ${pinR})\n`;
 };
 
 // ===== Forward =====
-Blockly.Blocks['otto_wheel_forward'] = {
+Blockly.Blocks['wheel_forward'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⬆️ ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_FORWARD || 'OTTO Wheel Forward'))
+        .appendField('⬆️ ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_FORWARD || 'Wheel Forward'))
         .appendField((Blockly.Msg as any).BLOCKS_OTTOWHEEL_SPEED || 'Speed')
         .appendField(new Blockly.FieldDropdown([
           [(Blockly.Msg as any).BLOCKS_OTTOWHEEL_SPEEDFAST || 'Fast', '100'],
@@ -70,21 +70,21 @@ Blockly.Blocks['otto_wheel_forward'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_wheel_forward'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['wheel_forward'] = function(block: Blockly.Block) {
   const speed = block.getFieldValue('SPEED');
   return `  ottoWheel.forward(${speed});\n`;
 };
 
-pythonGenerator.forBlock['otto_wheel_forward'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['wheel_forward'] = function(block: Blockly.Block) {
   const speed = block.getFieldValue('SPEED');
   return `otto_wheel.forward(${speed})\n`;
 };
 
 // ===== Backward =====
-Blockly.Blocks['otto_wheel_backward'] = {
+Blockly.Blocks['wheel_backward'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⬇️ ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_BACKWARD || 'OTTO Wheel Backward'))
+        .appendField('⬇️ ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_BACKWARD || 'Wheel Backward'))
         .appendField((Blockly.Msg as any).BLOCKS_OTTOWHEEL_SPEED || 'Speed')
         .appendField(new Blockly.FieldDropdown([
           [(Blockly.Msg as any).BLOCKS_OTTOWHEEL_SPEEDFAST || 'Fast', '100'],
@@ -98,21 +98,21 @@ Blockly.Blocks['otto_wheel_backward'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_wheel_backward'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['wheel_backward'] = function(block: Blockly.Block) {
   const speed = block.getFieldValue('SPEED');
   return `  ottoWheel.backward(${speed});\n`;
 };
 
-pythonGenerator.forBlock['otto_wheel_backward'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['wheel_backward'] = function(block: Blockly.Block) {
   const speed = block.getFieldValue('SPEED');
   return `otto_wheel.backward(${speed})\n`;
 };
 
 // ===== Turn Left =====
-Blockly.Blocks['otto_wheel_turn_left'] = {
+Blockly.Blocks['wheel_turn_left'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↰ ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_TURNLEFT || 'OTTO Wheel Turn Left'));
+        .appendField('↰ ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_TURNLEFT || 'Wheel Turn Left'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WHEEL_COLOR);
@@ -120,19 +120,19 @@ Blockly.Blocks['otto_wheel_turn_left'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_wheel_turn_left'] = function() {
+javascriptGenerator.forBlock['wheel_turn_left'] = function() {
   return `  ottoWheel.turnLeft(50);\n`;
 };
 
-pythonGenerator.forBlock['otto_wheel_turn_left'] = function() {
+pythonGenerator.forBlock['wheel_turn_left'] = function() {
   return `otto_wheel.turn_left(50)\n`;
 };
 
 // ===== Turn Right =====
-Blockly.Blocks['otto_wheel_turn_right'] = {
+Blockly.Blocks['wheel_turn_right'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↱ ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_TURNRIGHT || 'OTTO Wheel Turn Right'));
+        .appendField('↱ ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_TURNRIGHT || 'Wheel Turn Right'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WHEEL_COLOR);
@@ -140,19 +140,19 @@ Blockly.Blocks['otto_wheel_turn_right'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_wheel_turn_right'] = function() {
+javascriptGenerator.forBlock['wheel_turn_right'] = function() {
   return `  ottoWheel.turnRight(50);\n`;
 };
 
-pythonGenerator.forBlock['otto_wheel_turn_right'] = function() {
+pythonGenerator.forBlock['wheel_turn_right'] = function() {
   return `otto_wheel.turn_right(50)\n`;
 };
 
 // ===== Spin Left =====
-Blockly.Blocks['otto_wheel_spin_left'] = {
+Blockly.Blocks['wheel_spin_left'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↶ ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_SPINLEFT || 'OTTO Wheel Spin Left'));
+        .appendField('↶ ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_SPINLEFT || 'Wheel Spin Left'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WHEEL_COLOR);
@@ -160,19 +160,19 @@ Blockly.Blocks['otto_wheel_spin_left'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_wheel_spin_left'] = function() {
+javascriptGenerator.forBlock['wheel_spin_left'] = function() {
   return `  ottoWheel.spinLeft(50);\n`;
 };
 
-pythonGenerator.forBlock['otto_wheel_spin_left'] = function() {
+pythonGenerator.forBlock['wheel_spin_left'] = function() {
   return `otto_wheel.spin_left(50)\n`;
 };
 
 // ===== Spin Right =====
-Blockly.Blocks['otto_wheel_spin_right'] = {
+Blockly.Blocks['wheel_spin_right'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↷ ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_SPINRIGHT || 'OTTO Wheel Spin Right'));
+        .appendField('↷ ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_SPINRIGHT || 'Wheel Spin Right'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WHEEL_COLOR);
@@ -180,19 +180,19 @@ Blockly.Blocks['otto_wheel_spin_right'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_wheel_spin_right'] = function() {
+javascriptGenerator.forBlock['wheel_spin_right'] = function() {
   return `  ottoWheel.spinRight(50);\n`;
 };
 
-pythonGenerator.forBlock['otto_wheel_spin_right'] = function() {
+pythonGenerator.forBlock['wheel_spin_right'] = function() {
   return `otto_wheel.spin_right(50)\n`;
 };
 
 // ===== Stop =====
-Blockly.Blocks['otto_wheel_stop'] = {
+Blockly.Blocks['wheel_stop'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⏹ ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_STOP || 'OTTO Wheel Stop'));
+        .appendField('⏹ ' + ((Blockly.Msg as any).BLOCKS_OTTOWHEEL_STOP || 'Wheel Stop'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WHEEL_COLOR);
@@ -200,11 +200,11 @@ Blockly.Blocks['otto_wheel_stop'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_wheel_stop'] = function() {
+javascriptGenerator.forBlock['wheel_stop'] = function() {
   return `  ottoWheel.stop();\n`;
 };
 
-pythonGenerator.forBlock['otto_wheel_stop'] = function() {
+pythonGenerator.forBlock['wheel_stop'] = function() {
   return `otto_wheel.stop()\n`;
 };
 

@@ -1620,7 +1620,7 @@
       "getSpeed": "Current Speed",
       "getSpeedTooltip": "Get currently set motor speed"
     },
-    "ottoWheel": {
+    "wheelRobot": {
       "init": "OTTO Wheel Init",
       "initTooltip": "Initialize OTTO Wheel",
       "leftWheelPin": "Left Wheel Pin",
@@ -2041,7 +2041,7 @@
       "front": "front",
       "back": "back"
     },
-    "otto": {
+    "humanoid": {
       "init": {
         "label": "OTTO Init",
         "tooltip": "Initialize OTTO robot (pin numbers from preset)"
@@ -2147,7 +2147,7 @@
         "tooltip": "Move up and down"
       }
     },
-    "ottoNinja": {
+    "transform": {
       "init": {
         "label": "OTTO Ninja Init",
         "tooltip": "Initialize OTTO Ninja (pin numbers from preset)"
@@ -2529,7 +2529,7 @@
           "tooltip": "Control OTTO servo directly (0-180 degrees)"
         }
       },
-      "ottoNinja": {
+      "transform": {
         "init": {
           "label": "OTTO Ninja Init",
           "leftLeg": "Left Leg",
@@ -2617,7 +2617,7 @@
           "tooltip": "Make Ninja dance"
         }
       },
-      "ottoWheel": {
+      "wheelRobot": {
         "init": {
           "label": "OTTO Wheel Init",
           "leftWheel": "Left Wheel",
@@ -2709,9 +2709,9 @@
       "functions": "⚙️ Funções",
       "time": "⏱️ Tempo",
       "serial": "📟 Serial",
-      "ottoBipedal": "🤖 Bípede",
-      "ottoWheel": "🛞 Rodas",
-      "ottoNinja": "🦾 Ninja",
+      "humanoid": "🤖 Bípede",
+      "wheelRobot": "🛞 Rodas",
+      "transform": "🦾 Ninja",
       "ultrasonicSensor": "📡 Sensor Ultrassónico",
       "motor": "🚗 Motor",
       "diffDrive": "🚗 Tração Diferencial",
@@ -3154,9 +3154,9 @@
       "time": "⏱️ Time",
       "i2c": "🔌 I2C",
       "uart": "📡 UART",
-      "ottoBipedal": "🤖 OTTO Bipedal",
-      "ottoWheel": "🛞 OTTO Wheel",
-      "ottoNinja": "🐱 OTTO Ninja",
+      "humanoid": "🤖 OTTO Bipedal",
+      "wheelRobot": "🛞 OTTO Wheel",
+      "transform": "🐱 OTTO Ninja",
       "ultrasonic": "📡 Ultrasonic Sensor",
       "dht": "🌡️ Temperature/Humidity",
       "digitalSensor": "📟 Digital Sensor",
@@ -3271,8 +3271,8 @@
     },
     "sections": {
       "ottoRobot": "Robô OTTO",
-      "ottoWheel": "OTTO Wheel",
-      "ottoNinja": "OTTO Ninja",
+      "wheelRobot": "OTTO Wheel",
+      "transform": "OTTO Ninja",
       "rus04": "Sensor ultrassônico RUS-04 (com RGB)",
       "otherSensors": "Outros sensores",
       "servoMotor": "Servomotor",
@@ -3317,7 +3317,7 @@
     "selectedCount": "Selecionados: {{count}} categorias",
     "groups": {
       "otto": "Robôs OTTO",
-      "competition": "Robôs de competição",
+      "_deleted_competition": "",
       "homeAssistant": "Home Assistant",
       "motors": "Motores e acionamentos",
       "sensors": "Sensores",
@@ -3405,20 +3405,20 @@
   "modeSelector": {
     "groups": {
       "otto": "Robôs OTTO",
-      "competition": "Robôs de competição",
+      "_deleted_competition": "",
       "iot": "IoT / Casa inteligente",
       "other": "Outros"
     },
     "modes": {
-      "ottoBipedal": {
+      "humanoid": {
         "name": "OTTO Bípede",
         "description": "Robô bípede de 4 servos"
       },
-      "ottoWheel": {
+      "wheelRobot": {
         "name": "OTTO Wheel",
         "description": "Robô de 2 rodas"
       },
-      "ottoNinja": {
+      "transform": {
         "name": "OTTO Ninja",
         "description": "Robô transformável"
       },

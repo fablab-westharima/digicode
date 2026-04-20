@@ -9,7 +9,7 @@
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
 import { pythonGenerator } from 'blockly/python';
-import { getOttoNinjaPins } from '../utils/pinHelper';
+import { getOttoNinjaPins } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -19,7 +19,7 @@ const pyGen = pythonGenerator as any;
 const NINJA_COLOR = '#9C27B0';  // Purple color for Ninja blocks
 
 // ===== Init =====
-Blockly.Blocks['otto_ninja_init'] = {
+Blockly.Blocks['transform_init'] = {
   init: function() {
     const pins = getOttoNinjaPins();
     this.appendDummyInput()
@@ -39,17 +39,17 @@ Blockly.Blocks['otto_ninja_init'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_init'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['transform_init'] = function(block: Blockly.Block) {
   const pinLL = block.getFieldValue('PIN_LL');
   const pinRL = block.getFieldValue('PIN_RL');
   const pinLF = block.getFieldValue('PIN_LF');
   const pinRF = block.getFieldValue('PIN_RF');
   generator.definitions_['include_otto_ninja'] = '#include <DigiCodeOttoNinja.h>';
-  generator.definitions_['otto_ninja_instance'] = 'DigiCodeOttoNinja ottoNinja;';
+  generator.definitions_['transform_instance'] = 'DigiCodeOttoNinja ottoNinja;';
   return `  ottoNinja.init(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF});\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_init'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['transform_init'] = function(block: Blockly.Block) {
   const pinLL = block.getFieldValue('PIN_LL');
   const pinRL = block.getFieldValue('PIN_RL');
   const pinLF = block.getFieldValue('PIN_LF');
@@ -57,12 +57,12 @@ pythonGenerator.forBlock['otto_ninja_init'] = function(block: Blockly.Block) {
   // Note: MicroPython support for OTTO Ninja requires ottowalkroll library
   // which may not be available. Arduino (DigiCodeOttoNinja) is the primary target.
   pyGen.definitions_['import_otto_ninja'] = '# OTTO Ninja - MicroPython support is experimental\nfrom ottowalkroll import Ninja';
-  pyGen.definitions_['otto_ninja_instance'] = `ninja = Ninja(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF})`;
+  pyGen.definitions_['transform_instance'] = `ninja = Ninja(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF})`;
   return '# Ninja initialized via constructor above\n';
 };
 
 // ===== Mode Switch (HP Robot style) =====
-Blockly.Blocks['otto_ninja_mode'] = {
+Blockly.Blocks['transform_mode'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🔄 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_MODE_LABEL || 'Ninja Mode'))
@@ -77,12 +77,12 @@ Blockly.Blocks['otto_ninja_mode'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_mode'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['transform_mode'] = function(block: Blockly.Block) {
   const mode = block.getFieldValue('MODE');
   return `  ottoNinja.setMode("${mode}");\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_mode'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['transform_mode'] = function(block: Blockly.Block) {
   const mode = block.getFieldValue('MODE');
   if (mode === 'walk') {
     return `ninja.walk_mode()\n`;
@@ -92,7 +92,7 @@ pythonGenerator.forBlock['otto_ninja_mode'] = function(block: Blockly.Block) {
 };
 
 // ===== Transform (Physical transformation with servo movement) =====
-Blockly.Blocks['otto_ninja_transform'] = {
+Blockly.Blocks['transform_shift'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🦾 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_TRANSFORM_LABEL || 'Ninja Transform'))
@@ -107,18 +107,18 @@ Blockly.Blocks['otto_ninja_transform'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_transform'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['transform_shift'] = function(block: Blockly.Block) {
   const mode = block.getFieldValue('MODE');
   return `  ottoNinja.transform("${mode}");\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_transform'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['transform_shift'] = function(block: Blockly.Block) {
   const mode = block.getFieldValue('MODE');
   return `ninja.transform("${mode}")\n`;
 };
 
 // ===== Align Angle =====
-Blockly.Blocks['otto_ninja_align'] = {
+Blockly.Blocks['transform_align'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('⊕ ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_ALIGN_LABEL || 'Ninja Align'));
@@ -129,16 +129,16 @@ Blockly.Blocks['otto_ninja_align'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_align'] = function() {
+javascriptGenerator.forBlock['transform_align'] = function() {
   return `  ottoNinja.alignAngle();\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_align'] = function() {
+pythonGenerator.forBlock['transform_align'] = function() {
   return `ninja.align_angle()\n`;
 };
 
 // ===== Calibrate =====
-Blockly.Blocks['otto_ninja_calibrate'] = {
+Blockly.Blocks['transform_calibrate'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_CALIBRATE_LABEL || 'Ninja Calibration'))
@@ -153,20 +153,20 @@ Blockly.Blocks['otto_ninja_calibrate'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_calibrate'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['transform_calibrate'] = function(block: Blockly.Block) {
   const left = block.getFieldValue('LEFT');
   const right = block.getFieldValue('RIGHT');
   return `  ottoNinja.calibrate(${left}, ${right});\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_calibrate'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['transform_calibrate'] = function(block: Blockly.Block) {
   const left = block.getFieldValue('LEFT');
   const right = block.getFieldValue('RIGHT');
   return `ninja.calibrate(${left}, ${right})\n`;
 };
 
 // ===== Home =====
-Blockly.Blocks['otto_ninja_home'] = {
+Blockly.Blocks['transform_home'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🏠 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_HOME_LABEL || 'Ninja Home'));
@@ -177,16 +177,16 @@ Blockly.Blocks['otto_ninja_home'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_home'] = function() {
+javascriptGenerator.forBlock['transform_home'] = function() {
   return `  ottoNinja.home();\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_home'] = function() {
+pythonGenerator.forBlock['transform_home'] = function() {
   return `ninja.home()\n`;
 };
 
 // ===== Walk (HP Robot style with direction and speed) =====
-Blockly.Blocks['otto_ninja_walk'] = {
+Blockly.Blocks['transform_walk'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🚶 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_WALK_LABEL || 'Ninja Walk'))
@@ -206,7 +206,7 @@ Blockly.Blocks['otto_ninja_walk'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_walk'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['transform_walk'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const speed = block.getFieldValue('SPEED');
   const speedMs = speed === 'fast' ? 600 : speed === 'slow' ? 1500 : 1000;
@@ -214,7 +214,7 @@ javascriptGenerator.forBlock['otto_ninja_walk'] = function(block: Blockly.Block)
   return `  ottoNinja.walk(2, ${speedMs}, ${dir});\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_walk'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['transform_walk'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const speed = block.getFieldValue('SPEED');
   const steps = speed === 'fast' ? 3 : speed === 'slow' ? 1 : 2;
@@ -223,7 +223,7 @@ pythonGenerator.forBlock['otto_ninja_walk'] = function(block: Blockly.Block) {
 };
 
 // ===== Walk with Power % =====
-Blockly.Blocks['otto_ninja_walk_power'] = {
+Blockly.Blocks['transform_walk_power'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🚶 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_WALKPOWER_LABEL || 'Ninja Walk'))
@@ -240,14 +240,14 @@ Blockly.Blocks['otto_ninja_walk_power'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_walk_power'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['transform_walk_power'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const power = block.getFieldValue('POWER');
   const dir = direction === 'forward' ? 1 : -1;
   return `  ottoNinja.walkPower(${dir}, ${power});\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_walk_power'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['transform_walk_power'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const power = block.getFieldValue('POWER');
   const dir = direction === 'forward' ? 1 : -1;
@@ -255,7 +255,7 @@ pythonGenerator.forBlock['otto_ninja_walk_power'] = function(block: Blockly.Bloc
 };
 
 // ===== Roll (HP Robot style) =====
-Blockly.Blocks['otto_ninja_roll'] = {
+Blockly.Blocks['transform_roll'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🛞 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_ROLL_LABEL || 'Ninja Roll'))
@@ -275,7 +275,7 @@ Blockly.Blocks['otto_ninja_roll'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_roll'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['transform_roll'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const speed = block.getFieldValue('SPEED');
   const speedVal = speed === 'fast' ? 100 : speed === 'slow' ? 30 : 50;
@@ -283,7 +283,7 @@ javascriptGenerator.forBlock['otto_ninja_roll'] = function(block: Blockly.Block)
   return `  ottoNinja.roll(${dir}, ${speedVal});\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_roll'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['transform_roll'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const speed = block.getFieldValue('SPEED');
   const speedVal = speed === 'fast' ? 100 : speed === 'slow' ? 30 : 50;
@@ -292,7 +292,7 @@ pythonGenerator.forBlock['otto_ninja_roll'] = function(block: Blockly.Block) {
 };
 
 // ===== Roll with Power % =====
-Blockly.Blocks['otto_ninja_roll_power'] = {
+Blockly.Blocks['transform_roll_power'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🛞 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_ROLLPOWER_LABEL || 'Ninja Roll'))
@@ -309,14 +309,14 @@ Blockly.Blocks['otto_ninja_roll_power'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_roll_power'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['transform_roll_power'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const power = block.getFieldValue('POWER');
   const dir = direction === 'forward' ? 1 : -1;
   return `  ottoNinja.rollPower(${dir}, ${power});\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_roll_power'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['transform_roll_power'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const power = block.getFieldValue('POWER');
   const dir = direction === 'forward' ? 1 : -1;
@@ -324,7 +324,7 @@ pythonGenerator.forBlock['otto_ninja_roll_power'] = function(block: Blockly.Bloc
 };
 
 // ===== Roll Rotate =====
-Blockly.Blocks['otto_ninja_roll_rotate'] = {
+Blockly.Blocks['transform_roll_rotate'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('↻ ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_ROLLROTATE_LABEL || 'Ninja Roll Rotate'))
@@ -341,14 +341,14 @@ Blockly.Blocks['otto_ninja_roll_rotate'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_roll_rotate'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['transform_roll_rotate'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const power = block.getFieldValue('POWER');
   const dir = direction === 'left' ? 1 : -1;
   return `  ottoNinja.rollRotate(${dir}, ${power});\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_roll_rotate'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['transform_roll_rotate'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const power = block.getFieldValue('POWER');
   const dir = direction === 'left' ? 1 : -1;
@@ -356,7 +356,7 @@ pythonGenerator.forBlock['otto_ninja_roll_rotate'] = function(block: Blockly.Blo
 };
 
 // ===== Turn (Walk mode) =====
-Blockly.Blocks['otto_ninja_turn'] = {
+Blockly.Blocks['transform_turn'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('↻ ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_TURN_LABEL || 'Ninja Turn'))
@@ -373,14 +373,14 @@ Blockly.Blocks['otto_ninja_turn'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_turn'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['transform_turn'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const steps = block.getFieldValue('STEPS');
   const dir = direction === 'left' ? 1 : -1;
   return `  ottoNinja.turn(${steps}, 1000, ${dir});\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_turn'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['transform_turn'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const steps = block.getFieldValue('STEPS');
   const dir = direction === 'left' ? 1 : -1;
@@ -388,7 +388,7 @@ pythonGenerator.forBlock['otto_ninja_turn'] = function(block: Blockly.Block) {
 };
 
 // ===== Stop (HP Robot style with mode selection) =====
-Blockly.Blocks['otto_ninja_stop'] = {
+Blockly.Blocks['transform_stop'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('⏹ ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_STOP_LABEL || 'Ninja Stop'))
@@ -403,12 +403,12 @@ Blockly.Blocks['otto_ninja_stop'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_stop'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['transform_stop'] = function(block: Blockly.Block) {
   const mode = block.getFieldValue('MODE');
   return `  ottoNinja.stop("${mode}");\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_stop'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['transform_stop'] = function(block: Blockly.Block) {
   const mode = block.getFieldValue('MODE');
   if (mode === 'walk') {
     return `ninja.walk_stop()\n`;
@@ -418,7 +418,7 @@ pythonGenerator.forBlock['otto_ninja_stop'] = function(block: Blockly.Block) {
 };
 
 // ===== Trot (Fast walk) =====
-Blockly.Blocks['otto_ninja_trot'] = {
+Blockly.Blocks['transform_trot'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🏃 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_TROT_LABEL || 'Ninja Trot'));
@@ -429,16 +429,16 @@ Blockly.Blocks['otto_ninja_trot'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_trot'] = function() {
+javascriptGenerator.forBlock['transform_trot'] = function() {
   return `  ottoNinja.trot(2, 600);\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_trot'] = function() {
+pythonGenerator.forBlock['transform_trot'] = function() {
   return `ninja.trot(2)\n`;
 };
 
 // ===== Push-up =====
-Blockly.Blocks['otto_ninja_pushup'] = {
+Blockly.Blocks['transform_pushup'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('💪 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_PUSHUP_LABEL || 'Ninja Push-up'));
@@ -449,16 +449,16 @@ Blockly.Blocks['otto_ninja_pushup'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_pushup'] = function() {
+javascriptGenerator.forBlock['transform_pushup'] = function() {
   return `  ottoNinja.pushUp(2, 1000);\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_pushup'] = function() {
+pythonGenerator.forBlock['transform_pushup'] = function() {
   return `ninja.push_up(2)\n`;
 };
 
 // ===== Lateral =====
-Blockly.Blocks['otto_ninja_lateral'] = {
+Blockly.Blocks['transform_lateral'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('↔️ ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_LATERAL_LABEL || 'Ninja Lateral'))
@@ -473,20 +473,20 @@ Blockly.Blocks['otto_ninja_lateral'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_lateral'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['transform_lateral'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const dir = direction === 'left' ? 1 : -1;
   return `  ottoNinja.lateral(2, 1000, ${dir});\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_lateral'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['transform_lateral'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const dir = direction === 'left' ? 1 : -1;
   return `ninja.lateral(2, ${dir})\n`;
 };
 
 // ===== Dance =====
-Blockly.Blocks['otto_ninja_dance'] = {
+Blockly.Blocks['transform_dance'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('💃 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_DANCE_LABEL || 'Ninja Dance'));
@@ -497,11 +497,11 @@ Blockly.Blocks['otto_ninja_dance'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ninja_dance'] = function() {
+javascriptGenerator.forBlock['transform_dance'] = function() {
   return `  ottoNinja.dance(4, 600);\n`;
 };
 
-pythonGenerator.forBlock['otto_ninja_dance'] = function() {
+pythonGenerator.forBlock['transform_dance'] = function() {
   return `ninja.dance(4)\n`;
 };
 

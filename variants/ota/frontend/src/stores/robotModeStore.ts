@@ -3,18 +3,16 @@ import { persist } from 'zustand/middleware';
 
 // モードの定義
 export type RobotMode =
-  | 'otto_bipedal'    // OTTO 二足歩行
-  | 'otto_wheel'      // OTTO Wheel
-  | 'otto_ninja'      // OTTO Ninja
-  | 'micromouse'      // マイクロマウス
-  | 'line_trace'      // ロボトレース
-  | 'homeassistant'   // Home Assistant
-  | 'generic'         // 汎用デバイス
-  | 'all_blocks'      // 全ブロック表示
-  | 'custom';         // お気に入り
+  | 'robots_humanoid'  // ヒューマノイドロボット（旧 otto_bipedal）
+  | 'robots_wheel'     // 車輪ロボット（旧 otto_wheel + micromouse + line_trace）
+  | 'robots_transform' // 変形ロボット（旧 otto_ninja）
+  | 'homeassistant'    // Home Assistant
+  | 'generic'          // 汎用デバイス
+  | 'all_blocks'       // 全ブロック表示
+  | 'custom';          // お気に入り
 
 // モードのグループ定義
-export type ModeGroup = 'otto' | 'competition' | 'iot' | 'other';
+export type ModeGroup = 'robots' | 'iot' | 'other';
 
 export interface ModeGroupInfo {
   id: ModeGroup;
@@ -23,8 +21,7 @@ export interface ModeGroupInfo {
 }
 
 export const MODE_GROUPS: Record<ModeGroup, ModeGroupInfo> = {
-  otto: { id: 'otto', name: 'OTTO ロボット', icon: '🤖' },
-  competition: { id: 'competition', name: '競技ロボット', icon: '🏆' },
+  robots: { id: 'robots', name: 'Robots', icon: '🤖' },
   iot: { id: 'iot', name: 'IoT / スマートホーム', icon: '🏠' },
   other: { id: 'other', name: 'その他', icon: '⚙️' },
 };
@@ -35,7 +32,7 @@ export interface RobotModeInfo {
   name: string;
   icon: string;
   description: string;
-  // このモードで表示するブロックカテゴリ
+  // このモードで表示するブロックカテゴリ（参考用）
   categories: string[];
   // グループ
   group: ModeGroup;
@@ -43,74 +40,46 @@ export interface RobotModeInfo {
 
 // ロボットモード定義
 export const ROBOT_MODES: Record<RobotMode, RobotModeInfo> = {
-  // OTTO ロボット
-  otto_bipedal: {
-    id: 'otto_bipedal',
-    name: 'OTTO 二足歩行',
+  // Robots グループ
+  robots_humanoid: {
+    id: 'robots_humanoid',
+    name: 'Humanoid',
     icon: '🤖',
     description: '4サーボ二足歩行ロボット',
     categories: [
       'logic', 'loops', 'math', 'variables', 'functions',
       'time', 'serial',
-      'otto_bipedal', // 専用カテゴリ
-      'sensor_ultrasonic', // 超音波センサー
+      'robot_humanoid',
+      'sensor_ultrasonic',
     ],
-    group: 'otto',
+    group: 'robots',
   },
-  otto_wheel: {
-    id: 'otto_wheel',
-    name: 'OTTO Wheel',
+  robots_wheel: {
+    id: 'robots_wheel',
+    name: 'Wheel',
     icon: '🛞',
-    description: '2輪駆動ロボット',
+    description: '車輪ロボット（2輪・競技）',
     categories: [
       'logic', 'loops', 'math', 'variables', 'functions',
       'time', 'serial',
-      'otto_wheel', // 専用カテゴリ
-      'sensor_ultrasonic',
+      'robot_wheel',
+      'motor', 'diff_drive', 'encoder', 'pid',
+      'sensor_ultrasonic', 'sensor_line', 'sensor_qtr', 'sensor_wall',
     ],
-    group: 'otto',
+    group: 'robots',
   },
-  otto_ninja: {
-    id: 'otto_ninja',
-    name: 'OTTO Ninja',
+  robots_transform: {
+    id: 'robots_transform',
+    name: 'Transform',
     icon: '🦾',
-    description: '歩行/走行変形ロボット',
+    description: '変形ロボット（歩行/走行変形）',
     categories: [
       'logic', 'loops', 'math', 'variables', 'functions',
       'time', 'serial',
-      'otto_ninja', // 専用カテゴリ
+      'robot_transform',
       'sensor_ultrasonic',
     ],
-    group: 'otto',
-  },
-  // 競技ロボット
-  micromouse: {
-    id: 'micromouse',
-    name: 'マイクロマウス',
-    icon: '🐭',
-    description: '迷路探索ロボット',
-    categories: [
-      'logic', 'loops', 'math', 'variables', 'functions',
-      'time', 'serial',
-      'motor', 'encoder',
-      'sensor_wall', 'sensor_ultrasonic',
-      'pid',
-    ],
-    group: 'competition',
-  },
-  line_trace: {
-    id: 'line_trace',
-    name: 'ロボトレース',
-    icon: '🏎️',
-    description: 'ライントレースロボット',
-    categories: [
-      'logic', 'loops', 'math', 'variables', 'functions',
-      'time', 'serial',
-      'motor', 'encoder',
-      'sensor_line',
-      'pid',
-    ],
-    group: 'competition',
+    group: 'robots',
   },
   // IoT / スマートホーム
   homeassistant: {
@@ -138,7 +107,7 @@ export const ROBOT_MODES: Record<RobotMode, RobotModeInfo> = {
       'time', 'serial',
       'gpio',
       'sensor_digital', 'sensor_analog', 'sensor_dht', 'sensor_ultrasonic',
-      'actuator', 'neopixel',
+      'neopixel',
     ],
     group: 'other',
   },
@@ -147,7 +116,7 @@ export const ROBOT_MODES: Record<RobotMode, RobotModeInfo> = {
     name: '全ブロック表示',
     icon: '📦',
     description: 'すべてのブロックを表示',
-    categories: ['all'], // 全カテゴリ表示
+    categories: ['all'],
     group: 'other',
   },
   custom: {
@@ -155,7 +124,7 @@ export const ROBOT_MODES: Record<RobotMode, RobotModeInfo> = {
     name: 'お気に入り',
     icon: '⭐',
     description: 'よく使うブロックを登録',
-    categories: ['all'], // 全カテゴリ表示（お気に入り設定で絞り込む）
+    categories: ['all'],
     group: 'other',
   },
 };
@@ -169,12 +138,27 @@ interface RobotModeState {
 export const useRobotModeStore = create<RobotModeState>()(
   persist(
     (set, get) => ({
-      mode: 'otto_bipedal', // デフォルトはOTTO二足歩行
+      mode: 'robots_humanoid', // デフォルトは Humanoid
       setMode: (mode) => set({ mode }),
       getModeInfo: () => ROBOT_MODES[get().mode],
     }),
     {
-      name: 'robot-mode-storage', // localStorageのキー
+      name: 'robot-mode-storage',
+      // 旧モード名から新モード名へのマイグレーション
+      migrate: (persistedState: any, version: number) => {
+        const modeMap: Record<string, RobotMode> = {
+          otto_bipedal: 'robots_humanoid',
+          otto_wheel: 'robots_wheel',
+          otto_ninja: 'robots_transform',
+          micromouse: 'robots_wheel',
+          line_trace: 'robots_wheel',
+        };
+        if (persistedState?.mode && modeMap[persistedState.mode]) {
+          persistedState.mode = modeMap[persistedState.mode];
+        }
+        return persistedState;
+      },
+      version: 1,
     }
   )
 );

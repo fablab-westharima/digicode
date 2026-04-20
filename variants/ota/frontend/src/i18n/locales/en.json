@@ -900,8 +900,8 @@
     },
     "sections": {
       "ottoRobot": "OTTO Robot",
-      "ottoWheel": "OTTO Wheel",
-      "ottoNinja": "OTTO Ninja",
+      "wheelRobot": "OTTO Wheel",
+      "transform": "OTTO Ninja",
       "rus04": "RUS-04 Ultrasonic Sensor (with RGB)",
       "otherSensors": "Other Sensors",
       "servoMotor": "Servo Motor",
@@ -1841,7 +1841,7 @@
       "getSpeed": "Current Speed",
       "getSpeedTooltip": "Get currently set motor speed"
     },
-    "ottoWheel": {
+    "wheelRobot": {
       "init": "OTTO Wheel Init",
       "initTooltip": "Initialize OTTO Wheel",
       "leftWheelPin": "Left Wheel Pin",
@@ -2262,7 +2262,7 @@
       "front": "front",
       "back": "back"
     },
-    "otto": {
+    "humanoid": {
       "init": {
         "label": "OTTO Init",
         "tooltip": "Initialize OTTO robot (pin numbers from preset)"
@@ -2368,7 +2368,7 @@
         "tooltip": "Move up and down"
       }
     },
-    "ottoNinja": {
+    "transform": {
       "init": {
         "label": "OTTO Ninja Init",
         "tooltip": "Initialize OTTO Ninja (pin numbers from preset)"
@@ -2930,9 +2930,9 @@
       "functions": "⚙️ Functions",
       "time": "⏱️ Time",
       "serial": "📟 Serial",
-      "ottoBipedal": "🤖 Bipedal",
-      "ottoWheel": "🛞 Wheel",
-      "ottoNinja": "🦾 Ninja",
+      "humanoid": "🤖 Bipedal",
+      "wheelRobot": "🛞 Wheel",
+      "transform": "🦾 Ninja",
       "ultrasonicSensor": "📡 Ultrasonic Sensor",
       "motor": "🚗 Motor",
       "diffDrive": "🚗 Differential Drive",
@@ -3375,9 +3375,9 @@
       "time": "⏱️ Time",
       "i2c": "🔌 I2C",
       "uart": "📡 UART",
-      "ottoBipedal": "🤖 OTTO Bipedal",
-      "ottoWheel": "🛞 OTTO Wheel",
-      "ottoNinja": "🐱 OTTO Ninja",
+      "humanoid": "🤖 OTTO Bipedal",
+      "wheelRobot": "🛞 OTTO Wheel",
+      "transform": "🐱 OTTO Ninja",
       "ultrasonic": "📡 Ultrasonic Sensor",
       "dht": "🌡️ Temperature/Humidity",
       "digitalSensor": "📟 Digital Sensor",
@@ -3404,31 +3404,22 @@
   },
   "modeSelector": {
     "groups": {
-      "otto": "OTTO Robots",
-      "competition": "Competition Robots",
+      "robots": "Robots",
       "iot": "IoT / Smart Home",
       "other": "Other"
     },
     "modes": {
-      "ottoBipedal": {
-        "name": "OTTO Bipedal",
+      "humanoid": {
+        "name": "Humanoid",
         "description": "4-servo bipedal robot"
       },
-      "ottoWheel": {
-        "name": "OTTO Wheel",
-        "description": "2-wheel drive robot"
+      "wheel": {
+        "name": "Wheel",
+        "description": "Wheel robot (2-wheel / competition)"
       },
-      "ottoNinja": {
-        "name": "OTTO Ninja",
+      "transform": {
+        "name": "Transform",
         "description": "Walk/roll transforming robot"
-      },
-      "micromouse": {
-        "name": "Micromouse",
-        "description": "Maze-solving robot"
-      },
-      "lineTrace": {
-        "name": "Line Tracer",
-        "description": "Line tracing robot"
       },
       "homeassistant": {
         "name": "Home Assistant",
@@ -3445,26 +3436,6 @@
       "custom": {
         "name": "Favorites",
         "description": "Register frequently used blocks"
-      },
-      "otto_bipedal": {
-        "name": "OTTO Bipedal",
-        "description": "4-servo bipedal robot"
-      },
-      "otto_wheel": {
-        "name": "OTTO Wheel",
-        "description": "2-wheel drive robot"
-      },
-      "otto_ninja": {
-        "name": "OTTO Ninja",
-        "description": "Walk/roll transforming robot"
-      },
-      "line_trace": {
-        "name": "Line Tracer",
-        "description": "Line tracing robot"
-      },
-      "all_blocks": {
-        "name": "All Blocks",
-        "description": "Show all blocks"
       }
     }
   },

@@ -1,14 +1,14 @@
 /*
- * DigiCodeOtto Blockly Blocks
+ * Humanoid Robot Blockly Blocks
  *
- * Blocks for controlling OTTO-compatible bipedal robots.
+ * Blocks for controlling Humanoid robots.
  * Supports both Arduino C++ and MicroPython.
  */
 
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
 import { pythonGenerator } from 'blockly/python';
-import { getOttoPins } from '../utils/pinHelper';
+import { getOttoPins } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -19,11 +19,11 @@ const OTTO_COLOR = '#FF6B35';  // Orange color for OTTO blocks
 
 // ===== OTTO Initialization =====
 
-Blockly.Blocks['otto_init'] = {
+Blockly.Blocks['humanoid_init'] = {
   init: function() {
     const pins = getOttoPins();
     this.appendDummyInput()
-        .appendField('🤖 ' + ((Blockly.Msg as any).BLOCKS_OTTO_INIT_LABEL || 'OTTO Init'))
+        .appendField('🤖 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_INIT_LABEL || 'OTTO Init'))
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_LEFTLEG || 'left leg pin')
         .appendField(new Blockly.FieldNumber(pins.leftLeg, 0, 39), 'PIN_LL')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_RIGHTLEG || 'right leg pin')
@@ -35,11 +35,11 @@ Blockly.Blocks['otto_init'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_INIT_TOOLTIP || 'Initialize OTTO robot (pin numbers from preset)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_INIT_TOOLTIP || 'Initialize OTTO robot (pin numbers from preset)');
   }
 };
 
-javascriptGenerator.forBlock['otto_init'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_init'] = function(block: Blockly.Block) {
   const pinLL = block.getFieldValue('PIN_LL');
   const pinRL = block.getFieldValue('PIN_RL');
   const pinLF = block.getFieldValue('PIN_LF');
@@ -51,7 +51,7 @@ javascriptGenerator.forBlock['otto_init'] = function(block: Blockly.Block) {
   return `  otto.init(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF});\n`;
 };
 
-pythonGenerator.forBlock['otto_init'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_init'] = function(block: Blockly.Block) {
   const pinLL = block.getFieldValue('PIN_LL');
   const pinRL = block.getFieldValue('PIN_RL');
   const pinLF = block.getFieldValue('PIN_LF');
@@ -65,31 +65,31 @@ pythonGenerator.forBlock['otto_init'] = function(block: Blockly.Block) {
 
 // ===== OTTO Home Position =====
 
-Blockly.Blocks['otto_home'] = {
+Blockly.Blocks['humanoid_home'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🏠 ' + ((Blockly.Msg as any).BLOCKS_OTTO_HOME_LABEL || 'OTTO Home'));
+        .appendField('🏠 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_HOME_LABEL || 'OTTO Home'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_HOME_TOOLTIP || 'Set OTTO to upright position');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_HOME_TOOLTIP || 'Set OTTO to upright position');
   }
 };
 
-javascriptGenerator.forBlock['otto_home'] = function() {
+javascriptGenerator.forBlock['humanoid_home'] = function() {
   return `  otto.home();\n`;
 };
 
-pythonGenerator.forBlock['otto_home'] = function() {
+pythonGenerator.forBlock['humanoid_home'] = function() {
   return `otto.home()\n`;
 };
 
 // ===== OTTO Walk =====
 
-Blockly.Blocks['otto_walk'] = {
+Blockly.Blocks['humanoid_walk'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🚶 ' + ((Blockly.Msg as any).BLOCKS_OTTO_WALK_LABEL || 'OTTO Walk'))
+        .appendField('🚶 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_WALK_LABEL || 'OTTO Walk'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_STEPS || 'steps')
         .appendField(new Blockly.FieldDropdown([
@@ -105,11 +105,11 @@ Blockly.Blocks['otto_walk'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_WALK_TOOLTIP || 'Make OTTO walk');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_WALK_TOOLTIP || 'Make OTTO walk');
   }
 };
 
-javascriptGenerator.forBlock['otto_walk'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_walk'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   const direction = block.getFieldValue('DIRECTION');
   const speed = block.getFieldValue('SPEED');
@@ -117,7 +117,7 @@ javascriptGenerator.forBlock['otto_walk'] = function(block: Blockly.Block) {
   return `  otto.walk(${steps}, ${speed}, ${direction});\n`;
 };
 
-pythonGenerator.forBlock['otto_walk'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_walk'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   const direction = block.getFieldValue('DIRECTION');
   const speed = block.getFieldValue('SPEED');
@@ -127,10 +127,10 @@ pythonGenerator.forBlock['otto_walk'] = function(block: Blockly.Block) {
 
 // ===== OTTO Turn =====
 
-Blockly.Blocks['otto_turn'] = {
+Blockly.Blocks['humanoid_turn'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↻ ' + ((Blockly.Msg as any).BLOCKS_OTTO_TURN_LABEL || 'OTTO Turn'))
+        .appendField('↻ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_TURN_LABEL || 'OTTO Turn'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
@@ -146,11 +146,11 @@ Blockly.Blocks['otto_turn'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_TURN_TOOLTIP || 'Make OTTO turn');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_TURN_TOOLTIP || 'Make OTTO turn');
   }
 };
 
-javascriptGenerator.forBlock['otto_turn'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_turn'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   const direction = block.getFieldValue('DIRECTION');
   const speed = block.getFieldValue('SPEED');
@@ -158,7 +158,7 @@ javascriptGenerator.forBlock['otto_turn'] = function(block: Blockly.Block) {
   return `  otto.turn(${steps}, ${speed}, ${direction});\n`;
 };
 
-pythonGenerator.forBlock['otto_turn'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_turn'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   const direction = block.getFieldValue('DIRECTION');
   const speed = block.getFieldValue('SPEED');
@@ -168,85 +168,85 @@ pythonGenerator.forBlock['otto_turn'] = function(block: Blockly.Block) {
 
 // ===== OTTO Jump =====
 
-Blockly.Blocks['otto_jump'] = {
+Blockly.Blocks['humanoid_jump'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⬆️ ' + ((Blockly.Msg as any).BLOCKS_OTTO_JUMP_LABEL || 'OTTO Jump'))
+        .appendField('⬆️ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_JUMP_LABEL || 'OTTO Jump'))
         .appendField(new Blockly.FieldNumber(1, 1, 5), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_JUMP_TOOLTIP || 'Make OTTO jump');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_JUMP_TOOLTIP || 'Make OTTO jump');
   }
 };
 
-javascriptGenerator.forBlock['otto_jump'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_jump'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `  otto.jump(${steps}, 500);\n`;
 };
 
-pythonGenerator.forBlock['otto_jump'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_jump'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `otto.jump(${steps}, 500)\n`;
 };
 
 // ===== OTTO Dance =====
 
-Blockly.Blocks['otto_dance'] = {
+Blockly.Blocks['humanoid_dance'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💃 ' + ((Blockly.Msg as any).BLOCKS_OTTO_DANCE_LABEL || 'OTTO Dance'))
+        .appendField('💃 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_DANCE_LABEL || 'OTTO Dance'))
         .appendField(new Blockly.FieldNumber(4, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_DANCE_TOOLTIP || 'Make OTTO dance');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_DANCE_TOOLTIP || 'Make OTTO dance');
   }
 };
 
-javascriptGenerator.forBlock['otto_dance'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_dance'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `  otto.dance(${steps}, 600);\n`;
 };
 
-pythonGenerator.forBlock['otto_dance'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_dance'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `otto.dance(${steps}, 600)\n`;
 };
 
 // ===== OTTO Swing =====
 
-Blockly.Blocks['otto_swing'] = {
+Blockly.Blocks['humanoid_swing'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('〜 ' + ((Blockly.Msg as any).BLOCKS_OTTO_SWING_LABEL || 'OTTO Swing'))
+        .appendField('〜 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_SWING_LABEL || 'OTTO Swing'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_SWING_TOOLTIP || 'Swing OTTO side to side');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_SWING_TOOLTIP || 'Swing OTTO side to side');
   }
 };
 
-javascriptGenerator.forBlock['otto_swing'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_swing'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `  otto.swing(${steps}, 1000);\n`;
 };
 
-pythonGenerator.forBlock['otto_swing'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_swing'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `otto.swing(${steps}, 1000)\n`;
 };
 
 // ===== OTTO Bend =====
 
-Blockly.Blocks['otto_bend'] = {
+Blockly.Blocks['humanoid_bend'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↔️ ' + ((Blockly.Msg as any).BLOCKS_OTTO_BEND_LABEL || 'OTTO Bend'))
+        .appendField('↔️ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_BEND_LABEL || 'OTTO Bend'))
         .appendField(new Blockly.FieldDropdown([
           [(Blockly.Msg as any).BLOCKS_COMMON_LEFT || 'left', 'left'],
           [(Blockly.Msg as any).BLOCKS_COMMON_RIGHT || 'right', 'right']
@@ -256,11 +256,11 @@ Blockly.Blocks['otto_bend'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_BEND_TOOLTIP || 'Bend OTTO left or right');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_BEND_TOOLTIP || 'Bend OTTO left or right');
   }
 };
 
-javascriptGenerator.forBlock['otto_bend'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_bend'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const steps = block.getFieldValue('STEPS');
 
@@ -271,7 +271,7 @@ javascriptGenerator.forBlock['otto_bend'] = function(block: Blockly.Block) {
   }
 };
 
-pythonGenerator.forBlock['otto_bend'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_bend'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const steps = block.getFieldValue('STEPS');
 
@@ -284,10 +284,10 @@ pythonGenerator.forBlock['otto_bend'] = function(block: Blockly.Block) {
 
 // ===== OTTO Moonwalk =====
 
-Blockly.Blocks['otto_moonwalk'] = {
+Blockly.Blocks['humanoid_moonwalk'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🕺 ' + ((Blockly.Msg as any).BLOCKS_OTTO_MOONWALK_LABEL || 'OTTO Moonwalk'))
+        .appendField('🕺 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_MOONWALK_LABEL || 'OTTO Moonwalk'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_STEPS || 'steps')
         .appendField(new Blockly.FieldDropdown([
@@ -297,18 +297,18 @@ Blockly.Blocks['otto_moonwalk'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_MOONWALK_TOOLTIP || 'Make OTTO moonwalk');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_MOONWALK_TOOLTIP || 'Make OTTO moonwalk');
   }
 };
 
-javascriptGenerator.forBlock['otto_moonwalk'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_moonwalk'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   const direction = block.getFieldValue('DIRECTION');
 
   return `  otto.moonwalk(${steps}, 1000, ${direction});\n`;
 };
 
-pythonGenerator.forBlock['otto_moonwalk'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_moonwalk'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   const direction = block.getFieldValue('DIRECTION');
 
@@ -317,38 +317,38 @@ pythonGenerator.forBlock['otto_moonwalk'] = function(block: Blockly.Block) {
 
 // ===== OTTO Gesture (感情表現) =====
 
-Blockly.Blocks['otto_gesture'] = {
+Blockly.Blocks['humanoid_gesture'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('😊 ' + ((Blockly.Msg as any).BLOCKS_OTTO_GESTURE_LABEL || 'OTTO Gesture'))
+        .appendField('😊 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_LABEL || 'OTTO Gesture'))
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_OTTO_GESTURE_HAPPY || 'Happy', 'OttoHappy'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_GESTURE_SUPERHAPPY || 'Super Happy', 'OttoSuperHappy'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_GESTURE_SAD || 'Sad', 'OttoSad'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_GESTURE_VICTORY || 'Victory', 'OttoVictory'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_GESTURE_ANGRY || 'Angry', 'OttoAngry'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_GESTURE_SLEEPING || 'Sleeping', 'OttoSleeping'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_GESTURE_FRETFUL || 'Fretful', 'OttoFretful'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_GESTURE_LOVE || 'Love', 'OttoLove'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_GESTURE_CONFUSED || 'Confused', 'OttoConfused'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_GESTURE_FART || 'Fart', 'OttoFart'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_GESTURE_WAVE || 'Wave', 'OttoWave'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_GESTURE_MAGIC || 'Magic', 'OttoMagic'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_GESTURE_FAIL || 'Fail', 'OttoFail']
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_HAPPY || 'Happy', 'OttoHappy'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_SUPERHAPPY || 'Super Happy', 'OttoSuperHappy'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_SAD || 'Sad', 'OttoSad'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_VICTORY || 'Victory', 'OttoVictory'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_ANGRY || 'Angry', 'OttoAngry'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_SLEEPING || 'Sleeping', 'OttoSleeping'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_FRETFUL || 'Fretful', 'OttoFretful'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_LOVE || 'Love', 'OttoLove'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_CONFUSED || 'Confused', 'OttoConfused'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_FART || 'Fart', 'OttoFart'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_WAVE || 'Wave', 'OttoWave'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_MAGIC || 'Magic', 'OttoMagic'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_FAIL || 'Fail', 'OttoFail']
         ]), 'GESTURE');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_GESTURE_TOOLTIP || 'OTTO expresses emotions with movement and sound');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_TOOLTIP || 'OTTO expresses emotions with movement and sound');
   }
 };
 
-javascriptGenerator.forBlock['otto_gesture'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_gesture'] = function(block: Blockly.Block) {
   const gesture = block.getFieldValue('GESTURE');
   return `  otto.playGesture(${gesture});\n`;
 };
 
-pythonGenerator.forBlock['otto_gesture'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_gesture'] = function(block: Blockly.Block) {
   const gesture = block.getFieldValue('GESTURE');
   // Python版は簡易実装
   const gestureMap: { [key: string]: string } = {
@@ -371,44 +371,44 @@ pythonGenerator.forBlock['otto_gesture'] = function(block: Blockly.Block) {
 
 // ===== OTTO Sound (音声) =====
 
-Blockly.Blocks['otto_sound'] = {
+Blockly.Blocks['humanoid_sound'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔊 ' + ((Blockly.Msg as any).BLOCKS_OTTO_SOUND_LABEL || 'OTTO Sound'))
+        .appendField('🔊 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_LABEL || 'OTTO Sound'))
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_CONNECTION || 'Connection', 'S_connection'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_DISCONNECTION || 'Disconnection', 'S_disconnection'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_BUTTONPUSHED || 'Button Pushed', 'S_buttonPushed'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_MODE1 || 'Mode 1', 'S_mode1'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_MODE2 || 'Mode 2', 'S_mode2'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_MODE3 || 'Mode 3', 'S_mode3'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_SURPRISE || 'Surprise', 'S_surprise'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_OHOOH || 'Oh Ooh', 'S_OhOoh'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_OHOOH2 || 'Oh Ooh 2', 'S_OhOoh2'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_CUDDLY || 'Cuddly', 'S_cuddly'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_SLEEPING || 'Sleeping', 'S_sleeping'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_HAPPY || 'Happy', 'S_happy'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_SUPERHAPPY || 'Super Happy', 'S_superHappy'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_HAPPYSHORT || 'Happy Short', 'S_happy_short'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_SAD || 'Sad', 'S_sad'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_CONFUSED || 'Confused', 'S_confused'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_FART1 || 'Fart 1', 'S_fart1'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_FART2 || 'Fart 2', 'S_fart2'],
-          [(Blockly.Msg as any).BLOCKS_OTTO_SOUND_FART3 || 'Fart 3', 'S_fart3']
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_CONNECTION || 'Connection', 'S_connection'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_DISCONNECTION || 'Disconnection', 'S_disconnection'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_BUTTONPUSHED || 'Button Pushed', 'S_buttonPushed'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_MODE1 || 'Mode 1', 'S_mode1'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_MODE2 || 'Mode 2', 'S_mode2'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_MODE3 || 'Mode 3', 'S_mode3'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_SURPRISE || 'Surprise', 'S_surprise'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_OHOOH || 'Oh Ooh', 'S_OhOoh'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_OHOOH2 || 'Oh Ooh 2', 'S_OhOoh2'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_CUDDLY || 'Cuddly', 'S_cuddly'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_SLEEPING || 'Sleeping', 'S_sleeping'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_HAPPY || 'Happy', 'S_happy'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_SUPERHAPPY || 'Super Happy', 'S_superHappy'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_HAPPYSHORT || 'Happy Short', 'S_happy_short'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_SAD || 'Sad', 'S_sad'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_CONFUSED || 'Confused', 'S_confused'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_FART1 || 'Fart 1', 'S_fart1'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_FART2 || 'Fart 2', 'S_fart2'],
+          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_FART3 || 'Fart 3', 'S_fart3']
         ]), 'SOUND');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_SOUND_TOOLTIP || 'OTTO plays a sound');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_TOOLTIP || 'OTTO plays a sound');
   }
 };
 
-javascriptGenerator.forBlock['otto_sound'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_sound'] = function(block: Blockly.Block) {
   const sound = block.getFieldValue('SOUND');
   return `  otto.sing(${sound});\n`;
 };
 
-pythonGenerator.forBlock['otto_sound'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_sound'] = function(block: Blockly.Block) {
   const sound = block.getFieldValue('SOUND');
   return `otto.sing("${sound}")\n`;
 };
@@ -416,10 +416,10 @@ pythonGenerator.forBlock['otto_sound'] = function(block: Blockly.Block) {
 // ===== OTTO Additional Dance Moves =====
 
 // Crusaito
-Blockly.Blocks['otto_crusaito'] = {
+Blockly.Blocks['humanoid_crusaito'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🦵 ' + ((Blockly.Msg as any).BLOCKS_OTTO_CRUSAITO_LABEL || 'OTTO Crusaito'))
+        .appendField('🦵 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_CRUSAITO_LABEL || 'OTTO Crusaito'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
@@ -429,27 +429,27 @@ Blockly.Blocks['otto_crusaito'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_CRUSAITO_TOOLTIP || 'Move with crossed legs');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_CRUSAITO_TOOLTIP || 'Move with crossed legs');
   }
 };
 
-javascriptGenerator.forBlock['otto_crusaito'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_crusaito'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   const direction = block.getFieldValue('DIRECTION');
   return `  otto.crusaito(${steps}, 1000, 30, ${direction});\n`;
 };
 
-pythonGenerator.forBlock['otto_crusaito'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_crusaito'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   const direction = block.getFieldValue('DIRECTION');
   return `otto.crusaito(${steps}, 1000, 30, ${direction})\n`;
 };
 
 // Flapping
-Blockly.Blocks['otto_flapping'] = {
+Blockly.Blocks['humanoid_flapping'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🦅 ' + ((Blockly.Msg as any).BLOCKS_OTTO_FLAPPING_LABEL || 'OTTO Flapping'))
+        .appendField('🦅 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_FLAPPING_LABEL || 'OTTO Flapping'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
@@ -459,75 +459,75 @@ Blockly.Blocks['otto_flapping'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_FLAPPING_TOOLTIP || 'Make flapping motion');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_FLAPPING_TOOLTIP || 'Make flapping motion');
   }
 };
 
-javascriptGenerator.forBlock['otto_flapping'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_flapping'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   const direction = block.getFieldValue('DIRECTION');
   return `  otto.flapping(${steps}, 1000, 20, ${direction});\n`;
 };
 
-pythonGenerator.forBlock['otto_flapping'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_flapping'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   const direction = block.getFieldValue('DIRECTION');
   return `otto.flapping(${steps}, 1000, 20, ${direction})\n`;
 };
 
 // Tiptoe Swing
-Blockly.Blocks['otto_tiptoe_swing'] = {
+Blockly.Blocks['humanoid_tiptoe_swing'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🩰 ' + ((Blockly.Msg as any).BLOCKS_OTTO_TIPTOESWING_LABEL || 'OTTO Tiptoe Swing'))
+        .appendField('🩰 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_TIPTOESWING_LABEL || 'OTTO Tiptoe Swing'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_TIPTOESWING_TOOLTIP || 'Swing on tiptoes');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_TIPTOESWING_TOOLTIP || 'Swing on tiptoes');
   }
 };
 
-javascriptGenerator.forBlock['otto_tiptoe_swing'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_tiptoe_swing'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `  otto.tiptoeSwing(${steps}, 1000, 30);\n`;
 };
 
-pythonGenerator.forBlock['otto_tiptoe_swing'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_tiptoe_swing'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `otto.tiptoe_swing(${steps}, 1000, 30)\n`;
 };
 
 // Jitter
-Blockly.Blocks['otto_jitter'] = {
+Blockly.Blocks['humanoid_jitter'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('😰 ' + ((Blockly.Msg as any).BLOCKS_OTTO_JITTER_LABEL || 'OTTO Jitter'))
+        .appendField('😰 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_JITTER_LABEL || 'OTTO Jitter'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_JITTER_TOOLTIP || 'Make jittering motion');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_JITTER_TOOLTIP || 'Make jittering motion');
   }
 };
 
-javascriptGenerator.forBlock['otto_jitter'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_jitter'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `  otto.jitter(${steps}, 500, 15);\n`;
 };
 
-pythonGenerator.forBlock['otto_jitter'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_jitter'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `otto.jitter(${steps}, 500, 15)\n`;
 };
 
 // Ascending Turn
-Blockly.Blocks['otto_ascending_turn'] = {
+Blockly.Blocks['humanoid_ascending_turn'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔄 ' + ((Blockly.Msg as any).BLOCKS_OTTO_ASCENDINGTURN_LABEL || 'OTTO Ascending Turn'))
+        .appendField('🔄 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_ASCENDINGTURN_LABEL || 'OTTO Ascending Turn'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
@@ -537,27 +537,27 @@ Blockly.Blocks['otto_ascending_turn'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_ASCENDINGTURN_TOOLTIP || 'Turn while ascending');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_ASCENDINGTURN_TOOLTIP || 'Turn while ascending');
   }
 };
 
-javascriptGenerator.forBlock['otto_ascending_turn'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_ascending_turn'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   const direction = block.getFieldValue('DIRECTION');
   return `  otto.ascendingTurn(${steps}, 1000, 10, ${direction});\n`;
 };
 
-pythonGenerator.forBlock['otto_ascending_turn'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_ascending_turn'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   const direction = block.getFieldValue('DIRECTION');
   return `otto.ascending_turn(${steps}, 1000, 10, ${direction})\n`;
 };
 
 // Shake Leg
-Blockly.Blocks['otto_shake_leg'] = {
+Blockly.Blocks['humanoid_shake_leg'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🦿 ' + ((Blockly.Msg as any).BLOCKS_OTTO_SHAKELEG_LABEL || 'OTTO Shake Leg'))
+        .appendField('🦿 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_SHAKELEG_LABEL || 'OTTO Shake Leg'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
@@ -567,42 +567,42 @@ Blockly.Blocks['otto_shake_leg'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_SHAKELEG_TOOLTIP || 'Shake leg');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_SHAKELEG_TOOLTIP || 'Shake leg');
   }
 };
 
-javascriptGenerator.forBlock['otto_shake_leg'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_shake_leg'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   const direction = block.getFieldValue('DIRECTION');
   return `  otto.shakeLeg(${steps}, 1000, ${direction});\n`;
 };
 
-pythonGenerator.forBlock['otto_shake_leg'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_shake_leg'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   const direction = block.getFieldValue('DIRECTION');
   return `otto.shake_leg(${steps}, 1000, ${direction})\n`;
 };
 
 // Up Down
-Blockly.Blocks['otto_updown'] = {
+Blockly.Blocks['humanoid_updown'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⬆️⬇️ ' + ((Blockly.Msg as any).BLOCKS_OTTO_UPDOWN_LABEL || 'OTTO Up Down'))
+        .appendField('⬆️⬇️ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_UPDOWN_LABEL || 'OTTO Up Down'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTO_UPDOWN_TOOLTIP || 'Move up and down');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_UPDOWN_TOOLTIP || 'Move up and down');
   }
 };
 
-javascriptGenerator.forBlock['otto_updown'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['humanoid_updown'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `  otto.updown(${steps}, 1000, 30);\n`;
 };
 
-pythonGenerator.forBlock['otto_updown'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['humanoid_updown'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `otto.updown(${steps}, 1000, 30)\n`;
 };

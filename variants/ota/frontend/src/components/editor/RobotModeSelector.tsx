@@ -14,11 +14,9 @@ import { useTranslation } from 'react-i18next';
 
 // Mode ID to i18n key mapping
 const MODE_I18N_KEYS: Record<RobotMode, string> = {
-  otto_bipedal: 'ottoBipedal',
-  otto_wheel: 'ottoWheel',
-  otto_ninja: 'ottoNinja',
-  micromouse: 'micromouse',
-  line_trace: 'lineTrace',
+  robots_humanoid: 'humanoid',
+  robots_wheel: 'wheel',
+  robots_transform: 'transform',
   homeassistant: 'homeassistant',
   generic: 'generic',
   all_blocks: 'allBlocks',
@@ -30,7 +28,7 @@ interface RobotModeSelectorProps {
 }
 
 // グループの表示順序
-const GROUP_ORDER: ModeGroup[] = ['otto', 'competition', 'iot', 'other'];
+const GROUP_ORDER: ModeGroup[] = ['robots', 'iot', 'other'];
 
 export function RobotModeSelector({ onModeChange }: RobotModeSelectorProps) {
   const { mode, setMode } = useRobotModeStore();

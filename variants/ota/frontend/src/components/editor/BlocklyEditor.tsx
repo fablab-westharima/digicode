@@ -14,10 +14,9 @@ import { populateBlocklyMessages } from '@/utils/blocklyMessages';
 import { FavoriteSettingsDialog } from './FavoriteSettingsDialog';
 // Old esp32BlocksArduino.ts removed - using arduino/core/esp32Blocks with Blockly.Msg.*
 import '../../blocks/arduino/core/esp32Blocks';
-import '../../blocks/ottoBlocks';
-// Old ottoWheelBlocks.ts removed - using arduino/robot/ottoWheelBlocks with Blockly.Msg.*
-import '../../blocks/arduino/robot/ottoWheelBlocks';
-import '../../blocks/ottoNinjaBlocks';
+import '../../blocks/arduino/robot/humanoidBlocks';
+import '../../blocks/arduino/robot/wheelBlocks';
+import '../../blocks/arduino/robot/transformBlocks';
 import '../../blocks/sensorBlocks';
 // Old audioBlocks.ts removed - using arduino/audio/audioBlocks with Blockly.Msg.*
 import '../../blocks/arduino/audio/audioBlocks';

@@ -900,8 +900,8 @@
     },
     "sections": {
       "ottoRobot": "OTTO ロボット",
-      "ottoWheel": "OTTO Wheel",
-      "ottoNinja": "OTTO Ninja",
+      "wheelRobot": "OTTO Wheel",
+      "transform": "OTTO Ninja",
       "rus04": "RUS-04 超音波センサー (RGB付き)",
       "otherSensors": "その他のセンサー",
       "servoMotor": "サーボモーター",
@@ -1841,7 +1841,7 @@
       "getSpeed": "現在速度",
       "getSpeedTooltip": "現在設定されているモーター速度を取得"
     },
-    "ottoWheel": {
+    "wheelRobot": {
       "init": "OTTO Wheel初期化",
       "initTooltip": "OTTO Wheelを初期化します",
       "leftWheelPin": "左車輪ピン",
@@ -2262,7 +2262,7 @@
       "front": "前",
       "back": "後"
     },
-    "otto": {
+    "humanoid": {
       "init": {
         "label": "OTTO初期化",
         "tooltip": "OTTOロボットを初期化します（ピン番号はプリセットから取得）"
@@ -2368,7 +2368,7 @@
         "tooltip": "上下に動きます"
       }
     },
-    "ottoNinja": {
+    "transform": {
       "init": {
         "label": "OTTO Ninja初期化",
         "tooltip": "OTTO Ninjaを初期化します（ピン番号はプリセットから取得）"
@@ -2920,9 +2920,9 @@
       "functions": "⚙️ 関数",
       "time": "⏱️ 時間",
       "serial": "📟 シリアル",
-      "ottoBipedal": "🤖 二足歩行",
-      "ottoWheel": "🛞 Wheel",
-      "ottoNinja": "🦾 Ninja",
+      "humanoid": "🤖 Humanoid",
+      "wheelRobot": "🛞 Wheel",
+      "transform": "🦾 Transform",
       "ultrasonicSensor": "📡 超音波センサー",
       "motor": "🚗 モーター",
       "diffDrive": "🚗 差動駆動",
@@ -3365,9 +3365,9 @@
       "time": "⏱️ 時間",
       "i2c": "🔌 I2C",
       "uart": "📡 UART",
-      "ottoBipedal": "🤖 OTTO 2足歩行",
-      "ottoWheel": "🛞 OTTO Wheel",
-      "ottoNinja": "🐱 OTTO Ninja",
+      "humanoid": "🤖 OTTO 2足歩行",
+      "wheelRobot": "🛞 OTTO Wheel",
+      "transform": "🐱 OTTO Ninja",
       "ultrasonic": "📡 超音波センサー",
       "dht": "🌡️ 温湿度センサー",
       "digitalSensor": "📟 デジタルセンサー",
@@ -3394,31 +3394,22 @@
   },
   "modeSelector": {
     "groups": {
-      "otto": "OTTO ロボット",
-      "competition": "競技ロボット",
+      "robots": "Robots",
       "iot": "IoT / スマートホーム",
       "other": "その他"
     },
     "modes": {
-      "ottoBipedal": {
-        "name": "OTTO 二足歩行",
+      "humanoid": {
+        "name": "Humanoid",
         "description": "4サーボ二足歩行ロボット"
       },
-      "ottoWheel": {
-        "name": "OTTO Wheel",
-        "description": "2輪駆動ロボット"
+      "wheel": {
+        "name": "Wheel",
+        "description": "車輪ロボット（2輪・競技）"
       },
-      "ottoNinja": {
-        "name": "OTTO Ninja",
-        "description": "歩行/走行変形ロボット"
-      },
-      "micromouse": {
-        "name": "マイクロマウス",
-        "description": "迷路探索ロボット"
-      },
-      "lineTrace": {
-        "name": "ロボトレース",
-        "description": "ライントレースロボット"
+      "transform": {
+        "name": "Transform",
+        "description": "変形ロボット（歩行/走行変形）"
       },
       "homeassistant": {
         "name": "Home Assistant",
@@ -3435,26 +3426,6 @@
       "custom": {
         "name": "お気に入り",
         "description": "よく使うブロックを登録"
-      },
-      "otto_bipedal": {
-        "name": "OTTO 二足歩行",
-        "description": "4サーボ二足歩行ロボット"
-      },
-      "otto_wheel": {
-        "name": "OTTO Wheel",
-        "description": "2輪駆動ロボット"
-      },
-      "otto_ninja": {
-        "name": "OTTO Ninja",
-        "description": "歩行/走行変形ロボット"
-      },
-      "line_trace": {
-        "name": "ロボトレース",
-        "description": "ライントレースロボット"
-      },
-      "all_blocks": {
-        "name": "全ブロック表示",
-        "description": "すべてのブロックを表示"
       }
     }
   },
