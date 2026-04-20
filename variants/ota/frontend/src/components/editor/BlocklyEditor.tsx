@@ -62,6 +62,8 @@ import '../../blocks/arduino/core/interruptBlocks';
 import '../../blocks/arduino/storage/storageNvsBlocks';
 import '../../blocks/arduino/storage/storageFsBlocks';
 import '../../blocks/arduino/storage/timeBlocks';
+import '../../blocks/arduino/sensor/sensorMotionBlocks';
+import '../../blocks/arduino/sensor/sensorEnvironmentBlocks';
 import { generateToolbox } from './toolboxGenerator';
 
 // 日本語ロケールを設定

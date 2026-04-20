@@ -1088,6 +1088,58 @@
       "check": "割り込み確認",
       "checkTooltip": "割り込みフラグを確認し、トリガーされていればハンドラを実行します。loopブロック内に配置してください。"
     },
+    "mpu6050": {
+      "init": "MPU6050 初期化",
+      "accelRange": "加速度レンジ",
+      "gyroRange": "ジャイロレンジ",
+      "initTooltip": "MPU6050センサーをI2C経由で初期化します。Adafruit MPU6050ライブラリが必要です。",
+      "update": "MPU6050 更新",
+      "updateTooltip": "センサー値を読み取り、相補フィルタでpitch/rollを更新します。loopブロック内で呼んでください。",
+      "accel": "加速度取得",
+      "accelTooltip": "指定軸の加速度（m/s²）を返します。mpu6050_updateを先に呼んでください。",
+      "gyro": "角速度取得",
+      "gyroTooltip": "指定軸の角速度（rad/s）を返します。mpu6050_updateを先に呼んでください。",
+      "temp": "MPU6050 温度",
+      "tempTooltip": "MPU6050内部温度（°C）を返します。チップ温度のため周囲温度と異なります。",
+      "angle": "姿勢角取得",
+      "pitch": "Pitch（前傾）",
+      "roll": "Roll（横傾き）",
+      "angleTooltip": "相補フィルタによるpitch/roll角度（度）を返します。loopブロックでmpu6050_updateを呼んでください。",
+      "calibrate": "MPU6050 キャリブレーション",
+      "samples": "サンプル数",
+      "calibrateTooltip": "静止状態でキャリブレーションします。オフセット値はRAM変数（mpu_offset_*）に保存されます。NVSへの保存はPreferencesブロックで行ってください。"
+    },
+    "bme280": {
+      "init": "BME280 初期化",
+      "initTooltip": "BME280センサーをI2C経由で初期化します。アドレス0x76が既定値、SDOピンがHIGHの場合は0x77を使用。",
+      "read": "BME280 読み取り",
+      "readTooltip": "BME280センサーから値（温度°C・湿度%・気圧hPa）を読み取ります。"
+    },
+    "bmp280": {
+      "init": "BMP280 初期化",
+      "initTooltip": "BMP280センサーをI2C経由で初期化します。注意: BMP280には湿度センサーがありません。",
+      "read": "BMP280 読み取り",
+      "readTooltip": "BMP280センサーから温度（°C）または気圧（hPa）を読み取ります。",
+      "altitude": "BMP280 高度(m)",
+      "seaLevel": "海面気圧(hPa)",
+      "altitudeTooltip": "現在気圧と海面気圧から高度（m）を計算します。標準海面気圧: 1013.25hPa。"
+    },
+    "env": {
+      "temperature": "温度 (°C)",
+      "humidity": "湿度 (%)",
+      "pressure": "気圧 (hPa)"
+    },
+    "battery": {
+      "voltage": "電池電圧 (V)",
+      "adcPin": "ADCピン",
+      "divider": "分圧比",
+      "voltageTooltip": "分圧抵抗経由でADCから電池電圧を計測します。分圧比を設定（等分抵抗は2.0）。V単位で返します。",
+      "percentage": "電池残量 (%)",
+      "voltageInput": "電圧 (V)",
+      "minV": "最小V",
+      "maxV": "最大V",
+      "percentageTooltip": "電池電圧を残量（0-100%）に変換します。電池種別に合わせた最小・最大電圧を設定してください（Li-ion: 3.0-4.2V）。"
+    },
     "ble": {
       "uartSetup": "BLE UART 初期化",
       "deviceName": "デバイス名",
@@ -2731,6 +2783,8 @@
       "i2cSpi": "📡 I2C/SPI",
       "interrupt": "⚡ 割り込み",
       "ble": "📶 BLE",
+      "sensorMotion": "🎯 姿勢・慣性",
+      "sensorEnvironment": "🌡️ 環境センサー",
       "ntpTime": "⏰ NTP時刻",
       "rtc": "🕰️ RTC",
       "storageNvs": "💾 設定保存",
@@ -2810,7 +2864,8 @@
       "preferences": "設定保存 (NVS)",
       "eeprom": "EEPROM",
       "sdCard": "SDカード",
-      "littlefs": "LittleFS（内部フラッシュ）"
+      "littlefs": "LittleFS（内部フラッシュ）",
+      "battery": "🔋 電池"
     }
   },
   "pinSettings": {

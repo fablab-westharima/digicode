@@ -867,6 +867,58 @@
       "check": "檢查中斷",
       "checkTooltip": "檢查並執行已觸發的中斷處理程式。請放在 loop 區塊中。"
     },
+    "mpu6050": {
+      "init": "MPU6050 初始化",
+      "accelRange": "加速度範圍",
+      "gyroRange": "陀螺儀範圍",
+      "initTooltip": "透過I2C初始化MPU6050感測器。需要Adafruit MPU6050函式庫。",
+      "update": "MPU6050 更新",
+      "updateTooltip": "讀取感測器數值並以互補濾波器更新pitch/roll。請在loop區塊中呼叫。",
+      "accel": "加速度",
+      "accelTooltip": "取得指定軸的加速度（m/s²）。請先呼叫mpu6050_update。",
+      "gyro": "陀螺儀",
+      "gyroTooltip": "取得指定軸的角速度（rad/s）。請先呼叫mpu6050_update。",
+      "temp": "MPU6050 溫度",
+      "tempTooltip": "取得MPU6050內部溫度（°C）。這是晶片溫度，非環境溫度。",
+      "angle": "取得姿態角",
+      "pitch": "Pitch（俯仰）",
+      "roll": "Roll（橫滾）",
+      "angleTooltip": "以互補濾波器取得pitch或roll角度（度）。請在loop中呼叫mpu6050_update。",
+      "calibrate": "MPU6050 校準",
+      "samples": "樣本數",
+      "calibrateTooltip": "在靜止狀態下校準。偏移值儲存在RAM變數（mpu_offset_*）中。如需儲存至NVS，請使用Preferences區塊。"
+    },
+    "bme280": {
+      "init": "BME280 初始化",
+      "initTooltip": "透過I2C初始化BME280。預設位址0x76，SDO腳位為HIGH時使用0x77。",
+      "read": "BME280 讀取",
+      "readTooltip": "從BME280讀取溫度（°C）、濕度（%）或氣壓（hPa）。"
+    },
+    "bmp280": {
+      "init": "BMP280 初始化",
+      "initTooltip": "透過I2C初始化BMP280。注意：BMP280無濕度感測器。",
+      "read": "BMP280 讀取",
+      "readTooltip": "從BMP280讀取溫度（°C）或氣壓（hPa）。",
+      "altitude": "BMP280 高度(m)",
+      "seaLevel": "海平面氣壓(hPa)",
+      "altitudeTooltip": "從當前氣壓與海平面氣壓計算高度（m）。標準海平面氣壓：1013.25 hPa。"
+    },
+    "env": {
+      "temperature": "溫度 (°C)",
+      "humidity": "濕度 (%)",
+      "pressure": "氣壓 (hPa)"
+    },
+    "battery": {
+      "voltage": "電池電壓 (V)",
+      "adcPin": "ADC腳位",
+      "divider": "分壓比",
+      "voltageTooltip": "透過分壓電阻由ADC量測電池電壓。設定分壓比（等值電阻為2.0）。以V為單位回傳。",
+      "percentage": "電池電量 (%)",
+      "voltageInput": "電壓 (V)",
+      "minV": "最小V",
+      "maxV": "最大V",
+      "percentageTooltip": "將電池電壓換算為電量百分比（0-100%）。依電池類型設定最小/最大電壓（鋰離子：3.0-4.2V）。"
+    },
     "ble": {
       "uartSetup": "BLE UART 初始化",
       "deviceName": "裝置名稱",
@@ -2520,6 +2572,8 @@
       "i2cSpi": "📡 I2C/SPI",
       "interrupt": "⚡ 中斷",
       "ble": "📶 BLE",
+      "sensorMotion": "🎯 姿態與IMU",
+      "sensorEnvironment": "🌡️ 環境感測",
       "ntpTime": "⏰ NTP時間",
       "rtc": "🕰️ RTC",
       "storageNvs": "💾 設定儲存",
@@ -2599,7 +2653,8 @@
       "preferences": "設定儲存 (NVS)",
       "eeprom": "EEPROM",
       "sdCard": "SD卡",
-      "littlefs": "LittleFS（內部快閃記憶體）"
+      "littlefs": "LittleFS（內部快閃記憶體）",
+      "battery": "🔋 電池"
     }
   },
   "pinSettings": {

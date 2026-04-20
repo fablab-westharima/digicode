@@ -774,6 +774,32 @@ const getToolboxCategories = (): Record<string, string> => ({
   </category>`,
 
   // アナログセンサー（Otto Blocklyスタイル）
+  // 姿勢・慣性センサー MPU6050 (BP5-1, 2026-04-20 追加)
+  sensor_motion: `
+  <category id="sensorMotion" name="${cat('sensorMotion')}" colour="#FF5722">
+    <label text="MPU6050"></label>
+    <block type="mpu6050_init"></block>
+    <block type="mpu6050_update"></block>
+    <block type="mpu6050_read_accel"></block>
+    <block type="mpu6050_read_gyro"></block>
+    <block type="mpu6050_read_temperature"></block>
+    <block type="mpu6050_get_angle"></block>
+    <block type="mpu6050_calibrate"></block>
+  </category>`,
+
+  // 環境センサー BME280/BMP280 (BP5-2, 2026-04-20 追加)
+  sensor_environment: `
+  <category id="sensorEnvironment" name="${cat('sensorEnvironment')}" colour="#4CAF50">
+    <label text="BME280 (温湿度・気圧)"></label>
+    <block type="bme280_init"></block>
+    <block type="bme280_read"></block>
+    <sep></sep>
+    <label text="BMP280 (気圧・高度)"></label>
+    <block type="bmp280_init"></block>
+    <block type="bmp280_read"></block>
+    <block type="bmp280_read_altitude"></block>
+  </category>`,
+
   sensor_analog: `
   <category id="analogSensor" name="${cat('analogSensor')}" colour="#10b981">
     <block type="potentiometer"></block>
@@ -787,6 +813,10 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="ir_reflective_sensor"></block>
     <block type="joystick_sensor"></block>
     <block type="analog_read"></block>
+    <sep></sep>
+    <label text="${label('battery') || 'Battery'}"></label>
+    <block type="battery_voltage"></block>
+    <block type="battery_percentage"></block>
   </category>`,
 
   // ステッピングモーター
@@ -1045,6 +1075,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'encoder',
     'separator4',
     // センサー
+    'sensor_motion',
+    'sensor_environment',
     'sensor_ultrasonic',
     'sensor_dht',
     'sensor_digital',
@@ -1083,6 +1115,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'arduino_core',
     'separator1',
     // センサー
+    'sensor_motion',
+    'sensor_environment',
     'sensor_ultrasonic',
     'sensor_dht',
     'sensor_digital',
@@ -1145,6 +1179,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'encoder',
     'separator4',
     // グループ5: センサー
+    'sensor_motion',
+    'sensor_environment',
     'sensor_ultrasonic',
     'sensor_dht',
     'sensor_digital',
@@ -1211,6 +1247,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'encoder',
     'separator5',
     // グループ6: センサー
+    'sensor_motion',
+    'sensor_environment',
     'sensor_ultrasonic',
     'sensor_dht',
     'sensor_digital',

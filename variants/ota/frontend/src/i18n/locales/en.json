@@ -1088,6 +1088,58 @@
       "check": "Check Interrupt",
       "checkTooltip": "Check and execute the interrupt handler if triggered. Place this in the loop block."
     },
+    "mpu6050": {
+      "init": "MPU6050 Init",
+      "accelRange": "accel range",
+      "gyroRange": "gyro range",
+      "initTooltip": "Initialize MPU6050 sensor via I2C. Requires Adafruit MPU6050 library.",
+      "update": "MPU6050 Update",
+      "updateTooltip": "Read sensor values and update pitch/roll with complementary filter. Call in loop block.",
+      "accel": "Accel",
+      "accelTooltip": "Get acceleration on specified axis (m/s²). Call mpu6050_update first.",
+      "gyro": "Gyro",
+      "gyroTooltip": "Get angular velocity on specified axis (rad/s). Call mpu6050_update first.",
+      "temp": "MPU6050 Temp",
+      "tempTooltip": "Get MPU6050 internal temperature (°C). Note: chip temperature, not ambient.",
+      "angle": "Get Angle",
+      "pitch": "Pitch",
+      "roll": "Roll",
+      "angleTooltip": "Get pitch or roll angle (degrees) using complementary filter. Call mpu6050_update in loop.",
+      "calibrate": "MPU6050 Calibrate",
+      "samples": "samples",
+      "calibrateTooltip": "Calibrate while stationary. Offsets stored in RAM (mpu_offset_*). Save to NVS with Preferences blocks if needed."
+    },
+    "bme280": {
+      "init": "BME280 Init",
+      "initTooltip": "Initialize BME280 via I2C. Default address 0x76, use 0x77 if SDO pin is HIGH.",
+      "read": "BME280 Read",
+      "readTooltip": "Read temperature (°C), humidity (%), or pressure (hPa) from BME280."
+    },
+    "bmp280": {
+      "init": "BMP280 Init",
+      "initTooltip": "Initialize BMP280 via I2C. Note: BMP280 has no humidity sensor.",
+      "read": "BMP280 Read",
+      "readTooltip": "Read temperature (°C) or pressure (hPa) from BMP280.",
+      "altitude": "BMP280 Altitude (m)",
+      "seaLevel": "sea level pressure (hPa)",
+      "altitudeTooltip": "Calculate altitude (m) from current vs sea level pressure. Standard: 1013.25 hPa."
+    },
+    "env": {
+      "temperature": "temperature (°C)",
+      "humidity": "humidity (%)",
+      "pressure": "pressure (hPa)"
+    },
+    "battery": {
+      "voltage": "Battery Voltage (V)",
+      "adcPin": "ADC pin",
+      "divider": "divider ratio",
+      "voltageTooltip": "Read battery voltage via ADC with resistor divider. Set ratio (e.g. 2.0 for equal resistors). Returns voltage in V.",
+      "percentage": "Battery %",
+      "voltageInput": "voltage (V)",
+      "minV": "min V",
+      "maxV": "max V",
+      "percentageTooltip": "Convert battery voltage to percentage (0-100%). Set min/max for your battery type (Li-ion: 3.0-4.2V)."
+    },
     "ble": {
       "uartSetup": "BLE UART Setup",
       "deviceName": "device name",
@@ -2741,6 +2793,8 @@
       "i2cSpi": "📡 I2C/SPI",
       "interrupt": "⚡ Interrupt",
       "ble": "📶 BLE",
+      "sensorMotion": "🎯 Motion & IMU",
+      "sensorEnvironment": "🌡️ Environment",
       "ntpTime": "⏰ NTP Time",
       "rtc": "🕰️ RTC",
       "storageNvs": "💾 Settings",
@@ -2820,7 +2874,8 @@
       "preferences": "Settings (NVS)",
       "eeprom": "EEPROM",
       "sdCard": "SD Card",
-      "littlefs": "LittleFS (Internal Flash)"
+      "littlefs": "LittleFS (Internal Flash)",
+      "battery": "🔋 Battery"
     }
   },
   "pinSettings": {

@@ -867,6 +867,58 @@
       "check": "Verificar Interrupção",
       "checkTooltip": "Verifica e executa o manipulador de interrupção se ativado. Coloque isto no bloco loop."
     },
+    "mpu6050": {
+      "init": "Inicializar MPU6050",
+      "accelRange": "intervalo aceleróm.",
+      "gyroRange": "intervalo giroscópio",
+      "initTooltip": "Inicializa MPU6050 via I2C. Requer biblioteca Adafruit MPU6050.",
+      "update": "Atualizar MPU6050",
+      "updateTooltip": "Lê valores e atualiza pitch/roll com filtro complementar. Chame no bloco loop.",
+      "accel": "Aceleração",
+      "accelTooltip": "Obtém aceleração no eixo especificado (m/s²). Chame mpu6050_update primeiro.",
+      "gyro": "Giroscópio",
+      "gyroTooltip": "Obtém velocidade angular no eixo especificado (rad/s). Chame mpu6050_update primeiro.",
+      "temp": "Temperatura MPU6050",
+      "tempTooltip": "Obtém temperatura interna do MPU6050 (°C). É a temperatura do chip, não ambiente.",
+      "angle": "Obter Ângulo",
+      "pitch": "Pitch",
+      "roll": "Roll",
+      "angleTooltip": "Obtém ângulo pitch ou roll (graus) com filtro complementar. Chame mpu6050_update no loop.",
+      "calibrate": "Calibrar MPU6050",
+      "samples": "amostras",
+      "calibrateTooltip": "Calibra em repouso. Offsets em RAM (mpu_offset_*). Guarde em NVS com bloques Preferences se necessário."
+    },
+    "bme280": {
+      "init": "Inicializar BME280",
+      "initTooltip": "Inicializa BME280 via I2C. Endereço 0x76 padrão, 0x77 se pino SDO estiver em HIGH.",
+      "read": "Ler BME280",
+      "readTooltip": "Lê temperatura (°C), humidade (%) ou pressão (hPa) do BME280."
+    },
+    "bmp280": {
+      "init": "Inicializar BMP280",
+      "initTooltip": "Inicializa BMP280 via I2C. Nota: BMP280 não tem sensor de humidade.",
+      "read": "Ler BMP280",
+      "readTooltip": "Lê temperatura (°C) ou pressão (hPa) do BMP280.",
+      "altitude": "Altitude BMP280 (m)",
+      "seaLevel": "pressão ao nível do mar (hPa)",
+      "altitudeTooltip": "Calcula altitude (m) a partir da pressão atual vs nível do mar. Padrão: 1013.25 hPa."
+    },
+    "env": {
+      "temperature": "temperatura (°C)",
+      "humidity": "humidade (%)",
+      "pressure": "pressão (hPa)"
+    },
+    "battery": {
+      "voltage": "Tensão da Bateria (V)",
+      "adcPin": "pino ADC",
+      "divider": "rácio divisor",
+      "voltageTooltip": "Mede tensão da bateria via ADC com divisor resistivo. Configure o rácio (ex. 2.0 para resistências iguais).",
+      "percentage": "% Bateria",
+      "voltageInput": "tensão (V)",
+      "minV": "V mín",
+      "maxV": "V máx",
+      "percentageTooltip": "Converte tensão da bateria em percentagem (0-100%). Configure min/max para o seu tipo (Li-ion: 3.0-4.2V)."
+    },
     "ble": {
       "uartSetup": "Iniciar BLE UART",
       "deviceName": "nome do dispositivo",
@@ -2520,6 +2572,8 @@
       "i2cSpi": "📡 I2C/SPI",
       "interrupt": "⚡ Interrupção",
       "ble": "📶 BLE",
+      "sensorMotion": "🎯 Movimento e IMU",
+      "sensorEnvironment": "🌡️ Ambiente",
       "ntpTime": "⏰ Hora NTP",
       "rtc": "🕰️ RTC",
       "storageNvs": "💾 Configurações",
@@ -2599,7 +2653,8 @@
       "preferences": "Configurações (NVS)",
       "eeprom": "EEPROM",
       "sdCard": "Cartão SD",
-      "littlefs": "LittleFS (Flash Interno)"
+      "littlefs": "LittleFS (Flash Interno)",
+      "battery": "🔋 Bateria"
     }
   },
   "pinSettings": {

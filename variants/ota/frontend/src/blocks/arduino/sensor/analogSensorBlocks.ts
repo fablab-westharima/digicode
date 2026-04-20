@@ -364,4 +364,61 @@ javascriptGenerator.forBlock['analog_read'] = function(block: Blockly.Block) {
   return [code, Order.FUNCTION_CALL];
 };
 
+// ========================================
+// バッテリー電圧監視 (BP5-6, 2026-04-20)
+// ========================================
+const BATTERY_COLOR = '#FF9800';
+
+/**
+ * battery_voltage - ADC 経由でバッテリー電圧を計測
+ */
+Blockly.Blocks['battery_voltage'] = {
+  init: function(this: Blockly.Block) {
+    this.appendDummyInput()
+        .appendField('🔋 ' + ((Blockly.Msg as any).BLOCKS_BATTERY_VOLTAGE || 'Battery Voltage (V)'));
+    this.appendDummyInput()
+        .appendField((Blockly.Msg as any).BLOCKS_BATTERY_ADCPIN || 'ADC pin')
+        .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN')
+        .appendField((Blockly.Msg as any).BLOCKS_BATTERY_DIVIDER || 'divider ratio')
+        .appendField(new Blockly.FieldNumber(2.0, 1.0, 10.0, 0.1), 'RATIO');
+    this.setOutput(true, 'Number');
+    this.setColour(BATTERY_COLOR);
+    this.setTooltip((Blockly.Msg as any).BLOCKS_BATTERY_VOLTAGETOOLTIP || 'Read battery voltage via ADC with a resistor divider. Set divider ratio (e.g. 2.0 for equal resistors). Returns voltage in V.');
+  }
+};
+
+generator.forBlock['battery_voltage'] = function(block: Blockly.Block) {
+  const pin = block.getFieldValue('PIN');
+  const ratio = block.getFieldValue('RATIO');
+  return [`(analogRead(${pin}) / 4095.0 * 3.3 * ${ratio})`, 0];
+};
+
+/**
+ * battery_percentage - バッテリー残量をパーセントで返す
+ */
+Blockly.Blocks['battery_percentage'] = {
+  init: function(this: Blockly.Block) {
+    this.appendDummyInput()
+        .appendField('🔋 ' + ((Blockly.Msg as any).BLOCKS_BATTERY_PERCENTAGE || 'Battery %'));
+    this.appendValueInput('VOLTAGE')
+        .setCheck('Number')
+        .appendField((Blockly.Msg as any).BLOCKS_BATTERY_VOLTAGE_INPUT || 'voltage (V)');
+    this.appendDummyInput()
+        .appendField((Blockly.Msg as any).BLOCKS_BATTERY_MINV || 'min V')
+        .appendField(new Blockly.FieldNumber(3.0, 0, 20, 0.1), 'MIN_V')
+        .appendField((Blockly.Msg as any).BLOCKS_BATTERY_MAXV || 'max V')
+        .appendField(new Blockly.FieldNumber(4.2, 0, 20, 0.1), 'MAX_V');
+    this.setOutput(true, 'Number');
+    this.setColour(BATTERY_COLOR);
+    this.setTooltip((Blockly.Msg as any).BLOCKS_BATTERY_PERCENTAGETOOLTIP || 'Convert battery voltage to percentage (0-100%). Set min/max voltage for your battery type (Li-ion: 3.0-4.2V).');
+  }
+};
+
+generator.forBlock['battery_percentage'] = function(block: Blockly.Block) {
+  const voltage = javascriptGenerator.valueToCode(block, 'VOLTAGE', Order.NONE) || '3.7';
+  const minV = block.getFieldValue('MIN_V');
+  const maxV = block.getFieldValue('MAX_V');
+  return [`constrain((int)(((${voltage}) - ${minV}) / (${maxV} - ${minV}) * 100.0), 0, 100)`, 0];
+};
+
 export {};
