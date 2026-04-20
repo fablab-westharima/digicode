@@ -328,4 +328,227 @@ generator.forBlock['ble_disconnect'] = function() {
   return `  if (pBleServer) { pBleServer->disconnectAll(); NimBLEDevice::startAdvertising(); }\n`;
 };
 
+// ===== BP4-1b: GATT カスタムサービス =====
+
+const GATT_COLOR = '#1565C0';
+
+const GATT_GLOBALS = `
+#include <map>
+std::map<std::string, NimBLECharacteristic*> bleCharMap;
+std::map<std::string, NimBLEService*> bleServiceMap;
+String bleWriteCharUuid = "";`;
+
+const GATT_WRITE_CALLBACKS = `
+class GattWriteCallbacks : public NimBLECharacteristicCallbacks {
+  std::string _uuid;
+public:
+  GattWriteCallbacks(const std::string& uuid) : _uuid(uuid) {}
+  void onWrite(NimBLECharacteristic* c) {
+    bleWriteCharUuid = String(_uuid.c_str());
+    std::string v = c->getValue();
+    bleMessage = String(v.c_str());
+  }
+};`;
+
+/**
+ * ble_init - BLE スタック初期化（UART を使わない場合の起点）
+ */
+Blockly.Blocks['ble_init'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_INIT || 'BLE Init'))
+        .appendField((Blockly.Msg as any).BLOCKS_BLE_DEVICENAME || 'device name')
+        .appendField(new Blockly.FieldTextInput('DigiCode'), 'NAME');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(GATT_COLOR);
+    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_INITTOOLTIP || 'Initialize BLE stack. Call before ble_add_service. Use ble_uart_setup instead if only using Nordic UART.');
+  }
+};
+
+generator.forBlock['ble_init'] = function(block: Blockly.Block) {
+  const name = block.getFieldValue('NAME');
+  generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
+  generator.definitions_['ble_globals'] = BLE_GLOBALS;
+  generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
+  generator.definitions_['ble_server_callbacks'] = SERVER_CALLBACKS;
+  return `
+  NimBLEDevice::init("${name}");
+  pBleServer = NimBLEDevice::createServer();
+  pBleServer->setCallbacks(new BleServerCallbacks());
+`;
+};
+
+/**
+ * ble_add_service - カスタム GATT サービス追加
+ */
+Blockly.Blocks['ble_add_service'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_ADDSERVICE || 'BLE Add Service'))
+        .appendField('UUID')
+        .appendField(new Blockly.FieldTextInput('12345678-1234-1234-1234-123456789ABC'), 'UUID');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(GATT_COLOR);
+    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_ADDSERVICETOOLTIP || 'Create a custom GATT service with the given UUID. Call ble_add_characteristic next, then ble_start_advertising.');
+  }
+};
+
+generator.forBlock['ble_add_service'] = function(block: Blockly.Block) {
+  const uuid = block.getFieldValue('UUID');
+  generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
+  generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
+  return `
+  {
+    NimBLEService* svc = pBleServer->createService("${uuid}");
+    bleServiceMap["${uuid}"] = svc;
+  }
+`;
+};
+
+/**
+ * ble_add_characteristic - Characteristic 追加（read/write/notify チェックボックス）
+ */
+Blockly.Blocks['ble_add_characteristic'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_ADDCHAR || 'BLE Add Characteristic'));
+    this.appendDummyInput()
+        .appendField((Blockly.Msg as any).BLOCKS_BLE_SERVICEUUID || 'service UUID')
+        .appendField(new Blockly.FieldTextInput('12345678-1234-1234-1234-123456789ABC'), 'SERVICE_UUID');
+    this.appendDummyInput()
+        .appendField((Blockly.Msg as any).BLOCKS_BLE_CHARUUID || 'char UUID')
+        .appendField(new Blockly.FieldTextInput('00001111-1234-1234-1234-123456789ABC'), 'CHAR_UUID');
+    this.appendDummyInput()
+        .appendField((Blockly.Msg as any).BLOCKS_BLE_PROPREAD || 'read')
+        .appendField(new Blockly.FieldCheckbox('TRUE'), 'READ')
+        .appendField((Blockly.Msg as any).BLOCKS_BLE_PROPWRITE || 'write')
+        .appendField(new Blockly.FieldCheckbox('TRUE'), 'WRITE')
+        .appendField((Blockly.Msg as any).BLOCKS_BLE_PROPNOTIFY || 'notify')
+        .appendField(new Blockly.FieldCheckbox('FALSE'), 'NOTIFY');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(GATT_COLOR);
+    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_ADDCHARTOOLTIP || 'Add a characteristic to a GATT service. Check read/write/notify as needed. The service must be created with ble_add_service first.');
+  }
+};
+
+generator.forBlock['ble_add_characteristic'] = function(block: Blockly.Block) {
+  const serviceUuid = block.getFieldValue('SERVICE_UUID');
+  const charUuid = block.getFieldValue('CHAR_UUID');
+  const canRead = block.getFieldValue('READ') === 'TRUE';
+  const canWrite = block.getFieldValue('WRITE') === 'TRUE';
+  const canNotify = block.getFieldValue('NOTIFY') === 'TRUE';
+
+  const props: string[] = [];
+  if (canRead) props.push('NIMBLE_PROPERTY::READ');
+  if (canWrite) props.push('NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_NR');
+  if (canNotify) props.push('NIMBLE_PROPERTY::NOTIFY');
+  const propsStr = props.length > 0 ? props.join(' | ') : 'NIMBLE_PROPERTY::READ';
+
+  generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
+  generator.definitions_['ble_globals'] = BLE_GLOBALS;
+  generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
+  generator.definitions_['ble_gatt_write_callbacks'] = GATT_WRITE_CALLBACKS;
+
+  const writeCallback = canWrite
+    ? `    bleCharMap["${charUuid}"]->setCallbacks(new GattWriteCallbacks("${charUuid}"));`
+    : '';
+
+  return `
+  if (bleServiceMap.count("${serviceUuid}")) {
+    NimBLECharacteristic* c = bleServiceMap["${serviceUuid}"]->createCharacteristic("${charUuid}", ${propsStr});
+    bleCharMap["${charUuid}"] = c;
+${writeCallback}
+    bleServiceMap["${serviceUuid}"]->start();
+  }
+`;
+};
+
+/**
+ * ble_notify - 任意 Characteristic に notify 送信
+ */
+Blockly.Blocks['ble_notify'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_NOTIFY || 'BLE Notify'))
+        .appendField((Blockly.Msg as any).BLOCKS_BLE_CHARUUID || 'char UUID')
+        .appendField(new Blockly.FieldTextInput('00001111-1234-1234-1234-123456789ABC'), 'CHAR_UUID');
+    this.appendValueInput('VALUE')
+        .setCheck(null)
+        .appendField((Blockly.Msg as any).BLOCKS_BLE_VALUE || 'value');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(GATT_COLOR);
+    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_NOTIFYTOOLTIP || 'Send a notify to the connected device via the specified characteristic UUID. The characteristic must have notify enabled.');
+  }
+};
+
+generator.forBlock['ble_notify'] = function(block: Blockly.Block) {
+  const charUuid = block.getFieldValue('CHAR_UUID');
+  const value = javascriptGenerator.valueToCode(block, 'VALUE', 0) || '""';
+  generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
+  generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
+  return `  if (bleConnected && bleCharMap.count("${charUuid}")) { String _v = String(${value}); bleCharMap["${charUuid}"]->setValue(_v.c_str()); bleCharMap["${charUuid}"]->notify(); }\n`;
+};
+
+/**
+ * ble_on_write - 任意 Characteristic への Write コールバック（loop 内）
+ * bleMessage に受信値、bleWriteCharUuid に対象 UUID が格納される
+ */
+Blockly.Blocks['ble_on_write'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_ONWRITE || 'BLE On Write'))
+        .appendField((Blockly.Msg as any).BLOCKS_BLE_CHARUUID || 'char UUID')
+        .appendField(new Blockly.FieldTextInput('00001111-1234-1234-1234-123456789ABC'), 'CHAR_UUID');
+    this.appendStatementInput('HANDLER')
+        .setCheck(null)
+        .appendField((Blockly.Msg as any).BLOCKS_BLE_HANDLER || 'handler');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(GATT_COLOR);
+    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_ONWRITETOOLTIP || 'Execute handler when the specified characteristic is written by the connected device. Use bleMessage for the received value. Place in loop block.');
+  }
+};
+
+generator.forBlock['ble_on_write'] = function(block: Blockly.Block) {
+  const charUuid = block.getFieldValue('CHAR_UUID');
+  const handler = javascriptGenerator.statementToCode(block, 'HANDLER');
+  generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
+  generator.definitions_['ble_globals'] = BLE_GLOBALS;
+  generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
+  const funcKey = `ble_on_write_${charUuid.replace(/-/g, '_')}`;
+  generator.definitions_[funcKey] = `
+void bleCheckWrite_${charUuid.replace(/-/g, '_')}() {
+  if (bleWriteCharUuid == "${charUuid}" && bleMessage.length() > 0) {
+    String _msg = bleMessage;
+    bleMessage = "";
+    bleWriteCharUuid = "";
+${handler}  }
+}`;
+  return `  bleCheckWrite_${charUuid.replace(/-/g, '_')}();\n`;
+};
+
+/**
+ * ble_start_advertising - 全サービス登録後にアドバタイズ開始
+ */
+Blockly.Blocks['ble_start_advertising'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_STARTADV || 'BLE Start Advertising'));
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(GATT_COLOR);
+    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_STARTADVTOOLTIP || 'Start BLE advertising after all services and characteristics are added. Smartphones can then discover and connect to this device.');
+  }
+};
+
+generator.forBlock['ble_start_advertising'] = function() {
+  generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
+  generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
+  return `  NimBLEDevice::startAdvertising();\n`;
+};
+
 console.log('BLE blocks loaded');

@@ -373,6 +373,14 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="ble_is_connected"></block>
     <block type="ble_disconnect"></block>
     <sep></sep>
+    <label text="${label('bleGatt') || 'GATT Custom Service'}"></label>
+    <block type="ble_init"></block>
+    <block type="ble_add_service"></block>
+    <block type="ble_add_characteristic"></block>
+    <block type="ble_notify"></block>
+    <block type="ble_on_write"></block>
+    <block type="ble_start_advertising"></block>
+    <sep></sep>
     <label text="${label('bleBeacon') || 'iBeacon'}"></label>
     <block type="ble_beacon_broadcast"></block>
     <sep></sep>
