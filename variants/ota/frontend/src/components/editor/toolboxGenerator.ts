@@ -363,6 +363,53 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="pid_reset"></block>
   </category>`,
 
+  // IR リモコン (BP6-2, 2026-04-20 追加)
+  ir_remote: `
+  <category id="irRemote" name="${cat('irRemote')}" colour="#FF6F00">
+    <label text="${label('irReceiver') || 'Receiver'}"></label>
+    <block type="ir_receiver_init"></block>
+    <block type="ir_receiver_decode"></block>
+    <sep></sep>
+    <label text="${label('irSender') || 'Sender'}"></label>
+    <block type="ir_sender_init"></block>
+    <block type="ir_sender_send"></block>
+  </category>`,
+
+  // TFT ディスプレイ (BP6-4, 2026-04-20 追加)
+  tft_display: `
+  <category id="tftDisplay" name="${cat('tftDisplay')}" colour="#9C27B0">
+    <label text="${label('tftInit') || 'Init'}"></label>
+    <block type="tft_init"></block>
+    <block type="tft_fill_screen"></block>
+    <sep></sep>
+    <label text="${label('tftDraw') || 'Draw'}"></label>
+    <block type="tft_draw_pixel"></block>
+    <block type="tft_draw_line"></block>
+    <block type="tft_draw_rect"></block>
+    <block type="tft_draw_circle"></block>
+    <sep></sep>
+    <label text="${label('tftText') || 'Text'}"></label>
+    <block type="tft_set_cursor"></block>
+    <block type="tft_print"></block>
+    <block type="tft_color_rgb"></block>
+  </category>`,
+
+  // RFID (BP6-5, 2026-04-20 追加)
+  rfid: `
+  <category id="rfid" name="${cat('rfid')}" colour="#4CAF50">
+    <label text="${label('rfidM5') || '✅ M5Stack RFID 2 (技適対応)'}"></label>
+    <block type="rfid_init_m5stack"></block>
+    <sep></sep>
+    <label text="${label('rfidGeneric') || '⚠️ Generic MFRC522 (要確認)'}"></label>
+    <block type="rfid_init_generic"></block>
+    <sep></sep>
+    <label text="${label('rfidOps') || 'Operations'}"></label>
+    <block type="rfid_is_card_present"></block>
+    <block type="rfid_read_uid"></block>
+    <block type="rfid_read_data"></block>
+    <block type="rfid_write_data"></block>
+  </category>`,
+
   // WebSocket (BP6-1, 2026-04-20 追加) — supportsWifi フィルタ対象
   websocket: `
   <category id="websocket" name="${cat('websocket')}" colour="#00BCD4">
@@ -1150,6 +1197,9 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'websocket',
     'ble',
     'uart_extra',
+    'ir_remote',
+    'tft_display',
+    'rfid',
     'audio_dfplayer',
     'ntp_time',
     'rtc',
