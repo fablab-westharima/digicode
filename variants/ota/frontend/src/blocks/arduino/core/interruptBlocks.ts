@@ -1,0 +1,197 @@
+/**
+ * 割り込み・タイマーブロック (BP2-1, 2026-04-20)
+ *
+ * attach_interrupt / detach_interrupt: Arduino 標準 API（ESP32 / RP2040 両対応）
+ * ticker_attach / ticker_detach: ESP32 の Ticker.h 専用（RP2040 では Ticker.h 非対応、
+ *   コンパイルエラーとなる。RP2040 対応が必要になったら代替実装を追加する）
+ *
+ * ハンドラは appendStatementInput('HANDLER') パターンで定義
+ * （mqtt_on_message のコールバックパターンを流用）
+ *
+ * i18n: Blockly.Msg.* パターン（ルール33）
+ */
+import * as Blockly from 'blockly';
+import { javascriptGenerator, Order } from 'blockly/javascript';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const generator = javascriptGenerator as any;
+
+if (!generator.definitions_) generator.definitions_ = {};
+
+const INTERRUPT_COLOR = '#E91E63';
+const TICKER_COLOR = '#9C27B0';
+
+// ===== ピン割り込み =====
+
+/**
+ * attach_interrupt - ピン割り込み設定
+ * appendStatementInput でハンドラコードを定義
+ */
+Blockly.Blocks['attach_interrupt'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⚡ ' + ((Blockly.Msg as any).BLOCKS_INTERRUPT_ATTACH || 'Attach Interrupt'))
+        .appendField((Blockly.Msg as any).BLOCKS_INTERRUPT_PIN || 'pin')
+        .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN')
+        .appendField((Blockly.Msg as any).BLOCKS_INTERRUPT_MODE || 'mode')
+        .appendField(new Blockly.FieldDropdown([
+          ['RISING', 'RISING'],
+          ['FALLING', 'FALLING'],
+          ['CHANGE', 'CHANGE'],
+        ]), 'MODE');
+    this.appendStatementInput('HANDLER')
+        .setCheck(null)
+        .appendField((Blockly.Msg as any).BLOCKS_INTERRUPT_HANDLER || 'handler');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(INTERRUPT_COLOR);
+    this.setTooltip((Blockly.Msg as any).BLOCKS_INTERRUPT_ATTACHTOOLTIP || 'Attach an interrupt handler to a pin. Handler runs when the pin state changes. Avoid delay() and Serial inside the handler.');
+  }
+};
+
+javascriptGenerator.forBlock['attach_interrupt'] = function(block: Blockly.Block) {
+  const pin = block.getFieldValue('PIN');
+  const mode = block.getFieldValue('MODE');
+  const handler = javascriptGenerator.statementToCode(block, 'HANDLER');
+
+  const funcName = `isr_pin${pin}`;
+
+  generator.definitions_[`volatile_isr_${pin}`] = `volatile bool isr_flag_${pin} = false;`;
+  generator.definitions_[`isr_func_${pin}`] = `
+void IRAM_ATTR ${funcName}() {
+  isr_flag_${pin} = true;
+}`;
+
+  generator.definitions_[`isr_handler_${pin}`] = `
+void handleInterrupt_${pin}() {
+  if (isr_flag_${pin}) {
+    isr_flag_${pin} = false;
+${handler}  }
+}`;
+
+  return `  attachInterrupt(digitalPinToInterrupt(${pin}), ${funcName}, ${mode});\n`;
+};
+
+/**
+ * detach_interrupt - ピン割り込み解除
+ */
+Blockly.Blocks['detach_interrupt'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⚡ ' + ((Blockly.Msg as any).BLOCKS_INTERRUPT_DETACH || 'Detach Interrupt'))
+        .appendField((Blockly.Msg as any).BLOCKS_INTERRUPT_PIN || 'pin')
+        .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(INTERRUPT_COLOR);
+    this.setTooltip((Blockly.Msg as any).BLOCKS_INTERRUPT_DETACHTOOLTIP || 'Remove the interrupt handler from a pin');
+  }
+};
+
+javascriptGenerator.forBlock['detach_interrupt'] = function(block: Blockly.Block) {
+  const pin = block.getFieldValue('PIN');
+  return `  detachInterrupt(digitalPinToInterrupt(${pin}));\n`;
+};
+
+/**
+ * check_interrupt - 割り込みフラグ確認（loop 内で呼ぶ）
+ */
+Blockly.Blocks['check_interrupt'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⚡ ' + ((Blockly.Msg as any).BLOCKS_INTERRUPT_CHECK || 'Check Interrupt'))
+        .appendField((Blockly.Msg as any).BLOCKS_INTERRUPT_PIN || 'pin')
+        .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(INTERRUPT_COLOR);
+    this.setTooltip((Blockly.Msg as any).BLOCKS_INTERRUPT_CHECKTOOLTIP || 'Check and execute the interrupt handler if triggered. Place this in the loop block.');
+  }
+};
+
+javascriptGenerator.forBlock['check_interrupt'] = function(block: Blockly.Block) {
+  const pin = block.getFieldValue('PIN');
+  return `  handleInterrupt_${pin}();\n`;
+};
+
+// ===== Ticker（ESP32 専用）=====
+
+/**
+ * ticker_attach - Ticker 定期実行（ESP32 専用）
+ */
+Blockly.Blocks['ticker_attach'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⏱️ ' + ((Blockly.Msg as any).BLOCKS_TICKER_ATTACH || 'Ticker Start'))
+        .appendField((Blockly.Msg as any).BLOCKS_TICKER_INTERVAL || 'interval')
+        .appendField(new Blockly.FieldNumber(1000, 1, 60000), 'INTERVAL_MS')
+        .appendField('ms');
+    this.appendStatementInput('CALLBACK')
+        .setCheck(null)
+        .appendField((Blockly.Msg as any).BLOCKS_TICKER_HANDLER || 'handler');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(TICKER_COLOR);
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TICKER_ATTACHTOOLTIP || 'Execute handler code periodically at the specified interval (ESP32 only, uses Ticker.h)');
+  }
+};
+
+javascriptGenerator.forBlock['ticker_attach'] = function(block: Blockly.Block) {
+  const interval = block.getFieldValue('INTERVAL_MS');
+  const callback = javascriptGenerator.statementToCode(block, 'CALLBACK');
+
+  generator.definitions_['include_ticker'] = '#include <Ticker.h>';
+  generator.definitions_['ticker_instance'] = 'Ticker digicodeTicker;';
+  generator.definitions_['ticker_flag'] = 'volatile bool tickerFlag = false;';
+  generator.definitions_['ticker_isr'] = `
+void tickerISR() {
+  tickerFlag = true;
+}`;
+  generator.definitions_['ticker_handler'] = `
+void tickerHandler() {
+  if (tickerFlag) {
+    tickerFlag = false;
+${callback}  }
+}`;
+
+  const seconds = (parseInt(interval) / 1000).toFixed(3);
+  return `  digicodeTicker.attach(${seconds}, tickerISR);\n`;
+};
+
+/**
+ * ticker_detach - Ticker 停止
+ */
+Blockly.Blocks['ticker_detach'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⏱️ ' + ((Blockly.Msg as any).BLOCKS_TICKER_DETACH || 'Ticker Stop'));
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(TICKER_COLOR);
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TICKER_DETACHTOOLTIP || 'Stop the periodic ticker');
+  }
+};
+
+javascriptGenerator.forBlock['ticker_detach'] = function() {
+  return '  digicodeTicker.detach();\n';
+};
+
+/**
+ * check_ticker - Ticker ハンドラ確認（loop 内で呼ぶ）
+ */
+Blockly.Blocks['check_ticker'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⏱️ ' + ((Blockly.Msg as any).BLOCKS_TICKER_CHECK || 'Check Ticker'));
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(TICKER_COLOR);
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TICKER_CHECKTOOLTIP || 'Check and execute the ticker handler if triggered. Place this in the loop block.');
+  }
+};
+
+javascriptGenerator.forBlock['check_ticker'] = function() {
+  return '  tickerHandler();\n';
+};
+
+console.log('Interrupt/Ticker blocks loaded');

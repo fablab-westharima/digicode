@@ -363,6 +363,20 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="pid_reset"></block>
   </category>`,
 
+  // 割り込み・タイマー (BP2-1, 2026-04-20 追加)
+  interrupt: `
+  <category id="interrupt" name="${cat('interrupt')}" colour="#E91E63">
+    <label text="${label('pinInterrupt') || 'Pin Interrupt'}"></label>
+    <block type="attach_interrupt"></block>
+    <block type="detach_interrupt"></block>
+    <block type="check_interrupt"></block>
+    <sep></sep>
+    <label text="${label('ticker') || 'Ticker (ESP32)'}"></label>
+    <block type="ticker_attach"></block>
+    <block type="ticker_detach"></block>
+    <block type="check_ticker"></block>
+  </category>`,
+
   // I2C / SPI 通信 (BP2-2, 2026-04-20 追加)
   i2c_spi: `
   <category id="i2cSpi" name="${cat('i2cSpi')}" colour="#4CAF50">
