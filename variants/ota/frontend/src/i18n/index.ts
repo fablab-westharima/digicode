@@ -22,7 +22,8 @@ i18n
   .init({
     resources,
     supportedLngs: ['ja', 'en', 'es', 'pt-PT', 'zh-TW'],
-    fallbackLng: 'ja',
+    nonExplicitSupportedLngs: true, // en-US → en, zh-TW → zh-TW, etc.
+    fallbackLng: 'en', // ブラウザ言語が未対応の場合は英語
     load: 'currentOnly', // Use exact language code (pt-PT, zh-TW)
     interpolation: {
       escapeValue: false,

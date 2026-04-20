@@ -127,6 +127,14 @@ export const api = {
       return fetchWithAuth('/api/auth/me');
     },
 
+    updatePreferredLang: async (lang: string | null) => {
+      return fetchWithAuth('/api/auth/me', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ preferredLang: lang }),
+      });
+    },
+
     logout: async (refreshToken: string | null) => {
       if (!refreshToken) return;
       return fetch(`${API_URL}/api/auth/logout`, {

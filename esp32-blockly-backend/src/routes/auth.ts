@@ -299,7 +299,7 @@ auth.get('/me', authMiddleware, async (c) => {
     const user = await c.env.DB.prepare(`
       SELECT
         u.id, u.email, u.created_at, u.passkey_only,
-        u.is_admin, u.plan, u.plan_source, u.account_type,
+        u.is_admin, u.plan, u.plan_source, u.account_type, u.preferred_lang,
         s.status as subscription_status, s.plan_type
       FROM users u
       LEFT JOIN subscriptions s ON u.id = s.user_id
@@ -313,6 +313,7 @@ auth.get('/me', authMiddleware, async (c) => {
       plan: string;
       plan_source: string | null;
       account_type: string | null;
+      preferred_lang: string | null;
       subscription_status: string;
       plan_type: string;
     }>();
@@ -330,6 +331,7 @@ auth.get('/me', authMiddleware, async (c) => {
         plan: user.plan || user.plan_type || 'free',
         planSource: user.plan_source || null,
         accountType: user.account_type || 'regular',
+        preferredLang: user.preferred_lang || null,
         createdAt: user.created_at,
         subscription: {
           status: user.subscription_status || 'free',
@@ -340,6 +342,29 @@ auth.get('/me', authMiddleware, async (c) => {
   } catch (error) {
     console.error('Get me error:', error);
     return c.json({ error: 'ユーザー情報の取得に失敗しました' }, 500);
+  }
+});
+
+// ユーザー設定更新（優先言語など）
+auth.patch('/me', authMiddleware, async (c) => {
+  try {
+    const { userId } = c.get('user');
+    const body = await c.req.json();
+    const { preferredLang } = body;
+
+    const supportedLangs = ['ja', 'en', 'es', 'pt-PT', 'zh-TW'];
+    if (preferredLang !== undefined && preferredLang !== null && !supportedLangs.includes(preferredLang)) {
+      return c.json({ error: '無効な言語コードです' }, 400);
+    }
+
+    await c.env.DB.prepare(
+      'UPDATE users SET preferred_lang = ? WHERE id = ?'
+    ).bind(preferredLang ?? null, userId).run();
+
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Update me error:', error);
+    return c.json({ error: 'ユーザー設定の更新に失敗しました' }, 500);
   }
 });
 

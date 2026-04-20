@@ -7,6 +7,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Globe, Check } from 'lucide-react';
+import { useAuthStore } from '@/stores/authStore';
+import { api } from '@/lib/api';
 
 const languages = [
   { code: 'ja', name: '日本語', flag: '🇯🇵' },
@@ -18,11 +20,15 @@ const languages = [
 
 export function LocaleSelector() {
   const { i18n } = useTranslation();
+  const { isAuthenticated } = useAuthStore();
 
   const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0];
 
   const changeLanguage = (langCode: string) => {
     i18n.changeLanguage(langCode);
+    if (isAuthenticated) {
+      api.auth.updatePreferredLang(langCode).catch(() => {});
+    }
   };
 
   return (

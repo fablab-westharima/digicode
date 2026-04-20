@@ -10,6 +10,7 @@ interface User {
   planSource?: string | null;
   isAdmin?: boolean;
   accountType?: string;
+  preferredLang?: string | null;
 }
 
 interface AuthState {
@@ -45,6 +46,10 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       setTokens(data.accessToken, data.refreshToken, data.expiresIn);
       localStorage.setItem('user', JSON.stringify(data.user));
+      if (data.user.preferredLang) {
+        i18n.changeLanguage(data.user.preferredLang);
+        localStorage.setItem('i18nextLng', data.user.preferredLang);
+      }
       set({
         user: data.user,
         accessToken: data.accessToken,
@@ -115,6 +120,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
 
       localStorage.setItem('user', JSON.stringify(data.user));
+      if (data.user.preferredLang) {
+        i18n.changeLanguage(data.user.preferredLang);
+        localStorage.setItem('i18nextLng', data.user.preferredLang);
+      }
       set({
         user: data.user,
         accessToken,
