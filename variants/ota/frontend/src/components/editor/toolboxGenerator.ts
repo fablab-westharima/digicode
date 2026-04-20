@@ -363,6 +363,36 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="pid_reset"></block>
   </category>`,
 
+  // I2C / SPI 通信 (BP2-2, 2026-04-20 追加)
+  i2c_spi: `
+  <category id="i2cSpi" name="${cat('i2cSpi')}" colour="#4CAF50">
+    <label text="I2C"></label>
+    <block type="i2c_scan"></block>
+    <block type="i2c_write">
+      <value name="ADDR"><shadow type="math_number"><field name="NUM">0x27</field></shadow></value>
+      <value name="DATA"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+    </block>
+    <block type="i2c_read">
+      <value name="ADDR"><shadow type="math_number"><field name="NUM">0x27</field></shadow></value>
+      <value name="COUNT"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
+    </block>
+    <block type="i2c_write_register">
+      <value name="ADDR"><shadow type="math_number"><field name="NUM">0x68</field></shadow></value>
+      <value name="REG"><shadow type="math_number"><field name="NUM">0x00</field></shadow></value>
+      <value name="VALUE"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+    </block>
+    <block type="i2c_read_register">
+      <value name="ADDR"><shadow type="math_number"><field name="NUM">0x68</field></shadow></value>
+      <value name="REG"><shadow type="math_number"><field name="NUM">0x00</field></shadow></value>
+    </block>
+    <sep></sep>
+    <label text="SPI"></label>
+    <block type="spi_begin"></block>
+    <block type="spi_transfer">
+      <value name="DATA"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+    </block>
+  </category>`,
+
   // GPIO
   gpio: `
   <category id="gpio" name="${cat('gpio')}" colour="#9C27B0">
@@ -929,6 +959,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'separator6',
     // GPIO・通信
     'gpio',
+    'i2c_spi',
     'serial',
     'time',
     'separator7',
@@ -965,6 +996,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'separator4',
     // GPIO・通信
     'gpio',
+    'i2c_spi',
     'serial',
     'time',
     'separator5',
@@ -1014,6 +1046,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'separator6',
     // グループ7: GPIO・通信
     'gpio',
+    'i2c_spi',
     'serial',
     'separator7',
     // グループ8: 通信・制御
@@ -1071,6 +1104,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'separator7',
     // グループ8: GPIO・通信
     'gpio',
+    'i2c_spi',
     'serial',
     'separator8',
     // グループ9: 通信・制御

@@ -56,6 +56,7 @@ import '../../blocks/arduino/communication/httpBlocks';
 import '../../blocks/arduino/communication/jsonBlocks';
 import '../../blocks/arduino/communication/otaBlocks';
 import '../../blocks/arduino/communication/wifiBlocks';
+import '../../blocks/arduino/communication/i2cSpiBlocks';
 import { generateToolbox } from './toolboxGenerator';
 
 // 日本語ロケールを設定
