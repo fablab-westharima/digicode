@@ -1620,28 +1620,28 @@
       "getSpeed": "Current Speed",
       "getSpeedTooltip": "Get currently set motor speed"
     },
-    "wheelRobot": {
-      "init": "OTTO Wheel Init",
+    "wheel": {
+      "init": "Wheel Init",
       "initTooltip": "Initialize OTTO Wheel",
       "leftWheelPin": "Left Wheel Pin",
       "rightWheelPin": "Right Wheel Pin",
-      "forward": "OTTO Wheel Forward",
+      "forward": "Wheel Forward",
       "forwardTooltip": "Move forward",
       "speed": "Velocidad",
       "speedFast": "Fast",
       "speedNormal": "Normal",
       "speedSlow": "Slow",
-      "backward": "OTTO Wheel Backward",
+      "backward": "Wheel Backward",
       "backwardTooltip": "Move backward",
-      "turnLeft": "OTTO Wheel Turn Left",
+      "turnLeft": "Wheel Turn Left",
       "turnLeftTooltip": "Turn left",
-      "turnRight": "OTTO Wheel Turn Right",
+      "turnRight": "Wheel Turn Right",
       "turnRightTooltip": "Turn right",
-      "spinLeft": "OTTO Wheel Spin Left",
+      "spinLeft": "Wheel Spin Left",
       "spinLeftTooltip": "Spin left in place",
-      "spinRight": "OTTO Wheel Spin Right",
+      "spinRight": "Wheel Spin Right",
       "spinRightTooltip": "Spin right in place",
-      "stop": "OTTO Wheel Stop",
+      "stop": "Wheel Stop",
       "stopTooltip": "Detener"
     },
     "pid": {
@@ -2043,44 +2043,44 @@
     },
     "humanoid": {
       "init": {
-        "label": "OTTO Init",
+        "label": "Humanoid Init",
         "tooltip": "Initialize OTTO robot (pin numbers from preset)"
       },
       "home": {
-        "label": "OTTO Home",
+        "label": "Humanoid Home",
         "tooltip": "Set OTTO to upright position"
       },
       "walk": {
-        "label": "OTTO Walk",
+        "label": "Humanoid Walk",
         "tooltip": "Make OTTO walk"
       },
       "turn": {
-        "label": "OTTO Turn",
+        "label": "Humanoid Turn",
         "tooltip": "Make OTTO turn"
       },
       "jump": {
-        "label": "OTTO Jump",
+        "label": "Humanoid Jump",
         "tooltip": "Make OTTO jump"
       },
       "dance": {
-        "label": "OTTO Dance",
+        "label": "Humanoid Dance",
         "tooltip": "Make OTTO dance"
       },
       "swing": {
-        "label": "OTTO Swing",
+        "label": "Humanoid Swing",
         "tooltip": "Swing OTTO side to side"
       },
       "bend": {
-        "label": "OTTO Bend",
+        "label": "Humanoid Bend",
         "tooltip": "Doblar OTTO hacia la izquierda o hacia la derecha"
       },
       "moonwalk": {
-        "label": "OTTO Moonwalk",
+        "label": "Humanoid Moonwalk",
         "tooltip": "Make OTTO moonwalk"
       },
       "gesture": {
-        "label": "OTTO Gesture",
-        "tooltip": "OTTO expresses emotions with movement and sound",
+        "label": "Humanoid Gesture",
+        "tooltip": "Humanoid expresses emotions with movement and sound",
         "happy": "Happy",
         "superHappy": "Super Happy",
         "sad": "Sad",
@@ -2096,8 +2096,8 @@
         "fail": "Fail"
       },
       "sound": {
-        "label": "OTTO Sound",
-        "tooltip": "OTTO plays a sound",
+        "label": "Humanoid Sound",
+        "tooltip": "Humanoid plays a sound",
         "connection": "Conexión",
         "disconnection": "Disconnection",
         "buttonPushed": "Button Pushed",
@@ -2119,37 +2119,37 @@
         "fart3": "Fart 3"
       },
       "crusaito": {
-        "label": "OTTO Crusaito",
+        "label": "Humanoid Crusaito",
         "tooltip": "Move with crossed legs"
       },
       "flapping": {
-        "label": "OTTO Flapping",
+        "label": "Humanoid Flapping",
         "tooltip": "Make flapping motion"
       },
       "tiptoeSwing": {
-        "label": "OTTO Tiptoe Swing",
+        "label": "Humanoid Tiptoe Swing",
         "tooltip": "Swing on tiptoes"
       },
       "jitter": {
-        "label": "OTTO Jitter",
+        "label": "Humanoid Jitter",
         "tooltip": "Make jittering motion"
       },
       "ascendingTurn": {
-        "label": "OTTO Ascending Turn",
+        "label": "Humanoid Ascending Turn",
         "tooltip": "Turn while ascending"
       },
       "shakeLeg": {
-        "label": "OTTO Shake Leg",
+        "label": "Humanoid Shake Leg",
         "tooltip": "Shake leg"
       },
       "updown": {
-        "label": "OTTO Up Down",
+        "label": "Humanoid Up Down",
         "tooltip": "Move up and down"
       }
     },
     "transform": {
       "init": {
-        "label": "OTTO Ninja Init",
+        "label": "Transform Init",
         "tooltip": "Initialize OTTO Ninja (pin numbers from preset)"
       },
       "mode": {
@@ -2456,7 +2456,7 @@
       },
       "otto": {
         "init": {
-          "label": "OTTO Init",
+          "label": "Humanoid Init",
           "leftLeg": "Left Leg",
           "rightLeg": "Right Leg",
           "leftFoot": "Left Foot",
@@ -2464,11 +2464,11 @@
           "tooltip": "Initialize OTTO robot (PWM direct control)"
         },
         "home": {
-          "label": "OTTO Home Position",
+          "label": "Humanoid Home Position",
           "tooltip": "Set OTTO to home position"
         },
         "walk": {
-          "label": "OTTO Walk",
+          "label": "Humanoid Walk",
           "steps": "steps",
           "forward": "Adelante",
           "backward": "Backward",
@@ -2479,7 +2479,7 @@
           "tooltip": "Make OTTO walk"
         },
         "turn": {
-          "label": "OTTO Turn",
+          "label": "Humanoid Turn",
           "times": "times",
           "left": "Left",
           "right": "Right",
@@ -2490,36 +2490,36 @@
           "tooltip": "Make OTTO turn"
         },
         "jump": {
-          "label": "OTTO Jump",
+          "label": "Humanoid Jump",
           "times": "times",
           "tooltip": "Make OTTO jump"
         },
         "dance": {
-          "label": "OTTO Dance",
+          "label": "Humanoid Dance",
           "times": "times",
           "tooltip": "Make OTTO dance"
         },
         "swing": {
-          "label": "OTTO Swing",
+          "label": "Humanoid Swing",
           "times": "times",
           "tooltip": "Make OTTO swing left and right"
         },
         "bend": {
-          "label": "OTTO Bend",
+          "label": "Humanoid Bend",
           "left": "Left",
           "right": "Right",
           "times": "times",
           "tooltip": "Make OTTO bend left or right"
         },
         "moonwalk": {
-          "label": "OTTO Moonwalk",
+          "label": "Humanoid Moonwalk",
           "steps": "steps",
           "right": "Right",
           "left": "Left",
           "tooltip": "Make OTTO moonwalk"
         },
         "servo": {
-          "label": "OTTO Servo",
+          "label": "Humanoid Servo",
           "leftLeg": "Left Leg (LL)",
           "rightLeg": "Right Leg (RL)",
           "leftFoot": "Left Foot (LF)",
@@ -2531,7 +2531,7 @@
       },
       "transform": {
         "init": {
-          "label": "OTTO Ninja Init",
+          "label": "Transform Init",
           "leftLeg": "Left Leg",
           "rightLeg": "Right Leg",
           "leftFoot": "Left Foot",
@@ -2619,7 +2619,7 @@
       },
       "wheelRobot": {
         "init": {
-          "label": "OTTO Wheel Init",
+          "label": "Wheel Init",
           "leftWheel": "Left Wheel",
           "rightWheel": "Right Wheel",
           "tooltip": "Initialize OTTO Wheel robot (continuous rotation servo)"
@@ -2873,15 +2873,15 @@
     "copyOf": " Copiar",
     "categories": {
       "otto_bipedal": {
-        "name": "OTTO Bipedal",
+        "name": "Humanoid Bipedal",
         "description": "Configuración de pines de robot bípedo (4 servos)"
       },
       "otto_wheel": {
-        "name": "OTTO Wheel",
+        "name": "Wheel",
         "description": "Configuración de pines de robot de 2 ruedas (servo de rotación continua)"
       },
       "otto_ninja": {
-        "name": "OTTO Ninja",
+        "name": "Transform",
         "description": "Transform robot (4 servos) pin settings"
       },
       "sensors": {
@@ -3264,15 +3264,15 @@
     "presetNamePlaceholder": "Introduzca el nombre del preset",
     "create": "Crear",
     "tabs": {
-      "otto": "OTTO",
+      "otto": "Humanoid",
       "sensors": "Sensores",
       "peripherals": "Periféricos",
       "display": "Pantalla"
     },
     "sections": {
       "ottoRobot": "Robot OTTO",
-      "wheelRobot": "OTTO Wheel",
-      "transform": "OTTO Ninja",
+      "wheelRobot": "Wheel",
+      "transform": "Transform",
       "rus04": "Sensor ultrasónico RUS-04 (con RGB)",
       "otherSensors": "Otros sensores",
       "servoMotor": "Servomotor",
@@ -3411,15 +3411,15 @@
     },
     "modes": {
       "humanoid": {
-        "name": "OTTO Bípedo",
+        "name": "Humanoid Bípedo",
         "description": "Robot bípedo de 4 servos"
       },
       "wheelRobot": {
-        "name": "OTTO Wheel",
+        "name": "Wheel",
         "description": "Robot de 2 ruedas"
       },
       "transform": {
-        "name": "OTTO Ninja",
+        "name": "Transform",
         "description": "Robot transformable"
       },
       "micromouse": {
@@ -3447,15 +3447,15 @@
         "description": "Registra los bloques que usas a menudo"
       },
       "otto_bipedal": {
-        "name": "OTTO Bípedo",
+        "name": "Humanoid Bípedo",
         "description": "Robot bípedo de 4 servos"
       },
       "otto_wheel": {
-        "name": "OTTO Wheel",
+        "name": "Wheel",
         "description": "Robot de 2 ruedas"
       },
       "otto_ninja": {
-        "name": "OTTO Ninja",
+        "name": "Transform",
         "description": "Robot transformer de caminar/rodar"
       },
       "line_trace": {
@@ -3669,10 +3669,10 @@
       "speedTrim": "Ajuste de Velocidad",
       "nameInputPlaceholder": "Nombre",
       "presets": {
-        "otto-diy": "OTTO DIY Bípedo (4 servos)",
-        "otto-diy-plus": "OTTO DIY+ Bípedo (6 servos)",
-        "otto-wheel": "OTTO Wheel (2 servos)",
-        "otto-ninja": "OTTO Ninja (4 servos)",
+        "otto-diy": "Humanoid DIY Bípedo (4 servos)",
+        "otto-diy-plus": "Humanoid DIY+ Bípedo (6 servos)",
+        "otto-wheel": "Wheel (2 servos)",
+        "otto-ninja": "Transform (4 servos)",
         "custom": "Personalizado"
       },
       "parts": {

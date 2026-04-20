@@ -15,15 +15,15 @@ const generator = javascriptGenerator as any;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const pyGen = pythonGenerator as any;
 
-const OTTO_COLOR = '#FF6B35';  // Orange color for OTTO blocks
+const OTTO_COLOR = '#FF6B35';  // Orange color for Humanoid blocks
 
-// ===== OTTO Initialization =====
+// ===== Humanoid Initialization =====
 
 Blockly.Blocks['humanoid_init'] = {
   init: function() {
     const pins = getOttoPins();
     this.appendDummyInput()
-        .appendField('🤖 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_INIT_LABEL || 'OTTO Init'))
+        .appendField('🤖 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_INIT_LABEL || 'Humanoid Init'))
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_LEFTLEG || 'left leg pin')
         .appendField(new Blockly.FieldNumber(pins.leftLeg, 0, 39), 'PIN_LL')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_RIGHTLEG || 'right leg pin')
@@ -35,7 +35,7 @@ Blockly.Blocks['humanoid_init'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_INIT_TOOLTIP || 'Initialize OTTO robot (pin numbers from preset)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_INIT_TOOLTIP || 'Initialize Humanoid robot (pin numbers from preset)');
   }
 };
 
@@ -68,11 +68,11 @@ pythonGenerator.forBlock['humanoid_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_home'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🏠 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_HOME_LABEL || 'OTTO Home'));
+        .appendField('🏠 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_HOME_LABEL || 'Humanoid Home'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_HOME_TOOLTIP || 'Set OTTO to upright position');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_HOME_TOOLTIP || 'Set Humanoid to upright position');
   }
 };
 
@@ -89,7 +89,7 @@ pythonGenerator.forBlock['humanoid_home'] = function() {
 Blockly.Blocks['humanoid_walk'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🚶 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_WALK_LABEL || 'OTTO Walk'))
+        .appendField('🚶 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_WALK_LABEL || 'Humanoid Walk'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_STEPS || 'steps')
         .appendField(new Blockly.FieldDropdown([
@@ -105,7 +105,7 @@ Blockly.Blocks['humanoid_walk'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_WALK_TOOLTIP || 'Make OTTO walk');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_WALK_TOOLTIP || 'Make Humanoid walk');
   }
 };
 
@@ -130,7 +130,7 @@ pythonGenerator.forBlock['humanoid_walk'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_turn'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↻ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_TURN_LABEL || 'OTTO Turn'))
+        .appendField('↻ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_TURN_LABEL || 'Humanoid Turn'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
@@ -146,7 +146,7 @@ Blockly.Blocks['humanoid_turn'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_TURN_TOOLTIP || 'Make OTTO turn');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_TURN_TOOLTIP || 'Make Humanoid turn');
   }
 };
 
@@ -171,13 +171,13 @@ pythonGenerator.forBlock['humanoid_turn'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_jump'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⬆️ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_JUMP_LABEL || 'OTTO Jump'))
+        .appendField('⬆️ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_JUMP_LABEL || 'Humanoid Jump'))
         .appendField(new Blockly.FieldNumber(1, 1, 5), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_JUMP_TOOLTIP || 'Make OTTO jump');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_JUMP_TOOLTIP || 'Make Humanoid jump');
   }
 };
 
@@ -196,13 +196,13 @@ pythonGenerator.forBlock['humanoid_jump'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_dance'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💃 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_DANCE_LABEL || 'OTTO Dance'))
+        .appendField('💃 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_DANCE_LABEL || 'Humanoid Dance'))
         .appendField(new Blockly.FieldNumber(4, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_DANCE_TOOLTIP || 'Make OTTO dance');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_DANCE_TOOLTIP || 'Make Humanoid dance');
   }
 };
 
@@ -221,13 +221,13 @@ pythonGenerator.forBlock['humanoid_dance'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_swing'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('〜 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_SWING_LABEL || 'OTTO Swing'))
+        .appendField('〜 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_SWING_LABEL || 'Humanoid Swing'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_SWING_TOOLTIP || 'Swing OTTO side to side');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_SWING_TOOLTIP || 'Swing Humanoid side to side');
   }
 };
 
@@ -246,7 +246,7 @@ pythonGenerator.forBlock['humanoid_swing'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_bend'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↔️ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_BEND_LABEL || 'OTTO Bend'))
+        .appendField('↔️ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_BEND_LABEL || 'Humanoid Bend'))
         .appendField(new Blockly.FieldDropdown([
           [(Blockly.Msg as any).BLOCKS_COMMON_LEFT || 'left', 'left'],
           [(Blockly.Msg as any).BLOCKS_COMMON_RIGHT || 'right', 'right']
@@ -256,7 +256,7 @@ Blockly.Blocks['humanoid_bend'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_BEND_TOOLTIP || 'Bend OTTO left or right');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_BEND_TOOLTIP || 'Bend Humanoid left or right');
   }
 };
 
@@ -287,7 +287,7 @@ pythonGenerator.forBlock['humanoid_bend'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_moonwalk'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🕺 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_MOONWALK_LABEL || 'OTTO Moonwalk'))
+        .appendField('🕺 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_MOONWALK_LABEL || 'Humanoid Moonwalk'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_STEPS || 'steps')
         .appendField(new Blockly.FieldDropdown([
@@ -297,7 +297,7 @@ Blockly.Blocks['humanoid_moonwalk'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_MOONWALK_TOOLTIP || 'Make OTTO moonwalk');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_MOONWALK_TOOLTIP || 'Make Humanoid moonwalk');
   }
 };
 
@@ -320,7 +320,7 @@ pythonGenerator.forBlock['humanoid_moonwalk'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_gesture'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('😊 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_LABEL || 'OTTO Gesture'))
+        .appendField('😊 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_LABEL || 'Humanoid Gesture'))
         .appendField(new Blockly.FieldDropdown([
           [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_HAPPY || 'Happy', 'OttoHappy'],
           [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_SUPERHAPPY || 'Super Happy', 'OttoSuperHappy'],
@@ -339,7 +339,7 @@ Blockly.Blocks['humanoid_gesture'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_TOOLTIP || 'OTTO expresses emotions with movement and sound');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_TOOLTIP || 'Humanoid expresses emotions with movement and sound');
   }
 };
 
@@ -374,7 +374,7 @@ pythonGenerator.forBlock['humanoid_gesture'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_sound'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔊 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_LABEL || 'OTTO Sound'))
+        .appendField('🔊 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_LABEL || 'Humanoid Sound'))
         .appendField(new Blockly.FieldDropdown([
           [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_CONNECTION || 'Connection', 'S_connection'],
           [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_DISCONNECTION || 'Disconnection', 'S_disconnection'],
@@ -399,7 +399,7 @@ Blockly.Blocks['humanoid_sound'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(OTTO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_TOOLTIP || 'OTTO plays a sound');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_TOOLTIP || 'Humanoid plays a sound');
   }
 };
 
@@ -419,7 +419,7 @@ pythonGenerator.forBlock['humanoid_sound'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_crusaito'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🦵 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_CRUSAITO_LABEL || 'OTTO Crusaito'))
+        .appendField('🦵 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_CRUSAITO_LABEL || 'Humanoid Crusaito'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
@@ -449,7 +449,7 @@ pythonGenerator.forBlock['humanoid_crusaito'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_flapping'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🦅 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_FLAPPING_LABEL || 'OTTO Flapping'))
+        .appendField('🦅 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_FLAPPING_LABEL || 'Humanoid Flapping'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
@@ -479,7 +479,7 @@ pythonGenerator.forBlock['humanoid_flapping'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_tiptoe_swing'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🩰 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_TIPTOESWING_LABEL || 'OTTO Tiptoe Swing'))
+        .appendField('🩰 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_TIPTOESWING_LABEL || 'Humanoid Tiptoe Swing'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
@@ -503,7 +503,7 @@ pythonGenerator.forBlock['humanoid_tiptoe_swing'] = function(block: Blockly.Bloc
 Blockly.Blocks['humanoid_jitter'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('😰 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_JITTER_LABEL || 'OTTO Jitter'))
+        .appendField('😰 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_JITTER_LABEL || 'Humanoid Jitter'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
@@ -527,7 +527,7 @@ pythonGenerator.forBlock['humanoid_jitter'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_ascending_turn'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔄 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_ASCENDINGTURN_LABEL || 'OTTO Ascending Turn'))
+        .appendField('🔄 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_ASCENDINGTURN_LABEL || 'Humanoid Ascending Turn'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
@@ -557,7 +557,7 @@ pythonGenerator.forBlock['humanoid_ascending_turn'] = function(block: Blockly.Bl
 Blockly.Blocks['humanoid_shake_leg'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🦿 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_SHAKELEG_LABEL || 'OTTO Shake Leg'))
+        .appendField('🦿 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_SHAKELEG_LABEL || 'Humanoid Shake Leg'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
@@ -587,7 +587,7 @@ pythonGenerator.forBlock['humanoid_shake_leg'] = function(block: Blockly.Block) 
 Blockly.Blocks['humanoid_updown'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⬆️⬇️ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_UPDOWN_LABEL || 'OTTO Up Down'))
+        .appendField('⬆️⬇️ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_UPDOWN_LABEL || 'Humanoid Up Down'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);

@@ -289,7 +289,7 @@
     "docsDesc": "使い方やトラブルシューティングを確認",
     "viewDocs": "ドキュメントを見る",
     "pinSettings": "ピンアサイン設定",
-    "pinSettingsDesc": "OTTOロボットやセンサーのピン番号を設定",
+    "pinSettingsDesc": "Humanoidロボットやセンサーのピン番号を設定",
     "configure": "設定する",
     "supportedDevices": "対応マイコン・センサー・アクチュエーター",
     "supportedDevicesDesc": "ESP32シリーズと豊富なセンサー・モーターに対応しています",
@@ -893,15 +893,15 @@
     "presetNamePlaceholder": "プリセット名を入力",
     "create": "作成",
     "tabs": {
-      "otto": "OTTO",
+      "otto": "Humanoid",
       "sensors": "センサー",
       "peripherals": "周辺機器",
       "display": "ディスプレイ"
     },
     "sections": {
-      "ottoRobot": "OTTO ロボット",
-      "wheelRobot": "OTTO Wheel",
-      "transform": "OTTO Ninja",
+      "ottoRobot": "Humanoid ロボット",
+      "wheelRobot": "Wheel",
+      "transform": "Transform",
       "rus04": "RUS-04 超音波センサー (RGB付き)",
       "otherSensors": "その他のセンサー",
       "servoMotor": "サーボモーター",
@@ -945,7 +945,7 @@
     "description": "よく使うブロックカテゴリを選択してください。選択したカテゴリが「お気に入り」モードに表示されます。",
     "selectedCount": "選択中: {{count}} カテゴリ",
     "groups": {
-      "otto": "OTTO ロボット",
+      "otto": "Humanoid ロボット",
       "competition": "競技ロボット",
       "homeAssistant": "Home Assistant",
       "motors": "モーター・駆動系",
@@ -1841,28 +1841,28 @@
       "getSpeed": "現在速度",
       "getSpeedTooltip": "現在設定されているモーター速度を取得"
     },
-    "wheelRobot": {
-      "init": "OTTO Wheel初期化",
-      "initTooltip": "OTTO Wheelを初期化します",
+    "wheel": {
+      "init": "Wheel初期化",
+      "initTooltip": "Wheelを初期化します",
       "leftWheelPin": "左車輪ピン",
       "rightWheelPin": "右車輪ピン",
-      "forward": "OTTO Wheel前進",
+      "forward": "Wheel前進",
       "forwardTooltip": "前進します",
       "speed": "速度",
       "speedFast": "速い",
       "speedNormal": "普通",
       "speedSlow": "遅い",
-      "backward": "OTTO Wheel後退",
+      "backward": "Wheel後退",
       "backwardTooltip": "後退します",
-      "turnLeft": "OTTO Wheel左折",
+      "turnLeft": "Wheel左折",
       "turnLeftTooltip": "左に曲がります",
-      "turnRight": "OTTO Wheel右折",
+      "turnRight": "Wheel右折",
       "turnRightTooltip": "右に曲がります",
-      "spinLeft": "OTTO Wheel左回転",
+      "spinLeft": "Wheel左回転",
       "spinLeftTooltip": "その場で左回転します",
-      "spinRight": "OTTO Wheel右回転",
+      "spinRight": "Wheel右回転",
       "spinRightTooltip": "その場で右回転します",
-      "stop": "OTTO Wheel停止",
+      "stop": "Wheel停止",
       "stopTooltip": "停止します"
     },
     "pid": {
@@ -2264,44 +2264,44 @@
     },
     "humanoid": {
       "init": {
-        "label": "OTTO初期化",
-        "tooltip": "OTTOロボットを初期化します（ピン番号はプリセットから取得）"
+        "label": "Humanoid初期化",
+        "tooltip": "Humanoidロボットを初期化します（ピン番号はプリセットから取得）"
       },
       "home": {
-        "label": "OTTOホームポジション",
-        "tooltip": "OTTOを直立姿勢にします"
+        "label": "Humanoidホームポジション",
+        "tooltip": "Humanoidを直立姿勢にします"
       },
       "walk": {
-        "label": "OTTO歩く",
-        "tooltip": "OTTOを歩かせます"
+        "label": "Humanoid歩く",
+        "tooltip": "Humanoidを歩かせます"
       },
       "turn": {
-        "label": "OTTO回転",
-        "tooltip": "OTTOを回転させます"
+        "label": "Humanoid回転",
+        "tooltip": "Humanoidを回転させます"
       },
       "jump": {
-        "label": "OTTOジャンプ",
-        "tooltip": "OTTOをジャンプさせます"
+        "label": "Humanoidジャンプ",
+        "tooltip": "Humanoidをジャンプさせます"
       },
       "dance": {
-        "label": "OTTOダンス",
-        "tooltip": "OTTOをダンスさせます"
+        "label": "Humanoidダンス",
+        "tooltip": "Humanoidをダンスさせます"
       },
       "swing": {
-        "label": "OTTOスウィング",
-        "tooltip": "OTTOを左右に揺らします"
+        "label": "Humanoidスウィング",
+        "tooltip": "Humanoidを左右に揺らします"
       },
       "bend": {
-        "label": "OTTO傾ける",
-        "tooltip": "OTTOを左右に傾けます"
+        "label": "Humanoid傾ける",
+        "tooltip": "Humanoidを左右に傾けます"
       },
       "moonwalk": {
-        "label": "OTTOムーンウォーク",
-        "tooltip": "OTTOをムーンウォークさせます"
+        "label": "Humanoidムーンウォーク",
+        "tooltip": "Humanoidをムーンウォークさせます"
       },
       "gesture": {
-        "label": "OTTOジェスチャー",
-        "tooltip": "OTTOが感情を動きと音で表現します",
+        "label": "Humanoidジェスチャー",
+        "tooltip": "Humanoidが感情を動きと音で表現します",
         "happy": "ハッピー",
         "superHappy": "超ハッピー",
         "sad": "悲しい",
@@ -2317,8 +2317,8 @@
         "fail": "失敗"
       },
       "sound": {
-        "label": "OTTOサウンド",
-        "tooltip": "OTTOが音を鳴らします",
+        "label": "Humanoidサウンド",
+        "tooltip": "Humanoidが音を鳴らします",
         "connection": "接続音",
         "disconnection": "切断音",
         "buttonPushed": "ボタン押下",
@@ -2340,38 +2340,38 @@
         "fart3": "おなら3"
       },
       "crusaito": {
-        "label": "OTTOクルサイト",
+        "label": "Humanoidクルサイト",
         "tooltip": "足をクロスさせながら移動します"
       },
       "flapping": {
-        "label": "OTTOフラッピング",
+        "label": "Humanoidフラッピング",
         "tooltip": "羽ばたくような動きをします"
       },
       "tiptoeSwing": {
-        "label": "OTTOつま先スウィング",
+        "label": "Humanoidつま先スウィング",
         "tooltip": "つま先立ちで揺れます"
       },
       "jitter": {
-        "label": "OTTOジッター",
+        "label": "Humanoidジッター",
         "tooltip": "震えるような動きをします"
       },
       "ascendingTurn": {
-        "label": "OTTO上昇ターン",
+        "label": "Humanoid上昇ターン",
         "tooltip": "上昇しながら回転します"
       },
       "shakeLeg": {
-        "label": "OTTO足を振る",
+        "label": "Humanoid足を振る",
         "tooltip": "足を振ります"
       },
       "updown": {
-        "label": "OTTOアップダウン",
+        "label": "Humanoidアップダウン",
         "tooltip": "上下に動きます"
       }
     },
     "transform": {
       "init": {
-        "label": "OTTO Ninja初期化",
-        "tooltip": "OTTO Ninjaを初期化します（ピン番号はプリセットから取得）"
+        "label": "Transform初期化",
+        "tooltip": "Transformを初期化します（ピン番号はプリセットから取得）"
       },
       "mode": {
         "label": "Ninjaモード",
@@ -2667,19 +2667,19 @@
       },
       "otto": {
         "init": {
-          "label": "OTTO初期化",
+          "label": "Humanoid初期化",
           "leftLeg": "左足",
           "rightLeg": "右足",
           "leftFoot": "左足首",
           "rightFoot": "右足首",
-          "tooltip": "OTTOロボットを初期化します（PWM直接制御）"
+          "tooltip": "Humanoidロボットを初期化します（PWM直接制御）"
         },
         "home": {
-          "label": "OTTOホームポジション",
-          "tooltip": "OTTOを直立姿勢にします"
+          "label": "Humanoidホームポジション",
+          "tooltip": "Humanoidを直立姿勢にします"
         },
         "walk": {
-          "label": "OTTO歩く",
+          "label": "Humanoid歩く",
           "steps": "歩",
           "forward": "前進",
           "backward": "後退",
@@ -2687,10 +2687,10 @@
           "normal": "普通",
           "fast": "速い",
           "slow": "遅い",
-          "tooltip": "OTTOを歩かせます"
+          "tooltip": "Humanoidを歩かせます"
         },
         "turn": {
-          "label": "OTTO回転",
+          "label": "Humanoid回転",
           "times": "回",
           "left": "左",
           "right": "右",
@@ -2698,56 +2698,56 @@
           "normal": "普通",
           "fast": "速い",
           "slow": "遅い",
-          "tooltip": "OTTOを回転させます"
+          "tooltip": "Humanoidを回転させます"
         },
         "jump": {
-          "label": "OTTOジャンプ",
+          "label": "Humanoidジャンプ",
           "times": "回",
-          "tooltip": "OTTOをジャンプさせます"
+          "tooltip": "Humanoidをジャンプさせます"
         },
         "dance": {
-          "label": "OTTOダンス",
+          "label": "Humanoidダンス",
           "times": "回",
-          "tooltip": "OTTOをダンスさせます"
+          "tooltip": "Humanoidをダンスさせます"
         },
         "swing": {
-          "label": "OTTOスウィング",
+          "label": "Humanoidスウィング",
           "times": "回",
-          "tooltip": "OTTOを左右に揺らします"
+          "tooltip": "Humanoidを左右に揺らします"
         },
         "bend": {
-          "label": "OTTO傾ける",
+          "label": "Humanoid傾ける",
           "left": "左",
           "right": "右",
           "times": "回",
-          "tooltip": "OTTOを左右に傾けます"
+          "tooltip": "Humanoidを左右に傾けます"
         },
         "moonwalk": {
-          "label": "OTTOムーンウォーク",
+          "label": "Humanoidムーンウォーク",
           "steps": "歩",
           "right": "右",
           "left": "左",
-          "tooltip": "OTTOをムーンウォークさせます"
+          "tooltip": "Humanoidをムーンウォークさせます"
         },
         "servo": {
-          "label": "OTTOサーボ",
+          "label": "Humanoidサーボ",
           "leftLeg": "左足 (LL)",
           "rightLeg": "右足 (RL)",
           "leftFoot": "左足首 (LF)",
           "rightFoot": "右足首 (RF)",
           "angle": "角度",
           "degrees": "度",
-          "tooltip": "OTTOの各サーボを直接制御します（0-180度）"
+          "tooltip": "Humanoidの各サーボを直接制御します（0-180度）"
         }
       },
       "ottoNinja": {
         "init": {
-          "label": "OTTO Ninja初期化",
+          "label": "Transform初期化",
           "leftLeg": "左足",
           "rightLeg": "右足",
           "leftFoot": "左足首",
           "rightFoot": "右足首",
-          "tooltip": "OTTO Ninjaロボットを初期化します（歩行/走行変形）"
+          "tooltip": "Transformロボットを初期化します（歩行/走行変形）"
         },
         "mode": {
           "label": "Ninjaモード",
@@ -2830,10 +2830,10 @@
       },
       "ottoWheel": {
         "init": {
-          "label": "OTTO Wheel初期化",
+          "label": "Wheel初期化",
           "leftWheel": "左ホイール",
           "rightWheel": "右ホイール",
-          "tooltip": "OTTO Wheelロボットを初期化します（連続回転サーボ）"
+          "tooltip": "Wheelロボットを初期化します（連続回転サーボ）"
         },
         "forward": {
           "label": "前進",
@@ -3084,15 +3084,15 @@
     "copyOf": "のコピー",
     "categories": {
       "otto_bipedal": {
-        "name": "OTTO 2足歩行専用",
+        "name": "Humanoid 2足歩行専用",
         "description": "2足歩行ロボット（4サーボ）のピン設定"
       },
       "otto_wheel": {
-        "name": "OTTO Wheel専用",
+        "name": "Wheel専用",
         "description": "2輪駆動ロボット（連続回転サーボ）のピン設定"
       },
       "otto_ninja": {
-        "name": "OTTO Ninja専用",
+        "name": "Transform専用",
         "description": "変形ロボット（4サーボ）のピン設定"
       },
       "sensors": {
@@ -3630,10 +3630,10 @@
       "speedTrim": "速度調整",
       "nameInputPlaceholder": "名前",
       "presets": {
-        "otto-diy": "OTTO DIY 2足歩行 (4サーボ)",
-        "otto-diy-plus": "OTTO DIY+ 2足歩行 (6サーボ)",
-        "otto-wheel": "OTTO Wheel (2サーボ)",
-        "otto-ninja": "OTTO Ninja (4サーボ)",
+        "otto-diy": "Humanoid DIY 2足歩行 (4サーボ)",
+        "otto-diy-plus": "Humanoid DIY+ 2足歩行 (6サーボ)",
+        "otto-wheel": "Wheel (2サーボ)",
+        "otto-ninja": "Transform (4サーボ)",
         "custom": "カスタム"
       },
       "parts": {

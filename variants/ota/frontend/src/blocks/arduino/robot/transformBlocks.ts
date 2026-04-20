@@ -1,7 +1,7 @@
 /*
  * DigiCodeOttoNinja Blockly Blocks
  *
- * Blocks for controlling OTTO Ninja robots (4-servo biped with Walk & Roll modes).
+ * Blocks for controlling Transform robots (4-servo biped with Walk & Roll modes).
  * HP Robot ESP32 uses Connectors #8, #9, #10, #11.
  * Supports both Arduino C++ and MicroPython.
  */
@@ -23,7 +23,7 @@ Blockly.Blocks['transform_init'] = {
   init: function() {
     const pins = getOttoNinjaPins();
     this.appendDummyInput()
-        .appendField('🐱 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_INIT_LABEL || 'OTTO Ninja Init'))
+        .appendField('🐱 ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_INIT_LABEL || 'Transform Init'))
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_LEFTLEG || 'left leg pin')
         .appendField(new Blockly.FieldNumber(pins.leftLeg, 0, 39), 'PIN_LL')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_RIGHTLEG || 'right leg pin')
@@ -35,7 +35,7 @@ Blockly.Blocks['transform_init'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_INIT_TOOLTIP || 'Initialize OTTO Ninja (pin numbers from preset)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_INIT_TOOLTIP || 'Initialize Transform robot (pin numbers from preset)');
   }
 };
 
@@ -65,15 +65,15 @@ pythonGenerator.forBlock['transform_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['transform_mode'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔄 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_MODE_LABEL || 'Ninja Mode'))
+        .appendField('🔄 ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_MODE_LABEL || 'Ninja Mode'))
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_OTTONINJA_MODE_WALK || 'Walk', 'walk'],
-          [(Blockly.Msg as any).BLOCKS_OTTONINJA_MODE_ROLL || 'Roll', 'roll']
+          [(Blockly.Msg as any).BLOCKS_TRANSFORM_MODE_WALK || 'Walk', 'walk'],
+          [(Blockly.Msg as any).BLOCKS_TRANSFORM_MODE_ROLL || 'Roll', 'roll']
         ]), 'MODE');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_MODE_TOOLTIP || 'Switch between Walk (4-leg walk) and Roll (wheel drive) mode');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_MODE_TOOLTIP || 'Switch between Walk (4-leg walk) and Roll (wheel drive) mode');
   }
 };
 
@@ -95,15 +95,15 @@ pythonGenerator.forBlock['transform_mode'] = function(block: Blockly.Block) {
 Blockly.Blocks['transform_shift'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🦾 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_TRANSFORM_LABEL || 'Ninja Transform'))
+        .appendField('🦾 ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_TRANSFORM_LABEL || 'Ninja Transform'))
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_OTTONINJA_MODE_WALK || 'Walk', 'walk'],
-          [(Blockly.Msg as any).BLOCKS_OTTONINJA_MODE_ROLL || 'Roll', 'roll']
+          [(Blockly.Msg as any).BLOCKS_TRANSFORM_MODE_WALK || 'Walk', 'walk'],
+          [(Blockly.Msg as any).BLOCKS_TRANSFORM_MODE_ROLL || 'Roll', 'roll']
         ]), 'MODE');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_TRANSFORM_TOOLTIP || 'Physically transform by moving servos (Walk↔Roll)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_TRANSFORM_TOOLTIP || 'Physically transform by moving servos (Walk↔Roll)');
   }
 };
 
@@ -121,11 +121,11 @@ pythonGenerator.forBlock['transform_shift'] = function(block: Blockly.Block) {
 Blockly.Blocks['transform_align'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⊕ ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_ALIGN_LABEL || 'Ninja Align'));
+        .appendField('⊕ ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_ALIGN_LABEL || 'Ninja Align'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_ALIGN_TOOLTIP || 'Adjust servo angles');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_ALIGN_TOOLTIP || 'Adjust servo angles');
   }
 };
 
@@ -141,7 +141,7 @@ pythonGenerator.forBlock['transform_align'] = function() {
 Blockly.Blocks['transform_calibrate'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_CALIBRATE_LABEL || 'Ninja Calibration'))
+        .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_CALIBRATE_LABEL || 'Ninja Calibration'))
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_LEFT || 'left')
         .appendField(new Blockly.FieldNumber(0, -90, 90), 'LEFT')
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_RIGHT || 'right')
@@ -149,7 +149,7 @@ Blockly.Blocks['transform_calibrate'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_CALIBRATE_TOOLTIP || 'Adjust left/right offset');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_CALIBRATE_TOOLTIP || 'Adjust left/right offset');
   }
 };
 
@@ -169,11 +169,11 @@ pythonGenerator.forBlock['transform_calibrate'] = function(block: Blockly.Block)
 Blockly.Blocks['transform_home'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🏠 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_HOME_LABEL || 'Ninja Home'));
+        .appendField('🏠 ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_HOME_LABEL || 'Ninja Home'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_HOME_TOOLTIP || 'Return to upright position');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_HOME_TOOLTIP || 'Return to upright position');
   }
 };
 
@@ -189,7 +189,7 @@ pythonGenerator.forBlock['transform_home'] = function() {
 Blockly.Blocks['transform_walk'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🚶 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_WALK_LABEL || 'Ninja Walk'))
+        .appendField('🚶 ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_WALK_LABEL || 'Ninja Walk'))
         .appendField(new Blockly.FieldDropdown([
           [(Blockly.Msg as any).BLOCKS_COMMON_FORWARD || 'forward', 'forward'],
           [(Blockly.Msg as any).BLOCKS_COMMON_BACKWARD || 'backward', 'backward']
@@ -202,7 +202,7 @@ Blockly.Blocks['transform_walk'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_WALK_TOOLTIP || 'Walk in Walk mode');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_WALK_TOOLTIP || 'Walk in Walk mode');
   }
 };
 
@@ -226,7 +226,7 @@ pythonGenerator.forBlock['transform_walk'] = function(block: Blockly.Block) {
 Blockly.Blocks['transform_walk_power'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🚶 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_WALKPOWER_LABEL || 'Ninja Walk'))
+        .appendField('🚶 ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_WALKPOWER_LABEL || 'Ninja Walk'))
         .appendField(new Blockly.FieldDropdown([
           [(Blockly.Msg as any).BLOCKS_COMMON_FORWARD || 'forward', 'forward'],
           [(Blockly.Msg as any).BLOCKS_COMMON_BACKWARD || 'backward', 'backward']
@@ -236,7 +236,7 @@ Blockly.Blocks['transform_walk_power'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_WALKPOWER_TOOLTIP || 'Walk in Walk mode (with power setting)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_WALKPOWER_TOOLTIP || 'Walk in Walk mode (with power setting)');
   }
 };
 
@@ -258,7 +258,7 @@ pythonGenerator.forBlock['transform_walk_power'] = function(block: Blockly.Block
 Blockly.Blocks['transform_roll'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🛞 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_ROLL_LABEL || 'Ninja Roll'))
+        .appendField('🛞 ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_ROLL_LABEL || 'Ninja Roll'))
         .appendField(new Blockly.FieldDropdown([
           [(Blockly.Msg as any).BLOCKS_COMMON_FORWARD || 'forward', 'forward'],
           [(Blockly.Msg as any).BLOCKS_COMMON_BACKWARD || 'backward', 'backward']
@@ -271,7 +271,7 @@ Blockly.Blocks['transform_roll'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_ROLL_TOOLTIP || 'Drive in Roll mode');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_ROLL_TOOLTIP || 'Drive in Roll mode');
   }
 };
 
@@ -295,7 +295,7 @@ pythonGenerator.forBlock['transform_roll'] = function(block: Blockly.Block) {
 Blockly.Blocks['transform_roll_power'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🛞 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_ROLLPOWER_LABEL || 'Ninja Roll'))
+        .appendField('🛞 ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_ROLLPOWER_LABEL || 'Ninja Roll'))
         .appendField(new Blockly.FieldDropdown([
           [(Blockly.Msg as any).BLOCKS_COMMON_FORWARD || 'forward', 'forward'],
           [(Blockly.Msg as any).BLOCKS_COMMON_BACKWARD || 'backward', 'backward']
@@ -305,7 +305,7 @@ Blockly.Blocks['transform_roll_power'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_ROLLPOWER_TOOLTIP || 'Drive in Roll mode (with power setting)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_ROLLPOWER_TOOLTIP || 'Drive in Roll mode (with power setting)');
   }
 };
 
@@ -327,7 +327,7 @@ pythonGenerator.forBlock['transform_roll_power'] = function(block: Blockly.Block
 Blockly.Blocks['transform_roll_rotate'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↻ ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_ROLLROTATE_LABEL || 'Ninja Roll Rotate'))
+        .appendField('↻ ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_ROLLROTATE_LABEL || 'Ninja Roll Rotate'))
         .appendField(new Blockly.FieldDropdown([
           [(Blockly.Msg as any).BLOCKS_COMMON_LEFT || 'left', 'left'],
           [(Blockly.Msg as any).BLOCKS_COMMON_RIGHT || 'right', 'right']
@@ -337,7 +337,7 @@ Blockly.Blocks['transform_roll_rotate'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_ROLLROTATE_TOOLTIP || 'Rotate in Roll mode');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_ROLLROTATE_TOOLTIP || 'Rotate in Roll mode');
   }
 };
 
@@ -359,7 +359,7 @@ pythonGenerator.forBlock['transform_roll_rotate'] = function(block: Blockly.Bloc
 Blockly.Blocks['transform_turn'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↻ ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_TURN_LABEL || 'Ninja Turn'))
+        .appendField('↻ ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_TURN_LABEL || 'Ninja Turn'))
         .appendField(new Blockly.FieldDropdown([
           [(Blockly.Msg as any).BLOCKS_COMMON_LEFT || 'left', 'left'],
           [(Blockly.Msg as any).BLOCKS_COMMON_RIGHT || 'right', 'right']
@@ -369,7 +369,7 @@ Blockly.Blocks['transform_turn'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_TURN_TOOLTIP || 'Turn in Walk mode');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_TURN_TOOLTIP || 'Turn in Walk mode');
   }
 };
 
@@ -391,15 +391,15 @@ pythonGenerator.forBlock['transform_turn'] = function(block: Blockly.Block) {
 Blockly.Blocks['transform_stop'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⏹ ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_STOP_LABEL || 'Ninja Stop'))
+        .appendField('⏹ ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_STOP_LABEL || 'Ninja Stop'))
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_OTTONINJA_MODE_WALK || 'Walk', 'walk'],
-          [(Blockly.Msg as any).BLOCKS_OTTONINJA_MODE_ROLL || 'Roll', 'roll']
+          [(Blockly.Msg as any).BLOCKS_TRANSFORM_MODE_WALK || 'Walk', 'walk'],
+          [(Blockly.Msg as any).BLOCKS_TRANSFORM_MODE_ROLL || 'Roll', 'roll']
         ]), 'MODE');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_STOP_TOOLTIP || 'Stop specified mode');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_STOP_TOOLTIP || 'Stop specified mode');
   }
 };
 
@@ -421,11 +421,11 @@ pythonGenerator.forBlock['transform_stop'] = function(block: Blockly.Block) {
 Blockly.Blocks['transform_trot'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🏃 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_TROT_LABEL || 'Ninja Trot'));
+        .appendField('🏃 ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_TROT_LABEL || 'Ninja Trot'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_TROT_TOOLTIP || 'Walk quickly');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_TROT_TOOLTIP || 'Walk quickly');
   }
 };
 
@@ -441,11 +441,11 @@ pythonGenerator.forBlock['transform_trot'] = function() {
 Blockly.Blocks['transform_pushup'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💪 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_PUSHUP_LABEL || 'Ninja Push-up'));
+        .appendField('💪 ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_PUSHUP_LABEL || 'Ninja Push-up'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_PUSHUP_TOOLTIP || 'Do push-ups');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_PUSHUP_TOOLTIP || 'Do push-ups');
   }
 };
 
@@ -461,7 +461,7 @@ pythonGenerator.forBlock['transform_pushup'] = function() {
 Blockly.Blocks['transform_lateral'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↔️ ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_LATERAL_LABEL || 'Ninja Lateral'))
+        .appendField('↔️ ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_LATERAL_LABEL || 'Ninja Lateral'))
         .appendField(new Blockly.FieldDropdown([
           [(Blockly.Msg as any).BLOCKS_COMMON_LEFT || 'left', 'left'],
           [(Blockly.Msg as any).BLOCKS_COMMON_RIGHT || 'right', 'right']
@@ -469,7 +469,7 @@ Blockly.Blocks['transform_lateral'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_LATERAL_TOOLTIP || 'Move sideways');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_LATERAL_TOOLTIP || 'Move sideways');
   }
 };
 
@@ -489,11 +489,11 @@ pythonGenerator.forBlock['transform_lateral'] = function(block: Blockly.Block) {
 Blockly.Blocks['transform_dance'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💃 ' + ((Blockly.Msg as any).BLOCKS_OTTONINJA_DANCE_LABEL || 'Ninja Dance'));
+        .appendField('💃 ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_DANCE_LABEL || 'Ninja Dance'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_OTTONINJA_DANCE_TOOLTIP || 'Perform a dance');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TRANSFORM_DANCE_TOOLTIP || 'Perform a dance');
   }
 };
 
