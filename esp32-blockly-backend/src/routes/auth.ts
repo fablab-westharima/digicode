@@ -179,7 +179,7 @@ auth.post('/login', async (c) => {
 
     // ユーザー検索
     const user = await c.env.DB.prepare(
-      'SELECT id, email, password_hash, email_verified, passkey_only, account_type FROM users WHERE email = ?'
+      'SELECT id, email, password_hash, email_verified, passkey_only, account_type, preferred_lang FROM users WHERE email = ?'
     ).bind(email).first<{
       id: number;
       email: string;
@@ -187,6 +187,7 @@ auth.post('/login', async (c) => {
       email_verified: number;
       passkey_only: number;
       account_type: string | null;
+      preferred_lang: string | null;
     }>();
 
     if (!user) {
@@ -257,6 +258,7 @@ auth.post('/login', async (c) => {
         email: user.email,
         passkeyOnly: user.passkey_only,
         accountType: user.account_type || 'regular',
+        preferredLang: user.preferred_lang || null,
       },
     });
   } catch (error) {
