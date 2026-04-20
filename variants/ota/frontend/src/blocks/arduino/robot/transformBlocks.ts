@@ -1,5 +1,5 @@
 /*
- * DigiCodeOttoNinja Blockly Blocks
+ * Transform Blockly Blocks
  *
  * Blocks for controlling Transform robots (4-servo biped with Walk & Roll modes).
  * HP Robot ESP32 uses Connectors #8, #9, #10, #11.
@@ -44,9 +44,9 @@ javascriptGenerator.forBlock['transform_init'] = function(block: Blockly.Block) 
   const pinRL = block.getFieldValue('PIN_RL');
   const pinLF = block.getFieldValue('PIN_LF');
   const pinRF = block.getFieldValue('PIN_RF');
-  generator.definitions_['include_otto_ninja'] = '#include <DigiCodeOttoNinja.h>';
-  generator.definitions_['transform_instance'] = 'DigiCodeOttoNinja ottoNinja;';
-  return `  ottoNinja.init(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF});\n`;
+  generator.definitions_['include_transform'] = '#include <DigiCodeTransform.h>';
+  generator.definitions_['transform_instance'] = 'DigiCodeTransform transform;';
+  return `  transform.init(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF});\n`;
 };
 
 pythonGenerator.forBlock['transform_init'] = function(block: Blockly.Block) {
@@ -79,7 +79,7 @@ Blockly.Blocks['transform_mode'] = {
 
 javascriptGenerator.forBlock['transform_mode'] = function(block: Blockly.Block) {
   const mode = block.getFieldValue('MODE');
-  return `  ottoNinja.setMode("${mode}");\n`;
+  return `  transform.setMode("${mode}");\n`;
 };
 
 pythonGenerator.forBlock['transform_mode'] = function(block: Blockly.Block) {
@@ -109,7 +109,7 @@ Blockly.Blocks['transform_shift'] = {
 
 javascriptGenerator.forBlock['transform_shift'] = function(block: Blockly.Block) {
   const mode = block.getFieldValue('MODE');
-  return `  ottoNinja.transform("${mode}");\n`;
+  return `  transform.transform("${mode}");\n`;
 };
 
 pythonGenerator.forBlock['transform_shift'] = function(block: Blockly.Block) {
@@ -130,7 +130,7 @@ Blockly.Blocks['transform_align'] = {
 };
 
 javascriptGenerator.forBlock['transform_align'] = function() {
-  return `  ottoNinja.alignAngle();\n`;
+  return `  transform.alignAngle();\n`;
 };
 
 pythonGenerator.forBlock['transform_align'] = function() {
@@ -156,7 +156,7 @@ Blockly.Blocks['transform_calibrate'] = {
 javascriptGenerator.forBlock['transform_calibrate'] = function(block: Blockly.Block) {
   const left = block.getFieldValue('LEFT');
   const right = block.getFieldValue('RIGHT');
-  return `  ottoNinja.calibrate(${left}, ${right});\n`;
+  return `  transform.calibrate(${left}, ${right});\n`;
 };
 
 pythonGenerator.forBlock['transform_calibrate'] = function(block: Blockly.Block) {
@@ -178,7 +178,7 @@ Blockly.Blocks['transform_home'] = {
 };
 
 javascriptGenerator.forBlock['transform_home'] = function() {
-  return `  ottoNinja.home();\n`;
+  return `  transform.home();\n`;
 };
 
 pythonGenerator.forBlock['transform_home'] = function() {
@@ -211,7 +211,7 @@ javascriptGenerator.forBlock['transform_walk'] = function(block: Blockly.Block) 
   const speed = block.getFieldValue('SPEED');
   const speedMs = speed === 'fast' ? 600 : speed === 'slow' ? 1500 : 1000;
   const dir = direction === 'forward' ? 1 : -1;
-  return `  ottoNinja.walk(2, ${speedMs}, ${dir});\n`;
+  return `  transform.walk(2, ${speedMs}, ${dir});\n`;
 };
 
 pythonGenerator.forBlock['transform_walk'] = function(block: Blockly.Block) {
@@ -244,7 +244,7 @@ javascriptGenerator.forBlock['transform_walk_power'] = function(block: Blockly.B
   const direction = block.getFieldValue('DIRECTION');
   const power = block.getFieldValue('POWER');
   const dir = direction === 'forward' ? 1 : -1;
-  return `  ottoNinja.walkPower(${dir}, ${power});\n`;
+  return `  transform.walkPower(${dir}, ${power});\n`;
 };
 
 pythonGenerator.forBlock['transform_walk_power'] = function(block: Blockly.Block) {
@@ -280,7 +280,7 @@ javascriptGenerator.forBlock['transform_roll'] = function(block: Blockly.Block) 
   const speed = block.getFieldValue('SPEED');
   const speedVal = speed === 'fast' ? 100 : speed === 'slow' ? 30 : 50;
   const dir = direction === 'forward' ? 1 : -1;
-  return `  ottoNinja.roll(${dir}, ${speedVal});\n`;
+  return `  transform.roll(${dir}, ${speedVal});\n`;
 };
 
 pythonGenerator.forBlock['transform_roll'] = function(block: Blockly.Block) {
@@ -313,7 +313,7 @@ javascriptGenerator.forBlock['transform_roll_power'] = function(block: Blockly.B
   const direction = block.getFieldValue('DIRECTION');
   const power = block.getFieldValue('POWER');
   const dir = direction === 'forward' ? 1 : -1;
-  return `  ottoNinja.rollPower(${dir}, ${power});\n`;
+  return `  transform.rollPower(${dir}, ${power});\n`;
 };
 
 pythonGenerator.forBlock['transform_roll_power'] = function(block: Blockly.Block) {
@@ -345,7 +345,7 @@ javascriptGenerator.forBlock['transform_roll_rotate'] = function(block: Blockly.
   const direction = block.getFieldValue('DIRECTION');
   const power = block.getFieldValue('POWER');
   const dir = direction === 'left' ? 1 : -1;
-  return `  ottoNinja.rollRotate(${dir}, ${power});\n`;
+  return `  transform.rollRotate(${dir}, ${power});\n`;
 };
 
 pythonGenerator.forBlock['transform_roll_rotate'] = function(block: Blockly.Block) {
@@ -377,7 +377,7 @@ javascriptGenerator.forBlock['transform_turn'] = function(block: Blockly.Block) 
   const direction = block.getFieldValue('DIRECTION');
   const steps = block.getFieldValue('STEPS');
   const dir = direction === 'left' ? 1 : -1;
-  return `  ottoNinja.turn(${steps}, 1000, ${dir});\n`;
+  return `  transform.turn(${steps}, 1000, ${dir});\n`;
 };
 
 pythonGenerator.forBlock['transform_turn'] = function(block: Blockly.Block) {
@@ -405,7 +405,7 @@ Blockly.Blocks['transform_stop'] = {
 
 javascriptGenerator.forBlock['transform_stop'] = function(block: Blockly.Block) {
   const mode = block.getFieldValue('MODE');
-  return `  ottoNinja.stop("${mode}");\n`;
+  return `  transform.stop("${mode}");\n`;
 };
 
 pythonGenerator.forBlock['transform_stop'] = function(block: Blockly.Block) {
@@ -430,7 +430,7 @@ Blockly.Blocks['transform_trot'] = {
 };
 
 javascriptGenerator.forBlock['transform_trot'] = function() {
-  return `  ottoNinja.trot(2, 600);\n`;
+  return `  transform.trot(2, 600);\n`;
 };
 
 pythonGenerator.forBlock['transform_trot'] = function() {
@@ -450,7 +450,7 @@ Blockly.Blocks['transform_pushup'] = {
 };
 
 javascriptGenerator.forBlock['transform_pushup'] = function() {
-  return `  ottoNinja.pushUp(2, 1000);\n`;
+  return `  transform.pushUp(2, 1000);\n`;
 };
 
 pythonGenerator.forBlock['transform_pushup'] = function() {
@@ -476,7 +476,7 @@ Blockly.Blocks['transform_lateral'] = {
 javascriptGenerator.forBlock['transform_lateral'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const dir = direction === 'left' ? 1 : -1;
-  return `  ottoNinja.lateral(2, 1000, ${dir});\n`;
+  return `  transform.lateral(2, 1000, ${dir});\n`;
 };
 
 pythonGenerator.forBlock['transform_lateral'] = function(block: Blockly.Block) {
@@ -498,7 +498,7 @@ Blockly.Blocks['transform_dance'] = {
 };
 
 javascriptGenerator.forBlock['transform_dance'] = function() {
-  return `  ottoNinja.dance(4, 600);\n`;
+  return `  transform.dance(4, 600);\n`;
 };
 
 pythonGenerator.forBlock['transform_dance'] = function() {
