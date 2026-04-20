@@ -96,6 +96,16 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     removeToken();
     localStorage.removeItem('user');
+    // ログアウト時は言語設定をリセット（次回ログイン時に preferred_lang を適用するため）
+    // ブラウザ言語を再検出して適用
+    localStorage.removeItem('i18nextLng');
+    const nav = navigator.language;
+    const browserLang = nav.startsWith('ja') ? 'ja'
+      : nav.startsWith('zh') ? 'zh-TW'
+      : nav.startsWith('es') ? 'es'
+      : nav.startsWith('pt') ? 'pt-PT'
+      : 'en';
+    i18n.changeLanguage(browserLang);
     set({
       user: null,
       accessToken: null,

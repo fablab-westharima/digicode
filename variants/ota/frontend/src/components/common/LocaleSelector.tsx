@@ -27,7 +27,9 @@ export function LocaleSelector() {
   const changeLanguage = (langCode: string) => {
     i18n.changeLanguage(langCode);
     if (isAuthenticated) {
-      api.auth.updatePreferredLang(langCode).catch(() => {});
+      api.auth.updatePreferredLang(langCode).catch((e) => {
+        console.error('[SP3] updatePreferredLang failed:', e);
+      });
     }
   };
 
