@@ -466,5 +466,39 @@ javascriptGenerator.forBlock['esp32_dht_read'] = function(block: Blockly.Block) 
   }
 };
 
+// 21. math_map - 範囲変換（Arduino map() 関数）
+Blockly.Blocks['math_map'] = {
+  init: function() {
+    this.appendValueInput('VALUE')
+        .setCheck('Number')
+        .appendField(Blockly.Msg.BLOCKS_MATH_MAP || 'map');
+    this.appendValueInput('FROM_LOW')
+        .setCheck('Number')
+        .appendField(Blockly.Msg.BLOCKS_MATH_MAPFROM || 'from');
+    this.appendValueInput('FROM_HIGH')
+        .setCheck('Number')
+        .appendField('~');
+    this.appendValueInput('TO_LOW')
+        .setCheck('Number')
+        .appendField(Blockly.Msg.BLOCKS_MATH_MAPTO || 'to');
+    this.appendValueInput('TO_HIGH')
+        .setCheck('Number')
+        .appendField('~');
+    this.setInputsInline(true);
+    this.setOutput(true, 'Number');
+    this.setColour('#3b82f6');
+    this.setTooltip(Blockly.Msg.BLOCKS_MATH_MAPTOOLTIP || 'Re-maps a number from one range to another (Arduino map function)');
+  }
+};
+
+javascriptGenerator.forBlock['math_map'] = function(block: Blockly.Block) {
+  const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.ATOMIC) || '0';
+  const fromLow = javascriptGenerator.valueToCode(block, 'FROM_LOW', Order.ATOMIC) || '0';
+  const fromHigh = javascriptGenerator.valueToCode(block, 'FROM_HIGH', Order.ATOMIC) || '1023';
+  const toLow = javascriptGenerator.valueToCode(block, 'TO_LOW', Order.ATOMIC) || '0';
+  const toHigh = javascriptGenerator.valueToCode(block, 'TO_HIGH', Order.ATOMIC) || '255';
+  return [`map(${value}, ${fromLow}, ${fromHigh}, ${toLow}, ${toHigh})`, Order.FUNCTION_CALL];
+};
+
 // Arduino C++ブロックの初期化完了
 console.log('ESP32 Arduino C++ blocks loaded');

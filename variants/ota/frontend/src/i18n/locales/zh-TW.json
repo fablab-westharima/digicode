@@ -545,7 +545,23 @@
       "proceed": "忽略並編譯"
     },
     "compileAndFlash": "編譯並燒錄",
-    "flashButton": "燒錄"
+    "flashButton": "燒錄",
+    "serial": {
+      "autoScroll": "自動捲動",
+      "clear": "清除",
+      "waiting": "等待 ESP32 的資料...",
+      "connectPrompt": "請連接 ESP32",
+      "sendPlaceholder": "要傳送的訊息...",
+      "send": "傳送",
+      "resume": "繼續",
+      "pause": "暫停",
+      "plotterWaiting": "等待資料...",
+      "plotterHint": "請從 ESP32 傳送數值資料",
+      "plotterExample": "範例：Serial.println(\"123,456,789\");",
+      "dataPoints": "資料點數：",
+      "yRange": "Y軸範圍：",
+      "auto": "自動"
+    }
   },
   "project": {
     "title": "項目",
@@ -817,6 +833,10 @@
     "logic": "Logic",
     "loops": "Loops",
     "math": "Math",
+    "math_map": "map",
+    "math_mapfrom": "從",
+    "math_mapto": "到",
+    "math_maptooltip": "將數值從一個範圍映射到另一個範圍（Arduino map 函數）",
     "text": "Text",
     "variables": "Variables",
     "functions": "Functions",

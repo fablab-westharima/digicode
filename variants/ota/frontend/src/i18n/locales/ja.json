@@ -545,7 +545,23 @@
       "cancel": "修正する",
       "proceed": "警告を無視してコンパイル"
     },
-    "flashButton": "書込み"
+    "flashButton": "書込み",
+    "serial": {
+      "autoScroll": "自動スクロール",
+      "clear": "クリア",
+      "waiting": "ESP32からのデータを待機中...",
+      "connectPrompt": "ESP32に接続してください",
+      "sendPlaceholder": "送信するメッセージ...",
+      "send": "送信",
+      "resume": "再開",
+      "pause": "一時停止",
+      "plotterWaiting": "データを待機中...",
+      "plotterHint": "ESP32から数値データを送信してください",
+      "plotterExample": "例: Serial.println(\"123,456,789\");",
+      "dataPoints": "データ点数:",
+      "yRange": "Y軸範囲:",
+      "auto": "自動"
+    }
   },
   "project": {
     "title": "プロジェクト",
@@ -1038,6 +1054,10 @@
     "logic": "ロジック",
     "loops": "ループ",
     "math": "数学",
+    "math_map": "map",
+    "math_mapfrom": "入力",
+    "math_mapto": "出力",
+    "math_maptooltip": "値を一つの範囲から別の範囲に変換します（Arduino map 関数）",
     "text": "テキスト",
     "variables": "変数",
     "functions": "関数",

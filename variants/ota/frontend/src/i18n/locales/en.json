@@ -545,7 +545,23 @@
       "proceed": "Ignore and Compile"
     },
     "compileAndFlash": "Compile & Flash",
-    "flashButton": "Flash"
+    "flashButton": "Flash",
+    "serial": {
+      "autoScroll": "Auto Scroll",
+      "clear": "Clear",
+      "waiting": "Waiting for data from ESP32...",
+      "connectPrompt": "Please connect to ESP32",
+      "sendPlaceholder": "Message to send...",
+      "send": "Send",
+      "resume": "Resume",
+      "pause": "Pause",
+      "plotterWaiting": "Waiting for data...",
+      "plotterHint": "Send numeric data from ESP32",
+      "plotterExample": "Example: Serial.println(\"123,456,789\");",
+      "dataPoints": "Data points:",
+      "yRange": "Y-axis range:",
+      "auto": "Auto"
+    }
   },
   "project": {
     "title": "Projects",
@@ -1038,6 +1054,10 @@
     "logic": "Logic",
     "loops": "Loops",
     "math": "Math",
+    "math_map": "map",
+    "math_mapfrom": "from",
+    "math_mapto": "to",
+    "math_maptooltip": "Re-maps a number from one range to another (Arduino map function)",
     "text": "Text",
     "variables": "Variables",
     "functions": "Functions",

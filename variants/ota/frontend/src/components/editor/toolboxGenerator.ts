@@ -83,6 +83,13 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
     <block type="math_round"><field name="OP">ROUND</field></block>
     <block type="math_single"><field name="OP">ABS</field></block>
+    <block type="math_map">
+      <value name="VALUE"><shadow type="math_number"><field name="NUM">512</field></shadow></value>
+      <value name="FROM_LOW"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="FROM_HIGH"><shadow type="math_number"><field name="NUM">1023</field></shadow></value>
+      <value name="TO_LOW"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="TO_HIGH"><shadow type="math_number"><field name="NUM">255</field></shadow></value>
+    </block>
   </category>`,
 
   variables: `

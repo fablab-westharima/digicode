@@ -545,7 +545,23 @@
       "proceed": "Ignorar e compilar"
     },
     "compileAndFlash": "Compilar e gravar",
-    "flashButton": "Gravar"
+    "flashButton": "Gravar",
+    "serial": {
+      "autoScroll": "Auto scroll",
+      "clear": "Limpar",
+      "waiting": "A aguardar dados do ESP32...",
+      "connectPrompt": "Ligue o ESP32",
+      "sendPlaceholder": "Mensagem a enviar...",
+      "send": "Enviar",
+      "resume": "Retomar",
+      "pause": "Pausar",
+      "plotterWaiting": "A aguardar dados...",
+      "plotterHint": "Envie dados numéricos a partir do ESP32",
+      "plotterExample": "Exemplo: Serial.println(\"123,456,789\");",
+      "dataPoints": "Pontos:",
+      "yRange": "Intervalo Y:",
+      "auto": "Auto"
+    }
   },
   "project": {
     "title": "Projeto",
@@ -817,6 +833,10 @@
     "logic": "Logic",
     "loops": "Loops",
     "math": "Math",
+    "math_map": "map",
+    "math_mapfrom": "de",
+    "math_mapto": "para",
+    "math_maptooltip": "Converte um valor de um intervalo para outro (função map do Arduino)",
     "text": "Text",
     "variables": "Variables",
     "functions": "Functions",
