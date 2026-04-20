@@ -1,7 +1,7 @@
 /**
  * 磁気エンコーダブロック (BP5-5, 2026-04-20)
  *
- * AS5600: Seeed_Arduino_AS5600 ライブラリ使用（I2C 固定アドレス 0x36）
+ * AS5600: RobTillaart AS5600 ライブラリ使用（I2C 固定アドレス 0x36）
  * 既存の `encoder`（パルスエンコーダ）とは別カテゴリ
  *
  * i18n: Blockly.Msg.* パターン（ルール33）
@@ -18,8 +18,8 @@ const MAG_COLOR = '#880E4F';
 
 const AS5600_INCLUDE = `
 #include <Wire.h>
-#include <AMS_5600.h>
-AMS_5600 as5600;`;
+#include <AS5600.h>
+AS5600 as5600;`;
 
 /**
  * as5600_init - AS5600 初期化
@@ -36,7 +36,7 @@ Blockly.Blocks['as5600_init'] = {
 
 generator.forBlock['as5600_init'] = function() {
   generator.definitions_['include_as5600'] = AS5600_INCLUDE;
-  return ['([&](){ Wire.begin(); return as5600.detectMagnet() == 1; })()', 0];
+  return ['([&](){ Wire.begin(); as5600.begin(); return as5600.isConnected(); })()', 0];
 };
 
 /**
@@ -54,7 +54,7 @@ Blockly.Blocks['as5600_read_angle'] = {
 
 generator.forBlock['as5600_read_angle'] = function() {
   generator.definitions_['include_as5600'] = AS5600_INCLUDE;
-  return ['(as5600.getScaledAngle() * 360.0 / 4096.0)', 0];
+  return ['(as5600.rawAngle() * 360.0 / 4096.0)', 0];
 };
 
 /**
@@ -72,7 +72,7 @@ Blockly.Blocks['as5600_read_raw'] = {
 
 generator.forBlock['as5600_read_raw'] = function() {
   generator.definitions_['include_as5600'] = AS5600_INCLUDE;
-  return ['as5600.getRawAngle()', 0];
+  return ['as5600.rawAngle()', 0];
 };
 
 console.log('Magnetic encoder (AS5600) blocks loaded');
