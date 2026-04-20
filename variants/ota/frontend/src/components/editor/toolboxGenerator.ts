@@ -363,6 +363,25 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="pid_reset"></block>
   </category>`,
 
+  // BLE (BP4, 2026-04-20 追加) — supportsBle フィルタ対象、ESP32 専用
+  ble: `
+  <category id="ble" name="${cat('ble')}" colour="#2196F3">
+    <label text="${label('bleUart') || 'Nordic UART (NUS)'}"></label>
+    <block type="ble_uart_setup"></block>
+    <block type="ble_uart_write"></block>
+    <block type="ble_uart_on_receive"></block>
+    <block type="ble_is_connected"></block>
+    <block type="ble_disconnect"></block>
+    <sep></sep>
+    <label text="${label('bleBeacon') || 'iBeacon'}"></label>
+    <block type="ble_beacon_broadcast"></block>
+    <sep></sep>
+    <label text="${label('bleScan') || 'Scan'}"></label>
+    <block type="ble_scan_start"></block>
+    <block type="ble_on_device_found"></block>
+    <block type="ble_get_rssi"></block>
+  </category>`,
+
   // NTP 時刻同期 (BP3-1, 2026-04-20 追加) — supportsWifi フィルタ対象
   ntp_time: `
   <category id="ntpTime" name="${cat('ntpTime')}" colour="#3F51B5">
@@ -1030,7 +1049,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'neopixel',
     'display',
     'separator6',
-    // 時刻・保存
+    // 時刻・保存・BLE
+    'ble',
     'ntp_time',
     'rtc',
     'storage_nvs',
@@ -1129,7 +1149,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'neopixel',
     'display',
     'separator6',
-    // グループ7: 時刻・保存
+    // グループ7: 時刻・保存・BLE
+    'ble',
     'ntp_time',
     'rtc',
     'storage_nvs',
@@ -1194,7 +1215,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'neopixel',
     'display',
     'separator7',
-    // グループ8: 時刻・保存
+    // グループ8: 時刻・保存・BLE
+    'ble',
     'ntp_time',
     'rtc',
     'storage_nvs',
@@ -1251,9 +1273,11 @@ export function generateToolbox(
   if (board) {
     const WIFI_CATEGORIES = new Set(['wifi', 'mqtt', 'arduino_ha', 'http', 'ntp_time']);
     const OTA_CATEGORIES = new Set(['ota']);
+    const BLE_CATEGORIES = new Set(['ble']);
     categories = categories.filter(catId => {
       if (!board.supportsWifi && WIFI_CATEGORIES.has(catId)) return false;
       if (!board.supportsOta && OTA_CATEGORIES.has(catId)) return false;
+      if (!board.supportsBle && BLE_CATEGORIES.has(catId)) return false;
       return true;
     });
   }

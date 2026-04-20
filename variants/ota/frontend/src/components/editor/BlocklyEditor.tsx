@@ -57,6 +57,7 @@ import '../../blocks/arduino/communication/jsonBlocks';
 import '../../blocks/arduino/communication/otaBlocks';
 import '../../blocks/arduino/communication/wifiBlocks';
 import '../../blocks/arduino/communication/i2cSpiBlocks';
+import '../../blocks/arduino/communication/bleBlocks';
 import '../../blocks/arduino/core/interruptBlocks';
 import '../../blocks/arduino/storage/storageNvsBlocks';
 import '../../blocks/arduino/storage/storageFsBlocks';
