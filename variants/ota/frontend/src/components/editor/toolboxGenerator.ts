@@ -363,6 +363,65 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="pid_reset"></block>
   </category>`,
 
+  // NTP 時刻同期 (BP3-1, 2026-04-20 追加) — supportsWifi フィルタ対象
+  ntp_time: `
+  <category id="ntpTime" name="${cat('ntpTime')}" colour="#3F51B5">
+    <label text="${label('ntpSync') || 'Sync'}"></label>
+    <block type="ntp_sync"></block>
+    <sep></sep>
+    <label text="${label('ntpGet') || 'Get Time'}"></label>
+    <block type="ntp_get_formatted"></block>
+    <block type="ntp_get_component"></block>
+    <block type="ntp_get_unix_time"></block>
+  </category>`,
+
+  // RTC (BP3-2, 2026-04-20 追加)
+  rtc: `
+  <category id="rtc" name="${cat('rtc')}" colour="#9C27B0">
+    <label text="${label('rtcInit') || 'Init'}"></label>
+    <block type="rtc_init"></block>
+    <block type="rtc_set_time"></block>
+    <sep></sep>
+    <label text="${label('rtcGet') || 'Get Time'}"></label>
+    <block type="rtc_get_formatted"></block>
+    <block type="rtc_get_component"></block>
+  </category>`,
+
+  // 設定保存 NVS / EEPROM (BP3-3/BP3-4, 2026-04-20 追加)
+  storage_nvs: `
+  <category id="storageNvs" name="${cat('storageNvs')}" colour="#795548">
+    <label text="${label('preferences') || 'Preferences (NVS)'}"></label>
+    <block type="preferences_begin"></block>
+    <block type="preferences_put"></block>
+    <block type="preferences_get"></block>
+    <block type="preferences_remove"></block>
+    <block type="preferences_clear"></block>
+    <block type="preferences_end"></block>
+    <sep></sep>
+    <label text="${label('eeprom') || 'EEPROM'}"></label>
+    <block type="eeprom_write"></block>
+    <block type="eeprom_read"></block>
+  </category>`,
+
+  // ファイルシステム SD / LittleFS (BP3-5/BP3-6, 2026-04-20 追加)
+  storage_fs: `
+  <category id="storageFs" name="${cat('storageFs')}" colour="#FF9800">
+    <label text="${label('sdCard') || 'SD Card'}"></label>
+    <block type="sd_begin"></block>
+    <block type="sd_write"></block>
+    <block type="sd_read"></block>
+    <block type="sd_exists"></block>
+    <block type="sd_delete"></block>
+    <block type="sd_csv_append"></block>
+    <sep></sep>
+    <label text="${label('littlefs') || 'LittleFS'}"></label>
+    <block type="fs_mount"></block>
+    <block type="fs_write"></block>
+    <block type="fs_read"></block>
+    <block type="fs_exists"></block>
+    <block type="fs_delete"></block>
+  </category>`,
+
   // 割り込み・タイマー (BP2-1, 2026-04-20 追加)
   interrupt: `
   <category id="interrupt" name="${cat('interrupt')}" colour="#E91E63">
@@ -971,6 +1030,11 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'neopixel',
     'display',
     'separator6',
+    // 時刻・保存
+    'ntp_time',
+    'rtc',
+    'storage_nvs',
+    'storage_fs',
     // GPIO・通信
     'interrupt',
     'gpio',
@@ -1009,6 +1073,11 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'json',
     'ota',
     'separator4',
+    // 時刻・保存
+    'ntp_time',
+    'rtc',
+    'storage_nvs',
+    'storage_fs',
     // GPIO・通信
     'interrupt',
     'gpio',
@@ -1060,20 +1129,26 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'neopixel',
     'display',
     'separator6',
-    // グループ7: GPIO・通信
+    // グループ7: 時刻・保存
+    'ntp_time',
+    'rtc',
+    'storage_nvs',
+    'storage_fs',
+    'separator7',
+    // グループ8: GPIO・通信
     'interrupt',
     'gpio',
     'i2c_spi',
     'serial',
-    'separator7',
-    // グループ8: 通信・制御
+    'separator8',
+    // グループ9: 通信・制御
     'http',
     'json',
     'ota',
     'pid',
     'time',
-    'separator8',
-    // グループ9: ロジック・基本
+    'separator9',
+    // グループ10: ロジック・基本
     'logic',
     'loops',
     'math',
@@ -1119,19 +1194,25 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'neopixel',
     'display',
     'separator7',
-    // グループ8: GPIO・通信
+    // グループ8: 時刻・保存
+    'ntp_time',
+    'rtc',
+    'storage_nvs',
+    'storage_fs',
+    'separator8',
+    // グループ9: GPIO・通信
     'interrupt',
     'gpio',
     'i2c_spi',
     'serial',
-    'separator8',
-    // グループ9: 通信・制御
+    'separator9',
+    // グループ10: 通信・制御
     'http',
     'json',
     'ota',
     'pid',
     'time',
-    // グループ10: ロジック・基本
+    // グループ11: ロジック・基本
     'logic',
     'loops',
     'math',
@@ -1168,7 +1249,7 @@ export function generateToolbox(
   // ボード対応フラグに基づき、選択中ボードでサポートされないカテゴリを除外する。
   // 将来 BLE 専用カテゴリ (BP4) が追加されたら BLE_CATEGORIES を同様に判定する。
   if (board) {
-    const WIFI_CATEGORIES = new Set(['wifi', 'mqtt', 'arduino_ha', 'http']);
+    const WIFI_CATEGORIES = new Set(['wifi', 'mqtt', 'arduino_ha', 'http', 'ntp_time']);
     const OTA_CATEGORIES = new Set(['ota']);
     categories = categories.filter(catId => {
       if (!board.supportsWifi && WIFI_CATEGORIES.has(catId)) return false;
