@@ -7,7 +7,7 @@ export interface SampleProject {
   id: string;
   title: string;
   description: string;
-  category: 'basic' | 'sensor' | 'motor' | 'otto' | 'advanced' | 'competition' | 'iot';
+  category: 'basic' | 'sensor' | 'motor' | 'robots' | 'advanced' | 'competition' | 'iot';
   language: 'arduino';
   blocklyXml: string;
 }
@@ -368,17 +368,17 @@ export const sampleProjects: SampleProject[] = [
 </block>
     </xml>`
   },
-  // OTTO examples
+  // Robots examples
   {
-    id: 'otto-wheel-obstacle',
-    title: 'OTTO Wheel 障害物回避',
+    id: 'wheel-obstacle',
+    title: 'Wheel 障害物回避',
     description: '超音波センサーで障害物を検知して回避',
-    category: 'otto',
+    category: 'robots',
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
 <statement name="SETUP">
-          <block type="otto_wheel_init">
+          <block type="wheel_init">
             <field name="PIN_L">14</field>
             <field name="PIN_R">13</field>
             <next>
@@ -407,9 +407,9 @@ export const sampleProjects: SampleProject[] = [
               </block>
             </value>
             <statement name="DO0">
-              <block type="otto_wheel_stop">
+              <block type="wheel_stop">
                 <next>
-                  <block type="otto_wheel_backward">
+                  <block type="wheel_backward">
                     <field name="SPEED">50</field>
                     <next>
                       <block type="esp32_delay">
@@ -419,7 +419,7 @@ export const sampleProjects: SampleProject[] = [
                           </block>
                         </value>
                         <next>
-                          <block type="otto_wheel_spin_right">
+                          <block type="wheel_spin_right">
                             <next>
                               <block type="esp32_delay">
                                 <value name="TIME">
@@ -438,7 +438,7 @@ export const sampleProjects: SampleProject[] = [
               </block>
             </statement>
             <next>
-              <block type="otto_wheel_forward">
+              <block type="wheel_forward">
                 <field name="SPEED">50</field>
                 <next>
                   <block type="esp32_delay">
@@ -457,15 +457,15 @@ export const sampleProjects: SampleProject[] = [
     </xml>`
   },
   {
-    id: 'otto-ninja-transform',
-    title: 'OTTO Ninja トランスフォーム',
+    id: 'transform-ninja',
+    title: 'Transform トランスフォーム',
     description: 'Walk/Rollモードを切り替えながら移動',
-    category: 'otto',
+    category: 'robots',
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
 <statement name="SETUP">
-          <block type="otto_ninja_init">
+          <block type="transform_init">
             <field name="PIN_LL">27</field>
             <field name="PIN_RL">15</field>
             <field name="PIN_LF">14</field>
@@ -475,14 +475,14 @@ export const sampleProjects: SampleProject[] = [
 </block>
 <block type="arduino_loop" x="50" y="250">
 <statement name="LOOP">
-          <block type="otto_ninja_transform">
+          <block type="transform_shift">
             <field name="MODE">walk</field>
             <next>
-              <block type="otto_ninja_walk">
+              <block type="transform_walk">
                 <field name="DIRECTION">forward</field>
                 <field name="SPEED">normal</field>
                 <next>
-                  <block type="otto_ninja_walk">
+                  <block type="transform_walk">
                     <field name="DIRECTION">forward</field>
                     <field name="SPEED">normal</field>
                     <next>
@@ -493,10 +493,10 @@ export const sampleProjects: SampleProject[] = [
                           </block>
                         </value>
                         <next>
-                          <block type="otto_ninja_transform">
+                          <block type="transform_shift">
                             <field name="MODE">roll</field>
                             <next>
-                              <block type="otto_ninja_roll">
+                              <block type="transform_roll">
                                 <field name="DIRECTION">forward</field>
                                 <field name="SPEED">normal</field>
                                 <next>
@@ -507,7 +507,7 @@ export const sampleProjects: SampleProject[] = [
                                       </block>
                                     </value>
                                     <next>
-                                      <block type="otto_ninja_stop">
+                                      <block type="transform_stop">
                                         <field name="MODE">roll</field>
                                         <next>
                                           <block type="esp32_delay">
@@ -538,15 +538,15 @@ export const sampleProjects: SampleProject[] = [
     </xml>`
   },
   {
-    id: 'otto-bipedal-dance',
-    title: 'OTTO 2足歩行ダンス',
-    description: 'OTTOに様々なダンスをさせる',
-    category: 'otto',
+    id: 'humanoid-dance',
+    title: 'Humanoid ダンス',
+    description: 'Humanoidに様々なダンスをさせる',
+    category: 'robots',
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
 <statement name="SETUP">
-          <block type="otto_init">
+          <block type="humanoid_init">
             <field name="PIN_LL">27</field>
             <field name="PIN_RL">15</field>
             <field name="PIN_LF">14</field>
@@ -556,7 +556,7 @@ export const sampleProjects: SampleProject[] = [
 </block>
 <block type="arduino_loop" x="50" y="250">
 <statement name="LOOP">
-          <block type="otto_home">
+          <block type="humanoid_home">
             <next>
               <block type="esp32_delay">
                 <value name="TIME">
@@ -565,17 +565,17 @@ export const sampleProjects: SampleProject[] = [
                   </block>
                 </value>
                 <next>
-                  <block type="otto_dance">
+                  <block type="humanoid_dance">
                     <field name="STEPS">4</field>
                     <next>
-                      <block type="otto_swing">
+                      <block type="humanoid_swing">
                         <field name="STEPS">4</field>
                         <next>
-                          <block type="otto_moonwalk">
+                          <block type="humanoid_moonwalk">
                             <field name="STEPS">4</field>
                             <field name="DIRECTION">1</field>
                             <next>
-                              <block type="otto_jump">
+                              <block type="humanoid_jump">
                                 <field name="STEPS">2</field>
                                 <next>
                                   <block type="esp32_delay">
@@ -1493,7 +1493,7 @@ export const sampleCategories = {
   basic: { name: '基本', icon: '📚' },
   sensor: { name: 'センサー', icon: '📡' },
   motor: { name: 'モーター/LED', icon: '⚙️' },
-  otto: { name: 'OTTO ロボット', icon: '🤖' },
+  robots: { name: 'ロボット', icon: '🤖' },
   competition: { name: '競技ロボット', icon: '🏁' },
   iot: { name: 'IoT/HA', icon: '🏠' },
 };

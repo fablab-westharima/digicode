@@ -178,37 +178,37 @@ export const tutorials: Tutorial[] = [
     ],
   },
 
-  // チュートリアル4: OTTOはじめての歩行
+  // チュートリアル4: Humanoidはじめての歩行
   {
-    id: 'otto-basic',
-    title: 'OTTOはじめて',
-    description: 'OTTOロボットを歩かせる',
+    id: 'humanoid-basic',
+    title: 'Humanoidはじめて',
+    description: 'Humanoidロボットを歩かせる',
     difficulty: 'beginner',
     estimatedTime: 5,
-    category: 'otto',
+    category: 'robots',
     sampleXml: `
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="arduino_setup" x="50" y="30">
     <statement name="SETUP">
-      <block type="otto_init">
+      <block type="humanoid_init">
         <field name="PIN_LL">2</field>
         <field name="PIN_RL">4</field>
         <field name="PIN_LF">5</field>
         <field name="PIN_RF">18</field>
         <next>
-          <block type="otto_home"></block>
+          <block type="humanoid_home"></block>
         </next>
       </block>
     </statement>
   </block>
   <block type="arduino_loop" x="50" y="180">
     <statement name="LOOP">
-      <block type="otto_walk">
+      <block type="humanoid_walk">
         <field name="STEPS">2</field>
         <field name="DIRECTION">1</field>
         <field name="SPEED">1000</field>
         <next>
-          <block type="otto_turn">
+          <block type="humanoid_turn">
             <field name="STEPS">2</field>
             <field name="DIRECTION">1</field>
             <field name="SPEED">1000</field>
@@ -220,41 +220,41 @@ export const tutorials: Tutorial[] = [
 </xml>`,
     steps: [
       {
-        id: 'otto-1',
-        title: 'OTTO歩行',
-        content: 'OTTOが前に2歩歩き、左に2回転します。ピン番号は環境に合わせて変更してください。',
+        id: 'humanoid-1',
+        title: 'Humanoid歩行',
+        content: 'Humanoidが前に2歩歩き、左に2回転します。ピン番号は環境に合わせて変更してください。',
         position: 'center',
       },
     ],
   },
 
-  // チュートリアル5: OTTOジェスチャー
+  // チュートリアル5: Humanoidジェスチャー
   {
-    id: 'otto-gesture',
-    title: 'OTTOの感情表現',
+    id: 'humanoid-gesture',
+    title: 'Humanoidの感情表現',
     description: 'ジェスチャーで感情を表現',
     difficulty: 'beginner',
     estimatedTime: 5,
-    category: 'otto',
+    category: 'robots',
     sampleXml: `
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="arduino_setup" x="50" y="30">
     <statement name="SETUP">
-      <block type="otto_init">
+      <block type="humanoid_init">
         <field name="PIN_LL">2</field>
         <field name="PIN_RL">4</field>
         <field name="PIN_LF">5</field>
         <field name="PIN_RF">18</field>
         <next>
-          <block type="otto_home"></block>
+          <block type="humanoid_home"></block>
         </next>
       </block>
     </statement>
   </block>
   <block type="arduino_loop" x="50" y="180">
     <statement name="LOOP">
-      <block type="otto_gesture">
-        <field name="GESTURE">OttoHappy</field>
+      <block type="humanoid_gesture">
+        <field name="GESTURE">Happy</field>
         <next>
           <block type="esp32_delay">
             <value name="TIME">
@@ -263,8 +263,8 @@ export const tutorials: Tutorial[] = [
               </block>
             </value>
             <next>
-              <block type="otto_gesture">
-                <field name="GESTURE">OttoSad</field>
+              <block type="humanoid_gesture">
+                <field name="GESTURE">Sad</field>
                 <next>
                   <block type="esp32_delay">
                     <value name="TIME">
@@ -273,8 +273,8 @@ export const tutorials: Tutorial[] = [
                       </block>
                     </value>
                     <next>
-                      <block type="otto_gesture">
-                        <field name="GESTURE">OttoVictory</field>
+                      <block type="humanoid_gesture">
+                        <field name="GESTURE">Victory</field>
                         <next>
                           <block type="esp32_delay">
                             <value name="TIME">
@@ -300,55 +300,55 @@ export const tutorials: Tutorial[] = [
       {
         id: 'gesture-1',
         title: 'ジェスチャー',
-        content: 'OTTOが「ハッピー」→「悲しい」→「勝利」のジェスチャーを順番に表現します。',
+        content: 'Humanoidが「ハッピー」→「悲しい」→「勝利」のジェスチャーを順番に表現します。',
         position: 'center',
       },
     ],
   },
 
-  // チュートリアル6: OTTOダンス
+  // チュートリアル6: Humanoidダンス
   {
-    id: 'otto-dance',
-    title: 'OTTOでダンス',
+    id: 'humanoid-dance',
+    title: 'Humanoidでダンス',
     description: '様々なダンス動作',
     difficulty: 'intermediate',
     estimatedTime: 5,
-    category: 'otto',
+    category: 'robots',
     sampleXml: `
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="arduino_setup" x="50" y="30">
     <statement name="SETUP">
-      <block type="otto_init">
+      <block type="humanoid_init">
         <field name="PIN_LL">2</field>
         <field name="PIN_RL">4</field>
         <field name="PIN_LF">5</field>
         <field name="PIN_RF">18</field>
         <next>
-          <block type="otto_home"></block>
+          <block type="humanoid_home"></block>
         </next>
       </block>
     </statement>
   </block>
   <block type="arduino_loop" x="50" y="180">
     <statement name="LOOP">
-      <block type="otto_swing">
+      <block type="humanoid_swing">
         <field name="STEPS">2</field>
         <next>
-          <block type="otto_dance">
+          <block type="humanoid_dance">
             <field name="STEPS">4</field>
             <next>
-              <block type="otto_moonwalk">
+              <block type="humanoid_moonwalk">
                 <field name="STEPS">2</field>
                 <field name="DIRECTION">1</field>
                 <next>
-                  <block type="otto_crusaito">
+                  <block type="humanoid_crusaito">
                     <field name="STEPS">2</field>
                     <field name="DIRECTION">1</field>
                     <next>
-                      <block type="otto_jitter">
+                      <block type="humanoid_jitter">
                         <field name="STEPS">4</field>
                         <next>
-                          <block type="otto_updown">
+                          <block type="humanoid_updown">
                             <field name="STEPS">2</field>
                           </block>
                         </next>
@@ -374,14 +374,14 @@ export const tutorials: Tutorial[] = [
     ],
   },
 
-  // チュートリアル7: タッチセンサーでOTTO操作
+  // チュートリアル7: タッチセンサーでHumanoid操作
   {
-    id: 'otto-touch',
+    id: 'humanoid-touch',
     title: 'タッチで操作',
-    description: 'タッチセンサーでOTTOを動かす',
+    description: 'タッチセンサーでHumanoidを動かす',
     difficulty: 'intermediate',
     estimatedTime: 5,
-    category: 'otto',
+    category: 'robots',
     sampleXml: `
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="arduino_setup" x="50" y="30">
@@ -390,13 +390,13 @@ export const tutorials: Tutorial[] = [
         <field name="PIN">4</field>
         <field name="THRESHOLD">40</field>
         <next>
-          <block type="otto_init">
+          <block type="humanoid_init">
             <field name="PIN_LL">2</field>
             <field name="PIN_RL">14</field>
             <field name="PIN_LF">5</field>
             <field name="PIN_RF">18</field>
             <next>
-              <block type="otto_home"></block>
+              <block type="humanoid_home"></block>
             </next>
           </block>
         </next>
@@ -410,10 +410,10 @@ export const tutorials: Tutorial[] = [
           <block type="touch_read"></block>
         </value>
         <statement name="DO0">
-          <block type="otto_gesture">
-            <field name="GESTURE">OttoHappy</field>
+          <block type="humanoid_gesture">
+            <field name="GESTURE">Happy</field>
             <next>
-              <block type="otto_walk">
+              <block type="humanoid_walk">
                 <field name="STEPS">2</field>
                 <field name="DIRECTION">1</field>
                 <field name="SPEED">1000</field>
@@ -429,20 +429,20 @@ export const tutorials: Tutorial[] = [
       {
         id: 'touch-1',
         title: 'タッチ操作',
-        content: 'GPIO4に触れるとOTTOがハッピーになり、2歩前進します。',
+        content: 'GPIO4に触れるとHumanoidがハッピーになり、2歩前進します。',
         position: 'center',
       },
     ],
   },
 
-  // チュートリアル8: 音に反応するOTTO
+  // チュートリアル8: 音に反応するHumanoid
   {
-    id: 'otto-sound-react',
+    id: 'humanoid-sound-react',
     title: '音に反応',
-    description: '拍手や声でOTTOが動く',
+    description: '拍手や声でHumanoidが動く',
     difficulty: 'intermediate',
     estimatedTime: 5,
-    category: 'otto',
+    category: 'robots',
     sampleXml: `
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="arduino_setup" x="50" y="30">
@@ -450,13 +450,13 @@ export const tutorials: Tutorial[] = [
       <block type="sound_init">
         <field name="PIN">34</field>
         <next>
-          <block type="otto_init">
+          <block type="humanoid_init">
             <field name="PIN_LL">2</field>
             <field name="PIN_RL">4</field>
             <field name="PIN_LF">5</field>
             <field name="PIN_RF">18</field>
             <next>
-              <block type="otto_home"></block>
+              <block type="humanoid_home"></block>
             </next>
           </block>
         </next>
@@ -472,10 +472,10 @@ export const tutorials: Tutorial[] = [
           </block>
         </value>
         <statement name="DO0">
-          <block type="otto_gesture">
-            <field name="GESTURE">OttoSuperHappy</field>
+          <block type="humanoid_gesture">
+            <field name="GESTURE">SuperHappy</field>
             <next>
-              <block type="otto_dance">
+              <block type="humanoid_dance">
                 <field name="STEPS">4</field>
                 <next>
                   <block type="esp32_delay">
@@ -498,7 +498,7 @@ export const tutorials: Tutorial[] = [
       {
         id: 'sound-1',
         title: '音反応',
-        content: '拍手や大きな音を検出するとOTTOが超ハッピーになってダンスします。しきい値は環境に合わせて調整してください。',
+        content: '拍手や大きな音を検出するとHumanoidが超ハッピーになってダンスします。しきい値は環境に合わせて調整してください。',
         position: 'center',
       },
     ],
@@ -506,12 +506,12 @@ export const tutorials: Tutorial[] = [
 
   // チュートリアル9: 障害物回避
   {
-    id: 'otto-obstacle',
+    id: 'humanoid-obstacle',
     title: '障害物回避',
     description: '超音波センサーで障害物を避ける',
     difficulty: 'intermediate',
     estimatedTime: 5,
-    category: 'otto',
+    category: 'robots',
     sampleXml: `
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="arduino_setup" x="50" y="30">
@@ -520,13 +520,13 @@ export const tutorials: Tutorial[] = [
         <field name="TRIG_PIN">12</field>
         <field name="ECHO_PIN">13</field>
         <next>
-          <block type="otto_init">
+          <block type="humanoid_init">
             <field name="PIN_LL">2</field>
             <field name="PIN_RL">4</field>
             <field name="PIN_LF">5</field>
             <field name="PIN_RF">18</field>
             <next>
-              <block type="otto_home"></block>
+              <block type="humanoid_home"></block>
             </next>
           </block>
         </next>
@@ -551,10 +551,10 @@ export const tutorials: Tutorial[] = [
           </block>
         </value>
         <statement name="DO0">
-          <block type="otto_gesture">
-            <field name="GESTURE">OttoConfused</field>
+          <block type="humanoid_gesture">
+            <field name="GESTURE">Confused</field>
             <next>
-              <block type="otto_turn">
+              <block type="humanoid_turn">
                 <field name="STEPS">3</field>
                 <field name="DIRECTION">1</field>
                 <field name="SPEED">800</field>
@@ -563,7 +563,7 @@ export const tutorials: Tutorial[] = [
           </block>
         </statement>
         <statement name="ELSE">
-          <block type="otto_walk">
+          <block type="humanoid_walk">
             <field name="STEPS">1</field>
             <field name="DIRECTION">1</field>
             <field name="SPEED">1000</field>
@@ -876,10 +876,10 @@ export const tutorialCategories = {
     description: 'プログラミングの基礎',
     tutorials: tutorials.filter(t => t.category === 'basic'),
   },
-  otto: {
-    name: 'OTTO ロボット',
-    description: 'OTTOを動かす',
-    tutorials: tutorials.filter(t => t.category === 'otto'),
+  robots: {
+    name: 'ロボット',
+    description: 'ロボットを動かす',
+    tutorials: tutorials.filter(t => t.category === 'robots'),
   },
   competition: {
     name: '競技ロボット',

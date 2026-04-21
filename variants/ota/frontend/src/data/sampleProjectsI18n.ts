@@ -30,7 +30,7 @@ const overrides: Record<string, LocaleOverride> = {
       basic: { name: 'Basics' },
       sensor: { name: 'Sensors' },
       motor: { name: 'Motors / LEDs' },
-      otto: { name: 'OTTO Robot' },
+      robots: { name: 'Robots' },
       competition: { name: 'Competition' },
       iot: { name: 'IoT / HA' },
     },
@@ -59,17 +59,17 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'NeoPixel Rainbow',
         description: 'Display rainbow colors on NeoPixel LEDs',
       },
-      'otto-wheel-obstacle': {
-        title: 'OTTO Wheel Obstacle Avoidance',
+      'wheel-obstacle': {
+        title: 'Wheel Robot Obstacle Avoidance',
         description: 'Detect and avoid obstacles with the ultrasonic sensor',
       },
-      'otto-ninja-transform': {
-        title: 'OTTO Ninja Transform',
+      'transform-ninja': {
+        title: 'Transform Robot',
         description: 'Move while switching between Walk/Roll modes',
       },
-      'otto-bipedal-dance': {
-        title: 'OTTO Bipedal Dance',
-        description: 'Make the OTTO perform various dances',
+      'humanoid-dance': {
+        title: 'Humanoid Dance',
+        description: 'Make the humanoid robot perform various dances',
       },
       'line-trace-basic': {
         title: 'Line Tracing Basics',
@@ -110,7 +110,7 @@ const overrides: Record<string, LocaleOverride> = {
       basic: { name: 'Básicos' },
       sensor: { name: 'Sensores' },
       motor: { name: 'Motores / LEDs' },
-      otto: { name: 'Robot OTTO' },
+      robots: { name: 'Robots' },
       competition: { name: 'Competición' },
       iot: { name: 'IoT / HA' },
     },
@@ -139,17 +139,17 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'NeoPixel arcoíris',
         description: 'Muestra colores del arcoíris en LEDs NeoPixel',
       },
-      'otto-wheel-obstacle': {
-        title: 'Evitar obstáculos OTTO Wheel',
+      'wheel-obstacle': {
+        title: 'Evitar obstáculos robot Wheel',
         description: 'Detecta y evita obstáculos con el sensor de ultrasonidos',
       },
-      'otto-ninja-transform': {
-        title: 'OTTO Ninja transformador',
+      'transform-ninja': {
+        title: 'Robot Transform',
         description: 'Se mueve alternando entre modos Walk/Roll',
       },
-      'otto-bipedal-dance': {
-        title: 'OTTO bípedo bailarín',
-        description: 'Hace que OTTO ejecute varios bailes',
+      'humanoid-dance': {
+        title: 'Baile robot Humanoid',
+        description: 'Hace que el robot humanoide ejecute varios bailes',
       },
       'line-trace-basic': {
         title: 'Seguimiento de línea básico',
@@ -190,7 +190,7 @@ const overrides: Record<string, LocaleOverride> = {
       basic: { name: 'Básico' },
       sensor: { name: 'Sensores' },
       motor: { name: 'Motores / LEDs' },
-      otto: { name: 'Robô OTTO' },
+      robots: { name: 'Robôs' },
       competition: { name: 'Competição' },
       iot: { name: 'IoT / HA' },
     },
@@ -219,17 +219,17 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'NeoPixel arco-íris',
         description: 'Mostra cores do arco-íris em LEDs NeoPixel',
       },
-      'otto-wheel-obstacle': {
-        title: 'OTTO Wheel a evitar obstáculos',
+      'wheel-obstacle': {
+        title: 'Robot Wheel a evitar obstáculos',
         description: 'Deteta e evita obstáculos com o sensor ultrassónico',
       },
-      'otto-ninja-transform': {
-        title: 'OTTO Ninja transformador',
+      'transform-ninja': {
+        title: 'Robot Transform',
         description: 'Move-se alternando entre modos Walk/Roll',
       },
-      'otto-bipedal-dance': {
-        title: 'OTTO bípede a dançar',
-        description: 'Faz o OTTO executar várias danças',
+      'humanoid-dance': {
+        title: 'Dança do robot Humanoid',
+        description: 'Faz o robot humanoide executar várias danças',
       },
       'line-trace-basic': {
         title: 'Seguimento de linha básico',
@@ -270,7 +270,7 @@ const overrides: Record<string, LocaleOverride> = {
       basic: { name: '基礎' },
       sensor: { name: '感測器' },
       motor: { name: '馬達 / LED' },
-      otto: { name: 'OTTO 機器人' },
+      robots: { name: '機器人' },
       competition: { name: '競賽' },
       iot: { name: 'IoT / HA' },
     },
@@ -299,17 +299,17 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'NeoPixel 彩虹',
         description: '在 NeoPixel LED 上顯示彩虹色',
       },
-      'otto-wheel-obstacle': {
-        title: 'OTTO Wheel 避障',
+      'wheel-obstacle': {
+        title: 'Wheel 機器人避障',
         description: '用超音波感測器偵測並避開障礙物',
       },
-      'otto-ninja-transform': {
-        title: 'OTTO Ninja 變形',
+      'transform-ninja': {
+        title: 'Transform 機器人',
         description: '切換 Walk/Roll 模式移動',
       },
-      'otto-bipedal-dance': {
-        title: 'OTTO 雙足舞蹈',
-        description: '讓 OTTO 表演各種舞蹈',
+      'humanoid-dance': {
+        title: 'Humanoid 舞蹈',
+        description: '讓仿人形機器人表演各種舞蹈',
       },
       'line-trace-basic': {
         title: '循線基礎',

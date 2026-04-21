@@ -34,7 +34,7 @@ const overrides: Record<string, LocaleOverride> = {
   en: {
     categories: {
       basic: { name: 'Basics', description: 'Programming fundamentals' },
-      otto: { name: 'OTTO Robot', description: 'Move the OTTO' },
+      robots: { name: 'Robots', description: 'Move your robot' },
       competition: { name: 'Competition Robots', description: 'Line tracing etc.' },
     },
     tutorials: {
@@ -68,28 +68,28 @@ const overrides: Record<string, LocaleOverride> = {
           },
         },
       },
-      'otto-basic': {
-        title: 'OTTO First Steps',
-        description: 'Make the OTTO robot walk',
+      'humanoid-basic': {
+        title: 'Humanoid First Steps',
+        description: 'Make the humanoid robot walk',
         steps: {
-          'otto-1': {
-            title: 'OTTO Walking',
-            content: 'The OTTO takes two steps forward and turns left twice. Adjust the pin numbers to match your hardware.',
+          'humanoid-1': {
+            title: 'Humanoid Walking',
+            content: 'The humanoid takes two steps forward and turns left twice. Adjust the pin numbers to match your hardware.',
           },
         },
       },
-      'otto-gesture': {
-        title: 'OTTO Emotions',
+      'humanoid-gesture': {
+        title: 'Humanoid Emotions',
         description: 'Express emotions with gestures',
         steps: {
           'gesture-1': {
             title: 'Gestures',
-            content: 'The OTTO performs "Happy" → "Sad" → "Victory" gestures in sequence.',
+            content: 'The humanoid performs "Happy" → "Sad" → "Victory" gestures in sequence.',
           },
         },
       },
-      'otto-dance': {
-        title: 'OTTO Dance',
+      'humanoid-dance': {
+        title: 'Humanoid Dance',
         description: 'Various dance moves',
         steps: {
           'dance-1': {
@@ -98,33 +98,33 @@ const overrides: Record<string, LocaleOverride> = {
           },
         },
       },
-      'otto-touch': {
+      'humanoid-touch': {
         title: 'Touch Control',
-        description: 'Move the OTTO with a touch sensor',
+        description: 'Move the humanoid with a touch sensor',
         steps: {
           'touch-1': {
             title: 'Touch Control',
-            content: 'Touching GPIO4 makes the OTTO happy and take two steps forward.',
+            content: 'Touching GPIO4 makes the humanoid happy and take two steps forward.',
           },
         },
       },
-      'otto-sound-react': {
+      'humanoid-sound-react': {
         title: 'Sound Reaction',
-        description: 'OTTO reacts to claps and voice',
+        description: 'Humanoid reacts to claps and voice',
         steps: {
           'sound-1': {
             title: 'Sound Reaction',
-            content: 'When a clap or loud sound is detected, the OTTO becomes super happy and dances. Adjust the threshold for your environment.',
+            content: 'When a clap or loud sound is detected, the humanoid becomes super happy and dances. Adjust the threshold for your environment.',
           },
         },
       },
-      'otto-obstacle': {
+      'humanoid-obstacle': {
         title: 'Obstacle Avoidance',
         description: 'Avoid obstacles with the ultrasonic sensor',
         steps: {
           'obstacle-1': {
             title: 'Obstacle Avoidance',
-            content: 'If an obstacle is within 20cm the OTTO gets confused and turns left; otherwise it moves forward.',
+            content: 'If an obstacle is within 20cm the humanoid gets confused and turns left; otherwise it moves forward.',
           },
         },
       },
@@ -153,7 +153,7 @@ const overrides: Record<string, LocaleOverride> = {
   es: {
     categories: {
       basic: { name: 'Básicos', description: 'Fundamentos de programación' },
-      otto: { name: 'Robot OTTO', description: 'Mueve el OTTO' },
+      robots: { name: 'Robots', description: 'Mueve tu robot' },
       competition: { name: 'Robots de competición', description: 'Seguimiento de línea, etc.' },
     },
     tutorials: {
@@ -187,28 +187,28 @@ const overrides: Record<string, LocaleOverride> = {
           },
         },
       },
-      'otto-basic': {
-        title: 'Primeros pasos con OTTO',
-        description: 'Haz caminar al robot OTTO',
+      'humanoid-basic': {
+        title: 'Primeros pasos con Humanoid',
+        description: 'Haz caminar al robot humanoide',
         steps: {
-          'otto-1': {
-            title: 'Caminata OTTO',
-            content: 'El OTTO da dos pasos adelante y gira dos veces a la izquierda. Ajusta los pines a tu hardware.',
+          'humanoid-1': {
+            title: 'Caminata Humanoid',
+            content: 'El robot da dos pasos adelante y gira dos veces a la izquierda. Ajusta los pines a tu hardware.',
           },
         },
       },
-      'otto-gesture': {
-        title: 'Emociones del OTTO',
+      'humanoid-gesture': {
+        title: 'Emociones del Humanoid',
         description: 'Expresa emociones con gestos',
         steps: {
           'gesture-1': {
             title: 'Gestos',
-            content: 'El OTTO realiza "Feliz" → "Triste" → "Victoria" en secuencia.',
+            content: 'El robot realiza "Feliz" → "Triste" → "Victoria" en secuencia.',
           },
         },
       },
-      'otto-dance': {
-        title: 'OTTO baila',
+      'humanoid-dance': {
+        title: 'Humanoid baila',
         description: 'Varios movimientos de baile',
         steps: {
           'dance-1': {
@@ -217,33 +217,33 @@ const overrides: Record<string, LocaleOverride> = {
           },
         },
       },
-      'otto-touch': {
+      'humanoid-touch': {
         title: 'Control por tacto',
-        description: 'Mueve al OTTO con un sensor táctil',
+        description: 'Mueve al Humanoid con un sensor táctil',
         steps: {
           'touch-1': {
             title: 'Control por tacto',
-            content: 'Al tocar GPIO4 el OTTO se pone feliz y da dos pasos adelante.',
+            content: 'Al tocar GPIO4 el robot se pone feliz y da dos pasos adelante.',
           },
         },
       },
-      'otto-sound-react': {
+      'humanoid-sound-react': {
         title: 'Reacción al sonido',
-        description: 'El OTTO reacciona a aplausos y voz',
+        description: 'El Humanoid reacciona a aplausos y voz',
         steps: {
           'sound-1': {
             title: 'Reacción al sonido',
-            content: 'Al detectar un aplauso o ruido fuerte, el OTTO se pone muy feliz y baila. Ajusta el umbral según tu entorno.',
+            content: 'Al detectar un aplauso o ruido fuerte, el robot se pone muy feliz y baila. Ajusta el umbral según tu entorno.',
           },
         },
       },
-      'otto-obstacle': {
+      'humanoid-obstacle': {
         title: 'Evitar obstáculos',
         description: 'Evita obstáculos con el sensor de ultrasonidos',
         steps: {
           'obstacle-1': {
             title: 'Evitar obstáculos',
-            content: 'Si hay un obstáculo a menos de 20 cm el OTTO se confunde y gira a la izquierda; si no, avanza.',
+            content: 'Si hay un obstáculo a menos de 20 cm el robot se confunde y gira a la izquierda; si no, avanza.',
           },
         },
       },
@@ -272,7 +272,7 @@ const overrides: Record<string, LocaleOverride> = {
   'pt-PT': {
     categories: {
       basic: { name: 'Básico', description: 'Fundamentos de programação' },
-      otto: { name: 'Robô OTTO', description: 'Mover o OTTO' },
+      robots: { name: 'Robôs', description: 'Mover o robot' },
       competition: { name: 'Robôs de competição', description: 'Seguimento de linha, etc.' },
     },
     tutorials: {
@@ -306,28 +306,28 @@ const overrides: Record<string, LocaleOverride> = {
           },
         },
       },
-      'otto-basic': {
-        title: 'Primeiros passos com OTTO',
-        description: 'Fazer o robô OTTO andar',
+      'humanoid-basic': {
+        title: 'Primeiros passos com Humanoid',
+        description: 'Fazer o robot humanoide andar',
         steps: {
-          'otto-1': {
-            title: 'Andamento do OTTO',
-            content: 'O OTTO dá dois passos em frente e gira duas vezes para a esquerda. Ajuste os pinos ao seu hardware.',
+          'humanoid-1': {
+            title: 'Andamento do Humanoid',
+            content: 'O robot dá dois passos em frente e gira duas vezes para a esquerda. Ajuste os pinos ao seu hardware.',
           },
         },
       },
-      'otto-gesture': {
-        title: 'Emoções do OTTO',
+      'humanoid-gesture': {
+        title: 'Emoções do Humanoid',
         description: 'Expressar emoções com gestos',
         steps: {
           'gesture-1': {
             title: 'Gestos',
-            content: 'O OTTO realiza "Feliz" → "Triste" → "Vitória" em sequência.',
+            content: 'O robot realiza "Feliz" → "Triste" → "Vitória" em sequência.',
           },
         },
       },
-      'otto-dance': {
-        title: 'OTTO a dançar',
+      'humanoid-dance': {
+        title: 'Humanoid a dançar',
         description: 'Vários movimentos de dança',
         steps: {
           'dance-1': {
@@ -336,33 +336,33 @@ const overrides: Record<string, LocaleOverride> = {
           },
         },
       },
-      'otto-touch': {
+      'humanoid-touch': {
         title: 'Controlo por toque',
-        description: 'Mover o OTTO com um sensor de toque',
+        description: 'Mover o Humanoid com um sensor de toque',
         steps: {
           'touch-1': {
             title: 'Controlo por toque',
-            content: 'Ao tocar em GPIO4, o OTTO fica feliz e dá dois passos em frente.',
+            content: 'Ao tocar em GPIO4, o robot fica feliz e dá dois passos em frente.',
           },
         },
       },
-      'otto-sound-react': {
+      'humanoid-sound-react': {
         title: 'Reação ao som',
-        description: 'O OTTO reage a palmas e voz',
+        description: 'O Humanoid reage a palmas e voz',
         steps: {
           'sound-1': {
             title: 'Reação ao som',
-            content: 'Ao detetar uma palma ou som alto, o OTTO fica muito feliz e dança. Ajuste o limiar ao seu ambiente.',
+            content: 'Ao detetar uma palma ou som alto, o robot fica muito feliz e dança. Ajuste o limiar ao seu ambiente.',
           },
         },
       },
-      'otto-obstacle': {
+      'humanoid-obstacle': {
         title: 'Evitar obstáculos',
         description: 'Evitar obstáculos com o sensor de ultrassons',
         steps: {
           'obstacle-1': {
             title: 'Evitar obstáculos',
-            content: 'Se houver um obstáculo a menos de 20 cm, o OTTO fica confuso e vira à esquerda; caso contrário, avança.',
+            content: 'Se houver um obstáculo a menos de 20 cm, o robot fica confuso e vira à esquerda; caso contrário, avança.',
           },
         },
       },
@@ -391,7 +391,7 @@ const overrides: Record<string, LocaleOverride> = {
   'zh-TW': {
     categories: {
       basic: { name: '基礎', description: '程式設計基礎' },
-      otto: { name: 'OTTO 機器人', description: '讓 OTTO 動起來' },
+      robots: { name: '機器人', description: '讓機器人動起來' },
       competition: { name: '競賽機器人', description: '循線等' },
     },
     tutorials: {
@@ -425,28 +425,28 @@ const overrides: Record<string, LocaleOverride> = {
           },
         },
       },
-      'otto-basic': {
-        title: 'OTTO 首次啟動',
-        description: '讓 OTTO 機器人行走',
+      'humanoid-basic': {
+        title: 'Humanoid 首次啟動',
+        description: '讓 Humanoid 機器人行走',
         steps: {
-          'otto-1': {
-            title: 'OTTO 行走',
-            content: 'OTTO 向前走兩步並向左旋轉兩次。請依實際硬體調整接腳。',
+          'humanoid-1': {
+            title: 'Humanoid 行走',
+            content: 'Humanoid 向前走兩步並向左旋轉兩次。請依實際硬體調整接腳。',
           },
         },
       },
-      'otto-gesture': {
-        title: 'OTTO 情感表達',
+      'humanoid-gesture': {
+        title: 'Humanoid 情感表達',
         description: '以動作表達情感',
         steps: {
           'gesture-1': {
             title: '動作',
-            content: 'OTTO 依序表現「快樂」→「悲傷」→「勝利」。',
+            content: 'Humanoid 依序表現「快樂」→「悲傷」→「勝利」。',
           },
         },
       },
-      'otto-dance': {
-        title: 'OTTO 舞蹈',
+      'humanoid-dance': {
+        title: 'Humanoid 舞蹈',
         description: '多種舞蹈動作',
         steps: {
           'dance-1': {
@@ -455,33 +455,33 @@ const overrides: Record<string, LocaleOverride> = {
           },
         },
       },
-      'otto-touch': {
+      'humanoid-touch': {
         title: '觸控操作',
-        description: '用觸控感測器讓 OTTO 動',
+        description: '用觸控感測器讓 Humanoid 動',
         steps: {
           'touch-1': {
             title: '觸控操作',
-            content: '觸碰 GPIO4 時 OTTO 會高興並前進兩步。',
+            content: '觸碰 GPIO4 時 Humanoid 會高興並前進兩步。',
           },
         },
       },
-      'otto-sound-react': {
+      'humanoid-sound-react': {
         title: '聲音反應',
-        description: 'OTTO 會對拍手或聲音做出反應',
+        description: 'Humanoid 會對拍手或聲音做出反應',
         steps: {
           'sound-1': {
             title: '聲音反應',
-            content: '偵測到拍手或大聲響時,OTTO 會超開心並跳舞。請依環境調整閾值。',
+            content: '偵測到拍手或大聲響時,Humanoid 會超開心並跳舞。請依環境調整閾值。',
           },
         },
       },
-      'otto-obstacle': {
+      'humanoid-obstacle': {
         title: '避障',
         description: '以超音波感測器避開障礙',
         steps: {
           'obstacle-1': {
             title: '避障',
-            content: '若 20cm 內有障礙物 OTTO 會困惑並向左旋轉,否則前進。',
+            content: '若 20cm 內有障礙物 Humanoid 會困惑並向左旋轉,否則前進。',
           },
         },
       },
