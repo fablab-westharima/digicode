@@ -3,9 +3,9 @@ import { persist } from 'zustand/middleware';
 
 // モードの定義
 export type RobotMode =
-  | 'robots_humanoid'  // ヒューマノイドロボット（旧 otto_bipedal）
-  | 'robots_wheel'     // 車輪ロボット（旧 otto_wheel + micromouse + line_trace）
-  | 'robots_transform' // 変形ロボット（旧 otto_ninja）
+  | 'robots_humanoid'  // ヒューマノイドロボット
+  | 'robots_wheel'     // 車輪ロボット（micromouse / line_trace 統合）
+  | 'robots_transform' // 変形ロボット
   | 'homeassistant'    // Home Assistant
   | 'generic'          // 汎用デバイス
   | 'all_blocks'       // 全ブロック表示

@@ -15,36 +15,36 @@ export function getPinFromPreset(pinName: keyof ReturnType<typeof usePinPresetSt
 }
 
 /**
- * OTTO 2足歩行のピン番号を取得
+ * Humanoid 2足歩行のピン番号を取得
  */
-export function getOttoPins() {
+export function getHumanoidPins() {
   return {
-    leftLeg: getPinFromPreset('ottoLeftLeg'),
-    rightLeg: getPinFromPreset('ottoRightLeg'),
-    leftFoot: getPinFromPreset('ottoLeftFoot'),
-    rightFoot: getPinFromPreset('ottoRightFoot'),
+    leftLeg: getPinFromPreset('humanoidLeftLeg'),
+    rightLeg: getPinFromPreset('humanoidRightLeg'),
+    leftFoot: getPinFromPreset('humanoidLeftFoot'),
+    rightFoot: getPinFromPreset('humanoidRightFoot'),
   };
 }
 
 /**
- * OTTO Wheelのピン番号を取得
+ * Wheel ロボットのピン番号を取得
  */
-export function getOttoWheelPins() {
+export function getWheelPins() {
   return {
-    left: getPinFromPreset('ottoWheelLeft'),
-    right: getPinFromPreset('ottoWheelRight'),
+    left: getPinFromPreset('wheelLeft'),
+    right: getPinFromPreset('wheelRight'),
   };
 }
 
 /**
- * OTTO Ninjaのピン番号を取得
+ * Transform ロボットのピン番号を取得
  */
-export function getOttoNinjaPins() {
+export function getTransformPins() {
   return {
-    leftLeg: getPinFromPreset('ottoNinjaLeftLeg'),
-    rightLeg: getPinFromPreset('ottoNinjaRightLeg'),
-    leftFoot: getPinFromPreset('ottoNinjaLeftFoot'),
-    rightFoot: getPinFromPreset('ottoNinjaRightFoot'),
+    leftLeg: getPinFromPreset('transformLeftLeg'),
+    rightLeg: getPinFromPreset('transformRightLeg'),
+    leftFoot: getPinFromPreset('transformLeftFoot'),
+    rightFoot: getPinFromPreset('transformRightFoot'),
   };
 }
 

@@ -9,7 +9,7 @@
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
 import { pythonGenerator } from 'blockly/python';
-import { getOttoNinjaPins } from '@/utils/pinHelper';
+import { getTransformPins } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -21,7 +21,7 @@ const NINJA_COLOR = '#9C27B0';  // Purple color for Ninja blocks
 // ===== Init =====
 Blockly.Blocks['transform_init'] = {
   init: function() {
-    const pins = getOttoNinjaPins();
+    const pins = getTransformPins();
     this.appendDummyInput()
         .appendField('🐱 ' + ((Blockly.Msg as any).BLOCKS_TRANSFORM_INIT_LABEL || 'Transform Init'))
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_LEFTLEG || 'left leg pin')

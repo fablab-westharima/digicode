@@ -8,7 +8,7 @@
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
 import { pythonGenerator } from 'blockly/python';
-import { getOttoPins } from '@/utils/pinHelper';
+import { getHumanoidPins } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -21,7 +21,7 @@ const HUMANOID_COLOR = '#FF6B35';  // Orange color for Humanoid blocks
 
 Blockly.Blocks['humanoid_init'] = {
   init: function() {
-    const pins = getOttoPins();
+    const pins = getHumanoidPins();
     this.appendDummyInput()
         .appendField('🤖 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_INIT_LABEL || 'Humanoid Init'))
         .appendField((Blockly.Msg as any).BLOCKS_COMMON_LEFTLEG || 'left leg pin')

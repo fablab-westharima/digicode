@@ -10,7 +10,7 @@
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
 import { pythonGenerator } from 'blockly/python';
-import { getOttoWheelPins } from '@/utils/pinHelper';
+import { getWheelPins } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -22,7 +22,7 @@ const WHEEL_COLOR = '#4CAF50';  // Green color for Wheel blocks
 // ===== Init =====
 Blockly.Blocks['wheel_init'] = {
   init: function() {
-    const pins = getOttoWheelPins();
+    const pins = getWheelPins();
     this.appendDummyInput()
         .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_WHEEL_INIT || 'Wheel Init'))
         .appendField((Blockly.Msg as any).BLOCKS_WHEEL_LEFTWHEELPIN || 'Left Wheel Pin')

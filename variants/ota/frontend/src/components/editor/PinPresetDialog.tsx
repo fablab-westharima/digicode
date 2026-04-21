@@ -270,8 +270,8 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                         type="number"
                         min={0}
                         max={39}
-                        value={editingPreset.pins.ottoLeftLeg}
-                        onChange={(e) => updatePinValue('ottoLeftLeg', parseInt(e.target.value) || 0)}
+                        value={editingPreset.pins.humanoidLeftLeg}
+                        onChange={(e) => updatePinValue('humanoidLeftLeg', parseInt(e.target.value) || 0)}
                       />
                     </div>
                     <div>
@@ -280,8 +280,8 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                         type="number"
                         min={0}
                         max={39}
-                        value={editingPreset.pins.ottoRightLeg}
-                        onChange={(e) => updatePinValue('ottoRightLeg', parseInt(e.target.value) || 0)}
+                        value={editingPreset.pins.humanoidRightLeg}
+                        onChange={(e) => updatePinValue('humanoidRightLeg', parseInt(e.target.value) || 0)}
                       />
                     </div>
                     <div>
@@ -290,8 +290,8 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                         type="number"
                         min={0}
                         max={39}
-                        value={editingPreset.pins.ottoLeftFoot}
-                        onChange={(e) => updatePinValue('ottoLeftFoot', parseInt(e.target.value) || 0)}
+                        value={editingPreset.pins.humanoidLeftFoot}
+                        onChange={(e) => updatePinValue('humanoidLeftFoot', parseInt(e.target.value) || 0)}
                       />
                     </div>
                     <div>
@@ -300,8 +300,8 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                         type="number"
                         min={0}
                         max={39}
-                        value={editingPreset.pins.ottoRightFoot}
-                        onChange={(e) => updatePinValue('ottoRightFoot', parseInt(e.target.value) || 0)}
+                        value={editingPreset.pins.humanoidRightFoot}
+                        onChange={(e) => updatePinValue('humanoidRightFoot', parseInt(e.target.value) || 0)}
                       />
                     </div>
                   </div>
@@ -314,8 +314,8 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                         type="number"
                         min={0}
                         max={39}
-                        value={editingPreset.pins.ottoWheelLeft}
-                        onChange={(e) => updatePinValue('ottoWheelLeft', parseInt(e.target.value) || 0)}
+                        value={editingPreset.pins.wheelLeft}
+                        onChange={(e) => updatePinValue('wheelLeft', parseInt(e.target.value) || 0)}
                       />
                     </div>
                     <div>
@@ -324,8 +324,8 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                         type="number"
                         min={0}
                         max={39}
-                        value={editingPreset.pins.ottoWheelRight}
-                        onChange={(e) => updatePinValue('ottoWheelRight', parseInt(e.target.value) || 0)}
+                        value={editingPreset.pins.wheelRight}
+                        onChange={(e) => updatePinValue('wheelRight', parseInt(e.target.value) || 0)}
                       />
                     </div>
                   </div>
@@ -338,8 +338,8 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                         type="number"
                         min={0}
                         max={39}
-                        value={editingPreset.pins.ottoNinjaLeftLeg}
-                        onChange={(e) => updatePinValue('ottoNinjaLeftLeg', parseInt(e.target.value) || 0)}
+                        value={editingPreset.pins.transformLeftLeg}
+                        onChange={(e) => updatePinValue('transformLeftLeg', parseInt(e.target.value) || 0)}
                       />
                     </div>
                     <div>
@@ -348,8 +348,8 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                         type="number"
                         min={0}
                         max={39}
-                        value={editingPreset.pins.ottoNinjaRightLeg}
-                        onChange={(e) => updatePinValue('ottoNinjaRightLeg', parseInt(e.target.value) || 0)}
+                        value={editingPreset.pins.transformRightLeg}
+                        onChange={(e) => updatePinValue('transformRightLeg', parseInt(e.target.value) || 0)}
                       />
                     </div>
                     <div>
@@ -358,8 +358,8 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                         type="number"
                         min={0}
                         max={39}
-                        value={editingPreset.pins.ottoNinjaLeftFoot}
-                        onChange={(e) => updatePinValue('ottoNinjaLeftFoot', parseInt(e.target.value) || 0)}
+                        value={editingPreset.pins.transformLeftFoot}
+                        onChange={(e) => updatePinValue('transformLeftFoot', parseInt(e.target.value) || 0)}
                       />
                     </div>
                     <div>
@@ -368,8 +368,8 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
                         type="number"
                         min={0}
                         max={39}
-                        value={editingPreset.pins.ottoNinjaRightFoot}
-                        onChange={(e) => updatePinValue('ottoNinjaRightFoot', parseInt(e.target.value) || 0)}
+                        value={editingPreset.pins.transformRightFoot}
+                        onChange={(e) => updatePinValue('transformRightFoot', parseInt(e.target.value) || 0)}
                       />
                     </div>
                   </div>

@@ -41,21 +41,21 @@ export interface PinPreset {
   isCustom: boolean;   // カスタムプリセットフラグ
   servoConfig: ServoConfig;  // サーボパルス幅設定
   pins: {
-    // OTTO 2足歩行ロボット (Connector #8, #9, #10, #11)
-    ottoLeftLeg: number;
-    ottoRightLeg: number;
-    ottoLeftFoot: number;
-    ottoRightFoot: number;
+    // Humanoid 2足歩行ロボット (Connector #8, #9, #10, #11)
+    humanoidLeftLeg: number;
+    humanoidRightLeg: number;
+    humanoidLeftFoot: number;
+    humanoidRightFoot: number;
 
-    // OTTO Wheel (Connector #10, #11)
-    ottoWheelLeft: number;
-    ottoWheelRight: number;
+    // Wheel ロボット (Connector #10, #11)
+    wheelLeft: number;
+    wheelRight: number;
 
-    // OTTO Ninja (Connector #8, #9, #10, #11)
-    ottoNinjaLeftLeg: number;
-    ottoNinjaRightLeg: number;
-    ottoNinjaLeftFoot: number;
-    ottoNinjaRightFoot: number;
+    // Transform ロボット (Connector #8, #9, #10, #11)
+    transformLeftLeg: number;
+    transformRightLeg: number;
+    transformLeftFoot: number;
+    transformRightFoot: number;
 
     // センサー・アクチュエーター
     buzzer: number;              // GPIO 25
@@ -158,21 +158,21 @@ const DEFAULT_PRESET: PinPreset = {
   isCustom: false,
   servoConfig: { ...DEFAULT_SERVO_CONFIG },
   pins: {
-    // OTTO 2足歩行 (同じピンをNinjaと共有)
-    ottoLeftLeg: 27,
-    ottoRightLeg: 15,
-    ottoLeftFoot: 14,
-    ottoRightFoot: 13,
+    // Humanoid 2足歩行 (同じピンをTransformと共有)
+    humanoidLeftLeg: 27,
+    humanoidRightLeg: 15,
+    humanoidLeftFoot: 14,
+    humanoidRightFoot: 13,
 
-    // OTTO Wheel
-    ottoWheelLeft: 14,
-    ottoWheelRight: 13,
+    // Wheel ロボット
+    wheelLeft: 14,
+    wheelRight: 13,
 
-    // OTTO Ninja
-    ottoNinjaLeftLeg: 27,
-    ottoNinjaRightLeg: 15,
-    ottoNinjaLeftFoot: 14,
-    ottoNinjaRightFoot: 13,
+    // Transform ロボット
+    transformLeftLeg: 27,
+    transformRightLeg: 15,
+    transformLeftFoot: 14,
+    transformRightFoot: 13,
 
     // センサー・アクチュエーター
     buzzer: 25,
@@ -334,7 +334,7 @@ export const usePinPresetStore = create<PinPresetStore>()(
     }),
     {
       name: 'pin-preset-storage',
-      version: 7,
+      version: 8,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Migration handles various historic state structures
       migrate: (persistedState: any, version: number) => {
         let state = persistedState;
@@ -447,6 +447,37 @@ export const usePinPresetStore = create<PinPresetStore>()(
               perPinConfigs: preset.servoConfig?.perPinConfigs || [],
             },
           })) || [DEFAULT_PRESET];
+
+          state = {
+            ...state,
+            presets,
+          };
+        }
+
+        // バージョン8: ピンフィールド名を otto* から humanoid*/wheel*/transform* にリネーム
+        if (version < 8) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Historic state has varying shapes
+          const presets = state?.presets?.map((preset: any) => {
+            const pins = { ...preset.pins };
+
+            // Humanoid (旧 otto_bipedal)
+            if ('ottoLeftLeg' in pins) { pins.humanoidLeftLeg = pins.ottoLeftLeg; delete pins.ottoLeftLeg; }
+            if ('ottoRightLeg' in pins) { pins.humanoidRightLeg = pins.ottoRightLeg; delete pins.ottoRightLeg; }
+            if ('ottoLeftFoot' in pins) { pins.humanoidLeftFoot = pins.ottoLeftFoot; delete pins.ottoLeftFoot; }
+            if ('ottoRightFoot' in pins) { pins.humanoidRightFoot = pins.ottoRightFoot; delete pins.ottoRightFoot; }
+
+            // Wheel (旧 otto_wheel)
+            if ('ottoWheelLeft' in pins) { pins.wheelLeft = pins.ottoWheelLeft; delete pins.ottoWheelLeft; }
+            if ('ottoWheelRight' in pins) { pins.wheelRight = pins.ottoWheelRight; delete pins.ottoWheelRight; }
+
+            // Transform (旧 otto_ninja)
+            if ('ottoNinjaLeftLeg' in pins) { pins.transformLeftLeg = pins.ottoNinjaLeftLeg; delete pins.ottoNinjaLeftLeg; }
+            if ('ottoNinjaRightLeg' in pins) { pins.transformRightLeg = pins.ottoNinjaRightLeg; delete pins.ottoNinjaRightLeg; }
+            if ('ottoNinjaLeftFoot' in pins) { pins.transformLeftFoot = pins.ottoNinjaLeftFoot; delete pins.ottoNinjaLeftFoot; }
+            if ('ottoNinjaRightFoot' in pins) { pins.transformRightFoot = pins.ottoNinjaRightFoot; delete pins.ottoNinjaRightFoot; }
+
+            return { ...preset, pins };
+          }) || [DEFAULT_PRESET];
 
           state = {
             ...state,

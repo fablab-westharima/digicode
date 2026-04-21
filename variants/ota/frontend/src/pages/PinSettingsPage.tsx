@@ -55,28 +55,28 @@ const PIN_CATEGORIES: PinCategory[] = [
     id: 'humanoid',
     icon: '🤖',
     pins: [
-      { key: 'ottoLeftLeg', blockName: 'Humanoid Init', pinLabel: 'Left Leg (LL)', description: 'Connector #8' },
-      { key: 'ottoRightLeg', blockName: 'Humanoid Init', pinLabel: 'Right Leg (RL)', description: 'Connector #9' },
-      { key: 'ottoLeftFoot', blockName: 'Humanoid Init', pinLabel: 'Left Foot (LF)', description: 'Connector #10' },
-      { key: 'ottoRightFoot', blockName: 'Humanoid Init', pinLabel: 'Right Foot (RF)', description: 'Connector #11' },
+      { key: 'humanoidLeftLeg', blockName: 'Humanoid Init', pinLabel: 'Left Leg (LL)', description: 'Connector #8' },
+      { key: 'humanoidRightLeg', blockName: 'Humanoid Init', pinLabel: 'Right Leg (RL)', description: 'Connector #9' },
+      { key: 'humanoidLeftFoot', blockName: 'Humanoid Init', pinLabel: 'Left Foot (LF)', description: 'Connector #10' },
+      { key: 'humanoidRightFoot', blockName: 'Humanoid Init', pinLabel: 'Right Foot (RF)', description: 'Connector #11' },
     ],
   },
   {
     id: 'wheel',
     icon: '🛞',
     pins: [
-      { key: 'ottoWheelLeft', blockName: 'Wheel Init', pinLabel: 'Left Wheel', description: 'Connector #10' },
-      { key: 'ottoWheelRight', blockName: 'Wheel Init', pinLabel: 'Right Wheel', description: 'Connector #11' },
+      { key: 'wheelLeft', blockName: 'Wheel Init', pinLabel: 'Left Wheel', description: 'Connector #10' },
+      { key: 'wheelRight', blockName: 'Wheel Init', pinLabel: 'Right Wheel', description: 'Connector #11' },
     ],
   },
   {
     id: 'transform',
     icon: '🥷',
     pins: [
-      { key: 'ottoNinjaLeftLeg', blockName: 'Transform Init', pinLabel: 'Left Leg (LL)', description: 'Connector #8' },
-      { key: 'ottoNinjaRightLeg', blockName: 'Transform Init', pinLabel: 'Right Leg (RL)', description: 'Connector #9' },
-      { key: 'ottoNinjaLeftFoot', blockName: 'Transform Init', pinLabel: 'Left Foot (LF)', description: 'Connector #10' },
-      { key: 'ottoNinjaRightFoot', blockName: 'Transform Init', pinLabel: 'Right Foot (RF)', description: 'Connector #11' },
+      { key: 'transformLeftLeg', blockName: 'Transform Init', pinLabel: 'Left Leg (LL)', description: 'Connector #8' },
+      { key: 'transformRightLeg', blockName: 'Transform Init', pinLabel: 'Right Leg (RL)', description: 'Connector #9' },
+      { key: 'transformLeftFoot', blockName: 'Transform Init', pinLabel: 'Left Foot (LF)', description: 'Connector #10' },
+      { key: 'transformRightFoot', blockName: 'Transform Init', pinLabel: 'Right Foot (RF)', description: 'Connector #11' },
     ],
   },
   {
