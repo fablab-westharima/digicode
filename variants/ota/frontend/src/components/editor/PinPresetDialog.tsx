@@ -231,7 +231,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
           </div>
         ) : (
           // Edit/Create/View Mode
-          <Tabs defaultValue="otto" className="w-full">
+          <Tabs defaultValue="humanoid" className="w-full">
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">
@@ -254,15 +254,15 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
               </div>
 
               <TabsList className="grid grid-cols-4 w-full">
-                <TabsTrigger value="otto">{t('pinPreset.tabs.otto', { defaultValue: 'OTTO' })}</TabsTrigger>
+                <TabsTrigger value="humanoid">{t('pinPreset.tabs.humanoid', { defaultValue: 'Humanoid' })}</TabsTrigger>
                 <TabsTrigger value="sensors">{t('pinPreset.tabs.sensors', { defaultValue: 'センサー' })}</TabsTrigger>
                 <TabsTrigger value="peripherals">{t('pinPreset.tabs.peripherals', { defaultValue: '周辺機器' })}</TabsTrigger>
                 <TabsTrigger value="display">{t('pinPreset.tabs.display', { defaultValue: 'ディスプレイ' })}</TabsTrigger>
               </TabsList>
 
               <ScrollArea className="h-[350px]">
-                <TabsContent value="otto" className="space-y-4 pr-4">
-                  <h4 className="font-medium mb-2">{t('pinPreset.sections.ottoRobot', { defaultValue: 'OTTO ロボット' })}</h4>
+                <TabsContent value="humanoid" className="space-y-4 pr-4">
+                  <h4 className="font-medium mb-2">{t('pinPreset.sections.humanoid', { defaultValue: 'Humanoid' })}</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>{t('pinPreset.pins.leftLeg', { defaultValue: '左足 (Left Leg)' })}</Label>

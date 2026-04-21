@@ -49,31 +49,31 @@ interface PinCategory {
 
 const PIN_CATEGORIES: PinCategory[] = [
   {
-    id: 'otto_bipedal',
+    id: 'humanoid',
     icon: '🤖',
     pins: [
-      { key: 'ottoLeftLeg', blockName: 'Otto Init', pinLabel: 'Left Leg (LL)', description: 'Connector #8' },
-      { key: 'ottoRightLeg', blockName: 'Otto Init', pinLabel: 'Right Leg (RL)', description: 'Connector #9' },
-      { key: 'ottoLeftFoot', blockName: 'Otto Init', pinLabel: 'Left Foot (LF)', description: 'Connector #10' },
-      { key: 'ottoRightFoot', blockName: 'Otto Init', pinLabel: 'Right Foot (RF)', description: 'Connector #11' },
+      { key: 'ottoLeftLeg', blockName: 'Humanoid Init', pinLabel: 'Left Leg (LL)', description: 'Connector #8' },
+      { key: 'ottoRightLeg', blockName: 'Humanoid Init', pinLabel: 'Right Leg (RL)', description: 'Connector #9' },
+      { key: 'ottoLeftFoot', blockName: 'Humanoid Init', pinLabel: 'Left Foot (LF)', description: 'Connector #10' },
+      { key: 'ottoRightFoot', blockName: 'Humanoid Init', pinLabel: 'Right Foot (RF)', description: 'Connector #11' },
     ],
   },
   {
-    id: 'otto_wheel',
+    id: 'wheel',
     icon: '🛞',
     pins: [
-      { key: 'ottoWheelLeft', blockName: 'Otto Wheel Init', pinLabel: 'Left Wheel', description: 'Connector #10' },
-      { key: 'ottoWheelRight', blockName: 'Otto Wheel Init', pinLabel: 'Right Wheel', description: 'Connector #11' },
+      { key: 'ottoWheelLeft', blockName: 'Wheel Init', pinLabel: 'Left Wheel', description: 'Connector #10' },
+      { key: 'ottoWheelRight', blockName: 'Wheel Init', pinLabel: 'Right Wheel', description: 'Connector #11' },
     ],
   },
   {
-    id: 'otto_ninja',
+    id: 'transform',
     icon: '🥷',
     pins: [
-      { key: 'ottoNinjaLeftLeg', blockName: 'Otto Ninja Init', pinLabel: 'Left Leg (LL)', description: 'Connector #8' },
-      { key: 'ottoNinjaRightLeg', blockName: 'Otto Ninja Init', pinLabel: 'Right Leg (RL)', description: 'Connector #9' },
-      { key: 'ottoNinjaLeftFoot', blockName: 'Otto Ninja Init', pinLabel: 'Left Foot (LF)', description: 'Connector #10' },
-      { key: 'ottoNinjaRightFoot', blockName: 'Otto Ninja Init', pinLabel: 'Right Foot (RF)', description: 'Connector #11' },
+      { key: 'ottoNinjaLeftLeg', blockName: 'Transform Init', pinLabel: 'Left Leg (LL)', description: 'Connector #8' },
+      { key: 'ottoNinjaRightLeg', blockName: 'Transform Init', pinLabel: 'Right Leg (RL)', description: 'Connector #9' },
+      { key: 'ottoNinjaLeftFoot', blockName: 'Transform Init', pinLabel: 'Left Foot (LF)', description: 'Connector #10' },
+      { key: 'ottoNinjaRightFoot', blockName: 'Transform Init', pinLabel: 'Right Foot (RF)', description: 'Connector #11' },
     ],
   },
   {
@@ -172,11 +172,9 @@ interface PinSettingsDialogProps {
 
 // Map store mode IDs to i18n keys
 const MODE_ID_TO_I18N_KEY: Record<string, string> = {
-  'otto_bipedal': 'ottoBipedal',
-  'otto_wheel': 'ottoWheel',
-  'otto_ninja': 'ottoNinja',
-  'micromouse': 'micromouse',
-  'line_trace': 'lineTrace',
+  'robots_humanoid': 'humanoid',
+  'robots_wheel': 'wheel',
+  'robots_transform': 'transform',
   'homeassistant': 'homeassistant',
   'generic': 'generic',
   'all_blocks': 'allBlocks',
@@ -216,7 +214,7 @@ export function PinSettingsDialog({ open, onOpenChange }: PinSettingsDialogProps
   const [newPresetName, setNewPresetName] = useState('');
 
   // 展開中のカテゴリ
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['otto_bipedal', 'sensors', 'actuators']));
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['humanoid', 'sensors', 'actuators']));
 
   // プリセット切り替え時に状態を更新
   useEffect(() => {

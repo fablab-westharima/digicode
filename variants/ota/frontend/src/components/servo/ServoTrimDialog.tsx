@@ -48,7 +48,7 @@ interface ServoPresetDef {
 
 const SERVO_PRESETS_DEF: ServoPresetDef[] = [
   {
-    id: 'otto-diy',
+    id: 'humanoid-basic',
     servos: [
       { nameKey: 'leftFoot', pin: 27, type: '180' },
       { nameKey: 'rightFoot', pin: 15, type: '180' },
@@ -57,7 +57,7 @@ const SERVO_PRESETS_DEF: ServoPresetDef[] = [
     ],
   },
   {
-    id: 'otto-diy-plus',
+    id: 'humanoid-plus',
     servos: [
       { nameKey: 'leftFoot', pin: 27, type: '180' },
       { nameKey: 'rightFoot', pin: 15, type: '180' },
@@ -68,14 +68,14 @@ const SERVO_PRESETS_DEF: ServoPresetDef[] = [
     ],
   },
   {
-    id: 'otto-wheel',
+    id: 'wheel',
     servos: [
       { nameKey: 'leftWheel', pin: 14, type: '360' },
       { nameKey: 'rightWheel', pin: 13, type: '360' },
     ],
   },
   {
-    id: 'otto-ninja',
+    id: 'transform',
     servos: [
       { nameKey: 'leftFoot', pin: 27, type: '180' },
       { nameKey: 'rightFoot', pin: 15, type: '180' },
@@ -110,9 +110,20 @@ function buildServosFromPreset(presetId: string, t: TFunc): ServoItem[] {
   }));
 }
 
+const PRESET_MIGRATION: Record<string, string> = {
+  'otto-diy': 'humanoid-basic',
+  'otto-diy-plus': 'humanoid-plus',
+  'otto-wheel': 'wheel',
+  'otto-ninja': 'transform',
+};
+
 function loadServoConfig(t: TFunc): { preset: string; servos: ServoItem[] } {
   try {
-    const savedPreset = localStorage.getItem(PRESET_KEY) || 'otto-diy';
+    const raw = localStorage.getItem(PRESET_KEY) || 'humanoid-basic';
+    const savedPreset = PRESET_MIGRATION[raw] ?? raw;
+    if (savedPreset !== raw) {
+      localStorage.setItem(PRESET_KEY, savedPreset);
+    }
     const savedServos = localStorage.getItem(STORAGE_KEY);
     if (savedServos) {
       return { preset: savedPreset, servos: JSON.parse(savedServos) };
@@ -121,7 +132,7 @@ function loadServoConfig(t: TFunc): { preset: string; servos: ServoItem[] } {
   } catch {
     // ignore
   }
-  return { preset: 'otto-diy', servos: buildServosFromPreset('otto-diy', t) };
+  return { preset: 'humanoid-basic', servos: buildServosFromPreset('humanoid-basic', t) };
 }
 
 function saveServoConfig(preset: string, servos: ServoItem[]) {

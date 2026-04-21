@@ -3669,10 +3669,10 @@
       "speedTrim": "Ajuste de Velocidad",
       "nameInputPlaceholder": "Nombre",
       "presets": {
-        "otto-diy": "Humanoid DIY Bípedo (4 servos)",
-        "otto-diy-plus": "Humanoid DIY+ Bípedo (6 servos)",
-        "otto-wheel": "Wheel (2 servos)",
-        "otto-ninja": "Transform (4 servos)",
+        "humanoid-basic": "Humanoid DIY Bípedo (4 servos)",
+        "humanoid-plus": "Humanoid DIY+ Bípedo (6 servos)",
+        "wheel": "Wheel (2 servos)",
+        "transform": "Transform (4 servos)",
         "custom": "Personalizado"
       },
       "parts": {

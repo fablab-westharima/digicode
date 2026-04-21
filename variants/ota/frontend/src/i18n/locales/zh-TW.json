@@ -3669,10 +3669,10 @@
       "speedTrim": "速度調整",
       "nameInputPlaceholder": "名稱",
       "presets": {
-        "otto-diy": "Humanoid DIY 雙足 (4 伺服)",
-        "otto-diy-plus": "Humanoid DIY+ 雙足 (6 伺服)",
-        "otto-wheel": "Wheel (2 伺服)",
-        "otto-ninja": "Transform (4 伺服)",
+        "humanoid-basic": "Humanoid DIY 雙足 (4 伺服)",
+        "humanoid-plus": "Humanoid DIY+ 雙足 (6 伺服)",
+        "wheel": "Wheel (2 伺服)",
+        "transform": "Transform (4 伺服)",
         "custom": "自訂"
       },
       "parts": {

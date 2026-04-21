@@ -3630,10 +3630,10 @@
       "speedTrim": "速度調整",
       "nameInputPlaceholder": "名前",
       "presets": {
-        "otto-diy": "Humanoid DIY 2足歩行 (4サーボ)",
-        "otto-diy-plus": "Humanoid DIY+ 2足歩行 (6サーボ)",
-        "otto-wheel": "Wheel (2サーボ)",
-        "otto-ninja": "Transform (4サーボ)",
+        "humanoid-basic": "Humanoid DIY 2足歩行 (4サーボ)",
+        "humanoid-plus": "Humanoid DIY+ 2足歩行 (6サーボ)",
+        "wheel": "Wheel (2サーボ)",
+        "transform": "Transform (4サーボ)",
         "custom": "カスタム"
       },
       "parts": {

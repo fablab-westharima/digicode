@@ -56,7 +56,7 @@ const fallbackIcons: Record<string, string> = {
 
 // カテゴリの色（キーは id、言語非依存）
 const categoryColors: Record<string, string> = {
-  ottoBipedal: '#FF6B6B',
+  robotHumanoid: '#FF6B6B',
   ultrasonicSensor: '#F59E0B',
   buzzer: '#6B7280',
   neopixel: '#EC4899',

@@ -13,7 +13,7 @@ interface FavoriteSettingsDialogProps {
 // 利用可能な全カテゴリ（arduino_coreは除外）
 // 多言語対応: 表示名は toolbox.categories.* の既存キーを流用、グループ名は favoriteSettings.groups.* を使用
 type GroupKey =
-  | 'otto'
+  | 'robots'
   | 'competition'
   | 'homeAssistant'
   | 'motors'
@@ -30,10 +30,10 @@ interface CategoryEntry {
 }
 
 const AVAILABLE_CATEGORIES: CategoryEntry[] = [
-  // OTTO系ロボット
-  { id: 'otto_bipedal', i18nKey: 'toolbox.categories.ottoBipedal', groupKey: 'otto' },
-  { id: 'otto_wheel', i18nKey: 'toolbox.categories.ottoWheel', groupKey: 'otto' },
-  { id: 'otto_ninja', i18nKey: 'toolbox.categories.ottoNinja', groupKey: 'otto' },
+  // ロボット
+  { id: 'robot_humanoid', i18nKey: 'toolbox.categories.humanoid', groupKey: 'robots' },
+  { id: 'robot_wheel', i18nKey: 'toolbox.categories.wheelRobot', groupKey: 'robots' },
+  { id: 'robot_transform', i18nKey: 'toolbox.categories.transform', groupKey: 'robots' },
 
   // 競技ロボット
   { id: 'sensor_line', i18nKey: 'toolbox.categories.lineSensor', groupKey: 'competition' },
@@ -85,7 +85,7 @@ const AVAILABLE_CATEGORIES: CategoryEntry[] = [
 
 // 表示順を固定するためのグループキーリスト
 const GROUP_ORDER: GroupKey[] = [
-  'otto',
+  'robots',
   'competition',
   'homeAssistant',
   'motors',
