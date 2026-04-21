@@ -9,13 +9,10 @@
 
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
-import { pythonGenerator } from 'blockly/python';
 import { getWheelPins } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const pyGen = pythonGenerator as any;
 
 const WHEEL_COLOR = '#4CAF50';  // Green color for Wheel blocks
 
@@ -44,14 +41,6 @@ javascriptGenerator.forBlock['wheel_init'] = function(block: Blockly.Block) {
   return `  wheel.init(${pinL}, ${pinR});\n`;
 };
 
-pythonGenerator.forBlock['wheel_init'] = function(block: Blockly.Block) {
-  const pinL = block.getFieldValue('PIN_L');
-  const pinR = block.getFieldValue('PIN_R');
-  pyGen.definitions_['import_otto_wheel'] = 'from digicode_otto_wheel import DigiCodeOttoWheel';
-  pyGen.definitions_['wheel_instance'] = 'otto_wheel = DigiCodeOttoWheel()';
-  return `otto_wheel.init(${pinL}, ${pinR})\n`;
-};
-
 // ===== Forward =====
 Blockly.Blocks['wheel_forward'] = {
   init: function() {
@@ -73,11 +62,6 @@ Blockly.Blocks['wheel_forward'] = {
 javascriptGenerator.forBlock['wheel_forward'] = function(block: Blockly.Block) {
   const speed = block.getFieldValue('SPEED');
   return `  wheel.forward(${speed});\n`;
-};
-
-pythonGenerator.forBlock['wheel_forward'] = function(block: Blockly.Block) {
-  const speed = block.getFieldValue('SPEED');
-  return `otto_wheel.forward(${speed})\n`;
 };
 
 // ===== Backward =====
@@ -103,11 +87,6 @@ javascriptGenerator.forBlock['wheel_backward'] = function(block: Blockly.Block) 
   return `  wheel.backward(${speed});\n`;
 };
 
-pythonGenerator.forBlock['wheel_backward'] = function(block: Blockly.Block) {
-  const speed = block.getFieldValue('SPEED');
-  return `otto_wheel.backward(${speed})\n`;
-};
-
 // ===== Turn Left =====
 Blockly.Blocks['wheel_turn_left'] = {
   init: function() {
@@ -122,10 +101,6 @@ Blockly.Blocks['wheel_turn_left'] = {
 
 javascriptGenerator.forBlock['wheel_turn_left'] = function() {
   return `  wheel.turnLeft(50);\n`;
-};
-
-pythonGenerator.forBlock['wheel_turn_left'] = function() {
-  return `otto_wheel.turn_left(50)\n`;
 };
 
 // ===== Turn Right =====
@@ -144,10 +119,6 @@ javascriptGenerator.forBlock['wheel_turn_right'] = function() {
   return `  wheel.turnRight(50);\n`;
 };
 
-pythonGenerator.forBlock['wheel_turn_right'] = function() {
-  return `otto_wheel.turn_right(50)\n`;
-};
-
 // ===== Spin Left =====
 Blockly.Blocks['wheel_spin_left'] = {
   init: function() {
@@ -162,10 +133,6 @@ Blockly.Blocks['wheel_spin_left'] = {
 
 javascriptGenerator.forBlock['wheel_spin_left'] = function() {
   return `  wheel.spinLeft(50);\n`;
-};
-
-pythonGenerator.forBlock['wheel_spin_left'] = function() {
-  return `otto_wheel.spin_left(50)\n`;
 };
 
 // ===== Spin Right =====
@@ -184,10 +151,6 @@ javascriptGenerator.forBlock['wheel_spin_right'] = function() {
   return `  wheel.spinRight(50);\n`;
 };
 
-pythonGenerator.forBlock['wheel_spin_right'] = function() {
-  return `otto_wheel.spin_right(50)\n`;
-};
-
 // ===== Stop =====
 Blockly.Blocks['wheel_stop'] = {
   init: function() {
@@ -202,10 +165,6 @@ Blockly.Blocks['wheel_stop'] = {
 
 javascriptGenerator.forBlock['wheel_stop'] = function() {
   return `  wheel.stop();\n`;
-};
-
-pythonGenerator.forBlock['wheel_stop'] = function() {
-  return `otto_wheel.stop()\n`;
 };
 
 export {}; // Make this a module

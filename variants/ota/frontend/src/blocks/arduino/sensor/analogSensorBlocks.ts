@@ -1,6 +1,5 @@
 /**
  * アナログセンサーブロック（Arduino C++）
- * Otto Blocklyスタイル - ポテンショメータ、LDR、温度、ガス等
  *
  * i18n: Uses Blockly.Msg.* for dynamic language switching
  */

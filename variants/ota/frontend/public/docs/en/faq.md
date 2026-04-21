@@ -37,8 +37,8 @@ Common questions and answers about DigiCode.
 **A:** Please check the following:
 
 1. **Robot mode** - Have you selected the appropriate mode for your robot?
-   - OTTO Biped → OTTO blocks shown
-   - OTTO Wheel → Wheel blocks shown
+   - Humanoid (Biped) → Humanoid blocks shown
+   - Wheel → Wheel blocks shown
    - Custom → All blocks shown
 
 2. **Category** - Expand each category in the toolbox
@@ -163,7 +163,7 @@ It's convenient to upload OTA firmware via USB first, then update via OTA.
 2. **Voltage** - Check sensor operating voltage (3.3V/5V)
 3. **Analog pin** - Are you using ADC-capable pins (GPIO32-39)?
 
-### Q: OTTO robot doesn't walk properly
+### Q: Humanoid robot doesn't walk properly
 
 **A:** Try the following:
 

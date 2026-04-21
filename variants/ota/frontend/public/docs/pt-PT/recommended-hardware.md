@@ -31,7 +31,7 @@ Dispositivos verificados para DigiCode.
 
 | Produto | Uso |
 |---------|-----|
-| **SG90** | OTTO padrão |
+| **SG90** | Humanoid padrão |
 | **MG90S** | Engrenagem metálica |
 | **FS90R** | Rotação contínua |
 
@@ -55,7 +55,7 @@ Dispositivos verificados para DigiCode.
 
 ---
 
-## Robot OTTO
+## Robot
 
 ### Configuração Bípede
 

@@ -11,7 +11,7 @@ A complete list of all blocks available in DigiCode and how to use them.
 5. [Display (OLED)](#display-oled)
 6. [NeoPixel (LED)](#neopixel-led)
 7. [Audio](#audio)
-8. [OTTO Robot](#otto-robot)
+8. [Robot](#robot)
 
 ---
 
@@ -99,7 +99,7 @@ Distance measurement sensor.
 
 ### RUS-04 (RGB Ultrasonic Sensor)
 
-Ultrasonic sensor with built-in RGB LEDs for OTTO robot.
+Ultrasonic sensor with built-in RGB LEDs for robots.
 
 | Block Name | Description | Parameters |
 |------------|-------------|------------|
@@ -269,42 +269,42 @@ Control buzzers and speakers.
 
 ---
 
-## OTTO Robot
+## Robot
 
-### OTTO Biped
+### Humanoid (Biped)
 
 Control 4-servo biped walking robot.
 
 | Block Name | Description | Parameters |
 |------------|-------------|------------|
-| **OTTO Initialize** | Initialize OTTO | Left leg/Right leg/Left ankle/Right ankle pins |
-| **OTTO Home Position** | Return to standing pose | - |
-| **OTTO Walk** | Walk forward/backward | Steps, Direction, Speed |
-| **OTTO Turn** | Rotate left/right | Count, Direction, Speed |
-| **OTTO Side Step** | Step sideways | Steps, Direction, Speed |
-| **OTTO Jump** | Jump motion | Count, Speed |
-| **OTTO Bow** | Bow motion | Count, Speed |
-| **OTTO Shake** | Shake body | Count, Speed |
+| **Humanoid Initialize** | Initialize Humanoid | Left leg/Right leg/Left ankle/Right ankle pins |
+| **Humanoid Home Position** | Return to standing pose | - |
+| **Humanoid Walk** | Walk forward/backward | Steps, Direction, Speed |
+| **Humanoid Turn** | Rotate left/right | Count, Direction, Speed |
+| **Humanoid Side Step** | Step sideways | Steps, Direction, Speed |
+| **Humanoid Jump** | Jump motion | Count, Speed |
+| **Humanoid Bow** | Bow motion | Count, Speed |
+| **Humanoid Shake** | Shake body | Count, Speed |
 
-### OTTO Wheel
+### Wheel Robot
 
 Control 2-wheel continuous rotation servo robot.
 
 | Block Name | Description | Parameters |
 |------------|-------------|------------|
-| **OTTO Wheel Initialize** | Initialize wheel robot | Left/Right wheel pins |
-| **OTTO Wheel Move** | Move forward/backward/rotate | Direction, Speed, Time |
-| **OTTO Wheel Stop** | Stop | - |
+| **Wheel Initialize** | Initialize wheel robot | Left/Right wheel pins |
+| **Wheel Move** | Move forward/backward/rotate | Direction, Speed, Time |
+| **Wheel Stop** | Stop | - |
 
-### OTTO Ninja
+### Transform (Ninja)
 
 Control transforming robot.
 
 | Block Name | Description | Parameters |
 |------------|-------------|------------|
-| **OTTO Ninja Initialize** | Initialize Ninja | Each servo pin |
-| **OTTO Ninja Transform** | Switch mode | Mode (Biped/Quadruped/Car) |
-| **OTTO Ninja Action** | Execute action | Action type |
+| **Transform Initialize** | Initialize Ninja | Each servo pin |
+| **Transform Mode** | Switch mode | Mode (Biped/Quadruped/Car) |
+| **Transform Action** | Execute action | Action type |
 
 ---
 

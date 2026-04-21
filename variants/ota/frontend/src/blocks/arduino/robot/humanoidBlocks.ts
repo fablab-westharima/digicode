@@ -7,13 +7,10 @@
 
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
-import { pythonGenerator } from 'blockly/python';
 import { getHumanoidPins } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const pyGen = pythonGenerator as any;
 
 const HUMANOID_COLOR = '#FF6B35';  // Orange color for Humanoid blocks
 
@@ -51,18 +48,6 @@ javascriptGenerator.forBlock['humanoid_init'] = function(block: Blockly.Block) {
   return `  humanoid.init(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF});\n`;
 };
 
-pythonGenerator.forBlock['humanoid_init'] = function(block: Blockly.Block) {
-  const pinLL = block.getFieldValue('PIN_LL');
-  const pinRL = block.getFieldValue('PIN_RL');
-  const pinLF = block.getFieldValue('PIN_LF');
-  const pinRF = block.getFieldValue('PIN_RF');
-
-  pyGen.definitions_['import_otto'] = 'from digicode_otto import DigiCodeOtto';
-  pyGen.definitions_['otto_instance'] = 'otto = DigiCodeOtto()';
-
-  return `otto.init(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF})\n`;
-};
-
 // ===== Humanoid Home Position =====
 
 Blockly.Blocks['humanoid_home'] = {
@@ -78,10 +63,6 @@ Blockly.Blocks['humanoid_home'] = {
 
 javascriptGenerator.forBlock['humanoid_home'] = function() {
   return `  humanoid.home();\n`;
-};
-
-pythonGenerator.forBlock['humanoid_home'] = function() {
-  return `otto.home()\n`;
 };
 
 // ===== Humanoid Walk =====
@@ -117,14 +98,6 @@ javascriptGenerator.forBlock['humanoid_walk'] = function(block: Blockly.Block) {
   return `  humanoid.walk(${steps}, ${speed}, ${direction});\n`;
 };
 
-pythonGenerator.forBlock['humanoid_walk'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  const direction = block.getFieldValue('DIRECTION');
-  const speed = block.getFieldValue('SPEED');
-
-  return `otto.walk(${steps}, ${speed}, ${direction})\n`;
-};
-
 // ===== Humanoid Turn =====
 
 Blockly.Blocks['humanoid_turn'] = {
@@ -158,14 +131,6 @@ javascriptGenerator.forBlock['humanoid_turn'] = function(block: Blockly.Block) {
   return `  humanoid.turn(${steps}, ${speed}, ${direction});\n`;
 };
 
-pythonGenerator.forBlock['humanoid_turn'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  const direction = block.getFieldValue('DIRECTION');
-  const speed = block.getFieldValue('SPEED');
-
-  return `otto.turn(${steps}, ${speed}, ${direction})\n`;
-};
-
 // ===== Humanoid Jump =====
 
 Blockly.Blocks['humanoid_jump'] = {
@@ -184,11 +149,6 @@ Blockly.Blocks['humanoid_jump'] = {
 javascriptGenerator.forBlock['humanoid_jump'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `  humanoid.jump(${steps}, 500);\n`;
-};
-
-pythonGenerator.forBlock['humanoid_jump'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  return `otto.jump(${steps}, 500)\n`;
 };
 
 // ===== Humanoid Dance =====
@@ -211,11 +171,6 @@ javascriptGenerator.forBlock['humanoid_dance'] = function(block: Blockly.Block) 
   return `  humanoid.dance(${steps}, 600);\n`;
 };
 
-pythonGenerator.forBlock['humanoid_dance'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  return `otto.dance(${steps}, 600)\n`;
-};
-
 // ===== Humanoid Swing =====
 
 Blockly.Blocks['humanoid_swing'] = {
@@ -234,11 +189,6 @@ Blockly.Blocks['humanoid_swing'] = {
 javascriptGenerator.forBlock['humanoid_swing'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `  humanoid.swing(${steps}, 1000);\n`;
-};
-
-pythonGenerator.forBlock['humanoid_swing'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  return `otto.swing(${steps}, 1000)\n`;
 };
 
 // ===== Humanoid Bend =====
@@ -271,17 +221,6 @@ javascriptGenerator.forBlock['humanoid_bend'] = function(block: Blockly.Block) {
   }
 };
 
-pythonGenerator.forBlock['humanoid_bend'] = function(block: Blockly.Block) {
-  const direction = block.getFieldValue('DIRECTION');
-  const steps = block.getFieldValue('STEPS');
-
-  if (direction === 'left') {
-    return `otto.bend_left(${steps}, 1000)\n`;
-  } else {
-    return `otto.bend_right(${steps}, 1000)\n`;
-  }
-};
-
 // ===== Humanoid Moonwalk =====
 
 Blockly.Blocks['humanoid_moonwalk'] = {
@@ -306,13 +245,6 @@ javascriptGenerator.forBlock['humanoid_moonwalk'] = function(block: Blockly.Bloc
   const direction = block.getFieldValue('DIRECTION');
 
   return `  humanoid.moonwalk(${steps}, 1000, ${direction});\n`;
-};
-
-pythonGenerator.forBlock['humanoid_moonwalk'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  const direction = block.getFieldValue('DIRECTION');
-
-  return `otto.moonwalk(${steps}, 1000, ${direction})\n`;
 };
 
 // ===== Humanoid Gesture (感情表現) =====
@@ -346,27 +278,6 @@ Blockly.Blocks['humanoid_gesture'] = {
 javascriptGenerator.forBlock['humanoid_gesture'] = function(block: Blockly.Block) {
   const gesture = block.getFieldValue('GESTURE');
   return `  humanoid.playGesture(${gesture});\n`;
-};
-
-pythonGenerator.forBlock['humanoid_gesture'] = function(block: Blockly.Block) {
-  const gesture = block.getFieldValue('GESTURE');
-  // Python版は簡易実装
-  const gestureMap: { [key: string]: string } = {
-    'OttoHappy': 'happy',
-    'OttoSuperHappy': 'super_happy',
-    'OttoSad': 'sad',
-    'OttoVictory': 'victory',
-    'OttoAngry': 'angry',
-    'OttoSleeping': 'sleeping',
-    'OttoFretful': 'fretful',
-    'OttoLove': 'love',
-    'OttoConfused': 'confused',
-    'OttoFart': 'fart',
-    'OttoWave': 'wave',
-    'OttoMagic': 'magic',
-    'OttoFail': 'fail'
-  };
-  return `otto.play_gesture("${gestureMap[gesture]}")\n`;
 };
 
 // ===== Humanoid Sound (音声) =====
@@ -408,11 +319,6 @@ javascriptGenerator.forBlock['humanoid_sound'] = function(block: Blockly.Block) 
   return `  humanoid.sing(${sound});\n`;
 };
 
-pythonGenerator.forBlock['humanoid_sound'] = function(block: Blockly.Block) {
-  const sound = block.getFieldValue('SOUND');
-  return `otto.sing("${sound}")\n`;
-};
-
 // ===== Humanoid Additional Dance Moves =====
 
 // Crusaito
@@ -439,12 +345,6 @@ javascriptGenerator.forBlock['humanoid_crusaito'] = function(block: Blockly.Bloc
   return `  humanoid.crusaito(${steps}, 1000, 30, ${direction});\n`;
 };
 
-pythonGenerator.forBlock['humanoid_crusaito'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  const direction = block.getFieldValue('DIRECTION');
-  return `otto.crusaito(${steps}, 1000, 30, ${direction})\n`;
-};
-
 // Flapping
 Blockly.Blocks['humanoid_flapping'] = {
   init: function() {
@@ -469,12 +369,6 @@ javascriptGenerator.forBlock['humanoid_flapping'] = function(block: Blockly.Bloc
   return `  humanoid.flapping(${steps}, 1000, 20, ${direction});\n`;
 };
 
-pythonGenerator.forBlock['humanoid_flapping'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  const direction = block.getFieldValue('DIRECTION');
-  return `otto.flapping(${steps}, 1000, 20, ${direction})\n`;
-};
-
 // Tiptoe Swing
 Blockly.Blocks['humanoid_tiptoe_swing'] = {
   init: function() {
@@ -494,11 +388,6 @@ javascriptGenerator.forBlock['humanoid_tiptoe_swing'] = function(block: Blockly.
   return `  humanoid.tiptoeSwing(${steps}, 1000, 30);\n`;
 };
 
-pythonGenerator.forBlock['humanoid_tiptoe_swing'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  return `otto.tiptoe_swing(${steps}, 1000, 30)\n`;
-};
-
 // Jitter
 Blockly.Blocks['humanoid_jitter'] = {
   init: function() {
@@ -516,11 +405,6 @@ Blockly.Blocks['humanoid_jitter'] = {
 javascriptGenerator.forBlock['humanoid_jitter'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `  humanoid.jitter(${steps}, 500, 15);\n`;
-};
-
-pythonGenerator.forBlock['humanoid_jitter'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  return `otto.jitter(${steps}, 500, 15)\n`;
 };
 
 // Ascending Turn
@@ -547,12 +431,6 @@ javascriptGenerator.forBlock['humanoid_ascending_turn'] = function(block: Blockl
   return `  humanoid.ascendingTurn(${steps}, 1000, 10, ${direction});\n`;
 };
 
-pythonGenerator.forBlock['humanoid_ascending_turn'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  const direction = block.getFieldValue('DIRECTION');
-  return `otto.ascending_turn(${steps}, 1000, 10, ${direction})\n`;
-};
-
 // Shake Leg
 Blockly.Blocks['humanoid_shake_leg'] = {
   init: function() {
@@ -577,12 +455,6 @@ javascriptGenerator.forBlock['humanoid_shake_leg'] = function(block: Blockly.Blo
   return `  humanoid.shakeLeg(${steps}, 1000, ${direction});\n`;
 };
 
-pythonGenerator.forBlock['humanoid_shake_leg'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  const direction = block.getFieldValue('DIRECTION');
-  return `otto.shake_leg(${steps}, 1000, ${direction})\n`;
-};
-
 // Up Down
 Blockly.Blocks['humanoid_updown'] = {
   init: function() {
@@ -600,11 +472,6 @@ Blockly.Blocks['humanoid_updown'] = {
 javascriptGenerator.forBlock['humanoid_updown'] = function(block: Blockly.Block) {
   const steps = block.getFieldValue('STEPS');
   return `  humanoid.updown(${steps}, 1000, 30);\n`;
-};
-
-pythonGenerator.forBlock['humanoid_updown'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  return `otto.updown(${steps}, 1000, 30)\n`;
 };
 
 export {}; // Make this a module

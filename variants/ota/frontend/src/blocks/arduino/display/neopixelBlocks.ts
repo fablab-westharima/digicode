@@ -9,13 +9,10 @@
 
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
-import { pythonGenerator } from 'blockly/python';
 import { getSensorPins } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const pyGen = pythonGenerator as any;
 
 const NEOPIXEL_COLOR = '#E91E63';  // Pink for NeoPixel blocks
 
@@ -49,21 +46,6 @@ javascriptGenerator.forBlock['neopixel_init'] = function(block: Blockly.Block) {
     `Adafruit_NeoPixel pixels(NUM_PIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);`;
 
   generator.setups_['neopixel_begin'] = `  pixels.begin();`;
-
-  return '';  // Init doesn't generate runtime code
-};
-
-pythonGenerator.forBlock['neopixel_init'] = function(block: Blockly.Block) {
-  const pin = block.getFieldValue('PIN');
-  const numLeds = block.getFieldValue('NUM_LEDS');
-
-  pyGen.definitions_['import_neopixel'] =
-    'from machine import Pin\n' +
-    'from neopixel import NeoPixel';
-
-  pyGen.definitions_['neopixel_instance'] =
-    `# NeoPixel strip\n` +
-    `np = NeoPixel(Pin(${pin}), ${numLeds})`;
 
   return '';  // Init doesn't generate runtime code
 };
@@ -102,15 +84,6 @@ javascriptGenerator.forBlock['neopixel_set_color'] = function(block: Blockly.Blo
   return `  pixels.setPixelColor(${index}, pixels.Color(${red}, ${green}, ${blue}));\n`;
 };
 
-pythonGenerator.forBlock['neopixel_set_color'] = function(block: Blockly.Block) {
-  const index = block.getFieldValue('INDEX');
-  const red = pythonGenerator.valueToCode(block, 'RED', pythonGenerator.ORDER_ATOMIC) || '0';
-  const green = pythonGenerator.valueToCode(block, 'GREEN', pythonGenerator.ORDER_ATOMIC) || '0';
-  const blue = pythonGenerator.valueToCode(block, 'BLUE', pythonGenerator.ORDER_ATOMIC) || '0';
-
-  return `np[${index}] = (${red}, ${green}, ${blue})\n`;
-};
-
 // ===== Set All Pixels =====
 
 Blockly.Blocks['neopixel_set_all'] = {
@@ -142,15 +115,6 @@ javascriptGenerator.forBlock['neopixel_set_all'] = function(block: Blockly.Block
          `  }\n`;
 };
 
-pythonGenerator.forBlock['neopixel_set_all'] = function(block: Blockly.Block) {
-  const red = pythonGenerator.valueToCode(block, 'RED', pythonGenerator.ORDER_ATOMIC) || '0';
-  const green = pythonGenerator.valueToCode(block, 'GREEN', pythonGenerator.ORDER_ATOMIC) || '0';
-  const blue = pythonGenerator.valueToCode(block, 'BLUE', pythonGenerator.ORDER_ATOMIC) || '0';
-
-  return `for i in range(len(np)):\n` +
-         `    np[i] = (${red}, ${green}, ${blue})\n`;
-};
-
 // ===== Show =====
 
 Blockly.Blocks['neopixel_show'] = {
@@ -166,10 +130,6 @@ Blockly.Blocks['neopixel_show'] = {
 
 javascriptGenerator.forBlock['neopixel_show'] = function() {
   return `  pixels.show();\n`;
-};
-
-pythonGenerator.forBlock['neopixel_show'] = function() {
-  return `np.write()\n`;
 };
 
 // ===== Clear =====
@@ -188,11 +148,6 @@ Blockly.Blocks['neopixel_clear'] = {
 javascriptGenerator.forBlock['neopixel_clear'] = function() {
   return `  pixels.clear();\n` +
          `  pixels.show();\n`;
-};
-
-pythonGenerator.forBlock['neopixel_clear'] = function() {
-  return `np.fill((0, 0, 0))\n` +
-         `np.write()\n`;
 };
 
 // ===== Set Brightness =====
@@ -215,17 +170,6 @@ Blockly.Blocks['neopixel_brightness'] = {
 javascriptGenerator.forBlock['neopixel_brightness'] = function(block: Blockly.Block) {
   const brightness = javascriptGenerator.valueToCode(block, 'BRIGHTNESS', javascriptGenerator.ORDER_ATOMIC) || '50';
   return `  pixels.setBrightness(${brightness});\n`;
-};
-
-pythonGenerator.forBlock['neopixel_brightness'] = function(block: Blockly.Block) {
-  const brightness = pythonGenerator.valueToCode(block, 'BRIGHTNESS', pythonGenerator.ORDER_ATOMIC) || '50';
-
-  // MicroPython's neopixel doesn't have brightness control, so we need to scale colors manually
-  if (!pyGen.definitions_['neopixel_brightness_var']) {
-    pyGen.definitions_['neopixel_brightness_var'] = 'np_brightness = 255';
-  }
-
-  return `np_brightness = ${brightness}\n`;
 };
 
 // ===== Rainbow Effect =====
@@ -265,21 +209,6 @@ javascriptGenerator.forBlock['neopixel_rainbow'] = function(block: Blockly.Block
   }
 
   return `  rainbowCycle(${delayMs});\n`;
-};
-
-pythonGenerator.forBlock['neopixel_rainbow'] = function(block: Blockly.Block) {
-  const speed = block.getFieldValue('SPEED');
-  const delayMs = speed === 'fast' ? 5 : speed === 'slow' ? 20 : 10;
-
-  if (!pyGen.definitions_['import_otto_neopixel']) {
-    pyGen.definitions_['import_otto_neopixel'] = 'from ottoneopixel import OttoNeoPixel';
-  }
-
-  if (!pyGen.definitions_['neopixel_ring_instance']) {
-    pyGen.definitions_['neopixel_ring_instance'] = 'ring = OttoNeoPixel(4, 13)';
-  }
-
-  return `ring.rainbow_cycle(13, ${delayMs})\n`;
 };
 
 // ===== Bounce Effect =====
@@ -338,22 +267,6 @@ javascriptGenerator.forBlock['neopixel_bounce'] = function(block: Blockly.Block)
   return `  bounceEffect(${r}, ${g}, ${b}, ${delayMs});\n`;
 };
 
-pythonGenerator.forBlock['neopixel_bounce'] = function(block: Blockly.Block) {
-  const color = block.getFieldValue('COLOR');
-  const speed = block.getFieldValue('SPEED');
-  const delayMs = speed === 'fast' ? 30 : speed === 'slow' ? 100 : 50;
-
-  if (!pyGen.definitions_['import_otto_neopixel']) {
-    pyGen.definitions_['import_otto_neopixel'] = 'from ottoneopixel import OttoNeoPixel';
-  }
-
-  if (!pyGen.definitions_['neopixel_ring_instance']) {
-    pyGen.definitions_['neopixel_ring_instance'] = 'ring = OttoNeoPixel(4, 13)';
-  }
-
-  return `ring.bounce("${color}", ${delayMs})\n`;
-};
-
 // ===== Cycle Effect =====
 
 Blockly.Blocks['neopixel_cycle'] = {
@@ -409,22 +322,6 @@ javascriptGenerator.forBlock['neopixel_cycle'] = function(block: Blockly.Block) 
   return `  cycleEffect(${r}, ${g}, ${b}, ${delayMs});\n`;
 };
 
-pythonGenerator.forBlock['neopixel_cycle'] = function(block: Blockly.Block) {
-  const color = block.getFieldValue('COLOR');
-  const speed = block.getFieldValue('SPEED');
-  const delayMs = speed === 'fast' ? 30 : speed === 'slow' ? 100 : 50;
-
-  if (!pyGen.definitions_['import_otto_neopixel']) {
-    pyGen.definitions_['import_otto_neopixel'] = 'from ottoneopixel import OttoNeoPixel';
-  }
-
-  if (!pyGen.definitions_['neopixel_ring_instance']) {
-    pyGen.definitions_['neopixel_ring_instance'] = 'ring = OttoNeoPixel(4, 13)';
-  }
-
-  return `ring.cycle("${color}", ${delayMs})\n`;
-};
-
 // ===== Color Lights (simple color dropdown) =====
 
 Blockly.Blocks['neopixel_color_simple'] = {
@@ -463,16 +360,6 @@ javascriptGenerator.forBlock['neopixel_color_simple'] = function(block: Blockly.
          `  pixels.show();\n`;
 };
 
-pythonGenerator.forBlock['neopixel_color_simple'] = function(block: Blockly.Block) {
-  const color = block.getFieldValue('COLOR');
-  const r = parseInt(color.substring(0, 2), 16);
-  const g = parseInt(color.substring(2, 4), 16);
-  const b = parseInt(color.substring(4, 6), 16);
-
-  return `np.fill((${r}, ${g}, ${b}))\n` +
-         `np.write()\n`;
-};
-
 // ===== Light # with simple color =====
 
 Blockly.Blocks['neopixel_light_simple'] = {
@@ -508,16 +395,6 @@ javascriptGenerator.forBlock['neopixel_light_simple'] = function(block: Blockly.
   const b = parseInt(color.substring(4, 6), 16);
 
   return `  pixels.setPixelColor(${index}, pixels.Color(${r}, ${g}, ${b}));\n`;
-};
-
-pythonGenerator.forBlock['neopixel_light_simple'] = function(block: Blockly.Block) {
-  const index = block.getFieldValue('INDEX');
-  const color = block.getFieldValue('COLOR');
-  const r = parseInt(color.substring(0, 2), 16);
-  const g = parseInt(color.substring(2, 4), 16);
-  const b = parseInt(color.substring(4, 6), 16);
-
-  return `np[${index}] = (${r}, ${g}, ${b})\n`;
 };
 
 export {}; // Make this a module

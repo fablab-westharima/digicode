@@ -22,7 +22,7 @@ export default function AboutPageJa() {
             DigiCodeは、ファブラボ西播磨で教育用ロボットやIoTデバイスのハード設計（基板設計・筐体設計）をする中で生まれました。
           </p>
           <p>
-            既存のブロックプログラミングツール（OttoBlocklyなど）を使っていると、対応ボードやピン配置がエディタ側の仕様で決まっているため、
+            既存のブロックプログラミングツールを使っていると、対応ボードやピン配置がエディタ側の仕様で決まっているため、
             <strong className="text-[#E6EDF3]">ハード設計をソフトの都合に合わせなければならない</strong>
             という制約がありました。
             自分でオリジナルのマイコンボードやブレイクアウトボードを設計しても、エディタが対応していなければ使えません。
@@ -63,8 +63,8 @@ export default function AboutPageJa() {
             description="ロジック、ループ、数学、テキストなどの基本ブロックに加え、センサー、モーター、サーボ、NeoPixel、OLED、ブザー、MQTT、Home Assistantなど、ハードウェア制御のブロックを豊富に揃えています。"
           />
           <FeatureCard
-            title="OTTOベースのロボット対応"
-            description="OTTOをベースにしたファブラボ西播磨オリジナルのロボット向けに、2足歩行・ホイール・Ninjaの3バリアントの専用ブロックを用意。歩行、ダンス、ジェスチャー表現までブロックだけで制御できます。（OTTO公式とは無関係のフォークです）"
+            title="オリジナルロボット対応"
+            description="ファブラボ西播磨オリジナルのロボット向けに、Humanoid（2足歩行）・Wheel・Transformの3バリアントの専用ブロックを用意。歩行、ダンス、ジェスチャー表現までブロックだけで制御できます。"
           />
           <FeatureCard
             title="5言語対応"
@@ -117,7 +117,7 @@ export default function AboutPageJa() {
           他のブロックエディタにはない機能
         </h2>
         <p className="text-[#8B949E] mb-4">
-          DigiCodeは、既存のブロックエディタ（OttoBlockly, mBlock, ArduBlockなど）にはない機能を多数搭載しています。
+          DigiCodeは、既存のブロックエディタ（mBlock, ArduBlockなど）にはない機能を多数搭載しています。
         </p>
         <div className="flex items-center gap-4 mb-8 text-sm text-[#8B949E]">
           <span className="flex items-center gap-1.5">
@@ -145,7 +145,7 @@ export default function AboutPageJa() {
           />
           <UniqueFeature
             title="サーボトリム調整"
-            description="OTTOロボット用サーボのトリム（オフセット）をGUIのスライダーで微調整。調整値はESP32のNVS（不揮発メモリ）に保存され、電源を切っても保持されます。個別サーボのテスト（スイープ、ホームポジション、歩行テスト）もブラウザから実行できます。"
+            description="ロボット用サーボのトリム（オフセット）をGUIのスライダーで微調整。調整値はESP32のNVS（不揮発メモリ）に保存され、電源を切っても保持されます。個別サーボのテスト（スイープ、ホームポジション、歩行テスト）もブラウザから実行できます。"
             tag="調整・チューニング"
           />
           <UniqueFeature
@@ -160,7 +160,7 @@ export default function AboutPageJa() {
           />
           <UniqueFeature
             title="ロボットモードセレクター"
-            description="OTTO 2足歩行、OTTO Wheel、OTTO Ninja、マイクロマウス、ライントレース、Home Assistant、汎用デバイスなど、9種類のモードを切り替えるだけで、そのロボット/用途に必要なブロックだけが表示されます。初心者が大量のブロックに圧倒されるのを防ぎます。"
+            description="Humanoid（2足歩行）、Wheel、Transform（Ninja）、マイクロマウス、ライントレース、Home Assistant、汎用デバイスなど、モードを切り替えるだけで、そのロボット/用途に必要なブロックだけが表示されます。初心者が大量のブロックに圧倒されるのを防ぎます。"
             tag="使いやすさ"
           />
           <UniqueFeature
@@ -190,12 +190,12 @@ export default function AboutPageJa() {
           />
           <UniqueFeature
             title="サンプルプロジェクト"
-            description="基本、センサー、モーター、OTTO、応用、競技、IoTの各カテゴリに分類されたサンプルプロジェクトを内蔵。ワンクリックで読み込んですぐに試せます。"
+            description="基本、センサー、モーター、ロボット、応用、競技、IoTの各カテゴリに分類されたサンプルプロジェクトを内蔵。ワンクリックで読み込んですぐに試せます。"
             tag="学習支援"
           />
           <UniqueFeature
             title="チュートリアル"
-            description="LED点滅、センサー、サーボ、OTTO歩行、障害物回避、ライントレース、マイクロマウスなど11種類のチュートリアルを内蔵。選択するとサンプルプロジェクトが読み込まれ、説明を見ながらすぐに試せます。"
+            description="LED点滅、センサー、サーボ、Humanoid歩行、障害物回避、ライントレース、マイクロマウスなど11種類のチュートリアルを内蔵。選択するとサンプルプロジェクトが読み込まれ、説明を見ながらすぐに試せます。"
             tag="学習支援"
           />
           <UniqueFeature

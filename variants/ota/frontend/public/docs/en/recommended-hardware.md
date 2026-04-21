@@ -55,7 +55,7 @@ List of verified devices for DigiCode. We recommend purchasing from trusted reta
 
 | Product | Price (approx) | Use | Link |
 |---------|----------------|-----|------|
-| **SG90** | ¥440 | OTTO standard, light load | [Akizuki](https://akizukidenshi.com/catalog/g/g108761/) |
+| **SG90** | ¥440 | Humanoid standard, light load | [Akizuki](https://akizukidenshi.com/catalog/g/g108761/) |
 | **MG90S** | ¥1,240 | Metal gear, medium load | [Akizuki](https://akizukidenshi.com/catalog/g/g113227/) |
 | **SG92R** | ¥700 | High torque | [Akizuki](https://akizukidenshi.com/catalog/g/g108914/) |
 | **MG996R** | ¥1,480 | High torque, large robots | [Akizuki](https://akizukidenshi.com/catalog/g/g112534/) |
@@ -64,7 +64,7 @@ List of verified devices for DigiCode. We recommend purchasing from trusted reta
 
 | Product | Price (approx) | Use | Link |
 |---------|----------------|-----|------|
-| **FS90R** | ¥500 | Continuous rotation, OTTO Wheel | [Akizuki](https://akizukidenshi.com/catalog/g/g113206/) |
+| **FS90R** | ¥500 | Continuous rotation, Wheel robot | [Akizuki](https://akizukidenshi.com/catalog/g/g113206/) |
 
 ### Servo Power Notes
 
@@ -156,9 +156,9 @@ List of verified devices for DigiCode. We recommend purchasing from trusted reta
 
 ---
 
-## OTTO Robot Parts
+## Robot Parts
 
-### Recommended Configuration (OTTO Biped)
+### Recommended Configuration (Humanoid Biped)
 
 | Part | Recommended | Qty | Unit Price | Link |
 |------|-------------|-----|------------|------|
@@ -168,7 +168,7 @@ List of verified devices for DigiCode. We recommend purchasing from trusted reta
 | Buzzer | Piezo Speaker | 1 | ¥40 | [Akizuki](https://akizukidenshi.com/catalog/g/g104118/) |
 | **Total** | | | **¥3,882** | |
 
-### Recommended Configuration (OTTO Wheel)
+### Recommended Configuration (Wheel Robot)
 
 | Part | Recommended | Qty | Unit Price | Link |
 |------|-------------|-----|------------|------|

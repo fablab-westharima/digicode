@@ -60,11 +60,11 @@ Lista completa de blocos disponíveis no DigiCode.
 
 ---
 
-## Robot OTTO
+## Robot
 
 | Bloco | Descrição |
 |-------|-----------|
-| **Inicializar OTTO** | Configurar pinos |
+| **Inicializar Humanoid** | Configurar pinos |
 | **Posição Inicial** | Postura de pé |
 | **Andar** | Andar frente/trás |
 | **Virar** | Virar esquerda/direita |

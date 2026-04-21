@@ -49,6 +49,6 @@
     <text x="20" y="55" fill="#8B949E" font-family="sans-serif" font-size="12">• 使用 Blockly 視覺化程式設計</text>
     <text x="20" y="75" fill="#8B949E" font-family="sans-serif" font-size="12">• 無線 OTA 燒錄</text>
     <text x="280" y="55" fill="#8B949E" font-family="sans-serif" font-size="12">• 雲端編譯</text>
-    <text x="280" y="75" fill="#8B949E" font-family="sans-serif" font-size="12">• 支援 OTTO 機器人</text>
+    <text x="280" y="75" fill="#8B949E" font-family="sans-serif" font-size="12">• 支援機器人</text>
   </g>
 </svg>

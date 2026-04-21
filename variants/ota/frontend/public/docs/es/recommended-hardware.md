@@ -40,7 +40,7 @@ Lista de dispositivos verificados para DigiCode.
 
 | Producto | Precio (aprox) | Uso |
 |----------|----------------|-----|
-| **SG90** | €3-5 | Estándar OTTO, carga ligera |
+| **SG90** | €3-5 | Estándar Humanoid, carga ligera |
 | **MG90S** | €8-10 | Engranaje metálico, carga media |
 | **MG996R** | €10-12 | Alto torque, robots grandes |
 
@@ -48,7 +48,7 @@ Lista de dispositivos verificados para DigiCode.
 
 | Producto | Precio (aprox) | Uso |
 |----------|----------------|-----|
-| **FS90R** | €4-6 | Rotación continua, OTTO Wheel |
+| **FS90R** | €4-6 | Rotación continua, Wheel Robot |
 
 ---
 
@@ -96,9 +96,9 @@ Lista de dispositivos verificados para DigiCode.
 
 ---
 
-## Partes para Robot OTTO
+## Partes para Robot
 
-### Configuración Recomendada (OTTO Bípedo)
+### Configuración Recomendada (Humanoid Bípedo)
 
 | Parte | Recomendado | Cant | Precio Unit |
 |-------|-------------|------|-------------|

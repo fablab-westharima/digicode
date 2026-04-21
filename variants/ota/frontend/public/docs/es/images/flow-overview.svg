@@ -49,6 +49,6 @@
     <text x="20" y="55" fill="#8B949E" font-family="sans-serif" font-size="12">• Programación Visual con Blockly</text>
     <text x="20" y="75" fill="#8B949E" font-family="sans-serif" font-size="12">• Carga OTA Inalámbrica</text>
     <text x="280" y="55" fill="#8B949E" font-family="sans-serif" font-size="12">• Compilación en la Nube</text>
-    <text x="280" y="75" fill="#8B949E" font-family="sans-serif" font-size="12">• Soporte para Robots OTTO</text>
+    <text x="280" y="75" fill="#8B949E" font-family="sans-serif" font-size="12">• Soporte para Robots</text>
   </g>
 </svg>

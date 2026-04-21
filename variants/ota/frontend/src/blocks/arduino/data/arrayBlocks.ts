@@ -1,5 +1,5 @@
 /**
- * 配列ブロック定義（Otto Blocklyスタイル）
+ * 配列ブロック定義
  * Arduino C++に最適化された配列操作ブロック
  *
  * i18n: Uses Blockly.Msg.* for dynamic language switching

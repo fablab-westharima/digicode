@@ -11,7 +11,7 @@ Lista completa de todos los bloques disponibles en DigiCode.
 5. [Pantalla (OLED)](#pantalla-oled)
 6. [NeoPixel (LED)](#neopixel-led)
 7. [Audio](#audio)
-8. [Robot OTTO](#robot-otto)
+8. [Robot](#robot)
 
 ---
 
@@ -110,16 +110,16 @@ Lista completa de todos los bloques disponibles en DigiCode.
 
 ---
 
-## Robot OTTO
+## Robot
 
-### OTTO Bípedo
+### Humanoid (Bípedo)
 
 | Nombre del Bloque | Descripción | Parámetros |
 |-------------------|-------------|------------|
-| **Inicializar OTTO** | Inicializa OTTO | Pines de piernas/tobillos |
-| **Posición Inicial OTTO** | Vuelve a postura de pie | - |
-| **OTTO Caminar** | Camina adelante/atrás | Pasos, Dirección, Velocidad |
-| **OTTO Girar** | Rota izquierda/derecha | Cuenta, Dirección, Velocidad |
+| **Inicializar Humanoid** | Inicializa Humanoid | Pines de piernas/tobillos |
+| **Posición Inicial Humanoid** | Vuelve a postura de pie | - |
+| **Humanoid Caminar** | Camina adelante/atrás | Pasos, Dirección, Velocidad |
+| **Humanoid Girar** | Rota izquierda/derecha | Cuenta, Dirección, Velocidad |
 
 ---
 

@@ -2,7 +2,6 @@
  * Blockly Message Population Utility
  *
  * Populates Blockly.Msg.* namespace from i18next translations
- * Based on OTTOBlockly's approach but adapted for React SPA
  */
 
 import * as Blockly from 'blockly';

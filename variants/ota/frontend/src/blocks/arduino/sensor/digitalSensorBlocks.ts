@@ -1,6 +1,5 @@
 /**
  * デジタルセンサーブロック（Arduino C++）
- * Otto Blocklyスタイル - ボタン、PIR、傾斜、振動等
  * ピン番号は数値入力（FieldNumber）で統一
  *
  * i18n: Uses Blockly.Msg.* for dynamic language switching

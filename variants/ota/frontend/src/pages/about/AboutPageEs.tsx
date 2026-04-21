@@ -22,7 +22,7 @@ export default function AboutPageEs() {
             DigiCode nació en FabLab Nishi-Harima durante el diseño de hardware (placas y carcasas) de robots educativos y dispositivos IoT.
           </p>
           <p>
-            Al usar herramientas de programación por bloques existentes (como OttoBlockly), las placas compatibles y la asignación de pines están definidas por la propia herramienta, obligando a
+            Al usar herramientas de programación por bloques existentes, las placas compatibles y la asignación de pines están definidas por la propia herramienta, obligando a
             {' '}<strong className="text-[#E6EDF3]">adaptar el diseño de hardware a las restricciones del software</strong>.
             Aunque diseñes tu propia placa de microcontrolador o una breakout personalizada, no puedes usarla si el editor no la admite.
           </p>
@@ -61,8 +61,8 @@ export default function AboutPageEs() {
             description="Además de bloques básicos como lógica, bucles, matemáticas y texto, dispone de una amplia colección de bloques de control de hardware para sensores, motores, servos, NeoPixel, OLED, zumbadores, MQTT, Home Assistant y más."
           />
           <FeatureCard
-            title="Compatible con robots basados en OTTO"
-            description="Bloques dedicados para tres variantes de los robots propios basados en OTTO de FabLab Nishi-Harima: bípedo, con ruedas y Ninja. Controla la caminata, el baile y los gestos utilizando solo bloques. (Es un fork independiente, sin relación con el proyecto OTTO oficial.)"
+            title="Robots originales compatibles"
+            description="Bloques dedicados para tres variantes de los robots propios de FabLab Nishi-Harima: Humanoid (bípedo), Wheel (con ruedas) y Transform (Ninja). Controla la caminata, el baile y los gestos utilizando solo bloques."
           />
           <FeatureCard
             title="Soporte para 5 idiomas"
@@ -115,7 +115,7 @@ export default function AboutPageEs() {
           Funciones que no encontrarás en otros editores de bloques
         </h2>
         <p className="text-[#8B949E] mb-4">
-          DigiCode incluye muchas funciones que no están presentes en editores de bloques existentes (como OttoBlockly, mBlock y ArduBlock).
+          DigiCode incluye muchas funciones que no están presentes en editores de bloques existentes (como mBlock y ArduBlock).
         </p>
         <div className="flex items-center gap-4 mb-8 text-sm text-[#8B949E]">
           <span className="flex items-center gap-1.5">
@@ -143,7 +143,7 @@ export default function AboutPageEs() {
           />
           <UniqueFeature
             title="Ajuste de trim de servos"
-            description="Ajusta con precisión el trim (offset) de los servos para robots OTTO con un deslizador gráfico. Los ajustes se guardan en la NVS (memoria no volátil) del ESP32 y se mantienen tras apagar el equipo. También puedes ejecutar pruebas individuales de servos (barrido, posición inicial, prueba de caminata) desde el navegador."
+            description="Ajusta con precisión el trim (offset) de los servos para robots con un deslizador gráfico. Los ajustes se guardan en la NVS (memoria no volátil) del ESP32 y se mantienen tras apagar el equipo. También puedes ejecutar pruebas individuales de servos (barrido, posición inicial, prueba de caminata) desde el navegador."
             tag="Ajuste y calibración"
           />
           <UniqueFeature
@@ -158,7 +158,7 @@ export default function AboutPageEs() {
           />
           <UniqueFeature
             title="Selector de modo de robot"
-            description="Con un solo clic, cambia entre 9 modos — OTTO Bípedo, OTTO con Ruedas, OTTO Ninja, Micromouse, Seguidor de Línea, Home Assistant, Dispositivo Genérico, etc. — para mostrar solo los bloques relevantes a ese robot o caso de uso. Evita que los principiantes se vean abrumados por cientos de bloques."
+            description="Con un solo clic, cambia entre modos — Humanoid (Bípedo), Wheel, Transform (Ninja), Micromouse, Seguidor de Línea, Home Assistant, Dispositivo Genérico, etc. — para mostrar solo los bloques relevantes a ese robot o caso de uso. Evita que los principiantes se vean abrumados por cientos de bloques."
             tag="Facilidad de uso"
           />
           <UniqueFeature
@@ -188,12 +188,12 @@ export default function AboutPageEs() {
           />
           <UniqueFeature
             title="Proyectos de ejemplo"
-            description="Proyectos de ejemplo integrados organizados por categorías: Básicos, Sensores, Motores, OTTO, Aplicaciones, Competiciones e IoT. Cárgalos con un clic y pruébalos al instante."
+            description="Proyectos de ejemplo integrados organizados por categorías: Básicos, Sensores, Motores, Robots, Aplicaciones, Competiciones e IoT. Cárgalos con un clic y pruébalos al instante."
             tag="Apoyo al aprendizaje"
           />
           <UniqueFeature
             title="Tutoriales"
-            description="11 tutoriales integrados como parpadeo de LED, sensores, servos, caminar con OTTO, evasión de obstáculos, seguimiento de línea y micromouse. Al seleccionar uno se carga un proyecto de ejemplo para que puedas seguirlo mientras lees la explicación."
+            description="11 tutoriales integrados como parpadeo de LED, sensores, servos, caminar con Humanoid, evasión de obstáculos, seguimiento de línea y micromouse. Al seleccionar uno se carga un proyecto de ejemplo para que puedas seguirlo mientras lees la explicación."
             tag="Apoyo al aprendizaje"
           />
           <UniqueFeature

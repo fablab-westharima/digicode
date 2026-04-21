@@ -22,7 +22,7 @@ export default function AboutPageZh() {
             DigiCode 誕生於西播磨 FabLab,在設計教育用機器人與 IoT 裝置的硬體(電路板、外殼設計)過程中孕育而生。
           </p>
           <p>
-            使用既有的積木程式設計工具(如 OttoBlockly)時,支援的開發板與腳位配置皆由編輯器端決定,因此有
+            使用既有的積木程式設計工具時,支援的開發板與腳位配置皆由編輯器端決定,因此有
             {' '}<strong className="text-[#E6EDF3]">必須讓硬體設計配合軟體限制</strong>
             的約束。即使自行研發微控制器板或擴展板,編輯器若不支援就無法使用。
           </p>
@@ -60,8 +60,8 @@ export default function AboutPageZh() {
             description="除了邏輯、迴圈、數學、文字等基本積木外,還提供豐富的硬體控制積木,包括感測器、馬達、伺服馬達、NeoPixel、OLED、蜂鳴器、MQTT、Home Assistant 等。"
           />
           <FeatureCard
-            title="支援 OTTO 系列機器人"
-            description="為西播磨 FabLab 以 OTTO 為基礎打造的自製機器人,提供雙足、輪型、Ninja 三種變體的專用積木。走路、跳舞、動作表現皆可僅用積木完成。(本專案為獨立分支,與 OTTO 官方無關。)"
+            title="支援原創機器人"
+            description="為西播磨 FabLab 原創機器人提供 Humanoid（雙足）、Wheel（輪型）、Transform（Ninja）三種變體的專用積木。走路、跳舞、動作表現皆可僅用積木完成。"
           />
           <FeatureCard
             title="支援 5 種語言"
@@ -113,7 +113,7 @@ export default function AboutPageZh() {
           其他積木編輯器所沒有的功能
         </h2>
         <p className="text-[#8B949E] mb-4">
-          DigiCode 搭載許多既有積木編輯器(如 OttoBlockly、mBlock、ArduBlock 等)所沒有的功能。
+          DigiCode 搭載許多既有積木編輯器(如 mBlock、ArduBlock 等)所沒有的功能。
         </p>
         <div className="flex items-center gap-4 mb-8 text-sm text-[#8B949E]">
           <span className="flex items-center gap-1.5">
@@ -141,7 +141,7 @@ export default function AboutPageZh() {
           />
           <UniqueFeature
             title="伺服微調(Trim)"
-            description="可用 GUI 滑桿微調 OTTO 機器人用伺服的 Trim(偏移值)。調整值會儲存在 ESP32 的 NVS(非揮發記憶體),即使電源關閉也能保留。也可從瀏覽器執行單一伺服測試(掃描、回原點、行走測試)。"
+            description="可用 GUI 滑桿微調機器人用伺服的 Trim(偏移值)。調整值會儲存在 ESP32 的 NVS(非揮發記憶體),即使電源關閉也能保留。也可從瀏覽器執行單一伺服測試(掃描、回原點、行走測試)。"
             tag="調整與校準"
           />
           <UniqueFeature
@@ -156,7 +156,7 @@ export default function AboutPageZh() {
           />
           <UniqueFeature
             title="機器人模式選擇器"
-            description="一鍵切換 9 種模式——OTTO 雙足、OTTO 輪型、OTTO Ninja、微型鼠、循線、Home Assistant、通用裝置等——只顯示該機器人/用途所需的積木。避免初學者被大量積木淹沒。"
+            description="一鍵切換模式——Humanoid（雙足）、Wheel（輪型）、Transform（Ninja）、微型鼠、循線、Home Assistant、通用裝置等——只顯示該機器人/用途所需的積木。避免初學者被大量積木淹沒。"
             tag="易用性"
           />
           <UniqueFeature
@@ -186,12 +186,12 @@ export default function AboutPageZh() {
           />
           <UniqueFeature
             title="範例專案"
-            description="內建按分類整理的範例專案:基礎、感測器、馬達、OTTO、應用、競賽、IoT 等。一鍵載入即可立即試用。"
+            description="內建按分類整理的範例專案:基礎、感測器、馬達、機器人、應用、競賽、IoT 等。一鍵載入即可立即試用。"
             tag="學習支援"
           />
           <UniqueFeature
             title="教學引導"
-            description="內建 LED 閃爍、感測器、伺服、OTTO 行走、避障、循線、微型鼠等 11 個教學引導。選取後即載入範例專案,可一邊閱讀說明一邊立即試用。"
+            description="內建 LED 閃爍、感測器、伺服、Humanoid 行走、避障、循線、微型鼠等 11 個教學引導。選取後即載入範例專案,可一邊閱讀說明一邊立即試用。"
             tag="學習支援"
           />
           <UniqueFeature
