@@ -2872,15 +2872,15 @@
     "create": "建立",
     "copyOf": " 複製",
     "categories": {
-      "otto_bipedal": {
+      "humanoid": {
         "name": "Humanoid Bipedal",
         "description": "雙足機器人 (4 個伺服馬達) 引腳設定"
       },
-      "otto_wheel": {
+      "wheel": {
         "name": "Wheel",
         "description": "2 輪機器人 (連續旋轉伺服馬達) 引腳設定"
       },
-      "otto_ninja": {
+      "transform": {
         "name": "Transform",
         "description": "Transform robot (4 servos) pin settings"
       },

@@ -3083,15 +3083,15 @@
     "create": "作成",
     "copyOf": "のコピー",
     "categories": {
-      "otto_bipedal": {
+      "humanoid": {
         "name": "Humanoid 2足歩行専用",
         "description": "2足歩行ロボット（4サーボ）のピン設定"
       },
-      "otto_wheel": {
+      "wheel": {
         "name": "Wheel専用",
         "description": "2輪駆動ロボット（連続回転サーボ）のピン設定"
       },
-      "otto_ninja": {
+      "transform": {
         "name": "Transform専用",
         "description": "変形ロボット（4サーボ）のピン設定"
       },

@@ -3093,15 +3093,15 @@
     "create": "Create",
     "copyOf": " Copy",
     "categories": {
-      "otto_bipedal": {
+      "humanoid": {
         "name": "Humanoid Bipedal",
         "description": "Bipedal robot (4 servos) pin settings"
       },
-      "otto_wheel": {
+      "wheel": {
         "name": "Wheel",
         "description": "2-wheel robot (continuous rotation servo) pin settings"
       },
-      "otto_ninja": {
+      "transform": {
         "name": "Transform",
         "description": "Transform robot (4 servos) pin settings"
       },
