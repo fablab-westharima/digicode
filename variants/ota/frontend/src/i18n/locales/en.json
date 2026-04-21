@@ -289,7 +289,7 @@
     "docsDesc": "Check usage and troubleshooting",
     "viewDocs": "View Documentation",
     "pinSettings": "Pin Assignment Settings",
-    "pinSettingsDesc": "Configure pin numbers for OTTO robot and sensors",
+    "pinSettingsDesc": "Configure pin numbers for robot and sensors",
     "configure": "Configure",
     "supportedDevices": "Supported Microcontrollers, Sensors & Actuators",
     "supportedDevicesDesc": "Compatible with ESP32 series and various sensors and motors",
@@ -310,7 +310,7 @@
     "dcMotor": "DC Motor (PWM control)",
     "steppingMotor": "Stepping Motor",
     "neoPixelLed": "NeoPixel LED (Full color)",
-    "esp32OnlyWarning": "This editor is for ESP32 only. OTTO DIY official robots using Arduino Nano cannot be used as-is. You need to replace it with ESP32.",
+    "esp32OnlyWarning": "This editor is for ESP32 only. robots using Arduino Nano cannot be used as-is. You need to replace it with ESP32.",
     "warning": "Warning:",
     "manageProjects": "Manage your saved projects",
     "noProjects": "No projects yet",
@@ -893,13 +893,12 @@
     "presetNamePlaceholder": "Enter preset name",
     "create": "Create",
     "tabs": {
-      "otto": "Humanoid",
       "sensors": "Sensors",
       "peripherals": "Peripherals",
-      "display": "Display"
+      "display": "Display",
+      "humanoid": "Humanoid"
     },
     "sections": {
-      "ottoRobot": "Humanoid Robot",
       "wheelRobot": "Wheel",
       "transform": "Transform",
       "rus04": "RUS-04 Ultrasonic Sensor (with RGB)",
@@ -920,7 +919,8 @@
       "motorA": "Motor A",
       "motorB": "Motor B",
       "stepper": "Stepper Motor (28BYJ-48)",
-      "oled": "I2C OLED Display"
+      "oled": "I2C OLED Display",
+      "humanoid": "Humanoid Robot"
     },
     "pins": {
       "leftLeg": "Left Leg",
@@ -945,7 +945,6 @@
     "description": "Select the block categories you use frequently. Selected categories will appear in \"Favorites\" mode.",
     "selectedCount": "Selected: {{count}} categories",
     "groups": {
-      "otto": "Humanoid Robots",
       "competition": "Competition Robots",
       "homeAssistant": "Home Assistant",
       "motors": "Motors & Drives",
@@ -953,7 +952,8 @@
       "actuators": "Actuators",
       "gpioAndSerial": "GPIO & Serial",
       "communicationAndControl": "Communication & Control",
-      "logicBasic": "Logic & Basics"
+      "logicBasic": "Logic & Basics",
+      "robots": "Humanoid Robots"
     }
   },
   "usbPortRelease": {
@@ -1843,7 +1843,7 @@
     },
     "wheel": {
       "init": "Wheel Init",
-      "initTooltip": "Initialize OTTO Wheel",
+      "initTooltip": "Initialize Wheel",
       "leftWheelPin": "Left Wheel Pin",
       "rightWheelPin": "Right Wheel Pin",
       "forward": "Wheel Forward",
@@ -2265,39 +2265,39 @@
     "humanoid": {
       "init": {
         "label": "Humanoid Init",
-        "tooltip": "Initialize OTTO robot (pin numbers from preset)"
+        "tooltip": "Initialize Humanoid robot (pin numbers from preset)"
       },
       "home": {
         "label": "Humanoid Home",
-        "tooltip": "Set OTTO to upright position"
+        "tooltip": "Set Humanoid to upright position"
       },
       "walk": {
         "label": "Humanoid Walk",
-        "tooltip": "Make OTTO walk"
+        "tooltip": "Make Humanoid walk"
       },
       "turn": {
         "label": "Humanoid Turn",
-        "tooltip": "Make OTTO turn"
+        "tooltip": "Make Humanoid turn"
       },
       "jump": {
         "label": "Humanoid Jump",
-        "tooltip": "Make OTTO jump"
+        "tooltip": "Make Humanoid jump"
       },
       "dance": {
         "label": "Humanoid Dance",
-        "tooltip": "Make OTTO dance"
+        "tooltip": "Make Humanoid dance"
       },
       "swing": {
         "label": "Humanoid Swing",
-        "tooltip": "Swing OTTO side to side"
+        "tooltip": "Swing Humanoid side to side"
       },
       "bend": {
         "label": "Humanoid Bend",
-        "tooltip": "Bend OTTO left or right"
+        "tooltip": "Bend Humanoid left or right"
       },
       "moonwalk": {
         "label": "Humanoid Moonwalk",
-        "tooltip": "Make OTTO moonwalk"
+        "tooltip": "Make Humanoid moonwalk"
       },
       "gesture": {
         "label": "Humanoid Gesture",
@@ -2371,7 +2371,7 @@
     "transform": {
       "init": {
         "label": "Transform Init",
-        "tooltip": "Initialize OTTO Ninja (pin numbers from preset)"
+        "tooltip": "Initialize Transform (pin numbers from preset)"
       },
       "mode": {
         "label": "Ninja Mode",
@@ -2673,249 +2673,6 @@
           "value": "value",
           "tooltip": "Read potentiometer value (0-4095)",
           "angle": "Angle (0-270)"
-        }
-      },
-      "otto": {
-        "init": {
-          "label": "Humanoid Init",
-          "leftLeg": "Left Leg",
-          "rightLeg": "Right Leg",
-          "leftFoot": "Left Foot",
-          "rightFoot": "Right Foot",
-          "tooltip": "Initialize OTTO robot (PWM direct control)"
-        },
-        "home": {
-          "label": "Humanoid Home Position",
-          "tooltip": "Set OTTO to home position"
-        },
-        "walk": {
-          "label": "Humanoid Walk",
-          "steps": "steps",
-          "forward": "Forward",
-          "backward": "Backward",
-          "speed": "Speed",
-          "normal": "Normal",
-          "fast": "Fast",
-          "slow": "Slow",
-          "tooltip": "Make OTTO walk"
-        },
-        "turn": {
-          "label": "Humanoid Turn",
-          "times": "times",
-          "left": "Left",
-          "right": "Right",
-          "speed": "Speed",
-          "normal": "Normal",
-          "fast": "Fast",
-          "slow": "Slow",
-          "tooltip": "Make OTTO turn"
-        },
-        "jump": {
-          "label": "Humanoid Jump",
-          "times": "times",
-          "tooltip": "Make OTTO jump"
-        },
-        "dance": {
-          "label": "Humanoid Dance",
-          "times": "times",
-          "tooltip": "Make OTTO dance"
-        },
-        "swing": {
-          "label": "Humanoid Swing",
-          "times": "times",
-          "tooltip": "Make OTTO swing left and right"
-        },
-        "bend": {
-          "label": "Humanoid Bend",
-          "left": "Left",
-          "right": "Right",
-          "times": "times",
-          "tooltip": "Make OTTO bend left or right"
-        },
-        "moonwalk": {
-          "label": "Humanoid Moonwalk",
-          "steps": "steps",
-          "right": "Right",
-          "left": "Left",
-          "tooltip": "Make OTTO moonwalk"
-        },
-        "servo": {
-          "label": "Humanoid Servo",
-          "leftLeg": "Left Leg (LL)",
-          "rightLeg": "Right Leg (RL)",
-          "leftFoot": "Left Foot (LF)",
-          "rightFoot": "Right Foot (RF)",
-          "angle": "Angle",
-          "degrees": "degrees",
-          "tooltip": "Control OTTO servo directly (0-180 degrees)"
-        }
-      },
-      "ottoNinja": {
-        "init": {
-          "label": "Transform Init",
-          "leftLeg": "Left Leg",
-          "rightLeg": "Right Leg",
-          "leftFoot": "Left Foot",
-          "rightFoot": "Right Foot",
-          "tooltip": "Initialize OTTO Ninja robot (walk/roll transformation)"
-        },
-        "mode": {
-          "label": "Ninja Mode",
-          "walkMode": "Walk Mode",
-          "rollMode": "Roll Mode",
-          "tooltip": "Switch Ninja operation mode"
-        },
-        "transform": {
-          "label": "Ninja Transform",
-          "walkForm": "Walk Form",
-          "rollForm": "Roll Form",
-          "tooltip": "Transform Ninja"
-        },
-        "align": {
-          "label": "Ninja Align (90°)",
-          "tooltip": "Set all servos to 90 degrees (for calibration)"
-        },
-        "home": {
-          "label": "Ninja Home",
-          "tooltip": "Return to home position"
-        },
-        "walk": {
-          "label": "Ninja Walk",
-          "steps": "steps",
-          "forward": "Forward",
-          "backward": "Backward",
-          "tooltip": "Walk in walk mode"
-        },
-        "turn": {
-          "label": "Ninja Turn",
-          "times": "times",
-          "left": "Left",
-          "right": "Right",
-          "tooltip": "Turn in walk mode"
-        },
-        "trot": {
-          "label": "Ninja Trot",
-          "steps": "steps",
-          "tooltip": "Trot gait (diagonal walk)"
-        },
-        "stop": {
-          "label": "Ninja Stop",
-          "tooltip": "Stop and return to home position"
-        },
-        "roll": {
-          "label": "Ninja Roll",
-          "speed": "Speed",
-          "verySlow": "Very Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "fastest": "Fastest",
-          "forward": "Forward",
-          "backward": "Backward",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Move in roll mode"
-        },
-        "rollRotate": {
-          "label": "Ninja Roll Rotate",
-          "speed": "Speed",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "left": "Left",
-          "right": "Right",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Rotate in roll mode"
-        },
-        "pushup": {
-          "label": "Ninja Pushup",
-          "times": "times",
-          "tooltip": "Perform pushup-like motion"
-        },
-        "dance": {
-          "label": "Ninja Dance",
-          "times": "times",
-          "tooltip": "Make Ninja dance"
-        }
-      },
-      "ottoWheel": {
-        "init": {
-          "label": "Wheel Init",
-          "leftWheel": "Left Wheel",
-          "rightWheel": "Right Wheel",
-          "tooltip": "Initialize OTTO Wheel robot (continuous rotation servo)"
-        },
-        "forward": {
-          "label": "Forward",
-          "speed": "Speed",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "fastest": "Fastest",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Move forward"
-        },
-        "backward": {
-          "label": "Backward",
-          "speed": "Speed",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "fastest": "Fastest",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Move backward"
-        },
-        "turnLeft": {
-          "label": "Turn Left",
-          "speed": "Speed",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Turn left"
-        },
-        "turnRight": {
-          "label": "Turn Right",
-          "speed": "Speed",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Turn right"
-        },
-        "spinLeft": {
-          "label": "Spin Left",
-          "speed": "Speed",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Spin left in place"
-        },
-        "spinRight": {
-          "label": "Spin Right",
-          "speed": "Speed",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Spin right in place"
-        },
-        "stop": {
-          "label": "Stop",
-          "tooltip": "Stop"
-        },
-        "motors": {
-          "label": "Motor Control",
-          "left": "Left",
-          "right": "Right",
-          "tooltip": "Set left and right motor speeds directly (-100 to 100)"
         }
       }
     }
@@ -3375,9 +3132,9 @@
       "time": "⏱️ Time",
       "i2c": "🔌 I2C",
       "uart": "📡 UART",
-      "humanoid": "🤖 OTTO Bipedal",
-      "wheelRobot": "🛞 OTTO Wheel",
-      "transform": "🐱 OTTO Ninja",
+      "humanoid": "🤖 Humanoid",
+      "wheelRobot": "🛞 Wheel",
+      "transform": "🐱 Transform",
       "ultrasonic": "📡 Ultrasonic Sensor",
       "dht": "🌡️ Temperature/Humidity",
       "digitalSensor": "📟 Digital Sensor",

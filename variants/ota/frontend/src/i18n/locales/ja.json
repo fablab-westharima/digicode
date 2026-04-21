@@ -310,7 +310,7 @@
     "dcMotor": "DCモーター (PWM制御)",
     "steppingMotor": "ステッピングモーター",
     "neoPixelLed": "NeoPixel LED (フルカラー)",
-    "esp32OnlyWarning": "このエディタはESP32専用です。Arduino Nano等を使用したOTTO DIY公式ロボットはそのままでは使用できません。ESP32に置き換えて使用する必要があります。",
+    "esp32OnlyWarning": "このエディタはESP32専用です。Arduino Nano等を使用したArduino Nano等を使用したロボットはそのままでは使用できません。ESP32に置き換えて使用する必要があります。",
     "warning": "注意:",
     "manageProjects": "保存されたプロジェクトを管理",
     "noProjects": "まだプロジェクトがありません",
@@ -893,13 +893,12 @@
     "presetNamePlaceholder": "プリセット名を入力",
     "create": "作成",
     "tabs": {
-      "otto": "Humanoid",
       "sensors": "センサー",
       "peripherals": "周辺機器",
-      "display": "ディスプレイ"
+      "display": "ディスプレイ",
+      "humanoid": "Humanoid"
     },
     "sections": {
-      "ottoRobot": "Humanoid ロボット",
       "wheelRobot": "Wheel",
       "transform": "Transform",
       "rus04": "RUS-04 超音波センサー (RGB付き)",
@@ -920,7 +919,8 @@
       "motorA": "モーター A",
       "motorB": "モーター B",
       "stepper": "ステッピングモーター (28BYJ-48)",
-      "oled": "I2C OLED ディスプレイ"
+      "oled": "I2C OLED ディスプレイ",
+      "humanoid": "Humanoid ロボット"
     },
     "pins": {
       "leftLeg": "左足 (Left Leg)",
@@ -945,7 +945,6 @@
     "description": "よく使うブロックカテゴリを選択してください。選択したカテゴリが「お気に入り」モードに表示されます。",
     "selectedCount": "選択中: {{count}} カテゴリ",
     "groups": {
-      "otto": "Humanoid ロボット",
       "competition": "競技ロボット",
       "homeAssistant": "Home Assistant",
       "motors": "モーター・駆動系",
@@ -953,7 +952,8 @@
       "actuators": "アクチュエーター",
       "gpioAndSerial": "GPIO・通信",
       "communicationAndControl": "通信・制御",
-      "logicBasic": "ロジック・基本"
+      "logicBasic": "ロジック・基本",
+      "robots": "Humanoid ロボット"
     }
   },
   "usbPortRelease": {
@@ -2664,249 +2664,6 @@
           "angle": "角度(0-270)",
           "tooltip": "ポテンショメータ（可変抵抗）の値を読み取ります"
         }
-      },
-      "otto": {
-        "init": {
-          "label": "Humanoid初期化",
-          "leftLeg": "左足",
-          "rightLeg": "右足",
-          "leftFoot": "左足首",
-          "rightFoot": "右足首",
-          "tooltip": "Humanoidロボットを初期化します（PWM直接制御）"
-        },
-        "home": {
-          "label": "Humanoidホームポジション",
-          "tooltip": "Humanoidを直立姿勢にします"
-        },
-        "walk": {
-          "label": "Humanoid歩く",
-          "steps": "歩",
-          "forward": "前進",
-          "backward": "後退",
-          "speed": "速度",
-          "normal": "普通",
-          "fast": "速い",
-          "slow": "遅い",
-          "tooltip": "Humanoidを歩かせます"
-        },
-        "turn": {
-          "label": "Humanoid回転",
-          "times": "回",
-          "left": "左",
-          "right": "右",
-          "speed": "速度",
-          "normal": "普通",
-          "fast": "速い",
-          "slow": "遅い",
-          "tooltip": "Humanoidを回転させます"
-        },
-        "jump": {
-          "label": "Humanoidジャンプ",
-          "times": "回",
-          "tooltip": "Humanoidをジャンプさせます"
-        },
-        "dance": {
-          "label": "Humanoidダンス",
-          "times": "回",
-          "tooltip": "Humanoidをダンスさせます"
-        },
-        "swing": {
-          "label": "Humanoidスウィング",
-          "times": "回",
-          "tooltip": "Humanoidを左右に揺らします"
-        },
-        "bend": {
-          "label": "Humanoid傾ける",
-          "left": "左",
-          "right": "右",
-          "times": "回",
-          "tooltip": "Humanoidを左右に傾けます"
-        },
-        "moonwalk": {
-          "label": "Humanoidムーンウォーク",
-          "steps": "歩",
-          "right": "右",
-          "left": "左",
-          "tooltip": "Humanoidをムーンウォークさせます"
-        },
-        "servo": {
-          "label": "Humanoidサーボ",
-          "leftLeg": "左足 (LL)",
-          "rightLeg": "右足 (RL)",
-          "leftFoot": "左足首 (LF)",
-          "rightFoot": "右足首 (RF)",
-          "angle": "角度",
-          "degrees": "度",
-          "tooltip": "Humanoidの各サーボを直接制御します（0-180度）"
-        }
-      },
-      "ottoNinja": {
-        "init": {
-          "label": "Transform初期化",
-          "leftLeg": "左足",
-          "rightLeg": "右足",
-          "leftFoot": "左足首",
-          "rightFoot": "右足首",
-          "tooltip": "Transformロボットを初期化します（歩行/走行変形）"
-        },
-        "mode": {
-          "label": "Ninjaモード",
-          "walkMode": "歩行モード (Walk)",
-          "rollMode": "走行モード (Roll)",
-          "tooltip": "Ninjaの動作モードを切り替えます"
-        },
-        "transform": {
-          "label": "Ninja変形",
-          "walkForm": "歩行形態",
-          "rollForm": "走行形態",
-          "tooltip": "Ninjaを変形させます"
-        },
-        "align": {
-          "label": "Ninjaアライン（90度）",
-          "tooltip": "全サーボを90度に設定（キャリブレーション用）"
-        },
-        "home": {
-          "label": "Ninjaホーム",
-          "tooltip": "ホームポジションに戻ります"
-        },
-        "walk": {
-          "label": "Ninja歩行",
-          "steps": "歩",
-          "forward": "前進",
-          "backward": "後退",
-          "tooltip": "歩行モードで歩きます"
-        },
-        "turn": {
-          "label": "Ninja回転",
-          "times": "回",
-          "left": "左",
-          "right": "右",
-          "tooltip": "歩行モードで回転します"
-        },
-        "trot": {
-          "label": "Ninjaトロット",
-          "steps": "歩",
-          "tooltip": "トロット歩行（対角歩行）をします"
-        },
-        "stop": {
-          "label": "Ninja停止",
-          "tooltip": "停止してホームポジションに戻ります"
-        },
-        "roll": {
-          "label": "Ninja走行",
-          "speed": "速度",
-          "verySlow": "遅い",
-          "normal": "普通",
-          "fast": "速い",
-          "fastest": "最速",
-          "forward": "前進",
-          "backward": "後退",
-          "time": "時間",
-          "ms": "ms",
-          "tooltip": "走行モードで移動します"
-        },
-        "rollRotate": {
-          "label": "Ninja走行回転",
-          "speed": "速度",
-          "slow": "遅い",
-          "normal": "普通",
-          "fast": "速い",
-          "left": "左",
-          "right": "右",
-          "time": "時間",
-          "ms": "ms",
-          "tooltip": "走行モードで回転します"
-        },
-        "pushup": {
-          "label": "Ninja腕立て",
-          "times": "回",
-          "tooltip": "腕立て伏せのような動きをします"
-        },
-        "dance": {
-          "label": "Ninjaダンス",
-          "times": "回",
-          "tooltip": "Ninjaをダンスさせます"
-        }
-      },
-      "ottoWheel": {
-        "init": {
-          "label": "Wheel初期化",
-          "leftWheel": "左ホイール",
-          "rightWheel": "右ホイール",
-          "tooltip": "Wheelロボットを初期化します（連続回転サーボ）"
-        },
-        "forward": {
-          "label": "前進",
-          "speed": "速度",
-          "slow": "遅い",
-          "normal": "普通",
-          "fast": "速い",
-          "fastest": "最速",
-          "time": "時間",
-          "ms": "ms",
-          "tooltip": "前進します"
-        },
-        "backward": {
-          "label": "後退",
-          "speed": "速度",
-          "slow": "遅い",
-          "normal": "普通",
-          "fast": "速い",
-          "fastest": "最速",
-          "time": "時間",
-          "ms": "ms",
-          "tooltip": "後退します"
-        },
-        "turnLeft": {
-          "label": "左折",
-          "speed": "速度",
-          "slow": "遅い",
-          "normal": "普通",
-          "fast": "速い",
-          "time": "時間",
-          "ms": "ms",
-          "tooltip": "左に曲がります"
-        },
-        "turnRight": {
-          "label": "右折",
-          "speed": "速度",
-          "slow": "遅い",
-          "normal": "普通",
-          "fast": "速い",
-          "time": "時間",
-          "ms": "ms",
-          "tooltip": "右に曲がります"
-        },
-        "spinLeft": {
-          "label": "左スピン",
-          "speed": "速度",
-          "slow": "遅い",
-          "normal": "普通",
-          "fast": "速い",
-          "time": "時間",
-          "ms": "ms",
-          "tooltip": "その場で左に回転します"
-        },
-        "spinRight": {
-          "label": "右スピン",
-          "speed": "速度",
-          "slow": "遅い",
-          "normal": "普通",
-          "fast": "速い",
-          "time": "時間",
-          "ms": "ms",
-          "tooltip": "その場で右に回転します"
-        },
-        "stop": {
-          "label": "停止",
-          "tooltip": "停止します"
-        },
-        "motors": {
-          "label": "モーター制御",
-          "left": "左",
-          "right": "右",
-          "tooltip": "左右のモーター速度を直接指定（-100〜100）"
-        }
       }
     }
   },
@@ -3365,9 +3122,9 @@
       "time": "⏱️ 時間",
       "i2c": "🔌 I2C",
       "uart": "📡 UART",
-      "humanoid": "🤖 OTTO 2足歩行",
-      "wheelRobot": "🛞 OTTO Wheel",
-      "transform": "🐱 OTTO Ninja",
+      "humanoid": "🤖 Humanoid",
+      "wheelRobot": "🛞 Wheel",
+      "transform": "🐱 Transform",
       "ultrasonic": "📡 超音波センサー",
       "dht": "🌡️ 温湿度センサー",
       "digitalSensor": "📟 デジタルセンサー",
