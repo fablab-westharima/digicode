@@ -115,7 +115,6 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="esp32_serial_println"></block>
   </category>`,
 
-  // Humanoid ロボット（旧 OTTO 二足歩行）
   robot_humanoid: `
   <category id="robotHumanoid" name="${cat('humanoid')}" colour="#FF6B35">
     <block type="humanoid_init"></block>
@@ -135,7 +134,6 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="humanoid_sound"></block>
   </category>`,
 
-  // Wheel ロボット（旧 OTTO Wheel）
   robot_wheel: `
   <category id="robotWheel" name="${cat('wheelRobot')}" colour="#4CAF50">
     <block type="wheel_init"></block>
@@ -150,7 +148,6 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="wheel_stop"></block>
   </category>`,
 
-  // Transform ロボット（旧 OTTO Ninja）
   robot_transform: `
   <category id="robotTransform" name="${cat('transform')}" colour="#9C27B0">
     <label text="${label('init')}"></label>
@@ -181,11 +178,11 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="ultrasonic_distance"></block>
     <sep gap="24"></sep>
     <label text="${label('rus04')}"></label>
-    <block type="otto_ultrasonic_init"></block>
-    <block type="otto_ultrasonic_distance"></block>
-    <block type="otto_ultrasonic_both_simple"></block>
-    <block type="otto_ultrasonic_rgb"></block>
-    <block type="otto_ultrasonic_off"></block>
+    <block type="rus04_init"></block>
+    <block type="rus04_distance"></block>
+    <block type="rus04_both_simple"></block>
+    <block type="rus04_rgb"></block>
+    <block type="rus04_off"></block>
   </category>`,
 
   // モーター
@@ -880,7 +877,6 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="esp_get_free_sketch_space"></block>
   </category>`,
 
-  // デジタルセンサー（Otto Blocklyスタイル）
   sensor_digital: `
   <category id="digitalSensor" name="${cat('digitalSensor')}" colour="#f59e0b">
     <block type="button_sensor"></block>
@@ -897,7 +893,6 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="digital_read"></block>
   </category>`,
 
-  // アナログセンサー（Otto Blocklyスタイル）
   // 姿勢・慣性センサー MPU6050 (BP5-1, 2026-04-20 追加)
   sensor_motion: `
   <category id="sensorMotion" name="${cat('sensorMotion')}" colour="#FF5722">
@@ -962,7 +957,6 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
-  // 配列（Otto Blocklyスタイル）
   lists: `
   <category id="lists" name="${cat('lists')}" colour="#FF8900">
     <block type="array_create">

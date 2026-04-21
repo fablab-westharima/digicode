@@ -42,7 +42,7 @@ export const digiCodeTheme = Blockly.Theme.defineTheme('digicode', {
       colourTertiary: '#db2777',
     },
     // ESP32/Arduino カスタムブロック
-    otto_blocks: {
+    robot_blocks: {
       colourPrimary: '#f97316',    // オレンジ
       colourSecondary: '#fb923c',
       colourTertiary: '#ea580c',
@@ -78,7 +78,7 @@ export const digiCodeTheme = Blockly.Theme.defineTheme('digicode', {
     list_category: { colour: '#8b5cf6' },
     variable_category: { colour: '#f43f5e' },
     procedure_category: { colour: '#ec4899' },
-    otto_category: { colour: '#f97316' },
+    robot_category: { colour: '#f97316' },
     sensor_category: { colour: '#06b6d4' },
     motor_category: { colour: '#64748b' },
     led_category: { colour: '#eab308' },
@@ -154,7 +154,7 @@ export const digiCodeDarkTheme = Blockly.Theme.defineTheme('digicode-dark', {
       colourTertiary: '#ec4899',
     },
     // ESP32/Arduino カスタムブロック
-    otto_blocks: {
+    robot_blocks: {
       colourPrimary: '#fb923c',    // オレンジ（明るめ）
       colourSecondary: '#fdba74',
       colourTertiary: '#f97316',
@@ -190,7 +190,7 @@ export const digiCodeDarkTheme = Blockly.Theme.defineTheme('digicode-dark', {
     list_category: { colour: '#a78bfa' },
     variable_category: { colour: '#fb7185' },
     procedure_category: { colour: '#f472b6' },
-    otto_category: { colour: '#fb923c' },
+    robot_category: { colour: '#fb923c' },
     sensor_category: { colour: '#22d3ee' },
     motor_category: { colour: '#94a3b8' },
     led_category: { colour: '#facc15' },

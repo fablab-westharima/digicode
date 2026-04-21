@@ -267,7 +267,7 @@ pythonGenerator.forBlock['dht_humidity'] = function() {
 
 // ===== RUS-04 Ultrasonic with RGB (HC-SR04 + WS2812B) =====
 
-Blockly.Blocks['otto_ultrasonic_init'] = {
+Blockly.Blocks['rus04_init'] = {
   init: function() {
     const pins = getSensorPins();
     this.appendDummyInput()
@@ -288,7 +288,7 @@ Blockly.Blocks['otto_ultrasonic_init'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ultrasonic_init'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['rus04_init'] = function(block: Blockly.Block) {
   const trigPin = block.getFieldValue('TRIG_PIN');
   const echoPin = block.getFieldValue('ECHO_PIN');
   const rgbPin = block.getFieldValue('RGB_PIN');
@@ -329,7 +329,7 @@ javascriptGenerator.forBlock['otto_ultrasonic_init'] = function(block: Blockly.B
          `  rus04Eyes.show();\n`;
 };
 
-pythonGenerator.forBlock['otto_ultrasonic_init'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['rus04_init'] = function(block: Blockly.Block) {
   const trigPin = block.getFieldValue('TRIG_PIN');
   const echoPin = block.getFieldValue('ECHO_PIN');
   const rgbPin = block.getFieldValue('RGB_PIN');
@@ -374,7 +374,7 @@ pythonGenerator.forBlock['otto_ultrasonic_init'] = function(block: Blockly.Block
 
 // ===== RUS-04 Distance =====
 
-Blockly.Blocks['otto_ultrasonic_distance'] = {
+Blockly.Blocks['rus04_distance'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(t('blocks.sensor.rus04.distance'));
@@ -384,19 +384,19 @@ Blockly.Blocks['otto_ultrasonic_distance'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ultrasonic_distance'] = function() {
+javascriptGenerator.forBlock['rus04_distance'] = function() {
   const code = 'rus04MeasureDistance()';
   return [code, Order.FUNCTION_CALL];
 };
 
-pythonGenerator.forBlock['otto_ultrasonic_distance'] = function() {
+pythonGenerator.forBlock['rus04_distance'] = function() {
   const code = 'rus04_measure_distance()';
   return [code, pyGen.ORDER_FUNCTION_CALL];
 };
 
 // ===== RUS-04 RGB LED両目色設定 =====
 
-Blockly.Blocks['otto_ultrasonic_rgb'] = {
+Blockly.Blocks['rus04_rgb'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(t('blocks.sensor.rus04.rgbBoth'))
@@ -411,7 +411,7 @@ Blockly.Blocks['otto_ultrasonic_rgb'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ultrasonic_rgb'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['rus04_rgb'] = function(block: Blockly.Block) {
   const leftColor = block.getFieldValue('LEFT_COLOR');
   const rightColor = block.getFieldValue('RIGHT_COLOR');
 
@@ -434,7 +434,7 @@ javascriptGenerator.forBlock['otto_ultrasonic_rgb'] = function(block: Blockly.Bl
          `  rus04Eyes.show();\n`;
 };
 
-pythonGenerator.forBlock['otto_ultrasonic_rgb'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['rus04_rgb'] = function(block: Blockly.Block) {
   const leftColor = block.getFieldValue('LEFT_COLOR');
   const rightColor = block.getFieldValue('RIGHT_COLOR');
 
@@ -457,7 +457,7 @@ pythonGenerator.forBlock['otto_ultrasonic_rgb'] = function(block: Blockly.Block)
 
 // ===== RUS-04 RGB LED左右個別 =====
 
-Blockly.Blocks['otto_ultrasonic_eye'] = {
+Blockly.Blocks['rus04_eye'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(t('blocks.sensor.rus04.rgbEye'))
@@ -470,7 +470,7 @@ Blockly.Blocks['otto_ultrasonic_eye'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ultrasonic_eye'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['rus04_eye'] = function(block: Blockly.Block) {
   const eye = block.getFieldValue('EYE');
   const color = block.getFieldValue('COLOR');
 
@@ -493,7 +493,7 @@ javascriptGenerator.forBlock['otto_ultrasonic_eye'] = function(block: Blockly.Bl
   }
 };
 
-pythonGenerator.forBlock['otto_ultrasonic_eye'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['rus04_eye'] = function(block: Blockly.Block) {
   const eye = block.getFieldValue('EYE');
   const color = block.getFieldValue('COLOR');
 
@@ -514,9 +514,9 @@ pythonGenerator.forBlock['otto_ultrasonic_eye'] = function(block: Blockly.Block)
   }
 };
 
-// ===== RUS-04 RGB 両目簡易設定 (same as otto_ultrasonic_rgb) =====
+// ===== RUS-04 RGB 両目簡易設定 (same as rus04_rgb) =====
 
-Blockly.Blocks['otto_ultrasonic_both_simple'] = {
+Blockly.Blocks['rus04_both_simple'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(t('blocks.sensor.rus04.rgbBoth'))
@@ -531,7 +531,7 @@ Blockly.Blocks['otto_ultrasonic_both_simple'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ultrasonic_both_simple'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['rus04_both_simple'] = function(block: Blockly.Block) {
   const leftColor = block.getFieldValue('LEFT_COLOR');
   const rightColor = block.getFieldValue('RIGHT_COLOR');
 
@@ -554,7 +554,7 @@ javascriptGenerator.forBlock['otto_ultrasonic_both_simple'] = function(block: Bl
          `  rus04Eyes.show();\n`;
 };
 
-pythonGenerator.forBlock['otto_ultrasonic_both_simple'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['rus04_both_simple'] = function(block: Blockly.Block) {
   const leftColor = block.getFieldValue('LEFT_COLOR');
   const rightColor = block.getFieldValue('RIGHT_COLOR');
 
@@ -577,7 +577,7 @@ pythonGenerator.forBlock['otto_ultrasonic_both_simple'] = function(block: Blockl
 
 // ===== RUS-04 RGB 明るさ =====
 
-Blockly.Blocks['otto_ultrasonic_brightness'] = {
+Blockly.Blocks['rus04_brightness'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(t('blocks.sensor.rus04.brightness'))
@@ -590,13 +590,13 @@ Blockly.Blocks['otto_ultrasonic_brightness'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ultrasonic_brightness'] = function(block: Blockly.Block) {
+javascriptGenerator.forBlock['rus04_brightness'] = function(block: Blockly.Block) {
   const brightness = block.getFieldValue('BRIGHTNESS');
   return `  rus04Eyes.setBrightness(${brightness});\n` +
          `  rus04Eyes.show();\n`;
 };
 
-pythonGenerator.forBlock['otto_ultrasonic_brightness'] = function(block: Blockly.Block) {
+pythonGenerator.forBlock['rus04_brightness'] = function(block: Blockly.Block) {
   const brightness = block.getFieldValue('BRIGHTNESS');
   return `# MicroPython NeoPixel doesn't support brightness directly\n` +
          `# Brightness: ${brightness} - requires color scaling implementation\n`;
@@ -604,7 +604,7 @@ pythonGenerator.forBlock['otto_ultrasonic_brightness'] = function(block: Blockly
 
 // ===== RUS-04 RGB 消灯 =====
 
-Blockly.Blocks['otto_ultrasonic_off'] = {
+Blockly.Blocks['rus04_off'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(t('blocks.sensor.rus04.off'));
@@ -615,12 +615,12 @@ Blockly.Blocks['otto_ultrasonic_off'] = {
   }
 };
 
-javascriptGenerator.forBlock['otto_ultrasonic_off'] = function() {
+javascriptGenerator.forBlock['rus04_off'] = function() {
   return `  rus04Eyes.clear();\n` +
          `  rus04Eyes.show();\n`;
 };
 
-pythonGenerator.forBlock['otto_ultrasonic_off'] = function() {
+pythonGenerator.forBlock['rus04_off'] = function() {
   return `rus04_eyes.fill((0, 0, 0))\n` +
          `rus04_eyes.write()\n`;
 };
