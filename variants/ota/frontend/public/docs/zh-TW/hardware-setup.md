@@ -70,6 +70,63 @@ GND    →   GND
 8      →   GPIO 26
 ```
 
+### 加速度計/陀螺儀（MPU6050）
+
+**腳位配置（I2C）：**
+```
+MPU6050    ESP32
+--------   ------
+VCC    →   3.3V
+GND    →   GND
+SDA    →   GPIO 21
+SCL    →   GPIO 22
+```
+
+**注意：** 位址為 0x68（AD0=LOW）或 0x69（AD0=HIGH）。可在同一 I2C 匯流排上連接多個裝置
+
+### 氣壓/溫濕度感測器（BME280 / BMP280）
+
+**腳位配置（I2C）：**
+```
+BME280     ESP32
+--------   ------
+VCC    →   3.3V
+GND    →   GND
+SDA    →   GPIO 21
+SCL    →   GPIO 22
+```
+
+**注意：** 預設位址 0x76（SDO=LOW）或 0x77（SDO=HIGH）。BMP280 僅測量溫度和氣壓；BME280 另可測量濕度
+
+### ToF 距離感測器（VL53L0X）
+
+**腳位配置（I2C）：**
+```
+VL53L0X    ESP32
+--------   ------
+VCC    →   3.3V
+GND    →   GND
+SDA    →   GPIO 21
+SCL    →   GPIO 22
+```
+
+**注意：** 位址 0x29。使用多個裝置時，透過 XSHUT 腳位逐一啟動並修改位址
+
+### 磁性編碼器（AS5600）
+
+**腳位配置（I2C）：**
+```
+AS5600     ESP32
+--------   ------
+VCC    →   3.3V
+GND    →   GND
+SDA    →   GPIO 21
+SCL    →   GPIO 22
+DIR    →   GND（順時針為正方向）或 3.3V（逆時針為正方向）
+```
+
+**注意：** 固定位址 0x36。磁鐵置於軸心正上方，感測器與磁鐵距離保持 0.5–3mm
+
 ## 致動器連接
 
 ### 伺服馬達（SG90 等）
@@ -115,6 +172,125 @@ DIN    →   GPIO 23
 ```
 
 **注意：** 使用多個 LED 時建議使用外部 5V 電源
+
+## 通訊模組連接
+
+### I2C LCD 顯示器（PCF8574 I2C 轉接板 + 16x2 LCD）
+
+**腳位配置（I2C）：**
+```
+I2C LCD    ESP32
+--------   ------
+VCC    →   5V（建議）或 3.3V
+GND    →   GND
+SDA    →   GPIO 21
+SCL    →   GPIO 22
+```
+
+**注意：** 透過 PCF8574 轉接板上的跳線設定 I2C 位址（預設 0x27）。建議使用 5V 供電（3.3V 可能導致顯示亮度不足）
+
+### TFT 顯示器（SPI — ST7789 / ILI9341）
+
+**腳位配置（硬體 SPI）：**
+```
+TFT        ESP32
+--------   ------
+VCC    →   3.3V
+GND    →   GND
+CS     →   GPIO 5
+DC     →   GPIO 2
+RST    →   GPIO 4
+SCK    →   GPIO 18（SPI CLK）
+MOSI   →   GPIO 23（SPI MOSI）
+MISO   →   GPIO 19（SPI MISO，可省略）
+BL     →   3.3V 或背光控制腳位
+```
+
+**注意：** 在積木中選擇驅動 IC（ST7789 / ILI9341 / ST7735）。若與 RFID 共用 SPI 匯流排，請更改 CS 腳位
+
+### RFID 讀卡機（RC522，SPI）
+
+**腳位配置（硬體 SPI）：**
+```
+RC522      ESP32
+--------   ------
+3.3V   →   3.3V
+GND    →   GND
+CS     →   GPIO 5
+SCK    →   GPIO 18（SPI CLK）
+MOSI   →   GPIO 23（SPI MOSI）
+MISO   →   GPIO 19（SPI MISO）
+RST    →   GPIO 22
+IRQ    →   不連接（輪詢方式不需要）
+```
+
+**注意：** RC522 僅支援 3.3V（禁止連接 5V）。若與 TFT 共用 SPI 匯流排，請更改 CS 腳位。無線電法相關注意事項請參閱[推薦硬體清單](./recommended-hardware.md)
+
+### IR 接收模組（VS1838B）
+
+**腳位配置：**
+```
+VS1838B    ESP32
+--------   ------
+VCC    →   3.3V 或 5V
+GND    →   GND
+OUT    →   GPIO 14
+```
+
+**注意：** OUT 腳位已在模組端內建上拉電阻。使用 IRremoteESP8266 函式庫（也適用於 ESP32）
+
+### DFPlayer Mini（MP3 播放，UART）
+
+**腳位配置：**
+```
+DFPlayer   ESP32
+--------   ------
+VCC    →   5V
+GND    →   GND
+RX     →   GPIO 12（串聯 1kΩ 電阻）
+TX     →   GPIO 14
+SPK+   →   喇叭（+）
+SPK−   →   喇叭（−）
+```
+
+**注意：** DFPlayer RX 腳位必須串聯 1kΩ 保護電阻。使用 SoftwareSerial（ESP32 RX=14，TX=12）。MP3 檔案請以 `/01/001.mp3` 格式存放於 microSD 卡
+
+## 攝影機模組連接
+
+ESP32 攝影機模組已內建腳位配置，只需在積木中選擇開發板類型即可完成設定，無需手動配置腳位。
+
+### ESP32-CAM（AI-Thinker）
+
+基板上已內建攝影機連接器，請另行連接 OV2640 攝影機模組。
+
+**燒錄注意事項：**
+- 燒錄前請用跳線將 IO0 短接至 GND，透過 USB-UART 轉接板燒錄
+- 燒錄完成後移除跳線並重新上電
+- ESP32-CAM 無 USB 埠，需使用 USB-UART 轉接板（3.3V）
+
+**電源：** 5V（USB 供電）或外部 5V。直接連接 3.3V 腳位不建議（攝影機運作時電流需求大，易導致不穩定）
+
+### XIAO ESP32S3 Sense
+
+攝影機（OV2640）和麥克風已內建於基板。透過專用軟排線連接攝影機即可使用，無需額外外部接線。
+
+## CAN Bus 連接（TWAI）
+
+使用 ESP32 內建 TWAI 控制器。需要外部 CAN 收發器 IC（如 SN65HVD230）。
+
+**腳位配置：**
+```
+SN65HVD230  ESP32
+----------  ------
+VCC     →   3.3V
+GND     →   GND
+D（TXD） →  GPIO 5（TX）
+R（RXD） →  GPIO 4（RX）
+CANH    →   CAN 匯流排 CANH 線
+CANL    →   CAN 匯流排 CANL 線
+```
+
+**注意：** 在 CAN 匯流排兩端各連接 120Ω 終端電阻。SN65HVD230 為 3.3V 工作電壓。法規相關注意事項請參閱[推薦硬體清單](./recommended-hardware.md)
 
 ## 接線最佳實務
 
