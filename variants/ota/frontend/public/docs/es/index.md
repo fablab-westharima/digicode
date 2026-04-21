@@ -1,75 +1,168 @@
-# Bienvenido a DigiCode
+# Documentación de DigiCode
 
-**DigiCode** es un entorno de programación visual para ESP32 usando Blockly.
-Crea programas con bloques de arrastrar y soltar, y cárgalos en tu placa ESP32 con un clic.
+**Última actualización:** 2026-04-21
 
----
-
-## Resumen General
-
-![Descripción del Flujo](/docs/images/flow-overview.svg)
+DigiCode es un entorno de programación visual que permite programar fácilmente robots y dispositivos IoT con ESP32 usando bloques.
 
 ---
 
-## Tres Métodos de Carga
+## Flujo General
 
-DigiCode soporta tres métodos de carga de programas:
+DigiCode funciona **solo con un cable USB**. No se necesita ninguna configuración especial.
 
-![Métodos de Carga](/docs/images/upload-methods.svg)
+| Paso | Contenido | Frecuencia |
+|------|-----------|------------|
+| **1. Preparar** | Obtener placa ESP32, cable USB y controlador USB | Solo la primera vez |
+| **2. Crear Programa** | Construir el programa en el editor de bloques | Cada vez |
+| **3. Cargar por USB** | Conectar cable USB y cargar | Cada vez |
 
-| Método | Características | Casos de Uso |
-|--------|-----------------|--------------|
-| **WiFi OTA** | Sin cables, el más rápido | Actualizaciones regulares |
-| **BLE** | Bluetooth, funciona sin WiFi | Cuando WiFi no está disponible |
-| **USB** | El más confiable | Configuración inicial, depuración |
+Repite los mismos pasos a partir de aquí. WiFi OTA / BLE son opciones adicionales para cargar sin cable.
 
----
-
-## Inicio Rápido
-
-### Configuración Inicial (Solo Primera Vez)
-
-![Pasos de Configuración Inicial](/docs/images/quickstart-initial.svg)
-
-1. **Subir Firmware vía USB**
-   - Conecta ESP32 al PC con cable USB
-   - Clic en "Cargar Firmware" en el menú lateral
-   - Sube el firmware base de DigiCode
-
-2. **Configurar WiFi** (para carga OTA)
-   - Ingresa SSID y contraseña
-   - Prueba la conexión
-   - Se mostrará una IP fija
-
-3. **Instalar DigiCode Finder** (Recomendado)
-   - Descarga la app de escritorio
-   - Detecta automáticamente dispositivos en la red
-
-### Creación de Programa (Repetir)
-
-![Pasos de Repetición](/docs/images/quickstart-repeat.svg)
-
-1. **Crear Programa** - Arrastra y suelta bloques en el editor
-2. **Subir** - Elige método de carga y sube
-3. **Verificar** - Confirma que el programa funciona
+→ Detalles: [Primeros Pasos](./getting-started.md)
 
 ---
 
-## Documentos Detallados
+## WiFi OTA / BLE (Opcional)
+
+Configura cuando quieras actualizar programas sin cable. Solo requiere escribir el **firmware** (software base OTA) vía USB una vez.
+
+> **¿Qué es el firmware?** El programa necesario para WiFi OTA / BLE. Contiene las instrucciones base mínimas que controlan y ejecutan directamente el hardware. **No es necesario si solo usas carga USB.**
+
+| Método | Características | Mejor para |
+|--------|----------------|------------|
+| **WiFi OTA** | Más rápido · sin cable | Actualizaciones múltiples, desarrollo habitual (nivel intermedio+) |
+| **BLE** | Sin cable · sin WiFi | Actualizar dispositivos en carcasas |
+
+→ Detalles: [Guía de Configuración OTA](./05-ota-guide.md)
+
+---
+
+## Placas Compatibles
+
+DigiCode es un editor de bloques **exclusivo para ESP32**.
+
+### ESP32 Genérico
+
+| Placa | WiFi OTA | BLE | Notas |
+|-------|:--------:|:---:|-------|
+| ESP32 | ○ | ○ | El más común |
+| ESP32-S3 | ○ | ○ | Alto rendimiento |
+| ESP32-C3 | ○ | ○ | Bajo consumo · RISC-V |
+| ESP32-C6 | ○ | ○ | Soporte Matter |
+
+### Serie M5Stack
+
+| Placa | WiFi OTA | BLE | Notas |
+|-------|:--------:|:---:|-------|
+| M5Stack Basic/Gray/Fire | ○ | ○ | — |
+| M5StickC Plus | ○ | ○ | Compacto |
+| ATOM Lite / Matrix | ○ | ○ | Ultra-compacto |
+| M5Stamp Pico | ○ | ○ | — |
+| M5Stamp C3/C3U | ○ | ○ | — |
+| **M5StampS3A** | ○ | ○ | **Placa recomendada DigiCode (tarjeta de expansión dedicada en desarrollo)** |
+
+### Serie Seeed XIAO
+
+| Placa | WiFi OTA | BLE | Notas |
+|-------|:--------:|:---:|-------|
+| XIAO ESP32C3 | ○ | ○ | — |
+| XIAO ESP32S3 | ○ | ○ | Soporte cámara |
+| XIAO ESP32C6 | ○ | ○ | — |
+
+→ Detalles: [Hardware Recomendado](./recommended-hardware.md)
+
+---
+
+## Software Necesario
+
+| Software | Propósito | Cuándo se necesita |
+|----------|----------|-------------------|
+| **Navegador web** (Chrome/Edge) | Aplicación DigiCode | Obligatorio |
+| **Controlador USB** (CP2102 o CH340) | Carga USB | Obligatorio |
+| **DigiCode Finder** | Detección de dispositivos WiFi | Solo con WiFi OTA |
+| **Docker** | Aceleración de compilación local | Solo con servidor local |
+
+### Descargar DigiCode Finder
+
+Aplicación de escritorio necesaria para cargas WiFi OTA.
+
+**Descarga:** https://github.com/fablab-westharima/DigiCode-Finder/releases
+
+| SO | Archivo |
+|----|---------|
+| Windows | `.exe` |
+| macOS | `.dmg` |
+| Linux | `.AppImage` |
+
+---
+
+## Planes
+
+DigiCode es gratuito para empezar.
+
+| Plan | Ideal para | Compilaciones nube | Función clases |
+|------|-----------|:-----------------:|:--------------:|
+| **Free** | Prueba / compilación local | 50/mes | — |
+| **Lite** | Aficionado individual | 250/mes | — |
+| **Pro** | Desarrollador / Maker | 500/mes | — |
+| **Enterprise** | Instituciones educativas / equipos | Ilimitadas | ○ |
+
+> **Acceso como invitado:** Puedes crear y cargar programas sin cuenta (solo guardado local).
+
+---
+
+## Función de Clases (Plan Enterprise)
+
+Gestión de clases para escuelas e instituciones educativas.
+
+| Rol | Capacidades |
+|-----|-------------|
+| **Profesor** | Crear clases, distribuir tareas, revisar entregas |
+| **Alumno** | Unirse a clases, entregar tareas, ver historial |
+
+→ Detalles: [FAQ (Función de Clases)](./faq.md)
+
+---
+
+## Documentación
+
+### Primeros Pasos
 
 | Documento | Contenido |
 |-----------|-----------|
-| [Primeros Pasos](./getting-started.md) | Configuración del entorno, primera carga |
-| [Pasos Comunes](./01-program-setup-common.md) | Terminología, procedimientos comunes |
-| [Guía de Carga ESP32](./04-program-setup-esp32.md) | Configuración específica de ESP32 |
-| [Guía de Configuración OTA](./05-ota-guide.md) | Configuración detallada de WiFi OTA |
-| [Referencia de Bloques](./block-reference.md) | Documentación completa de bloques |
-| [Configuración de Hardware](./hardware-setup.md) | Cableado de sensores y actuadores |
+| [Primeros Pasos](./getting-started.md) | Configuración inicial y primer programa |
+| [Hardware Recomendado](./recommended-hardware.md) | Lista de dispositivos verificados |
+
+### Guías de Carga
+
+| Documento | Contenido |
+|-----------|-----------|
+| [Pasos Comunes](./01-program-setup-common.md) | Definición de términos y resumen de métodos |
+| [Serie ESP32](./04-program-setup-esp32.md) | Detalles de carga para ESP32 |
+| [Configuración OTA (Opcional)](./05-ota-guide.md) | Configuración de WiFi OTA / BLE |
+
+### Referencia
+
+| Documento | Contenido |
+|-----------|-----------|
+| [Referencia de Bloques](./block-reference.md) | Cómo usar todos los bloques |
+| [Configuración de Hardware](./hardware-setup.md) | Cableado de sensores y motores |
 | [Solución de Problemas](./troubleshooting.md) | Problemas comunes y soluciones |
+| [FAQ](./faq.md) | Preguntas frecuentes |
+
+### Avanzado
+
+| Documento | Contenido |
+|-----------|-----------|
+| [Arquitectura](./architecture.md) | Estructura del sistema y stack tecnológico |
+| [Servidor de Compilación Local](./local-compile-server.md) | Compilar en tu propio PC (aceleración) |
 
 ---
 
 ## Soporte
 
-- **Problemas de GitHub**: https://github.com/fablab-westharima/DigiCode/issues
-- **Documentación**: Este sitio de documentación
+Si encuentras problemas, consulta:
+
+1. [Solución de Problemas](./troubleshooting.md)
+2. [FAQ](./faq.md)
+3. [GitHub Issues](https://github.com/fablab-westharima/DigiCode/issues)

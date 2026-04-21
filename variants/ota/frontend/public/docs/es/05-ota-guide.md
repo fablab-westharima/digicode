@@ -1,95 +1,189 @@
-# Guía de Configuración OTA
+# Guía de Configuración OTA (Opcional)
 
-**Última actualización:** 2025-12-28
+**Última actualización:** 2026-04-21
 
----
-
-## Introducción
-
-La carga OTA (Over-The-Air) te permite subir programas al ESP32 vía WiFi. Actualiza programas de forma inalámbrica sin cable USB.
+> **Esta guía es opcional.** DigiCode funciona **solo con un cable USB**. Familiarízate primero con el flujo USB en [Primeros Pasos](./getting-started.md) y consulta esta guía cuando lo necesites.
 
 ---
 
-## Ventajas y Limitaciones
+## ¿Qué es WiFi OTA?
+
+WiFi OTA (Over-The-Air) permite cargar programas de forma inalámbrica vía WiFi. Una vez configurado, puedes actualizar programas sin cable USB.
 
 ### Ventajas
-- No se necesita cable USB (solo WiFi)
-- Actualiza múltiples dispositivos simultáneamente
-- Actualiza incluso si el dispositivo está en una caja
 
-### Limitaciones
-- El firmware debe cargarse primero vía USB
-- Requiere entorno WiFi
-- ESP32 y PC deben estar en la misma red
+- Carga sin cable USB
+- El método más rápido (~15 seg)
+- Actualiza múltiples dispositivos simultáneamente
+- Actualiza dispositivos dentro de carcasas
+
+### Desventajas / Notas
+
+- Requiere configuración inicial (carga de firmware + configuración WiFi)
+- Requiere conexión WiFi
+- PC y ESP32 deben estar en la misma red
+- Requiere Bonjour/mDNS (instalación adicional en Windows)
+- No es posible cargar durante cortes de WiFi o cambios de red
+
+> **Recomendado para nivel intermedio+:** Los problemas con WiFi OTA pueden requerir recargar el firmware vía USB para recuperarse.
 
 ---
 
-## Requisitos Previos
+## Prerequisitos
 
-1. **Firmware cargado**
-   - Carga inicial vía USB desde "Cargar Firmware" en el menú
-
-2. **Router WiFi disponible**
-   - Red WiFi a la que ESP32 puede conectarse
-
-3. **DigiCode Finder (recomendado)**
-   - App de escritorio para detección de dispositivos
+1. **Placa ESP32** (compatible con WiFi OTA, supportsOta: true)
+2. **Router WiFi** (una red a la que se pueda conectar el ESP32)
+3. **DigiCode Finder** (recomendado)
    - https://github.com/fablab-westharima/DigiCode-Finder/releases
 
 ---
 
-## Paso 1: Conectar ESP32 a WiFi
+## Paso 1: Cargar el Firmware
 
-### Configuración WiFi vía USB
+Para usar WiFi OTA / BLE, necesitas cargar el **firmware** (software base OTA) una vez vía USB.
 
-1. Conecta ESP32 al PC vía cable USB
-2. Clic en "**Configuración WiFi**" en el menú lateral
-3. Selecciona puerto serial y clic en "Conectar"
-4. Ingresa en el diálogo de configuración WiFi:
-   - **SSID**: Nombre de la red WiFi
-   - **Contraseña**: Contraseña WiFi
-5. Clic en "Probar Conexión"
-6. Se mostrará una IP fija al tener éxito
+1. Conecta el ESP32 mediante cable USB
+2. Haz clic en **"Carga de Firmware"** en el menú izquierdo
+3. Haz clic en "INSTALL"
+4. Selecciona el puerto serie
+5. Espera a que se complete (~1 min)
+
+> Una vez cargado, normalmente no es necesario recargar el firmware. Se requiere recarga después de un borrado completo del flash.
 
 ---
 
-## Paso 2: Detectar Dispositivos con DigiCode Finder
+## Paso 2: Conectar el ESP32 a WiFi
+
+1. Conecta el ESP32 vía USB (misma conexión que la carga de firmware)
+2. Haz clic en **"Configuración WiFi"** en el menú izquierdo
+3. Selecciona el puerto serie y haz clic en "Conectar"
+4. En el diálogo de configuración WiFi, ingresa:
+   - **SSID**: Nombre de tu red WiFi
+   - **Contraseña**: Contraseña de tu WiFi
+5. Haz clic en "Prueba de Conexión"
+6. Después del éxito, se muestra la dirección IP fija
+
+> Si la prueba de conexión falla, la configuración no se guarda. Verifica tu SSID y contraseña.
+
+---
+
+## Paso 3: Detectar Dispositivo con DigiCode Finder
 
 ### ¿Qué es DigiCode Finder?
 
-Una app de escritorio que detecta automáticamente dispositivos DigiCode en la red vía mDNS.
+Aplicación de escritorio que detecta automáticamente dispositivos DigiCode en tu red via mDNS (v1.4.1).
 
 ### Instalación
 
-1. Ve a https://github.com/fablab-westharima/DigiCode-Finder/releases
-2. Descarga el archivo para tu SO:
-   - **Windows**: archivo `.exe`
-   - **macOS**: archivo `.dmg`
-   - **Linux**: archivo `.AppImage`
-3. Instala e inicia
+**Descarga:** https://github.com/fablab-westharima/DigiCode-Finder/releases
 
-### Para Usuarios de Windows
+| SO | Archivo |
+|----|---------|
+| Windows | `.exe` |
+| macOS | `.dmg` |
+| Linux | `.AppImage` |
 
-**Se requiere instalación de Bonjour.**
+### Usuarios de Windows: Instalar Bonjour
 
-Si no se detectan dispositivos después de iniciar DigiCode Finder:
-1. Clic en menú "Ayuda" → "Instalar Bonjour (Windows)"
+Si los dispositivos no se detectan después de abrir DigiCode Finder, se necesita Bonjour.
+
+1. En el menú de DigiCode Finder: "Help" → "Install Bonjour (Windows)"
 2. Descarga Bonjour Print Services del sitio oficial de Apple
-3. Reinicia el PC después de la instalación
+3. Instala y reinicia el PC
+
+### Detección de Dispositivos
+
+1. Abre DigiCode Finder
+2. Los dispositivos DigiCode en la misma red se listan automáticamente
+3. Se muestran nombre del dispositivo, dirección IP y versión de firmware
+
+### Copiar Dirección IP
+
+1. Haz clic en "Seleccionar" junto al dispositivo objetivo
+2. La dirección IP se copia al portapapeles
+
+### Seleccionar Múltiples Dispositivos
+
+1. Marca múltiples dispositivos
+2. Haz clic en "Seleccionar" (se copia JSON con múltiples IPs)
 
 ---
 
-## Paso 3: Carga de Programa WiFi OTA
+## Paso 4: Cargar via WiFi OTA
 
-### Carga a Un Solo Dispositivo
+### Dispositivo Único
 
-1. Crea el programa en DigiCode (navegador)
-2. Clic en botón "**Subir**"
-3. Selecciona "**WiFi OTA**"
-4. Aparece el diálogo de selección de dispositivo
-5. Si copiaste desde DigiCode Finder, se muestra automáticamente
-6. Selecciona dispositivo y clic en "Iniciar Carga"
-7. Espera a que se complete la barra de progreso
+1. Crea tu programa en el editor de bloques
+2. Haz clic en **"Cargar"** → **"WiFi OTA"**
+3. Pega la dirección IP en el diálogo de selección de dispositivo
+4. Haz clic en "Iniciar Carga" (~15 seg)
+
+### Carga Masiva a Múltiples Dispositivos
+
+1. Selecciona y copia múltiples dispositivos en DigiCode Finder
+2. Haz clic en "Cargar" → "WiFi OTA"
+3. Múltiples dispositivos aparecen en el diálogo
+4. Marca los objetivos y haz clic en "Iniciar Carga Masiva"
+
+---
+
+## Carga BLE (Opcional)
+
+Carga via Bluetooth Low Energy. Útil para lugares sin WiFi o actualizar dispositivos en carcasas.
+
+### Ventajas / Desventajas del BLE
+
+**Ventajas:**
+- Sin WiFi necesario
+- Sin cable
+- Actualiza dispositivos en carcasas
+
+**Desventajas:**
+- Más lento que WiFi OTA (~40 seg)
+- Requiere navegador compatible con Web Bluetooth
+- Prerequisito: carga de firmware (igual que WiFi OTA)
+
+### Prerequisitos
+
+- Firmware cargado (igual que el Paso 1)
+- Navegador compatible con Web Bluetooth (Chrome, Edge)
+
+### Placas compatibles
+
+Todas las placas ESP32 con BLE (supportsBle: true).
+
+### Pasos
+
+1. Crea tu programa
+2. Haz clic en **"Cargar"** → **"BLE"**
+3. Haz clic en "Buscar dispositivos"
+4. Selecciona "DigiCode-XXXXXX" en el diálogo Bluetooth del navegador
+5. Haz clic en "Emparejar"
+6. La carga comienza (~40 seg)
+
+### Solución de Problemas BLE
+
+| Síntoma | Solución |
+|---------|---------|
+| Dispositivo no encontrado | Reinicia el ESP32, reinicia el navegador |
+| Emparejamiento fallido | Acércate más, desconecta otras conexiones BLE |
+| La carga se detiene a la mitad | Reinicia el ESP32 e intenta de nuevo |
+
+---
+
+## Configuración del Nombre del Dispositivo
+
+Útil al gestionar múltiples dispositivos.
+
+1. Abre "Configuración WiFi" vía USB
+2. Ingresa el nuevo nombre en el campo "Nombre del Dispositivo"
+3. Haz clic en "Guardar"
+
+**Nomenclatura recomendada:**
+```
+DigiCode-[propósito]-[número]
+Ej: DigiCode-robot-001, DigiCode-class-02
+```
 
 ---
 
@@ -98,19 +192,45 @@ Si no se detectan dispositivos después de iniciar DigiCode Finder:
 ### Dispositivo No Detectado
 
 | Causa | Solución |
-|-------|----------|
-| WiFi no conectado | Verifica configuración WiFi vía USB |
-| Red diferente | Verifica que PC y ESP32 estén en mismo WiFi |
+|-------|---------|
+| WiFi no conectado | Verifica la configuración WiFi vía USB |
+| Red diferente | Asegúrate que el PC y ESP32 estén en la misma WiFi |
 | Bonjour no instalado (Windows) | Instala Bonjour Print Services |
-| Firewall | Permite mDNS (puerto 5353) |
+| Cortafuegos | Permite mDNS (puerto 5353) |
 
-### La Carga Se Detiene a Mitad
+### La Carga se Detiene a la Mitad
 
 | Causa | Solución |
-|-------|----------|
-| Señal WiFi débil | Acerca ESP32 al router |
+|-------|---------|
+| Señal WiFi débil | Acerca el ESP32 al router |
 | Congestión de red | Pausa otras transferencias grandes |
-| Timeout | Reinicia ESP32 e intenta de nuevo |
+| Tiempo de espera | Reinicia el ESP32 e intenta de nuevo |
+
+### Dispositivo No Responde Después de Cargar
+
+| Causa | Solución |
+|-------|---------|
+| Error en el programa | Recarga el firmware vía USB |
+| Pérdida de configuración WiFi | Rehaz la configuración WiFi vía USB |
+
+---
+
+## Restablecer Configuración WiFi
+
+Para restablecer la configuración WiFi:
+
+1. Abre "Carga de Firmware"
+2. Ejecuta "Borrar todo el flash (depuración)"
+3. Recarga el firmware
+4. Rehaz la configuración WiFi
+
+---
+
+## Notas de Seguridad
+
+- Úsalo solo en entornos de red de confianza
+- No se recomienda en WiFi público
+- Considera VPN o redes aisladas para entornos de producción
 
 ---
 
@@ -118,6 +238,7 @@ Si no se detectan dispositivos después de iniciar DigiCode Finder:
 
 | Documento | Contenido |
 |-----------|-----------|
-| [Primeros Pasos](./getting-started.md) | Configuración inicial |
-| [Pasos Comunes](./01-program-setup-common.md) | Terminología, procedimientos comunes |
+| [Primeros Pasos](./getting-started.md) | Flujo básico USB |
+| [Pasos Comunes](./01-program-setup-common.md) | Terminología, resumen de métodos |
+| [Guía ESP32](./04-program-setup-esp32.md) | Configuración específica de ESP32 |
 | [Solución de Problemas](./troubleshooting.md) | Guía de resolución de problemas |
