@@ -75,15 +75,6 @@ DigiCode supports three methods for uploading programs to ESP32.
 
 → Details: [ESP32 Upload Guide](./04-program-setup-esp32.md)
 
-### Other Microcontrollers (USB)
-
-| Board | Upload | Notes |
-|-------|:------:|-------|
-| Arduino Uno/Nano | USB | Beginner friendly |
-| Raspberry Pi Pico | USB | High performance |
-
-→ Details: [Arduino](./03-program-setup-arduino.md) / [RP2040](./02-program-setup-rp2040.md)
-
 ---
 
 ## Required Software
@@ -124,8 +115,6 @@ A desktop app is required for WiFi OTA device detection.
 | Document | Content |
 |----------|---------|
 | [Common Steps](./01-program-setup-common.md) | Terminology, common procedures |
-| [RP2040](./02-program-setup-rp2040.md) | Raspberry Pi Pico series |
-| [Arduino](./03-program-setup-arduino.md) | Arduino Uno/Nano series |
 | [ESP32](./04-program-setup-esp32.md) | All ESP32 (WiFi OTA/BLE/USB) |
 | [OTA Setup](./05-ota-guide.md) | WiFi OTA detailed setup |
 

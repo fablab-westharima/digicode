@@ -75,15 +75,6 @@ DigiCodeでは、ESP32へのプログラム書き込みに3つの方式が使え
 
 → 詳細: [ESP32書き込みガイド](./04-program-setup-esp32.md)
 
-### その他のマイコン（USB）
-
-| ボード | 書き込み | 備考 |
-|--------|:--------:|------|
-| Arduino Uno/Nano | USB | 入門向け |
-| Raspberry Pi Pico | USB | 高性能 |
-
-→ 詳細: [Arduino](./03-program-setup-arduino.md) / [RP2040](./02-program-setup-rp2040.md)
-
 ---
 
 ## 必要なソフトウェア
@@ -124,8 +115,6 @@ WiFi OTA書き込みには、デバイス検出用のデスクトップアプリ
 | ドキュメント | 内容 |
 |-------------|------|
 | [共通手順](./01-program-setup-common.md) | 用語定義、全マイコン共通手順 |
-| [RP2040](./02-program-setup-rp2040.md) | Raspberry Pi Pico系 |
-| [Arduino](./03-program-setup-arduino.md) | Arduino Uno/Nano系 |
 | [ESP32](./04-program-setup-esp32.md) | ESP32全般（WiFi OTA/BLE/USB） |
 | [OTA設定](./05-ota-guide.md) | WiFi OTA詳細設定 |
 

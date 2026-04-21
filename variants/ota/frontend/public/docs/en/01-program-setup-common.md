@@ -180,7 +180,5 @@ Additional setup after firmware upload:
 
 | Document | Content |
 |----------|---------|
-| [RP2040 Upload Guide](./02-program-setup-rp2040.md) | RP2040 upload steps |
-| [Arduino Upload Guide](./03-program-setup-arduino.md) | Arduino upload steps |
 | [ESP32 Upload Guide](./04-program-setup-esp32.md) | ESP32 upload steps |
 | [OTA Setup Guide](./05-ota-guide.md) | WiFi OTA detailed setup |

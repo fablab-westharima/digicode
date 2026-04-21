@@ -75,15 +75,6 @@ DigiCode 提供三種方式將程式燒錄到 ESP32。
 
 → 詳細: [ESP32 燒錄指南](./04-program-setup-esp32.md)
 
-### 其他微控制器（USB）
-
-| 開發板 | 燒錄方式 | 備註 |
-|--------|:--------:|------|
-| Arduino Uno/Nano | USB | 入門款 |
-| Raspberry Pi Pico | USB | 高效能 |
-
-→ 詳細: [Arduino](./03-program-setup-arduino.md) / [RP2040](./02-program-setup-rp2040.md)
-
 ---
 
 ## 必要軟體
@@ -124,8 +115,6 @@ DigiCode 提供三種方式將程式燒錄到 ESP32。
 | 文件 | 內容 |
 |------|------|
 | [共通步驟](./01-program-setup-common.md) | 術語定義、所有微控制器共通步驟 |
-| [RP2040](./02-program-setup-rp2040.md) | Raspberry Pi Pico 系列 |
-| [Arduino](./03-program-setup-arduino.md) | Arduino Uno/Nano 系列 |
 | [ESP32](./04-program-setup-esp32.md) | ESP32 全系列（WiFi OTA/BLE/USB） |
 | [OTA 設定](./05-ota-guide.md) | WiFi OTA 詳細設定 |
 

@@ -182,7 +182,5 @@ USBケーブルで接続して書き込む方式。
 
 | ドキュメント | 内容 |
 |-------------|------|
-| [02_プログラム書き込み_RP2040.md](./02-program-setup-rp2040.md) | RP2040系の書き込み手順 |
-| [03_プログラム書き込み_Arduino.md](./03-program-setup-arduino.md) | Arduino系の書き込み手順 |
 | [04_プログラム書き込み_ESP32.md](./04-program-setup-esp32.md) | ESP32系の書き込み手順 |
 | [05_OTA設定ガイド.md](./05-ota-guide.md) | WiFi OTA書き込みの詳細設定 |

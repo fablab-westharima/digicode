@@ -40,16 +40,6 @@ const docItems: DocItem[] = [
     icon: <Wrench className="w-5 h-5" />
   },
   {
-    id: 'program-setup-rp2040',
-    file: '02-program-setup-rp2040.md',
-    icon: <Cpu className="w-5 h-5" />
-  },
-  {
-    id: 'program-setup-arduino',
-    file: '03-program-setup-arduino.md',
-    icon: <Cpu className="w-5 h-5" />
-  },
-  {
     id: 'program-setup-esp32',
     file: '04-program-setup-esp32.md',
     icon: <Cpu className="w-5 h-5" />
