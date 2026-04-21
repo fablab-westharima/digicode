@@ -1,178 +1,147 @@
-# Program Upload - Common Steps
+# Program Upload — Common Steps
 
-**Last updated:** 2025-12-28
+**Last updated:** 2026-04-21
 
----
-
-## Introduction
-
-DigiCode allows you to upload programs created with Blockly to various microcontroller boards. This document explains the common preparation and basic workflow for all microcontrollers.
+DigiCode is an **ESP32-only** block programming environment. This document defines terminology and provides an overview of upload methods.
 
 ---
 
 ## Terminology
 
-### Firmware Upload
+DigiCode distinguishes between "Program Upload" and "Firmware Upload."
 
-Uploading DigiCode's base system software. This is **required only once**.
+### Program Upload (Normal operation)
 
-| Item | Description |
-|------|-------------|
-| **What is uploaded** | DigiCode base program (Arduino C++) |
-| **Upload method** | USB only |
-| **Frequency** | Initial only (except after Flash erase) |
-| **UI location** | Left menu "Firmware Upload" |
+Uploading the program you built with blocks to your microcontroller.
 
-### Program Upload
+| Item | Content |
+|------|---------|
+| **What is uploaded** | The program you made with blocks |
+| **Upload method** | **USB** (primary) / WiFi OTA / BLE |
+| **Frequency** | Any time (whenever you change the program) |
+| **UI location** | "Upload" button in the editor |
 
-Uploading user programs created with Blockly. Can be uploaded and updated multiple times after firmware is installed.
+### Firmware Upload (Only for WiFi OTA / BLE users)
 
-| Item | Description |
-|------|-------------|
-| **What is uploaded** | User program created in block editor |
-| **Upload method** | WiFi OTA / BLE / USB |
-| **Frequency** | Anytime (whenever program changes) |
-| **UI location** | Editor "Upload" button |
+Uploading the base software needed for WiFi OTA or BLE. **Not required if you only use USB upload.**
 
----
-
-## Supported Microcontrollers
-
-| Family | Boards | Upload Methods |
-|--------|--------|----------------|
-| **ESP32** | 9+ types | WiFi OTA / BLE / USB |
-| **RP2040** | 3+ types | USB |
-| **Arduino** | 4+ types | USB |
-
-### ESP32 Series
-- ESP32
-- ESP32-S2 / S3
-- ESP32-C2 / C3 / C5 / C6
-- ESP8266
-
-### RP2040 Series
-- Raspberry Pi Pico
-- Pimoroni Tiny 2040
-- Adafruit FeatherS2/S3
-
-### Arduino Series
-- Arduino Uno
-- Arduino Nano
-- Arduino Nano (Old Bootloader)
-- Arduino Leonardo
+| Item | Content |
+|------|---------|
+| **What is uploaded** | OTA base software (minimal base instructions that directly control and drive the hardware) |
+| **Upload method** | Via USB only |
+| **Frequency** | First time only when using WiFi OTA / BLE |
+| **UI location** | "Firmware Upload" in the left menu |
 
 ---
 
-## Three Upload Methods
+## Supported Boards
 
-### WiFi OTA (Over-The-Air)
+DigiCode is ESP32-only.
 
-Upload programs wirelessly via WiFi.
+| Category | Example boards | USB | WiFi OTA | BLE |
+|---------|---------------|:---:|:--------:|:---:|
+| **Generic ESP32** | ESP32 / S3 / C3 / C6 | ○ | ○ | ○ |
+| **M5Stack** | M5Stack Basic / M5StickC Plus / ATOM / M5Stamp etc. | ○ | ○ | ○ |
+| **XIAO ESP32** | XIAO ESP32C3 / S3 / C6 | ○ | ○ | ○ |
 
-| Item | Description |
-|------|-------------|
-| **Advantage** | Fast, no cable needed |
-| **Disadvantage** | Firmware upload required first |
-| **Supported boards** | ESP32 series |
-| **Requirements** | DigiCode Finder (device detection app) |
+> **Not supported:** ESP8266, Arduino Uno/Nano, and RP2040 series are outside DigiCode's support scope.
 
-### BLE (Bluetooth Low Energy)
+---
 
-Upload programs via Bluetooth.
+## 4 Upload Methods
 
-| Item | Description |
-|------|-------------|
-| **Advantage** | No cable, works without WiFi |
-| **Disadvantage** | Slower than WiFi OTA |
-| **Supported boards** | ESP32 (except S2) |
-| **Requirements** | Web Bluetooth browser (Chrome, Edge) |
+### 1. USB Direct Upload (Primary · Recommended)
 
-### USB Direct Upload
-
-Upload via USB cable connection.
-
-| Item | Description |
-|------|-------------|
-| **Advantage** | Reliable, works anywhere |
-| **Disadvantage** | Cable required |
+| Item | Content |
+|------|---------|
+| **Feature** | Most reliable · works in any environment |
+| **Speed** | Fast (~30 sec) |
+| **Cable** | Required |
+| **Prerequisites** | Install USB driver |
 | **Supported boards** | All boards |
-| **Requirements** | USB cable, drivers |
+
+### 2. WiFi OTA (Optional)
+
+| Item | Content |
+|------|---------|
+| **Feature** | No cable · fastest · bulk update multiple devices |
+| **Speed** | Fastest (~15 sec) |
+| **Cable** | Not required |
+| **Prerequisites** | Firmware upload + WiFi setup (first time only) |
+| **Supported boards** | ESP32 series (supportsOta: true) |
+| **Required** | WiFi router, DigiCode Finder |
+
+### 3. BLE (Optional)
+
+| Item | Content |
+|------|---------|
+| **Feature** | No cable · no WiFi needed |
+| **Speed** | Medium (~40 sec) |
+| **Cable** | Not required |
+| **Prerequisites** | Firmware upload (first time only) |
+| **Supported boards** | BLE-capable ESP32 (supportsBle: true) |
+| **Required** | Web Bluetooth-compatible browser (Chrome, Edge) |
+
+### 4. Local Compile Server (Speed-up option)
+
+| Item | Content |
+|------|---------|
+| **Feature** | No cloud compile quota used · offline capable |
+| **Required** | Docker (or OrbStack, Rancher Desktop, etc.) |
+| **Recommended plan** | Pro and above |
+
+→ Details: [Local Compile Server](./local-compile-server.md)
 
 ---
 
-## Requirements
+## What You Need
 
 ### Required
 - Computer (Windows / Mac / Linux)
-- Browser (Chrome, Edge recommended)
-- Supported microcontroller board
-- USB cable (for initial firmware upload)
+- Web browser (Chrome, Edge recommended)
+- Compatible ESP32 board
+- USB cable (data-capable)
+- USB driver (CP2102 or CH340)
 
 ### Optional
 - **For WiFi OTA:** WiFi router, DigiCode Finder
-- **For BLE:** Web Bluetooth browser
+- **For BLE:** Web Bluetooth-compatible browser (Chrome, Edge)
+- **For local compile:** Docker environment
 
 ---
 
-## Basic Firmware Upload Flow
+## Basic Upload Flow (USB)
 
-All microcontrollers require **firmware** upload first.
-
-### Steps
-
-1. **USB Connection**
-   - Connect microcontroller to PC via USB
-   - Verify board is recognized
-
-2. **Firmware Upload in DigiCode**
-   - Click "Firmware Upload" in left menu
-   - Click "INSTALL" button
-   - Select serial port
-   - Wait for upload (~1 minute)
-
-3. **Verification**
-   - Device restarts and operates normally
-
-### For ESP32 with WiFi OTA
-
-Additional setup after firmware upload:
-
-1. Click "WiFi Settings"
-2. Select serial port and connect
-3. Enter SSID and password
-4. Click "Connection Test"
-5. Fixed IP address is displayed after success
+1. Connect ESP32 to PC via USB cable
+2. Create your program in the block editor
+3. Click "Upload" → select "USB"
+4. Select serial port
+5. After upload completes, ESP32 auto-restarts and runs the program
 
 ---
 
-## Device Detection
+## If You Want to Use WiFi OTA / BLE
 
-### ESP32 (WiFi OTA)
-
-**Using DigiCode Finder (recommended):**
-
-1. Download DigiCode Finder
-   - https://github.com/fablab-westharima/DigiCode-Finder/releases
-2. Launch the app
-3. DigiCode devices on the same network are auto-detected
-
-### All Microcontrollers (USB)
+A one-time setup is required:
 
 1. Connect ESP32 via USB
-2. Click "Serial Monitor" in sidebar
-3. Select port and connect
-4. Output displayed means normal operation
+2. Go to "**Firmware Upload**" in the left menu → click "INSTALL"
+3. (WiFi OTA only) Configure WiFi in "WiFi Setup" with SSID and password
+4. After setup, you can upload via WiFi OTA / BLE without USB
+
+→ Details: [OTA Setup Guide](./05-ota-guide.md)
 
 ---
 
 ## Common Issues and Solutions
 
 | Symptom | Cause | Solution |
-|---------|-------|----------|
-| Device not recognized | USB connection issue | Reconnect cable, try different port |
-| Upload error | Missing driver | Install USB driver |
-| Not working after upload | Wrong device selection | Check board info and reset |
-| Not detected in WiFi OTA | WiFi not connected | Check WiFi settings via USB |
+|---------|-------|---------|
+| Port not shown | USB driver not installed | Install CP2102 or CH340 driver |
+| Upload error | Charge-only USB cable | Replace with a data-capable cable |
+| Timeout during upload | Unstable connection | Try a different USB port or cable |
+| Can't enter BOOT mode | Board-specific procedure | Hold BOOT button while starting upload |
+| Not detected via WiFi OTA | WiFi not connected or FW not flashed | Check firmware upload and WiFi setup via USB |
 
 ---
 
@@ -180,5 +149,6 @@ Additional setup after firmware upload:
 
 | Document | Content |
 |----------|---------|
-| [ESP32 Upload Guide](./04-program-setup-esp32.md) | ESP32 upload steps |
-| [OTA Setup Guide](./05-ota-guide.md) | WiFi OTA detailed setup |
+| [ESP32 Upload Guide](./04-program-setup-esp32.md) | ESP32 upload details |
+| [OTA Setup Guide](./05-ota-guide.md) | WiFi OTA / BLE setup |
+| [Local Compile Server](./local-compile-server.md) | Compile on your own PC |

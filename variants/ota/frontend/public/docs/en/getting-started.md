@@ -1,128 +1,152 @@
-# Getting Started - DigiCode
+# Getting Started
 
-**Last updated:** 2025-12-28
+**Last updated:** 2026-04-21
 
-DigiCode is a visual development environment for programming robots and IoT devices using ESP32 microcontrollers with block-based coding.
+DigiCode is a visual programming environment that makes it easy to program ESP32-based robots and IoT devices using blocks.
 
-![Setup 4 Steps](/docs/en/images/getting-started-steps.svg)
+This guide explains the **basic USB workflow**. For WiFi OTA / BLE setup, see the [OTA Setup Guide](./05-ota-guide.md).
 
-## Requirements
+---
+
+## What You Need
 
 ### Hardware
-- **ESP32 Development Board** - See [Recommended Hardware](./recommended-hardware.md)
-- USB Cable (Type-C or Micro-USB, depending on board)
-- Sensors and motors (as needed for your project)
 
-> **Important:** For stable operation, we recommend purchasing from vendors listed in the [Recommended Hardware](./recommended-hardware.md) guide.
+- **ESP32 development board** — see [Recommended Hardware](./recommended-hardware.md)
+- **USB cable** (Type-C or Micro-USB, data-capable)
+- Sensors and motors (depending on what you're making)
 
 ### Software
-- Modern web browser (Chrome, Edge recommended)
-- Internet connection
-- **DigiCode Finder** (Desktop app for WiFi OTA, optional)
 
-## Step 1: Create Account and Login
+- **Web browser** (Chrome or Edge recommended)
+- **USB driver** (CP2102 or CH340 — see below)
 
-1. Access DigiCode
-2. Click "Register"
-3. Enter email and password
-4. After registration, you'll be automatically logged in
+---
 
-## Step 2: Upload Firmware to ESP32
+## Create an Account (Optional)
 
-To use DigiCode, you first need to upload the dedicated firmware to your ESP32.
+**You can create and upload programs as a guest.** Create an account if you want to save programs to the cloud.
 
-1. Click "**Firmware Upload**" in the left menu
-2. Connect ESP32 to PC via USB cable
-3. Click "INSTALL" button
-4. Select the serial port
-5. Wait for upload to complete (~1 minute)
+1. Go to DigiCode
+2. Click "Login" → "Register"
+3. Enter your email and password
 
-> **Note:** Firmware only needs to be uploaded once. You can upload programs as many times as you want afterward.
+> **About plans:** Start with Guest (Free) to try it out. → [Plan Overview](./index.md#plans)
 
-## Step 3: Your First Program (LED Blink)
+---
 
-### Create the Program
+## Step 1: Install USB Driver
 
-1. The editor screen will appear
-2. Select blocks from the toolbox on the left:
+You need a USB driver before connecting your ESP32 to your PC.
 
-#### Setup Block
+| Chip | Example boards | Download |
+|------|---------------|---------|
+| **CP2102** | ESP32-DevKitC, M5StampS3A, etc. | https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers |
+| **CH340** | Many generic ESP32 boards | http://www.wch.cn/downloads/CH341SER_ZIP.html |
+
+> Check your board's product description to find the chip type. Restart your PC after installing.
+
+---
+
+## Step 2: Create a Program (LED Blink)
+
+1. Open the DigiCode editor
+2. Place the following blocks from the toolbox:
+
+**Setup block:**
 ```
 Setup:
-  Set pin mode [2] to [OUTPUT]
+  Set Pin Mode [2] to [OUTPUT]
 ```
 
-#### Loop Block
+**Loop block:**
 ```
-Loop forever:
-  Digital write [2] to [HIGH]
-  Wait [1000] milliseconds
-  Digital write [2] to [LOW]
-  Wait [1000] milliseconds
+Repeat forever:
+  Digital Write [2] HIGH
+  Wait [1000] ms
+  Digital Write [2] LOW
+  Wait [1000] ms
 ```
 
-### Upload to ESP32
+> GPIO2 is the ESP32 built-in LED.
 
-1. Click the "**Upload**" button
-2. Select upload method:
+---
 
-| Method | Use Case | Notes |
-|--------|----------|-------|
-| **WiFi OTA** | Regular updates (fastest) | Detect with DigiCode Finder |
-| **BLE** | Wireless update | Web Bluetooth browser required |
-| **USB** | Initial setup, reliable upload | Cable required |
+## Step 3: Upload via USB
 
-#### WiFi OTA Upload (Recommended)
+1. **Connect ESP32 to PC via USB cable**
+2. Click the **"Upload"** button in the editor
+3. Select **"USB"**
+4. Choose the ESP32 port in the browser's serial port dialog (e.g., COM3, /dev/ttyUSB0)
+5. Upload starts → ESP32 auto-restarts after completion
 
-1. Launch **DigiCode Finder** (desktop app)
-2. DigiCode devices on the network are auto-detected
-3. Click "Select" to copy IP address
-4. Return to DigiCode (browser) and select "WiFi OTA"
-5. Paste IP address and start upload
+**Verify:** The ESP32 built-in LED (GPIO2) blinks at 1-second intervals.
 
-> **Download DigiCode Finder:**
-> https://github.com/fablab-westharima/DigiCode-Finder/releases
+### If the port doesn't appear
 
-#### USB Upload
+The USB driver may not be installed correctly. Go back to Step 1 and install the driver.
 
-1. Select "USB"
-2. Select serial port
-3. Wait for upload to complete
-
-### Verify Operation
-
-The ESP32's built-in LED (GPIO2) will blink at 1-second intervals!
+---
 
 ## Step 4: Try Sample Projects
 
-1. Click "Samples" in the editor
-2. Choose a category:
-   - **Basic** - LED blink, serial communication
-   - **Sensors** - Ultrasonic, temperature/humidity
-   - **Competition** - Line tracer, micromouse
-3. Select and load a sample
-4. Modify pin numbers as needed
-5. Upload and verify operation
+1. Click the **"Samples"** button in the editor
+2. Choose from categories:
+   - **Basic** — LED blink, serial communication
+   - **Sensors** — ultrasonic sensor, temperature/humidity
+   - **Competition** — line tracing, micromouse
+3. Load the sample
+4. Adjust pin numbers as needed
+5. Upload via USB and verify
 
-## Comparison of Three Upload Methods
+---
 
-| Method | Advantage | Disadvantage |
-|--------|-----------|--------------|
-| **WiFi OTA** | Fast, no cable needed | Firmware upload required first |
-| **BLE** | No cable, works without AP | Slightly slower |
-| **USB** | Reliable, works anywhere | Cable required |
+## Difference Between Program Upload and Firmware Upload
 
-**Recommended:** Upload firmware via USB first, then use WiFi OTA for updates
+| Operation | Content | When |
+|-----------|---------|------|
+| **Program Upload** | Upload the program made with blocks | Every time (USB / WiFi OTA / BLE) |
+| **Firmware Upload** | Upload base software for WiFi OTA / BLE | **First time only, only if using WiFi OTA / BLE** |
+
+**If you only use USB, firmware upload is not required.**
+
+---
+
+## Optional: Upload Without a Cable
+
+If connecting a USB cable every time is inconvenient, you can set up WiFi OTA / BLE.
+
+- **WiFi OTA** — fastest wireless upload (supports bulk updates)
+- **BLE** — Bluetooth-based (no WiFi needed, great for cased devices)
+
+A one-time USB setup is required: **Firmware Upload** + WiFi configuration (~5 min).
+
+> **Intermediate+ recommended:** WiFi OTA requires network configuration and troubleshooting can be complex. We recommend getting comfortable with USB first before switching.
+
+→ Details: [OTA Setup Guide](./05-ota-guide.md)
+
+---
+
+## Using Classes (Enterprise Plan)
+
+- **Teachers:** Create a class and share the invitation URL with students
+- **Students:** Join the class via the invitation URL and complete assignments
+
+→ Details: [FAQ (Class Feature)](./faq.md)
+
+---
 
 ## Next Steps
 
-- [Recommended Hardware](./recommended-hardware.md) - Verified device list
-- [Block Reference](./block-reference.md) - How to use all blocks
-- [Hardware Setup](./hardware-setup.md) - Sensor and motor wiring
-- [OTA Setup Guide](./05-ota-guide.md) - WiFi OTA details
-- [Troubleshooting](./troubleshooting.md) - Common problems and solutions
-- [Local Compile Server](./local-compile-server.md) - Compile on your own PC (Advanced)
+- [Recommended Hardware](./recommended-hardware.md) — Verified device list
+- [Block Reference](./block-reference.md) — How to use all blocks
+- [Hardware Setup Guide](./hardware-setup.md) — Sensor and motor wiring
+- [Troubleshooting](./troubleshooting.md) — Common issues and solutions
+- [OTA Setup Guide](./05-ota-guide.md) — WiFi OTA / BLE configuration
+- [Local Compile Server](./local-compile-server.md) — Compile on your own PC (advanced)
+
+---
 
 ## Support
 
-If you encounter problems, check [Troubleshooting](./troubleshooting.md) or report issues on GitHub.
+If you encounter issues, check [Troubleshooting](./troubleshooting.md) or file a GitHub Issue.

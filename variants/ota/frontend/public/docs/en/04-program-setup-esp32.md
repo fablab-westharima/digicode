@@ -1,26 +1,28 @@
-# Program Upload - ESP32
+# Program Upload — ESP32
 
-**Last updated:** 2025-12-28
+**Last updated:** 2026-04-21
 
 ---
 
 ## Supported Boards
 
-- ESP32
-- ESP32-S2 / S3
-- ESP32-C2 / C3 / C5 / C6
-- ESP8266
-- Other ESP-IDF compatible boards
+| Board | USB | WiFi OTA | BLE | Notes |
+|-------|:---:|:--------:|:---:|-------|
+| ESP32 | ○ | ○ | ○ | Most common |
+| ESP32-S3 | ○ | ○ | ○ | High performance, AI expansion |
+| ESP32-C3 | ○ | ○ | ○ | RISC-V, low power |
+| ESP32-C6 | ○ | ○ | ○ | Matter support |
+| M5Stack Basic/Gray/Fire | ○ | ○ | ○ | — |
+| M5StickC Plus | ○ | ○ | ○ | Compact |
+| ATOM Lite / Matrix | ○ | ○ | ○ | Ultra-compact |
+| M5Stamp Pico | ○ | ○ | ○ | — |
+| M5Stamp C3/C3U | ○ | ○ | ○ | — |
+| **M5StampS3A** | ○ | ○ | ○ | DigiCode recommended board (dedicated breakout board in development) |
+| XIAO ESP32C3 | ○ | ○ | ○ | — |
+| XIAO ESP32S3 | ○ | ○ | ○ | Camera support |
+| XIAO ESP32C6 | ○ | ○ | ○ | — |
 
----
-
-## ESP32 Features
-
-ESP32 is a high-performance microcontroller with built-in WiFi/Bluetooth.
-
-- **Language:** Arduino C++
-- **Connection methods:** WiFi OTA, BLE, USB
-- **Bootloader:** Fixed in ROM (usually no replacement needed)
+> **Not supported:** ESP8266 is not supported by DigiCode.
 
 ---
 
@@ -28,201 +30,150 @@ ESP32 is a high-performance microcontroller with built-in WiFi/Bluetooth.
 
 | Term | Description |
 |------|-------------|
-| **Firmware** | DigiCode base program. USB upload, initial only |
-| **Program** | User program from block editor. Can be updated anytime |
+| **Program Upload** | Upload the program created in the block editor (every time) |
+| **Firmware Upload** | Upload base software for WiFi OTA / BLE (**first time only, only if using WiFi OTA / BLE**) |
 
 See [Common Steps](./01-program-setup-common.md) for details.
 
 ---
 
-## Three Upload Methods
+## Method 1: USB Direct Upload (Primary · Recommended)
 
-ESP32 supports three upload methods.
-
-| Method | Use Case | Supported Boards | Features |
-|--------|----------|------------------|----------|
-| **WiFi OTA** | Regular updates | All ESP32 | Fastest, no cable |
-| **BLE** | AP-restricted, enclosed devices | ESP32 (except S2) | No cable, works without WiFi |
-| **USB** | Initial setup, reliable upload | All boards | Works anywhere |
-
----
-
-## Method 1: WiFi OTA Upload (Recommended)
-
-The fastest wireless upload method.
-
-### Prerequisites
-
-- Firmware uploaded via USB
-- ESP32 connected to WiFi
-- DigiCode Finder (desktop app)
-
-### Steps
-
-1. **Launch DigiCode Finder**
-   - DigiCode devices on network are auto-detected
-   - Download: https://github.com/fablab-westharima/DigiCode-Finder/releases
-
-2. **Select device and copy IP**
-   - Click "Select" button for target device
-   - IP address is copied to clipboard
-
-3. **Upload in DigiCode (browser)**
-   - Create your program
-   - Click "Upload" button
-   - Select "WiFi OTA"
-   - Paste IP in device selection dialog
-   - Click "Start Upload"
-
-See [OTA Setup Guide](./05-ota-guide.md) for details.
-
----
-
-## Method 2: BLE Upload
-
-Upload via Bluetooth Low Energy. Useful for environments without WiFi or enclosed devices.
-
-### Prerequisites
-
-- Firmware uploaded via USB
-- Web Bluetooth browser (Chrome, Edge)
-
-### Supported Boards
-
-- ESP32 (standard)
-- ESP32-C3
-- ESP32-S3
-
-> **Note:** ESP32-S2 does not support BLE.
-
-### Steps
-
-1. **Create program in DigiCode (browser)**
-
-2. **Select "Upload" → "BLE"**
-
-3. **Start Bluetooth scan**
-   - Click "Search devices"
-   - Browser's Bluetooth dialog appears
-
-4. **Select device**
-   - Select device named "DigiCode-XXXXXX"
-   - Click "Pair"
-
-5. **Start upload**
-   - Progress bar is displayed
-   - Wait for completion (slower than WiFi OTA)
-
-### Troubleshooting
-
-| Symptom | Solution |
-|---------|----------|
-| Device not found | Restart ESP32, restart browser |
-| Pairing failed | Move closer, disconnect other BLE connections |
-| Upload stops midway | Restart ESP32 and retry |
-
----
-
-## Method 3: USB Direct Upload
-
-The most reliable upload method. Use for initial setup or troubleshooting.
+The most reliable upload method. Suitable for beginners and troubleshooting.
 
 ### Prerequisites
 
 - USB cable (data-capable)
 - USB driver (CP2102 or CH340)
 
-### Steps
+### Install USB Driver
 
-1. **Connect ESP32 to PC via USB cable**
+If ESP32 is not recognized, install the driver.
 
-2. **Create program in DigiCode (browser)**
-
-3. **Select "Upload" → "USB"**
-
-4. **Select serial port**
-   - Browser's serial port dialog appears
-   - Select the port for ESP32
-
-5. **Start upload**
-   - Four files are uploaded sequentially (fullPackage mode)
-   - bootloader.bin → partitions.bin → boot_app0.bin → firmware.bin
-
-### USB Driver Installation
-
-If ESP32 is not recognized, install USB drivers.
-
-**CP2102 chip boards:**
+**CP2102 boards (many ESP32-DevKitC, M5StampS3A, etc.):**
 - https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
 
-**CH340 chip boards:**
+**CH340 boards (many generic ESP32 boards):**
 - http://www.wch.cn/downloads/CH341SER_ZIP.html
+
+### Steps
+
+1. Connect ESP32 to PC via USB cable
+2. Create your program in the block editor
+3. Click **"Upload"** → select **"USB"**
+4. Select ESP32 port in the browser's serial port dialog
+5. Upload starts (~30 sec) → auto-restarts after completion
 
 ### Troubleshooting
 
 | Symptom | Solution |
-|---------|----------|
+|---------|---------|
 | Port not shown | Install USB driver |
-| Upload failed | Hold BOOT button while starting upload |
-| Timeout error | Try different USB port |
+| Upload fails | Hold BOOT button while starting upload |
+| Timeout error | Try a different USB port or cable |
 
 ---
 
-## Initial Firmware Upload
+## Method 2: WiFi OTA (Optional)
 
-Required when using DigiCode on a new ESP32.
+Cable-free, fastest upload method. Requires one-time setup.
+
+### Prerequisites
+
+- **Firmware uploaded** (done once via USB)
+- WiFi configured (SSID/password)
+- DigiCode Finder (desktop app)
 
 ### Steps
 
-1. Click "**Firmware Upload**" in left menu
-2. Connect ESP32 to PC via USB cable
-3. Click "INSTALL" button
-4. Select serial port
-5. Wait for upload (~1 minute)
+1. Launch DigiCode Finder, device auto-detected
+2. Click "Select" on the target device to copy IP address
+3. Click "Upload" → "WiFi OTA" → paste IP address
+4. Upload starts (~15 sec)
 
-### WiFi Setup (for OTA)
-
-After firmware upload, for WiFi OTA:
-
-1. Click "WiFi Settings"
-2. Select serial port and connect
-3. Enter SSID and password
-4. Click "Connection Test"
-5. Fixed IP address is displayed after success
+→ Setup details: [OTA Setup Guide](./05-ota-guide.md)
 
 ---
 
-## Serial Monitor for Debugging
+## Method 3: BLE (Optional)
 
-Serial monitor is useful for debugging programs.
+Bluetooth upload. Useful for updating cased devices or locations without WiFi.
 
-### In Browser
+### Prerequisites
 
-DigiCode has a built-in serial monitor:
+- **Firmware uploaded** (done once via USB)
+- Web Bluetooth-compatible browser (Chrome, Edge)
+
+### Supported Boards
+
+All BLE-capable (supportsBle: true) ESP32 series boards.
+
+### Steps
+
+1. Create your program
+2. Click "Upload" → select "BLE"
+3. Click "Scan for devices", Bluetooth scan starts
+4. Select "DigiCode-XXXXXX" and pair
+5. Upload starts (~40 sec)
+
+→ Setup details: [OTA Setup Guide](./05-ota-guide.md)
+
+---
+
+## Method 4: Local Compile Server (Speed-up option)
+
+Compile on your own PC — no cloud quota used, faster builds.
+
+→ Details: [Local Compile Server](./local-compile-server.md)
+
+---
+
+## Firmware Upload (Only for WiFi OTA / BLE users)
+
+Required only once for WiFi OTA or BLE use.
+
+### Steps
+
+1. Click **"Firmware Upload"** in the left menu
+2. Connect ESP32 via USB cable
+3. Click "INSTALL"
+4. Select serial port
+5. Wait for completion (~1 min)
+
+### WiFi Setup (for WiFi OTA)
+
+After firmware upload, to use WiFi OTA:
+
+1. Click "WiFi Setup"
+2. Select and connect to serial port
+3. Enter SSID and password
+4. Click "Connection Test"
+5. After success, fixed IP address is shown
+
+---
+
+## Serial Monitor
+
+Useful for debugging your program.
 
 1. Connect ESP32 via USB
-2. Click "Serial Monitor" in sidebar
+2. Click "Serial Monitor" in the sidebar
 3. Select port and click "Connect"
 4. Baud rate: 115200
 
-### In Arduino IDE
-
-1. Open Tools → Serial Monitor
-2. Baud rate: 115200
-3. ESP32 output is displayed
-
 ---
 
-## Choosing the Right Method
+## Choosing an Upload Method
 
-| Situation | Recommended Method |
-|-----------|--------------------|
-| Regular updates (fastest) | WiFi OTA |
-| No WiFi available | BLE |
-| Initial setup | USB |
-| Troubleshooting | USB |
-| Enclosed device | BLE or WiFi OTA |
-| Classroom/workshop (many devices) | WiFi OTA (batch update) |
+| Situation | Recommended |
+|-----------|-------------|
+| Beginner / regular development | **USB** (most reliable) |
+| WiFi OTA already set up | WiFi OTA (fastest) |
+| No WiFi environment | USB or BLE |
+| Cased device | BLE or WiFi OTA |
+| Classroom bulk update | WiFi OTA |
+| Save compile quota | Local compile server |
+| Troubleshooting / recovery | **USB** (most reliable) |
 
 ---
 
@@ -230,7 +181,8 @@ DigiCode has a built-in serial monitor:
 
 | Document | Content |
 |----------|---------|
-| [Common Steps](./01-program-setup-common.md) | Terminology, common procedures |
-| [OTA Setup Guide](./05-ota-guide.md) | WiFi OTA detailed setup |
+| [Common Steps](./01-program-setup-common.md) | Terminology, upload method overview |
+| [OTA Setup Guide](./05-ota-guide.md) | WiFi OTA / BLE setup details |
+| [Local Compile Server](./local-compile-server.md) | Compile on your own PC |
 | [Troubleshooting](./troubleshooting.md) | Problem solving guide |
-| [Hardware Setup](./hardware-setup.md) | Sensor and motor wiring |
+| [Hardware Setup Guide](./hardware-setup.md) | Sensor and motor wiring |

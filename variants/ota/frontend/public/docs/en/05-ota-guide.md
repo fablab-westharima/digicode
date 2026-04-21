@@ -1,182 +1,188 @@
-# OTA Setup Guide
+# OTA Setup Guide (Optional)
 
-**Last updated:** 2025-12-28
+**Last updated:** 2026-04-21
 
----
-
-## Introduction
-
-OTA (Over-The-Air) upload allows you to upload programs to ESP32 via WiFi. Update programs wirelessly without a USB cable.
+> **This guide is optional.** DigiCode works **with just a USB cable**. Get comfortable with the USB workflow in [Getting Started](./getting-started.md) first, then refer to this guide when needed.
 
 ---
 
-## Terminology
+## What is WiFi OTA?
 
-| Term | Description |
-|------|-------------|
-| **Firmware** | DigiCode base program. USB upload, initial only |
-| **Program** | User program from block editor. Can be updated via WiFi OTA anytime |
-
-See [Common Steps](./01-program-setup-common.md) for details.
-
----
-
-## OTA Advantages and Limitations
+WiFi OTA (Over-The-Air) lets you upload programs wirelessly via WiFi. Once set up, you can update programs without a USB cable.
 
 ### Advantages
-- No USB cable needed (WiFi only)
-- Update multiple devices simultaneously
-- Update even if device is in a case
 
-### Limitations
-- Firmware must be uploaded via USB first
-- WiFi environment required
-- ESP32 and PC must be on the same network
+- Upload without USB cable
+- Fastest method (~15 sec)
+- Update multiple devices simultaneously
+- Update devices inside enclosures
+
+### Disadvantages / Notes
+
+- One-time setup required (firmware upload + WiFi configuration)
+- Requires WiFi connection
+- PC and ESP32 must be on the same network
+- Requires Bonjour/mDNS (additional install on Windows)
+- Upload not possible during WiFi outages or network changes
+
+> **Intermediate+ recommended:** WiFi OTA issues can require firmware re-flashing via USB to recover.
 
 ---
 
 ## Prerequisites
 
-1. **Firmware is uploaded**
-   - Initial upload via USB from left menu "Firmware Upload"
-
-2. **WiFi router available**
-   - WiFi network ESP32 can connect to
-
-3. **DigiCode Finder (recommended)**
-   - Desktop app for device detection
+1. **ESP32 board** (WiFi OTA capable, supportsOta: true)
+2. **WiFi router** (a network your ESP32 can connect to)
+3. **DigiCode Finder** (recommended)
    - https://github.com/fablab-westharima/DigiCode-Finder/releases
 
 ---
 
-## Step 1: Connect ESP32 to WiFi
+## Step 1: Upload Firmware
 
-### WiFi Setup via USB
+To use WiFi OTA / BLE, you need to upload **firmware** (OTA base software) once via USB.
 
-1. Connect ESP32 to PC via USB cable
-2. Click "**WiFi Settings**" in left menu (or "Firmware Upload" → "WiFi Settings")
-3. Select serial port and click "Connect"
-4. Enter in WiFi settings dialog:
-   - **SSID**: WiFi network name
-   - **Password**: WiFi password
-5. Click "Connection Test"
-6. Fixed IP address is displayed after success
+1. Connect ESP32 via USB cable
+2. Click **"Firmware Upload"** in the left menu
+3. Click "INSTALL"
+4. Select serial port
+5. Wait for completion (~1 min)
 
-> **Note:** Settings are not saved unless connection test succeeds. Enter correct SSID and password.
-
-### Verify Settings
-
-After successful connection:
-- Device name
-- Assigned IP address
-- Connected SSID
+> Once uploaded, firmware normally does not need to be re-flashed. Re-flashing is required after a full flash erase.
 
 ---
 
-## Step 2: Detect Devices with DigiCode Finder
+## Step 2: Connect ESP32 to WiFi
 
-### What is DigiCode Finder
+1. Connect ESP32 via USB (same connection as firmware upload)
+2. Click **"WiFi Setup"** in the left menu
+3. Select serial port and click "Connect"
+4. In the WiFi setup dialog, enter:
+   - **SSID**: Your WiFi network name
+   - **Password**: Your WiFi password
+5. Click "Connection Test"
+6. After success, the fixed IP address is shown
 
-A desktop app that auto-detects DigiCode devices on the network via mDNS.
+> If the connection test fails, settings are not saved. Verify your SSID and password.
+
+---
+
+## Step 3: Detect Device with DigiCode Finder
+
+### About DigiCode Finder
+
+A desktop app that auto-detects DigiCode devices on your network via mDNS (v1.4.1).
 
 ### Installation
 
-1. Go to https://github.com/fablab-westharima/DigiCode-Finder/releases
-2. Download file for your OS:
-   - **Windows**: `.exe` file
-   - **macOS**: `.dmg` file
-   - **Linux**: `.AppImage` file
-3. Install and launch
+**Download:** https://github.com/fablab-westharima/DigiCode-Finder/releases
 
-### For Windows Users
+| OS | File |
+|----|------|
+| Windows | `.exe` |
+| macOS | `.dmg` |
+| Linux | `.AppImage` |
 
-**Bonjour installation is required.**
+### Windows Users: Install Bonjour
 
-If devices are not detected after launching DigiCode Finder:
-1. Click menu "Help" → "Install Bonjour (Windows)"
-2. Download Bonjour Print Services from Apple official site
-3. Restart PC after installation
+If devices aren't detected after launching DigiCode Finder, Bonjour is required.
+
+1. In DigiCode Finder menu: "Help" → "Install Bonjour (Windows)"
+2. Download Bonjour Print Services from Apple's official site
+3. Install and restart your PC
 
 ### Device Detection
 
 1. Launch DigiCode Finder
 2. DigiCode devices on the same network are auto-listed
-3. Detected devices show:
-   - Device name
-   - IP address
-   - Firmware version
+3. Device name, IP address, and firmware version are shown
 
 ### Copy IP Address
 
-1. Click "Select" button for target device
+1. Click "Select" next to the target device
 2. IP address is copied to clipboard
-3. Paste when selecting "WiFi OTA" in DigiCode (browser)
 
-### Multiple Device Selection
+### Select Multiple Devices
 
-You can select multiple devices at once:
 1. Check multiple devices
-2. Click "Select" button
-3. Multiple IP addresses are copied in JSON format
+2. Click "Select" (JSON with multiple IPs is copied)
 
 ---
 
-## Step 3: WiFi OTA Program Upload
+## Step 4: Upload via WiFi OTA
 
-### Single Device Upload
+### Single Device
 
-1. Create program in DigiCode (browser)
-2. Click "**Upload**" button
-3. Select "**WiFi OTA**"
-4. Device selection dialog appears
-5. If copied from DigiCode Finder, it's auto-displayed
-6. Select device and click "Start Upload"
-7. Wait for progress bar to complete
+1. Create your program in the block editor
+2. Click **"Upload"** → **"WiFi OTA"**
+3. Paste IP address in the device selection dialog
+4. Click "Start Upload" (~15 sec)
 
-### Batch Upload to Multiple Devices
+### Bulk Upload to Multiple Devices
 
-For updating multiple devices like in a classroom:
-
-1. Select multiple devices in DigiCode Finder and copy
-2. Select "Upload" → "WiFi OTA" in DigiCode (browser)
-3. Multiple devices are shown in device selection dialog
-4. Check targets (or select all)
-5. Click "Start Batch Upload"
-6. Progress is shown for each device
+1. Select and copy multiple devices in DigiCode Finder
+2. Click "Upload" → "WiFi OTA"
+3. Multiple devices appear in the dialog
+4. Check target devices and click "Start Bulk Upload"
 
 ---
 
-## Step 4: Verify Operation
+## BLE Upload (Optional)
 
-After upload, ESP32 automatically restarts and runs the program.
+Bluetooth Low Energy upload. Useful for locations without WiFi or updating devices in enclosures.
 
-### Verification Methods
+### BLE Advantages / Disadvantages
 
-1. **Check operation**: Verify program is running
-2. **Serial monitor**: Check serial output when USB connected
-3. **DigiCode Finder**: Device redetected means normal
+**Advantages:**
+- No WiFi needed
+- No cable
+- Update cased devices
+
+**Disadvantages:**
+- Slower than WiFi OTA (~40 sec)
+- Requires Web Bluetooth-compatible browser
+- Firmware upload prerequisite (same as WiFi OTA)
+
+### Prerequisites
+
+- Firmware uploaded (same as Step 1)
+- Web Bluetooth-compatible browser (Chrome, Edge)
+
+### Supported Boards
+
+All BLE-capable (supportsBle: true) ESP32 series boards.
+
+### Steps
+
+1. Create your program
+2. Click **"Upload"** → **"BLE"**
+3. Click "Scan for devices"
+4. Select "DigiCode-XXXXXX" in the browser Bluetooth dialog
+5. Click "Pair"
+6. Upload starts (~40 sec)
+
+### BLE Troubleshooting
+
+| Symptom | Solution |
+|---------|---------|
+| Device not found | Restart ESP32, restart browser |
+| Pairing fails | Move closer, disconnect other BLE devices |
+| Upload stops midway | Restart ESP32 and retry |
 
 ---
 
-## Device Name Settings
+## Device Name Setup
 
-Device names are important for managing multiple devices.
+Useful when managing multiple devices.
 
-### How to Change Device Name
-
-1. Open "WiFi Settings" via USB
+1. Open "WiFi Setup" via USB
 2. Enter new name in "Device Name" field
 3. Click "Save"
 
-### Recommended Naming Convention
-
+**Recommended naming:**
 ```
 DigiCode-[purpose]-[number]
-
-Examples:
-- DigiCode-robot-001
-- DigiCode-sensor-lab-a
-- DigiCode-class-02
+Examples: DigiCode-robot-001, DigiCode-class-02
 ```
 
 ---
@@ -186,16 +192,16 @@ Examples:
 ### Device Not Detected
 
 | Cause | Solution |
-|-------|----------|
-| WiFi not connected | Check WiFi settings via USB |
-| Different network | Verify PC and ESP32 on same WiFi |
+|-------|---------|
+| WiFi not connected | Check WiFi setup via USB |
+| Different network | Ensure PC and ESP32 are on same WiFi |
 | Bonjour not installed (Windows) | Install Bonjour Print Services |
 | Firewall | Allow mDNS (port 5353) |
 
 ### Upload Stops Midway
 
 | Cause | Solution |
-|-------|----------|
+|-------|---------|
 | Weak WiFi signal | Move ESP32 closer to router |
 | Network congestion | Pause other large transfers |
 | Timeout | Restart ESP32 and retry |
@@ -203,28 +209,28 @@ Examples:
 ### Device Unresponsive After Upload
 
 | Cause | Solution |
-|-------|----------|
-| Program error | Re-upload firmware via USB |
-| WiFi settings lost | Redo WiFi settings via USB |
+|-------|---------|
+| Program error | Re-flash firmware via USB |
+| WiFi settings lost | Redo WiFi setup via USB |
 
 ---
 
 ## Reset WiFi Settings
 
-To reset WiFi settings:
+To reset WiFi configuration:
 
 1. Open "Firmware Upload"
-2. Execute "Erase entire Flash (debug)"
-3. Re-upload firmware
-4. Redo WiFi settings
+2. Run "Erase entire flash (debug)"
+3. Re-flash firmware
+4. Redo WiFi setup
 
 ---
 
 ## Security Notes
 
-- Only use on trusted network environments
+- Use only on trusted networks
 - Not recommended on public WiFi
-- Consider VPN or isolated network for production
+- Consider VPN or isolated networks for production environments
 
 ---
 
@@ -232,7 +238,7 @@ To reset WiFi settings:
 
 | Document | Content |
 |----------|---------|
-| [Getting Started](./getting-started.md) | Initial setup |
-| [Common Steps](./01-program-setup-common.md) | Terminology, common procedures |
+| [Getting Started](./getting-started.md) | Basic USB workflow |
+| [Common Steps](./01-program-setup-common.md) | Terminology, upload method overview |
 | [ESP32 Upload Guide](./04-program-setup-esp32.md) | ESP32 specific settings |
 | [Troubleshooting](./troubleshooting.md) | Problem solving guide |
