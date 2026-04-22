@@ -379,7 +379,7 @@ export function Sidebar({
         action: onChangePassword || (() => {}),
         category: 'account' as const,
       },
-      ...(user?.accountType !== 'student' ? [{
+      ...(isAiAvailable ? [{
         id: 'ai-settings',
         label: t('sidebar.aiSettings', { defaultValue: 'AI 設定' }),
         icon: <Bot className="w-4 h-4" />,
