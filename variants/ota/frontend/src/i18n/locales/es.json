@@ -2896,6 +2896,10 @@
     "ota-guide": {
       "title": "Guía de Configuración OTA",
       "description": "Cómo configurar la grabación de programas por WiFi"
+    },
+    "ai-block-generation": {
+      "title": "Generación de Bloques con IA",
+      "description": "Genera blocos Blockly automáticamente con lenguaje natural (BYOK)"
     }
   },
   "firmware": {
@@ -3814,6 +3818,7 @@
       "basicBlocks": "Bloques básicos",
       "allBlocks": "Todos los bloques",
       "pinAssign": "Función de asignación de pines",
+      "aiBlockGeneration": "Generación de bloques con IA (BYOK)",
       "allFeatures": "Todas las funciones",
       "classFeature": "Función de clases"
     }

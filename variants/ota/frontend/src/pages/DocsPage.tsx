@@ -4,7 +4,7 @@ import i18n from 'i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Card, CardContent } from '@/components/ui/card';
-import { BookOpen, Wrench, Lightbulb, Blocks, HelpCircle, Cpu, Server, Wifi, Home } from 'lucide-react';
+import { BookOpen, Wrench, Lightbulb, Blocks, HelpCircle, Cpu, Server, Wifi, Home, Sparkles } from 'lucide-react';
 import { LocaleSelector } from '@/components/common/LocaleSelector';
 
 interface DocItem {
@@ -68,6 +68,11 @@ const docItems: DocItem[] = [
     id: 'local-compile-server',
     file: 'local-compile-server.md',
     icon: <Server className="w-5 h-5" />
+  },
+  {
+    id: 'ai-block-generation',
+    file: 'ai-block-generation.md',
+    icon: <Sparkles className="w-5 h-5" />
   }
 ];
 

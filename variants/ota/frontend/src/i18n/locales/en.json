@@ -2950,6 +2950,10 @@
     "ota-guide": {
       "title": "OTA Configuration Guide",
       "description": "Wireless program upload configuration and batch update guide"
+    },
+    "ai-block-generation": {
+      "title": "AI Block Generation",
+      "description": "Auto-generate Blockly blocks from natural language (BYOK)"
     }
   },
   "firmware": {
@@ -3629,6 +3633,7 @@
       "basicBlocks": "Basic blocks",
       "allBlocks": "All blocks",
       "pinAssign": "Pin assignment feature",
+      "aiBlockGeneration": "AI block generation (BYOK)",
       "allFeatures": "All features",
       "classFeature": "Class feature"
     }

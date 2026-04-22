@@ -2896,6 +2896,10 @@
     "ota-guide": {
       "title": "OTA設定指南",
       "description": "透過WiFi燒錄程式的設定方法"
+    },
+    "ai-block-generation": {
+      "title": "AI 積木生成",
+      "description": "從自然語言自動生成 Blockly 積木（BYOK）"
     }
   },
   "firmware": {
@@ -3814,6 +3818,7 @@
       "basicBlocks": "基本積木",
       "allBlocks": "所有積木",
       "pinAssign": "腳位指定功能",
+      "aiBlockGeneration": "AI 積木生成（BYOK）",
       "allFeatures": "所有功能",
       "classFeature": "班級功能"
     }

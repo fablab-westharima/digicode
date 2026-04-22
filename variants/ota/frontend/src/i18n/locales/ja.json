@@ -2940,6 +2940,10 @@
     "ota-guide": {
       "title": "OTA設定ガイド",
       "description": "WiFi経由でのプログラム書き込み設定方法"
+    },
+    "ai-block-generation": {
+      "title": "AIブロック生成",
+      "description": "自然言語からBlocklyブロックを自動生成（BYOK）"
     }
   },
   "firmware": {
@@ -3619,6 +3623,7 @@
       "basicBlocks": "基本ブロック",
       "allBlocks": "全ブロック",
       "pinAssign": "ピンアサイン機能",
+      "aiBlockGeneration": "AIブロック生成（BYOK）",
       "allFeatures": "全機能",
       "classFeature": "クラス機能"
     }
