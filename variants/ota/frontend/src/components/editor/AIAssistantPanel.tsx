@@ -279,7 +279,7 @@ export function AIAssistantPanel({
       )}
 
       {/* 会話履歴 */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto min-h-0 px-2 py-2 space-y-2">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto min-h-0 px-2 py-2 space-y-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#3E4451] [&::-webkit-scrollbar-thumb:hover]:bg-[#5C6370]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3E4451 transparent' }}>
         {conversation.length === 0 && (
           <p className="text-xs text-[#5C6370] text-center mt-4 px-2">
             {currentMode === 'blockGen'

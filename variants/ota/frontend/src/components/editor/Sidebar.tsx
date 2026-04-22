@@ -472,7 +472,7 @@ export function Sidebar({
       </div>
 
       {/* Navigation Items */}
-      <div className="flex-1 overflow-y-auto py-2 min-h-[30vh]">
+      <div className="flex-1 overflow-y-auto py-2 min-h-[30vh] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#3E4451] [&::-webkit-scrollbar-thumb:hover]:bg-[#5C6370]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3E4451 transparent' }}>
         {orderedCategories.map((category) => {
           const items = groupedItems[category];
           const isExpanded = expandedCategories.has(category);
