@@ -3819,6 +3819,7 @@
       "allBlocks": "Todos os blocos",
       "pinAssign": "Função de atribuição de pinos",
       "aiBlockGeneration": "Geração de blocos com IA (BYOK)",
+      "aiChat": "Chat IA (BYOK)",
       "allFeatures": "Todas as funcionalidades",
       "classFeature": "Funcionalidade de turmas"
     }

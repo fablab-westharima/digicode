@@ -318,8 +318,8 @@ export default function PlanPage() {
 function getFallbackFeatures(planId: string, t: (key: string) => string): string[] {
   const map: Record<string, string[]> = {
     free: [t('plan.features.cloudCompile50'), t('plan.features.basicBlocks')],
-    lite: [t('plan.features.cloudCompile250'), t('plan.features.basicBlocks'), t('plan.features.aiBlockGeneration')],
-    pro: [t('plan.features.cloudCompile500'), t('plan.features.allBlocks'), t('plan.features.pinAssign'), t('plan.features.aiBlockGeneration')],
+    lite: [t('plan.features.cloudCompile250'), t('plan.features.basicBlocks'), t('plan.features.aiBlockGeneration'), t('plan.features.aiChat')],
+    pro: [t('plan.features.cloudCompile500'), t('plan.features.allBlocks'), t('plan.features.pinAssign'), t('plan.features.aiBlockGeneration'), t('plan.features.aiChat')],
     enterprise: [t('plan.features.cloudCompileUnlimited'), t('plan.features.allFeatures'), t('plan.features.classFeature')],
   };
   return map[planId] || [];

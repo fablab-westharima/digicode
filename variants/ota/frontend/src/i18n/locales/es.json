@@ -3819,6 +3819,7 @@
       "allBlocks": "Todos los bloques",
       "pinAssign": "Función de asignación de pines",
       "aiBlockGeneration": "Generación de bloques con IA (BYOK)",
+      "aiChat": "Chat IA (BYOK)",
       "allFeatures": "Todas las funciones",
       "classFeature": "Función de clases"
     }

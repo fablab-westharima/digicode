@@ -3634,6 +3634,7 @@
       "allBlocks": "All blocks",
       "pinAssign": "Pin assignment feature",
       "aiBlockGeneration": "AI block generation (BYOK)",
+      "aiChat": "AI Chat (BYOK)",
       "allFeatures": "All features",
       "classFeature": "Class feature"
     }

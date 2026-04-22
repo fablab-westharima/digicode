@@ -3819,6 +3819,7 @@
       "allBlocks": "所有積木",
       "pinAssign": "腳位指定功能",
       "aiBlockGeneration": "AI 積木生成（BYOK）",
+      "aiChat": "AI 對話（BYOK）",
       "allFeatures": "所有功能",
       "classFeature": "班級功能"
     }
