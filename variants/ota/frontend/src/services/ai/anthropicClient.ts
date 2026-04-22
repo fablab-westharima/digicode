@@ -9,6 +9,7 @@ import {
 } from './systemPrompt';
 import { trimConversationForContext } from './conversationContext';
 import { validateBlocklyXml } from './xmlValidator';
+import { dryRunBlocklyXml } from './blocklyDryRun';
 import { AI_SYSTEM_PROMPTS } from '@/data/aiSystemPrompts';
 import { AiGenerationError, ApiAuthError, RateLimitError, ApiServerError, NetworkError } from './errors';
 
@@ -119,7 +120,12 @@ export class AnthropicClient implements AIClient {
 
       const result = validateBlocklyXml(lastRaw, allowedTypes);
       if (result.valid && result.sanitizedXml) {
-        return { xml: result.sanitizedXml, rawResponse: lastRaw, attempts: attempt };
+        // 静的検証 OK → Blockly ランタイムで dry-run（接続構造の検証）
+        const dryRun = dryRunBlocklyXml(result.sanitizedXml);
+        if (dryRun.valid) {
+          return { xml: result.sanitizedXml, rawResponse: lastRaw, attempts: attempt };
+        }
+        // dry-run 失敗 → 次の attempt へ（retry prefix で再生成を促す）
       }
     }
 
