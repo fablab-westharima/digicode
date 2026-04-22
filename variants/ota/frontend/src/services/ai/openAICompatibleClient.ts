@@ -79,7 +79,7 @@ export class OpenAICompatibleClient implements AIClient {
       filteredBlocks,
     });
 
-    const retryPrefix = AI_SYSTEM_PROMPTS[input.language].retryPrefix;
+    const retryPrefix = AI_SYSTEM_PROMPTS[input.language].blockGen.retryPrefix;
     let lastRaw = '';
 
     for (let attempt = 1; attempt <= 3; attempt++) {

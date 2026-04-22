@@ -84,7 +84,7 @@ function getFewShotExamples(mode: RobotMode): string {
 }
 
 export function buildSystemPrompt(ctx: SystemPromptContext): string {
-  const templates = AI_SYSTEM_PROMPTS[ctx.language];
+  const templates = AI_SYSTEM_PROMPTS[ctx.language].blockGen;
   const blockTypeList = ctx.filteredBlocks.map(b => b.type).join(', ');
 
   const contextLines = [
