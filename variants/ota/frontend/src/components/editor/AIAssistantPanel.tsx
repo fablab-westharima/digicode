@@ -316,7 +316,11 @@ export function AIAssistantPanel({
               <button
                 onClick={handleSend}
                 disabled={isBusy || !input.trim()}
-                className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded border border-[#2E333D] text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded border transition-colors ${
+                  isBusy || !input.trim()
+                    ? 'border-[#2E333D] text-[#5C6370] cursor-not-allowed'
+                    : 'border-blue-500 text-blue-400 hover:bg-blue-500/10'
+                }`}
               >
                 {isSending && <Loader2 className="w-3 h-3 animate-spin" />}
                 {t('ai.sendButton')}
