@@ -265,19 +265,6 @@ export function AIAssistantPanel({
         )}
       </div>
 
-      {/* blockGen タブで未解放: インライン CTA（判断 10 / isUpgradeCandidate）*/}
-      {currentMode === 'blockGen' && !isAvailable && isUpgradeCandidate && (
-        <div className="mx-2 mt-2 px-2 py-1.5 rounded border border-orange-900/50 bg-orange-950/20 text-xs text-orange-400 flex items-center justify-between gap-2 shrink-0">
-          <span>{t('ai.requiresLitePlus')}</span>
-          <button
-            onClick={onUpgradePlan}
-            className="text-blue-400 hover:text-blue-300 underline whitespace-nowrap"
-          >
-            {t('ai.upgradePlan')}
-          </button>
-        </div>
-      )}
-
       {/* 会話履歴 */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto min-h-0 px-2 py-2 space-y-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#3E4451] [&::-webkit-scrollbar-thumb:hover]:bg-[#5C6370]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3E4451 transparent' }}>
         {conversation.length === 0 && (

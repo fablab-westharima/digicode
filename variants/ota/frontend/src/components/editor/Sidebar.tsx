@@ -597,8 +597,8 @@ export function Sidebar({
         })}
       </div>
 
-      {/* AI Assistant Panel（全認証済みユーザーに表示、判断 10）*/}
-      {isAuthenticated && (
+      {/* AI Assistant Panel（Lite+ または upgrade 候補ユーザーに表示）*/}
+      {isAuthenticated && (isAiAvailable || isAiUpgradeCandidate) && (
         <div className={`${shouldShowFull ? 'flex-1 min-h-[40vh]' : ''} overflow-y-auto border-t border-[#2E333D]`}>
           <AIAssistantPanel
             onAppendBlocks={onAiAppendBlocks}

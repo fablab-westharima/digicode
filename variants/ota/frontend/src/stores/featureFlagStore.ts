@@ -79,9 +79,13 @@ export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
     return ['lite', 'pro', 'enterprise'].includes(userPlan);
   },
 
-  // HELP Bot: ゲスト除く全ログインユーザー対象（判断 10）
-  // ゲスト判定は呼び出し側の isAuthenticated チェックで行う
-  canUseAiHelpBot: (_userPlan?: string, _accountType?: string) => true,
+  // AI チャット: blockGen と同じく Lite+ 非 student 限定（判断 10 変更 2026-04-22）
+  // BYOK + 有料プランの差別化機能として位置づけ
+  canUseAiHelpBot: (userPlan?: string, accountType?: string) => {
+    if (accountType === 'student') return false;
+    if (!userPlan) return false;
+    return ['lite', 'pro', 'enterprise'].includes(userPlan);
+  },
 
   isFreeOpenNow: (key: string) => {
     const flag = get().flags[key];
