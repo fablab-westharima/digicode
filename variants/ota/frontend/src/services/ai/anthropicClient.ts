@@ -13,7 +13,7 @@ export class AnthropicClient implements AIClient {
   constructor(config: AiConfig) { this.config = config; }
 
   private async callOnce(systemPrompt: string, userPrompt: string): Promise<string> {
-    const model = this.config.model ?? DEFAULT_MODEL;
+    const model = (this.config.model?.trim()) || DEFAULT_MODEL;
 
     let response: Response;
     try {

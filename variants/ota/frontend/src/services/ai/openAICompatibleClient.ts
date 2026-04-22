@@ -27,7 +27,7 @@ export class OpenAICompatibleClient implements AIClient {
   }
 
   private async callOnce(systemPrompt: string, userPrompt: string): Promise<string> {
-    const model = this.config.model ?? DEFAULT_MODELS[this.config.provider] ?? 'gpt-4o';
+    const model = (this.config.model?.trim()) || DEFAULT_MODELS[this.config.provider] || 'gpt-4o';
 
     let response: Response;
     try {
