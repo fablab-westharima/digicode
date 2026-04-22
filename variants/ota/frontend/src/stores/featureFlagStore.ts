@@ -19,6 +19,7 @@ interface FeatureFlagState {
   fetchFlags: () => Promise<void>;
   canUsePinAssign: (userPlan?: string) => boolean;
   canUseAiBlockGeneration: (userPlan?: string, accountType?: string) => boolean;
+  canUseAiHelpBot: (userPlan?: string, accountType?: string) => boolean;
   isFreeOpenNow: (key: string) => boolean;
   getFreeReason: (key: string) => string | null;
   getFreeUntil: (key: string) => string | null;
@@ -77,6 +78,10 @@ export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
     if (!userPlan) return false;
     return ['lite', 'pro', 'enterprise'].includes(userPlan);
   },
+
+  // HELP Bot: ゲスト除く全ログインユーザー対象（判断 10）
+  // ゲスト判定は呼び出し側の isAuthenticated チェックで行う
+  canUseAiHelpBot: (_userPlan?: string, _accountType?: string) => true,
 
   isFreeOpenNow: (key: string) => {
     const flag = get().flags[key];

@@ -3819,12 +3819,10 @@
     "generateButton": "Generate",
     "generating": "Generating...",
     "noApiKey": "API key is not set",
-    "settingsLink": "Enter it in settings",
     "errorInvalidKey": "Invalid API key (401/403)",
     "errorRateLimit": "Rate limit reached (429)",
     "errorNetwork": "Network error (possibly CORS)",
     "errorGeneration": "Could not generate valid XML (3 attempts)",
-    "successAppended": "Blocks added to workspace",
     "provider": {
       "label": "AI Provider",
       "openai": "OpenAI",

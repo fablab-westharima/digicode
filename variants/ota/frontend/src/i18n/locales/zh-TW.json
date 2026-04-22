@@ -4004,12 +4004,10 @@
     "generateButton": "生成",
     "generating": "生成中...",
     "noApiKey": "尚未設定 API 金鑰",
-    "settingsLink": "前往設定輸入",
     "errorInvalidKey": "API 金鑰無效（401/403）",
     "errorRateLimit": "已達使用上限（429）",
     "errorNetwork": "網路錯誤（可能為 CORS 問題）",
     "errorGeneration": "無法生成有效的 XML（已嘗試 3 次）",
-    "successAppended": "已將積木新增至工作區",
     "provider": {
       "label": "AI 提供商",
       "openai": "OpenAI",

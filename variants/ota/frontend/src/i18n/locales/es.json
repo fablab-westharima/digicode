@@ -4004,12 +4004,10 @@
     "generateButton": "Generar",
     "generating": "Generando...",
     "noApiKey": "La clave API no está configurada",
-    "settingsLink": "Configurarla en ajustes",
     "errorInvalidKey": "Clave API no válida (401/403)",
     "errorRateLimit": "Límite de uso alcanzado (429)",
     "errorNetwork": "Error de red (posiblemente CORS)",
     "errorGeneration": "No se pudo generar XML válido (3 intentos)",
-    "successAppended": "Bloques añadidos al espacio de trabajo",
     "provider": {
       "label": "Proveedor de IA",
       "openai": "OpenAI",

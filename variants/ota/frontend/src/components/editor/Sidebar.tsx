@@ -122,7 +122,7 @@ export function Sidebar({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
-  const { canUsePinAssign, isFreeOpenNow, fetchFlags, canUseAiBlockGeneration } = useFeatureFlagStore();
+  const { canUsePinAssign, isFreeOpenNow, fetchFlags, canUseAiBlockGeneration, canUseAiHelpBot } = useFeatureFlagStore();
   const [isPinned, setIsPinned] = useState(false); // ピン留めなし
   const [isHovered, setIsHovered] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['project'])); // デフォルトでprojectを開く
@@ -137,6 +137,7 @@ export function Sidebar({
   const isPinAssignAvailable = canUsePinAssign(user?.plan);
   const isPinAssignFreeOpen = isFreeOpenNow('pin_assign_pro');
   const isAiAvailable = canUseAiBlockGeneration(user?.plan, user?.accountType);
+  const isHelpBotAvailable = canUseAiHelpBot(user?.plan, user?.accountType);
   const isAiUpgradeCandidate = isAuthenticated && user?.accountType !== 'student' && !isAiAvailable;
 
   const toggleCategory = (category: string) => {
@@ -595,8 +596,8 @@ export function Sidebar({
         })}
       </div>
 
-      {/* AI Assistant Panel */}
-      {(isAiAvailable || isAiUpgradeCandidate) && (
+      {/* AI Assistant Panel（全認証済みユーザーに表示、判断 10）*/}
+      {isAuthenticated && (
         <div className={`${shouldShowFull ? 'flex-1 min-h-[40vh]' : ''} overflow-y-auto border-t border-[#2E333D]`}>
           <AIAssistantPanel
             onAppendBlocks={onAiAppendBlocks}
@@ -605,6 +606,8 @@ export function Sidebar({
             shouldShowFull={shouldShowFull}
             onUpgradePlan={() => navigate('/plan')}
             isAvailable={isAiAvailable}
+            isHelpBotAvailable={isHelpBotAvailable}
+            isUpgradeCandidate={isAiUpgradeCandidate}
             onExpand={() => setIsAiDialogOpen(true)}
           />
         </div>
@@ -618,6 +621,8 @@ export function Sidebar({
         onClearWorkspace={onAiClearWorkspace}
         workspaceXml={workspaceXml}
         isAvailable={isAiAvailable}
+        isHelpBotAvailable={isHelpBotAvailable}
+        isUpgradeCandidate={isAiUpgradeCandidate}
         onUpgradePlan={() => navigate('/plan')}
       />
     </div>

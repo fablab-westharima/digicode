@@ -18,9 +18,11 @@ interface AIAssistantPanelProps {
   onClearWorkspace?: () => void;
   shouldShowFull: boolean;
   onUpgradePlan?: () => void;
-  isAvailable?: boolean;
-  onExpand?: () => void;       // ↗ ボタン押下時のコールバック（Sidebar がダイアログを開く）
-  showExpandButton?: boolean;  // ダイアログ内では false に（再帰防止）
+  isAvailable?: boolean;          // blockGen: Lite+ 非 student
+  isHelpBotAvailable?: boolean;   // helpBot: 全認証済みユーザー（判断 10）
+  isUpgradeCandidate?: boolean;   // blockGen アップグレード CTA 表示対象（Free 非 student）
+  onExpand?: () => void;
+  showExpandButton?: boolean;
 }
 
 const I18N_TO_AI_LANG: Record<string, AiLanguage> = {
@@ -41,7 +43,9 @@ export function AIAssistantPanel({
   onClearWorkspace,
   shouldShowFull,
   onUpgradePlan,
-  isAvailable,
+  isAvailable = false,
+  isHelpBotAvailable = false,
+  isUpgradeCandidate = false,
   onExpand,
   showExpandButton = true,
 }: AIAssistantPanelProps) {
@@ -63,7 +67,6 @@ export function AIAssistantPanel({
   const conversation = currentMode === 'blockGen' ? conversationBlockGen : conversationHelpBot;
   const hasConversation = conversationBlockGen.length > 0 || conversationHelpBot.length > 0;
 
-  // リロード警告（会話履歴が残っている時のみ）
   useBeforeUnloadWarning(hasConversation);
 
   useEffect(() => {
@@ -196,15 +199,15 @@ export function AIAssistantPanel({
     return (
       <div className="flex justify-center py-2">
         <Bot
-          className={`w-4 h-4 ${isAvailable === false ? 'text-[#5C6370] opacity-50' : 'text-[#8B949E]'}`}
-          title={isAvailable === false ? t('ai.requiresLitePlus') : t('ai.label')}
+          className={`w-4 h-4 ${!isAvailable && !isHelpBotAvailable ? 'text-[#5C6370] opacity-50' : 'text-[#8B949E]'}`}
+          title={!isAvailable && !isHelpBotAvailable ? t('ai.requiresLitePlus') : t('ai.label')}
         />
       </div>
     );
   }
 
-  // アップグレード CTA
-  if (isAvailable === false) {
+  // ゲスト（isHelpBotAvailable=false）: アップグレード CTA（Sidebar が isAuthenticated でガードするため通常未到達）
+  if (!isHelpBotAvailable) {
     return (
       <div className="px-2 py-2">
         <div className="px-2 py-1 text-xs font-semibold text-[#8B949E] uppercase tracking-wide flex items-center gap-1 mb-1">
@@ -214,10 +217,7 @@ export function AIAssistantPanel({
         </div>
         <div className="px-2 py-2 text-xs text-[#8B949E]">
           <p className="mb-1">{t('ai.requiresLitePlus')}</p>
-          <button
-            onClick={onUpgradePlan}
-            className="text-blue-400 hover:text-blue-300 underline text-xs"
-          >
+          <button onClick={onUpgradePlan} className="text-blue-400 hover:text-blue-300 underline text-xs">
             {t('ai.upgradePlan')}
           </button>
         </div>
@@ -225,6 +225,7 @@ export function AIAssistantPanel({
     );
   }
 
+  // 認証済みユーザー（helpBot 利用可、blockGen は isAvailable に依存）
   const isBusy = isSending || isGenerating;
 
   return (
@@ -244,7 +245,6 @@ export function AIAssistantPanel({
             {tab === 'blockGen' ? t('ai.tabBlockGen') : t('ai.tabHelp')}
           </button>
         ))}
-        {/* 書き出しボタン */}
         {conversation.length > 0 && (
           <button
             onClick={handleExport}
@@ -254,7 +254,6 @@ export function AIAssistantPanel({
             <Download className="w-3 h-3" />
           </button>
         )}
-        {/* ↗ 展開ボタン */}
         {showExpandButton && onExpand && (
           <button
             onClick={onExpand}
@@ -265,6 +264,19 @@ export function AIAssistantPanel({
           </button>
         )}
       </div>
+
+      {/* blockGen タブで未解放: インライン CTA（判断 10 / isUpgradeCandidate）*/}
+      {currentMode === 'blockGen' && !isAvailable && isUpgradeCandidate && (
+        <div className="mx-2 mt-2 px-2 py-1.5 rounded border border-orange-900/50 bg-orange-950/20 text-xs text-orange-400 flex items-center justify-between gap-2 shrink-0">
+          <span>{t('ai.requiresLitePlus')}</span>
+          <button
+            onClick={onUpgradePlan}
+            className="text-blue-400 hover:text-blue-300 underline whitespace-nowrap"
+          >
+            {t('ai.upgradePlan')}
+          </button>
+        </div>
+      )}
 
       {/* 会話履歴 */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto min-h-0 px-2 py-2 space-y-2">
@@ -294,7 +306,7 @@ export function AIAssistantPanel({
           onKeyDown={(e) => {
             if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
               e.preventDefault();
-              if (e.shiftKey && currentMode === 'blockGen') {
+              if (e.shiftKey && currentMode === 'blockGen' && isAvailable) {
                 handleGenerate();
               } else {
                 handleSend();
@@ -322,25 +334,30 @@ export function AIAssistantPanel({
                 {isSending && <Loader2 className="w-3 h-3 animate-spin" />}
                 {t('ai.sendButton')}
               </button>
-              <button
-                onClick={handleGenerate}
-                disabled={isBusy}
-                className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                {isGenerating
-                  ? <Loader2 className="w-3 h-3 animate-spin" />
-                  : <Sparkles className="w-3 h-3" />}
-                {isGenerating ? t('ai.generating') : t('ai.generateButton')}
-              </button>
+              {/* ブロック生成ボタン: blockGen 解放済みユーザーのみ表示 */}
+              {isAvailable && (
+                <button
+                  onClick={handleGenerate}
+                  disabled={isBusy}
+                  className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isGenerating
+                    ? <Loader2 className="w-3 h-3 animate-spin" />
+                    : <Sparkles className="w-3 h-3" />}
+                  {isGenerating ? t('ai.generating') : t('ai.generateButton')}
+                </button>
+              )}
             </div>
-            <button
-              onClick={onClearWorkspace}
-              disabled={isBusy}
-              className="mt-1 w-full flex items-center justify-center gap-1 px-2 py-1 text-[10px] text-[#5C6370] hover:text-red-400 hover:bg-[#2E333D] rounded disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              <Trash2 className="w-3 h-3" />
-              {t('ai.clearWorkspace')}
-            </button>
+            {isAvailable && (
+              <button
+                onClick={onClearWorkspace}
+                disabled={isBusy}
+                className="mt-1 w-full flex items-center justify-center gap-1 px-2 py-1 text-[10px] text-[#5C6370] hover:text-red-400 hover:bg-[#2E333D] rounded disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <Trash2 className="w-3 h-3" />
+                {t('ai.clearWorkspace')}
+              </button>
+            )}
           </>
         ) : (
           <button
