@@ -3823,6 +3823,7 @@
     "model": "モデル名（省略時はデフォルト）",
     "save": "保存",
     "saved": "保存しました",
+    "modelDocsLink": "利用可能なモデル一覧（公式）",
     "deleteApiKey": "APIキーを削除",
     "requiresLitePlus": "Liteプラン以上で利用できます",
     "upgradePlan": "プランをアップグレード"

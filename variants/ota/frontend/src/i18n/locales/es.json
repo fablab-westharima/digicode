@@ -4018,6 +4018,7 @@
     "model": "Nombre del modelo (por defecto si se omite)",
     "save": "Guardar",
     "saved": "Guardado",
+    "modelDocsLink": "Modelos disponibles (documentación oficial)",
     "deleteApiKey": "Eliminar clave API",
     "requiresLitePlus": "Disponible para el plan Lite o superior",
     "upgradePlan": "Actualizar plan"

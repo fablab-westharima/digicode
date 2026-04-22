@@ -4018,6 +4018,7 @@
     "model": "模型名稱（省略時使用預設）",
     "save": "保存",
     "saved": "已保存",
+    "modelDocsLink": "可用模型清單（官方）",
     "deleteApiKey": "刪除 API 金鑰",
     "requiresLitePlus": "Lite 方案以上可使用",
     "upgradePlan": "升級方案"

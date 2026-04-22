@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, Check } from 'lucide-react';
+import { AlertTriangle, Check, ExternalLink } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAiStore } from '@/stores/aiStore';
 import type { AiProvider } from '@/services/ai/index';
+
+const MODEL_DOC_LINKS: Partial<Record<AiProvider, string>> = {
+  openai:    'https://platform.openai.com/docs/models',
+  anthropic: 'https://docs.anthropic.com/en/docs/about-claude/models',
+  gemini:    'https://ai.google.dev/gemini-api/docs/models',
+};
 
 interface Props {
   open: boolean;
@@ -146,6 +152,17 @@ export function AIProviderSettingsDialog({ open, onOpenChange }: Props) {
               placeholder="gpt-4o-mini"
               className="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
+            {MODEL_DOC_LINKS[localProvider] && (
+              <a
+                href={MODEL_DOC_LINKS[localProvider]}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-1 inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300"
+              >
+                <ExternalLink className="w-3 h-3" />
+                {t('ai.modelDocsLink')}
+              </a>
+            )}
           </div>
         </div>
 
