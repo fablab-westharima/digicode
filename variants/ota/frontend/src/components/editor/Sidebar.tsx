@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { AIBlockGeneratorWidget } from './AIBlockGeneratorWidget';
+import { AIAssistantPanel } from './AIAssistantPanel';
 import {
   FolderOpen,
   Zap,
@@ -467,7 +467,7 @@ export function Sidebar({
       </div>
 
       {/* Navigation Items */}
-      <div className="flex-1 overflow-y-auto py-2">
+      <div className="flex-1 overflow-y-auto py-2 min-h-[30vh]">
         {orderedCategories.map((category) => {
           const items = groupedItems[category];
           const isExpanded = expandedCategories.has(category);
@@ -591,25 +591,16 @@ export function Sidebar({
         })}
       </div>
 
-      {/* AI Block Generator */}
+      {/* AI Assistant Panel */}
       {(isAiAvailable || isAiUpgradeCandidate) && (
-        <div className="border-t border-[#2E333D]">
-          <AIBlockGeneratorWidget
+        <div className={`${shouldShowFull ? 'flex-1 min-h-[40vh]' : ''} overflow-y-auto border-t border-[#2E333D]`}>
+          <AIAssistantPanel
             onAppendBlocks={onAiAppendBlocks}
             workspaceXml={workspaceXml}
             shouldShowFull={shouldShowFull}
             onUpgradePlan={() => navigate('/plan')}
             isAvailable={isAiAvailable}
           />
-        </div>
-      )}
-
-      {/* Footer - Collapse hint */}
-      {shouldShowFull && (
-        <div className="px-4 py-3 border-t border-[#2E333D]">
-          <div className="text-xs text-[#8B949E]">
-            {t('sidebar.hint', { defaultValue: 'サイドバーを折りたたむには左矢印をクリック' })}
-          </div>
         </div>
       )}
     </div>

@@ -4026,6 +4026,11 @@
     "modelDocsLink": "Modelos disponíveis (documentação oficial)",
     "deleteApiKey": "Eliminar chave API",
     "requiresLitePlus": "Disponível para o plano Lite ou superior",
-    "upgradePlan": "Atualizar plano"
+    "upgradePlan": "Atualizar plano",
+    "tabBlockGen": "Geração de blocos",
+    "tabHelp": "Ajuda",
+    "sendButton": "Enviar",
+    "sending": "A enviar...",
+    "helpBotPlaceholder": "Faz uma pergunta sobre o DigiCode"
   }
 }

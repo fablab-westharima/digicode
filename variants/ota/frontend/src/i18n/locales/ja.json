@@ -3831,6 +3831,11 @@
     "modelDocsLink": "利用可能なモデル一覧（公式）",
     "deleteApiKey": "APIキーを削除",
     "requiresLitePlus": "Liteプラン以上で利用できます",
-    "upgradePlan": "プランをアップグレード"
+    "upgradePlan": "プランをアップグレード",
+    "tabBlockGen": "ブロック生成",
+    "tabHelp": "ヘルプ",
+    "sendButton": "送信",
+    "sending": "送信中...",
+    "helpBotPlaceholder": "DigiCode の使い方を質問してください"
   }
 }

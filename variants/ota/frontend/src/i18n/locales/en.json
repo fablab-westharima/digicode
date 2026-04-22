@@ -3841,6 +3841,11 @@
     "modelDocsLink": "Available models (official docs)",
     "deleteApiKey": "Delete API key",
     "requiresLitePlus": "Available for Lite plan and above",
-    "upgradePlan": "Upgrade plan"
+    "upgradePlan": "Upgrade plan",
+    "tabBlockGen": "Block Generation",
+    "tabHelp": "Help",
+    "sendButton": "Send",
+    "sending": "Sending...",
+    "helpBotPlaceholder": "Ask a question about DigiCode"
   }
 }
