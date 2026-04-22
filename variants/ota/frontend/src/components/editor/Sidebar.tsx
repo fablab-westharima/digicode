@@ -64,6 +64,7 @@ interface SidebarProps {
   onGradedList?: () => void;
   currentSubmissionTitle?: string | null;
   onAiAppendBlocks?: (xml: string) => void;
+  onAiClearWorkspace?: () => void;
   workspaceXml?: string;
   onOpenAiSettings?: () => void;
 }
@@ -113,6 +114,7 @@ export function Sidebar({
   onGradedList,
   currentSubmissionTitle,
   onAiAppendBlocks,
+  onAiClearWorkspace,
   workspaceXml,
   onOpenAiSettings,
 }: SidebarProps) {
@@ -596,6 +598,7 @@ export function Sidebar({
         <div className={`${shouldShowFull ? 'flex-1 min-h-[40vh]' : ''} overflow-y-auto border-t border-[#2E333D]`}>
           <AIAssistantPanel
             onAppendBlocks={onAiAppendBlocks}
+            onClearWorkspace={onAiClearWorkspace}
             workspaceXml={workspaceXml}
             shouldShowFull={shouldShowFull}
             onUpgradePlan={() => navigate('/plan')}

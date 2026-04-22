@@ -3846,6 +3846,8 @@
     "tabHelp": "Help",
     "sendButton": "Send",
     "sending": "Sending...",
-    "helpBotPlaceholder": "Ask a question about DigiCode"
+    "helpBotPlaceholder": "Ask a question about DigiCode",
+    "clearWorkspace": "Clear workspace",
+    "systemMetaAdded": "Added {{count}} blocks"
   }
 }

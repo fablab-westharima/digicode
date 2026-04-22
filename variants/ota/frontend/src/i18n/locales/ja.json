@@ -3836,6 +3836,8 @@
     "tabHelp": "ヘルプ",
     "sendButton": "送信",
     "sending": "送信中...",
-    "helpBotPlaceholder": "DigiCode の使い方を質問してください"
+    "helpBotPlaceholder": "DigiCode の使い方を質問してください",
+    "clearWorkspace": "ワークスペースをクリア",
+    "systemMetaAdded": "{{count}} 個のブロックを追加しました"
   }
 }

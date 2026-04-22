@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bot, Loader2, Sparkles, AlertTriangle } from 'lucide-react';
+import { Bot, Loader2, Sparkles, AlertTriangle, Trash2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useAiStore } from '@/stores/aiStore';
@@ -11,8 +11,9 @@ import type { AiConfig, Message } from '@/services/ai/index';
 import type { AiLanguage } from '@/data/aiSystemPrompts';
 
 interface AIAssistantPanelProps {
-  onAppendBlocks?: (xml: string) => void;   // S4 で使用
-  workspaceXml?: string;                     // S4 で使用
+  onAppendBlocks?: (xml: string) => void;
+  workspaceXml?: string;
+  onClearWorkspace?: () => void;
   shouldShowFull: boolean;
   onUpgradePlan?: () => void;
   isAvailable?: boolean;
@@ -31,8 +32,9 @@ function resolveAiLanguage(lng: string): AiLanguage {
 }
 
 export function AIAssistantPanel({
-  onAppendBlocks: _onAppendBlocks,
-  workspaceXml: _workspaceXml,
+  onAppendBlocks,
+  workspaceXml,
+  onClearWorkspace,
   shouldShowFull,
   onUpgradePlan,
   isAvailable,
@@ -42,6 +44,7 @@ export function AIAssistantPanel({
     provider, apiKey, customEndpoint, model,
     currentMode, conversationBlockGen, conversationHelpBot,
     appendMessage, setCurrentMode, setLastTokenUsage,
+    isGenerating, setGenerating,
   } = useAiStore();
   const { mode: robotMode } = useRobotModeStore();
   const getSelectedBoard = useBoardStore((s) => s.getSelectedBoard);
@@ -61,7 +64,7 @@ export function AIAssistantPanel({
 
   const handleSend = async () => {
     const trimmedInput = input.trim();
-    if (!trimmedInput || isSending) return;
+    if (!trimmedInput || isSending || isGenerating) return;
     if (!apiKey.trim()) {
       setErrorMsg(t('ai.noApiKey'));
       return;
@@ -103,12 +106,61 @@ export function AIAssistantPanel({
       setLastTokenUsage(result.tokensUsed);
     } catch (err) {
       let msg = t('ai.errorGeneration');
-      if (err instanceof ApiAuthError)  msg = t('ai.errorInvalidKey');
+      if (err instanceof ApiAuthError)       msg = t('ai.errorInvalidKey');
       else if (err instanceof RateLimitError) msg = t('ai.errorRateLimit');
       else if (err instanceof NetworkError)   msg = t('ai.errorNetwork');
       setErrorMsg(msg);
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleGenerate = async () => {
+    if (isSending || isGenerating) return;
+    if (!apiKey.trim()) {
+      setErrorMsg(t('ai.noApiKey'));
+      return;
+    }
+
+    setGenerating(true);
+    setErrorMsg('');
+
+    const config: AiConfig = { provider, apiKey, customEndpoint, model };
+    const client = createAIClient(config);
+    const board = getSelectedBoard();
+    const language = resolveAiLanguage(i18n.language);
+    const generateRequest = input.trim() || 'Generate.';
+
+    try {
+      const result = await client.generateFromConversation({
+        messages: conversationBlockGen,
+        generateRequest,
+        language,
+        robotMode,
+        board,
+        existingXml: workspaceXml,
+      });
+
+      onAppendBlocks?.(result.xml);
+
+      const count = (result.xml.match(/<block /g) || []).length;
+      const metaMsg: Message = {
+        id: crypto.randomUUID(),
+        role: 'system-meta',
+        content: t('ai.systemMetaAdded', { count }) + ` (${robotMode} / ${board.name})`,
+        timestamp: Date.now(),
+        generatedXml: result.xml,
+      };
+      appendMessage('blockGen', metaMsg);
+      setInput('');
+    } catch (err) {
+      let msg = t('ai.errorGeneration');
+      if (err instanceof ApiAuthError)       msg = t('ai.errorInvalidKey');
+      else if (err instanceof RateLimitError) msg = t('ai.errorRateLimit');
+      else if (err instanceof NetworkError)   msg = t('ai.errorNetwork');
+      setErrorMsg(msg);
+    } finally {
+      setGenerating(false);
     }
   };
 
@@ -146,6 +198,8 @@ export function AIAssistantPanel({
     );
   }
 
+  const isBusy = isSending || isGenerating;
+
   return (
     <div className="flex flex-col h-full">
       {/* タブバー */}
@@ -177,10 +231,10 @@ export function AIAssistantPanel({
         {conversation.map((msg) => (
           <MessageBubble key={msg.id} msg={msg} />
         ))}
-        {isSending && (
+        {isBusy && (
           <div className="flex items-center gap-1 text-xs text-[#8B949E]">
             <Loader2 className="w-3 h-3 animate-spin" />
-            {t('ai.sending')}
+            {isGenerating ? t('ai.generating') : t('ai.sending')}
           </div>
         )}
       </div>
@@ -193,7 +247,11 @@ export function AIAssistantPanel({
           onKeyDown={(e) => {
             if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
               e.preventDefault();
-              handleSend();
+              if (e.shiftKey && currentMode === 'blockGen') {
+                handleGenerate();
+              } else {
+                handleSend();
+              }
             }
           }}
           placeholder={
@@ -202,20 +260,58 @@ export function AIAssistantPanel({
               : t('ai.helpBotPlaceholder')
           }
           rows={2}
-          disabled={isSending}
+          disabled={isBusy}
           className="w-full px-2 py-1.5 text-xs bg-[#0D1117] border border-[#2E333D] rounded text-[#E6EDF3] placeholder-[#8B949E] resize-none focus:outline-none focus:border-blue-500 disabled:opacity-50"
         />
-        <button
-          onClick={handleSend}
-          disabled={isSending || !input.trim()}
-          className="mt-1 w-full flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {isSending ? (
-            <><Loader2 className="w-3 h-3 animate-spin" />{t('ai.sending')}</>
-          ) : (
-            <><Sparkles className="w-3 h-3" />{t('ai.sendButton')}</>
-          )}
-        </button>
+
+        {currentMode === 'blockGen' ? (
+          <>
+            {/* [送信] + [ブロック生成] */}
+            <div className="mt-1 flex gap-1">
+              <button
+                onClick={handleSend}
+                disabled={isBusy || !input.trim()}
+                className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded border border-[#2E333D] text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                {isSending
+                  ? <Loader2 className="w-3 h-3 animate-spin" />
+                  : null}
+                {t('ai.sendButton')}
+              </button>
+              <button
+                onClick={handleGenerate}
+                disabled={isBusy}
+                className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                {isGenerating
+                  ? <Loader2 className="w-3 h-3 animate-spin" />
+                  : <Sparkles className="w-3 h-3" />}
+                {isGenerating ? t('ai.generating') : t('ai.generateButton')}
+              </button>
+            </div>
+            {/* [ワークスペースをクリア] */}
+            <button
+              onClick={onClearWorkspace}
+              disabled={isBusy}
+              className="mt-1 w-full flex items-center justify-center gap-1 px-2 py-1 text-[10px] text-[#5C6370] hover:text-red-400 hover:bg-[#2E333D] rounded disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <Trash2 className="w-3 h-3" />
+              {t('ai.clearWorkspace')}
+            </button>
+          </>
+        ) : (
+          /* helpBot: [送信] のみ */
+          <button
+            onClick={handleSend}
+            disabled={isBusy || !input.trim()}
+            className="mt-1 w-full flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {isSending
+              ? <><Loader2 className="w-3 h-3 animate-spin" />{t('ai.sending')}</>
+              : <><Sparkles className="w-3 h-3" />{t('ai.sendButton')}</>}
+          </button>
+        )}
+
         {errorMsg && (
           <div className="mt-1 flex items-start gap-1 text-xs text-red-400">
             <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" />
@@ -238,7 +334,16 @@ function MessageBubble({ msg }: { msg: Message }) {
     );
   }
 
-  // assistant（ReactMarkdown でレンダリング）
+  if (msg.role === 'system-meta') {
+    return (
+      <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-[#2E333D]/50 text-[10px] text-[#8B949E]">
+        <Sparkles className="w-3 h-3 shrink-0" />
+        <span>{msg.content}</span>
+      </div>
+    );
+  }
+
+  // assistant
   return (
     <div className="flex items-start gap-1.5">
       <Bot className="w-3.5 h-3.5 text-[#8B949E] shrink-0 mt-0.5" />

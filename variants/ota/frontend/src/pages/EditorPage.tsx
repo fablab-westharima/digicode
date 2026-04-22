@@ -1605,6 +1605,7 @@ export function EditorPage() {
             onGradedList={() => setGradedListOpen(true)}
             currentSubmissionTitle={currentSubmission?.assignmentTitle || null}
             onAiAppendBlocks={(xml) => blocklyEditorRef.current?.appendBlocks(xml)}
+            onAiClearWorkspace={() => blocklyEditorRef.current?.loadXml('<xml xmlns="https://developers.google.com/blockly/xml"></xml>')}
             workspaceXml={workspaceXml}
             onOpenAiSettings={() => setAiSettingsDialogOpen(true)}
           />

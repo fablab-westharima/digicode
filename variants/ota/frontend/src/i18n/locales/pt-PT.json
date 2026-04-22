@@ -4031,6 +4031,8 @@
     "tabHelp": "Ajuda",
     "sendButton": "Enviar",
     "sending": "A enviar...",
-    "helpBotPlaceholder": "Faz uma pergunta sobre o DigiCode"
+    "helpBotPlaceholder": "Faz uma pergunta sobre o DigiCode",
+    "clearWorkspace": "Limpar área de trabalho",
+    "systemMetaAdded": "{{count}} blocos adicionados"
   }
 }
