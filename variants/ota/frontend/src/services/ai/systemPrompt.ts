@@ -145,6 +145,7 @@ export function buildBlockGenConversationPrompt(ctx: BlockGenConversationContext
 
   const sections = [
     `# Role\n${templates.role}`,
+    `# Response Style\n${templates.conversationStyle}`,
     ...(contextLines.length > 0 ? [`# Current Context\n${contextLines.join('\n')}`] : []),
   ];
 
