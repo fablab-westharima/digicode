@@ -12,6 +12,7 @@ export interface FieldDef {
   max?: number;
   options?: string[];
   isCredential?: true;
+  isDynamic?: true;
 }
 
 export interface ValueInputDef {

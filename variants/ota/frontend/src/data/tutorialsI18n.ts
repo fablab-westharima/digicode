@@ -128,26 +128,6 @@ const overrides: Record<string, LocaleOverride> = {
           },
         },
       },
-      'line-trace-basic': {
-        title: 'Line Tracing Basics',
-        description: 'Trace a line with PID control',
-        steps: {
-          'line-1': {
-            title: 'Line Tracing',
-            content: 'Detect the line with the QTR-8A sensor and control differential-drive motors with PID. After calibration, it drives along the line.',
-          },
-        },
-      },
-      'micromouse-basic': {
-        title: 'Micromouse Basics',
-        description: 'Explore a maze with the left-hand rule',
-        steps: {
-          'micro-1': {
-            title: 'Micromouse',
-            content: 'Left-hand rule: turn left if no wall on the left, turn right if a wall is ahead, otherwise go straight. Encoders provide accurate movement.',
-          },
-        },
-      },
     },
   },
   es: {
@@ -244,26 +224,6 @@ const overrides: Record<string, LocaleOverride> = {
           'obstacle-1': {
             title: 'Evitar obstáculos',
             content: 'Si hay un obstáculo a menos de 20 cm el robot se confunde y gira a la izquierda; si no, avanza.',
-          },
-        },
-      },
-      'line-trace-basic': {
-        title: 'Seguimiento de línea básico',
-        description: 'Sigue una línea con control PID',
-        steps: {
-          'line-1': {
-            title: 'Seguimiento de línea',
-            content: 'Detecta la línea con el sensor QTR-8A y controla motores diferenciales con PID. Tras calibrar, circula siguiendo la línea.',
-          },
-        },
-      },
-      'micromouse-basic': {
-        title: 'Micromouse básico',
-        description: 'Explora un laberinto con la regla de la mano izquierda',
-        steps: {
-          'micro-1': {
-            title: 'Micromouse',
-            content: 'Regla de la mano izquierda: gira a la izquierda si no hay muro a la izquierda, a la derecha si hay muro enfrente; en otro caso, sigue recto. Los encoders aportan movimiento preciso.',
           },
         },
       },
@@ -366,26 +326,6 @@ const overrides: Record<string, LocaleOverride> = {
           },
         },
       },
-      'line-trace-basic': {
-        title: 'Seguimento de linha básico',
-        description: 'Seguir uma linha com controlo PID',
-        steps: {
-          'line-1': {
-            title: 'Seguimento de linha',
-            content: 'Detetar a linha com o sensor QTR-8A e controlar motores diferenciais com PID. Após calibração, segue ao longo da linha.',
-          },
-        },
-      },
-      'micromouse-basic': {
-        title: 'Micromouse básico',
-        description: 'Explorar um labirinto com a regra da mão esquerda',
-        steps: {
-          'micro-1': {
-            title: 'Micromouse',
-            content: 'Regra da mão esquerda: vira à esquerda se não houver parede à esquerda, à direita se houver parede à frente; caso contrário, segue em frente. Os encoders garantem movimento preciso.',
-          },
-        },
-      },
     },
   },
   'zh-TW': {
@@ -482,26 +422,6 @@ const overrides: Record<string, LocaleOverride> = {
           'obstacle-1': {
             title: '避障',
             content: '若 20cm 內有障礙物 Humanoid 會困惑並向左旋轉,否則前進。',
-          },
-        },
-      },
-      'line-trace-basic': {
-        title: '循線基礎',
-        description: '用 PID 控制循線',
-        steps: {
-          'line-1': {
-            title: '循線',
-            content: '使用 QTR-8A 感測器偵測線條並以 PID 控制差速馬達。校正後沿著線行走。',
-          },
-        },
-      },
-      'micromouse-basic': {
-        title: 'Micromouse 基礎',
-        description: '以左手法探索迷宮',
-        steps: {
-          'micro-1': {
-            title: 'Micromouse',
-            content: '左手法演算法:左邊無牆則左轉,前方有牆則右轉,否則直行。編碼器提供精準移動。',
           },
         },
       },

@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-04-22T16:55:56.347Z",
+  "generatedAt": "2026-04-22T18:20:45.356Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -1103,6 +1103,13 @@
           "default": 34,
           "min": 0,
           "max": 39
+        },
+        {
+          "name": "RATIO",
+          "fieldType": "number",
+          "default": 2,
+          "min": 1,
+          "max": 10
         }
       ],
       "valueInputs": [],
@@ -1125,7 +1132,22 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "MIN_V",
+          "fieldType": "number",
+          "default": 3,
+          "min": 0,
+          "max": 20
+        },
+        {
+          "name": "MAX_V",
+          "fieldType": "number",
+          "default": 4.2,
+          "min": 0,
+          "max": 20
+        }
+      ],
       "valueInputs": [
         {
           "name": "VOLTAGE",
@@ -1279,7 +1301,20 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "LEFT_COLOR",
+          "fieldType": "dropdown",
+          "options": [],
+          "isDynamic": true
+        },
+        {
+          "name": "RIGHT_COLOR",
+          "fieldType": "dropdown",
+          "options": [],
+          "isDynamic": true
+        }
+      ],
       "valueInputs": [],
       "statementInputs": []
     },
@@ -1300,7 +1335,20 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "LEFT_COLOR",
+          "fieldType": "dropdown",
+          "options": [],
+          "isDynamic": true
+        },
+        {
+          "name": "RIGHT_COLOR",
+          "fieldType": "dropdown",
+          "options": [],
+          "isDynamic": true
+        }
+      ],
       "valueInputs": [],
       "statementInputs": []
     },
@@ -3416,7 +3464,12 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "VAR",
+          "fieldType": "text"
+        }
+      ],
       "valueInputs": [
         {
           "name": "FROM",
@@ -3774,6 +3827,20 @@
       ],
       "boardRequires": null,
       "fields": [
+        {
+          "name": "TYPE",
+          "fieldType": "dropdown",
+          "options": [
+            "int",
+            "float",
+            "double",
+            "char",
+            "bool",
+            "byte",
+            "long",
+            "unsigned int"
+          ]
+        },
         {
           "name": "VAR",
           "fieldType": "text",
@@ -7632,6 +7699,21 @@
       "boardRequires": "supportsWifi",
       "fields": [
         {
+          "name": "MIN",
+          "fieldType": "number",
+          "default": 0
+        },
+        {
+          "name": "MAX",
+          "fieldType": "number",
+          "default": 180
+        },
+        {
+          "name": "STEP",
+          "fieldType": "number",
+          "default": 1
+        },
+        {
           "name": "MODE",
           "fieldType": "dropdown",
           "options": [
@@ -9653,7 +9735,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "COLOR",
+          "fieldType": "dropdown",
+          "options": [],
+          "isDynamic": true
+        }
+      ],
       "valueInputs": [],
       "statementInputs": []
     },
@@ -9685,6 +9774,12 @@
           "default": 0,
           "min": 0,
           "max": 239
+        },
+        {
+          "name": "COLOR",
+          "fieldType": "dropdown",
+          "options": [],
+          "isDynamic": true
         }
       ],
       "valueInputs": [],
@@ -9732,6 +9827,12 @@
           "default": 100,
           "min": 0,
           "max": 239
+        },
+        {
+          "name": "COLOR",
+          "fieldType": "dropdown",
+          "options": [],
+          "isDynamic": true
         }
       ],
       "valueInputs": [],
@@ -9781,6 +9882,12 @@
           "max": 240
         },
         {
+          "name": "COLOR",
+          "fieldType": "dropdown",
+          "options": [],
+          "isDynamic": true
+        },
+        {
           "name": "FILL",
           "fieldType": "checkbox",
           "default": false
@@ -9826,6 +9933,12 @@
           "max": 160
         },
         {
+          "name": "COLOR",
+          "fieldType": "dropdown",
+          "options": [],
+          "isDynamic": true
+        },
+        {
           "name": "FILL",
           "fieldType": "checkbox",
           "default": false
@@ -9869,6 +9982,12 @@
           "default": 2,
           "min": 1,
           "max": 10
+        },
+        {
+          "name": "COLOR",
+          "fieldType": "dropdown",
+          "options": [],
+          "isDynamic": true
         }
       ],
       "valueInputs": [],
@@ -11702,6 +11821,65 @@
       ],
       "statementInputs": [],
       "builtin": true
+    },
+    {
+      "type": "variables_get",
+      "category": "variables",
+      "tooltip": "",
+      "colour": "#A55B80",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "robots_humanoid",
+        "robots_wheel",
+        "robots_transform",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "builtin": true,
+      "fields": [
+        {
+          "name": "VAR",
+          "fieldType": "text"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "variables_set",
+      "category": "variables",
+      "tooltip": "",
+      "colour": "#A55B80",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robots_humanoid",
+        "robots_wheel",
+        "robots_transform",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "builtin": true,
+      "fields": [
+        {
+          "name": "VAR",
+          "fieldType": "text"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     }
   ],
   "boardFilters": {

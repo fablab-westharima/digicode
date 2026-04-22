@@ -25,6 +25,7 @@ interface FieldDef {
   max?: number;       // number only
   options?: string[]; // dropdown only
   isCredential?: true; // text fields containing sensitive user data (SSID, password, token, etc.)
+  isDynamic?: true;   // dropdown resolved from function reference — options cannot be statically determined
 }
 
 interface ValueInputDef {
@@ -186,7 +187,18 @@ const BUILTIN_CORRECT_META: Record<string, Partial<BlockMeta>> = {
   controls_ifelse:    { isStatement: true,  hasOutput: false, fields: [], valueInputs: [{ name: 'IF0', check: 'Boolean' }], statementInputs: [{ name: 'DO0' }, { name: 'ELSE' }] },
   controls_repeat_ext:{ isStatement: true,  hasOutput: false, fields: [], valueInputs: [{ name: 'TIMES', check: 'Number' }], statementInputs: [{ name: 'DO' }] },
   controls_whileUntil:{ isStatement: true,  hasOutput: false, fields: [{ name: 'MODE', fieldType: 'dropdown', options: ['WHILE','UNTIL'] }], valueInputs: [{ name: 'BOOL', check: 'Boolean' }], statementInputs: [{ name: 'DO' }] },
-  controls_for:       { isStatement: true,  hasOutput: false, fields: [], valueInputs: [{ name: 'FROM', check: 'Number' }, { name: 'TO', check: 'Number' }, { name: 'BY', check: 'Number' }], statementInputs: [{ name: 'DO' }] },
+  controls_for:       { isStatement: true,  hasOutput: false, fields: [{ name: 'VAR', fieldType: 'text' }], valueInputs: [{ name: 'FROM', check: 'Number' }, { name: 'TO', check: 'Number' }, { name: 'BY', check: 'Number' }], statementInputs: [{ name: 'DO' }] },
+  variables_get: {
+    isStatement: false, hasOutput: true,
+    fields: [{ name: 'VAR', fieldType: 'text' }],
+    valueInputs: [], statementInputs: [],
+  },
+  variables_set: {
+    isStatement: true, hasOutput: false,
+    fields: [{ name: 'VAR', fieldType: 'text' }],
+    valueInputs: [{ name: 'VALUE', check: null }],
+    statementInputs: [],
+  },
   controls_flow_statements: { isStatement: true, hasOutput: false, fields: [{ name: 'FLOW', fieldType: 'dropdown', options: ['BREAK','CONTINUE'] }], valueInputs: [], statementInputs: [] },
   array_create:       { isStatement: true,  hasOutput: false, fields: [], valueInputs: [], statementInputs: [] },
   array_set:          { isStatement: true,  hasOutput: false, fields: [], valueInputs: [{ name: 'INDEX', check: 'Number' }, { name: 'VALUE', check: null }], statementInputs: [] },
@@ -339,10 +351,24 @@ function getBlockFiles(dir: string): string[] {
   return files;
 }
 
+/**
+ * Resolves a dropdown const by name from the full file content.
+ * Looks for `const NAME = [['label', 'value'], ...]` and extracts value strings.
+ * Returns null if the identifier refers to a function (unresolvable at build time).
+ */
+function resolveDropdownConst(name: string, content: string): string[] | null {
+  const re = new RegExp(`const\\s+${name}\\s*(?::[^=]*)?=\\s*\\[([\\s\\S]*?)\\]\\s*(?:as\\s+\\w+)?\\s*;`);
+  const m = content.match(re);
+  if (!m) return null;
+  const options = [...m[1].matchAll(/,\s*['"]([^'"]+)['"]\s*\]/g)].map(mm => mm[1]);
+  return options.length > 0 ? options : null;
+}
+
 function parseBlockMeta(
   body: string,
   colorConstants: Record<string, string> = {},
-  i18nMessages: Record<string, string> = {}
+  i18nMessages: Record<string, string> = {},
+  fileContent: string = ''
 ): BlockMeta {
   // Tooltip pass 1: extract || 'fallback' literal (handles both plain and `as any` cast forms)
   const tooltipM = body.match(/setTooltip\([^\n]*\|\|\s*['"](.+?)['"]\)/);
@@ -370,23 +396,26 @@ function parseBlockMeta(
   const fields: FieldDef[] = [];
   let fm: RegExpExecArray | null;
 
-  // FieldNumber:  new Blockly.FieldNumber(default, min, max), 'NAME'
-  const numRe = /new Blockly\.FieldNumber\(([^,)]+),\s*([^,)]+),\s*([^,)]+)\),\s*'(\w+)'/g;
+  // FieldNumber: supports 1–4 arguments (default, min, max, precision)
+  const numRe = /new Blockly\.FieldNumber\(([^)]*)\),\s*'(\w+)'/g;
   while ((fm = numRe.exec(body)) !== null) {
-    const defRaw = parseFloat(fm[1].trim());
-    const minRaw = parseFloat(fm[2].trim());
-    const maxRaw = parseFloat(fm[3].trim());
+    const args = fm[1].split(',').map(s => s.trim());
+    const parseOrUndef = (i: number) => {
+      if (args.length <= i) return undefined;
+      const n = parseFloat(args[i]);
+      return isNaN(n) ? undefined : n;
+    };
     fields.push({
-      name: fm[4],
+      name: fm[2],
       fieldType: 'number',
-      default: isNaN(defRaw) ? null : defRaw,
-      min: isNaN(minRaw) ? undefined : minRaw,
-      max: isNaN(maxRaw) ? undefined : maxRaw,
+      default: parseOrUndef(0) ?? null,
+      min: parseOrUndef(1),
+      max: parseOrUndef(2),
+      // precision (args[3]) intentionally omitted — schema does not need it
     });
   }
 
-  // FieldDropdown: collect option VALUES (second element of each [label, value] pair)
-  // Pattern:  new Blockly.FieldDropdown([...]), 'NAME'
+  // FieldDropdown (inline array literal):  new Blockly.FieldDropdown([...]), 'NAME'
   const ddRe = /new Blockly\.FieldDropdown\(\[([\s\S]*?)\]\),\s*'(\w+)'/g;
   while ((fm = ddRe.exec(body)) !== null) {
     const inner = fm[1];
@@ -395,6 +424,21 @@ function parseBlockMeta(
     const options = [...inner.matchAll(/,\s*['"]([^'"]+)['"]\s*\]/g)].map(mm => mm[1]);
     if (options.length > 0) {
       fields.push({ name: fieldName, fieldType: 'dropdown', options });
+    }
+  }
+
+  // FieldDropdown (identifier — const name or function reference):
+  //   new Blockly.FieldDropdown(IDENTIFIER), 'NAME'
+  const dynDdRe = /new Blockly\.FieldDropdown\(([a-zA-Z_]\w*)\)(?:\s*as\s*\w+)?,\s*'(\w+)'/g;
+  while ((fm = dynDdRe.exec(body)) !== null) {
+    const identifier = fm[1];
+    const fieldName = fm[2];
+    const resolved = resolveDropdownConst(identifier, fileContent);
+    if (resolved) {
+      fields.push({ name: fieldName, fieldType: 'dropdown', options: resolved });
+    } else {
+      // Function reference — options cannot be determined at build time
+      fields.push({ name: fieldName, fieldType: 'dropdown', options: [], isDynamic: true });
     }
   }
 
@@ -467,7 +511,7 @@ function parseAllBlockMeta(
       const body = nextStart !== -1
         ? content.substring(bodyStart, nextStart)
         : content.substring(bodyStart);
-      map.set(blockType, parseBlockMeta(body, colorConstants, i18nMessages));
+      map.set(blockType, parseBlockMeta(body, colorConstants, i18nMessages, content));
     }
   }
   return map;
@@ -540,6 +584,31 @@ function main(): void {
         blockMap.set(blockType, entry);
       }
     }
+  }
+
+  // Force-include Blockly standard blocks that are NOT in any toolbox category
+  // (accessed via Blockly's built-in variable/procedure UI, but needed in the catalog
+  // so AI can reference them in generated XML and few-shot examples).
+  const FORCE_CATALOG_BUILTINS: string[] = ['variables_get', 'variables_set'];
+  const allModes = Object.keys(modeCategories);
+  for (const blockType of FORCE_CATALOG_BUILTINS) {
+    if (blockMap.has(blockType)) continue; // already present via toolbox
+    const correct = BUILTIN_CORRECT_META[blockType];
+    if (!correct) continue;
+    blockMap.set(blockType, {
+      type: blockType,
+      category: 'variables',
+      tooltip: BUILTIN_TOOLTIPS[blockType] || '',
+      colour: '#A55B80',
+      isStatement: correct.isStatement ?? false,
+      hasOutput: correct.hasOutput ?? false,
+      modes: [...allModes],
+      boardRequires: null,
+      builtin: true,
+      fields: correct.fields ?? [],
+      valueInputs: correct.valueInputs ?? [],
+      statementInputs: correct.statementInputs ?? [],
+    });
   }
 
   const catalog: BlockCatalog = {

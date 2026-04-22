@@ -31,7 +31,6 @@ const overrides: Record<string, LocaleOverride> = {
       sensor: { name: 'Sensors' },
       motor: { name: 'Motors / LEDs' },
       robots: { name: 'Robots' },
-      competition: { name: 'Competition' },
       iot: { name: 'IoT / HA' },
     },
     samples: {
@@ -71,14 +70,6 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Humanoid Dance',
         description: 'Make the humanoid robot perform various dances',
       },
-      'line-trace-basic': {
-        title: 'Line Tracing Basics',
-        description: 'Follow a black line with QTR sensor and PID control',
-      },
-      'micromouse-basic': {
-        title: 'Micromouse Basics',
-        description: 'Explore a maze using wall sensors and encoders',
-      },
       'ha-temperature-sensor': {
         title: 'HA Temperature Sensor',
         description: 'Auto-register a temperature sensor with Home Assistant',
@@ -95,10 +86,6 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'HA RGB LED',
         description: 'Control an RGB LED color from Home Assistant',
       },
-      'ha-servo-control': {
-        title: 'HA Servo Control',
-        description: 'Control servo angle with a number slider in Home Assistant',
-      },
       'ha-multi-sensor': {
         title: 'HA Multi-Sensor Node',
         description: 'Combined temperature/humidity/motion sensor node',
@@ -111,7 +98,6 @@ const overrides: Record<string, LocaleOverride> = {
       sensor: { name: 'Sensores' },
       motor: { name: 'Motores / LEDs' },
       robots: { name: 'Robots' },
-      competition: { name: 'Competición' },
       iot: { name: 'IoT / HA' },
     },
     samples: {
@@ -151,14 +137,6 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Baile robot Humanoid',
         description: 'Hace que el robot humanoide ejecute varios bailes',
       },
-      'line-trace-basic': {
-        title: 'Seguimiento de línea básico',
-        description: 'Sigue una línea negra con sensor QTR y control PID',
-      },
-      'micromouse-basic': {
-        title: 'Micromouse básico',
-        description: 'Explora un laberinto con sensores de pared y encoders',
-      },
       'ha-temperature-sensor': {
         title: 'HA sensor de temperatura',
         description: 'Auto-registrar un sensor de temperatura en Home Assistant',
@@ -175,10 +153,6 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'HA LED RGB',
         description: 'Controla el color de un LED RGB desde Home Assistant',
       },
-      'ha-servo-control': {
-        title: 'HA control de servo',
-        description: 'Controla el ángulo del servo con un deslizador numérico',
-      },
       'ha-multi-sensor': {
         title: 'HA nodo multi-sensor',
         description: 'Nodo sensor combinado de temperatura/humedad/movimiento',
@@ -191,7 +165,6 @@ const overrides: Record<string, LocaleOverride> = {
       sensor: { name: 'Sensores' },
       motor: { name: 'Motores / LEDs' },
       robots: { name: 'Robôs' },
-      competition: { name: 'Competição' },
       iot: { name: 'IoT / HA' },
     },
     samples: {
@@ -231,14 +204,6 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Dança do robot Humanoid',
         description: 'Faz o robot humanoide executar várias danças',
       },
-      'line-trace-basic': {
-        title: 'Seguimento de linha básico',
-        description: 'Segue uma linha preta com sensor QTR e controlo PID',
-      },
-      'micromouse-basic': {
-        title: 'Micromouse básico',
-        description: 'Explora um labirinto com sensores de parede e encoders',
-      },
       'ha-temperature-sensor': {
         title: 'HA sensor de temperatura',
         description: 'Auto-registar um sensor de temperatura no Home Assistant',
@@ -255,10 +220,6 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'HA LED RGB',
         description: 'Controla a cor de um LED RGB a partir do Home Assistant',
       },
-      'ha-servo-control': {
-        title: 'HA controlo de servo',
-        description: 'Controla o ângulo do servo com um slider numérico',
-      },
       'ha-multi-sensor': {
         title: 'HA nó multi-sensor',
         description: 'Nó combinado de temperatura/humidade/movimento',
@@ -271,7 +232,6 @@ const overrides: Record<string, LocaleOverride> = {
       sensor: { name: '感測器' },
       motor: { name: '馬達 / LED' },
       robots: { name: '機器人' },
-      competition: { name: '競賽' },
       iot: { name: 'IoT / HA' },
     },
     samples: {
@@ -311,14 +271,6 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Humanoid 舞蹈',
         description: '讓仿人形機器人表演各種舞蹈',
       },
-      'line-trace-basic': {
-        title: '循線基礎',
-        description: '用 QTR 感測器與 PID 控制追蹤黑線',
-      },
-      'micromouse-basic': {
-        title: 'Micromouse 基礎',
-        description: '以牆面感測器和編碼器進行迷宮探索',
-      },
       'ha-temperature-sensor': {
         title: 'HA 溫度感測器',
         description: '在 Home Assistant 自動註冊溫度感測器',
@@ -334,10 +286,6 @@ const overrides: Record<string, LocaleOverride> = {
       'ha-rgb-led': {
         title: 'HA RGB LED',
         description: '從 Home Assistant 控制 RGB LED 的顏色',
-      },
-      'ha-servo-control': {
-        title: 'HA 伺服控制',
-        description: '從 Home Assistant 用數值滑桿控制伺服角度',
       },
       'ha-multi-sensor': {
         title: 'HA 複合感測節點',
