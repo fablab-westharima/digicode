@@ -4,6 +4,25 @@ import { AI_SYSTEM_PROMPTS } from '@/data/aiSystemPrompts';
 import type { AiLanguage } from '@/data/aiSystemPrompts';
 import { sampleProjects } from '@/data/sampleProjects';
 
+export interface FieldDef {
+  name: string;
+  fieldType: 'number' | 'dropdown' | 'text' | 'checkbox' | 'angle';
+  default?: number | string | boolean | null;
+  min?: number;
+  max?: number;
+  options?: string[];
+  isCredential?: true;
+}
+
+export interface ValueInputDef {
+  name: string;
+  check: string | null;
+}
+
+export interface StatementInputDef {
+  name: string;
+}
+
 export interface BlockCatalogEntry {
   type: string;
   category: string;
@@ -12,7 +31,9 @@ export interface BlockCatalogEntry {
   hasOutput: boolean;
   modes: string[];
   boardRequires: string | null;
-  fields: unknown[];
+  fields: FieldDef[];
+  valueInputs: ValueInputDef[];
+  statementInputs: StatementInputDef[];
 }
 
 export interface BlockCatalog {
@@ -92,22 +113,63 @@ function getFewShotExamples(mode: RobotMode): string {
     .join('\n\n');
 }
 
+/**
+ * Format a block entry as a compact schema string for the AI system prompt.
+ *
+ * Notation:
+ *   (NAME:type)       = field  (e.g. ADDR:0x76|0x77  or  KEY:text  or  SSID:text★)
+ *   [NAME]            = value input slot (accepts sub-block)
+ *   {NAME}            = statement input slot (accepts stacked blocks)
+ *   ★                 = credential field — AI must NOT specify a value; block default will show
+ */
+function formatBlockSchema(b: BlockCatalogEntry): string {
+  const fieldParts: string[] = [];
+  for (const f of b.fields) {
+    if (f.isCredential) {
+      fieldParts.push(`${f.name}:text★`);
+    } else if (f.fieldType === 'dropdown' && f.options && f.options.length > 0) {
+      fieldParts.push(`${f.name}:${f.options.join('|')}`);
+    } else if (f.fieldType === 'number') {
+      const range = (f.min !== undefined && f.max !== undefined)
+        ? `num(${f.min}–${f.max})`
+        : 'num';
+      fieldParts.push(`${f.name}:${range}`);
+    } else if (f.fieldType === 'text') {
+      fieldParts.push(`${f.name}:text`);
+    } else if (f.fieldType === 'checkbox') {
+      fieldParts.push(`${f.name}:bool`);
+    } else if (f.fieldType === 'angle') {
+      fieldParts.push(`${f.name}:angle`);
+    }
+  }
+
+  const valueInputParts = b.valueInputs.map(vi =>
+    vi.check ? `[${vi.name}:${vi.check}]` : `[${vi.name}]`
+  );
+  const stmtInputParts = b.statementInputs.map(si => `{${si.name}}`);
+
+  const schema = [...(fieldParts.length ? [`(${fieldParts.join(',')})`] : []), ...valueInputParts, ...stmtInputParts].join('');
+  return b.type + schema;
+}
+
 // blockGen 生成フェーズ用（XML 出力制約あり、generateFromConversation で使用）
 export function buildSystemPrompt(ctx: SystemPromptContext): string {
   const templates = AI_SYSTEM_PROMPTS[ctx.language].blockGen;
 
-  // ブロックを接続形状別に分類（AI が誤った接続を生成しないよう明示）
-  const statementBlocks = ctx.filteredBlocks.filter(b => b.isStatement && !b.hasOutput).map(b => b.type);
-  const valueBlocks     = ctx.filteredBlocks.filter(b => b.hasOutput).map(b => b.type);
-  const hatBlocks       = ctx.filteredBlocks.filter(b => !b.isStatement && !b.hasOutput).map(b => b.type);
+  // ブロックを接続形状別に分類し、それぞれのスキーマを付与する
+  const statementBlocks = ctx.filteredBlocks.filter(b => b.isStatement && !b.hasOutput);
+  const valueBlocks     = ctx.filteredBlocks.filter(b => b.hasOutput);
+  const hatBlocks       = ctx.filteredBlocks.filter(b => !b.isStatement && !b.hasOutput);
 
   const blockTypeSection = [
-    '## Statement blocks (stackable vertically, can have <next>/<previous> connections)',
-    statementBlocks.join(', '),
-    '## Value blocks (plug into <value> slots only, MUST NOT have <next>/<previous>)',
-    valueBlocks.join(', '),
-    '## Top-level hat blocks (no previous/next, use as root: arduino_setup, arduino_loop)',
-    hatBlocks.join(', '),
+    '## Statement blocks — stackable vertically, can have <next>/<previous>',
+    statementBlocks.map(formatBlockSchema).join(', '),
+    '## Value blocks — plug into <value> slots only; MUST NOT have <next>/<previous>',
+    valueBlocks.map(formatBlockSchema).join(', '),
+    '## Top-level hat blocks — use as root only (arduino_setup, arduino_loop)',
+    hatBlocks.map(formatBlockSchema).join(', '),
+    '## Schema notation: (FIELD:type★=credential) [VALUE_INPUT] {STMT_INPUT}',
+    '## ★ credential fields: DO NOT specify values; omit them and the block shows safe defaults',
   ].join('\n');
 
   const contextLines = [

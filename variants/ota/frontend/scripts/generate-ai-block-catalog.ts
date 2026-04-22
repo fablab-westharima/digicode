@@ -19,11 +19,21 @@ import { fileURLToPath } from 'url';
 
 interface FieldDef {
   name: string;
-  fieldType: 'number' | 'dropdown';
-  default?: number | null;
-  min?: number;
-  max?: number;
-  options?: string[];
+  fieldType: 'number' | 'dropdown' | 'text' | 'checkbox' | 'angle';
+  default?: number | string | boolean | null;
+  min?: number;       // number only
+  max?: number;       // number only
+  options?: string[]; // dropdown only
+  isCredential?: true; // text fields containing sensitive user data (SSID, password, token, etc.)
+}
+
+interface ValueInputDef {
+  name: string;
+  check: string | null; // Blockly type check e.g. 'Number', 'String', null = any
+}
+
+interface StatementInputDef {
+  name: string;
 }
 
 interface BlockEntry {
@@ -37,6 +47,8 @@ interface BlockEntry {
   boardRequires: string | null;
   builtin?: true;
   fields: FieldDef[];
+  valueInputs: ValueInputDef[];
+  statementInputs: StatementInputDef[];
 }
 
 interface BoardInfo {
@@ -61,6 +73,8 @@ interface BlockMeta {
   isStatement: boolean;
   hasOutput: boolean;
   fields: FieldDef[];
+  valueInputs: ValueInputDef[];
+  statementInputs: StatementInputDef[];
 }
 
 // ---------------------------------------------------------------------------
@@ -126,6 +140,25 @@ const BUILTIN_TOOLTIPS: Record<string, string> = {
   array_size: 'Get the number of elements in an array',
   array_content: 'Create an array with explicit element values',
 };
+
+// Returns true if a field name contains user credentials/secrets — AI must not generate values
+function isCredentialField(name: string): boolean {
+  const n = name.toLowerCase();
+  return (
+    n === 'ssid' ||
+    n === 'broker' ||
+    n === 'username' ||
+    n === 'user_name' ||
+    n.includes('password') ||
+    n.includes('passwd') ||
+    n.endsWith('_pass') ||
+    n.includes('api_key') ||
+    n.includes('token') ||
+    n.includes('secret') ||
+    n.includes('auth_key') ||
+    n.includes('endpoint')
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Step 1: Parse toolboxGenerator.ts → categoryBlocks
@@ -300,10 +333,10 @@ function parseBlockMeta(
   const hasOutput = /setOutput\(true/.test(body);
 
   const fields: FieldDef[] = [];
+  let fm: RegExpExecArray | null;
 
   // FieldNumber:  new Blockly.FieldNumber(default, min, max), 'NAME'
   const numRe = /new Blockly\.FieldNumber\(([^,)]+),\s*([^,)]+),\s*([^,)]+)\),\s*'(\w+)'/g;
-  let fm: RegExpExecArray | null;
   while ((fm = numRe.exec(body)) !== null) {
     const defRaw = parseFloat(fm[1].trim());
     const minRaw = parseFloat(fm[2].trim());
@@ -330,7 +363,47 @@ function parseBlockMeta(
     }
   }
 
-  return { tooltip, colour, isStatement, hasOutput, fields };
+  // FieldTextInput:  new Blockly.FieldTextInput('default'), 'NAME'
+  const textRe = /new Blockly\.FieldTextInput\((['"])(.*?)\1\),\s*'(\w+)'/g;
+  while ((fm = textRe.exec(body)) !== null) {
+    const defaultVal = fm[2];
+    const fieldName = fm[3];
+    const fd: FieldDef = { name: fieldName, fieldType: 'text', default: defaultVal };
+    if (isCredentialField(fieldName)) fd.isCredential = true;
+    fields.push(fd);
+  }
+
+  // FieldCheckbox:  new Blockly.FieldCheckbox('TRUE'|'FALSE'), 'NAME'
+  const checkRe = /new Blockly\.FieldCheckbox\(['"]?(TRUE|FALSE)['"]?\),\s*'(\w+)'/g;
+  while ((fm = checkRe.exec(body)) !== null) {
+    fields.push({ name: fm[2], fieldType: 'checkbox', default: fm[1] === 'TRUE' });
+  }
+
+  // FieldAngle:  new Blockly.FieldAngle(90), 'NAME'
+  const angleRe = /new Blockly\.FieldAngle\((\d+)\),\s*'(\w+)'/g;
+  while ((fm = angleRe.exec(body)) !== null) {
+    fields.push({ name: fm[2], fieldType: 'angle', default: parseInt(fm[1]) });
+  }
+
+  // appendValueInput('NAME') — look ahead up to 200 chars for optional .setCheck(...)
+  const valueInputs: ValueInputDef[] = [];
+  const viRe = /\.appendValueInput\(['"](\w+)['"]\)/g;
+  while ((fm = viRe.exec(body)) !== null) {
+    const name = fm[1];
+    const ahead = body.substring(fm.index + fm[0].length, fm.index + fm[0].length + 200);
+    const checkM = ahead.match(/\.setCheck\((?:null|['"](\w+)['"])\)/);
+    const check = checkM ? (checkM[1] ?? null) : null;
+    valueInputs.push({ name, check });
+  }
+
+  // appendStatementInput('NAME')
+  const statementInputs: StatementInputDef[] = [];
+  const siRe = /\.appendStatementInput\(['"](\w+)['"]\)/g;
+  while ((fm = siRe.exec(body)) !== null) {
+    statementInputs.push({ name: fm[1] });
+  }
+
+  return { tooltip, colour, isStatement, hasOutput, fields, valueInputs, statementInputs };
 }
 
 function parseAllBlockMeta(
@@ -422,6 +495,8 @@ function main(): void {
           modes: [mode],
           boardRequires,
           fields: meta?.fields ?? [],
+          valueInputs: meta?.valueInputs ?? [],
+          statementInputs: meta?.statementInputs ?? [],
         };
         if (isBuiltin) entry.builtin = true;
 
@@ -448,9 +523,15 @@ function main(): void {
   const builtin = catalog.blocks.filter(b => b.builtin).length;
   const fileBytes = fs.statSync(OUTPUT_PATH).size;
   const modeCount = Object.keys(modeCategories).length;
+  const withFields = catalog.blocks.filter(b => b.fields.length > 0).length;
+  const withValueInputs = catalog.blocks.filter(b => b.valueInputs.length > 0).length;
+  const withStmtInputs = catalog.blocks.filter(b => b.statementInputs.length > 0).length;
+  const credentials = catalog.blocks.filter(b => b.fields.some(f => f.isCredential)).length;
 
   console.log(`✅ Generated: ${OUTPUT_PATH}`);
   console.log(`   Blocks: ${total} total (${custom} DigiCode + ${builtin} built-in)`);
+  console.log(`   Fields: ${withFields} blocks with fields, ${credentials} blocks with credential fields`);
+  console.log(`   Inputs: ${withValueInputs} with value inputs, ${withStmtInputs} with statement inputs`);
   console.log(`   Modes: ${modeCount}  Boards: ${boards.length}`);
   console.log(`   File size: ${(fileBytes / 1024).toFixed(1)} KB`);
 }

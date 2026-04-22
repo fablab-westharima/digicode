@@ -25,11 +25,47 @@ const mockCatalog: BlockCatalog = {
   version: '1.0',
   generatedAt: '2026-04-22T00:00:00.000Z',
   blocks: [
-    { type: 'arduino_setup', category: 'core',           tooltip: 'Setup',    isStatement: false, hasOutput: false, modes: ['generic', 'robots_humanoid', 'all_blocks', 'custom'], boardRequires: null,           fields: [] },
-    { type: 'humanoid_walk', category: 'robot_humanoid', tooltip: 'Walk',     isStatement: true,  hasOutput: false, modes: ['robots_humanoid', 'all_blocks', 'custom'],            boardRequires: null,           fields: [] },
-    { type: 'ble_scan',      category: 'ble',            tooltip: 'BLE Scan', isStatement: true,  hasOutput: false, modes: ['generic', 'robots_humanoid', 'all_blocks', 'custom'], boardRequires: 'supportsBle',  fields: [] },
-    { type: 'wifi_connect',  category: 'wifi',           tooltip: 'WiFi',     isStatement: true,  hasOutput: false, modes: ['generic', 'all_blocks', 'custom'],                    boardRequires: 'supportsWifi', fields: [] },
-    { type: 'bmp280_read',   category: 'sensor',         tooltip: 'BMP280',   isStatement: false, hasOutput: true,  modes: ['generic', 'all_blocks', 'custom'],                    boardRequires: null,           fields: [] },
+    {
+      type: 'arduino_setup', category: 'core', tooltip: 'Setup',
+      isStatement: false, hasOutput: false,
+      modes: ['generic', 'robots_humanoid', 'all_blocks', 'custom'], boardRequires: null,
+      fields: [], valueInputs: [], statementInputs: [{ name: 'SETUP' }],
+    },
+    {
+      type: 'humanoid_walk', category: 'robot_humanoid', tooltip: 'Walk',
+      isStatement: true, hasOutput: false,
+      modes: ['robots_humanoid', 'all_blocks', 'custom'], boardRequires: null,
+      fields: [], valueInputs: [], statementInputs: [],
+    },
+    {
+      type: 'ble_scan', category: 'ble', tooltip: 'BLE Scan',
+      isStatement: true, hasOutput: false,
+      modes: ['generic', 'robots_humanoid', 'all_blocks', 'custom'], boardRequires: 'supportsBle',
+      fields: [], valueInputs: [], statementInputs: [],
+    },
+    {
+      type: 'wifi_connect', category: 'wifi', tooltip: 'WiFi',
+      isStatement: true, hasOutput: false,
+      modes: ['generic', 'all_blocks', 'custom'], boardRequires: 'supportsWifi',
+      fields: [
+        { name: 'SSID',     fieldType: 'text', default: 'your_ssid',     isCredential: true as const },
+        { name: 'PASSWORD', fieldType: 'text', default: 'your_password', isCredential: true as const },
+      ],
+      valueInputs: [], statementInputs: [],
+    },
+    {
+      type: 'bmp280_read', category: 'sensor', tooltip: 'BMP280',
+      isStatement: false, hasOutput: true,
+      modes: ['generic', 'all_blocks', 'custom'], boardRequires: null,
+      fields: [{ name: 'TYPE', fieldType: 'dropdown', options: ['temp', 'pres'] }],
+      valueInputs: [], statementInputs: [],
+    },
+    {
+      type: 'esp32_delay', category: 'core', tooltip: 'Delay',
+      isStatement: true, hasOutput: false,
+      modes: ['generic', 'all_blocks', 'custom'], boardRequires: null,
+      fields: [], valueInputs: [{ name: 'TIME', check: 'Number' }], statementInputs: [],
+    },
   ],
 };
 
@@ -61,6 +97,32 @@ describe('buildSystemPrompt', () => {
     const humanoidIdx = prompt.indexOf('humanoid_walk');
     expect(humanoidIdx).toBeGreaterThan(statementIdx);
     expect(humanoidIdx).toBeLessThan(valueIdx);
+  });
+
+  it('marks credential fields with ★ in the schema', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'generic', board: mockBoard, filteredBlocks });
+    // wifi_connect has SSID and PASSWORD as credential fields
+    expect(prompt).toContain('SSID:text★');
+    expect(prompt).toContain('PASSWORD:text★');
+    // The schema notation legend must be present
+    expect(prompt).toContain('★ credential fields');
+  });
+
+  it('includes dropdown options in schema', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'generic', board: mockBoard, filteredBlocks });
+    // bmp280_read has TYPE dropdown with temp|pres
+    expect(prompt).toContain('TYPE:temp|pres');
+  });
+
+  it('includes value inputs and statement inputs in schema', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'generic', board: mockBoard, filteredBlocks });
+    // esp32_delay has TIME value input with Number check
+    expect(prompt).toContain('[TIME:Number]');
+    // arduino_setup has SETUP statement input
+    expect(prompt).toContain('{SETUP}');
   });
 
   it('includes existingXml in context when provided', () => {

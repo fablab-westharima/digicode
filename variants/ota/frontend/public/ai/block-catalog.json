@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-04-22T11:52:46.331Z",
+  "generatedAt": "2026-04-22T16:48:23.823Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -19,7 +19,13 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "SETUP"
+        }
+      ]
     },
     {
       "type": "arduino_loop",
@@ -38,7 +44,13 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "LOOP"
+        }
+      ]
     },
     {
       "type": "humanoid_init",
@@ -82,7 +94,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "humanoid_home",
@@ -97,7 +111,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "humanoid_walk",
@@ -137,7 +153,9 @@
             "1500"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "humanoid_turn",
@@ -177,7 +195,9 @@
             "1500"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "humanoid_jump",
@@ -200,7 +220,9 @@
           "min": 1,
           "max": 5
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "humanoid_moonwalk",
@@ -231,7 +253,9 @@
             "-1"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "humanoid_dance",
@@ -254,7 +278,9 @@
           "min": 1,
           "max": 10
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "humanoid_swing",
@@ -277,7 +303,9 @@
           "min": 1,
           "max": 10
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "humanoid_bend",
@@ -308,7 +336,9 @@
             "right"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "humanoid_gesture",
@@ -343,7 +373,9 @@
             "Fail"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "humanoid_sound",
@@ -384,7 +416,9 @@
             "S_fart3"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "button_sensor",
@@ -411,7 +445,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "pir_sensor",
@@ -438,7 +474,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "tilt_sensor",
@@ -465,7 +503,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "vibration_sensor",
@@ -492,7 +532,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "hall_sensor",
@@ -519,7 +561,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "hall_sensor_esp32",
@@ -538,7 +582,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "photo_interrupter",
@@ -565,7 +611,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ir_obstacle_sensor",
@@ -592,7 +640,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "flame_sensor_digital",
@@ -619,7 +669,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "gas_sensor_digital",
@@ -646,7 +698,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "limit_switch",
@@ -673,7 +727,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "digital_read",
@@ -700,7 +756,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "potentiometer",
@@ -727,7 +785,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ldr_sensor",
@@ -754,7 +814,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "thermistor_sensor",
@@ -781,7 +843,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "lm35_sensor",
@@ -808,7 +872,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "gas_sensor_analog",
@@ -835,7 +901,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "soil_moisture_sensor",
@@ -862,7 +930,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "water_level_sensor",
@@ -889,7 +959,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "flame_sensor_analog",
@@ -916,7 +988,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ir_reflective_sensor",
@@ -943,7 +1017,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "joystick_sensor",
@@ -970,7 +1046,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "analog_read",
@@ -997,7 +1075,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "battery_voltage",
@@ -1024,7 +1104,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "battery_percentage",
@@ -1043,7 +1125,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "VOLTAGE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "ultrasonic_init",
@@ -1063,6 +1152,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -1083,6 +1174,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -1103,6 +1196,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -1123,6 +1218,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -1143,6 +1240,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -1163,6 +1262,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -1183,6 +1284,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -1203,6 +1306,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -1223,6 +1328,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -1243,6 +1350,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -1283,7 +1392,9 @@
             "MPU6050_RANGE_2000_DEG"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mpu6050_update",
@@ -1302,7 +1413,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mpu6050_read_accel",
@@ -1331,7 +1444,9 @@
             "mpu_az"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mpu6050_read_gyro",
@@ -1360,7 +1475,9 @@
             "mpu_gz"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mpu6050_read_temperature",
@@ -1379,7 +1496,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mpu6050_get_angle",
@@ -1407,7 +1526,9 @@
             "mpu_roll"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mpu6050_calibrate",
@@ -1434,7 +1555,9 @@
           "min": 10,
           "max": 1000
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "servo_attach",
@@ -1461,7 +1584,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "servo_write",
@@ -1487,8 +1612,15 @@
           "default": null,
           "min": 0,
           "max": 39
+        },
+        {
+          "name": "ANGLE",
+          "fieldType": "angle",
+          "default": 90
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "servo_write_value",
@@ -1515,7 +1647,14 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "ANGLE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "servo_sweep",
@@ -1563,7 +1702,9 @@
           "min": 1,
           "max": 100
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "servo_detach",
@@ -1590,7 +1731,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "buzzer_tone",
@@ -1631,7 +1774,18 @@
             "custom"
           ]
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "FREQ_CUSTOM",
+          "check": "Number"
+        },
+        {
+          "name": "DURATION",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "buzzer_stop",
@@ -1658,7 +1812,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "buzzer_melody",
@@ -1695,7 +1851,9 @@
             "complete"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "neopixel_init",
@@ -1729,7 +1887,9 @@
           "min": 1,
           "max": 256
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "neopixel_rainbow",
@@ -1758,7 +1918,9 @@
             "slow"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "neopixel_color_simple",
@@ -1795,7 +1957,9 @@
             "000000"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "neopixel_set_color",
@@ -1822,7 +1986,22 @@
           "min": 0,
           "max": 255
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "RED",
+          "check": "Number"
+        },
+        {
+          "name": "GREEN",
+          "check": "Number"
+        },
+        {
+          "name": "BLUE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "neopixel_show",
@@ -1841,7 +2020,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "neopixel_clear",
@@ -1860,7 +2041,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "display_init",
@@ -1910,7 +2093,9 @@
             "32"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "display_text",
@@ -1953,7 +2138,14 @@
             "3"
           ]
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "TEXT",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "display_show",
@@ -1972,7 +2164,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "display_clear",
@@ -1991,7 +2185,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "lcd_init",
@@ -2033,7 +2229,9 @@
             "0x3F"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "lcd_print",
@@ -2052,7 +2250,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "TEXT",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "lcd_print_at",
@@ -2086,7 +2291,14 @@
           "min": 0,
           "max": 3
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "TEXT",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "lcd_clear",
@@ -2105,7 +2317,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "lcd_backlight",
@@ -2124,7 +2338,15 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "ON",
+          "fieldType": "checkbox",
+          "default": true
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "dfplayer_init",
@@ -2157,7 +2379,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "dfplayer_play",
@@ -2183,7 +2407,9 @@
           "min": 1,
           "max": 999
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "dfplayer_pause",
@@ -2201,7 +2427,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "dfplayer_resume",
@@ -2219,7 +2447,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "dfplayer_stop",
@@ -2237,7 +2467,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "dfplayer_volume",
@@ -2263,7 +2495,9 @@
           "min": 0,
           "max": 30
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ble_uart_setup",
@@ -2281,7 +2515,15 @@
         "custom"
       ],
       "boardRequires": "supportsBle",
-      "fields": []
+      "fields": [
+        {
+          "name": "NAME",
+          "fieldType": "text",
+          "default": "DigiCode"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ble_uart_write",
@@ -2299,7 +2541,14 @@
         "custom"
       ],
       "boardRequires": "supportsBle",
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "TEXT",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "ble_uart_on_receive",
@@ -2317,7 +2566,13 @@
         "custom"
       ],
       "boardRequires": "supportsBle",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "HANDLER"
+        }
+      ]
     },
     {
       "type": "ble_is_connected",
@@ -2335,7 +2590,9 @@
         "custom"
       ],
       "boardRequires": "supportsBle",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ble_disconnect",
@@ -2353,7 +2610,9 @@
         "custom"
       ],
       "boardRequires": "supportsBle",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ble_init",
@@ -2371,7 +2630,15 @@
         "custom"
       ],
       "boardRequires": "supportsBle",
-      "fields": []
+      "fields": [
+        {
+          "name": "NAME",
+          "fieldType": "text",
+          "default": "DigiCode"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ble_add_service",
@@ -2389,7 +2656,15 @@
         "custom"
       ],
       "boardRequires": "supportsBle",
-      "fields": []
+      "fields": [
+        {
+          "name": "UUID",
+          "fieldType": "text",
+          "default": "12345678-1234-1234-1234-123456789ABC"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ble_add_characteristic",
@@ -2407,7 +2682,35 @@
         "custom"
       ],
       "boardRequires": "supportsBle",
-      "fields": []
+      "fields": [
+        {
+          "name": "SERVICE_UUID",
+          "fieldType": "text",
+          "default": "12345678-1234-1234-1234-123456789ABC"
+        },
+        {
+          "name": "CHAR_UUID",
+          "fieldType": "text",
+          "default": "00001111-1234-1234-1234-123456789ABC"
+        },
+        {
+          "name": "READ",
+          "fieldType": "checkbox",
+          "default": true
+        },
+        {
+          "name": "WRITE",
+          "fieldType": "checkbox",
+          "default": true
+        },
+        {
+          "name": "NOTIFY",
+          "fieldType": "checkbox",
+          "default": false
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ble_notify",
@@ -2425,7 +2728,20 @@
         "custom"
       ],
       "boardRequires": "supportsBle",
-      "fields": []
+      "fields": [
+        {
+          "name": "CHAR_UUID",
+          "fieldType": "text",
+          "default": "00001111-1234-1234-1234-123456789ABC"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "ble_on_write",
@@ -2443,7 +2759,19 @@
         "custom"
       ],
       "boardRequires": "supportsBle",
-      "fields": []
+      "fields": [
+        {
+          "name": "CHAR_UUID",
+          "fieldType": "text",
+          "default": "00001111-1234-1234-1234-123456789ABC"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "HANDLER"
+        }
+      ]
     },
     {
       "type": "ble_start_advertising",
@@ -2461,7 +2789,9 @@
         "custom"
       ],
       "boardRequires": "supportsBle",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ble_beacon_broadcast",
@@ -2493,8 +2823,15 @@
           "default": 1,
           "min": 0,
           "max": 65535
+        },
+        {
+          "name": "UUID",
+          "fieldType": "text",
+          "default": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ble_scan_start",
@@ -2520,7 +2857,9 @@
           "min": 1,
           "max": 60
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ble_on_device_found",
@@ -2538,7 +2877,13 @@
         "custom"
       ],
       "boardRequires": "supportsBle",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "HANDLER"
+        }
+      ]
     },
     {
       "type": "ble_get_rssi",
@@ -2556,7 +2901,9 @@
         "custom"
       ],
       "boardRequires": "supportsBle",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "esp32_serial_begin",
@@ -2586,7 +2933,9 @@
             "38400"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "esp32_serial_print",
@@ -2605,7 +2954,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "esp32_serial_println",
@@ -2624,7 +2980,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "esp32_delay",
@@ -2643,7 +3006,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "TIME",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "esp32_millis",
@@ -2662,7 +3032,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "controls_if",
@@ -2682,6 +3054,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2702,6 +3076,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2722,6 +3098,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2742,6 +3120,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2762,6 +3142,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2782,6 +3164,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2802,6 +3186,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2822,6 +3208,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2842,6 +3230,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2862,6 +3252,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2882,6 +3274,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2902,6 +3296,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2922,6 +3318,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2942,6 +3340,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2962,6 +3362,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -2982,6 +3384,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -3002,6 +3406,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -3022,6 +3428,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -3041,7 +3449,30 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": "Number"
+        },
+        {
+          "name": "FROM_LOW",
+          "check": "Number"
+        },
+        {
+          "name": "FROM_HIGH",
+          "check": "Number"
+        },
+        {
+          "name": "TO_LOW",
+          "check": "Number"
+        },
+        {
+          "name": "TO_HIGH",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "array_create",
@@ -3060,7 +3491,20 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "VAR",
+          "fieldType": "text",
+          "default": "myArray"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "SIZE0",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "array_set",
@@ -3079,7 +3523,28 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "VAR",
+          "fieldType": "text",
+          "default": "myArray"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "INDEX0",
+          "check": "Number"
+        },
+        {
+          "name": "VALUE",
+          "check": null
+        },
+        {
+          "name": "VALUE",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "array_get",
@@ -3098,7 +3563,20 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "VAR",
+          "fieldType": "text",
+          "default": "myArray"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "INDEX0",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "array_size",
@@ -3117,7 +3595,15 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "VAR",
+          "fieldType": "text",
+          "default": "myArray"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "array_content",
@@ -3136,7 +3622,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wheel_init",
@@ -3166,7 +3654,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wheel_forward",
@@ -3191,7 +3681,9 @@
             "30"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wheel_backward",
@@ -3216,7 +3708,9 @@
             "30"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wheel_turn_left",
@@ -3231,7 +3725,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wheel_turn_right",
@@ -3246,7 +3742,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wheel_spin_left",
@@ -3261,7 +3759,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wheel_spin_right",
@@ -3276,7 +3776,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wheel_stop",
@@ -3291,7 +3793,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "motor_init",
@@ -3329,7 +3833,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "motor_move",
@@ -3370,7 +3876,9 @@
             "stop"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "motor_speed",
@@ -3402,7 +3910,9 @@
             "B"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "motor_stop",
@@ -3428,7 +3938,9 @@
             "BOTH"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "diff_drive_init",
@@ -3494,7 +4006,9 @@
           "min": 1,
           "max": 1000
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "diff_drive_forward",
@@ -3510,7 +4024,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "SPEED",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "diff_drive_backward",
@@ -3526,7 +4047,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "SPEED",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "diff_drive_spin",
@@ -3551,7 +4079,14 @@
             "LEFT"
           ]
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "SPEED",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "diff_drive_curve",
@@ -3576,7 +4111,18 @@
             "LEFT"
           ]
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "SPEED",
+          "check": "Number"
+        },
+        {
+          "name": "RATIO",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "diff_drive_stop",
@@ -3601,7 +4147,9 @@
             "FREE"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "diff_drive_forward_distance",
@@ -3617,7 +4165,18 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "DISTANCE",
+          "check": "Number"
+        },
+        {
+          "name": "SPEED",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "diff_drive_rotate_angle",
@@ -3642,7 +4201,18 @@
             "LEFT"
           ]
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "ANGLE",
+          "check": "Number"
+        },
+        {
+          "name": "SPEED",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "diff_drive_set_speed",
@@ -3658,7 +4228,18 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "LEFT",
+          "check": "Number"
+        },
+        {
+          "name": "RIGHT",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "diff_drive_line_trace",
@@ -3674,7 +4255,22 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "BASE_SPEED",
+          "check": "Number"
+        },
+        {
+          "name": "ERROR",
+          "check": "Number"
+        },
+        {
+          "name": "CORRECTION",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "diff_drive_get_speed",
@@ -3699,7 +4295,9 @@
             "RIGHT"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "encoder_init",
@@ -3758,7 +4356,9 @@
           "min": 1,
           "max": 500
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "encoder_distance",
@@ -3784,7 +4384,9 @@
             "RIGHT"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "encoder_speed",
@@ -3810,7 +4412,9 @@
             "RIGHT"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "encoder_count",
@@ -3835,7 +4439,9 @@
             "RIGHT"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "encoder_reset",
@@ -3851,7 +4457,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "encoder_wait_distance",
@@ -3867,7 +4475,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "DISTANCE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "pid_init",
@@ -3894,7 +4509,22 @@
             "angle"
           ]
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "KP",
+          "check": "Number"
+        },
+        {
+          "name": "KI",
+          "check": "Number"
+        },
+        {
+          "name": "KD",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "pid_calculate",
@@ -3921,7 +4551,14 @@
             "angle"
           ]
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "ERROR",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "pid_motor_speeds",
@@ -3946,7 +4583,18 @@
             "wall"
           ]
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "BASE_SPEED",
+          "check": "Number"
+        },
+        {
+          "name": "ERROR",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "pid_get_speed",
@@ -3971,7 +4619,9 @@
             "RIGHT"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "pid_set_gains",
@@ -3998,7 +4648,22 @@
             "angle"
           ]
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "KP",
+          "check": "Number"
+        },
+        {
+          "name": "KI",
+          "check": "Number"
+        },
+        {
+          "name": "KD",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "pid_reset",
@@ -4025,7 +4690,9 @@
             "angle"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "line_sensor_init_simple_2",
@@ -4055,7 +4722,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "line_sensor_init",
@@ -4070,7 +4739,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "line_sensor_calibrate",
@@ -4085,7 +4756,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "DURATION",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "line_sensor_position",
@@ -4100,7 +4778,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "line_sensor_detected",
@@ -4115,7 +4795,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "THRESHOLD",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "line_sensor_value",
@@ -4130,7 +4817,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "line_sensor_raw",
@@ -4153,7 +4842,9 @@
           "min": 0,
           "max": 7
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "qtr_8a_init",
@@ -4242,7 +4933,9 @@
             "3"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "qtr_8rc_init",
@@ -4331,7 +5024,9 @@
             "3"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "qtr_calibrate",
@@ -4346,7 +5041,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "SAMPLES",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "qtr_auto_calibrate",
@@ -4361,7 +5063,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "DURATION",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "qtr_is_calibrated",
@@ -4376,7 +5085,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "qtr_line_position_normalized",
@@ -4400,7 +5111,9 @@
             "BLACK"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "qtr_line_position",
@@ -4424,7 +5137,9 @@
             "BLACK"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "qtr_line_detected",
@@ -4439,7 +5154,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "THRESHOLD",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "qtr_read_all",
@@ -4454,7 +5176,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "qtr_sensor_value",
@@ -4484,7 +5208,9 @@
             "7"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "qtr_raw_value",
@@ -4507,7 +5233,9 @@
           "min": 0,
           "max": 7
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "qtr_emitter_control",
@@ -4531,7 +5259,9 @@
             "OFF"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wall_sensor_init",
@@ -4582,7 +5312,9 @@
           "min": 0,
           "max": 4095
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wall_sensor_has_wall",
@@ -4607,7 +5339,9 @@
             "RIGHT"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wall_sensor_info",
@@ -4622,7 +5356,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wall_sensor_error",
@@ -4637,7 +5373,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wall_sensor_value",
@@ -4663,7 +5401,9 @@
             "RIGHT"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wall_sensor_read",
@@ -4678,7 +5418,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wall_sensor_set_threshold",
@@ -4693,7 +5435,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "THRESHOLD",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "stepper_init",
@@ -4739,7 +5488,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "stepper_move",
@@ -4773,7 +5524,9 @@
             "2"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "stepper_rotate",
@@ -4799,8 +5552,15 @@
             "3",
             "2"
           ]
+        },
+        {
+          "name": "ANGLE",
+          "fieldType": "angle",
+          "default": 90
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "stepper_stop",
@@ -4817,7 +5577,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "preferences_begin",
@@ -4834,7 +5596,20 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "NAMESPACE",
+          "fieldType": "text",
+          "default": "config"
+        },
+        {
+          "name": "READONLY",
+          "fieldType": "checkbox",
+          "default": false
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "preferences_put",
@@ -4860,8 +5635,20 @@
             "Float",
             "String"
           ]
+        },
+        {
+          "name": "KEY",
+          "fieldType": "text",
+          "default": "myKey"
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "preferences_get",
@@ -4887,8 +5674,20 @@
             "Float",
             "String"
           ]
+        },
+        {
+          "name": "KEY",
+          "fieldType": "text",
+          "default": "myKey"
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "DEFAULT",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "preferences_remove",
@@ -4905,7 +5704,15 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "KEY",
+          "fieldType": "text",
+          "default": "myKey"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "preferences_clear",
@@ -4922,7 +5729,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "preferences_end",
@@ -4939,7 +5748,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "eeprom_write",
@@ -4956,7 +5767,18 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "ADDRESS",
+          "check": "Number"
+        },
+        {
+          "name": "VALUE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "eeprom_read",
@@ -4973,7 +5795,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "ADDRESS",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "transform_init",
@@ -5017,7 +5846,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "transform_mode",
@@ -5041,7 +5872,9 @@
             "roll"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "transform_shift",
@@ -5065,7 +5898,9 @@
             "roll"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "transform_home",
@@ -5080,7 +5915,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "transform_walk",
@@ -5113,7 +5950,9 @@
             "slow"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "transform_turn",
@@ -5144,7 +5983,9 @@
             "right"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "transform_stop",
@@ -5168,7 +6009,9 @@
             "roll"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "transform_roll",
@@ -5201,7 +6044,9 @@
             "slow"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "transform_roll_rotate",
@@ -5232,7 +6077,9 @@
             "right"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "transform_pushup",
@@ -5247,7 +6094,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "transform_dance",
@@ -5262,7 +6111,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wifi_connect",
@@ -5278,7 +6129,22 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "SSID",
+          "fieldType": "text",
+          "default": "your_ssid",
+          "isCredential": true
+        },
+        {
+          "name": "PASSWORD",
+          "fieldType": "text",
+          "default": "your_password",
+          "isCredential": true
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mqtt_setup",
@@ -5301,8 +6167,33 @@
           "default": 1883,
           "min": 1,
           "max": 65535
+        },
+        {
+          "name": "SSID",
+          "fieldType": "text",
+          "default": "your_ssid",
+          "isCredential": true
+        },
+        {
+          "name": "WIFI_PASS",
+          "fieldType": "text",
+          "default": "your_password",
+          "isCredential": true
+        },
+        {
+          "name": "BROKER",
+          "fieldType": "text",
+          "default": "192.168.1.100",
+          "isCredential": true
+        },
+        {
+          "name": "CLIENT_ID",
+          "fieldType": "text",
+          "default": "esp32_client"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mqtt_set_buffer_size",
@@ -5326,7 +6217,9 @@
           "min": 128,
           "max": 16384
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mqtt_set_keepalive",
@@ -5350,7 +6243,9 @@
           "min": 5,
           "max": 300
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mqtt_connect",
@@ -5366,7 +6261,22 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "USERNAME",
+          "fieldType": "text",
+          "default": "",
+          "isCredential": true
+        },
+        {
+          "name": "PASSWORD",
+          "fieldType": "text",
+          "default": "",
+          "isCredential": true
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mqtt_connect_with_lwt",
@@ -5382,7 +6292,22 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "USERNAME",
+          "fieldType": "text",
+          "default": "",
+          "isCredential": true
+        },
+        {
+          "name": "PASSWORD",
+          "fieldType": "text",
+          "default": "",
+          "isCredential": true
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mqtt_disconnect",
@@ -5398,7 +6323,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mqtt_last_will",
@@ -5423,8 +6350,25 @@
             "1",
             "2"
           ]
+        },
+        {
+          "name": "TOPIC",
+          "fieldType": "text",
+          "default": "home/esp32/status"
+        },
+        {
+          "name": "MESSAGE",
+          "fieldType": "text",
+          "default": "offline"
+        },
+        {
+          "name": "RETAIN",
+          "fieldType": "checkbox",
+          "default": true
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mqtt_publish",
@@ -5440,7 +6384,25 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "TOPIC",
+          "fieldType": "text",
+          "default": "home/esp32/state"
+        },
+        {
+          "name": "RETAIN",
+          "fieldType": "checkbox",
+          "default": false
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "MESSAGE",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "mqtt_publish_qos",
@@ -5464,8 +6426,25 @@
             "0",
             "1"
           ]
+        },
+        {
+          "name": "TOPIC",
+          "fieldType": "text",
+          "default": "home/esp32/state"
+        },
+        {
+          "name": "RETAIN",
+          "fieldType": "checkbox",
+          "default": false
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "MESSAGE",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "mqtt_subscribe",
@@ -5481,7 +6460,15 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "TOPIC",
+          "fieldType": "text",
+          "default": "home/esp32/command"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mqtt_unsubscribe",
@@ -5497,7 +6484,15 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "TOPIC",
+          "fieldType": "text",
+          "default": "home/esp32/command"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mqtt_on_message",
@@ -5513,7 +6508,13 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "CALLBACK"
+        }
+      ]
     },
     {
       "type": "mqtt_topic_value",
@@ -5529,7 +6530,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mqtt_message_value",
@@ -5545,7 +6548,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mqtt_loop",
@@ -5561,7 +6566,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mqtt_is_connected",
@@ -5577,7 +6584,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "mqtt_get_state",
@@ -5593,7 +6602,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wifi_is_connected",
@@ -5609,7 +6620,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wifi_reconnect",
@@ -5625,7 +6638,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wifi_get_ip",
@@ -5641,7 +6656,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "wifi_get_rssi",
@@ -5657,7 +6674,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_device_init",
@@ -5680,8 +6699,38 @@
           "default": 1883,
           "min": 1,
           "max": 65535
+        },
+        {
+          "name": "SSID",
+          "fieldType": "text",
+          "default": "your_ssid",
+          "isCredential": true
+        },
+        {
+          "name": "WIFI_PASS",
+          "fieldType": "text",
+          "default": "your_password",
+          "isCredential": true
+        },
+        {
+          "name": "BROKER",
+          "fieldType": "text",
+          "default": "192.168.1.100",
+          "isCredential": true
+        },
+        {
+          "name": "DEVICE_NAME",
+          "fieldType": "text",
+          "default": "ESP32センサー"
+        },
+        {
+          "name": "DEVICE_ID",
+          "fieldType": "text",
+          "default": "esp32_sensor"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_device_init_auth",
@@ -5704,8 +6753,49 @@
           "default": 1883,
           "min": 1,
           "max": 65535
+        },
+        {
+          "name": "SSID",
+          "fieldType": "text",
+          "default": "your_ssid",
+          "isCredential": true
+        },
+        {
+          "name": "WIFI_PASS",
+          "fieldType": "text",
+          "default": "your_password",
+          "isCredential": true
+        },
+        {
+          "name": "BROKER",
+          "fieldType": "text",
+          "default": "192.168.1.100",
+          "isCredential": true
+        },
+        {
+          "name": "MQTT_USER",
+          "fieldType": "text",
+          "default": ""
+        },
+        {
+          "name": "MQTT_PASS",
+          "fieldType": "text",
+          "default": "",
+          "isCredential": true
+        },
+        {
+          "name": "DEVICE_NAME",
+          "fieldType": "text",
+          "default": "ESP32センサー"
+        },
+        {
+          "name": "DEVICE_ID",
+          "fieldType": "text",
+          "default": "esp32_sensor"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_sensor_create",
@@ -5740,8 +6830,25 @@
             "distance",
             "None"
           ]
+        },
+        {
+          "name": "SENSOR_ID",
+          "fieldType": "text",
+          "default": "temperature"
+        },
+        {
+          "name": "NAME",
+          "fieldType": "text",
+          "default": "温度"
+        },
+        {
+          "name": "UNIT",
+          "fieldType": "text",
+          "default": "°C"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_sensor_update",
@@ -5757,7 +6864,20 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "SENSOR_ID",
+          "fieldType": "text",
+          "default": "temperature"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "ha_binary_sensor_create",
@@ -5790,8 +6910,20 @@
             "connectivity",
             "None"
           ]
+        },
+        {
+          "name": "SENSOR_ID",
+          "fieldType": "text",
+          "default": "motion"
+        },
+        {
+          "name": "NAME",
+          "fieldType": "text",
+          "default": "人感センサー"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_binary_sensor_update",
@@ -5807,7 +6939,20 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "SENSOR_ID",
+          "fieldType": "text",
+          "default": "motion"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": "Boolean"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "ha_switch_create",
@@ -5834,8 +6979,20 @@
             "mdi:power-plug",
             "mdi:toggle-switch"
           ]
+        },
+        {
+          "name": "SWITCH_ID",
+          "fieldType": "text",
+          "default": "relay"
+        },
+        {
+          "name": "NAME",
+          "fieldType": "text",
+          "default": "リレー"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_switch_on_command",
@@ -5851,7 +7008,22 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "SWITCH_ID",
+          "fieldType": "text",
+          "default": "relay"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "ON_CALLBACK"
+        },
+        {
+          "name": "OFF_CALLBACK"
+        }
+      ]
     },
     {
       "type": "ha_switch_set_state",
@@ -5867,7 +7039,20 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "SWITCH_ID",
+          "fieldType": "text",
+          "default": "relay"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "STATE",
+          "check": "Boolean"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "ha_light_create",
@@ -5883,7 +7068,25 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "LIGHT_ID",
+          "fieldType": "text",
+          "default": "led"
+        },
+        {
+          "name": "NAME",
+          "fieldType": "text",
+          "default": "LED"
+        },
+        {
+          "name": "BRIGHTNESS",
+          "fieldType": "checkbox",
+          "default": true
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_light_on_command",
@@ -5899,7 +7102,19 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "LIGHT_ID",
+          "fieldType": "text",
+          "default": "led"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "CALLBACK"
+        }
+      ]
     },
     {
       "type": "ha_light_state",
@@ -5915,7 +7130,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_light_brightness",
@@ -5931,7 +7148,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_light_set_state",
@@ -5947,7 +7166,24 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "LIGHT_ID",
+          "fieldType": "text",
+          "default": "led"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "STATE",
+          "check": "Boolean"
+        },
+        {
+          "name": "BRIGHTNESS",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "ha_light_create_rgb",
@@ -5963,7 +7199,20 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "LIGHT_ID",
+          "fieldType": "text",
+          "default": "rgb_led"
+        },
+        {
+          "name": "NAME",
+          "fieldType": "text",
+          "default": "RGB LED"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_light_on_rgb_command",
@@ -5979,7 +7228,19 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "LIGHT_ID",
+          "fieldType": "text",
+          "default": "rgb_led"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "CALLBACK"
+        }
+      ]
     },
     {
       "type": "ha_light_rgb_r",
@@ -5995,7 +7256,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_light_rgb_g",
@@ -6011,7 +7274,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_light_rgb_b",
@@ -6027,7 +7292,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_light_set_rgb",
@@ -6043,7 +7310,28 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "LIGHT_ID",
+          "fieldType": "text",
+          "default": "rgb_led"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "R",
+          "check": "Number"
+        },
+        {
+          "name": "G",
+          "check": "Number"
+        },
+        {
+          "name": "B",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "ha_number_create",
@@ -6068,8 +7356,25 @@
             "box",
             "slider"
           ]
+        },
+        {
+          "name": "NUMBER_ID",
+          "fieldType": "text",
+          "default": "servo_angle"
+        },
+        {
+          "name": "NAME",
+          "fieldType": "text",
+          "default": "サーボ角度"
+        },
+        {
+          "name": "UNIT",
+          "fieldType": "text",
+          "default": "°"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_number_on_command",
@@ -6085,7 +7390,19 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "NUMBER_ID",
+          "fieldType": "text",
+          "default": "servo_angle"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "CALLBACK"
+        }
+      ]
     },
     {
       "type": "ha_number_value",
@@ -6101,7 +7418,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_number_set_state",
@@ -6117,7 +7436,20 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "NUMBER_ID",
+          "fieldType": "text",
+          "default": "servo_angle"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "ha_fan_create",
@@ -6133,7 +7465,25 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "FAN_ID",
+          "fieldType": "text",
+          "default": "fan"
+        },
+        {
+          "name": "NAME",
+          "fieldType": "text",
+          "default": "換気扇"
+        },
+        {
+          "name": "SPEEDS",
+          "fieldType": "checkbox",
+          "default": true
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_fan_on_command",
@@ -6149,7 +7499,19 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "FAN_ID",
+          "fieldType": "text",
+          "default": "fan"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "CALLBACK"
+        }
+      ]
     },
     {
       "type": "ha_fan_state",
@@ -6165,7 +7527,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_fan_speed",
@@ -6181,7 +7545,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_fan_set_state",
@@ -6197,7 +7563,24 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "FAN_ID",
+          "fieldType": "text",
+          "default": "fan"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "STATE",
+          "check": "Boolean"
+        },
+        {
+          "name": "SPEED",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "ha_cover_create",
@@ -6225,8 +7608,20 @@
             "gate",
             "None"
           ]
+        },
+        {
+          "name": "COVER_ID",
+          "fieldType": "text",
+          "default": "shutter"
+        },
+        {
+          "name": "NAME",
+          "fieldType": "text",
+          "default": "シャッター"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_cover_on_command",
@@ -6242,7 +7637,25 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "COVER_ID",
+          "fieldType": "text",
+          "default": "shutter"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "OPEN_CALLBACK"
+        },
+        {
+          "name": "CLOSE_CALLBACK"
+        },
+        {
+          "name": "STOP_CALLBACK"
+        }
+      ]
     },
     {
       "type": "ha_cover_set_state",
@@ -6269,8 +7682,15 @@
             "StateClosing",
             "StateStopped"
           ]
+        },
+        {
+          "name": "COVER_ID",
+          "fieldType": "text",
+          "default": "shutter"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_button_create",
@@ -6296,8 +7716,20 @@
             "mdi:play",
             "mdi:stop"
           ]
+        },
+        {
+          "name": "BUTTON_ID",
+          "fieldType": "text",
+          "default": "restart"
+        },
+        {
+          "name": "NAME",
+          "fieldType": "text",
+          "default": "再起動"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_button_on_press",
@@ -6313,7 +7745,19 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "BUTTON_ID",
+          "fieldType": "text",
+          "default": "restart"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "CALLBACK"
+        }
+      ]
     },
     {
       "type": "ha_device_trigger_create",
@@ -6338,8 +7782,20 @@
             "remote",
             "sensor"
           ]
+        },
+        {
+          "name": "TRIGGER_ID",
+          "fieldType": "text",
+          "default": "button_press"
+        },
+        {
+          "name": "SUBTYPE",
+          "fieldType": "text",
+          "default": "button_1"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_device_trigger_fire",
@@ -6355,7 +7811,15 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "TRIGGER_ID",
+          "fieldType": "text",
+          "default": "button_press"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_scene_create",
@@ -6371,7 +7835,20 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "SCENE_ID",
+          "fieldType": "text",
+          "default": "night_mode"
+        },
+        {
+          "name": "NAME",
+          "fieldType": "text",
+          "default": "ナイトモード"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_scene_on_command",
@@ -6387,7 +7864,19 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "SCENE_ID",
+          "fieldType": "text",
+          "default": "night_mode"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "CALLBACK"
+        }
+      ]
     },
     {
       "type": "ha_tag_scanner_create",
@@ -6403,7 +7892,20 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "SCANNER_ID",
+          "fieldType": "text",
+          "default": "nfc_reader"
+        },
+        {
+          "name": "NAME",
+          "fieldType": "text",
+          "default": "NFCリーダー"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_tag_scanner_scanned",
@@ -6419,7 +7921,20 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "SCANNER_ID",
+          "fieldType": "text",
+          "default": "nfc_reader"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "TAG_ID",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "ha_loop",
@@ -6435,7 +7950,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_is_connected",
@@ -6451,7 +7968,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ha_report_interval",
@@ -6467,7 +7986,18 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "INTERVAL",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": [
+        {
+          "name": "CALLBACK"
+        }
+      ]
     },
     {
       "type": "http_get",
@@ -6483,7 +8013,14 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "URL",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "http_get_with_headers",
@@ -6499,7 +8036,22 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "URL",
+          "check": "String"
+        },
+        {
+          "name": "HEADER_NAME",
+          "check": "String"
+        },
+        {
+          "name": "HEADER_VALUE",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "http_post",
@@ -6525,7 +8077,18 @@
             "text/plain"
           ]
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "URL",
+          "check": "String"
+        },
+        {
+          "name": "BODY",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "http_post_json",
@@ -6541,7 +8104,18 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "URL",
+          "check": "String"
+        },
+        {
+          "name": "JSON",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "http_put",
@@ -6557,7 +8131,18 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "URL",
+          "check": "String"
+        },
+        {
+          "name": "BODY",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "http_delete",
@@ -6573,7 +8158,14 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "URL",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "http_url_encode",
@@ -6589,7 +8181,14 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "TEXT",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "http_build_url",
@@ -6605,7 +8204,22 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "BASE_URL",
+          "check": "String"
+        },
+        {
+          "name": "PARAM1_NAME",
+          "check": "String"
+        },
+        {
+          "name": "PARAM1_VALUE",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "http_is_success",
@@ -6621,7 +8235,14 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "CODE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "json_parse",
@@ -6637,7 +8258,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "JSON",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "json_parse_size",
@@ -6665,7 +8293,14 @@
             "8192"
           ]
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "JSON",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "json_get_string",
@@ -6681,7 +8316,15 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "KEY",
+          "fieldType": "text",
+          "default": "key"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "json_get_number",
@@ -6697,7 +8340,15 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "KEY",
+          "fieldType": "text",
+          "default": "key"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "json_get_int",
@@ -6713,7 +8364,15 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "KEY",
+          "fieldType": "text",
+          "default": "key"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "json_get_bool",
@@ -6729,7 +8388,15 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "KEY",
+          "fieldType": "text",
+          "default": "key"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "json_get_nested",
@@ -6755,8 +8422,15 @@
             "int",
             "bool"
           ]
+        },
+        {
+          "name": "PATH",
+          "fieldType": "text",
+          "default": "data.value"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "json_has_key",
@@ -6772,7 +8446,15 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "KEY",
+          "fieldType": "text",
+          "default": "key"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "json_array_size",
@@ -6788,7 +8470,15 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "KEY",
+          "fieldType": "text",
+          "default": "items"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "json_array_get",
@@ -6813,8 +8503,20 @@
             "float",
             "int"
           ]
+        },
+        {
+          "name": "KEY",
+          "fieldType": "text",
+          "default": "items"
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "INDEX",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "json_create_object",
@@ -6830,7 +8532,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "json_set_string",
@@ -6846,7 +8550,20 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "KEY",
+          "fieldType": "text",
+          "default": "key"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "json_set_number",
@@ -6862,7 +8579,20 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "KEY",
+          "fieldType": "text",
+          "default": "key"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "json_set_bool",
@@ -6878,7 +8608,20 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "KEY",
+          "fieldType": "text",
+          "default": "key"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": "Boolean"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "json_to_string",
@@ -6894,7 +8637,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "json_to_string_pretty",
@@ -6910,7 +8655,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "json_simple",
@@ -6926,7 +8673,26 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "KEY1",
+          "check": "String"
+        },
+        {
+          "name": "VALUE1",
+          "check": "String"
+        },
+        {
+          "name": "KEY2",
+          "check": "String"
+        },
+        {
+          "name": "VALUE2",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "ota_setup",
@@ -6942,7 +8708,33 @@
         "custom"
       ],
       "boardRequires": "supportsOta",
-      "fields": []
+      "fields": [
+        {
+          "name": "SSID",
+          "fieldType": "text",
+          "default": "your_ssid",
+          "isCredential": true
+        },
+        {
+          "name": "WIFI_PASS",
+          "fieldType": "text",
+          "default": "your_password",
+          "isCredential": true
+        },
+        {
+          "name": "HOSTNAME",
+          "fieldType": "text",
+          "default": "esp32-ota"
+        },
+        {
+          "name": "OTA_PASS",
+          "fieldType": "text",
+          "default": "",
+          "isCredential": true
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ota_setup_simple",
@@ -6958,7 +8750,15 @@
         "custom"
       ],
       "boardRequires": "supportsOta",
-      "fields": []
+      "fields": [
+        {
+          "name": "HOSTNAME",
+          "fieldType": "text",
+          "default": "esp32-ota"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ota_loop",
@@ -6974,7 +8774,9 @@
         "custom"
       ],
       "boardRequires": "supportsOta",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ota_get_hostname",
@@ -6990,7 +8792,9 @@
         "custom"
       ],
       "boardRequires": "supportsOta",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "esp_restart",
@@ -7006,7 +8810,9 @@
         "custom"
       ],
       "boardRequires": "supportsOta",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "esp_deep_sleep",
@@ -7022,7 +8828,14 @@
         "custom"
       ],
       "boardRequires": "supportsOta",
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "SECONDS",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "esp_light_sleep",
@@ -7038,7 +8851,14 @@
         "custom"
       ],
       "boardRequires": "supportsOta",
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "SECONDS",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "esp_get_free_heap",
@@ -7054,7 +8874,9 @@
         "custom"
       ],
       "boardRequires": "supportsOta",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "esp_get_chip_id",
@@ -7070,7 +8892,9 @@
         "custom"
       ],
       "boardRequires": "supportsOta",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "esp_get_cpu_freq",
@@ -7086,7 +8910,9 @@
         "custom"
       ],
       "boardRequires": "supportsOta",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "esp_get_flash_size",
@@ -7102,7 +8928,9 @@
         "custom"
       ],
       "boardRequires": "supportsOta",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "esp_get_sketch_size",
@@ -7118,7 +8946,9 @@
         "custom"
       ],
       "boardRequires": "supportsOta",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "esp_get_free_sketch_space",
@@ -7134,7 +8964,9 @@
         "custom"
       ],
       "boardRequires": "supportsOta",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "websocket_connect",
@@ -7157,8 +8989,20 @@
           "default": 8080,
           "min": 1,
           "max": 65535
+        },
+        {
+          "name": "HOST",
+          "fieldType": "text",
+          "default": "192.168.1.100"
+        },
+        {
+          "name": "PATH",
+          "fieldType": "text",
+          "default": "/"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "websocket_send",
@@ -7174,7 +9018,14 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "TEXT",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "websocket_on_message",
@@ -7190,7 +9041,13 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "HANDLER"
+        }
+      ]
     },
     {
       "type": "websocket_is_connected",
@@ -7206,7 +9063,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "websocket_disconnect",
@@ -7222,7 +9081,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "bme280_init",
@@ -7247,7 +9108,9 @@
             "0x77"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "bme280_read",
@@ -7273,7 +9136,9 @@
             "pres"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "bmp280_init",
@@ -7298,7 +9163,9 @@
             "0x77"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "bmp280_read",
@@ -7323,7 +9190,9 @@
             "pres"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "bmp280_read_altitude",
@@ -7339,7 +9208,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "SEA_LEVEL",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "vl53l0x_init",
@@ -7355,7 +9231,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "vl53l0x_read_distance_mm",
@@ -7371,7 +9249,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "as5600_init",
@@ -7387,7 +9267,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "as5600_read_angle",
@@ -7403,7 +9285,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "as5600_read_raw",
@@ -7419,7 +9303,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "tft_init",
@@ -7466,7 +9352,9 @@
             "ST7735"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "tft_fill_screen",
@@ -7482,7 +9370,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "tft_draw_pixel",
@@ -7513,7 +9403,9 @@
           "min": 0,
           "max": 239
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "tft_draw_line",
@@ -7558,7 +9450,9 @@
           "min": 0,
           "max": 239
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "tft_draw_rect",
@@ -7602,8 +9496,15 @@
           "default": 50,
           "min": 1,
           "max": 240
+        },
+        {
+          "name": "FILL",
+          "fieldType": "checkbox",
+          "default": false
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "tft_draw_circle",
@@ -7640,8 +9541,15 @@
           "default": 30,
           "min": 1,
           "max": 160
+        },
+        {
+          "name": "FILL",
+          "fieldType": "checkbox",
+          "default": false
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "tft_set_cursor",
@@ -7679,7 +9587,9 @@
           "min": 1,
           "max": 10
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "tft_print",
@@ -7695,7 +9605,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "TEXT",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "tft_color_rgb",
@@ -7733,7 +9650,9 @@
           "min": 0,
           "max": 255
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "camera_init",
@@ -7761,7 +9680,9 @@
             "M5STACK_UNITCAM"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "camera_capture",
@@ -7777,7 +9698,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "camera_save_sd",
@@ -7793,7 +9716,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "FILENAME",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "camera_send_http",
@@ -7809,7 +9739,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "URL",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "camera_stream_start",
@@ -7833,7 +9770,9 @@
           "min": 1,
           "max": 65535
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ir_receiver_init",
@@ -7857,7 +9796,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ir_receiver_decode",
@@ -7873,7 +9814,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ir_sender_init",
@@ -7897,7 +9840,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ir_sender_send",
@@ -7927,7 +9872,14 @@
             "PANASONIC"
           ]
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "CODE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "rfid_init_m5stack",
@@ -7943,7 +9895,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "rfid_init_generic",
@@ -7974,7 +9928,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "rfid_is_card_present",
@@ -7990,7 +9946,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "rfid_read_uid",
@@ -8006,7 +9964,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "rfid_read_data",
@@ -8030,7 +9990,9 @@
           "min": 0,
           "max": 63
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "rfid_write_data",
@@ -8054,7 +10016,14 @@
           "min": 0,
           "max": 62
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "DATA",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "esp32_pin_mode",
@@ -8087,7 +10056,9 @@
             "INPUT_PULLUP"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "esp32_digital_write",
@@ -8119,7 +10090,9 @@
             "LOW"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "esp32_digital_read",
@@ -8143,7 +10116,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "esp32_analog_read",
@@ -8167,7 +10142,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "esp32_analog_write",
@@ -8191,7 +10168,14 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "esp32_builtin_led_on",
@@ -8207,7 +10191,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "esp32_builtin_led_off",
@@ -8223,7 +10209,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "attach_interrupt",
@@ -8256,6 +10244,12 @@
             "CHANGE"
           ]
         }
+      ],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "HANDLER"
+        }
       ]
     },
     {
@@ -8280,7 +10274,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "check_interrupt",
@@ -8304,7 +10300,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ticker_attach",
@@ -8328,6 +10326,12 @@
           "min": 1,
           "max": 60000
         }
+      ],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "CALLBACK"
+        }
       ]
     },
     {
@@ -8344,7 +10348,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "check_ticker",
@@ -8360,7 +10366,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "i2c_scan",
@@ -8376,7 +10384,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "i2c_write",
@@ -8392,7 +10402,18 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "ADDR",
+          "check": "Number"
+        },
+        {
+          "name": "DATA",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "i2c_read",
@@ -8408,7 +10429,18 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "ADDR",
+          "check": "Number"
+        },
+        {
+          "name": "COUNT",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "i2c_write_register",
@@ -8424,7 +10456,22 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "ADDR",
+          "check": "Number"
+        },
+        {
+          "name": "REG",
+          "check": "Number"
+        },
+        {
+          "name": "VALUE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "i2c_read_register",
@@ -8440,7 +10487,18 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "ADDR",
+          "check": "Number"
+        },
+        {
+          "name": "REG",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "spi_begin",
@@ -8464,7 +10522,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "spi_transfer",
@@ -8488,7 +10548,14 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "DATA",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "serial2_begin",
@@ -8530,7 +10597,9 @@
             "115200"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "serial2_print",
@@ -8546,7 +10615,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "TEXT",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "serial2_println",
@@ -8562,7 +10638,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "TEXT",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "serial2_read",
@@ -8578,7 +10661,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "serial2_read_string_until",
@@ -8594,7 +10679,15 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [
+        {
+          "name": "TERM",
+          "fieldType": "text",
+          "default": "\\\\n"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "serial2_available",
@@ -8610,7 +10703,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "can_init",
@@ -8651,7 +10746,9 @@
             "1000"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "can_send",
@@ -8667,7 +10764,18 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "ID",
+          "check": "Number"
+        },
+        {
+          "name": "DATA",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "can_receive_available",
@@ -8683,7 +10791,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "can_get_received_id",
@@ -8699,7 +10809,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "can_get_received_data",
@@ -8715,7 +10827,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ntp_sync",
@@ -8738,8 +10852,15 @@
           "default": 32400,
           "min": -86400,
           "max": 86400
+        },
+        {
+          "name": "SERVER",
+          "fieldType": "text",
+          "default": "pool.ntp.org"
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ntp_get_formatted",
@@ -8755,7 +10876,15 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [
+        {
+          "name": "FORMAT",
+          "fieldType": "text",
+          "default": "%Y-%m-%d %H:%M:%S"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ntp_get_component",
@@ -8784,7 +10913,9 @@
             "second"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ntp_get_unix_time",
@@ -8800,7 +10931,9 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "rtc_init",
@@ -8825,7 +10958,9 @@
             "DS1307"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "rtc_set_time",
@@ -8841,7 +10976,34 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "YEAR",
+          "check": "Number"
+        },
+        {
+          "name": "MONTH",
+          "check": "Number"
+        },
+        {
+          "name": "DAY",
+          "check": "Number"
+        },
+        {
+          "name": "HOUR",
+          "check": "Number"
+        },
+        {
+          "name": "MINUTE",
+          "check": "Number"
+        },
+        {
+          "name": "SECOND",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "rtc_get_formatted",
@@ -8857,7 +11019,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "rtc_get_component",
@@ -8887,7 +11051,9 @@
             "unixtime"
           ]
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "sd_begin",
@@ -8911,7 +11077,9 @@
           "min": 0,
           "max": 39
         }
-      ]
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "sd_write",
@@ -8936,7 +11104,18 @@
             "FILE_WRITE"
           ]
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "FILENAME",
+          "check": "String"
+        },
+        {
+          "name": "CONTENT",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "sd_read",
@@ -8952,7 +11131,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "FILENAME",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "sd_exists",
@@ -8968,7 +11154,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "FILENAME",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "sd_delete",
@@ -8984,7 +11177,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "FILENAME",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "sd_csv_append",
@@ -9000,7 +11200,26 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "FILENAME",
+          "check": "String"
+        },
+        {
+          "name": "COL1",
+          "check": null
+        },
+        {
+          "name": "COL2",
+          "check": null
+        },
+        {
+          "name": "COL3",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "fs_mount",
@@ -9016,7 +11235,9 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "fs_write",
@@ -9041,7 +11262,18 @@
             "w"
           ]
         }
-      ]
+      ],
+      "valueInputs": [
+        {
+          "name": "FILENAME",
+          "check": "String"
+        },
+        {
+          "name": "CONTENT",
+          "check": null
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "fs_read",
@@ -9057,7 +11289,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "FILENAME",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "fs_exists",
@@ -9073,7 +11312,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "FILENAME",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "fs_delete",
@@ -9089,7 +11335,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": []
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "FILENAME",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "text",
@@ -9106,6 +11359,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -9123,6 +11378,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     },
     {
@@ -9140,6 +11397,8 @@
       ],
       "boardRequires": null,
       "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
       "builtin": true
     }
   ],
