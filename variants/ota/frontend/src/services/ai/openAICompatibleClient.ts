@@ -106,13 +106,14 @@ export class OpenAICompatibleClient implements AIClient {
     });
 
     const historyMessages = trimConversationForContext(input.messages);
-    const retryPrefix = AI_SYSTEM_PROMPTS[input.language].blockGen.retryPrefix;
+    const { retryErrorPrefix } = AI_SYSTEM_PROMPTS[input.language].blockGen;
     let lastRaw = '';
+    let lastError: string | null = null;
 
     for (let attempt = 1; attempt <= 3; attempt++) {
-      const finalUserContent = attempt < 3
-        ? input.generateRequest
-        : `${retryPrefix}\n\n${input.generateRequest}`;
+      const finalUserContent = attempt > 1 && lastError
+        ? `${retryErrorPrefix} ${lastError}\n\n${input.generateRequest}`
+        : input.generateRequest;
 
       const messages: ApiMessage[] = [
         { role: 'system', content: systemPrompt },
@@ -124,14 +125,17 @@ export class OpenAICompatibleClient implements AIClient {
       lastRaw = content;
 
       const result = validateBlocklyXml(lastRaw, allowedTypes);
-      if (result.valid && result.sanitizedXml) {
-        // 静的検証 OK → Blockly ランタイムで dry-run（接続構造の検証）
-        const dryRun = dryRunBlocklyXml(result.sanitizedXml);
-        if (dryRun.valid) {
-          return { xml: result.sanitizedXml, rawResponse: lastRaw, attempts: attempt };
-        }
-        // dry-run 失敗 → 次の attempt へ（retry prefix で再生成を促す）
+      if (!result.valid || !result.sanitizedXml) {
+        lastError = result.errors[0] ?? 'XML 形式ではありませんでした';
+        continue;
       }
+      // 静的検証 OK → Blockly ランタイムで dry-run（接続構造の検証）
+      const dryRun = dryRunBlocklyXml(result.sanitizedXml);
+      if (!dryRun.valid) {
+        lastError = `Blockly connection error: ${dryRun.error}. Value blocks (hasOutput=true) must not have <next>. Statement blocks (isStatement=true) must not be placed in <value> slots.`;
+        continue;
+      }
+      return { xml: result.sanitizedXml, rawResponse: lastRaw, attempts: attempt };
     }
 
     throw new AiGenerationError('Failed to generate valid XML after 3 attempts', 3, lastRaw);

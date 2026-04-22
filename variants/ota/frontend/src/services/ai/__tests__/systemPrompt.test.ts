@@ -25,10 +25,11 @@ const mockCatalog: BlockCatalog = {
   version: '1.0',
   generatedAt: '2026-04-22T00:00:00.000Z',
   blocks: [
-    { type: 'arduino_setup', category: 'core',           tooltip: 'Setup',    modes: ['generic', 'robots_humanoid', 'all_blocks', 'custom'], boardRequires: null,           fields: [] },
-    { type: 'humanoid_walk', category: 'robot_humanoid', tooltip: 'Walk',     modes: ['robots_humanoid', 'all_blocks', 'custom'],            boardRequires: null,           fields: [] },
-    { type: 'ble_scan',      category: 'ble',            tooltip: 'BLE Scan', modes: ['generic', 'robots_humanoid', 'all_blocks', 'custom'], boardRequires: 'supportsBle',  fields: [] },
-    { type: 'wifi_connect',  category: 'wifi',           tooltip: 'WiFi',     modes: ['generic', 'all_blocks', 'custom'],                    boardRequires: 'supportsWifi', fields: [] },
+    { type: 'arduino_setup', category: 'core',           tooltip: 'Setup',    isStatement: false, hasOutput: false, modes: ['generic', 'robots_humanoid', 'all_blocks', 'custom'], boardRequires: null,           fields: [] },
+    { type: 'humanoid_walk', category: 'robot_humanoid', tooltip: 'Walk',     isStatement: true,  hasOutput: false, modes: ['robots_humanoid', 'all_blocks', 'custom'],            boardRequires: null,           fields: [] },
+    { type: 'ble_scan',      category: 'ble',            tooltip: 'BLE Scan', isStatement: true,  hasOutput: false, modes: ['generic', 'robots_humanoid', 'all_blocks', 'custom'], boardRequires: 'supportsBle',  fields: [] },
+    { type: 'wifi_connect',  category: 'wifi',           tooltip: 'WiFi',     isStatement: true,  hasOutput: false, modes: ['generic', 'all_blocks', 'custom'],                    boardRequires: 'supportsWifi', fields: [] },
+    { type: 'bmp280_read',   category: 'sensor',         tooltip: 'BMP280',   isStatement: false, hasOutput: true,  modes: ['generic', 'all_blocks', 'custom'],                    boardRequires: null,           fields: [] },
   ],
 };
 
@@ -42,6 +43,24 @@ describe('buildSystemPrompt', () => {
     expect(prompt).toContain('# Examples');
     expect(prompt).toContain('# Current Context');
     expect(prompt).toContain('# Prohibitions');
+  });
+
+  it('groups blocks by connection shape (statement / value / hat)', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'generic', board: mockBoard, filteredBlocks });
+    expect(prompt).toContain('## Statement blocks');
+    expect(prompt).toContain('## Value blocks');
+    expect(prompt).toContain('## Top-level hat blocks');
+    // bmp280_read (hasOutput=true) must appear in value blocks section, not statement
+    const valueIdx     = prompt.indexOf('## Value blocks');
+    const statementIdx = prompt.indexOf('## Statement blocks');
+    const bmpIdx       = prompt.indexOf('bmp280_read');
+    expect(bmpIdx).toBeGreaterThan(valueIdx);
+    expect(bmpIdx).toBeGreaterThan(statementIdx);
+    // humanoid_walk (isStatement=true) must appear in statement blocks section
+    const humanoidIdx = prompt.indexOf('humanoid_walk');
+    expect(humanoidIdx).toBeGreaterThan(statementIdx);
+    expect(humanoidIdx).toBeLessThan(valueIdx);
   });
 
   it('includes existingXml in context when provided', () => {

@@ -8,6 +8,8 @@ export interface BlockCatalogEntry {
   type: string;
   category: string;
   tooltip: string;
+  isStatement: boolean;
+  hasOutput: boolean;
   modes: string[];
   boardRequires: string | null;
   fields: unknown[];
@@ -93,7 +95,20 @@ function getFewShotExamples(mode: RobotMode): string {
 // blockGen 生成フェーズ用（XML 出力制約あり、generateFromConversation で使用）
 export function buildSystemPrompt(ctx: SystemPromptContext): string {
   const templates = AI_SYSTEM_PROMPTS[ctx.language].blockGen;
-  const blockTypeList = ctx.filteredBlocks.map(b => b.type).join(', ');
+
+  // ブロックを接続形状別に分類（AI が誤った接続を生成しないよう明示）
+  const statementBlocks = ctx.filteredBlocks.filter(b => b.isStatement && !b.hasOutput).map(b => b.type);
+  const valueBlocks     = ctx.filteredBlocks.filter(b => b.hasOutput).map(b => b.type);
+  const hatBlocks       = ctx.filteredBlocks.filter(b => !b.isStatement && !b.hasOutput).map(b => b.type);
+
+  const blockTypeSection = [
+    '## Statement blocks (stackable vertically, can have <next>/<previous> connections)',
+    statementBlocks.join(', '),
+    '## Value blocks (plug into <value> slots only, MUST NOT have <next>/<previous>)',
+    valueBlocks.join(', '),
+    '## Top-level hat blocks (no previous/next, use as root: arduino_setup, arduino_loop)',
+    hatBlocks.join(', '),
+  ].join('\n');
 
   const contextLines = [
     `Board: ${ctx.board.name}`,
@@ -109,7 +124,7 @@ export function buildSystemPrompt(ctx: SystemPromptContext): string {
   return [
     `# Role\n${templates.role}`,
     `# Output Format\n${templates.outputLock}`,
-    `# Available Block Types (mode: ${ctx.mode}, board: ${ctx.board.name})\n${blockTypeList}`,
+    `# Available Block Types (mode: ${ctx.mode}, board: ${ctx.board.name})\n${blockTypeSection}`,
     `# Examples\n${getFewShotExamples(ctx.mode)}`,
     `# Current Context\n${contextLines.join('\n')}`,
     `# Prohibitions\n${templates.prohibitions}`,

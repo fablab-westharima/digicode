@@ -10,6 +10,7 @@ export interface BlockGenTemplates {
   outputLock: string;
   prohibitions: string;
   retryPrefix: string;
+  retryErrorPrefix: string;  // 検証エラーを伴う retry 時の前置き（後にエラー文字列を連結）
 }
 
 // ヘルプ Bot 用途（自由応答、XML 生成禁止）
@@ -33,6 +34,7 @@ export const AI_SYSTEM_PROMPTS: Record<AiLanguage, PromptTemplates> = {
       outputLock: '返答は必ず以下の XML 形式のみにしてください。\n- 説明文・マークダウン・コードフェンス（```）は一切禁止です\n- <xml xmlns="https://developers.google.com/blockly/xml">...</xml> の形式で始まり終わる単一の XML ブロックのみを返してください\n- XML ブロック以外の文字を一切含めないでください',
       prohibitions: '以下のことを厳守してください：\n- 上記リスト外の type を使ってはいけません\n- 自然言語で返答してはいけません\n- 会話で確定した仕様に従い、XML を完成させてください（再度の質問は不要）\n- コードフェンス（```）で XML を囲んではいけません',
       retryPrefix: '前回の応答は XML 形式ではありませんでした。必ず <xml xmlns="https://developers.google.com/blockly/xml">...</xml> のみを返してください。説明文は不要です。',
+      retryErrorPrefix: '前回の応答に問題がありました:',
     },
     helpBot: {
       role: 'あなたは DigiCode ブロックプログラミングのヘルプアシスタントです。DigiCode は ESP32 マイコン向けのビジュアルプログラミング環境です。ユーザーからのブロックの使い方・ボードの選び方・機能・トラブルシューティングに関する質問に答えてください。',
@@ -48,6 +50,7 @@ export const AI_SYSTEM_PROMPTS: Record<AiLanguage, PromptTemplates> = {
       outputLock: 'Your response must contain ONLY the following XML format:\n- No explanations, markdown, or code fences (```) are allowed\n- Return a single XML block starting with <xml xmlns="https://developers.google.com/blockly/xml"> and ending with </xml>\n- Do not include any characters outside the XML block',
       prohibitions: 'You must strictly follow these rules:\n- Only use block types from the provided list\n- Do not respond in natural language\n- Follow the specification agreed upon in the conversation and complete the XML (no need to ask again)\n- Do not wrap the XML in code fences (```)',
       retryPrefix: 'Your previous response was not in XML format. You must return ONLY <xml xmlns="https://developers.google.com/blockly/xml">...</xml>. No explanations needed.',
+      retryErrorPrefix: 'Your previous response had an issue:',
     },
     helpBot: {
       role: 'You are a help assistant for DigiCode block programming. DigiCode is a visual programming environment for ESP32 microcontrollers. Answer user questions about block usage, board selection, features, and troubleshooting.',
@@ -63,6 +66,7 @@ export const AI_SYSTEM_PROMPTS: Record<AiLanguage, PromptTemplates> = {
       outputLock: '您的回應必須僅包含以下 XML 格式：\n- 不允許任何說明文字、Markdown 或程式碼圍欄（```）\n- 回傳以 <xml xmlns="https://developers.google.com/blockly/xml"> 開頭、</xml> 結尾的單一 XML 區塊\n- XML 區塊外不得包含任何字元',
       prohibitions: '請嚴格遵守以下規則：\n- 只能使用提供列表中的積木類型\n- 不得以自然語言回應\n- 依照對話中確定的規格完成 XML（無需再次詢問）\n- 不得將 XML 包在程式碼圍欄（```）中',
       retryPrefix: '您上一次的回應不是 XML 格式。請只回傳 <xml xmlns="https://developers.google.com/blockly/xml">...</xml>。不需要說明文字。',
+      retryErrorPrefix: '您上一次的回應有問題：',
     },
     helpBot: {
       role: '您是 DigiCode 積木程式設計的說明助理。DigiCode 是針對 ESP32 微控制器的視覺化程式設計環境。請回答使用者關於積木用法、開發板選擇、功能及疑難排解的問題。',
@@ -78,6 +82,7 @@ export const AI_SYSTEM_PROMPTS: Record<AiLanguage, PromptTemplates> = {
       outputLock: 'Tu respuesta debe contener ÚNICAMENTE el siguiente formato XML:\n- No se permiten explicaciones, markdown ni bloques de código (```)\n- Devuelve un único bloque XML que comience con <xml xmlns="https://developers.google.com/blockly/xml"> y termine con </xml>\n- No incluyas ningún carácter fuera del bloque XML',
       prohibitions: 'Debes seguir estas reglas estrictamente:\n- Solo usa tipos de bloques de la lista proporcionada\n- No respondas en lenguaje natural\n- Sigue la especificación acordada en la conversación y completa el XML (no es necesario volver a preguntar)\n- No envuelvas el XML en bloques de código (```)',
       retryPrefix: 'Tu respuesta anterior no estaba en formato XML. Debes devolver SOLO <xml xmlns="https://developers.google.com/blockly/xml">...</xml>. No se necesitan explicaciones.',
+      retryErrorPrefix: 'Tu respuesta anterior tuvo un problema:',
     },
     helpBot: {
       role: 'Eres un asistente de ayuda para la programación de bloques DigiCode. DigiCode es un entorno de programación visual para microcontroladores ESP32. Responde a las preguntas del usuario sobre el uso de bloques, la selección de placas, las funciones y la resolución de problemas.',
@@ -93,6 +98,7 @@ export const AI_SYSTEM_PROMPTS: Record<AiLanguage, PromptTemplates> = {
       outputLock: 'A tua resposta deve conter APENAS o seguinte formato XML:\n- Não são permitidas explicações, markdown ou cercas de código (```)\n- Devolve um único bloco XML que começa com <xml xmlns="https://developers.google.com/blockly/xml"> e termina com </xml>\n- Não incluas nenhum carácter fora do bloco XML',
       prohibitions: 'Deves seguir estas regras estritamente:\n- Usa apenas tipos de blocos da lista fornecida\n- Não respondas em linguagem natural\n- Segue a especificação acordada na conversa e conclui o XML (não é necessário perguntar novamente)\n- Não envolvas o XML em cercas de código (```)',
       retryPrefix: 'A tua resposta anterior não estava em formato XML. Deves devolver APENAS <xml xmlns="https://developers.google.com/blockly/xml">...</xml>. Não são necessárias explicações.',
+      retryErrorPrefix: 'A tua resposta anterior teve um problema:',
     },
     helpBot: {
       role: 'És um assistente de ajuda para a programação de blocos DigiCode. DigiCode é um ambiente de programação visual para microcontroladores ESP32. Responde às perguntas do utilizador sobre a utilização de blocos, a escolha de placas, funcionalidades e resolução de problemas.',
