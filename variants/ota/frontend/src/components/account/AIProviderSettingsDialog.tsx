@@ -19,6 +19,13 @@ const MODEL_DOC_LINKS: Partial<Record<AiProvider, string>> = {
   gemini:    'https://ai.google.dev/gemini-api/docs/models',
 };
 
+const MODEL_PLACEHOLDERS: Record<AiProvider, string> = {
+  openai:    'gpt-4o-mini',
+  anthropic: 'claude-haiku-4-5',
+  gemini:    'gemini-2.0-flash',
+  custom:    '',
+};
+
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -149,7 +156,7 @@ export function AIProviderSettingsDialog({ open, onOpenChange }: Props) {
               type="text"
               value={localModel}
               onChange={(e) => setLocalModel(e.target.value)}
-              placeholder="gpt-4o-mini"
+              placeholder={MODEL_PLACEHOLDERS[localProvider]}
               className="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
             {MODEL_DOC_LINKS[localProvider] && (
