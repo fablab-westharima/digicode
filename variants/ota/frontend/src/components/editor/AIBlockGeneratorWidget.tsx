@@ -12,7 +12,6 @@ interface AIBlockGeneratorWidgetProps {
   onAppendBlocks?: (xml: string) => void;
   workspaceXml?: string;
   shouldShowFull: boolean;
-  onOpenSettings?: () => void;   // API キー未設定時にダイアログを開く
   onUpgradePlan?: () => void;    // プラン不足時に /plan へ遷移
   isAvailable?: boolean;
 }
@@ -35,7 +34,6 @@ export function AIBlockGeneratorWidget({
   onAppendBlocks,
   workspaceXml,
   shouldShowFull,
-  onOpenSettings,
   onUpgradePlan,
   isAvailable,
 }: AIBlockGeneratorWidgetProps) {
@@ -49,10 +47,13 @@ export function AIBlockGeneratorWidget({
   const [errorMsg, setErrorMsg] = useState('');
   const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const hasApiKey = apiKey.trim().length > 0;
-
   const handleGenerate = async () => {
     if (!prompt.trim() || widgetState === 'generating') return;
+    if (!apiKey.trim()) {
+      setErrorMsg(t('ai.noApiKey'));
+      setWidgetState('error');
+      return;
+    }
 
     setWidgetState('generating');
     setErrorMsg('');
@@ -134,69 +135,54 @@ export function AIBlockGeneratorWidget({
         {t('ai.label')}
       </div>
 
-      {/* API キー未設定 */}
-      {!hasApiKey ? (
-        <div className="px-2 py-2 text-xs text-[#8B949E]">
-          <p className="mb-1">{t('ai.noApiKey')}</p>
-          <button
-            onClick={onOpenSettings}
-            className="text-blue-400 hover:text-blue-300 underline text-xs"
-          >
-            {t('ai.settingsLink')}
-          </button>
+      {/* プロンプト入力 */}
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            handleGenerate();
+          }
+        }}
+        placeholder={t('ai.placeholder')}
+        rows={3}
+        disabled={widgetState === 'generating'}
+        className="w-full px-2 py-2 text-xs bg-[#0D1117] border border-[#2E333D] rounded text-[#E6EDF3] placeholder-[#8B949E] resize-none focus:outline-none focus:border-blue-500 disabled:opacity-50"
+      />
+
+      {/* 生成ボタン */}
+      <button
+        onClick={handleGenerate}
+        disabled={widgetState === 'generating' || !prompt.trim()}
+        className="mt-1 w-full flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        {widgetState === 'generating' ? (
+          <>
+            <Loader2 className="w-3 h-3 animate-spin" />
+            {t('ai.generating')}
+          </>
+        ) : (
+          <>
+            <Sparkles className="w-3 h-3" />
+            {t('ai.generateButton')}
+          </>
+        )}
+      </button>
+
+      {/* 成功メッセージ */}
+      {widgetState === 'success' && (
+        <div className="mt-1.5 flex items-center gap-1 text-xs text-green-400">
+          <CheckCircle className="w-3 h-3" />
+          {t('ai.successAppended')}
         </div>
-      ) : (
-        <>
-          {/* プロンプト入力 */}
-          <textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                handleGenerate();
-              }
-            }}
-            placeholder={t('ai.placeholder')}
-            rows={3}
-            disabled={widgetState === 'generating'}
-            className="w-full px-2 py-2 text-xs bg-[#0D1117] border border-[#2E333D] rounded text-[#E6EDF3] placeholder-[#8B949E] resize-none focus:outline-none focus:border-blue-500 disabled:opacity-50"
-          />
+      )}
 
-          {/* 生成ボタン */}
-          <button
-            onClick={handleGenerate}
-            disabled={widgetState === 'generating' || !prompt.trim()}
-            className="mt-1 w-full flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {widgetState === 'generating' ? (
-              <>
-                <Loader2 className="w-3 h-3 animate-spin" />
-                {t('ai.generating')}
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-3 h-3" />
-                {t('ai.generateButton')}
-              </>
-            )}
-          </button>
-
-          {/* 成功メッセージ */}
-          {widgetState === 'success' && (
-            <div className="mt-1.5 flex items-center gap-1 text-xs text-green-400">
-              <CheckCircle className="w-3 h-3" />
-              {t('ai.successAppended')}
-            </div>
-          )}
-
-          {/* エラーメッセージ */}
-          {widgetState === 'error' && (
-            <div className="mt-1.5 flex items-start gap-1 text-xs text-red-400">
-              <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" />
-              <span>{errorMsg}</span>
-            </div>
-          )}
-        </>
+      {/* エラーメッセージ */}
+      {widgetState === 'error' && (
+        <div className="mt-1.5 flex items-start gap-1 text-xs text-red-400">
+          <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" />
+          <span>{errorMsg}</span>
+        </div>
       )}
     </div>
   );

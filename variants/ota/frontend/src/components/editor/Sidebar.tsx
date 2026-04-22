@@ -598,7 +598,6 @@ export function Sidebar({
             onAppendBlocks={onAiAppendBlocks}
             workspaceXml={workspaceXml}
             shouldShowFull={shouldShowFull}
-            onOpenSettings={onOpenAiSettings}
             onUpgradePlan={() => navigate('/plan')}
             isAvailable={isAiAvailable}
           />
