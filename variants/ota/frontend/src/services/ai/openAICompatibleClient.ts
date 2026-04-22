@@ -1,5 +1,13 @@
-import type { AIClient, AiConfig, GenerateInput, GenerateOutput } from './index';
-import { buildSystemPrompt, fetchCatalog, filterCatalog, getAllowedTypes } from './systemPrompt';
+import type { AIClient, AiConfig, GenerateInput, GenerateOutput, ChatInput, ChatOutput, GenerateFromConversationInput } from './index';
+import {
+  buildSystemPrompt,
+  buildHelpBotSystemPrompt,
+  buildBlockGenConversationPrompt,
+  fetchCatalog,
+  filterCatalog,
+  getAllowedTypes,
+} from './systemPrompt';
+import { trimConversationForContext } from './conversationContext';
 import { validateBlocklyXml } from './xmlValidator';
 import { AI_SYSTEM_PROMPTS } from '@/data/aiSystemPrompts';
 import { AiGenerationError, ApiAuthError, RateLimitError, ApiServerError, NetworkError } from './errors';
@@ -15,6 +23,8 @@ const DEFAULT_MODELS: Record<string, string> = {
   custom:  'gpt-4o',
 };
 
+type ApiMessage = { role: string; content: string };
+
 export class OpenAICompatibleClient implements AIClient {
   private config: AiConfig;
   constructor(config: AiConfig) { this.config = config; }
@@ -26,7 +36,10 @@ export class OpenAICompatibleClient implements AIClient {
     return ENDPOINTS[this.config.provider] ?? ENDPOINTS.openai;
   }
 
-  private async callOnce(systemPrompt: string, userPrompt: string): Promise<string> {
+  private async rawCall(
+    messages: ApiMessage[],
+    maxTokens = 4000,
+  ): Promise<{ content: string; tokensUsed: number }> {
     const model = (this.config.model?.trim()) || DEFAULT_MODELS[this.config.provider] || 'gpt-4o';
 
     let response: Response;
@@ -37,15 +50,7 @@ export class OpenAICompatibleClient implements AIClient {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.config.apiKey}`,
         },
-        body: JSON.stringify({
-          model,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user',   content: userPrompt },
-          ],
-          temperature: 0.2,
-          max_tokens: 4000,
-        }),
+        body: JSON.stringify({ model, messages, temperature: 0.2, max_tokens: maxTokens }),
       });
     } catch (e) {
       throw new NetworkError(`Network error: ${e instanceof Error ? e.message : String(e)}`);
@@ -62,40 +67,79 @@ export class OpenAICompatibleClient implements AIClient {
       throw new ApiServerError(`API error ${response.status}: ${body}`);
     }
 
-    const data = await response.json() as { choices: Array<{ message: { content: string } }> };
-    return data.choices[0]?.message?.content ?? '';
+    const data = await response.json() as {
+      choices: Array<{ message: { content: string } }>;
+      usage?: { total_tokens?: number; prompt_tokens?: number; completion_tokens?: number };
+    };
+    const content = data.choices[0]?.message?.content ?? '';
+    const tokensUsed = data.usage?.total_tokens
+      ?? ((data.usage?.prompt_tokens ?? 0) + (data.usage?.completion_tokens ?? 0));
+    return { content, tokensUsed };
   }
 
-  async generate(input: GenerateInput): Promise<GenerateOutput> {
+  async chat(input: ChatInput): Promise<ChatOutput> {
+    const trimmed = trimConversationForContext(input.messages);
+    const systemPrompt = input.mode === 'helpBot'
+      ? buildHelpBotSystemPrompt({ language: input.language, mode: input.robotMode, board: input.board })
+      : buildBlockGenConversationPrompt({ language: input.language, mode: input.robotMode, board: input.board });
+
+    const messages: ApiMessage[] = [
+      { role: 'system', content: systemPrompt },
+      ...trimmed.map(m => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+    ];
+
+    return this.rawCall(messages, 2000);
+  }
+
+  async generateFromConversation(input: GenerateFromConversationInput): Promise<GenerateOutput> {
     const catalog = await fetchCatalog();
-    const filteredBlocks = filterCatalog(catalog, input.mode, input.board);
+    const filteredBlocks = filterCatalog(catalog);
     const allowedTypes = getAllowedTypes(filteredBlocks);
 
     const systemPrompt = buildSystemPrompt({
       language: input.language,
-      mode: input.mode,
+      mode: input.robotMode,
       board: input.board,
       existingXml: input.existingXml,
       filteredBlocks,
     });
 
+    const historyMessages = trimConversationForContext(input.messages);
     const retryPrefix = AI_SYSTEM_PROMPTS[input.language].blockGen.retryPrefix;
     let lastRaw = '';
 
     for (let attempt = 1; attempt <= 3; attempt++) {
-      // attempt 3: retry prefix を prepend（系統プロンプト追加）
-      const userPrompt = attempt < 3
-        ? input.prompt
-        : `${retryPrefix}\n\n${input.prompt}`;
+      const finalUserContent = attempt < 3
+        ? input.generateRequest
+        : `${retryPrefix}\n\n${input.generateRequest}`;
 
-      lastRaw = await this.callOnce(systemPrompt, userPrompt);
+      const messages: ApiMessage[] = [
+        { role: 'system', content: systemPrompt },
+        ...historyMessages.map(m => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+        { role: 'user', content: finalUserContent },
+      ];
+
+      const { content } = await this.rawCall(messages);
+      lastRaw = content;
+
       const result = validateBlocklyXml(lastRaw, allowedTypes);
-
       if (result.valid && result.sanitizedXml) {
         return { xml: result.sanitizedXml, rawResponse: lastRaw, attempts: attempt };
       }
     }
 
     throw new AiGenerationError('Failed to generate valid XML after 3 attempts', 3, lastRaw);
+  }
+
+  // generate() は互換維持のための薄いラッパー（S3 で AIAssistantPanel 移行時に削除、判断 16）
+  async generate(input: GenerateInput): Promise<GenerateOutput> {
+    return this.generateFromConversation({
+      messages: [],
+      generateRequest: input.prompt,
+      language: input.language,
+      robotMode: input.mode,
+      board: input.board,
+      existingXml: input.existingXml,
+    });
   }
 }

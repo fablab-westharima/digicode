@@ -27,6 +27,18 @@ export interface SystemPromptContext {
   filteredBlocks: BlockCatalogEntry[];
 }
 
+export interface HelpBotSystemPromptContext {
+  language: AiLanguage;
+  mode?: RobotMode;
+  board?: BoardDefinition;
+}
+
+export interface BlockGenConversationContext {
+  language: AiLanguage;
+  mode?: RobotMode;
+  board?: BoardDefinition;
+}
+
 // 5000 文字超の既存 XML は切り詰め（MVP 制約）
 const MAX_EXISTING_XML_LENGTH = 5000;
 
@@ -53,18 +65,13 @@ export async function fetchCatalog(): Promise<BlockCatalog> {
   return catalogCache;
 }
 
+// 全ブロック返却（判断 16 付随: mode/board は optional で受け取るが無視、判断 2 + 5 確定）
 export function filterCatalog(
   catalog: BlockCatalog,
-  mode: RobotMode,
-  board: BoardDefinition,
+  _mode?: RobotMode,
+  _board?: BoardDefinition,
 ): BlockCatalogEntry[] {
-  return catalog.blocks.filter(b => {
-    if (!b.modes.includes(mode)) return false;
-    if (b.boardRequires === 'supportsWifi' && !board.supportsWifi) return false;
-    if (b.boardRequires === 'supportsOta'  && !board.supportsOta)  return false;
-    if (b.boardRequires === 'supportsBle'  && !board.supportsBle)  return false;
-    return true;
-  });
+  return catalog.blocks;
 }
 
 export function getAllowedTypes(blocks: BlockCatalogEntry[]): Set<string> {
@@ -83,6 +90,7 @@ function getFewShotExamples(mode: RobotMode): string {
     .join('\n\n');
 }
 
+// blockGen 生成フェーズ用（XML 出力制約あり、generateFromConversation で使用）
 export function buildSystemPrompt(ctx: SystemPromptContext): string {
   const templates = AI_SYSTEM_PROMPTS[ctx.language].blockGen;
   const blockTypeList = ctx.filteredBlocks.map(b => b.type).join(', ');
@@ -106,4 +114,39 @@ export function buildSystemPrompt(ctx: SystemPromptContext): string {
     `# Current Context\n${contextLines.join('\n')}`,
     `# Prohibitions\n${templates.prohibitions}`,
   ].join('\n\n');
+}
+
+// HELP Bot 用（自由応答、XML 禁止、Few-shot なし、判断 11 Q-B）
+export function buildHelpBotSystemPrompt(ctx: HelpBotSystemPromptContext): string {
+  const templates = AI_SYSTEM_PROMPTS[ctx.language].helpBot;
+  const contextLines = [
+    ...(ctx.board ? [`Board: ${ctx.board.name}`] : []),
+    ...(ctx.mode  ? [`Mode: ${ctx.mode}`]        : []),
+  ];
+
+  const sections = [
+    `# Role\n${templates.role}`,
+    `# Response Style\n${templates.style}`,
+    ...(contextLines.length > 0 ? [`# Current Context\n${contextLines.join('\n')}`] : []),
+    `# Prohibitions\n${templates.xmlProhibition}`,
+    `# Tab Switching Hint\n${templates.switchTabHint}`,
+  ];
+
+  return sections.join('\n\n');
+}
+
+// blockGen 会話フェーズ用（XML 出力制約なし、仕様を対話で固める段階）
+export function buildBlockGenConversationPrompt(ctx: BlockGenConversationContext): string {
+  const templates = AI_SYSTEM_PROMPTS[ctx.language].blockGen;
+  const contextLines = [
+    ...(ctx.board ? [`Board: ${ctx.board.name}`] : []),
+    ...(ctx.mode  ? [`Mode: ${ctx.mode}`]        : []),
+  ];
+
+  const sections = [
+    `# Role\n${templates.role}`,
+    ...(contextLines.length > 0 ? [`# Current Context\n${contextLines.join('\n')}`] : []),
+  ];
+
+  return sections.join('\n\n');
 }
