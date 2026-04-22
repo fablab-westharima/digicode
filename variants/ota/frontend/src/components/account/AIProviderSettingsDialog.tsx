@@ -96,6 +96,15 @@ export function AIProviderSettingsDialog({ open, onOpenChange }: Props) {
               autoComplete="off"
               className="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
+            {localApiKey && (
+              <button
+                type="button"
+                onClick={() => setLocalApiKey('')}
+                className="mt-1 text-xs text-destructive hover:text-destructive/80 underline"
+              >
+                {t('ai.deleteApiKey')}
+              </button>
+            )}
           </div>
 
           {/* カスタムエンドポイント（custom 選択時のみ） */}

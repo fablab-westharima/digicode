@@ -4018,6 +4018,7 @@
     "model": "Nome do modelo (predefinição se omitido)",
     "save": "Guardar",
     "saved": "Guardado",
+    "deleteApiKey": "Eliminar chave API",
     "requiresLitePlus": "Disponível para o plano Lite ou superior",
     "upgradePlan": "Atualizar plano"
   }

@@ -3833,6 +3833,7 @@
     "model": "Model name (default if omitted)",
     "save": "Save",
     "saved": "Saved",
+    "deleteApiKey": "Delete API key",
     "requiresLitePlus": "Available for Lite plan and above",
     "upgradePlan": "Upgrade plan"
   }
