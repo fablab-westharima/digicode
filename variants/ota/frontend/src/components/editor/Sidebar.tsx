@@ -384,7 +384,8 @@ export function Sidebar({
         action: onChangePassword || (() => {}),
         category: 'account' as const,
       },
-      ...(isAiAvailable ? [{
+      // AI 設定: helpBot 利用可の全認証済みユーザーに表示（BYOK のため API キー設定が必要）
+      ...(isAuthenticated ? [{
         id: 'ai-settings',
         label: t('sidebar.aiSettings', { defaultValue: 'AI 設定' }),
         icon: <Bot className="w-4 h-4" />,
