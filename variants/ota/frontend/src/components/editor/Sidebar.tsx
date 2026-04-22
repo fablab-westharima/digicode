@@ -118,7 +118,7 @@ export function Sidebar({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
-  const { canUsePinAssign, isFreeOpenNow, fetchFlags } = useFeatureFlagStore();
+  const { canUsePinAssign, isFreeOpenNow, fetchFlags, canUseAiBlockGeneration } = useFeatureFlagStore();
   const [isPinned, setIsPinned] = useState(false); // ピン留めなし
   const [isHovered, setIsHovered] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['project'])); // デフォルトでprojectを開く
@@ -131,6 +131,8 @@ export function Sidebar({
 
   const isPinAssignAvailable = canUsePinAssign(user?.plan);
   const isPinAssignFreeOpen = isFreeOpenNow('pin_assign_pro');
+  const isAiAvailable = canUseAiBlockGeneration(user?.plan, user?.accountType);
+  const isAiUpgradeCandidate = isAuthenticated && user?.accountType !== 'student' && !isAiAvailable;
 
   const toggleCategory = (category: string) => {
     setExpandedCategories(prev => {
@@ -582,13 +584,14 @@ export function Sidebar({
       </div>
 
       {/* AI Block Generator */}
-      {isAuthenticated && (
+      {(isAiAvailable || isAiUpgradeCandidate) && (
         <div className="border-t border-[#2E333D]">
           <AIBlockGeneratorWidget
             onAppendBlocks={onAiAppendBlocks}
             workspaceXml={workspaceXml}
             shouldShowFull={shouldShowFull}
             onGoToSettings={onGoToAiSettings}
+            isAvailable={isAiAvailable}
           />
         </div>
       )}

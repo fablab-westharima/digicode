@@ -3831,6 +3831,8 @@
     "customEndpoint": "Endpoint URL",
     "model": "Model name (default if omitted)",
     "save": "Save",
-    "saved": "Saved"
+    "saved": "Saved",
+    "requiresLitePlus": "Available for Lite plan and above",
+    "upgradePlan": "Upgrade plan"
   }
 }

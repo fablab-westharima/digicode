@@ -3821,6 +3821,8 @@
     "customEndpoint": "エンドポイント URL",
     "model": "モデル名（省略時はデフォルト）",
     "save": "保存",
-    "saved": "保存しました"
+    "saved": "保存しました",
+    "requiresLitePlus": "Liteプラン以上で利用できます",
+    "upgradePlan": "プランをアップグレード"
   }
 }

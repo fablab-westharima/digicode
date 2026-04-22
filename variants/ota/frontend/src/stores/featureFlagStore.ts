@@ -18,6 +18,7 @@ interface FeatureFlagState {
 
   fetchFlags: () => Promise<void>;
   canUsePinAssign: (userPlan?: string) => boolean;
+  canUseAiBlockGeneration: (userPlan?: string, accountType?: string) => boolean;
   isFreeOpenNow: (key: string) => boolean;
   getFreeReason: (key: string) => string | null;
   getFreeUntil: (key: string) => string | null;
@@ -69,6 +70,12 @@ export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
     if (flag && flag.isFreeNow) return true;
 
     return false;
+  },
+
+  canUseAiBlockGeneration: (userPlan?: string, accountType?: string) => {
+    if (accountType === 'student') return false;
+    if (!userPlan) return false;
+    return ['lite', 'pro', 'enterprise'].includes(userPlan);
   },
 
   isFreeOpenNow: (key: string) => {

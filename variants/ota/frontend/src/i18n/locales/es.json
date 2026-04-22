@@ -4016,6 +4016,8 @@
     "customEndpoint": "URL del endpoint",
     "model": "Nombre del modelo (por defecto si se omite)",
     "save": "Guardar",
-    "saved": "Guardado"
+    "saved": "Guardado",
+    "requiresLitePlus": "Disponible para el plan Lite o superior",
+    "upgradePlan": "Actualizar plan"
   }
 }
