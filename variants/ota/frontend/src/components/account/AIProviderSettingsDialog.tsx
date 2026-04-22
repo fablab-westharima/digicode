@@ -98,7 +98,7 @@ export function AIProviderSettingsDialog({ open, onOpenChange }: Props) {
             </label>
             <select
               value={localProvider}
-              onChange={(e) => setLocalProvider(e.target.value as AiProvider)}
+              onChange={(e) => { setLocalProvider(e.target.value as AiProvider); setLocalModel(''); }}
               className="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
               {providers.map((p) => (
