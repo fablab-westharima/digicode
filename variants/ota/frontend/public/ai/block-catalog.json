@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-04-22T16:48:23.823Z",
+  "generatedAt": "2026-04-22T16:55:56.347Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -1138,7 +1138,7 @@
       "type": "ultrasonic_init",
       "category": "sensor_ultrasonic",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#3b82f6",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -1151,18 +1151,32 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "TRIG_PIN",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "ECHO_PIN",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        }
+      ],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "ultrasonic_distance",
       "category": "sensor_ultrasonic",
       "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "colour": "#3b82f6",
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -1175,14 +1189,13 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "rus04_init",
       "category": "sensor_ultrasonic",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#3b82f6",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -1195,18 +1208,46 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "TRIG_PIN",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "ECHO_PIN",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "RGB_PIN",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "NUM_LEDS",
+          "fieldType": "number",
+          "default": 6,
+          "min": 1,
+          "max": 256
+        }
+      ],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "rus04_distance",
       "category": "sensor_ultrasonic",
       "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "colour": "#3b82f6",
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -1219,14 +1260,13 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "rus04_both_simple",
       "category": "sensor_ultrasonic",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#3b82f6",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -1241,14 +1281,13 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "rus04_rgb",
       "category": "sensor_ultrasonic",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#3b82f6",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -1263,14 +1302,13 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "rus04_off",
       "category": "sensor_ultrasonic",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#3b82f6",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -1285,14 +1323,13 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "dht_init",
       "category": "sensor_dht",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#06b6d4",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -1305,18 +1342,33 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "TYPE",
+          "fieldType": "dropdown",
+          "options": [
+            "DHT11",
+            "DHT22"
+          ]
+        }
+      ],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "dht_temperature",
       "category": "sensor_dht",
       "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "colour": "#06b6d4",
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -1329,16 +1381,15 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "dht_humidity",
       "category": "sensor_dht",
       "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "colour": "#06b6d4",
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -1351,8 +1402,7 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "mpu6050_init",
@@ -3054,8 +3104,17 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
+      "valueInputs": [
+        {
+          "name": "IF0",
+          "check": "Boolean"
+        }
+      ],
+      "statementInputs": [
+        {
+          "name": "DO0"
+        }
+      ],
       "builtin": true
     },
     {
@@ -3076,8 +3135,20 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
+      "valueInputs": [
+        {
+          "name": "IF0",
+          "check": "Boolean"
+        }
+      ],
+      "statementInputs": [
+        {
+          "name": "DO0"
+        },
+        {
+          "name": "ELSE"
+        }
+      ],
       "builtin": true
     },
     {
@@ -3085,8 +3156,8 @@
       "category": "logic",
       "tooltip": "Compare two values: EQ, NEQ, LT, LTE, GT, GTE",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -3097,8 +3168,30 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
+      "fields": [
+        {
+          "name": "OP",
+          "fieldType": "dropdown",
+          "options": [
+            "EQ",
+            "NEQ",
+            "LT",
+            "LTE",
+            "GT",
+            "GTE"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "A",
+          "check": null
+        },
+        {
+          "name": "B",
+          "check": null
+        }
+      ],
       "statementInputs": [],
       "builtin": true
     },
@@ -3107,8 +3200,8 @@
       "category": "logic",
       "tooltip": "Logical AND or OR between two boolean values",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -3119,8 +3212,26 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
+      "fields": [
+        {
+          "name": "OP",
+          "fieldType": "dropdown",
+          "options": [
+            "AND",
+            "OR"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "A",
+          "check": "Boolean"
+        },
+        {
+          "name": "B",
+          "check": "Boolean"
+        }
+      ],
       "statementInputs": [],
       "builtin": true
     },
@@ -3129,8 +3240,8 @@
       "category": "logic",
       "tooltip": "Logical NOT — invert a boolean value",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -3142,7 +3253,12 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "BOOL",
+          "check": "Boolean"
+        }
+      ],
       "statementInputs": [],
       "builtin": true
     },
@@ -3151,8 +3267,8 @@
       "category": "logic",
       "tooltip": "Boolean constant: TRUE or FALSE",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -3163,7 +3279,16 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "BOOL",
+          "fieldType": "dropdown",
+          "options": [
+            "TRUE",
+            "FALSE"
+          ]
+        }
+      ],
       "valueInputs": [],
       "statementInputs": [],
       "builtin": true
@@ -3173,8 +3298,8 @@
       "category": "logic",
       "tooltip": "Ternary: if test is true, return valueA; otherwise valueB",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -3186,7 +3311,20 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "IF",
+          "check": "Boolean"
+        },
+        {
+          "name": "THEN",
+          "check": null
+        },
+        {
+          "name": "ELSE",
+          "check": null
+        }
+      ],
       "statementInputs": [],
       "builtin": true
     },
@@ -3208,8 +3346,17 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
+      "valueInputs": [
+        {
+          "name": "TIMES",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": [
+        {
+          "name": "DO"
+        }
+      ],
       "builtin": true
     },
     {
@@ -3229,9 +3376,27 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
+      "fields": [
+        {
+          "name": "MODE",
+          "fieldType": "dropdown",
+          "options": [
+            "WHILE",
+            "UNTIL"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "BOOL",
+          "check": "Boolean"
+        }
+      ],
+      "statementInputs": [
+        {
+          "name": "DO"
+        }
+      ],
       "builtin": true
     },
     {
@@ -3252,8 +3417,25 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
+      "valueInputs": [
+        {
+          "name": "FROM",
+          "check": "Number"
+        },
+        {
+          "name": "TO",
+          "check": "Number"
+        },
+        {
+          "name": "BY",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": [
+        {
+          "name": "DO"
+        }
+      ],
       "builtin": true
     },
     {
@@ -3273,7 +3455,16 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "FLOW",
+          "fieldType": "dropdown",
+          "options": [
+            "BREAK",
+            "CONTINUE"
+          ]
+        }
+      ],
       "valueInputs": [],
       "statementInputs": [],
       "builtin": true
@@ -3283,8 +3474,8 @@
       "category": "math",
       "tooltip": "A numeric constant",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -3295,7 +3486,12 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "NUM",
+          "fieldType": "number"
+        }
+      ],
       "valueInputs": [],
       "statementInputs": [],
       "builtin": true
@@ -3305,8 +3501,8 @@
       "category": "math",
       "tooltip": "Arithmetic: add (+), subtract (-), multiply (*), divide (/)",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -3317,8 +3513,29 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
+      "fields": [
+        {
+          "name": "OP",
+          "fieldType": "dropdown",
+          "options": [
+            "ADD",
+            "MINUS",
+            "MULTIPLY",
+            "DIVIDE",
+            "POWER"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "A",
+          "check": "Number"
+        },
+        {
+          "name": "B",
+          "check": "Number"
+        }
+      ],
       "statementInputs": [],
       "builtin": true
     },
@@ -3327,8 +3544,8 @@
       "category": "math",
       "tooltip": "Random integer between min and max (inclusive)",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -3340,7 +3557,16 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "FROM",
+          "check": "Number"
+        },
+        {
+          "name": "TO",
+          "check": "Number"
+        }
+      ],
       "statementInputs": [],
       "builtin": true
     },
@@ -3349,8 +3575,8 @@
       "category": "math",
       "tooltip": "Remainder after dividing dividend by divisor",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -3362,7 +3588,16 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "DIVIDEND",
+          "check": "Number"
+        },
+        {
+          "name": "DIVISOR",
+          "check": "Number"
+        }
+      ],
       "statementInputs": [],
       "builtin": true
     },
@@ -3371,8 +3606,8 @@
       "category": "math",
       "tooltip": "Clamp a value so it stays between low and high",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -3384,7 +3619,20 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": "Number"
+        },
+        {
+          "name": "LOW",
+          "check": "Number"
+        },
+        {
+          "name": "HIGH",
+          "check": "Number"
+        }
+      ],
       "statementInputs": [],
       "builtin": true
     },
@@ -3393,8 +3641,8 @@
       "category": "math",
       "tooltip": "Round a number (round / ceil / floor)",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -3405,8 +3653,23 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
+      "fields": [
+        {
+          "name": "OP",
+          "fieldType": "dropdown",
+          "options": [
+            "ROUND",
+            "ROUNDUP",
+            "ROUNDDOWN"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "NUM",
+          "check": "Number"
+        }
+      ],
       "statementInputs": [],
       "builtin": true
     },
@@ -3415,8 +3678,8 @@
       "category": "math",
       "tooltip": "Single-operand math: abs, sqrt, sin, cos, tan, etc.",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "robots_humanoid",
         "robots_wheel",
@@ -3427,8 +3690,27 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
+      "fields": [
+        {
+          "name": "OP",
+          "fieldType": "dropdown",
+          "options": [
+            "ROOT",
+            "ABS",
+            "NEG",
+            "LN",
+            "LOG10",
+            "EXP",
+            "POW10"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "NUM",
+          "check": "Number"
+        }
+      ],
       "statementInputs": [],
       "builtin": true
     },
@@ -6775,7 +7057,8 @@
         {
           "name": "MQTT_USER",
           "fieldType": "text",
-          "default": ""
+          "default": "",
+          "isCredential": true
         },
         {
           "name": "MQTT_PASS",
@@ -11349,8 +11632,8 @@
       "category": "text",
       "tooltip": "A literal text string",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "homeassistant",
         "generic",
@@ -11358,7 +11641,12 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "TEXT",
+          "fieldType": "text"
+        }
+      ],
       "valueInputs": [],
       "statementInputs": [],
       "builtin": true
@@ -11368,8 +11656,8 @@
       "category": "text",
       "tooltip": "Concatenate two or more text strings",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "homeassistant",
         "generic",
@@ -11378,7 +11666,16 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "ADD0",
+          "check": null
+        },
+        {
+          "name": "ADD1",
+          "check": null
+        }
+      ],
       "statementInputs": [],
       "builtin": true
     },
@@ -11387,8 +11684,8 @@
       "category": "text",
       "tooltip": "Number of characters in a text string",
       "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "homeassistant",
         "generic",
@@ -11397,7 +11694,12 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": "String"
+        }
+      ],
       "statementInputs": [],
       "builtin": true
     }

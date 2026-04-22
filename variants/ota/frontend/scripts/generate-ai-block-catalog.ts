@@ -104,7 +104,7 @@ const __dirname = path.dirname(__filename);
 const FRONTEND_DIR = path.join(__dirname, '..');
 const TOOLBOX_PATH = path.join(FRONTEND_DIR, 'src/components/editor/toolboxGenerator.ts');
 const BOARD_STORE_PATH = path.join(FRONTEND_DIR, 'src/stores/boardStore.ts');
-const BLOCKS_DIR = path.join(FRONTEND_DIR, 'src/blocks/arduino');
+const BLOCKS_DIR = path.join(FRONTEND_DIR, 'src/blocks');  // scan entire src/blocks/ tree
 const OUTPUT_PATH = path.join(FRONTEND_DIR, 'public/ai/block-catalog.json');
 
 // ---------------------------------------------------------------------------
@@ -149,9 +149,11 @@ function isCredentialField(name: string): boolean {
     n === 'broker' ||
     n === 'username' ||
     n === 'user_name' ||
+    n === 'mqtt_user' ||
     n.includes('password') ||
     n.includes('passwd') ||
     n.endsWith('_pass') ||
+    n.endsWith('_user') ||
     n.includes('api_key') ||
     n.includes('token') ||
     n.includes('secret') ||
@@ -159,6 +161,39 @@ function isCredentialField(name: string): boolean {
     n.includes('endpoint')
   );
 }
+
+// Correct metadata for Blockly built-in blocks that are value blocks (output, not statement).
+// Default fallback in the generator is isStatement=true/hasOutput=false which is wrong for these.
+const BUILTIN_CORRECT_META: Record<string, Partial<BlockMeta>> = {
+  math_number:        { isStatement: false, hasOutput: true, fields: [{ name: 'NUM', fieldType: 'number' }], valueInputs: [], statementInputs: [] },
+  text:               { isStatement: false, hasOutput: true, fields: [{ name: 'TEXT', fieldType: 'text' }],  valueInputs: [], statementInputs: [] },
+  logic_boolean:      { isStatement: false, hasOutput: true, fields: [{ name: 'BOOL', fieldType: 'dropdown', options: ['TRUE', 'FALSE'] }], valueInputs: [], statementInputs: [] },
+  logic_negate:       { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'BOOL', check: 'Boolean' }], statementInputs: [] },
+  logic_compare:      { isStatement: false, hasOutput: true, fields: [{ name: 'OP', fieldType: 'dropdown', options: ['EQ','NEQ','LT','LTE','GT','GTE'] }], valueInputs: [{ name: 'A', check: null }, { name: 'B', check: null }], statementInputs: [] },
+  logic_operation:    { isStatement: false, hasOutput: true, fields: [{ name: 'OP', fieldType: 'dropdown', options: ['AND', 'OR'] }], valueInputs: [{ name: 'A', check: 'Boolean' }, { name: 'B', check: 'Boolean' }], statementInputs: [] },
+  logic_ternary:      { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'IF', check: 'Boolean' }, { name: 'THEN', check: null }, { name: 'ELSE', check: null }], statementInputs: [] },
+  math_arithmetic:    { isStatement: false, hasOutput: true, fields: [{ name: 'OP', fieldType: 'dropdown', options: ['ADD','MINUS','MULTIPLY','DIVIDE','POWER'] }], valueInputs: [{ name: 'A', check: 'Number' }, { name: 'B', check: 'Number' }], statementInputs: [] },
+  math_random_int:    { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'FROM', check: 'Number' }, { name: 'TO', check: 'Number' }], statementInputs: [] },
+  math_modulo:        { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'DIVIDEND', check: 'Number' }, { name: 'DIVISOR', check: 'Number' }], statementInputs: [] },
+  math_constrain:     { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'VALUE', check: 'Number' }, { name: 'LOW', check: 'Number' }, { name: 'HIGH', check: 'Number' }], statementInputs: [] },
+  math_round:         { isStatement: false, hasOutput: true, fields: [{ name: 'OP', fieldType: 'dropdown', options: ['ROUND','ROUNDUP','ROUNDDOWN'] }], valueInputs: [{ name: 'NUM', check: 'Number' }], statementInputs: [] },
+  math_single:        { isStatement: false, hasOutput: true, fields: [{ name: 'OP', fieldType: 'dropdown', options: ['ROOT','ABS','NEG','LN','LOG10','EXP','POW10'] }], valueInputs: [{ name: 'NUM', check: 'Number' }], statementInputs: [] },
+  math_map:           { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'VALUE', check: 'Number' }, { name: 'FROMLOW', check: 'Number' }, { name: 'FROMHIGH', check: 'Number' }, { name: 'TOLOW', check: 'Number' }, { name: 'TOHIGH', check: 'Number' }], statementInputs: [] },
+  text_join:          { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'ADD0', check: null }, { name: 'ADD1', check: null }], statementInputs: [] },
+  text_length:        { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'VALUE', check: 'String' }], statementInputs: [] },
+  // Compound statement blocks with statement inputs
+  controls_if:        { isStatement: true,  hasOutput: false, fields: [], valueInputs: [{ name: 'IF0', check: 'Boolean' }], statementInputs: [{ name: 'DO0' }] },
+  controls_ifelse:    { isStatement: true,  hasOutput: false, fields: [], valueInputs: [{ name: 'IF0', check: 'Boolean' }], statementInputs: [{ name: 'DO0' }, { name: 'ELSE' }] },
+  controls_repeat_ext:{ isStatement: true,  hasOutput: false, fields: [], valueInputs: [{ name: 'TIMES', check: 'Number' }], statementInputs: [{ name: 'DO' }] },
+  controls_whileUntil:{ isStatement: true,  hasOutput: false, fields: [{ name: 'MODE', fieldType: 'dropdown', options: ['WHILE','UNTIL'] }], valueInputs: [{ name: 'BOOL', check: 'Boolean' }], statementInputs: [{ name: 'DO' }] },
+  controls_for:       { isStatement: true,  hasOutput: false, fields: [], valueInputs: [{ name: 'FROM', check: 'Number' }, { name: 'TO', check: 'Number' }, { name: 'BY', check: 'Number' }], statementInputs: [{ name: 'DO' }] },
+  controls_flow_statements: { isStatement: true, hasOutput: false, fields: [{ name: 'FLOW', fieldType: 'dropdown', options: ['BREAK','CONTINUE'] }], valueInputs: [], statementInputs: [] },
+  array_create:       { isStatement: true,  hasOutput: false, fields: [], valueInputs: [], statementInputs: [] },
+  array_set:          { isStatement: true,  hasOutput: false, fields: [], valueInputs: [{ name: 'INDEX', check: 'Number' }, { name: 'VALUE', check: null }], statementInputs: [] },
+  array_get:          { isStatement: false, hasOutput: true,  fields: [], valueInputs: [{ name: 'INDEX', check: 'Number' }], statementInputs: [] },
+  array_size:         { isStatement: false, hasOutput: true,  fields: [], valueInputs: [], statementInputs: [] },
+  array_content:      { isStatement: false, hasOutput: true,  fields: [], valueInputs: [], statementInputs: [] },
+};
 
 // ---------------------------------------------------------------------------
 // Step 1: Parse toolboxGenerator.ts → categoryBlocks
@@ -484,19 +519,21 @@ function main(): void {
 
         const meta = blockMeta.get(blockType);
         const isBuiltin = meta === undefined;
+        // Apply correct metadata for known Blockly builtin blocks
+        const builtinCorrect = isBuiltin ? BUILTIN_CORRECT_META[blockType] : undefined;
 
         const entry: BlockEntry = {
           type: blockType,
           category: catKey,
           tooltip: meta?.tooltip || BUILTIN_TOOLTIPS[blockType] || '',
           colour: meta?.colour ?? '#808080',
-          isStatement: meta?.isStatement ?? true,
-          hasOutput: meta?.hasOutput ?? false,
+          isStatement: builtinCorrect?.isStatement ?? meta?.isStatement ?? true,
+          hasOutput: builtinCorrect?.hasOutput ?? meta?.hasOutput ?? false,
           modes: [mode],
           boardRequires,
-          fields: meta?.fields ?? [],
-          valueInputs: meta?.valueInputs ?? [],
-          statementInputs: meta?.statementInputs ?? [],
+          fields: builtinCorrect?.fields ?? meta?.fields ?? [],
+          valueInputs: builtinCorrect?.valueInputs ?? meta?.valueInputs ?? [],
+          statementInputs: builtinCorrect?.statementInputs ?? meta?.statementInputs ?? [],
         };
         if (isBuiltin) entry.builtin = true;
 
