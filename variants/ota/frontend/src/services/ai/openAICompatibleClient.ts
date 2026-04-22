@@ -11,7 +11,7 @@ const ENDPOINTS: Record<string, string> = {
 
 const DEFAULT_MODELS: Record<string, string> = {
   openai:  'gpt-4o',
-  gemini:  'gemini-2.0-flash',
+  gemini:  'gemini-2.0-flash-lite',
   custom:  'gpt-4o',
 };
 
