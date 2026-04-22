@@ -12,7 +12,8 @@ interface AIBlockGeneratorWidgetProps {
   onAppendBlocks?: (xml: string) => void;
   workspaceXml?: string;
   shouldShowFull: boolean;
-  onGoToSettings?: () => void;
+  onOpenSettings?: () => void;   // API キー未設定時にダイアログを開く
+  onUpgradePlan?: () => void;    // プラン不足時に /plan へ遷移
   isAvailable?: boolean;
 }
 
@@ -34,7 +35,8 @@ export function AIBlockGeneratorWidget({
   onAppendBlocks,
   workspaceXml,
   shouldShowFull,
-  onGoToSettings,
+  onOpenSettings,
+  onUpgradePlan,
   isAvailable,
 }: AIBlockGeneratorWidgetProps) {
   const { t, i18n } = useTranslation();
@@ -114,7 +116,7 @@ export function AIBlockGeneratorWidget({
         <div className="px-2 py-2 text-xs text-[#8B949E]">
           <p className="mb-1">{t('ai.requiresLitePlus')}</p>
           <button
-            onClick={onGoToSettings}
+            onClick={onUpgradePlan}
             className="text-blue-400 hover:text-blue-300 underline text-xs"
           >
             {t('ai.upgradePlan')}
@@ -137,7 +139,7 @@ export function AIBlockGeneratorWidget({
         <div className="px-2 py-2 text-xs text-[#8B949E]">
           <p className="mb-1">{t('ai.noApiKey')}</p>
           <button
-            onClick={onGoToSettings}
+            onClick={onOpenSettings}
             className="text-blue-400 hover:text-blue-300 underline text-xs"
           >
             {t('ai.settingsLink')}

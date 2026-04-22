@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Check, Loader2, ExternalLink } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
-import { AIProviderSettings } from '@/components/account/AIProviderSettings';
 import {
   getSubscriptionStatus,
   createCheckoutSession,
@@ -271,9 +270,6 @@ export default function PlanPage() {
             );
           })}
         </div>
-
-        {/* AI プロバイダー設定 */}
-        <AIProviderSettings />
 
         {/* 招待ユーザーの上位プラン契約確認ダイアログ */}
         {inviteConfirmPlan && (

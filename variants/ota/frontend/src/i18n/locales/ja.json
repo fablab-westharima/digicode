@@ -841,6 +841,7 @@
     "admin": "管理画面",
     "classManagement": "クラス管理",
     "changePassword": "パスワード変更",
+    "aiSettings": "AI 設定",
     "login": "ログイン / 新規登録",
     "pin": "ピン留め",
     "unpin": "ピン留め解除",

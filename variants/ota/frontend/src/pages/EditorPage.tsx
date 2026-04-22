@@ -35,6 +35,7 @@ import { TwoFactorSettingsDialog } from '@/components/auth/TwoFactorSettingsDial
 import { useAuthStore } from '@/stores/authStore';
 import { AccountDeleteDialog } from '@/components/auth/AccountDeleteDialog';
 import { ChangePasswordDialog } from '@/components/auth/ChangePasswordDialog';
+import { AIProviderSettingsDialog } from '@/components/account/AIProviderSettingsDialog';
 import { SubmissionListDialog } from '@/components/classes/SubmissionListDialog';
 import { SubmissionSaveDialog } from '@/components/classes/SubmissionSaveDialog';
 import { GradedListDialog } from '@/components/classes/GradedListDialog';
@@ -134,6 +135,7 @@ export function EditorPage() {
   const [twoFactorSettingsDialogOpen, setTwoFactorSettingsDialogOpen] = useState(false);
   const [accountDeleteDialogOpen, setAccountDeleteDialogOpen] = useState(false);
   const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false);
+  const [aiSettingsDialogOpen, setAiSettingsDialogOpen] = useState(false);
 
   // 生徒用: submission 管理
   const isStudent = user?.accountType === 'student';
@@ -1604,7 +1606,7 @@ export function EditorPage() {
             currentSubmissionTitle={currentSubmission?.assignmentTitle || null}
             onAiAppendBlocks={(xml) => blocklyEditorRef.current?.appendBlocks(xml)}
             workspaceXml={workspaceXml}
-            onGoToAiSettings={() => navigate('/plan')}
+            onOpenAiSettings={() => setAiSettingsDialogOpen(true)}
           />
 
           {/* メインコンテンツエリア (Blocklyワークスペース) */}
@@ -2013,6 +2015,12 @@ export function EditorPage() {
       <ChangePasswordDialog
         open={changePasswordDialogOpen}
         onOpenChange={setChangePasswordDialogOpen}
+      />
+
+      {/* AI プロバイダー設定ダイアログ */}
+      <AIProviderSettingsDialog
+        open={aiSettingsDialogOpen}
+        onOpenChange={setAiSettingsDialogOpen}
       />
 
       {/* 生徒用: 課題一覧ダイアログ */}

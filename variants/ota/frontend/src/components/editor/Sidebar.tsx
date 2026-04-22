@@ -30,7 +30,8 @@ import {
   ClipboardList,
   Save,
   Award,
-  CreditCard
+  CreditCard,
+  Bot
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAuthStore } from '@/stores/authStore';
@@ -64,7 +65,7 @@ interface SidebarProps {
   currentSubmissionTitle?: string | null;
   onAiAppendBlocks?: (xml: string) => void;
   workspaceXml?: string;
-  onGoToAiSettings?: () => void;
+  onOpenAiSettings?: () => void;
 }
 
 interface NavSubItem {
@@ -113,7 +114,7 @@ export function Sidebar({
   currentSubmissionTitle,
   onAiAppendBlocks,
   workspaceXml,
-  onGoToAiSettings,
+  onOpenAiSettings,
 }: SidebarProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -378,6 +379,13 @@ export function Sidebar({
         action: onChangePassword || (() => {}),
         category: 'account' as const,
       },
+      ...(user?.accountType !== 'student' ? [{
+        id: 'ai-settings',
+        label: t('sidebar.aiSettings', { defaultValue: 'AI 設定' }),
+        icon: <Bot className="w-4 h-4" />,
+        action: onOpenAiSettings || (() => {}),
+        category: 'account' as const,
+      }] : []),
       {
         id: 'logout',
         label: t('sidebar.logout', { defaultValue: 'ログアウト' }),
@@ -590,7 +598,8 @@ export function Sidebar({
             onAppendBlocks={onAiAppendBlocks}
             workspaceXml={workspaceXml}
             shouldShowFull={shouldShowFull}
-            onGoToSettings={onGoToAiSettings}
+            onOpenSettings={onOpenAiSettings}
+            onUpgradePlan={() => navigate('/plan')}
             isAvailable={isAiAvailable}
           />
         </div>
