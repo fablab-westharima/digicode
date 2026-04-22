@@ -3848,6 +3848,8 @@
     "sending": "Sending...",
     "helpBotPlaceholder": "Ask a question about DigiCode",
     "clearWorkspace": "Clear workspace",
-    "systemMetaAdded": "Added {{count}} blocks"
+    "systemMetaAdded": "Added {{count}} blocks",
+    "exportChat": "Export conversation",
+    "expandPanel": "Open in dialog"
   }
 }

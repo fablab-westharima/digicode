@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AIAssistantPanel } from './AIAssistantPanel';
+import { AIAssistantDialog } from './AIAssistantDialog';
 import {
   FolderOpen,
   Zap,
@@ -126,6 +127,7 @@ export function Sidebar({
   const [isHovered, setIsHovered] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['project'])); // デフォルトでprojectを開く
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set()); // サブメニュー展開状態
+  const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
 
   // Feature Flagsを取得
   useEffect(() => {
@@ -603,9 +605,21 @@ export function Sidebar({
             shouldShowFull={shouldShowFull}
             onUpgradePlan={() => navigate('/plan')}
             isAvailable={isAiAvailable}
+            onExpand={() => setIsAiDialogOpen(true)}
           />
         </div>
       )}
+
+      {/* AI アシスタント 展開ダイアログ */}
+      <AIAssistantDialog
+        open={isAiDialogOpen}
+        onClose={() => setIsAiDialogOpen(false)}
+        onAppendBlocks={onAiAppendBlocks}
+        onClearWorkspace={onAiClearWorkspace}
+        workspaceXml={workspaceXml}
+        isAvailable={isAiAvailable}
+        onUpgradePlan={() => navigate('/plan')}
+      />
     </div>
   );
 }

@@ -3838,6 +3838,8 @@
     "sending": "送信中...",
     "helpBotPlaceholder": "DigiCode の使い方を質問してください",
     "clearWorkspace": "ワークスペースをクリア",
-    "systemMetaAdded": "{{count}} 個のブロックを追加しました"
+    "systemMetaAdded": "{{count}} 個のブロックを追加しました",
+    "exportChat": "会話を書き出す",
+    "expandPanel": "ダイアログで開く"
   }
 }

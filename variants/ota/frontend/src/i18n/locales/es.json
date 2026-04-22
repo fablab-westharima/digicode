@@ -4033,6 +4033,8 @@
     "sending": "Enviando...",
     "helpBotPlaceholder": "Haz una pregunta sobre DigiCode",
     "clearWorkspace": "Limpiar área de trabajo",
-    "systemMetaAdded": "Se añadieron {{count}} bloques"
+    "systemMetaAdded": "Se añadieron {{count}} bloques",
+    "exportChat": "Exportar conversación",
+    "expandPanel": "Abrir en diálogo"
   }
 }

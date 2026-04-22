@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bot, Loader2, Sparkles, AlertTriangle, Trash2 } from 'lucide-react';
+import { Bot, Loader2, Sparkles, AlertTriangle, Trash2, Download, Maximize2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useAiStore } from '@/stores/aiStore';
@@ -9,6 +9,8 @@ import { useBoardStore } from '@/stores/boardStore';
 import { createAIClient, ApiAuthError, RateLimitError, NetworkError } from '@/services/ai/index';
 import type { AiConfig, Message } from '@/services/ai/index';
 import type { AiLanguage } from '@/data/aiSystemPrompts';
+import { exportConversationToMarkdown } from '@/services/ai/conversationExporter';
+import { useBeforeUnloadWarning } from '@/hooks/useBeforeUnloadWarning';
 
 interface AIAssistantPanelProps {
   onAppendBlocks?: (xml: string) => void;
@@ -17,6 +19,8 @@ interface AIAssistantPanelProps {
   shouldShowFull: boolean;
   onUpgradePlan?: () => void;
   isAvailable?: boolean;
+  onExpand?: () => void;       // ↗ ボタン押下時のコールバック（Sidebar がダイアログを開く）
+  showExpandButton?: boolean;  // ダイアログ内では false に（再帰防止）
 }
 
 const I18N_TO_AI_LANG: Record<string, AiLanguage> = {
@@ -38,6 +42,8 @@ export function AIAssistantPanel({
   shouldShowFull,
   onUpgradePlan,
   isAvailable,
+  onExpand,
+  showExpandButton = true,
 }: AIAssistantPanelProps) {
   const { t, i18n } = useTranslation();
   const {
@@ -55,6 +61,10 @@ export function AIAssistantPanel({
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const conversation = currentMode === 'blockGen' ? conversationBlockGen : conversationHelpBot;
+  const hasConversation = conversationBlockGen.length > 0 || conversationHelpBot.length > 0;
+
+  // リロード警告（会話履歴が残っている時のみ）
+  useBeforeUnloadWarning(hasConversation);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -164,6 +174,23 @@ export function AIAssistantPanel({
     }
   };
 
+  const handleExport = () => {
+    if (conversation.length === 0) return;
+    const markdown = exportConversationToMarkdown(conversation, {
+      mode: currentMode,
+      provider,
+      model: model ?? undefined,
+    });
+    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const ts = new Date().toISOString().slice(0, 16).replace('T', '-').replace(':', '');
+    a.href = url;
+    a.download = `digicode-ai-${currentMode}-${ts}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   // 折畳時: アイコンのみ
   if (!shouldShowFull) {
     return (
@@ -202,8 +229,8 @@ export function AIAssistantPanel({
 
   return (
     <div className="flex flex-col h-full">
-      {/* タブバー */}
-      <div className="flex shrink-0 border-b border-[#2E333D]">
+      {/* タブバー + 補助ボタン */}
+      <div className="flex shrink-0 items-stretch border-b border-[#2E333D]">
         {(['blockGen', 'helpBot'] as const).map((tab) => (
           <button
             key={tab}
@@ -217,6 +244,26 @@ export function AIAssistantPanel({
             {tab === 'blockGen' ? t('ai.tabBlockGen') : t('ai.tabHelp')}
           </button>
         ))}
+        {/* 書き出しボタン */}
+        {conversation.length > 0 && (
+          <button
+            onClick={handleExport}
+            title={t('ai.exportChat')}
+            className="px-2 text-[#5C6370] hover:text-[#8B949E] hover:bg-[#2E333D] transition-colors"
+          >
+            <Download className="w-3 h-3" />
+          </button>
+        )}
+        {/* ↗ 展開ボタン */}
+        {showExpandButton && onExpand && (
+          <button
+            onClick={onExpand}
+            title={t('ai.expandPanel')}
+            className="px-2 text-[#5C6370] hover:text-[#8B949E] hover:bg-[#2E333D] transition-colors"
+          >
+            <Maximize2 className="w-3 h-3" />
+          </button>
+        )}
       </div>
 
       {/* 会話履歴 */}
@@ -266,16 +313,13 @@ export function AIAssistantPanel({
 
         {currentMode === 'blockGen' ? (
           <>
-            {/* [送信] + [ブロック生成] */}
             <div className="mt-1 flex gap-1">
               <button
                 onClick={handleSend}
                 disabled={isBusy || !input.trim()}
                 className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded border border-[#2E333D] text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                {isSending
-                  ? <Loader2 className="w-3 h-3 animate-spin" />
-                  : null}
+                {isSending && <Loader2 className="w-3 h-3 animate-spin" />}
                 {t('ai.sendButton')}
               </button>
               <button
@@ -289,7 +333,6 @@ export function AIAssistantPanel({
                 {isGenerating ? t('ai.generating') : t('ai.generateButton')}
               </button>
             </div>
-            {/* [ワークスペースをクリア] */}
             <button
               onClick={onClearWorkspace}
               disabled={isBusy}
@@ -300,7 +343,6 @@ export function AIAssistantPanel({
             </button>
           </>
         ) : (
-          /* helpBot: [送信] のみ */
           <button
             onClick={handleSend}
             disabled={isBusy || !input.trim()}
