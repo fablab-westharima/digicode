@@ -3604,7 +3604,7 @@
     "confirmCancel": "キャンセル",
     "confirmSubmit": "契約する",
     "free": {
-      "description": "お試し・ローカルコンパイル向け"
+      "description": "入門・お試し向け"
     },
     "lite": {
       "description": "個人ホビイスト向け"

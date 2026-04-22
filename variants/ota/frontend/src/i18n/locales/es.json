@@ -3799,7 +3799,7 @@
     "confirmCancel": "Cancelar",
     "confirmSubmit": "Suscribirse",
     "free": {
-      "description": "Para prueba y compilación local"
+      "description": "Para principiantes y prueba inicial"
     },
     "lite": {
       "description": "Para aficionados individuales"
