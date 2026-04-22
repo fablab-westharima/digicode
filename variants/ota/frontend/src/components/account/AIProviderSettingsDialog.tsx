@@ -48,6 +48,17 @@ export function AIProviderSettingsDialog({ open, onOpenChange }: Props) {
     setTimeout(() => setSaved(false), 3000);
   };
 
+  const handleDeleteApiKey = () => {
+    setLocalApiKey('');
+    // 現在のプロバイダー・モデル設定はそのまま保存し、API キーのみ削除
+    setProvider(localProvider);
+    setApiKey('');
+    setCustomEndpoint(localEndpoint);
+    setModel(localModel);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 3000);
+  };
+
   const providers: { value: AiProvider; label: string }[] = [
     { value: 'openai',    label: t('ai.provider.openai') },
     { value: 'anthropic', label: t('ai.provider.anthropic') },
@@ -99,7 +110,7 @@ export function AIProviderSettingsDialog({ open, onOpenChange }: Props) {
             {localApiKey && (
               <button
                 type="button"
-                onClick={() => setLocalApiKey('')}
+                onClick={handleDeleteApiKey}
                 className="mt-1 text-xs text-destructive hover:text-destructive/80 underline"
               >
                 {t('ai.deleteApiKey')}
