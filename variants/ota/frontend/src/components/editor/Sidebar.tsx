@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { AIBlockGeneratorWidget } from './AIBlockGeneratorWidget';
 import {
   FolderOpen,
   Zap,
@@ -61,6 +62,9 @@ interface SidebarProps {
   onSubmissionSaveDialog?: () => void;
   onGradedList?: () => void;
   currentSubmissionTitle?: string | null;
+  onAiAppendBlocks?: (xml: string) => void;
+  workspaceXml?: string;
+  onGoToAiSettings?: () => void;
 }
 
 interface NavSubItem {
@@ -107,6 +111,9 @@ export function Sidebar({
   onSubmissionSaveDialog,
   onGradedList,
   currentSubmissionTitle,
+  onAiAppendBlocks,
+  workspaceXml,
+  onGoToAiSettings,
 }: SidebarProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -573,6 +580,18 @@ export function Sidebar({
           );
         })}
       </div>
+
+      {/* AI Block Generator */}
+      {isAuthenticated && (
+        <div className="border-t border-[#2E333D]">
+          <AIBlockGeneratorWidget
+            onAppendBlocks={onAiAppendBlocks}
+            workspaceXml={workspaceXml}
+            shouldShowFull={shouldShowFull}
+            onGoToSettings={onGoToAiSettings}
+          />
+        </div>
+      )}
 
       {/* Footer - Collapse hint */}
       {shouldShowFull && (

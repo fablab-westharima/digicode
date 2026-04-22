@@ -3796,5 +3796,31 @@
     },
     "generic": "エラーが発生しました",
     "registerFailed": "登録に失敗しました"
+  },
+  "ai": {
+    "label": "AI ブロック生成",
+    "placeholder": "例: 13番ピンのLEDを1秒点滅させて",
+    "generateButton": "生成",
+    "generating": "生成中...",
+    "noApiKey": "APIキーが未設定です",
+    "settingsLink": "設定で入力する",
+    "errorInvalidKey": "APIキーが無効です（401/403）",
+    "errorRateLimit": "利用制限に達しました（429）",
+    "errorNetwork": "ネットワークエラー（CORSの可能性）",
+    "errorGeneration": "有効なXMLを生成できませんでした（3回試行）",
+    "successAppended": "ブロックを追加しました",
+    "provider": {
+      "label": "AIプロバイダー",
+      "openai": "OpenAI",
+      "anthropic": "Claude (Anthropic)",
+      "gemini": "Gemini (Google)",
+      "custom": "カスタムエンドポイント"
+    },
+    "apiKey": "APIキー",
+    "apiKeyDisclaimer": "APIキーはブラウザのローカルストレージに平文で保存されます",
+    "customEndpoint": "エンドポイント URL",
+    "model": "モデル名（省略時はデフォルト）",
+    "save": "保存",
+    "saved": "保存しました"
   }
 }

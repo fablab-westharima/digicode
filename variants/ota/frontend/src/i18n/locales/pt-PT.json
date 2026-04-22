@@ -3991,5 +3991,31 @@
     },
     "generic": "Ocorreu um erro",
     "registerFailed": "Falha no registo"
+  },
+  "ai": {
+    "label": "Geração de blocos por IA",
+    "placeholder": "ex: Fazer o LED no pino 13 piscar a cada segundo",
+    "generateButton": "Gerar",
+    "generating": "A gerar...",
+    "noApiKey": "Chave API não configurada",
+    "settingsLink": "Configurar nas definições",
+    "errorInvalidKey": "Chave API inválida (401/403)",
+    "errorRateLimit": "Limite de utilização atingido (429)",
+    "errorNetwork": "Erro de rede (possivelmente CORS)",
+    "errorGeneration": "Não foi possível gerar XML válido (3 tentativas)",
+    "successAppended": "Blocos adicionados ao espaço de trabalho",
+    "provider": {
+      "label": "Fornecedor de IA",
+      "openai": "OpenAI",
+      "anthropic": "Claude (Anthropic)",
+      "gemini": "Gemini (Google)",
+      "custom": "Endpoint personalizado"
+    },
+    "apiKey": "Chave API",
+    "apiKeyDisclaimer": "A chave API é armazenada em texto simples no armazenamento local do navegador",
+    "customEndpoint": "URL do endpoint",
+    "model": "Nome do modelo (predefinição se omitido)",
+    "save": "Guardar",
+    "saved": "Guardado"
   }
 }

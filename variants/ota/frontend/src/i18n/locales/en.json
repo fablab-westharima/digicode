@@ -3806,5 +3806,31 @@
     },
     "generic": "An error occurred",
     "registerFailed": "Registration failed"
+  },
+  "ai": {
+    "label": "AI Block Generation",
+    "placeholder": "e.g. Blink the LED on pin 13 every second",
+    "generateButton": "Generate",
+    "generating": "Generating...",
+    "noApiKey": "API key is not set",
+    "settingsLink": "Enter it in settings",
+    "errorInvalidKey": "Invalid API key (401/403)",
+    "errorRateLimit": "Rate limit reached (429)",
+    "errorNetwork": "Network error (possibly CORS)",
+    "errorGeneration": "Could not generate valid XML (3 attempts)",
+    "successAppended": "Blocks added to workspace",
+    "provider": {
+      "label": "AI Provider",
+      "openai": "OpenAI",
+      "anthropic": "Claude (Anthropic)",
+      "gemini": "Gemini (Google)",
+      "custom": "Custom Endpoint"
+    },
+    "apiKey": "API Key",
+    "apiKeyDisclaimer": "Your API key is stored in plain text in the browser's local storage",
+    "customEndpoint": "Endpoint URL",
+    "model": "Model name (default if omitted)",
+    "save": "Save",
+    "saved": "Saved"
   }
 }

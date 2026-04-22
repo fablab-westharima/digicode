@@ -3991,5 +3991,31 @@
     },
     "generic": "發生錯誤",
     "registerFailed": "註冊失敗"
+  },
+  "ai": {
+    "label": "AI 積木生成",
+    "placeholder": "例：讓第13腳位的LED每秒閃爍一次",
+    "generateButton": "生成",
+    "generating": "生成中...",
+    "noApiKey": "尚未設定 API 金鑰",
+    "settingsLink": "前往設定輸入",
+    "errorInvalidKey": "API 金鑰無效（401/403）",
+    "errorRateLimit": "已達使用上限（429）",
+    "errorNetwork": "網路錯誤（可能為 CORS 問題）",
+    "errorGeneration": "無法生成有效的 XML（已嘗試 3 次）",
+    "successAppended": "已將積木新增至工作區",
+    "provider": {
+      "label": "AI 提供商",
+      "openai": "OpenAI",
+      "anthropic": "Claude (Anthropic)",
+      "gemini": "Gemini (Google)",
+      "custom": "自訂端點"
+    },
+    "apiKey": "API 金鑰",
+    "apiKeyDisclaimer": "API 金鑰將以明文儲存於瀏覽器的本機存儲中",
+    "customEndpoint": "端點 URL",
+    "model": "模型名稱（省略時使用預設）",
+    "save": "保存",
+    "saved": "已保存"
   }
 }

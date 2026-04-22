@@ -1602,6 +1602,9 @@ export function EditorPage() {
             onSubmissionSaveDialog={() => setSubmissionSaveDialogOpen(true)}
             onGradedList={() => setGradedListOpen(true)}
             currentSubmissionTitle={currentSubmission?.assignmentTitle || null}
+            onAiAppendBlocks={(xml) => blocklyEditorRef.current?.appendBlocks(xml)}
+            workspaceXml={workspaceXml}
+            onGoToAiSettings={() => navigate('/plan')}
           />
 
           {/* メインコンテンツエリア (Blocklyワークスペース) */}
