@@ -25,6 +25,10 @@ type Variables = {
 
 const subscriptions = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
+// Stripe API version を明示固定する。SDK v22 のデフォルトと一致、webhooks.ts と同値。
+// 2026-04-23 に 2018-02-28 → dahlia へ migration。
+const STRIPE_API_VERSION = '2026-03-25.dahlia';
+
 // プラン定義（参考情報、実際の金額は Stripe Dashboard で設定）
 const PLANS = {
   free: {
@@ -54,7 +58,7 @@ const PLANS = {
 };
 
 function getStripe(env: Bindings): Stripe {
-  return new Stripe(env.STRIPE_SECRET_KEY);
+  return new Stripe(env.STRIPE_SECRET_KEY, { apiVersion: STRIPE_API_VERSION });
 }
 
 // ---------- GET /plans ----------

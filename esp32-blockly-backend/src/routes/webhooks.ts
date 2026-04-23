@@ -18,7 +18,43 @@ type Bindings = {
   STRIPE_WEBHOOK_SECRET: string;
 };
 
+// Stripe API version を明示固定する。SDK v22 のデフォルトと一致。
+// 2026-04-23 に Stripe アカウント + webhook endpoint を 2018-02-28 → dahlia へ migration。
+// SDK 更新時に default API version が勝手に動くのを防ぐため明示する。
+const STRIPE_API_VERSION = '2026-03-25.dahlia';
+
 const webhooks = new Hono<{ Bindings: Bindings }>();
+
+// ---------- Payload 互換 helper ----------
+// 2026-04-23 migration 後、endpoint API version は dahlia に揃えたが、
+// Stripe 側で endpoint を旧版に戻した場合や古い未配信 event の retry に備え、
+// 2018-02-28 payload 形式への fallback を永続維持する。
+// 参考: prompt/maintenance/発見バグ/2026-04-23_034_*.md
+
+function extractInvoiceSubscriptionId(invoice: Stripe.Invoice): string | undefined {
+  // dahlia: invoice.parent.subscription_details.subscription
+  const modern = invoice.parent?.subscription_details?.subscription;
+  if (modern) {
+    return typeof modern === 'string' ? modern : modern.id;
+  }
+  // 2018-02-28: invoice.subscription（現行 SDK 型には存在しないため cast）
+  const legacy = (invoice as unknown as {
+    subscription?: string | Stripe.Subscription | null;
+  }).subscription;
+  if (legacy) {
+    return typeof legacy === 'string' ? legacy : legacy.id;
+  }
+  return undefined;
+}
+
+function extractSubscriptionItemPriceId(
+  subscription: Stripe.Subscription,
+): string | null {
+  const item = subscription.items.data[0];
+  if (!item) return null;
+  // dahlia は price、2018-02-28 は plan。SDK 型は両方保持しているため cast 不要。
+  return item.price?.id ?? item.plan?.id ?? null;
+}
 
 // ---------- Stripe price_id → plan_type マッピング ----------
 // Price ID は Stripe Dashboard で作成後に環境変数で管理するのが理想だが、
@@ -31,7 +67,7 @@ async function resolvePlanFromSubscription(
 ): Promise<string> {
   try {
     const sub = await stripe.subscriptions.retrieve(subscriptionId);
-    const priceId = sub.items.data[0]?.price?.id;
+    const priceId = extractSubscriptionItemPriceId(sub);
     if (!priceId) return 'free';
 
     // price の metadata に plan_type を設定しておく（Dashboard で設定）
@@ -69,7 +105,7 @@ webhooks.post('/stripe', async (c) => {
 
   let event: Stripe.Event;
   try {
-    const stripe = new Stripe(c.env.STRIPE_SECRET_KEY);
+    const stripe = new Stripe(c.env.STRIPE_SECRET_KEY, { apiVersion: STRIPE_API_VERSION });
     event = await stripe.webhooks.constructEventAsync(
       body,
       signature,
@@ -81,7 +117,7 @@ webhooks.post('/stripe', async (c) => {
     return c.json({ error: `Webhook Error: ${msg}` }, 400);
   }
 
-  const stripe = new Stripe(c.env.STRIPE_SECRET_KEY);
+  const stripe = new Stripe(c.env.STRIPE_SECRET_KEY, { apiVersion: STRIPE_API_VERSION });
   const db = c.env.DB;
 
   console.log(`[webhook] ${event.type} id=${event.id}`);
@@ -129,7 +165,7 @@ async function handleCheckoutCompleted(
 
   const planType = await resolvePlanFromSubscription(stripe, subscriptionId);
   const sub = await stripe.subscriptions.retrieve(subscriptionId);
-  const priceId = sub.items.data[0]?.price?.id || null;
+  const priceId = extractSubscriptionItemPriceId(sub);
 
   // subscriptions テーブル更新
   await db.prepare(`
@@ -164,7 +200,7 @@ async function handleSubscriptionUpdated(
   const subscriptionId = subscription.id;
   const status = subscription.status; // active, past_due, canceled, etc.
   const planType = await resolvePlanFromSubscription(stripe, subscriptionId);
-  const priceId = subscription.items.data[0]?.price?.id || null;
+  const priceId = extractSubscriptionItemPriceId(subscription);
 
   await db.prepare(`
     UPDATE subscriptions
@@ -242,11 +278,12 @@ async function handlePaymentFailed(
   db: D1Database,
   invoice: Stripe.Invoice,
 ) {
-  const subscriptionId = typeof invoice.subscription === 'string'
-    ? invoice.subscription
-    : invoice.subscription?.id;
+  const subscriptionId = extractInvoiceSubscriptionId(invoice);
 
-  if (!subscriptionId) return;
+  if (!subscriptionId) {
+    console.warn('[webhook] invoice.payment_failed: no subscription reference in payload');
+    return;
+  }
 
   await db.prepare(`
     UPDATE subscriptions
