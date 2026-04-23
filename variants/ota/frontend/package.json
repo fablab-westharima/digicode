@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "generate:ai-catalog": "npx tsx scripts/generate-ai-block-catalog.ts",
-    "prebuild": "npm run generate:ai-catalog && npx tsx scripts/audit-ai-catalog.ts",
+    "prebuild": "npm run generate:ai-catalog && npx tsx scripts/audit-ai-catalog.ts && npx tsx scripts/audit-data-consistency.ts",
     "build": "vite build",
     "typecheck": "tsc -b",
     "lint": "eslint .",
