@@ -24,14 +24,6 @@ export interface AiConfig {
   model?: string;
 }
 
-export interface GenerateInput {
-  prompt: string;
-  mode: RobotMode;
-  board: BoardDefinition;
-  existingXml?: string;
-  language: AiLanguage;
-}
-
 export interface GenerateOutput {
   xml: string;         // 検証済み Blockly XML
   rawResponse: string; // デバッグ用生応答
@@ -61,7 +53,6 @@ export interface GenerateFromConversationInput {
 }
 
 export interface AIClient {
-  generate(input: GenerateInput): Promise<GenerateOutput>;
   chat(input: ChatInput): Promise<ChatOutput>;
   generateFromConversation(input: GenerateFromConversationInput): Promise<GenerateOutput>;
 }

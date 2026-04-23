@@ -1,17 +1,11 @@
-import type { AIClient, AiConfig, GenerateInput, GenerateOutput, ChatInput, ChatOutput, GenerateFromConversationInput } from './index';
+import type { AIClient, AiConfig, ChatInput, ChatOutput, GenerateFromConversationInput, GenerateOutput } from './index';
 import {
-  buildSystemPrompt,
   buildHelpBotSystemPrompt,
   buildBlockGenConversationPrompt,
-  fetchCatalog,
-  filterCatalog,
-  getAllowedTypes,
 } from './systemPrompt';
 import { trimConversationForContext } from './conversationContext';
-import { validateBlocklyXml } from './xmlValidator';
-import { dryRunBlocklyXml } from './blocklyDryRun';
-import { AI_SYSTEM_PROMPTS } from '@/data/aiSystemPrompts';
-import { AiGenerationError, ApiAuthError, RateLimitError, ApiServerError, NetworkError } from './errors';
+import { ApiAuthError, RateLimitError, ApiServerError, NetworkError } from './errors';
+import { generateWithRetry } from './retryHelper';
 
 const ENDPOINTS: Record<string, string> = {
   openai:  'https://api.openai.com/v1/chat/completions',
@@ -19,9 +13,9 @@ const ENDPOINTS: Record<string, string> = {
 };
 
 const DEFAULT_MODELS: Record<string, string> = {
-  openai:  'gpt-4o',
+  openai:  'gpt-4o-mini',
   gemini:  'gemini-2.0-flash-lite',
-  custom:  'gpt-4o',
+  custom:  'gpt-4o-mini',
 };
 
 type ApiMessage = { role: string; content: string };
@@ -41,7 +35,7 @@ export class OpenAICompatibleClient implements AIClient {
     messages: ApiMessage[],
     maxTokens = 4000,
   ): Promise<{ content: string; tokensUsed: number }> {
-    const model = (this.config.model?.trim()) || DEFAULT_MODELS[this.config.provider] || 'gpt-4o';
+    const model = (this.config.model?.trim()) || DEFAULT_MODELS[this.config.provider] || 'gpt-4o-mini';
 
     let response: Response;
     try {
@@ -93,63 +87,13 @@ export class OpenAICompatibleClient implements AIClient {
   }
 
   async generateFromConversation(input: GenerateFromConversationInput): Promise<GenerateOutput> {
-    const catalog = await fetchCatalog();
-    const filteredBlocks = filterCatalog(catalog);
-    const allowedTypes = getAllowedTypes(filteredBlocks);
-
-    const systemPrompt = buildSystemPrompt({
-      language: input.language,
-      mode: input.robotMode,
-      board: input.board,
-      existingXml: input.existingXml,
-      filteredBlocks,
-    });
-
-    const historyMessages = trimConversationForContext(input.messages);
-    const { retryErrorPrefix } = AI_SYSTEM_PROMPTS[input.language].blockGen;
-    let lastRaw = '';
-    let lastError: string | null = null;
-
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      const finalUserContent = attempt > 1 && lastError
-        ? `${retryErrorPrefix} ${lastError}\n\n${input.generateRequest}`
-        : input.generateRequest;
-
+    return generateWithRetry(input, async (systemPrompt, historyMessages, finalUserContent) => {
       const messages: ApiMessage[] = [
         { role: 'system', content: systemPrompt },
         ...historyMessages.map(m => ({ role: m.role as 'user' | 'assistant', content: m.content })),
         { role: 'user', content: finalUserContent },
       ];
-
-      const { content } = await this.rawCall(messages);
-      lastRaw = content;
-
-      const result = validateBlocklyXml(lastRaw, allowedTypes);
-      if (!result.valid || !result.sanitizedXml) {
-        lastError = result.errors[0] ?? 'XML 形式ではありませんでした';
-        continue;
-      }
-      // 静的検証 OK → Blockly ランタイムで dry-run（接続構造の検証）
-      const dryRun = dryRunBlocklyXml(result.sanitizedXml);
-      if (!dryRun.valid) {
-        lastError = `Blockly connection error: ${dryRun.error}. Value blocks (hasOutput=true) must not have <next>. Statement blocks (isStatement=true) must not be placed in <value> slots.`;
-        continue;
-      }
-      return { xml: result.sanitizedXml, rawResponse: lastRaw, attempts: attempt };
-    }
-
-    throw new AiGenerationError('Failed to generate valid XML after 3 attempts', 3, lastRaw);
-  }
-
-  // generate() は互換維持のための薄いラッパー（S3 で AIAssistantPanel 移行時に削除、判断 16）
-  async generate(input: GenerateInput): Promise<GenerateOutput> {
-    return this.generateFromConversation({
-      messages: [],
-      generateRequest: input.prompt,
-      language: input.language,
-      robotMode: input.mode,
-      board: input.board,
-      existingXml: input.existingXml,
+      return this.rawCall(messages);
     });
   }
 }
