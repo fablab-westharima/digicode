@@ -9,7 +9,7 @@
  * 優先順位: users.plan > subscriptions.plan_type > 'free'
  *
  *   - users.plan:        Admin 画面で手動付与されたプラン (migration 0014)
- *   - subscriptions.plan_type: Square/Stripe 決済連携用 (migration 0001、未使用)
+ *   - subscriptions.plan_type: Stripe 決済連携用 (migration 0001 + 0020 で stripe_* に統一)
  *
  * Phase D（決済実装時）に二重管理の解消方針を決定する予定だが、それまでは
  * 両方を参照して統合する。

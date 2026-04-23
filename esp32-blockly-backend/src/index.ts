@@ -117,7 +117,7 @@ app.route('/api/compile-usage', compileUsage);
 // サブスクリプションルート
 app.route('/api/subscriptions', subscriptions);
 
-// Webhookルート（Square決済連携）
+// Webhookルート（Stripe決済連携）
 app.route('/api/webhooks', webhooks);
 
 // 管理者APIルート（Admin + Feature Flags公開API）
