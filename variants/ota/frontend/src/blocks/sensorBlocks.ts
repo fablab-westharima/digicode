@@ -21,8 +21,6 @@ const pyGen = pythonGenerator as any;
 const SENSOR_COLOR_ULTRASONIC = '#3b82f6';  // Blue - 超音波センサー
 const SENSOR_COLOR_DHT = '#06b6d4';         // Cyan - 温湿度センサー
 const SENSOR_COLOR_DIGITAL = '#f59e0b';     // Amber - デジタルセンサー
-const SENSOR_COLOR_ANALOG = '#10b981';      // Green - アナログセンサー
-const SENSOR_COLOR_DEFAULT = '#FF9800';     // Orange - その他
 
 // Helper function to get translated color dropdown options
 const getColorOptions = (): [string, string][] => [

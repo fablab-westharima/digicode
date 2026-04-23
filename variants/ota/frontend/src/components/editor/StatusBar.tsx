@@ -1,4 +1,4 @@
-import { Circle, Zap, Upload, AlertCircle, Check, Wifi, WifiOff } from 'lucide-react';
+import { Zap, Upload, AlertCircle, Check, Wifi, WifiOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export type StatusBarState = 'ready' | 'compiling' | 'uploading' | 'error' | 'success';

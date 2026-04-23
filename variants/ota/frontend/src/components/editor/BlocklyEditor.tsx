@@ -9,7 +9,7 @@ import { useRobotModeStore } from '../../stores/robotModeStore';
 import { useFavoriteCategoriesStore } from '../../stores/favoriteCategoriesStore';
 import { useBoardStore } from '../../stores/boardStore';
 import { useBreakpoint } from '../../hooks/useMediaQuery';
-import { digiCodeTheme, digiCodeDarkTheme } from './blocklyTheme';
+import { digiCodeDarkTheme } from './blocklyTheme';
 import { populateBlocklyMessages } from '@/utils/blocklyMessages';
 import { FavoriteSettingsDialog } from './FavoriteSettingsDialog';
 // Old esp32BlocksArduino.ts removed - using arduino/core/esp32Blocks with Blockly.Msg.*

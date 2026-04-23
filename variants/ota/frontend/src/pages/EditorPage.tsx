@@ -7,7 +7,6 @@ import { CodePreview } from '@/components/editor/CodePreview';
 import { LinearToolbar } from '@/components/editor/LinearToolbar';
 import { StatusBar, type StatusBarState } from '@/components/editor/StatusBar';
 import { Sidebar } from '@/components/editor/Sidebar';
-import { RobotModeSelector } from '@/components/editor/RobotModeSelector';
 import { SaveProjectDialog } from '@/components/editor/SaveProjectDialog';
 import { ProjectListDialog } from '@/components/editor/ProjectListDialog';
 import { SampleProjectsDialog } from '@/components/editor/SampleProjectsDialog';
@@ -15,8 +14,6 @@ import { SerialMonitor } from '@/components/serial/SerialMonitor';
 import { SerialPlotter } from '@/components/serial/SerialPlotter';
 import { PIDTuningPanel } from '@/components/tuning/PIDTuningPanel';
 import type { SampleProject } from '@/data/sampleProjects';
-import { BoardSelector } from '@/components/editor/BoardSelector';
-import { LocaleSelector } from '@/components/common/LocaleSelector';
 import { DeviceSelectDialog } from '@/components/device/DeviceSelectDialog';
 import type { DigiCodeDevice } from '@/components/device/DeviceSelectDialog';
 import { BatchUpdateDialog } from '@/components/device/BatchUpdateDialog';
@@ -50,22 +47,14 @@ import { useBreakpoint } from '@/hooks/useMediaQuery';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import type { Project } from '@/stores/projectStore';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { compileService, type CompileServerMode, type FullPackage, type ConnectionType } from '@/services/compileService';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { compileService, type CompileServerMode, type FullPackage } from '@/services/compileService';
 import { usbFirmwareService, type UsbFlashProgress, type UsbChipInfo } from '@/services/usbFirmwareService';
 import { bleFirmwareService, type BleFlashProgress, type BleDeviceInfo } from '@/services/bleFirmwareService';
 import { checkADC2Usage, type ADC2Warning } from '@/utils/adc2Check';
 import { api } from '@/lib/api';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
-import { Download, Loader2, Zap, SlidersHorizontal, LineChart, Code, Terminal, ChevronUp, ChevronDown, GraduationCap, ChevronDown as ChevronDownIcon, X, FilePlus, FolderOpen, FileCode, Cloud, Server, Usb, Wifi, Bluetooth, Check, Settings2, Pin, BookOpen, Globe, AlertTriangle } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuCheckboxItem,
-} from '@/components/ui/dropdown-menu';
+import { Loader2, Zap, SlidersHorizontal, LineChart, Code, Terminal, ChevronUp, ChevronDown, Usb, Wifi, Bluetooth, AlertTriangle } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -89,10 +78,10 @@ export function EditorPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { logout, isAuthenticated, user } = useAuthStore();
+  const { logout, isAuthenticated } = useAuthStore();
   const { currentProject, setCurrentProject } = useProjectStore();
-  const { status: serialStatus, connect: connectSerial, disconnect: disconnectSerial, forceReleaseAllPorts } = useSerialStore();
-  const { status: wifiStatus, getDeviceUrl, setHost, setDeviceName, connect: connectWifi } = useWifiStore();
+  const { status: serialStatus, forceReleaseAllPorts } = useSerialStore();
+  const { status: wifiStatus, setHost, setDeviceName, connect: connectWifi } = useWifiStore();
   const { getSelectedBoard } = useBoardStore();
 
   const [generatedCode, setGeneratedCode] = useState('');
@@ -138,7 +127,6 @@ export function EditorPage() {
   const [aiSettingsDialogOpen, setAiSettingsDialogOpen] = useState(false);
 
   // 生徒用: submission 管理
-  const isStudent = user?.accountType === 'student';
   const [submissionListOpen, setSubmissionListOpen] = useState(false);
   const [submissionSaveDialogOpen, setSubmissionSaveDialogOpen] = useState(false);
   const [gradedListOpen, setGradedListOpen] = useState(false);
@@ -161,7 +149,7 @@ export function EditorPage() {
   const [statusBarMessage, setStatusBarMessage] = useState<string>('');
   const blocklyEditorRef = useRef<BlocklyEditorRef>(null);
   const compiledBinaryRef = useRef<Blob | null>(null);
-  const { isMobile, isMobileOrTablet } = useBreakpoint();
+  const { isMobileOrTablet } = useBreakpoint();
   const { currentTutorial, isActive: isTutorialActive } = useTutorialStore();
   // ブラウザを閉じる/リロード時の確認
   useEffect(() => {
@@ -205,12 +193,6 @@ export function EditorPage() {
 
     fetchUsage();
   }, []);
-
-  // サーバーモード変更ハンドラー
-  const handleServerModeChange = (mode: CompileServerMode) => {
-    setServerMode(mode);
-    compileService.setMode(mode);
-  };
 
   // コンパイル成功後に使用量を再取得（ログイン済みの場合のみ）
   const refreshUsage = async () => {
@@ -1170,310 +1152,6 @@ export function EditorPage() {
 
     setCompiledBinary(null);
   };
-
-  // 接続状態に応じた色（いずれかの接続方式が接続されていれば表示）
-  const getConnectionStatusColor = () => {
-    // 接続中のものがあればそれを優先
-    if (serialStatus === 'connected' || wifiStatus === 'connected') {
-      return 'bg-green-500';
-    }
-    // 接続試行中
-    if (serialStatus === 'connecting' || wifiStatus === 'connecting') {
-      return 'bg-yellow-500 animate-pulse';
-    }
-    // エラー
-    if (serialStatus === 'error' || wifiStatus === 'error') {
-      return 'bg-red-500';
-    }
-    // 未接続
-    return 'bg-gray-400';
-  };
-
-  // モバイル/タブレット用ツールバーコントロール
-  const MobileToolbarControls = () => (
-    <div className={isMobile ? 'flex flex-col gap-2 w-full' : 'flex items-center gap-1'}>
-      {/* チュートリアルボタン */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setTutorialDialogOpen(true)}
-        className="text-xs text-purple-600 w-full md:w-auto justify-start"
-      >
-        <GraduationCap className="w-3 h-3 mr-1" />
-        チュートリアル
-      </Button>
-
-      {/* モード選択 */}
-      <div className={isMobile ? 'w-full' : 'flex items-center'}>
-        <RobotModeSelector />
-      </div>
-
-      {/* コンパイル＆書き込みボタン */}
-      <Button
-          variant="default"
-          size="sm"
-          onClick={handleCompile}
-          disabled={isCompiling}
-          className="bg-orange-600 hover:bg-orange-700 text-xs w-full md:w-auto"
-        >
-          {isCompiling ? (
-            <>
-              <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-              コンパイル中
-            </>
-          ) : (
-            <>
-              <Zap className="w-3 h-3 mr-1" />
-              書き込み
-            </>
-          )}
-        </Button>
-
-      {/* USB接続ボタン */}
-      <div className="flex items-center gap-1">
-        <div className={`w-2 h-2 rounded-full ${getConnectionStatusColor()}`} />
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => serialStatus === 'connected' ? disconnectSerial() : connectSerial()}
-          className="text-xs"
-        >
-          {serialStatus === 'connected' ? 'USB切断' : 'USB接続'}
-        </Button>
-      </div>
-    </div>
-  );
-
-  // デスクトップ用ツールバーコントロール（メニューバー形式）
-  const DesktopToolbarControls = () => (
-    <>
-      {/* コンパイル＆書き込みメニュー */}
-      <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="default"
-              size="sm"
-              disabled={isCompiling}
-              className="bg-orange-600 hover:bg-orange-700 text-xs px-3"
-            >
-              {isCompiling ? (
-                <>
-                  <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                  コンパイル中...
-                </>
-              ) : (
-                <>
-                  {serverMode === 'cloud' ? (
-                    <Cloud className="w-3 h-3 mr-1" />
-                  ) : (
-                    <Server className="w-3 h-3 mr-1" />
-                  )}
-                  書き込み
-                  {serverMode === 'cloud' && compileUsage && (
-                    <span className={`ml-1 ${compileUsage.isOverLimit ? 'text-red-200' : 'text-orange-200'}`}>
-                      ({compileUsage.count}/{compileUsage.limit === -1 ? '∞' : compileUsage.limit})
-                    </span>
-                  )}
-                  <ChevronDownIcon className="w-3 h-3 ml-1" />
-                </>
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-64">
-            {/* 書き込み実行 */}
-            <DropdownMenuItem
-              onClick={handleCompile}
-              disabled={isCompiling}
-              className="font-medium"
-            >
-              <Zap className="w-4 h-4 mr-2 text-orange-500" />
-              コンパイル＆書き込み
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
-
-            {/* サーバー選択 */}
-            <div className="px-2 py-1.5 text-xs text-gray-500">{t('editor.menu.compileServer')}</div>
-            <DropdownMenuCheckboxItem
-              checked={serverMode === 'cloud'}
-              onCheckedChange={() => handleServerModeChange('cloud')}
-            >
-              <Cloud className="w-4 h-4 mr-2 text-blue-500" />
-              {t('editor.menu.cloudRecommended')}
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={serverMode === 'local'}
-              onCheckedChange={() => handleServerModeChange('local')}
-            >
-              <Server className="w-4 h-4 mr-2 text-purple-500" />
-              {t('editor.menu.local')}
-            </DropdownMenuCheckboxItem>
-
-            {/* 使用量表示（クラウド選択時のみ） */}
-            {serverMode === 'cloud' && (
-              <>
-                <DropdownMenuSeparator />
-                <div className="px-2 py-2">
-                  <div className="text-xs text-gray-500 mb-2">{t('editor.menu.monthlyUsage')}</div>
-                  {compileUsage ? (
-                    <div className="space-y-1">
-                      <Progress
-                        value={compileUsage.limit === -1 ? 0 : (compileUsage.count / compileUsage.limit) * 100}
-                        className={`h-2 ${compileUsage.isOverLimit ? '[&>div]:bg-red-500' : ''}`}
-                      />
-                      <div className="flex justify-between text-xs">
-                        <span className={compileUsage.isOverLimit ? 'text-red-500 font-medium' : ''}>
-                          {t('editor.menu.usedCount', { count: compileUsage.count })}
-                        </span>
-                        <span className="text-gray-500">
-                          {compileUsage.limit === -1
-                            ? t('settings.unlimited', { defaultValue: '無制限' })
-                            : t('editor.menu.limitCount', { limit: compileUsage.limit })}
-                        </span>
-                      </div>
-                      <p className={`text-xs ${compileUsage.isOverLimit ? 'text-red-500' : 'text-green-600'}`}>
-                        {compileUsage.limit === -1
-                          ? t('settings.unlimited', { defaultValue: '無制限' })
-                          : compileUsage.isOverLimit
-                            ? t('editor.menu.limitReached')
-                            : t('editor.menu.remaining', { count: compileUsage.remaining })
-                        }
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-gray-400">{t('editor.menu.loginToView')}</p>
-                  )}
-                </div>
-              </>
-            )}
-
-            {serverMode === 'local' && (
-              <>
-                <DropdownMenuSeparator />
-                <div className="px-2 py-2 text-xs text-gray-500">
-                  {t('editor.menu.noLimitLocal')}
-                </div>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-      {/* 接続メニュー */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-xs px-2">
-            <div className={`w-2 h-2 rounded-full mr-1 ${getConnectionStatusColor()}`} />
-            {t('editor.menu.connection')}
-            <ChevronDownIcon className="w-3 h-3 ml-1" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={() => setWifiSetupDialogOpen(true)}>
-            <Settings2 className="w-4 h-4 mr-2" />
-            {t('editor.menu.wifiRouterConnect')}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* ファイルメニュー */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-xs px-2">
-            {t('editor.menu.file')}
-            <ChevronDownIcon className="w-3 h-3 ml-1" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="z-50">
-          <DropdownMenuItem onClick={handleNew}>
-            <FilePlus className="w-4 h-4 mr-2" />
-            {t('editor.menu.new')}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleOpen}>
-            <FolderOpen className="w-4 h-4 mr-2" />
-            {t('editor.menu.open')}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setSampleDialogOpen(true)} className="text-purple-600">
-            <FileCode className="w-4 h-4 mr-2" />
-            {t('editor.sample')}
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleSave}>
-            <Download className="w-4 h-4 mr-2" />
-            {t('editor.menu.save')}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* 表示メニュー */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-xs px-2">
-            {t('editor.menu.view')}
-            <ChevronDownIcon className="w-3 h-3 ml-1" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuCheckboxItem
-            checked={showSerialMonitor}
-            onCheckedChange={setShowSerialMonitor}
-            data-tutorial-target="serial-monitor"
-          >
-            <Terminal className="w-4 h-4 mr-2" />
-            {t('editor.menu.serialMonitor')}
-          </DropdownMenuCheckboxItem>
-          <DropdownMenuCheckboxItem
-            checked={showSerialPlotter}
-            onCheckedChange={setShowSerialPlotter}
-          >
-            <LineChart className="w-4 h-4 mr-2" />
-            {t('editor.menu.plotter')}
-          </DropdownMenuCheckboxItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* 設定メニュー */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-xs px-2">
-            {t('editor.menu.settings')}
-            <ChevronDownIcon className="w-3 h-3 ml-1" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <div className="px-2 py-1.5 text-xs text-gray-500">{t('editor.menu.mode')}</div>
-          <div className="px-2 pb-2">
-            <RobotModeSelector />
-          </div>
-          <DropdownMenuSeparator />
-          <div className="px-2 py-1.5 text-xs text-gray-500">{t('editor.menu.compileTargetBoard')}</div>
-          <div className="px-2 pb-2">
-            <BoardSelector />
-          </div>
-          <DropdownMenuSeparator />
-          <div className="px-2 py-1.5 text-xs text-gray-500">{t('editor.menu.displayLanguage')}</div>
-          <div className="px-2 pb-2">
-            <LocaleSelector />
-          </div>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* ヘルプメニュー */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-xs px-2">
-            {t('editor.menu.help')}
-            <ChevronDownIcon className="w-3 h-3 ml-1" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={() => setTutorialDialogOpen(true)} className="text-purple-600">
-            <GraduationCap className="w-4 h-4 mr-2" />
-            {t('editor.menu.tutorial')}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
-  );
 
   // モバイル/タブレット用下部パネル
   const MobileBottomPanel = () => (

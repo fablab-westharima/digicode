@@ -37,7 +37,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
   const { t } = useTranslation();
   const { getCurrentPreset, presets, setCurrentPreset, addCustomPreset, updatePreset, deletePreset } = usePinPresetStore();
   const user = useAuthStore((s) => s.user);
-  const { canUsePinAssign, isFreeOpenNow, getFreeUntil, fetchFlags } = useFeatureFlagStore();
+  const { canUsePinAssign, fetchFlags } = useFeatureFlagStore();
   const isPremiumEnabled = canUsePinAssign(user?.plan);
   const currentPreset = getCurrentPreset();
   const [editingPreset, setEditingPreset] = useState<PinPreset | null>(null);

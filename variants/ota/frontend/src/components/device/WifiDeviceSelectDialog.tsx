@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Wifi, Clipboard, Clock, Download, Sparkles, Check, Square, CheckSquare, ExternalLink } from 'lucide-react';
+import { Wifi, Clipboard, Download, Check, Square, CheckSquare, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,

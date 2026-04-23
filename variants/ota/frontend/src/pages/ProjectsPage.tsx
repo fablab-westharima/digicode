@@ -53,7 +53,7 @@ export function ProjectsPage() {
     }
   };
 
-  const getLanguageLabel = (language?: string) => {
+  const getLanguageLabel = (_language?: string) => {
     return 'Arduino C++';
   };
 

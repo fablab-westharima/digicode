@@ -41,7 +41,7 @@ export async function checkHelperAvailable(): Promise<boolean> {
 
     const response = await fetch(`${HELPER_BASE_URL}/health`, {
       signal: controller.signal,
-      // @ts-ignore - Chrome 138+ Private Network Access
+      // @ts-expect-error - Chrome 138+ Private Network Access (remove when TypeScript adds targetAddressSpace to RequestInit)
       targetAddressSpace: 'local',
     });
 
@@ -69,7 +69,7 @@ export async function getHelperDevices(): Promise<HelperDevice[]> {
   try {
     console.log('[helperService] Fetching devices from:', `${HELPER_BASE_URL}/api/devices`);
     const response = await fetch(`${HELPER_BASE_URL}/api/devices`, {
-      // @ts-ignore - Chrome 138+ Private Network Access
+      // @ts-expect-error - Chrome 138+ Private Network Access (remove when TypeScript adds targetAddressSpace to RequestInit)
       targetAddressSpace: 'local',
     });
     console.log('[helperService] Response status:', response.status);
@@ -102,7 +102,7 @@ export async function triggerHelperSearch(): Promise<void> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ timeout: 5000 }),
-      // @ts-ignore - Chrome 138+ Private Network Access
+      // @ts-expect-error - Chrome 138+ Private Network Access (remove when TypeScript adds targetAddressSpace to RequestInit)
       targetAddressSpace: 'local',
     });
   } catch (error) {

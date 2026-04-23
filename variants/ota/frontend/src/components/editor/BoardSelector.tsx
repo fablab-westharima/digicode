@@ -41,8 +41,7 @@ const BOARD_I18N_KEYS: Record<string, string> = {
 
 export function BoardSelector() {
   const { t } = useTranslation();
-  const { selectedBoardId, setSelectedBoard, getSelectedBoard } = useBoardStore();
-  const selectedBoard = getSelectedBoard();
+  const { selectedBoardId, setSelectedBoard } = useBoardStore();
 
   const getCategoryLabel = (category: string): string => {
     return t(`boardSelector.categories.${category}`, { defaultValue: category });

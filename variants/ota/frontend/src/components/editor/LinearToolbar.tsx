@@ -74,14 +74,14 @@ export function LinearToolbar({
   serverMode,
   compileUsage,
   onCompile,
-  onServerModeChange,
+  onServerModeChange: _onServerModeChange,
   onRobotModeChange,
   showSerialMonitor = false,
   showSerialPlotter = false,
   onToggleSerialMonitor,
   onToggleSerialPlotter,
 }: LinearToolbarProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, logout, isAuthenticated } = useAuthStore();
   const { isMobile, isMobileOrTablet } = useBreakpoint();

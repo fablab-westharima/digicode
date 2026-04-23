@@ -1,7 +1,8 @@
 // canonical JA source — 17.md 方針 10
 // 5 言語 × 2 種（blockGen / helpBot）のシステムプロンプトテンプレート（AI に渡す指示文）
 
-export type AiLanguage = 'ja' | 'en' | 'zh-TW' | 'es' | 'pt-PT';
+export const AI_LANGUAGES = ['ja', 'en', 'zh-TW', 'es', 'pt-PT'] as const;
+export type AiLanguage = typeof AI_LANGUAGES[number];
 
 // ブロック XML を生成する用途（会話で固めた仕様を XML に変換）
 export interface BlockGenTemplates {

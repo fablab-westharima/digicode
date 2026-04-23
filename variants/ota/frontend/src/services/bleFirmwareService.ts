@@ -16,10 +16,7 @@ const COMMAND_CHAR_UUID = 0x8022;    // コマンド送信 + 応答通知
 
 // NimBLEOtaプロトコル定数
 const START_COMMAND = 0x0001;
-const STOP_COMMAND = 0x0002;
-const ACK_COMMAND = 0x0003;
 const ACK_ACCEPTED = 0x0000;
-const ACK_REJECTED = 0x0001;
 const FW_ACK_SUCCESS = 0x0000;
 const FW_ACK_CRC_ERROR = 0x0001;
 const FW_ACK_SECTOR_ERROR = 0x0002;
@@ -387,7 +384,7 @@ class BleFirmwareService {
         await this.commandChar.writeValueWithoutResponse(startCommand);
         try {
           startAck = await this.waitForCommandResponse(5000);
-        } catch (e) {
+        } catch {
           this.log(`START command retry ${retry + 1}`);
         }
       }
@@ -484,7 +481,7 @@ class BleFirmwareService {
         if (this.recvFwChar) {
           this.recvFwChar.removeEventListener('characteristicvaluechanged', this.handleFirmwareNotification);
         }
-      } catch (e) {
+      } catch {
         // ignore cleanup errors
       }
 

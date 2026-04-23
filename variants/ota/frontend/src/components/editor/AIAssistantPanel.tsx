@@ -8,7 +8,7 @@ import { useRobotModeStore } from '@/stores/robotModeStore';
 import { useBoardStore } from '@/stores/boardStore';
 import { createAIClient, ApiAuthError, RateLimitError, NetworkError } from '@/services/ai/index';
 import type { AiConfig, Message } from '@/services/ai/index';
-import type { AiLanguage } from '@/data/aiSystemPrompts';
+import { AI_LANGUAGES, type AiLanguage } from '@/data/aiSystemPrompts';
 import { exportConversationToMarkdown } from '@/services/ai/conversationExporter';
 import { useBeforeUnloadWarning } from '@/hooks/useBeforeUnloadWarning';
 
@@ -20,21 +20,12 @@ interface AIAssistantPanelProps {
   onUpgradePlan?: () => void;
   isAvailable?: boolean;          // blockGen: Lite+ 非 student
   isHelpBotAvailable?: boolean;   // helpBot: 全認証済みユーザー（判断 10）
-  isUpgradeCandidate?: boolean;   // blockGen アップグレード CTA 表示対象（Free 非 student）
   onExpand?: () => void;
   showExpandButton?: boolean;
 }
 
-const I18N_TO_AI_LANG: Record<string, AiLanguage> = {
-  ja: 'ja',
-  en: 'en',
-  'zh-TW': 'zh-TW',
-  es: 'es',
-  'pt-PT': 'pt-PT',
-};
-
 function resolveAiLanguage(lng: string): AiLanguage {
-  return I18N_TO_AI_LANG[lng] ?? 'en';
+  return (AI_LANGUAGES as readonly string[]).includes(lng) ? (lng as AiLanguage) : 'en';
 }
 
 export function AIAssistantPanel({
@@ -45,7 +36,6 @@ export function AIAssistantPanel({
   onUpgradePlan,
   isAvailable = false,
   isHelpBotAvailable = false,
-  isUpgradeCandidate = false,
   onExpand,
   showExpandButton = true,
 }: AIAssistantPanelProps) {

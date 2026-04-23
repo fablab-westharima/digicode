@@ -608,7 +608,6 @@ export function Sidebar({
             onUpgradePlan={() => navigate('/plan')}
             isAvailable={isAiAvailable}
             isHelpBotAvailable={isHelpBotAvailable}
-            isUpgradeCandidate={isAiUpgradeCandidate}
             onExpand={() => setIsAiDialogOpen(true)}
           />
         </div>
@@ -623,7 +622,6 @@ export function Sidebar({
         workspaceXml={workspaceXml}
         isAvailable={isAiAvailable}
         isHelpBotAvailable={isHelpBotAvailable}
-        isUpgradeCandidate={isAiUpgradeCandidate}
         onUpgradePlan={() => navigate('/plan')}
       />
     </div>

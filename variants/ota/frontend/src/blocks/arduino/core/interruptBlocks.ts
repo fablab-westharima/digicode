@@ -11,7 +11,7 @@
  * i18n: Blockly.Msg.* パターン（ルール33）
  */
 import * as Blockly from 'blockly';
-import { javascriptGenerator, Order } from 'blockly/javascript';
+import { javascriptGenerator } from 'blockly/javascript';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;

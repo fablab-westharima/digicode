@@ -41,7 +41,6 @@ export function FirmwareInstallerDialog({ open, onOpenChange, defaultFirmwareTyp
   const [isInstalling, setIsInstalling] = useState(false);
   const [installProgress, setInstallProgress] = useState<FlashProgress | null>(null);
   const [needsManualReset, setNeedsManualReset] = useState(false);
-  const [connectionAttempts, setConnectionAttempts] = useState(0);
 
   // ファームウェアをコンパイル
   const compileFirmware = async () => {

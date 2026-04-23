@@ -145,7 +145,7 @@ export const useRobotModeStore = create<RobotModeState>()(
     {
       name: 'robot-mode-storage',
       // 旧モード名から新モード名へのマイグレーション
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: any, _version: number) => {
         const modeMap: Record<string, RobotMode> = {
           otto_bipedal: 'robots_humanoid',
           otto_wheel: 'robots_wheel',

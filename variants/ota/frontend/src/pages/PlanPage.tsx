@@ -8,7 +8,6 @@ import {
   createCheckoutSession,
   createPortalSession,
   type SubscriptionStatus,
-  type PlanInfo,
 } from '@/services/subscriptionService';
 
 const PLAN_ORDER = ['free', 'lite', 'pro', 'enterprise'] as const;
@@ -66,7 +65,6 @@ export default function PlanPage() {
   const currentPlan = user?.plan || status?.planType || 'free';
   const isAdmin = !!user?.isAdmin;
   const isInvited = user?.planSource === 'admin_granted';
-  const hideCheckout = isAdmin; // 管理者のみ全ボタン非表示（招待ユーザーは上位プランのみ表示）
   const [inviteConfirmPlan, setInviteConfirmPlan] = useState<string | null>(null);
 
   const planRank = (p: string) => PLAN_ORDER.indexOf(p as any);
@@ -176,10 +174,8 @@ export default function PlanPage() {
           {PLAN_ORDER.map((planId) => {
             const display = PLAN_DISPLAY_STATIC[planId];
             const description = t(`plan.${planId}.description`);
-            const planInfo = status?.plan?.id === planId ? status.plan : null;
             const isCurrent = currentPlan === planId;
             const priceId = PRICE_IDS[planId as keyof typeof PRICE_IDS];
-            const canCheckout = planId !== 'free' && !isCurrent && !!priceId;
 
             return (
               <div

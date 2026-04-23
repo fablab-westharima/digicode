@@ -10,7 +10,6 @@ interface AIAssistantDialogProps {
   onClearWorkspace?: () => void;
   isAvailable?: boolean;
   isHelpBotAvailable?: boolean;
-  isUpgradeCandidate?: boolean;
   onUpgradePlan?: () => void;
 }
 
@@ -22,7 +21,6 @@ export function AIAssistantDialog({
   onClearWorkspace,
   isAvailable,
   isHelpBotAvailable,
-  isUpgradeCandidate,
   onUpgradePlan,
 }: AIAssistantDialogProps) {
   const { t } = useTranslation();
@@ -41,7 +39,6 @@ export function AIAssistantDialog({
             shouldShowFull={true}
             isAvailable={isAvailable}
             isHelpBotAvailable={isHelpBotAvailable}
-            isUpgradeCandidate={isUpgradeCandidate}
             onUpgradePlan={onUpgradePlan}
             showExpandButton={false}
           />
