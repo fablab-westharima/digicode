@@ -94,7 +94,7 @@ export function SubmissionViewerDialog({
       })
       .catch((err) => setError(err instanceof Error ? err.message : t('submissions.progress.fetchError')))
       .finally(() => setLoading(false));
-  }, [open, submissionId]);
+  }, [open, submissionId, t]);
 
   // Blockly に XML を読み込み + 読み取り専用化 + 中央配置
   useEffect(() => {

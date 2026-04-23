@@ -95,7 +95,18 @@ async function fetchDeviceInfo(url: string): Promise<DigiCodeDevice | null> {
 
 export function DeviceSelectDialog({ open, onOpenChange, onSelect, multiSelect = false, onSelectMultiple }: DeviceSelectDialogProps) {
   const { t } = useTranslation();
-  const [devices, setDevices] = useState<DigiCodeDevice[]>([]);
+  const [devices, setDevices] = useState<DigiCodeDevice[]>(() => {
+    // 初回 mount 時の localStorage 読み込みを useState 初期化子で実行
+    // （以前は useEffect 内で setDevices しており set-state-in-effect を発生させていた）
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return [];
+    try {
+      return JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to load saved devices:', e);
+      return [];
+    }
+  });
   const [scanning, setScanning] = useState(false);
   const [newDeviceUrl, setNewDeviceUrl] = useState('');
   const [addingDevice, setAddingDevice] = useState(false);
@@ -137,6 +148,8 @@ export function DeviceSelectDialog({ open, onOpenChange, onSelect, multiSelect =
   // ダイアログを閉じるときに選択をリセット
   useEffect(() => {
     if (!open) {
+      // Props→State sync: open=false 遷移時の選択リセット（意図的）
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedUrls(new Set());
     }
   }, [open]);
@@ -154,18 +167,7 @@ export function DeviceSelectDialog({ open, onOpenChange, onSelect, multiSelect =
     setCheckingStatus(false);
   }, []);
 
-  // 保存されたデバイスを読み込み
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const loadedDevices = JSON.parse(saved);
-        setDevices(loadedDevices);
-      } catch (e) {
-        console.error('Failed to load saved devices:', e);
-      }
-    }
-  }, []);
+  // （初回 mount 時の localStorage 読み込みは useState 初期化子で実行済み）
 
   // デバイスリストを保存
   const saveDevices = (deviceList: DigiCodeDevice[]) => {
@@ -305,15 +307,20 @@ export function DeviceSelectDialog({ open, onOpenChange, onSelect, multiSelect =
   };
 
   // ダイアログが開いたときにスキャン開始＆オンライン状態チェック
+  // devices / scanDevices は意図的に dep から除外: devices を dep に入れると
+  // checkDevicesOnline → setDevices → 再実行の無限ループ、scanDevices は未 memo で
+  // 毎 render 新参照となり dep に入れても意味がない。open トリガのみで実行する。
   useEffect(() => {
     if (open) {
       if (devices.length === 0) {
         scanDevices();
       } else {
         // 既存のデバイスリストがあれば、オンライン状態をチェック
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         checkDevicesOnline(devices);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, checkDevicesOnline]);
 
   const onlineDevices = devices.filter(d => d.isOnline !== false);

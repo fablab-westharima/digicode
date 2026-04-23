@@ -28,7 +28,7 @@ export function ClassesPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (user?.plan === 'enterprise') {

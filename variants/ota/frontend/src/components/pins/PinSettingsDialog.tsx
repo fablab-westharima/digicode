@@ -218,6 +218,8 @@ export function PinSettingsDialog({ open, onOpenChange }: PinSettingsDialogProps
 
   // プリセット切り替え時に状態を更新
   useEffect(() => {
+    // Props→State sync: currentPresetId 変化時にローカル編集 state を最新 preset で初期化（意図的）
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setEditedPins(currentPreset.pins);
     setServoType(currentPreset.servoConfig.servoType);
     setMinPulse(currentPreset.servoConfig.minPulse);

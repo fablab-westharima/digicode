@@ -44,6 +44,8 @@ export function AIProviderSettingsDialog({ open, onOpenChange }: Props) {
   // ダイアログ開示時に store の最新値で local state を同期
   useEffect(() => {
     if (open) {
+      // Props→State sync: store 最新値をローカルフォームに引き写す（意図的）
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocalProvider(provider);
       setLocalApiKey(apiKey);
       setLocalEndpoint(customEndpoint ?? '');

@@ -44,6 +44,8 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
   // 一覧取得
   useEffect(() => {
     if (!open) return;
+    // Props→State sync: open 時のビュー・選択・ロード状態リセット + 一覧 fetch（意図的）
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setView('list');
     setSelectedId(null);
     setDetail(null);
@@ -62,18 +64,20 @@ export function GradedListDialog({ open, onOpenChange }: Props) {
       })
       .catch((err) => setError(err instanceof Error ? err.message : t('submissions.graded.fetchError')))
       .finally(() => setLoading(false));
-  }, [open]);
+  }, [open, t]);
 
   // 詳細表示時: submission 詳細を取得（blocklyXml 含む）
   useEffect(() => {
     if (view !== 'detail' || selectedId === null) return;
+    // Props→State sync: detail 表示切替時のロード開始（意図的）
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDetailLoading(true);
     setError(null);
     getSubmission(selectedId)
       .then(setDetail)
       .catch((err) => setError(err instanceof Error ? err.message : t('submissions.graded.detailError')))
       .finally(() => setDetailLoading(false));
-  }, [view, selectedId]);
+  }, [view, selectedId, t]);
 
   // 答案表示時: Blockly に XML ロード + 読み取り専用 + 中央配置
   useEffect(() => {

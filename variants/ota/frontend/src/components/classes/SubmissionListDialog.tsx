@@ -45,7 +45,7 @@ export function SubmissionListDialog({ open, onOpenChange, onSelect }: Props) {
       .then(setSubmissions)
       .catch((err) => setError(err instanceof Error ? err.message : t('submissions.progress.fetchError')))
       .finally(() => setLoading(false));
-  }, [open]);
+  }, [open, t]);
 
   const handleSelect = (sub: SubmissionInfo) => {
     onSelect(sub);

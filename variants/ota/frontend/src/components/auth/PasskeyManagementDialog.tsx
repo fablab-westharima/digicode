@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Dialog,
@@ -53,7 +53,8 @@ export function PasskeyManagementDialog({
 
   const supported = isPasskeySupported();
 
-  const loadPasskeys = async () => {
+  // loadPasskeys は useEffect dep から正しく参照するため useCallback で memoize
+  const loadPasskeys = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
@@ -85,13 +86,13 @@ export function PasskeyManagementDialog({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     if (open && supported) {
       loadPasskeys();
     }
-  }, [open, supported]);
+  }, [open, supported, loadPasskeys]);
 
   const handleDelete = async (id: number) => {
     setIsDeleting(true);

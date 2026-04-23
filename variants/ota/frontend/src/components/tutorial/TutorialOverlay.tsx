@@ -29,6 +29,8 @@ export function TutorialOverlay() {
   // ハイライト対象を探す
   useEffect(() => {
     if (!step?.highlight) {
+      // DOM query 結果を state に反映する典型パターン（render 内では不可能）
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHighlightRect(null);
       return;
     }

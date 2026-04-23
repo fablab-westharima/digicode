@@ -159,7 +159,7 @@ export function ClassDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [classId]);
+  }, [classId, t]);
 
   useEffect(() => {
     if (user?.plan === 'enterprise') {

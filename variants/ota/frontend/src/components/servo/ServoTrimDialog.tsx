@@ -169,24 +169,8 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
     setTrims(newServos.map(() => 0));
   };
 
-  // サーボ数変更時にトリム配列を調整
-  useEffect(() => {
-    setTrims(prev => {
-      const newTrims = [...prev];
-      while (newTrims.length < servos.length) {
-        newTrims.push(0);
-      }
-      return newTrims.slice(0, servos.length);
-    });
-  }, [servos.length]);
-
-  // ダイアログ開いた時にデバイスからトリム値を読み込み
-  useEffect(() => {
-    if (open && isConnected) {
-      loadTrimsFromDevice();
-    }
-  }, [open]);
-
+  // isConnected / loadTrimsFromDevice は下の useEffect から dep 参照するため
+  // 宣言順序を useEffect より前に配置（TDZ 回避）
   const isConnected = wifiStatus === 'connected' && host;
 
   const loadTrimsFromDevice = useCallback(async () => {
@@ -209,6 +193,24 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
       setIsLoading(false);
     }
   }, [isConnected, getDeviceUrl, servos, t]);
+
+  // サーボ数変更時にトリム配列を調整
+  useEffect(() => {
+    setTrims(prev => {
+      const newTrims = [...prev];
+      while (newTrims.length < servos.length) {
+        newTrims.push(0);
+      }
+      return newTrims.slice(0, servos.length);
+    });
+  }, [servos.length]);
+
+  // ダイアログ開いた時にデバイスからトリム値を読み込み
+  useEffect(() => {
+    if (open && isConnected) {
+      loadTrimsFromDevice();
+    }
+  }, [open, isConnected, loadTrimsFromDevice]);
 
   const handleTrimChange = async (index: number, value: number) => {
     const newTrims = [...trims];

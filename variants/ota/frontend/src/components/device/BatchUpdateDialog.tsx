@@ -85,12 +85,14 @@ export function BatchUpdateDialog({
     setResults(updateResults);
     setIsUpdating(false);
     onComplete(updateResults);
-  }, [binData, devices, onComplete]);
+  }, [binData, devices, onComplete, t]);
 
   // 更新開始
   useEffect(() => {
     if (open && binData && devices.length > 0 && !hasStartedRef.current) {
       hasStartedRef.current = true;
+      // hasStartedRef で 1 回だけ実行をガード。startBatchUpdate 内部で setState するが意図的。
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       startBatchUpdate();
     }
     if (!open) {

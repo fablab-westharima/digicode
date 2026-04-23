@@ -36,6 +36,8 @@ export function SaveProjectDialog({
   // ダイアログが開いた時に状態をリセット
   useEffect(() => {
     if (open) {
+      // Props→State sync: ダイアログ開示時のフォームリセット（意図的）
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTitle('');
       setDescription('');
       setError('');

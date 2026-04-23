@@ -60,7 +60,7 @@ export default function PlanPage() {
         setLoading(false);
       }
     })();
-  }, [searchParams, checkAuth]);
+  }, [searchParams, checkAuth, t]);
 
   const currentPlan = user?.plan || status?.planType || 'free';
   const isAdmin = !!user?.isAdmin;

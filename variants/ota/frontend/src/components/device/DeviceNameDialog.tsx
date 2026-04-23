@@ -129,7 +129,7 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
     setOriginalName(foundName);
     setIsLoading(false);
     setStatusMessage('');
-  }, []);
+  }, [t]);
 
   // USB接続→リセット→Ready待ち→デバイス名読み込み
   const handleConnect = async () => {
@@ -164,7 +164,7 @@ export function DeviceNameDialog({ open, onOpenChange }: DeviceNameDialogProps) 
     };
 
     initDevice();
-  }, [status, isDeviceReady, resetESP32, loadDeviceName]);
+  }, [status, isDeviceReady, resetESP32, loadDeviceName, t]);
 
   // デバイス名を保存して再起動
   const handleSave = async () => {

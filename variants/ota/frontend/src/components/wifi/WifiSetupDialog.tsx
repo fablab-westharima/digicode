@@ -123,7 +123,7 @@ export function WifiSetupDialog({ open, onOpenChange }: WifiSetupDialogProps) {
       setWifiMessage(t('device.nameDialog.status.resetting', { defaultValue: 'ESP32をリセット中...' }));
       resetESP32();
     }
-  }, [status, open, resetESP32]);
+  }, [status, open, resetESP32, t]);
 
   // ESP32起動完了を検知（"System Ready!" を監視）
   useEffect(() => {

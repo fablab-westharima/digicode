@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false);
+  // 初期値は useState 初期化子で計算（mount 時の setState を回避）
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(query);
+    // query が動的変化したときの同期: matchMedia は外部ストアなので effect 内 setState が必要
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMatches(mediaQuery.matches);
 
     const handler = (event: MediaQueryListEvent) => {
