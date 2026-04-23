@@ -2,16 +2,7 @@ import { useState, useEffect } from 'react';
 import * as Blockly from 'blockly';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
-// カテゴリの型定義
-interface ToolboxCategory {
-  name: string;
-  colour: string;
-  icon?: string;
-  blocks?: string[];
-  categories?: ToolboxCategory[];
-  custom?: string;
-}
+import type { ToolboxCategory } from './toolboxParser';
 
 interface CustomToolboxProps {
   workspace: Blockly.WorkspaceSvg | null;

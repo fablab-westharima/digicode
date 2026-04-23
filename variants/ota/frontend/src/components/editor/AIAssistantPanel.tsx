@@ -198,10 +198,11 @@ export function AIAssistantPanel({
   if (!shouldShowFull) {
     return (
       <div className="flex justify-center py-2">
-        <Bot
-          className={`w-4 h-4 ${!isAvailable && !isHelpBotAvailable ? 'text-[#5C6370] opacity-50' : 'text-[#8B949E]'}`}
-          title={!isAvailable && !isHelpBotAvailable ? t('ai.requiresLitePlus') : t('ai.label')}
-        />
+        <span title={!isAvailable && !isHelpBotAvailable ? t('ai.requiresLitePlus') : t('ai.label')}>
+          <Bot
+            className={`w-4 h-4 ${!isAvailable && !isHelpBotAvailable ? 'text-[#5C6370] opacity-50' : 'text-[#8B949E]'}`}
+          />
+        </span>
       </div>
     );
   }
