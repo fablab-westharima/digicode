@@ -148,8 +148,9 @@ function extractSourceShapes(): Map<string, SourceShape> {
       const fields = new Set<string>();
       let fm: RegExpExecArray | null;
       const numRe       = /new Blockly\.FieldNumber\([^)]*\),\s*'(\w+)'/g;
-      const ddInlineRe  = /new Blockly\.FieldDropdown\(\[[\s\S]*?\]\)(?:\s*as\s*\w+)?,\s*'(\w+)'/g;
-      const ddIdentRe   = /new Blockly\.FieldDropdown\([a-zA-Z_]\w*\)(?:\s*as\s*\w+)?,\s*'(\w+)'/g;
+      // Regex allows compound type assertions (` as any`, ` as unknown as Blockly.Field`)
+      const ddInlineRe  = /new Blockly\.FieldDropdown\(\[[\s\S]*?\]\)(?:\s+as\s+[^,]+?)?,\s*'(\w+)'/g;
+      const ddIdentRe   = /new Blockly\.FieldDropdown\([a-zA-Z_]\w*\)(?:\s+as\s+[^,]+?)?,\s*'(\w+)'/g;
       const textRe      = /new Blockly\.FieldTextInput\(['"][^'"]*['"]\),\s*'(\w+)'/g;
       const cbRe        = /new Blockly\.FieldCheckbox\([^)]*\),\s*'(\w+)'/g;
       const angRe       = /new Blockly\.FieldAngle\([^)]*\),\s*'(\w+)'/g;

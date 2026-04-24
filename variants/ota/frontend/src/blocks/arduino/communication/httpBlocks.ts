@@ -19,13 +19,13 @@ const generator = javascriptGenerator as any;
 Blockly.Blocks['http_get'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🌐 ' + ((Blockly.Msg as any).BLOCKS_HTTP_GET || 'HTTP GET'));
+        .appendField('🌐 ' + (Blockly.Msg.BLOCKS_HTTP_GET || 'HTTP GET'));
     this.appendValueInput('URL')
         .setCheck('String')
         .appendField('URL');
     this.setOutput(true, 'String');
     this.setColour('#2196F3');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HTTP_GETTOOLTIP || 'Send a GET request to the specified URL and get the response');
+    this.setTooltip(Blockly.Msg.BLOCKS_HTTP_GETTOOLTIP || 'Send a GET request to the specified URL and get the response');
   }
 };
 
@@ -60,19 +60,19 @@ String httpGet(String url) {
 Blockly.Blocks['http_get_with_headers'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🌐 ' + ((Blockly.Msg as any).BLOCKS_HTTP_GETWITHHEADERS || 'HTTP GET with Headers'));
+        .appendField('🌐 ' + (Blockly.Msg.BLOCKS_HTTP_GETWITHHEADERS || 'HTTP GET with Headers'));
     this.appendValueInput('URL')
         .setCheck('String')
         .appendField('URL');
     this.appendValueInput('HEADER_NAME')
         .setCheck('String')
-        .appendField((Blockly.Msg as any).BLOCKS_HTTP_HEADERNAME || 'Header Name');
+        .appendField(Blockly.Msg.BLOCKS_HTTP_HEADERNAME || 'Header Name');
     this.appendValueInput('HEADER_VALUE')
         .setCheck('String')
-        .appendField((Blockly.Msg as any).BLOCKS_HTTP_HEADERVALUE || 'Header Value');
+        .appendField(Blockly.Msg.BLOCKS_HTTP_HEADERVALUE || 'Header Value');
     this.setOutput(true, 'String');
     this.setColour('#2196F3');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HTTP_GETWITHHEADERSTOOLTIP || 'Send GET request with custom header (for API Key auth, etc.)');
+    this.setTooltip(Blockly.Msg.BLOCKS_HTTP_GETWITHHEADERSTOOLTIP || 'Send GET request with custom header (for API Key auth, etc.)');
   }
 };
 
@@ -112,13 +112,13 @@ String httpGetWithHeader(String url, String headerName, String headerValue) {
 Blockly.Blocks['http_post'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📤 ' + ((Blockly.Msg as any).BLOCKS_HTTP_POST || 'HTTP POST'));
+        .appendField('📤 ' + (Blockly.Msg.BLOCKS_HTTP_POST || 'HTTP POST'));
     this.appendValueInput('URL')
         .setCheck('String')
         .appendField('URL');
     this.appendValueInput('BODY')
         .setCheck('String')
-        .appendField((Blockly.Msg as any).BLOCKS_HTTP_BODY || 'Body');
+        .appendField(Blockly.Msg.BLOCKS_HTTP_BODY || 'Body');
     this.appendDummyInput()
         .appendField('Content-Type')
         .appendField(new Blockly.FieldDropdown([
@@ -128,7 +128,7 @@ Blockly.Blocks['http_post'] = {
         ]), 'CONTENT_TYPE');
     this.setOutput(true, 'String');
     this.setColour('#4CAF50');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HTTP_POSTTOOLTIP || 'Send POST request to the specified URL and get response');
+    this.setTooltip(Blockly.Msg.BLOCKS_HTTP_POSTTOOLTIP || 'Send POST request to the specified URL and get response');
   }
 };
 
@@ -166,7 +166,7 @@ String httpPost(String url, String body, String contentType) {
 Blockly.Blocks['http_post_json'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📤 ' + ((Blockly.Msg as any).BLOCKS_HTTP_POSTJSON || 'HTTP POST JSON'));
+        .appendField('📤 ' + (Blockly.Msg.BLOCKS_HTTP_POSTJSON || 'HTTP POST JSON'));
     this.appendValueInput('URL')
         .setCheck('String')
         .appendField('URL');
@@ -175,7 +175,7 @@ Blockly.Blocks['http_post_json'] = {
         .appendField('JSON');
     this.setOutput(true, 'String');
     this.setColour('#4CAF50');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HTTP_POSTJSONTOOLTIP || 'POST JSON data');
+    this.setTooltip(Blockly.Msg.BLOCKS_HTTP_POSTJSONTOOLTIP || 'POST JSON data');
   }
 };
 
@@ -214,16 +214,16 @@ String httpPost(String url, String body, String contentType) {
 Blockly.Blocks['http_put'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📝 ' + ((Blockly.Msg as any).BLOCKS_HTTP_PUT || 'HTTP PUT'));
+        .appendField('📝 ' + (Blockly.Msg.BLOCKS_HTTP_PUT || 'HTTP PUT'));
     this.appendValueInput('URL')
         .setCheck('String')
         .appendField('URL');
     this.appendValueInput('BODY')
         .setCheck('String')
-        .appendField((Blockly.Msg as any).BLOCKS_HTTP_BODY || 'Body');
+        .appendField(Blockly.Msg.BLOCKS_HTTP_BODY || 'Body');
     this.setOutput(true, 'String');
     this.setColour('#FF9800');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HTTP_PUTTOOLTIP || 'Send PUT request to the specified URL');
+    this.setTooltip(Blockly.Msg.BLOCKS_HTTP_PUTTOOLTIP || 'Send PUT request to the specified URL');
   }
 };
 
@@ -260,13 +260,13 @@ String httpPut(String url, String body) {
 Blockly.Blocks['http_delete'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🗑️ ' + ((Blockly.Msg as any).BLOCKS_HTTP_DELETE || 'HTTP DELETE'));
+        .appendField('🗑️ ' + (Blockly.Msg.BLOCKS_HTTP_DELETE || 'HTTP DELETE'));
     this.appendValueInput('URL')
         .setCheck('String')
         .appendField('URL');
     this.setOutput(true, 'Number');
     this.setColour('#f44336');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HTTP_DELETETOOLTIP || 'Send DELETE request to the specified URL (returns HTTP status code)');
+    this.setTooltip(Blockly.Msg.BLOCKS_HTTP_DELETETOOLTIP || 'Send DELETE request to the specified URL (returns HTTP status code)');
   }
 };
 
@@ -296,10 +296,10 @@ int httpDelete(String url) {
 Blockly.Blocks['http_last_status'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📊 ' + ((Blockly.Msg as any).BLOCKS_HTTP_LASTSTATUS || 'HTTP Last Status'));
+        .appendField('📊 ' + (Blockly.Msg.BLOCKS_HTTP_LASTSTATUS || 'HTTP Last Status'));
     this.setOutput(true, 'Number');
     this.setColour('#607D8B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HTTP_LASTSTATUSTOOLTIP || 'Get the status code of the last HTTP request');
+    this.setTooltip(Blockly.Msg.BLOCKS_HTTP_LASTSTATUSTOOLTIP || 'Get the status code of the last HTTP request');
   }
 };
 
@@ -315,12 +315,12 @@ Blockly.Blocks['http_is_success'] = {
   init: function() {
     this.appendValueInput('CODE')
         .setCheck('Number')
-        .appendField((Blockly.Msg as any).BLOCKS_HTTP_STATUS || 'HTTP Status');
+        .appendField(Blockly.Msg.BLOCKS_HTTP_STATUS || 'HTTP Status');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_HTTP_ISSUCCESS || 'is Success (2xx)');
+        .appendField(Blockly.Msg.BLOCKS_HTTP_ISSUCCESS || 'is Success (2xx)');
     this.setOutput(true, 'Boolean');
     this.setColour('#607D8B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HTTP_ISSUCCESSTOOLTIP || 'Check if HTTP status code is 2xx (success)');
+    this.setTooltip(Blockly.Msg.BLOCKS_HTTP_ISSUCCESSTOOLTIP || 'Check if HTTP status code is 2xx (success)');
   }
 };
 
@@ -338,10 +338,10 @@ Blockly.Blocks['http_url_encode'] = {
   init: function() {
     this.appendValueInput('TEXT')
         .setCheck('String')
-        .appendField('🔗 ' + ((Blockly.Msg as any).BLOCKS_HTTP_URLENCODE || 'URL Encode'));
+        .appendField('🔗 ' + (Blockly.Msg.BLOCKS_HTTP_URLENCODE || 'URL Encode'));
     this.setOutput(true, 'String');
     this.setColour('#607D8B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HTTP_URLENCODETOOLTIP || 'URL encode a string');
+    this.setTooltip(Blockly.Msg.BLOCKS_HTTP_URLENCODETOOLTIP || 'URL encode a string');
   }
 };
 
@@ -381,16 +381,16 @@ Blockly.Blocks['http_build_url'] = {
   init: function() {
     this.appendValueInput('BASE_URL')
         .setCheck('String')
-        .appendField('🔗 ' + ((Blockly.Msg as any).BLOCKS_HTTP_BUILDURL || 'Build URL') + ' ' + ((Blockly.Msg as any).BLOCKS_HTTP_BASEURL || 'Base'));
+        .appendField('🔗 ' + (Blockly.Msg.BLOCKS_HTTP_BUILDURL || 'Build URL') + ' ' + (Blockly.Msg.BLOCKS_HTTP_BASEURL || 'Base'));
     this.appendValueInput('PARAM1_NAME')
         .setCheck('String')
-        .appendField((Blockly.Msg as any).BLOCKS_HTTP_PARAM1NAME || 'Param1 Name');
+        .appendField(Blockly.Msg.BLOCKS_HTTP_PARAM1NAME || 'Param1 Name');
     this.appendValueInput('PARAM1_VALUE')
         .setCheck(['String', 'Number'])
-        .appendField((Blockly.Msg as any).BLOCKS_HTTP_VALUE || 'Value');
+        .appendField(Blockly.Msg.BLOCKS_HTTP_VALUE || 'Value');
     this.setOutput(true, 'String');
     this.setColour('#607D8B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HTTP_BUILDURLTOOLTIP || 'Add query parameters to base URL');
+    this.setTooltip(Blockly.Msg.BLOCKS_HTTP_BUILDURLTOOLTIP || 'Add query parameters to base URL');
   }
 };
 

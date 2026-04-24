@@ -20,26 +20,26 @@ const generator = javascriptGenerator as any;
 Blockly.Blocks['mqtt_setup'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🏠 ' + ((Blockly.Msg as any).BLOCKS_MQTT_SETUP || 'MQTT Setup'));
+        .appendField('🏠 ' + (Blockly.Msg.BLOCKS_MQTT_SETUP || 'MQTT Setup'));
     this.appendDummyInput()
         .appendField('WiFi SSID')
         .appendField(new Blockly.FieldTextInput('your_ssid'), 'SSID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_WIFI_PASSWORD || 'WiFi Password')
+        .appendField(Blockly.Msg.BLOCKS_WIFI_PASSWORD || 'WiFi Password')
         .appendField(new Blockly.FieldTextInput('your_password'), 'WIFI_PASS');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_BROKER || 'MQTT Broker')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_BROKER || 'MQTT Broker')
         .appendField(new Blockly.FieldTextInput('192.168.1.100'), 'BROKER');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_PORT || 'Port')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_PORT || 'Port')
         .appendField(new Blockly.FieldNumber(1883, 1, 65535), 'PORT');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_CLIENTID || 'Client ID')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_CLIENTID || 'Client ID')
         .appendField(new Blockly.FieldTextInput('esp32_client'), 'CLIENT_ID');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_SETUPTOOLTIP || 'Configure WiFi and MQTT broker connection');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_SETUPTOOLTIP || 'Configure WiFi and MQTT broker connection');
   }
 };
 
@@ -95,18 +95,18 @@ void mqttWifiConnect() {
 Blockly.Blocks['mqtt_connect'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔗 ' + ((Blockly.Msg as any).BLOCKS_MQTT_CONNECT || 'Connect to MQTT Broker'));
+        .appendField('🔗 ' + (Blockly.Msg.BLOCKS_MQTT_CONNECT || 'Connect to MQTT Broker'));
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_USERNAME || 'Username')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_USERNAME || 'Username')
         .appendField(new Blockly.FieldTextInput(''), 'USERNAME')
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_EMPTYNOAUTH || '(empty for no auth)');
+        .appendField(Blockly.Msg.BLOCKS_MQTT_EMPTYNOAUTH || '(empty for no auth)');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_PASSWORD || 'Password')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_PASSWORD || 'Password')
         .appendField(new Blockly.FieldTextInput(''), 'PASSWORD');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_CONNECTTOOLTIP || 'Connect to MQTT broker (with/without auth)');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_CONNECTTOOLTIP || 'Connect to MQTT broker (with/without auth)');
   }
 };
 
@@ -165,16 +165,16 @@ Blockly.Blocks['mqtt_publish'] = {
   init: function() {
     this.appendValueInput('MESSAGE')
         .setCheck(['String', 'Number'])
-        .appendField('📤 ' + ((Blockly.Msg as any).BLOCKS_MQTT_PUBLISH || 'MQTT Publish') + ' ' + ((Blockly.Msg as any).BLOCKS_MQTT_TOPIC || 'Topic'))
+        .appendField('📤 ' + (Blockly.Msg.BLOCKS_MQTT_PUBLISH || 'MQTT Publish') + ' ' + (Blockly.Msg.BLOCKS_MQTT_TOPIC || 'Topic'))
         .appendField(new Blockly.FieldTextInput('home/esp32/state'), 'TOPIC')
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_MESSAGE || 'Message');
+        .appendField(Blockly.Msg.BLOCKS_MQTT_MESSAGE || 'Message');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_RETAIN || 'Retain')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_RETAIN || 'Retain')
         .appendField(new Blockly.FieldCheckbox('FALSE'), 'RETAIN');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#4CAF50');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_PUBLISHTOOLTIP || 'Send message to specified topic');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_PUBLISHTOOLTIP || 'Send message to specified topic');
   }
 };
 
@@ -205,12 +205,12 @@ String mqttToString(String val) { return val; }`;
 Blockly.Blocks['mqtt_subscribe'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📥 ' + ((Blockly.Msg as any).BLOCKS_MQTT_SUBSCRIBE || 'MQTT Subscribe') + ' ' + ((Blockly.Msg as any).BLOCKS_MQTT_TOPIC || 'Topic'))
+        .appendField('📥 ' + (Blockly.Msg.BLOCKS_MQTT_SUBSCRIBE || 'MQTT Subscribe') + ' ' + (Blockly.Msg.BLOCKS_MQTT_TOPIC || 'Topic'))
         .appendField(new Blockly.FieldTextInput('home/esp32/command'), 'TOPIC');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FF9800');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_SUBSCRIBETOOLTIP || 'Subscribe to topic (wildcards # and + supported)');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_SUBSCRIBETOOLTIP || 'Subscribe to topic (wildcards # and + supported)');
   }
 };
 
@@ -227,12 +227,12 @@ javascriptGenerator.forBlock['mqtt_subscribe'] = function(block: Blockly.Block) 
 Blockly.Blocks['mqtt_on_message'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📨 ' + ((Blockly.Msg as any).BLOCKS_MQTT_ONMESSAGE || 'MQTT On Message Received'));
+        .appendField('📨 ' + (Blockly.Msg.BLOCKS_MQTT_ONMESSAGE || 'MQTT On Message Received'));
     this.appendStatementInput('CALLBACK')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_HANDLER || 'Handler');
+        .appendField(Blockly.Msg.BLOCKS_MQTT_HANDLER || 'Handler');
     this.setColour('#E91E63');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_ONMESSAGETOOLTIP || 'Set handler when MQTT message is received. mqtt_topic and mqtt_message variables are available.');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_ONMESSAGETOOLTIP || 'Set handler when MQTT message is received. mqtt_topic and mqtt_message variables are available.');
   }
 };
 
@@ -269,11 +269,11 @@ ${statements}}`;
 Blockly.Blocks['mqtt_loop'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔄 ' + ((Blockly.Msg as any).BLOCKS_MQTT_LOOP || 'MQTT Loop'));
+        .appendField('🔄 ' + (Blockly.Msg.BLOCKS_MQTT_LOOP || 'MQTT Loop'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_LOOPTOOLTIP || 'Process MQTT communication. Call in loop().');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_LOOPTOOLTIP || 'Process MQTT communication. Call in loop().');
   }
 };
 
@@ -290,10 +290,10 @@ javascriptGenerator.forBlock['mqtt_loop'] = function() {
 Blockly.Blocks['mqtt_topic_value'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_RECEIVEDTOPIC || 'Received Topic');
+        .appendField(Blockly.Msg.BLOCKS_MQTT_RECEIVEDTOPIC || 'Received Topic');
     this.setOutput(true, 'String');
     this.setColour('#E91E63');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_RECEIVEDTOPICTOOLTIP || 'Get the topic name of received message');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_RECEIVEDTOPICTOOLTIP || 'Get the topic name of received message');
   }
 };
 
@@ -307,10 +307,10 @@ javascriptGenerator.forBlock['mqtt_topic_value'] = function() {
 Blockly.Blocks['mqtt_message_value'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_RECEIVEDMESSAGE || 'Received Message');
+        .appendField(Blockly.Msg.BLOCKS_MQTT_RECEIVEDMESSAGE || 'Received Message');
     this.setOutput(true, 'String');
     this.setColour('#E91E63');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_RECEIVEDMESSAGETOOLTIP || 'Get the content of received message');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_RECEIVEDMESSAGETOOLTIP || 'Get the content of received message');
   }
 };
 
@@ -324,10 +324,10 @@ javascriptGenerator.forBlock['mqtt_message_value'] = function() {
 Blockly.Blocks['mqtt_is_connected'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_ISCONNECTED || 'MQTT is Connected');
+        .appendField(Blockly.Msg.BLOCKS_MQTT_ISCONNECTED || 'MQTT is Connected');
     this.setOutput(true, 'Boolean');
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_ISCONNECTEDTOOLTIP || 'Returns whether connected to MQTT broker');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_ISCONNECTEDTOOLTIP || 'Returns whether connected to MQTT broker');
   }
 };
 
@@ -341,10 +341,10 @@ javascriptGenerator.forBlock['mqtt_is_connected'] = function() {
 Blockly.Blocks['wifi_is_connected'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_WIFI_ISCONNECTED || 'WiFi is Connected');
+        .appendField(Blockly.Msg.BLOCKS_WIFI_ISCONNECTED || 'WiFi is Connected');
     this.setOutput(true, 'Boolean');
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_WIFI_ISCONNECTEDTOOLTIP || 'Returns whether connected to WiFi');
+    this.setTooltip(Blockly.Msg.BLOCKS_WIFI_ISCONNECTEDTOOLTIP || 'Returns whether connected to WiFi');
   }
 };
 
@@ -361,11 +361,11 @@ javascriptGenerator.forBlock['wifi_is_connected'] = function() {
 Blockly.Blocks['mqtt_disconnect'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔌 ' + ((Blockly.Msg as any).BLOCKS_MQTT_DISCONNECT || 'MQTT Disconnect'));
+        .appendField('🔌 ' + (Blockly.Msg.BLOCKS_MQTT_DISCONNECT || 'MQTT Disconnect'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#9E9E9E');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_DISCONNECTTOOLTIP || 'Disconnect from MQTT broker');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_DISCONNECTTOOLTIP || 'Disconnect from MQTT broker');
   }
 };
 
@@ -380,12 +380,12 @@ javascriptGenerator.forBlock['mqtt_disconnect'] = function() {
 Blockly.Blocks['mqtt_unsubscribe'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🚫 ' + ((Blockly.Msg as any).BLOCKS_MQTT_UNSUBSCRIBE || 'MQTT Unsubscribe') + ' ' + ((Blockly.Msg as any).BLOCKS_MQTT_TOPIC || 'Topic'))
+        .appendField('🚫 ' + (Blockly.Msg.BLOCKS_MQTT_UNSUBSCRIBE || 'MQTT Unsubscribe') + ' ' + (Blockly.Msg.BLOCKS_MQTT_TOPIC || 'Topic'))
         .appendField(new Blockly.FieldTextInput('home/esp32/command'), 'TOPIC');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FF9800');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_UNSUBSCRIBETOOLTIP || 'Unsubscribe from topic');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_UNSUBSCRIBETOOLTIP || 'Unsubscribe from topic');
   }
 };
 
@@ -401,13 +401,13 @@ javascriptGenerator.forBlock['mqtt_unsubscribe'] = function(block: Blockly.Block
 Blockly.Blocks['mqtt_set_buffer_size'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📦 ' + ((Blockly.Msg as any).BLOCKS_MQTT_BUFFERSIZE || 'MQTT Buffer Size'))
+        .appendField('📦 ' + (Blockly.Msg.BLOCKS_MQTT_BUFFERSIZE || 'MQTT Buffer Size'))
         .appendField(new Blockly.FieldNumber(256, 128, 16384), 'SIZE')
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_BYTES || 'bytes');
+        .appendField(Blockly.Msg.BLOCKS_MQTT_BYTES || 'bytes');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_BUFFERSIZETOOLTIP || 'Set maximum MQTT message size (default 256 bytes)');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_BUFFERSIZETOOLTIP || 'Set maximum MQTT message size (default 256 bytes)');
   }
 };
 
@@ -423,13 +423,13 @@ javascriptGenerator.forBlock['mqtt_set_buffer_size'] = function(block: Blockly.B
 Blockly.Blocks['mqtt_set_keepalive'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⏱️ ' + ((Blockly.Msg as any).BLOCKS_MQTT_KEEPALIVE || 'MQTT Keep Alive'))
+        .appendField('⏱️ ' + (Blockly.Msg.BLOCKS_MQTT_KEEPALIVE || 'MQTT Keep Alive'))
         .appendField(new Blockly.FieldNumber(15, 5, 300), 'SECONDS')
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_SECONDS || 'seconds');
+        .appendField(Blockly.Msg.BLOCKS_MQTT_SECONDS || 'seconds');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_KEEPALIVETOOLTIP || 'Set MQTT keep alive interval (default 15 seconds)');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_KEEPALIVETOOLTIP || 'Set MQTT keep alive interval (default 15 seconds)');
   }
 };
 
@@ -445,27 +445,27 @@ javascriptGenerator.forBlock['mqtt_set_keepalive'] = function(block: Blockly.Blo
 Blockly.Blocks['mqtt_last_will'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💀 ' + ((Blockly.Msg as any).BLOCKS_MQTT_LASTWILL || 'MQTT Last Will'));
+        .appendField('💀 ' + (Blockly.Msg.BLOCKS_MQTT_LASTWILL || 'MQTT Last Will'));
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_TOPIC || 'Topic')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_TOPIC || 'Topic')
         .appendField(new Blockly.FieldTextInput('home/esp32/status'), 'TOPIC');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_MESSAGE || 'Message')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_MESSAGE || 'Message')
         .appendField(new Blockly.FieldTextInput('offline'), 'MESSAGE');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_RETAIN || 'Retain')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_RETAIN || 'Retain')
         .appendField(new Blockly.FieldCheckbox('TRUE'), 'RETAIN');
     this.appendDummyInput()
         .appendField('QoS')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_MQTT_QOS0 || '0 (at most once)', '0'],
-          [(Blockly.Msg as any).BLOCKS_MQTT_QOS1 || '1 (at least once)', '1'],
-          [(Blockly.Msg as any).BLOCKS_MQTT_QOS2 || '2 (exactly once)', '2']
+          [Blockly.Msg.BLOCKS_MQTT_QOS0 || '0 (at most once)', '0'],
+          [Blockly.Msg.BLOCKS_MQTT_QOS1 || '1 (at least once)', '1'],
+          [Blockly.Msg.BLOCKS_MQTT_QOS2 || '2 (exactly once)', '2']
         ]), 'QOS');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#795548');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_LASTWILLTOOLTIP || 'Set message broker sends when client disconnects unexpectedly');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_LASTWILLTOOLTIP || 'Set message broker sends when client disconnects unexpectedly');
   }
 };
 
@@ -491,17 +491,17 @@ javascriptGenerator.forBlock['mqtt_last_will'] = function(block: Blockly.Block) 
 Blockly.Blocks['mqtt_connect_with_lwt'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔗 ' + ((Blockly.Msg as any).BLOCKS_MQTT_CONNECTWITHLWT || 'Connect to MQTT with Last Will'));
+        .appendField('🔗 ' + (Blockly.Msg.BLOCKS_MQTT_CONNECTWITHLWT || 'Connect to MQTT with Last Will'));
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_USERNAME || 'Username')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_USERNAME || 'Username')
         .appendField(new Blockly.FieldTextInput(''), 'USERNAME');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_PASSWORD || 'Password')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_PASSWORD || 'Password')
         .appendField(new Blockly.FieldTextInput(''), 'PASSWORD');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_CONNECTWITHLWTTOOLTIP || 'Connect to MQTT broker with Last Will settings');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_CONNECTWITHLWTTOOLTIP || 'Connect to MQTT broker with Last Will settings');
   }
 };
 
@@ -561,10 +561,10 @@ void mqttReconnectLWT() {
 Blockly.Blocks['mqtt_get_state'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_GETSTATE || 'MQTT State Code');
+        .appendField(Blockly.Msg.BLOCKS_MQTT_GETSTATE || 'MQTT State Code');
     this.setOutput(true, 'Number');
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_GETSTATETOOLTIP || 'Returns MQTT state code (-4:timeout, -3:disconnected, -2:failed, -1:disconnected, 0:connected, 1-4:error)');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_GETSTATETOOLTIP || 'Returns MQTT state code (-4:timeout, -3:disconnected, -2:failed, -1:disconnected, 0:connected, 1-4:error)');
   }
 };
 
@@ -579,22 +579,22 @@ Blockly.Blocks['mqtt_publish_qos'] = {
   init: function() {
     this.appendValueInput('MESSAGE')
         .setCheck(['String', 'Number'])
-        .appendField('📤 ' + ((Blockly.Msg as any).BLOCKS_MQTT_PUBLISHQOS || 'MQTT Publish (QoS)'));
+        .appendField('📤 ' + (Blockly.Msg.BLOCKS_MQTT_PUBLISHQOS || 'MQTT Publish (QoS)'));
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_TOPIC || 'Topic')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_TOPIC || 'Topic')
         .appendField(new Blockly.FieldTextInput('home/esp32/state'), 'TOPIC');
     this.appendDummyInput()
         .appendField('QoS')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_MQTT_QOS0 || '0 (at most once)', '0'],
-          [(Blockly.Msg as any).BLOCKS_MQTT_QOS1 || '1 (at least once)', '1']
+          [Blockly.Msg.BLOCKS_MQTT_QOS0 || '0 (at most once)', '0'],
+          [Blockly.Msg.BLOCKS_MQTT_QOS1 || '1 (at least once)', '1']
         ]), 'QOS')
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_RETAIN || 'Retain')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_RETAIN || 'Retain')
         .appendField(new Blockly.FieldCheckbox('FALSE'), 'RETAIN');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#4CAF50');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MQTT_PUBLISHQOSTOOLTIP || 'Send message with specified QoS level');
+    this.setTooltip(Blockly.Msg.BLOCKS_MQTT_PUBLISHQOSTOOLTIP || 'Send message with specified QoS level');
   }
 };
 
@@ -637,11 +637,11 @@ String mqttToString(String val) { return val; }`;
 Blockly.Blocks['wifi_reconnect'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_WIFI_RECONNECT || 'WiFi Reconnect'));
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_WIFI_RECONNECT || 'WiFi Reconnect'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_WIFI_RECONNECTTOOLTIP || 'Reconnect to WiFi if disconnected');
+    this.setTooltip(Blockly.Msg.BLOCKS_WIFI_RECONNECTTOOLTIP || 'Reconnect to WiFi if disconnected');
   }
 };
 
@@ -659,10 +659,10 @@ javascriptGenerator.forBlock['wifi_reconnect'] = function() {
 Blockly.Blocks['wifi_get_ip'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📍 ' + ((Blockly.Msg as any).BLOCKS_WIFI_GETIP || 'WiFi IP Address'));
+        .appendField('📍 ' + (Blockly.Msg.BLOCKS_WIFI_GETIP || 'WiFi IP Address'));
     this.setOutput(true, 'String');
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_WIFI_GETIPTOOLTIP || 'Get current IP address as string');
+    this.setTooltip(Blockly.Msg.BLOCKS_WIFI_GETIPTOOLTIP || 'Get current IP address as string');
   }
 };
 
@@ -677,10 +677,10 @@ javascriptGenerator.forBlock['wifi_get_ip'] = function() {
 Blockly.Blocks['wifi_get_rssi'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📊 ' + ((Blockly.Msg as any).BLOCKS_WIFI_GETRSSI || 'WiFi Signal Strength (RSSI)'));
+        .appendField('📊 ' + (Blockly.Msg.BLOCKS_WIFI_GETRSSI || 'WiFi Signal Strength (RSSI)'));
     this.setOutput(true, 'Number');
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_WIFI_GETRSSITOOLTIP || 'Get WiFi signal strength in dBm (-30:very strong ~ -90:very weak)');
+    this.setTooltip(Blockly.Msg.BLOCKS_WIFI_GETRSSITOOLTIP || 'Get WiFi signal strength in dBm (-30:very strong ~ -90:very weak)');
   }
 };
 

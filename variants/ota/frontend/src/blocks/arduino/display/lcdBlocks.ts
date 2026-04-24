@@ -25,10 +25,10 @@ const LCD_INCLUDE = `
 Blockly.Blocks['lcd_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📟 ' + ((Blockly.Msg as any).BLOCKS_LCD_INIT || 'LCD Init'))
-        .appendField((Blockly.Msg as any).BLOCKS_LCD_COLS || 'cols')
+        .appendField('📟 ' + (Blockly.Msg.BLOCKS_LCD_INIT || 'LCD Init'))
+        .appendField(Blockly.Msg.BLOCKS_LCD_COLS || 'cols')
         .appendField(new Blockly.FieldNumber(16, 8, 40), 'COLS')
-        .appendField((Blockly.Msg as any).BLOCKS_LCD_ROWS || 'rows')
+        .appendField(Blockly.Msg.BLOCKS_LCD_ROWS || 'rows')
         .appendField(new Blockly.FieldNumber(2, 1, 4), 'ROWS');
     this.appendDummyInput()
         .appendField('I2C addr')
@@ -39,7 +39,7 @@ Blockly.Blocks['lcd_init'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(LCD_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_LCD_INITTOOLTIP || 'Initialize LCD display via I2C. Common addresses: 0x27 (PCF8574) or 0x3F (PCF8574A). Use I2C scanner to find your address.');
+    this.setTooltip(Blockly.Msg.BLOCKS_LCD_INITTOOLTIP || 'Initialize LCD display via I2C. Common addresses: 0x27 (PCF8574) or 0x3F (PCF8574A). Use I2C scanner to find your address.');
   }
 };
 
@@ -59,11 +59,11 @@ Blockly.Blocks['lcd_print'] = {
   init: function() {
     this.appendValueInput('TEXT')
         .setCheck(null)
-        .appendField('📟 ' + ((Blockly.Msg as any).BLOCKS_LCD_PRINT || 'LCD Print'));
+        .appendField('📟 ' + (Blockly.Msg.BLOCKS_LCD_PRINT || 'LCD Print'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(LCD_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_LCD_PRINTTOOLTIP || 'Print text at the current cursor position on the LCD.');
+    this.setTooltip(Blockly.Msg.BLOCKS_LCD_PRINTTOOLTIP || 'Print text at the current cursor position on the LCD.');
   }
 };
 
@@ -79,18 +79,18 @@ generator.forBlock['lcd_print'] = function(block: Blockly.Block) {
 Blockly.Blocks['lcd_print_at'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📟 ' + ((Blockly.Msg as any).BLOCKS_LCD_PRINTAT || 'LCD Print At'))
-        .appendField((Blockly.Msg as any).BLOCKS_LCD_COL || 'col')
+        .appendField('📟 ' + (Blockly.Msg.BLOCKS_LCD_PRINTAT || 'LCD Print At'))
+        .appendField(Blockly.Msg.BLOCKS_LCD_COL || 'col')
         .appendField(new Blockly.FieldNumber(0, 0, 39), 'X')
-        .appendField((Blockly.Msg as any).BLOCKS_LCD_ROW || 'row')
+        .appendField(Blockly.Msg.BLOCKS_LCD_ROW || 'row')
         .appendField(new Blockly.FieldNumber(0, 0, 3), 'Y');
     this.appendValueInput('TEXT')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_LCD_TEXT || 'text');
+        .appendField(Blockly.Msg.BLOCKS_LCD_TEXT || 'text');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(LCD_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_LCD_PRINTATTOOLTIP || 'Move cursor to (col, row) and print text. Col 0 = leftmost, Row 0 = top row.');
+    this.setTooltip(Blockly.Msg.BLOCKS_LCD_PRINTATTOOLTIP || 'Move cursor to (col, row) and print text. Col 0 = leftmost, Row 0 = top row.');
   }
 };
 
@@ -108,11 +108,11 @@ generator.forBlock['lcd_print_at'] = function(block: Blockly.Block) {
 Blockly.Blocks['lcd_clear'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📟 ' + ((Blockly.Msg as any).BLOCKS_LCD_CLEAR || 'LCD Clear'));
+        .appendField('📟 ' + (Blockly.Msg.BLOCKS_LCD_CLEAR || 'LCD Clear'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(LCD_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_LCD_CLEARTOOLTIP || 'Clear all text on the LCD and move cursor to home position (0, 0).');
+    this.setTooltip(Blockly.Msg.BLOCKS_LCD_CLEARTOOLTIP || 'Clear all text on the LCD and move cursor to home position (0, 0).');
   }
 };
 
@@ -127,12 +127,12 @@ generator.forBlock['lcd_clear'] = function() {
 Blockly.Blocks['lcd_backlight'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📟 ' + ((Blockly.Msg as any).BLOCKS_LCD_BACKLIGHT || 'LCD Backlight'))
+        .appendField('📟 ' + (Blockly.Msg.BLOCKS_LCD_BACKLIGHT || 'LCD Backlight'))
         .appendField(new Blockly.FieldCheckbox('TRUE'), 'ON');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(LCD_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_LCD_BACKLIGHTTOOLTIP || 'Turn the LCD backlight on or off.');
+    this.setTooltip(Blockly.Msg.BLOCKS_LCD_BACKLIGHTTOOLTIP || 'Turn the LCD backlight on or off.');
   }
 };
 

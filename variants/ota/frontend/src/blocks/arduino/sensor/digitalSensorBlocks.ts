@@ -18,15 +18,15 @@ const SENSOR_COLOR = '#f59e0b';  // Amber - デジタルセンサー
 Blockly.Blocks['button_sensor'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_BUTTON_LABEL || 'Button Pin')
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_BUTTON_LABEL || 'Button Pin')
       .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN')
       .appendField(new Blockly.FieldDropdown([
-        [(Blockly.Msg as any).BLOCKS_SENSOR_BUTTON_PRESSED || 'Pressed', 'pressed'],
-        [(Blockly.Msg as any).BLOCKS_SENSOR_BUTTON_RELEASED || 'Released', 'released']
-      ]) as any, 'STATE');
+        [Blockly.Msg.BLOCKS_SENSOR_BUTTON_PRESSED || 'Pressed', 'pressed'],
+        [Blockly.Msg.BLOCKS_SENSOR_BUTTON_RELEASED || 'Released', 'released']
+      ]) as unknown as Blockly.Field, 'STATE');
     this.setOutput(true, 'Boolean');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_BUTTON_TOOLTIP || 'Get button state');
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_BUTTON_TOOLTIP || 'Get button state');
   }
 };
 
@@ -49,12 +49,12 @@ javascriptGenerator.forBlock['button_sensor'] = function(block: Blockly.Block) {
 Blockly.Blocks['pir_sensor'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_PIR_LABEL || 'PIR Sensor Pin')
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_PIR_LABEL || 'PIR Sensor Pin')
       .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN')
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_PIR_DETECT || 'Motion Detected');
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_PIR_DETECT || 'Motion Detected');
     this.setOutput(true, 'Boolean');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_PIR_TOOLTIP || 'Detect motion');
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_PIR_TOOLTIP || 'Detect motion');
   }
 };
 
@@ -74,12 +74,12 @@ javascriptGenerator.forBlock['pir_sensor'] = function(block: Blockly.Block) {
 Blockly.Blocks['tilt_sensor'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_TILT_LABEL || 'Tilt Sensor Pin')
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_TILT_LABEL || 'Tilt Sensor Pin')
       .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN')
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_TILT_DETECT || 'Tilt Detected');
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_TILT_DETECT || 'Tilt Detected');
     this.setOutput(true, 'Boolean');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_TILT_TOOLTIP || 'Detect tilt');
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_TILT_TOOLTIP || 'Detect tilt');
   }
 };
 
@@ -99,12 +99,12 @@ javascriptGenerator.forBlock['tilt_sensor'] = function(block: Blockly.Block) {
 Blockly.Blocks['vibration_sensor'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_VIBRATION_LABEL || 'Vibration Sensor Pin')
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_VIBRATION_LABEL || 'Vibration Sensor Pin')
       .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN')
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_VIBRATION_DETECT || 'Vibration Detected');
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_VIBRATION_DETECT || 'Vibration Detected');
     this.setOutput(true, 'Boolean');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_VIBRATION_TOOLTIP || 'Detect vibration');
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_VIBRATION_TOOLTIP || 'Detect vibration');
   }
 };
 
@@ -124,12 +124,12 @@ javascriptGenerator.forBlock['vibration_sensor'] = function(block: Blockly.Block
 Blockly.Blocks['hall_sensor'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_HALL_LABEL || 'Hall Sensor Pin')
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_HALL_LABEL || 'Hall Sensor Pin')
       .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN')
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_HALL_DETECT || 'Magnet Detected');
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_HALL_DETECT || 'Magnet Detected');
     this.setOutput(true, 'Boolean');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_HALL_TOOLTIP || 'Detect magnet');
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_HALL_TOOLTIP || 'Detect magnet');
   }
 };
 
@@ -149,10 +149,10 @@ javascriptGenerator.forBlock['hall_sensor'] = function(block: Blockly.Block) {
 Blockly.Blocks['hall_sensor_esp32'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_HALLESP32_LABEL || 'ESP32 Built-in Hall Sensor');
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_HALLESP32_LABEL || 'ESP32 Built-in Hall Sensor');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_HALLESP32_TOOLTIP || 'Get ESP32 hall sensor value');
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_HALLESP32_TOOLTIP || 'Get ESP32 hall sensor value');
   }
 };
 
@@ -167,12 +167,12 @@ javascriptGenerator.forBlock['hall_sensor_esp32'] = function() {
 Blockly.Blocks['photo_interrupter'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_PHOTOINTERRUPTER_LABEL || 'Photo Interrupter Pin')
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_PHOTOINTERRUPTER_LABEL || 'Photo Interrupter Pin')
       .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN')
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_PHOTOINTERRUPTER_DETECT || 'Interrupted');
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_PHOTOINTERRUPTER_DETECT || 'Interrupted');
     this.setOutput(true, 'Boolean');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_PHOTOINTERRUPTER_TOOLTIP || 'Detect interruption');
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_PHOTOINTERRUPTER_TOOLTIP || 'Detect interruption');
   }
 };
 
@@ -192,12 +192,12 @@ javascriptGenerator.forBlock['photo_interrupter'] = function(block: Blockly.Bloc
 Blockly.Blocks['ir_obstacle_sensor'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_IROBSTACLE_LABEL || 'IR Obstacle Sensor Pin')
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_IROBSTACLE_LABEL || 'IR Obstacle Sensor Pin')
       .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN')
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_IROBSTACLE_DETECT || 'Obstacle Detected');
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_IROBSTACLE_DETECT || 'Obstacle Detected');
     this.setOutput(true, 'Boolean');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_IROBSTACLE_TOOLTIP || 'Detect obstacle');
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_IROBSTACLE_TOOLTIP || 'Detect obstacle');
   }
 };
 
@@ -217,12 +217,12 @@ javascriptGenerator.forBlock['ir_obstacle_sensor'] = function(block: Blockly.Blo
 Blockly.Blocks['flame_sensor_digital'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_FLAMEDIGITAL_LABEL || 'Flame Sensor(D) Pin')
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_FLAMEDIGITAL_LABEL || 'Flame Sensor(D) Pin')
       .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN')
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_FLAMEDIGITAL_DETECT || 'Flame Detected');
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_FLAMEDIGITAL_DETECT || 'Flame Detected');
     this.setOutput(true, 'Boolean');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_FLAMEDIGITAL_TOOLTIP || 'Detect flame');
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_FLAMEDIGITAL_TOOLTIP || 'Detect flame');
   }
 };
 
@@ -242,12 +242,12 @@ javascriptGenerator.forBlock['flame_sensor_digital'] = function(block: Blockly.B
 Blockly.Blocks['gas_sensor_digital'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_GASDIGITAL_LABEL || 'Gas Sensor(D) Pin')
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_GASDIGITAL_LABEL || 'Gas Sensor(D) Pin')
       .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN')
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_GASDIGITAL_DETECT || 'Gas Detected');
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_GASDIGITAL_DETECT || 'Gas Detected');
     this.setOutput(true, 'Boolean');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_GASDIGITAL_TOOLTIP || 'Detect gas');
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_GASDIGITAL_TOOLTIP || 'Detect gas');
   }
 };
 
@@ -267,12 +267,12 @@ javascriptGenerator.forBlock['gas_sensor_digital'] = function(block: Blockly.Blo
 Blockly.Blocks['limit_switch'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LIMITSWITCH_LABEL || 'Limit Switch Pin')
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_LIMITSWITCH_LABEL || 'Limit Switch Pin')
       .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN')
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LIMITSWITCH_DETECT || 'Switch Activated');
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_LIMITSWITCH_DETECT || 'Switch Activated');
     this.setOutput(true, 'Boolean');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_LIMITSWITCH_TOOLTIP || 'Get limit switch state');
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_LIMITSWITCH_TOOLTIP || 'Get limit switch state');
   }
 };
 
@@ -292,16 +292,16 @@ javascriptGenerator.forBlock['limit_switch'] = function(block: Blockly.Block) {
 Blockly.Blocks['digital_read'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_DIGITALREAD_LABEL || 'Digital Read Pin')
+      .appendField(Blockly.Msg.BLOCKS_SENSOR_DIGITALREAD_LABEL || 'Digital Read Pin')
       .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN')
       .appendField(new Blockly.FieldDropdown([
-        [(Blockly.Msg as any).BLOCKS_SENSOR_DIGITALREAD_PULLUP || 'Pull-up', 'pullup'],
-        [(Blockly.Msg as any).BLOCKS_SENSOR_DIGITALREAD_PULLDOWN || 'Pull-down', 'pulldown'],
-        [(Blockly.Msg as any).BLOCKS_SENSOR_DIGITALREAD_NONE || 'None', 'none']
-      ]) as any, 'MODE');
+        [Blockly.Msg.BLOCKS_SENSOR_DIGITALREAD_PULLUP || 'Pull-up', 'pullup'],
+        [Blockly.Msg.BLOCKS_SENSOR_DIGITALREAD_PULLDOWN || 'Pull-down', 'pulldown'],
+        [Blockly.Msg.BLOCKS_SENSOR_DIGITALREAD_NONE || 'None', 'none']
+      ]) as unknown as Blockly.Field, 'MODE');
     this.setOutput(true, 'Boolean');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_DIGITALREAD_TOOLTIP || 'Read digital pin state');
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_DIGITALREAD_TOOLTIP || 'Read digital pin state');
   }
 };
 

@@ -23,30 +23,30 @@ Blockly.Blocks['buzzer_tone'] = {
   init: function() {
     const pins = getSensorPins();
     this.appendDummyInput()
-        .appendField('🔊 ' + ((Blockly.Msg as any).BLOCKS_AUDIO_BUZZERTONE || 'Buzzer Tone'))
-        .appendField((Blockly.Msg as any).BLOCKS_AUDIO_PIN || 'Pin')
+        .appendField('🔊 ' + (Blockly.Msg.BLOCKS_AUDIO_BUZZERTONE || 'Buzzer Tone'))
+        .appendField(Blockly.Msg.BLOCKS_AUDIO_PIN || 'Pin')
         .appendField(new Blockly.FieldNumber(pins.buzzer, 0, 39), 'PIN')
-        .appendField((Blockly.Msg as any).BLOCKS_AUDIO_FREQUENCY || 'Frequency')
+        .appendField(Blockly.Msg.BLOCKS_AUDIO_FREQUENCY || 'Frequency')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_AUDIO_NOTEC || 'C (262Hz)', '262'],
-          [(Blockly.Msg as any).BLOCKS_AUDIO_NOTED || 'D (294Hz)', '294'],
-          [(Blockly.Msg as any).BLOCKS_AUDIO_NOTEE || 'E (330Hz)', '330'],
-          [(Blockly.Msg as any).BLOCKS_AUDIO_NOTEF || 'F (349Hz)', '349'],
-          [(Blockly.Msg as any).BLOCKS_AUDIO_NOTEG || 'G (392Hz)', '392'],
-          [(Blockly.Msg as any).BLOCKS_AUDIO_NOTEA || 'A (440Hz)', '440'],
-          [(Blockly.Msg as any).BLOCKS_AUDIO_NOTEB || 'B (494Hz)', '494'],
-          [(Blockly.Msg as any).BLOCKS_AUDIO_CUSTOM || 'Custom', 'custom']
+          [Blockly.Msg.BLOCKS_AUDIO_NOTEC || 'C (262Hz)', '262'],
+          [Blockly.Msg.BLOCKS_AUDIO_NOTED || 'D (294Hz)', '294'],
+          [Blockly.Msg.BLOCKS_AUDIO_NOTEE || 'E (330Hz)', '330'],
+          [Blockly.Msg.BLOCKS_AUDIO_NOTEF || 'F (349Hz)', '349'],
+          [Blockly.Msg.BLOCKS_AUDIO_NOTEG || 'G (392Hz)', '392'],
+          [Blockly.Msg.BLOCKS_AUDIO_NOTEA || 'A (440Hz)', '440'],
+          [Blockly.Msg.BLOCKS_AUDIO_NOTEB || 'B (494Hz)', '494'],
+          [Blockly.Msg.BLOCKS_AUDIO_CUSTOM || 'Custom', 'custom']
         ]), 'FREQ_SELECT');
     this.appendValueInput('FREQ_CUSTOM')
         .setCheck('Number')
-        .appendField((Blockly.Msg as any).BLOCKS_AUDIO_HZ || 'Hz');
+        .appendField(Blockly.Msg.BLOCKS_AUDIO_HZ || 'Hz');
     this.appendValueInput('DURATION')
         .setCheck('Number')
-        .appendField((Blockly.Msg as any).BLOCKS_AUDIO_DURATION || 'Duration (ms)');
+        .appendField(Blockly.Msg.BLOCKS_AUDIO_DURATION || 'Duration (ms)');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(AUDIO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_AUDIO_BUZZERTONETOOLTIP || 'Play a tone on the buzzer');
+    this.setTooltip(Blockly.Msg.BLOCKS_AUDIO_BUZZERTONETOOLTIP || 'Play a tone on the buzzer');
   }
 };
 
@@ -92,13 +92,13 @@ Blockly.Blocks['buzzer_stop'] = {
   init: function() {
     const pins = getSensorPins();
     this.appendDummyInput()
-        .appendField('🔇 ' + ((Blockly.Msg as any).BLOCKS_AUDIO_BUZZERSTOP || 'Stop Buzzer'))
-        .appendField((Blockly.Msg as any).BLOCKS_AUDIO_PIN || 'Pin')
+        .appendField('🔇 ' + (Blockly.Msg.BLOCKS_AUDIO_BUZZERSTOP || 'Stop Buzzer'))
+        .appendField(Blockly.Msg.BLOCKS_AUDIO_PIN || 'Pin')
         .appendField(new Blockly.FieldNumber(pins.buzzer, 0, 39), 'PIN');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(AUDIO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_AUDIO_BUZZERSTOPTOOLTIP || 'Stop the buzzer sound');
+    this.setTooltip(Blockly.Msg.BLOCKS_AUDIO_BUZZERSTOPTOOLTIP || 'Stop the buzzer sound');
   }
 };
 
@@ -123,19 +123,19 @@ Blockly.Blocks['buzzer_melody'] = {
   init: function() {
     const pins = getSensorPins();
     this.appendDummyInput()
-        .appendField('🎵 ' + ((Blockly.Msg as any).BLOCKS_AUDIO_BUZZERMELODY || 'Play Melody'))
-        .appendField((Blockly.Msg as any).BLOCKS_AUDIO_PIN || 'Pin')
+        .appendField('🎵 ' + (Blockly.Msg.BLOCKS_AUDIO_BUZZERMELODY || 'Play Melody'))
+        .appendField(Blockly.Msg.BLOCKS_AUDIO_PIN || 'Pin')
         .appendField(new Blockly.FieldNumber(pins.buzzer, 0, 39), 'PIN')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_AUDIO_STARTUP || 'Startup', 'startup'],
-          [(Blockly.Msg as any).BLOCKS_AUDIO_SUCCESS || 'Success', 'success'],
-          [(Blockly.Msg as any).BLOCKS_AUDIO_ERROR || 'Error', 'error'],
-          [(Blockly.Msg as any).BLOCKS_AUDIO_COMPLETE || 'Complete', 'complete']
+          [Blockly.Msg.BLOCKS_AUDIO_STARTUP || 'Startup', 'startup'],
+          [Blockly.Msg.BLOCKS_AUDIO_SUCCESS || 'Success', 'success'],
+          [Blockly.Msg.BLOCKS_AUDIO_ERROR || 'Error', 'error'],
+          [Blockly.Msg.BLOCKS_AUDIO_COMPLETE || 'Complete', 'complete']
         ]), 'MELODY');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(AUDIO_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_AUDIO_BUZZERMELODYTOOLTIP || 'Play a predefined melody');
+    this.setTooltip(Blockly.Msg.BLOCKS_AUDIO_BUZZERMELODYTOOLTIP || 'Play a predefined melody');
   }
 };
 

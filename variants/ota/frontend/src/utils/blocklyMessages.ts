@@ -20,7 +20,7 @@ import i18n from '@/i18n';
  * @returns Flattened key-value object
  */
 function flattenTranslations(
-  obj: any,
+  obj: Record<string, unknown>,
   prefix = ''
 ): Record<string, string> {
   const result: Record<string, string> = {};
@@ -33,7 +33,7 @@ function flattenTranslations(
       result[newKey.toUpperCase()] = value;
     } else if (typeof value === 'object' && value !== null) {
       // Recursively flatten nested objects
-      Object.assign(result, flattenTranslations(value, newKey));
+      Object.assign(result, flattenTranslations(value as Record<string, unknown>, newKey));
     }
   }
 

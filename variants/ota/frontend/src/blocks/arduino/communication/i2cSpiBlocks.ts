@@ -30,11 +30,11 @@ const SPI_COLOR = '#2196F3';
 Blockly.Blocks['i2c_scan'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔍 ' + ((Blockly.Msg as any).BLOCKS_I2C_SCAN || 'I2C Scan'));
+        .appendField('🔍 ' + (Blockly.Msg.BLOCKS_I2C_SCAN || 'I2C Scan'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(I2C_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_I2C_SCANTOOLTIP || 'Scan for connected I2C devices and print addresses to Serial');
+    this.setTooltip(Blockly.Msg.BLOCKS_I2C_SCANTOOLTIP || 'Scan for connected I2C devices and print addresses to Serial');
   }
 };
 
@@ -68,15 +68,15 @@ Blockly.Blocks['i2c_write'] = {
   init: function() {
     this.appendValueInput('ADDR')
         .setCheck('Number')
-        .appendField('📡 ' + ((Blockly.Msg as any).BLOCKS_I2C_WRITE || 'I2C Write'))
-        .appendField((Blockly.Msg as any).BLOCKS_I2C_ADDRESS || 'addr');
+        .appendField('📡 ' + (Blockly.Msg.BLOCKS_I2C_WRITE || 'I2C Write'))
+        .appendField(Blockly.Msg.BLOCKS_I2C_ADDRESS || 'addr');
     this.appendValueInput('DATA')
         .setCheck('Number')
-        .appendField((Blockly.Msg as any).BLOCKS_I2C_DATA || 'data');
+        .appendField(Blockly.Msg.BLOCKS_I2C_DATA || 'data');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(I2C_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_I2C_WRITETOOLTIP || 'Write a byte to an I2C device');
+    this.setTooltip(Blockly.Msg.BLOCKS_I2C_WRITETOOLTIP || 'Write a byte to an I2C device');
   }
 };
 
@@ -95,14 +95,14 @@ Blockly.Blocks['i2c_read'] = {
   init: function() {
     this.appendValueInput('ADDR')
         .setCheck('Number')
-        .appendField('📡 ' + ((Blockly.Msg as any).BLOCKS_I2C_READ || 'I2C Read'))
-        .appendField((Blockly.Msg as any).BLOCKS_I2C_ADDRESS || 'addr');
+        .appendField('📡 ' + (Blockly.Msg.BLOCKS_I2C_READ || 'I2C Read'))
+        .appendField(Blockly.Msg.BLOCKS_I2C_ADDRESS || 'addr');
     this.appendValueInput('COUNT')
         .setCheck('Number')
-        .appendField((Blockly.Msg as any).BLOCKS_I2C_BYTES || 'bytes');
+        .appendField(Blockly.Msg.BLOCKS_I2C_BYTES || 'bytes');
     this.setOutput(true, 'Number');
     this.setColour(I2C_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_I2C_READTOOLTIP || 'Read a byte from an I2C device');
+    this.setTooltip(Blockly.Msg.BLOCKS_I2C_READTOOLTIP || 'Read a byte from an I2C device');
   }
 };
 
@@ -129,18 +129,18 @@ Blockly.Blocks['i2c_write_register'] = {
   init: function() {
     this.appendValueInput('ADDR')
         .setCheck('Number')
-        .appendField('📡 ' + ((Blockly.Msg as any).BLOCKS_I2C_WRITEREG || 'I2C Write Register'))
-        .appendField((Blockly.Msg as any).BLOCKS_I2C_ADDRESS || 'addr');
+        .appendField('📡 ' + (Blockly.Msg.BLOCKS_I2C_WRITEREG || 'I2C Write Register'))
+        .appendField(Blockly.Msg.BLOCKS_I2C_ADDRESS || 'addr');
     this.appendValueInput('REG')
         .setCheck('Number')
-        .appendField((Blockly.Msg as any).BLOCKS_I2C_REGISTER || 'reg');
+        .appendField(Blockly.Msg.BLOCKS_I2C_REGISTER || 'reg');
     this.appendValueInput('VALUE')
         .setCheck('Number')
-        .appendField((Blockly.Msg as any).BLOCKS_I2C_VALUE || 'value');
+        .appendField(Blockly.Msg.BLOCKS_I2C_VALUE || 'value');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(I2C_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_I2C_WRITEREGTOOLTIP || 'Write a value to a specific register of an I2C device');
+    this.setTooltip(Blockly.Msg.BLOCKS_I2C_WRITEREGTOOLTIP || 'Write a value to a specific register of an I2C device');
   }
 };
 
@@ -160,14 +160,14 @@ Blockly.Blocks['i2c_read_register'] = {
   init: function() {
     this.appendValueInput('ADDR')
         .setCheck('Number')
-        .appendField('📡 ' + ((Blockly.Msg as any).BLOCKS_I2C_READREG || 'I2C Read Register'))
-        .appendField((Blockly.Msg as any).BLOCKS_I2C_ADDRESS || 'addr');
+        .appendField('📡 ' + (Blockly.Msg.BLOCKS_I2C_READREG || 'I2C Read Register'))
+        .appendField(Blockly.Msg.BLOCKS_I2C_ADDRESS || 'addr');
     this.appendValueInput('REG')
         .setCheck('Number')
-        .appendField((Blockly.Msg as any).BLOCKS_I2C_REGISTER || 'reg');
+        .appendField(Blockly.Msg.BLOCKS_I2C_REGISTER || 'reg');
     this.setOutput(true, 'Number');
     this.setColour(I2C_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_I2C_READREGTOOLTIP || 'Read a value from a specific register of an I2C device');
+    this.setTooltip(Blockly.Msg.BLOCKS_I2C_READREGTOOLTIP || 'Read a value from a specific register of an I2C device');
   }
 };
 
@@ -198,14 +198,14 @@ int i2cReadRegister(int addr, int reg) {
 Blockly.Blocks['spi_begin'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔌 ' + ((Blockly.Msg as any).BLOCKS_SPI_BEGIN || 'SPI Begin'));
+        .appendField('🔌 ' + (Blockly.Msg.BLOCKS_SPI_BEGIN || 'SPI Begin'));
     this.appendDummyInput()
         .appendField('CS')
         .appendField(new Blockly.FieldNumber(5, 0, 39), 'CS');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SPI_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_SPI_BEGINTOOLTIP || 'Initialize SPI communication with chip select pin');
+    this.setTooltip(Blockly.Msg.BLOCKS_SPI_BEGINTOOLTIP || 'Initialize SPI communication with chip select pin');
   }
 };
 
@@ -223,13 +223,13 @@ Blockly.Blocks['spi_transfer'] = {
   init: function() {
     this.appendValueInput('DATA')
         .setCheck('Number')
-        .appendField('🔌 ' + ((Blockly.Msg as any).BLOCKS_SPI_TRANSFER || 'SPI Transfer'));
+        .appendField('🔌 ' + (Blockly.Msg.BLOCKS_SPI_TRANSFER || 'SPI Transfer'));
     this.appendDummyInput()
         .appendField('CS')
         .appendField(new Blockly.FieldNumber(5, 0, 39), 'CS');
     this.setOutput(true, 'Number');
     this.setColour(SPI_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_SPI_TRANSFERTOOLTIP || 'Send a byte via SPI and receive a byte back');
+    this.setTooltip(Blockly.Msg.BLOCKS_SPI_TRANSFERTOOLTIP || 'Send a byte via SPI and receive a byte back');
   }
 };
 

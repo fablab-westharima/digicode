@@ -52,13 +52,13 @@ class BleServerCallbacks : public NimBLEServerCallbacks {
 Blockly.Blocks['ble_uart_setup'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_UARTSETUP || 'BLE UART Setup'))
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_DEVICENAME || 'device name')
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_UARTSETUP || 'BLE UART Setup'))
+        .appendField(Blockly.Msg.BLOCKS_BLE_DEVICENAME || 'device name')
         .appendField(new Blockly.FieldTextInput('DigiCode'), 'NAME');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(BLE_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_UARTSETUOPTOOLTIP || 'Initialize BLE and start Nordic UART Service (NUS). Use nRF Connect app to connect and communicate.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_UARTSETUOPTOOLTIP || 'Initialize BLE and start Nordic UART Service (NUS). Use nRF Connect app to connect and communicate.');
   }
 };
 
@@ -97,11 +97,11 @@ Blockly.Blocks['ble_uart_write'] = {
   init: function() {
     this.appendValueInput('TEXT')
         .setCheck(null)
-        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_UARTWRITE || 'BLE Send'));
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_UARTWRITE || 'BLE Send'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(BLE_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_UARTWRITETOOLTIP || 'Send a string to the connected smartphone via BLE Notify (NUS TX characteristic).');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_UARTWRITETOOLTIP || 'Send a string to the connected smartphone via BLE Notify (NUS TX characteristic).');
   }
 };
 
@@ -119,14 +119,14 @@ generator.forBlock['ble_uart_write'] = function(block: Blockly.Block) {
 Blockly.Blocks['ble_uart_on_receive'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_UARTONRECEIVE || 'BLE On Receive'));
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_UARTONRECEIVE || 'BLE On Receive'));
     this.appendStatementInput('HANDLER')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_HANDLER || 'handler');
+        .appendField(Blockly.Msg.BLOCKS_BLE_HANDLER || 'handler');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(BLE_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_UARTONRECEIVETOOLTIP || 'Execute handler when a BLE message is received. Use "bleMessage" variable to get the received text. Place in loop block.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_UARTONRECEIVETOOLTIP || 'Execute handler when a BLE message is received. Use "bleMessage" variable to get the received text. Place in loop block.');
   }
 };
 
@@ -149,10 +149,10 @@ ${handler}    bleMessage = "";
 Blockly.Blocks['ble_is_connected'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_ISCONNECTED || 'BLE Connected?'));
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_ISCONNECTED || 'BLE Connected?'));
     this.setOutput(true, 'Boolean');
     this.setColour(BLE_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_ISCONNECTEDTOOLTIP || 'Returns true if a smartphone is currently connected via BLE.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_ISCONNECTEDTOOLTIP || 'Returns true if a smartphone is currently connected via BLE.');
   }
 };
 
@@ -170,11 +170,11 @@ generator.forBlock['ble_is_connected'] = function() {
 Blockly.Blocks['ble_beacon_broadcast'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📡 ' + ((Blockly.Msg as any).BLOCKS_BLE_BEACON || 'iBeacon Broadcast'));
+        .appendField('📡 ' + (Blockly.Msg.BLOCKS_BLE_BEACON || 'iBeacon Broadcast'));
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_MAJOR || 'major')
+        .appendField(Blockly.Msg.BLOCKS_BLE_MAJOR || 'major')
         .appendField(new Blockly.FieldNumber(1, 0, 65535), 'MAJOR')
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_MINOR || 'minor')
+        .appendField(Blockly.Msg.BLOCKS_BLE_MINOR || 'minor')
         .appendField(new Blockly.FieldNumber(1, 0, 65535), 'MINOR');
     this.appendDummyInput()
         .appendField('UUID')
@@ -182,7 +182,7 @@ Blockly.Blocks['ble_beacon_broadcast'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(BLE_SCAN_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_BEACONTOOLTIP || 'Start broadcasting as an iBeacon with the specified UUID, major and minor values. Detectable by smartphone apps.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_BEACONTOOLTIP || 'Start broadcasting as an iBeacon with the specified UUID, major and minor values. Detectable by smartphone apps.');
   }
 };
 
@@ -218,13 +218,13 @@ generator.forBlock['ble_beacon_broadcast'] = function(block: Blockly.Block) {
 Blockly.Blocks['ble_scan_start'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📡 ' + ((Blockly.Msg as any).BLOCKS_BLE_SCANSTART || 'BLE Scan Start'))
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_DURATION || 'duration (sec)')
+        .appendField('📡 ' + (Blockly.Msg.BLOCKS_BLE_SCANSTART || 'BLE Scan Start'))
+        .appendField(Blockly.Msg.BLOCKS_BLE_DURATION || 'duration (sec)')
         .appendField(new Blockly.FieldNumber(5, 1, 60), 'DURATION');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(BLE_SCAN_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_SCANSTARTTOOLTIP || 'Start scanning for nearby BLE devices for the specified duration. Use ble_on_device_found to handle results.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_SCANSTARTTOOLTIP || 'Start scanning for nearby BLE devices for the specified duration. Use ble_on_device_found to handle results.');
   }
 };
 
@@ -261,14 +261,14 @@ class BleScanCallbacks : public NimBLEScanCallbacks {
 Blockly.Blocks['ble_on_device_found'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📡 ' + ((Blockly.Msg as any).BLOCKS_BLE_ONDEVICEFOUND || 'BLE On Device Found'));
+        .appendField('📡 ' + (Blockly.Msg.BLOCKS_BLE_ONDEVICEFOUND || 'BLE On Device Found'));
     this.appendStatementInput('HANDLER')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_HANDLER || 'handler');
+        .appendField(Blockly.Msg.BLOCKS_BLE_HANDLER || 'handler');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(BLE_SCAN_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_ONDEVICEFOUNDTOOLTIP || 'Execute handler when a BLE device is found during scan. Use bleFoundName, bleFoundAddress, bleFoundRssi variables.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_ONDEVICEFOUNDTOOLTIP || 'Execute handler when a BLE device is found during scan. Use bleFoundName, bleFoundAddress, bleFoundRssi variables.');
   }
 };
 
@@ -295,10 +295,10 @@ ${handler}  }
 Blockly.Blocks['ble_get_rssi'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_GETRSSI || 'BLE RSSI'));
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_GETRSSI || 'BLE RSSI'));
     this.setOutput(true, 'Number');
     this.setColour(BLE_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_GETRSSITOOLTIP || 'Get the RSSI (signal strength) of the connected BLE device. Returns dBm value (negative, closer to 0 = stronger signal).');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_GETRSSITOOLTIP || 'Get the RSSI (signal strength) of the connected BLE device. Returns dBm value (negative, closer to 0 = stronger signal).');
   }
 };
 
@@ -314,11 +314,11 @@ generator.forBlock['ble_get_rssi'] = function() {
 Blockly.Blocks['ble_disconnect'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_DISCONNECT || 'BLE Disconnect'));
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_DISCONNECT || 'BLE Disconnect'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(BLE_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_DISCONNECTTOOLTIP || 'Disconnect the currently connected BLE device and restart advertising.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_DISCONNECTTOOLTIP || 'Disconnect the currently connected BLE device and restart advertising.');
   }
 };
 
@@ -356,13 +356,13 @@ public:
 Blockly.Blocks['ble_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_INIT || 'BLE Init'))
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_DEVICENAME || 'device name')
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_INIT || 'BLE Init'))
+        .appendField(Blockly.Msg.BLOCKS_BLE_DEVICENAME || 'device name')
         .appendField(new Blockly.FieldTextInput('DigiCode'), 'NAME');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(GATT_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_INITTOOLTIP || 'Initialize BLE stack. Call before ble_add_service. Use ble_uart_setup instead if only using Nordic UART.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_INITTOOLTIP || 'Initialize BLE stack. Call before ble_add_service. Use ble_uart_setup instead if only using Nordic UART.');
   }
 };
 
@@ -385,13 +385,13 @@ generator.forBlock['ble_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['ble_add_service'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_ADDSERVICE || 'BLE Add Service'))
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_ADDSERVICE || 'BLE Add Service'))
         .appendField('UUID')
         .appendField(new Blockly.FieldTextInput('12345678-1234-1234-1234-123456789ABC'), 'UUID');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(GATT_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_ADDSERVICETOOLTIP || 'Create a custom GATT service with the given UUID. Call ble_add_characteristic next, then ble_start_advertising.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_ADDSERVICETOOLTIP || 'Create a custom GATT service with the given UUID. Call ble_add_characteristic next, then ble_start_advertising.');
   }
 };
 
@@ -413,24 +413,24 @@ generator.forBlock['ble_add_service'] = function(block: Blockly.Block) {
 Blockly.Blocks['ble_add_characteristic'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_ADDCHAR || 'BLE Add Characteristic'));
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_ADDCHAR || 'BLE Add Characteristic'));
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_SERVICEUUID || 'service UUID')
+        .appendField(Blockly.Msg.BLOCKS_BLE_SERVICEUUID || 'service UUID')
         .appendField(new Blockly.FieldTextInput('12345678-1234-1234-1234-123456789ABC'), 'SERVICE_UUID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_CHARUUID || 'char UUID')
+        .appendField(Blockly.Msg.BLOCKS_BLE_CHARUUID || 'char UUID')
         .appendField(new Blockly.FieldTextInput('00001111-1234-1234-1234-123456789ABC'), 'CHAR_UUID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_PROPREAD || 'read')
+        .appendField(Blockly.Msg.BLOCKS_BLE_PROPREAD || 'read')
         .appendField(new Blockly.FieldCheckbox('TRUE'), 'READ')
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_PROPWRITE || 'write')
+        .appendField(Blockly.Msg.BLOCKS_BLE_PROPWRITE || 'write')
         .appendField(new Blockly.FieldCheckbox('TRUE'), 'WRITE')
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_PROPNOTIFY || 'notify')
+        .appendField(Blockly.Msg.BLOCKS_BLE_PROPNOTIFY || 'notify')
         .appendField(new Blockly.FieldCheckbox('FALSE'), 'NOTIFY');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(GATT_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_ADDCHARTOOLTIP || 'Add a characteristic to a GATT service. Check read/write/notify as needed. The service must be created with ble_add_service first.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_ADDCHARTOOLTIP || 'Add a characteristic to a GATT service. Check read/write/notify as needed. The service must be created with ble_add_service first.');
   }
 };
 
@@ -472,16 +472,16 @@ ${writeCallback}
 Blockly.Blocks['ble_notify'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_NOTIFY || 'BLE Notify'))
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_CHARUUID || 'char UUID')
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_NOTIFY || 'BLE Notify'))
+        .appendField(Blockly.Msg.BLOCKS_BLE_CHARUUID || 'char UUID')
         .appendField(new Blockly.FieldTextInput('00001111-1234-1234-1234-123456789ABC'), 'CHAR_UUID');
     this.appendValueInput('VALUE')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_VALUE || 'value');
+        .appendField(Blockly.Msg.BLOCKS_BLE_VALUE || 'value');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(GATT_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_NOTIFYTOOLTIP || 'Send a notify to the connected device via the specified characteristic UUID. The characteristic must have notify enabled.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_NOTIFYTOOLTIP || 'Send a notify to the connected device via the specified characteristic UUID. The characteristic must have notify enabled.');
   }
 };
 
@@ -500,16 +500,16 @@ generator.forBlock['ble_notify'] = function(block: Blockly.Block) {
 Blockly.Blocks['ble_on_write'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_ONWRITE || 'BLE On Write'))
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_CHARUUID || 'char UUID')
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_ONWRITE || 'BLE On Write'))
+        .appendField(Blockly.Msg.BLOCKS_BLE_CHARUUID || 'char UUID')
         .appendField(new Blockly.FieldTextInput('00001111-1234-1234-1234-123456789ABC'), 'CHAR_UUID');
     this.appendStatementInput('HANDLER')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_BLE_HANDLER || 'handler');
+        .appendField(Blockly.Msg.BLOCKS_BLE_HANDLER || 'handler');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(GATT_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_ONWRITETOOLTIP || 'Execute handler when the specified characteristic is written by the connected device. Use bleMessage for the received value. Place in loop block.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_ONWRITETOOLTIP || 'Execute handler when the specified characteristic is written by the connected device. Use bleMessage for the received value. Place in loop block.');
   }
 };
 
@@ -537,11 +537,11 @@ ${handler}  }
 Blockly.Blocks['ble_start_advertising'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_BLE_STARTADV || 'BLE Start Advertising'));
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_STARTADV || 'BLE Start Advertising'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(GATT_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BLE_STARTADVTOOLTIP || 'Start BLE advertising after all services and characteristics are added. Smartphones can then discover and connect to this device.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_STARTADVTOOLTIP || 'Start BLE advertising after all services and characteristics are added. Smartphones can then discover and connect to this device.');
   }
 };
 

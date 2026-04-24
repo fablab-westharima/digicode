@@ -29,15 +29,15 @@ DFRobotDFPlayerMini dfPlayer;`;
 Blockly.Blocks['dfplayer_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔊 ' + ((Blockly.Msg as any).BLOCKS_DFP_INIT || 'DFPlayer Init'));
+        .appendField('🔊 ' + (Blockly.Msg.BLOCKS_DFP_INIT || 'DFPlayer Init'));
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_DFP_RX || 'RX pin')
+        .appendField(Blockly.Msg.BLOCKS_DFP_RX || 'RX pin')
         .appendField(new Blockly.FieldNumber(14, 0, 39), 'RX')
-        .appendField((Blockly.Msg as any).BLOCKS_DFP_TX || 'TX pin')
+        .appendField(Blockly.Msg.BLOCKS_DFP_TX || 'TX pin')
         .appendField(new Blockly.FieldNumber(12, 0, 39), 'TX');
     this.setOutput(true, 'Boolean');
     this.setColour(DFP_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_DFP_INITTOOLTIP || 'Initialize DFPlayer Mini via SoftwareSerial. Returns true if found. Connect DFPlayer TX to ESP32 RX pin, and DFPlayer RX (via 1kΩ resistor) to ESP32 TX pin.');
+    this.setTooltip(Blockly.Msg.BLOCKS_DFP_INITTOOLTIP || 'Initialize DFPlayer Mini via SoftwareSerial. Returns true if found. Connect DFPlayer TX to ESP32 RX pin, and DFPlayer RX (via 1kΩ resistor) to ESP32 TX pin.');
   }
 };
 
@@ -56,13 +56,13 @@ generator.forBlock['dfplayer_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['dfplayer_play'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔊 ' + ((Blockly.Msg as any).BLOCKS_DFP_PLAY || 'DFPlayer Play'))
-        .appendField((Blockly.Msg as any).BLOCKS_DFP_TRACK || 'track')
+        .appendField('🔊 ' + (Blockly.Msg.BLOCKS_DFP_PLAY || 'DFPlayer Play'))
+        .appendField(Blockly.Msg.BLOCKS_DFP_TRACK || 'track')
         .appendField(new Blockly.FieldNumber(1, 1, 999), 'TRACK');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DFP_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_DFP_PLAYTOOLTIP || 'Play the specified track number (1-999) from the SD card.');
+    this.setTooltip(Blockly.Msg.BLOCKS_DFP_PLAYTOOLTIP || 'Play the specified track number (1-999) from the SD card.');
   }
 };
 
@@ -78,11 +78,11 @@ generator.forBlock['dfplayer_play'] = function(block: Blockly.Block) {
 Blockly.Blocks['dfplayer_pause'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔊 ' + ((Blockly.Msg as any).BLOCKS_DFP_PAUSE || 'DFPlayer Pause'));
+        .appendField('🔊 ' + (Blockly.Msg.BLOCKS_DFP_PAUSE || 'DFPlayer Pause'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DFP_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_DFP_PAUSETOOLTIP || 'Pause the current playback.');
+    this.setTooltip(Blockly.Msg.BLOCKS_DFP_PAUSETOOLTIP || 'Pause the current playback.');
   }
 };
 
@@ -97,11 +97,11 @@ generator.forBlock['dfplayer_pause'] = function() {
 Blockly.Blocks['dfplayer_resume'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔊 ' + ((Blockly.Msg as any).BLOCKS_DFP_RESUME || 'DFPlayer Resume'));
+        .appendField('🔊 ' + (Blockly.Msg.BLOCKS_DFP_RESUME || 'DFPlayer Resume'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DFP_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_DFP_RESUMETOOLTIP || 'Resume paused playback.');
+    this.setTooltip(Blockly.Msg.BLOCKS_DFP_RESUMETOOLTIP || 'Resume paused playback.');
   }
 };
 
@@ -116,11 +116,11 @@ generator.forBlock['dfplayer_resume'] = function() {
 Blockly.Blocks['dfplayer_stop'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔊 ' + ((Blockly.Msg as any).BLOCKS_DFP_STOP || 'DFPlayer Stop'));
+        .appendField('🔊 ' + (Blockly.Msg.BLOCKS_DFP_STOP || 'DFPlayer Stop'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DFP_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_DFP_STOPTOOLTIP || 'Stop playback.');
+    this.setTooltip(Blockly.Msg.BLOCKS_DFP_STOPTOOLTIP || 'Stop playback.');
   }
 };
 
@@ -135,12 +135,12 @@ generator.forBlock['dfplayer_stop'] = function() {
 Blockly.Blocks['dfplayer_volume'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔊 ' + ((Blockly.Msg as any).BLOCKS_DFP_VOLUME || 'DFPlayer Volume'))
+        .appendField('🔊 ' + (Blockly.Msg.BLOCKS_DFP_VOLUME || 'DFPlayer Volume'))
         .appendField(new Blockly.FieldNumber(15, 0, 30), 'VOL');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DFP_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_DFP_VOLUMETOOLTIP || 'Set the volume (0-30). 0 = silent, 30 = maximum.');
+    this.setTooltip(Blockly.Msg.BLOCKS_DFP_VOLUMETOOLTIP || 'Set the volume (0-30). 0 = silent, 30 = maximum.');
   }
 };
 

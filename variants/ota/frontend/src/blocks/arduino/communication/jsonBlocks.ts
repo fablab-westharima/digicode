@@ -20,11 +20,11 @@ Blockly.Blocks['json_parse'] = {
   init: function() {
     this.appendValueInput('JSON')
         .setCheck('String')
-        .appendField('📋 ' + ((Blockly.Msg as any).BLOCKS_JSON_PARSE || 'JSON Parse'));
+        .appendField('📋 ' + (Blockly.Msg.BLOCKS_JSON_PARSE || 'JSON Parse'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FF5722');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_PARSETOOLTIP || 'Parse JSON string to access values with json_get_* blocks');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_PARSETOOLTIP || 'Parse JSON string to access values with json_get_* blocks');
   }
 };
 
@@ -47,20 +47,20 @@ Blockly.Blocks['json_parse_size'] = {
   init: function() {
     this.appendValueInput('JSON')
         .setCheck('String')
-        .appendField('📋 ' + ((Blockly.Msg as any).BLOCKS_JSON_PARSEWITHSIZE || 'JSON Parse (with size)'));
+        .appendField('📋 ' + (Blockly.Msg.BLOCKS_JSON_PARSEWITHSIZE || 'JSON Parse (with size)'));
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_JSON_BUFFER || 'Buffer')
+        .appendField(Blockly.Msg.BLOCKS_JSON_BUFFER || 'Buffer')
         .appendField(new Blockly.FieldDropdown([
-          ['512 ' + ((Blockly.Msg as any).BLOCKS_JSON_BYTES || 'bytes'), '512'],
-          ['1024 ' + ((Blockly.Msg as any).BLOCKS_JSON_BYTES || 'bytes'), '1024'],
-          ['2048 ' + ((Blockly.Msg as any).BLOCKS_JSON_BYTES || 'bytes'), '2048'],
-          ['4096 ' + ((Blockly.Msg as any).BLOCKS_JSON_BYTES || 'bytes'), '4096'],
-          ['8192 ' + ((Blockly.Msg as any).BLOCKS_JSON_BYTES || 'bytes'), '8192']
+          ['512 ' + (Blockly.Msg.BLOCKS_JSON_BYTES || 'bytes'), '512'],
+          ['1024 ' + (Blockly.Msg.BLOCKS_JSON_BYTES || 'bytes'), '1024'],
+          ['2048 ' + (Blockly.Msg.BLOCKS_JSON_BYTES || 'bytes'), '2048'],
+          ['4096 ' + (Blockly.Msg.BLOCKS_JSON_BYTES || 'bytes'), '4096'],
+          ['8192 ' + (Blockly.Msg.BLOCKS_JSON_BYTES || 'bytes'), '8192']
         ]), 'SIZE');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FF5722');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_PARSEWITHSIZETOOLTIP || 'Increase buffer size for large JSON');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_PARSEWITHSIZETOOLTIP || 'Increase buffer size for large JSON');
   }
 };
 
@@ -85,11 +85,11 @@ javascriptGenerator.forBlock['json_parse_size'] = function(block: Blockly.Block)
 Blockly.Blocks['json_get_string'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📖 ' + ((Blockly.Msg as any).BLOCKS_JSON_GETSTRING || 'JSON Get String'))
+        .appendField('📖 ' + (Blockly.Msg.BLOCKS_JSON_GETSTRING || 'JSON Get String'))
         .appendField(new Blockly.FieldTextInput('key'), 'KEY');
     this.setOutput(true, 'String');
     this.setColour('#FF5722');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_GETSTRINGTOOLTIP || 'Get string value from JSON by key');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_GETSTRINGTOOLTIP || 'Get string value from JSON by key');
   }
 };
 
@@ -104,11 +104,11 @@ javascriptGenerator.forBlock['json_get_string'] = function(block: Blockly.Block)
 Blockly.Blocks['json_get_number'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📖 ' + ((Blockly.Msg as any).BLOCKS_JSON_GETNUMBER || 'JSON Get Number'))
+        .appendField('📖 ' + (Blockly.Msg.BLOCKS_JSON_GETNUMBER || 'JSON Get Number'))
         .appendField(new Blockly.FieldTextInput('key'), 'KEY');
     this.setOutput(true, 'Number');
     this.setColour('#FF5722');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_GETNUMBERTOOLTIP || 'Get number value from JSON by key');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_GETNUMBERTOOLTIP || 'Get number value from JSON by key');
   }
 };
 
@@ -123,11 +123,11 @@ javascriptGenerator.forBlock['json_get_number'] = function(block: Blockly.Block)
 Blockly.Blocks['json_get_int'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📖 ' + ((Blockly.Msg as any).BLOCKS_JSON_GETINT || 'JSON Get Integer'))
+        .appendField('📖 ' + (Blockly.Msg.BLOCKS_JSON_GETINT || 'JSON Get Integer'))
         .appendField(new Blockly.FieldTextInput('key'), 'KEY');
     this.setOutput(true, 'Number');
     this.setColour('#FF5722');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_GETINTTOOLTIP || 'Get integer value from JSON by key');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_GETINTTOOLTIP || 'Get integer value from JSON by key');
   }
 };
 
@@ -142,11 +142,11 @@ javascriptGenerator.forBlock['json_get_int'] = function(block: Blockly.Block) {
 Blockly.Blocks['json_get_bool'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📖 ' + ((Blockly.Msg as any).BLOCKS_JSON_GETBOOL || 'JSON Get Boolean'))
+        .appendField('📖 ' + (Blockly.Msg.BLOCKS_JSON_GETBOOL || 'JSON Get Boolean'))
         .appendField(new Blockly.FieldTextInput('key'), 'KEY');
     this.setOutput(true, 'Boolean');
     this.setColour('#FF5722');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_GETBOOLTOOLTIP || 'Get boolean value from JSON by key');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_GETBOOLTOOLTIP || 'Get boolean value from JSON by key');
   }
 };
 
@@ -161,21 +161,21 @@ javascriptGenerator.forBlock['json_get_bool'] = function(block: Blockly.Block) {
 Blockly.Blocks['json_get_nested'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📖 ' + ((Blockly.Msg as any).BLOCKS_JSON_GETNESTED || 'JSON Get Nested'));
+        .appendField('📖 ' + (Blockly.Msg.BLOCKS_JSON_GETNESTED || 'JSON Get Nested'));
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_JSON_PATH || 'Path')
+        .appendField(Blockly.Msg.BLOCKS_JSON_PATH || 'Path')
         .appendField(new Blockly.FieldTextInput('data.value'), 'PATH');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_JSON_TYPE || 'Type')
+        .appendField(Blockly.Msg.BLOCKS_JSON_TYPE || 'Type')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_JSON_TYPESTRING || 'String', 'String'],
-          [(Blockly.Msg as any).BLOCKS_JSON_TYPENUMBER || 'Number', 'float'],
-          [(Blockly.Msg as any).BLOCKS_JSON_TYPEINT || 'Integer', 'int'],
-          [(Blockly.Msg as any).BLOCKS_JSON_TYPEBOOL || 'Boolean', 'bool']
+          [Blockly.Msg.BLOCKS_JSON_TYPESTRING || 'String', 'String'],
+          [Blockly.Msg.BLOCKS_JSON_TYPENUMBER || 'Number', 'float'],
+          [Blockly.Msg.BLOCKS_JSON_TYPEINT || 'Integer', 'int'],
+          [Blockly.Msg.BLOCKS_JSON_TYPEBOOL || 'Boolean', 'bool']
         ]), 'TYPE');
     this.setOutput(true, null);
     this.setColour('#FF5722');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_GETNESTEDTOOLTIP || 'Get nested JSON value (e.g., data.items[0].name)');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_GETNESTEDTOOLTIP || 'Get nested JSON value (e.g., data.items[0].name)');
   }
 };
 
@@ -205,12 +205,12 @@ javascriptGenerator.forBlock['json_get_nested'] = function(block: Blockly.Block)
 Blockly.Blocks['json_has_key'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📖 ' + ((Blockly.Msg as any).BLOCKS_JSON_HASKEY || 'JSON has key'))
+        .appendField('📖 ' + (Blockly.Msg.BLOCKS_JSON_HASKEY || 'JSON has key'))
         .appendField(new Blockly.FieldTextInput('key'), 'KEY')
-        .appendField((Blockly.Msg as any).BLOCKS_JSON_EXISTS || 'exists');
+        .appendField(Blockly.Msg.BLOCKS_JSON_EXISTS || 'exists');
     this.setOutput(true, 'Boolean');
     this.setColour('#FF5722');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_HASKEYTOOLTIP || 'Check if JSON has the specified key');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_HASKEYTOOLTIP || 'Check if JSON has the specified key');
   }
 };
 
@@ -225,11 +225,11 @@ javascriptGenerator.forBlock['json_has_key'] = function(block: Blockly.Block) {
 Blockly.Blocks['json_array_size'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📖 ' + ((Blockly.Msg as any).BLOCKS_JSON_ARRAYSIZE || 'JSON Array Size'))
+        .appendField('📖 ' + (Blockly.Msg.BLOCKS_JSON_ARRAYSIZE || 'JSON Array Size'))
         .appendField(new Blockly.FieldTextInput('items'), 'KEY');
     this.setOutput(true, 'Number');
     this.setColour('#FF5722');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_ARRAYSIZETOOLTIP || 'Get the number of elements in JSON array');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_ARRAYSIZETOOLTIP || 'Get the number of elements in JSON array');
   }
 };
 
@@ -244,21 +244,21 @@ javascriptGenerator.forBlock['json_array_size'] = function(block: Blockly.Block)
 Blockly.Blocks['json_array_get'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📖 ' + ((Blockly.Msg as any).BLOCKS_JSON_ARRAY || 'JSON Array'))
+        .appendField('📖 ' + (Blockly.Msg.BLOCKS_JSON_ARRAY || 'JSON Array'))
         .appendField(new Blockly.FieldTextInput('items'), 'KEY');
     this.appendValueInput('INDEX')
         .setCheck('Number')
-        .appendField((Blockly.Msg as any).BLOCKS_JSON_INDEX || 'index');
+        .appendField(Blockly.Msg.BLOCKS_JSON_INDEX || 'index');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_JSON_GETAS || 'get as')
+        .appendField(Blockly.Msg.BLOCKS_JSON_GETAS || 'get as')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_JSON_TYPESTRING || 'String', 'String'],
-          [(Blockly.Msg as any).BLOCKS_JSON_TYPENUMBER || 'Number', 'float'],
-          [(Blockly.Msg as any).BLOCKS_JSON_TYPEINT || 'Integer', 'int']
+          [Blockly.Msg.BLOCKS_JSON_TYPESTRING || 'String', 'String'],
+          [Blockly.Msg.BLOCKS_JSON_TYPENUMBER || 'Number', 'float'],
+          [Blockly.Msg.BLOCKS_JSON_TYPEINT || 'Integer', 'int']
         ]), 'TYPE');
     this.setOutput(true, null);
     this.setColour('#FF5722');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_ARRAYGETTOOLTIP || 'Get element from JSON array at specified index');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_ARRAYGETTOOLTIP || 'Get element from JSON array at specified index');
   }
 };
 
@@ -278,11 +278,11 @@ javascriptGenerator.forBlock['json_array_get'] = function(block: Blockly.Block) 
 Blockly.Blocks['json_create_object'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📝 ' + ((Blockly.Msg as any).BLOCKS_JSON_CREATE || 'JSON Create Start'));
+        .appendField('📝 ' + (Blockly.Msg.BLOCKS_JSON_CREATE || 'JSON Create Start'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#8BC34A');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_CREATETOOLTIP || 'Start creating a new JSON object');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_CREATETOOLTIP || 'Start creating a new JSON object');
   }
 };
 
@@ -302,13 +302,13 @@ Blockly.Blocks['json_set_string'] = {
   init: function() {
     this.appendValueInput('VALUE')
         .setCheck('String')
-        .appendField('📝 ' + ((Blockly.Msg as any).BLOCKS_JSON_SET || 'JSON Set'))
+        .appendField('📝 ' + (Blockly.Msg.BLOCKS_JSON_SET || 'JSON Set'))
         .appendField(new Blockly.FieldTextInput('key'), 'KEY')
         .appendField('=');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#8BC34A');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_SETSTRINGTOOLTIP || 'Set string value in JSON');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_SETSTRINGTOOLTIP || 'Set string value in JSON');
   }
 };
 
@@ -326,13 +326,13 @@ Blockly.Blocks['json_set_number'] = {
   init: function() {
     this.appendValueInput('VALUE')
         .setCheck('Number')
-        .appendField('📝 ' + ((Blockly.Msg as any).BLOCKS_JSON_SET || 'JSON Set'))
+        .appendField('📝 ' + (Blockly.Msg.BLOCKS_JSON_SET || 'JSON Set'))
         .appendField(new Blockly.FieldTextInput('key'), 'KEY')
         .appendField('=');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#8BC34A');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_SETNUMBERTOOLTIP || 'Set number value in JSON');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_SETNUMBERTOOLTIP || 'Set number value in JSON');
   }
 };
 
@@ -350,13 +350,13 @@ Blockly.Blocks['json_set_bool'] = {
   init: function() {
     this.appendValueInput('VALUE')
         .setCheck('Boolean')
-        .appendField('📝 ' + ((Blockly.Msg as any).BLOCKS_JSON_SET || 'JSON Set'))
+        .appendField('📝 ' + (Blockly.Msg.BLOCKS_JSON_SET || 'JSON Set'))
         .appendField(new Blockly.FieldTextInput('key'), 'KEY')
         .appendField('=');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#8BC34A');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_SETBOOLTOOLTIP || 'Set boolean value in JSON');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_SETBOOLTOOLTIP || 'Set boolean value in JSON');
   }
 };
 
@@ -373,10 +373,10 @@ javascriptGenerator.forBlock['json_set_bool'] = function(block: Blockly.Block) {
 Blockly.Blocks['json_to_string'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📝 ' + ((Blockly.Msg as any).BLOCKS_JSON_TOSTRING || 'JSON to String'));
+        .appendField('📝 ' + (Blockly.Msg.BLOCKS_JSON_TOSTRING || 'JSON to String'));
     this.setOutput(true, 'String');
     this.setColour('#8BC34A');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_TOSTRINGTOOLTIP || 'Convert JSON object to string');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_TOSTRINGTOOLTIP || 'Convert JSON object to string');
   }
 };
 
@@ -397,10 +397,10 @@ String jsonSerialize() {
 Blockly.Blocks['json_to_string_pretty'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📝 ' + ((Blockly.Msg as any).BLOCKS_JSON_TOSTRINGPRETTY || 'JSON to Formatted String'));
+        .appendField('📝 ' + (Blockly.Msg.BLOCKS_JSON_TOSTRINGPRETTY || 'JSON to Formatted String'));
     this.setOutput(true, 'String');
     this.setColour('#8BC34A');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_TOSTRINGPRETTYTOOLTIP || 'Convert JSON object to formatted string');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_TOSTRINGPRETTYTOOLTIP || 'Convert JSON object to formatted string');
   }
 };
 
@@ -423,22 +423,22 @@ String jsonSerializePretty() {
 Blockly.Blocks['json_simple'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📝 ' + ((Blockly.Msg as any).BLOCKS_JSON_SIMPLE || 'Simple JSON Create'));
+        .appendField('📝 ' + (Blockly.Msg.BLOCKS_JSON_SIMPLE || 'Simple JSON Create'));
     this.appendValueInput('KEY1')
         .setCheck('String')
-        .appendField((Blockly.Msg as any).BLOCKS_JSON_KEY1 || 'Key1');
+        .appendField(Blockly.Msg.BLOCKS_JSON_KEY1 || 'Key1');
     this.appendValueInput('VALUE1')
         .setCheck(['String', 'Number', 'Boolean'])
-        .appendField((Blockly.Msg as any).BLOCKS_JSON_VALUE1 || 'Value1');
+        .appendField(Blockly.Msg.BLOCKS_JSON_VALUE1 || 'Value1');
     this.appendValueInput('KEY2')
         .setCheck('String')
-        .appendField((Blockly.Msg as any).BLOCKS_JSON_KEY2 || 'Key2');
+        .appendField(Blockly.Msg.BLOCKS_JSON_KEY2 || 'Key2');
     this.appendValueInput('VALUE2')
         .setCheck(['String', 'Number', 'Boolean'])
-        .appendField((Blockly.Msg as any).BLOCKS_JSON_VALUE2 || 'Value2');
+        .appendField(Blockly.Msg.BLOCKS_JSON_VALUE2 || 'Value2');
     this.setOutput(true, 'String');
     this.setColour('#8BC34A');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_JSON_SIMPLETOOLTIP || 'Generate JSON from two key-value pairs');
+    this.setTooltip(Blockly.Msg.BLOCKS_JSON_SIMPLETOOLTIP || 'Generate JSON from two key-value pairs');
   }
 };
 

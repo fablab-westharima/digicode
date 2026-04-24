@@ -20,19 +20,19 @@ Blockly.Blocks['humanoid_init'] = {
   init: function() {
     const pins = getHumanoidPins();
     this.appendDummyInput()
-        .appendField('🤖 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_INIT_LABEL || 'Humanoid Init'))
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_LEFTLEG || 'left leg pin')
+        .appendField('🤖 ' + (Blockly.Msg.BLOCKS_HUMANOID_INIT_LABEL || 'Humanoid Init'))
+        .appendField(Blockly.Msg.BLOCKS_COMMON_LEFTLEG || 'left leg pin')
         .appendField(new Blockly.FieldNumber(pins.leftLeg, 0, 39), 'PIN_LL')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_RIGHTLEG || 'right leg pin')
+        .appendField(Blockly.Msg.BLOCKS_COMMON_RIGHTLEG || 'right leg pin')
         .appendField(new Blockly.FieldNumber(pins.rightLeg, 0, 39), 'PIN_RL')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_LEFTANKLE || 'left ankle pin')
+        .appendField(Blockly.Msg.BLOCKS_COMMON_LEFTANKLE || 'left ankle pin')
         .appendField(new Blockly.FieldNumber(pins.leftFoot, 0, 39), 'PIN_LF')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_RIGHTANKLE || 'right ankle pin')
+        .appendField(Blockly.Msg.BLOCKS_COMMON_RIGHTANKLE || 'right ankle pin')
         .appendField(new Blockly.FieldNumber(pins.rightFoot, 0, 39), 'PIN_RF');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_INIT_TOOLTIP || 'Initialize Humanoid robot (pin numbers from preset)');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_INIT_TOOLTIP || 'Initialize Humanoid robot (pin numbers from preset)');
   }
 };
 
@@ -53,11 +53,11 @@ javascriptGenerator.forBlock['humanoid_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_home'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🏠 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_HOME_LABEL || 'Humanoid Home'));
+        .appendField('🏠 ' + (Blockly.Msg.BLOCKS_HUMANOID_HOME_LABEL || 'Humanoid Home'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_HOME_TOOLTIP || 'Set Humanoid to upright position');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_HOME_TOOLTIP || 'Set Humanoid to upright position');
   }
 };
 
@@ -70,23 +70,23 @@ javascriptGenerator.forBlock['humanoid_home'] = function() {
 Blockly.Blocks['humanoid_walk'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🚶 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_WALK_LABEL || 'Humanoid Walk'))
+        .appendField('🚶 ' + (Blockly.Msg.BLOCKS_HUMANOID_WALK_LABEL || 'Humanoid Walk'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_STEPS || 'steps')
+        .appendField(Blockly.Msg.BLOCKS_COMMON_STEPS || 'steps')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_COMMON_FORWARD || 'forward', '1'],
-          [(Blockly.Msg as any).BLOCKS_COMMON_BACKWARD || 'backward', '-1']
+          [Blockly.Msg.BLOCKS_COMMON_FORWARD || 'forward', '1'],
+          [Blockly.Msg.BLOCKS_COMMON_BACKWARD || 'backward', '-1']
         ]), 'DIRECTION')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_SPEED || 'speed')
+        .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_COMMON_SPEEDNORMAL || 'normal', '1000'],
-          [(Blockly.Msg as any).BLOCKS_COMMON_SPEEDFAST || 'fast', '600'],
-          [(Blockly.Msg as any).BLOCKS_COMMON_SPEEDSLOW || 'slow', '1500']
+          [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', '1000'],
+          [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', '600'],
+          [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', '1500']
         ]), 'SPEED');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_WALK_TOOLTIP || 'Make Humanoid walk');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_WALK_TOOLTIP || 'Make Humanoid walk');
   }
 };
 
@@ -103,23 +103,23 @@ javascriptGenerator.forBlock['humanoid_walk'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_turn'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↻ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_TURN_LABEL || 'Humanoid Turn'))
+        .appendField('↻ ' + (Blockly.Msg.BLOCKS_HUMANOID_TURN_LABEL || 'Humanoid Turn'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
+        .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_COMMON_LEFT || 'left', '1'],
-          [(Blockly.Msg as any).BLOCKS_COMMON_RIGHT || 'right', '-1']
+          [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', '1'],
+          [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', '-1']
         ]), 'DIRECTION')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_SPEED || 'speed')
+        .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_COMMON_SPEEDNORMAL || 'normal', '1000'],
-          [(Blockly.Msg as any).BLOCKS_COMMON_SPEEDFAST || 'fast', '600'],
-          [(Blockly.Msg as any).BLOCKS_COMMON_SPEEDSLOW || 'slow', '1500']
+          [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', '1000'],
+          [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', '600'],
+          [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', '1500']
         ]), 'SPEED');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_TURN_TOOLTIP || 'Make Humanoid turn');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_TURN_TOOLTIP || 'Make Humanoid turn');
   }
 };
 
@@ -136,13 +136,13 @@ javascriptGenerator.forBlock['humanoid_turn'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_jump'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⬆️ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_JUMP_LABEL || 'Humanoid Jump'))
+        .appendField('⬆️ ' + (Blockly.Msg.BLOCKS_HUMANOID_JUMP_LABEL || 'Humanoid Jump'))
         .appendField(new Blockly.FieldNumber(1, 1, 5), 'STEPS')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
+        .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_JUMP_TOOLTIP || 'Make Humanoid jump');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_JUMP_TOOLTIP || 'Make Humanoid jump');
   }
 };
 
@@ -156,13 +156,13 @@ javascriptGenerator.forBlock['humanoid_jump'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_dance'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💃 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_DANCE_LABEL || 'Humanoid Dance'))
+        .appendField('💃 ' + (Blockly.Msg.BLOCKS_HUMANOID_DANCE_LABEL || 'Humanoid Dance'))
         .appendField(new Blockly.FieldNumber(4, 1, 10), 'STEPS')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
+        .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_DANCE_TOOLTIP || 'Make Humanoid dance');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_DANCE_TOOLTIP || 'Make Humanoid dance');
   }
 };
 
@@ -176,13 +176,13 @@ javascriptGenerator.forBlock['humanoid_dance'] = function(block: Blockly.Block) 
 Blockly.Blocks['humanoid_swing'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('〜 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_SWING_LABEL || 'Humanoid Swing'))
+        .appendField('〜 ' + (Blockly.Msg.BLOCKS_HUMANOID_SWING_LABEL || 'Humanoid Swing'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
+        .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_SWING_TOOLTIP || 'Swing Humanoid side to side');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_SWING_TOOLTIP || 'Swing Humanoid side to side');
   }
 };
 
@@ -196,17 +196,17 @@ javascriptGenerator.forBlock['humanoid_swing'] = function(block: Blockly.Block) 
 Blockly.Blocks['humanoid_bend'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↔️ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_BEND_LABEL || 'Humanoid Bend'))
+        .appendField('↔️ ' + (Blockly.Msg.BLOCKS_HUMANOID_BEND_LABEL || 'Humanoid Bend'))
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_COMMON_LEFT || 'left', 'left'],
-          [(Blockly.Msg as any).BLOCKS_COMMON_RIGHT || 'right', 'right']
+          [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', 'left'],
+          [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', 'right']
         ]), 'DIRECTION')
         .appendField(new Blockly.FieldNumber(1, 1, 5), 'STEPS')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
+        .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_BEND_TOOLTIP || 'Bend Humanoid left or right');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_BEND_TOOLTIP || 'Bend Humanoid left or right');
   }
 };
 
@@ -226,17 +226,17 @@ javascriptGenerator.forBlock['humanoid_bend'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_moonwalk'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🕺 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_MOONWALK_LABEL || 'Humanoid Moonwalk'))
+        .appendField('🕺 ' + (Blockly.Msg.BLOCKS_HUMANOID_MOONWALK_LABEL || 'Humanoid Moonwalk'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_STEPS || 'steps')
+        .appendField(Blockly.Msg.BLOCKS_COMMON_STEPS || 'steps')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_COMMON_RIGHT || 'right', '1'],
-          [(Blockly.Msg as any).BLOCKS_COMMON_LEFT || 'left', '-1']
+          [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', '1'],
+          [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', '-1']
         ]), 'DIRECTION');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_MOONWALK_TOOLTIP || 'Make Humanoid moonwalk');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_MOONWALK_TOOLTIP || 'Make Humanoid moonwalk');
   }
 };
 
@@ -252,26 +252,26 @@ javascriptGenerator.forBlock['humanoid_moonwalk'] = function(block: Blockly.Bloc
 Blockly.Blocks['humanoid_gesture'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('😊 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_LABEL || 'Humanoid Gesture'))
+        .appendField('😊 ' + (Blockly.Msg.BLOCKS_HUMANOID_GESTURE_LABEL || 'Humanoid Gesture'))
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_HAPPY || 'Happy', 'Happy'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_SUPERHAPPY || 'Super Happy', 'SuperHappy'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_SAD || 'Sad', 'Sad'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_VICTORY || 'Victory', 'Victory'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_ANGRY || 'Angry', 'Angry'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_SLEEPING || 'Sleeping', 'Sleeping'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_FRETFUL || 'Fretful', 'Fretful'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_LOVE || 'Love', 'Love'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_CONFUSED || 'Confused', 'Confused'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_FART || 'Fart', 'Fart'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_WAVE || 'Wave', 'Wave'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_MAGIC || 'Magic', 'Magic'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_FAIL || 'Fail', 'Fail']
+          [Blockly.Msg.BLOCKS_HUMANOID_GESTURE_HAPPY || 'Happy', 'Happy'],
+          [Blockly.Msg.BLOCKS_HUMANOID_GESTURE_SUPERHAPPY || 'Super Happy', 'SuperHappy'],
+          [Blockly.Msg.BLOCKS_HUMANOID_GESTURE_SAD || 'Sad', 'Sad'],
+          [Blockly.Msg.BLOCKS_HUMANOID_GESTURE_VICTORY || 'Victory', 'Victory'],
+          [Blockly.Msg.BLOCKS_HUMANOID_GESTURE_ANGRY || 'Angry', 'Angry'],
+          [Blockly.Msg.BLOCKS_HUMANOID_GESTURE_SLEEPING || 'Sleeping', 'Sleeping'],
+          [Blockly.Msg.BLOCKS_HUMANOID_GESTURE_FRETFUL || 'Fretful', 'Fretful'],
+          [Blockly.Msg.BLOCKS_HUMANOID_GESTURE_LOVE || 'Love', 'Love'],
+          [Blockly.Msg.BLOCKS_HUMANOID_GESTURE_CONFUSED || 'Confused', 'Confused'],
+          [Blockly.Msg.BLOCKS_HUMANOID_GESTURE_FART || 'Fart', 'Fart'],
+          [Blockly.Msg.BLOCKS_HUMANOID_GESTURE_WAVE || 'Wave', 'Wave'],
+          [Blockly.Msg.BLOCKS_HUMANOID_GESTURE_MAGIC || 'Magic', 'Magic'],
+          [Blockly.Msg.BLOCKS_HUMANOID_GESTURE_FAIL || 'Fail', 'Fail']
         ]), 'GESTURE');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_GESTURE_TOOLTIP || 'Humanoid expresses emotions with movement and sound');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_GESTURE_TOOLTIP || 'Humanoid expresses emotions with movement and sound');
   }
 };
 
@@ -285,32 +285,32 @@ javascriptGenerator.forBlock['humanoid_gesture'] = function(block: Blockly.Block
 Blockly.Blocks['humanoid_sound'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔊 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_LABEL || 'Humanoid Sound'))
+        .appendField('🔊 ' + (Blockly.Msg.BLOCKS_HUMANOID_SOUND_LABEL || 'Humanoid Sound'))
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_CONNECTION || 'Connection', 'S_connection'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_DISCONNECTION || 'Disconnection', 'S_disconnection'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_BUTTONPUSHED || 'Button Pushed', 'S_buttonPushed'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_MODE1 || 'Mode 1', 'S_mode1'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_MODE2 || 'Mode 2', 'S_mode2'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_MODE3 || 'Mode 3', 'S_mode3'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_SURPRISE || 'Surprise', 'S_surprise'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_OHOOH || 'Oh Ooh', 'S_OhOoh'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_OHOOH2 || 'Oh Ooh 2', 'S_OhOoh2'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_CUDDLY || 'Cuddly', 'S_cuddly'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_SLEEPING || 'Sleeping', 'S_sleeping'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_HAPPY || 'Happy', 'S_happy'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_SUPERHAPPY || 'Super Happy', 'S_superHappy'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_HAPPYSHORT || 'Happy Short', 'S_happy_short'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_SAD || 'Sad', 'S_sad'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_CONFUSED || 'Confused', 'S_confused'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_FART1 || 'Fart 1', 'S_fart1'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_FART2 || 'Fart 2', 'S_fart2'],
-          [(Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_FART3 || 'Fart 3', 'S_fart3']
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_CONNECTION || 'Connection', 'S_connection'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_DISCONNECTION || 'Disconnection', 'S_disconnection'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_BUTTONPUSHED || 'Button Pushed', 'S_buttonPushed'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_MODE1 || 'Mode 1', 'S_mode1'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_MODE2 || 'Mode 2', 'S_mode2'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_MODE3 || 'Mode 3', 'S_mode3'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_SURPRISE || 'Surprise', 'S_surprise'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_OHOOH || 'Oh Ooh', 'S_OhOoh'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_OHOOH2 || 'Oh Ooh 2', 'S_OhOoh2'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_CUDDLY || 'Cuddly', 'S_cuddly'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_SLEEPING || 'Sleeping', 'S_sleeping'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_HAPPY || 'Happy', 'S_happy'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_SUPERHAPPY || 'Super Happy', 'S_superHappy'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_HAPPYSHORT || 'Happy Short', 'S_happy_short'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_SAD || 'Sad', 'S_sad'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_CONFUSED || 'Confused', 'S_confused'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_FART1 || 'Fart 1', 'S_fart1'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_FART2 || 'Fart 2', 'S_fart2'],
+          [Blockly.Msg.BLOCKS_HUMANOID_SOUND_FART3 || 'Fart 3', 'S_fart3']
         ]), 'SOUND');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_SOUND_TOOLTIP || 'Humanoid plays a sound');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_SOUND_TOOLTIP || 'Humanoid plays a sound');
   }
 };
 
@@ -325,17 +325,17 @@ javascriptGenerator.forBlock['humanoid_sound'] = function(block: Blockly.Block) 
 Blockly.Blocks['humanoid_crusaito'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🦵 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_CRUSAITO_LABEL || 'Humanoid Crusaito'))
+        .appendField('🦵 ' + (Blockly.Msg.BLOCKS_HUMANOID_CRUSAITO_LABEL || 'Humanoid Crusaito'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
+        .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_COMMON_LEFT || 'left', '1'],
-          [(Blockly.Msg as any).BLOCKS_COMMON_RIGHT || 'right', '-1']
+          [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', '1'],
+          [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', '-1']
         ]), 'DIRECTION');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_CRUSAITO_TOOLTIP || 'Move with crossed legs');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_CRUSAITO_TOOLTIP || 'Move with crossed legs');
   }
 };
 
@@ -349,17 +349,17 @@ javascriptGenerator.forBlock['humanoid_crusaito'] = function(block: Blockly.Bloc
 Blockly.Blocks['humanoid_flapping'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🦅 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_FLAPPING_LABEL || 'Humanoid Flapping'))
+        .appendField('🦅 ' + (Blockly.Msg.BLOCKS_HUMANOID_FLAPPING_LABEL || 'Humanoid Flapping'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
+        .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_COMMON_FRONT || 'front', '1'],
-          [(Blockly.Msg as any).BLOCKS_COMMON_BACK || 'back', '-1']
+          [Blockly.Msg.BLOCKS_COMMON_FRONT || 'front', '1'],
+          [Blockly.Msg.BLOCKS_COMMON_BACK || 'back', '-1']
         ]), 'DIRECTION');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_FLAPPING_TOOLTIP || 'Make flapping motion');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_FLAPPING_TOOLTIP || 'Make flapping motion');
   }
 };
 
@@ -373,13 +373,13 @@ javascriptGenerator.forBlock['humanoid_flapping'] = function(block: Blockly.Bloc
 Blockly.Blocks['humanoid_tiptoe_swing'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🩰 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_TIPTOESWING_LABEL || 'Humanoid Tiptoe Swing'))
+        .appendField('🩰 ' + (Blockly.Msg.BLOCKS_HUMANOID_TIPTOESWING_LABEL || 'Humanoid Tiptoe Swing'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
+        .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_TIPTOESWING_TOOLTIP || 'Swing on tiptoes');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_TIPTOESWING_TOOLTIP || 'Swing on tiptoes');
   }
 };
 
@@ -392,13 +392,13 @@ javascriptGenerator.forBlock['humanoid_tiptoe_swing'] = function(block: Blockly.
 Blockly.Blocks['humanoid_jitter'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('😰 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_JITTER_LABEL || 'Humanoid Jitter'))
+        .appendField('😰 ' + (Blockly.Msg.BLOCKS_HUMANOID_JITTER_LABEL || 'Humanoid Jitter'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
+        .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_JITTER_TOOLTIP || 'Make jittering motion');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_JITTER_TOOLTIP || 'Make jittering motion');
   }
 };
 
@@ -411,17 +411,17 @@ javascriptGenerator.forBlock['humanoid_jitter'] = function(block: Blockly.Block)
 Blockly.Blocks['humanoid_ascending_turn'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔄 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_ASCENDINGTURN_LABEL || 'Humanoid Ascending Turn'))
+        .appendField('🔄 ' + (Blockly.Msg.BLOCKS_HUMANOID_ASCENDINGTURN_LABEL || 'Humanoid Ascending Turn'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
+        .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_COMMON_LEFT || 'left', '1'],
-          [(Blockly.Msg as any).BLOCKS_COMMON_RIGHT || 'right', '-1']
+          [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', '1'],
+          [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', '-1']
         ]), 'DIRECTION');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_ASCENDINGTURN_TOOLTIP || 'Turn while ascending');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_ASCENDINGTURN_TOOLTIP || 'Turn while ascending');
   }
 };
 
@@ -435,17 +435,17 @@ javascriptGenerator.forBlock['humanoid_ascending_turn'] = function(block: Blockl
 Blockly.Blocks['humanoid_shake_leg'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🦿 ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_SHAKELEG_LABEL || 'Humanoid Shake Leg'))
+        .appendField('🦿 ' + (Blockly.Msg.BLOCKS_HUMANOID_SHAKELEG_LABEL || 'Humanoid Shake Leg'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times')
+        .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_COMMON_LEFTFOOT || 'left foot', '1'],
-          [(Blockly.Msg as any).BLOCKS_COMMON_RIGHTFOOT || 'right foot', '-1']
+          [Blockly.Msg.BLOCKS_COMMON_LEFTFOOT || 'left foot', '1'],
+          [Blockly.Msg.BLOCKS_COMMON_RIGHTFOOT || 'right foot', '-1']
         ]), 'DIRECTION');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_SHAKELEG_TOOLTIP || 'Shake leg');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_SHAKELEG_TOOLTIP || 'Shake leg');
   }
 };
 
@@ -459,13 +459,13 @@ javascriptGenerator.forBlock['humanoid_shake_leg'] = function(block: Blockly.Blo
 Blockly.Blocks['humanoid_updown'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⬆️⬇️ ' + ((Blockly.Msg as any).BLOCKS_HUMANOID_UPDOWN_LABEL || 'Humanoid Up Down'))
+        .appendField('⬆️⬇️ ' + (Blockly.Msg.BLOCKS_HUMANOID_UPDOWN_LABEL || 'Humanoid Up Down'))
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
-        .appendField((Blockly.Msg as any).BLOCKS_COMMON_TIMES || 'times');
+        .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HUMANOID_UPDOWN_TOOLTIP || 'Move up and down');
+    this.setTooltip(Blockly.Msg.BLOCKS_HUMANOID_UPDOWN_TOOLTIP || 'Move up and down');
   }
 };
 
