@@ -391,6 +391,70 @@
       "bleWriteSuccess": "✓ Escrita BLE concluída!\n\nO dispositivo será reiniciado automaticamente.",
       "bleWriteError": "✗ Erro de escrita BLE:\n{{error}}"
     },
+    "compileLog": {
+      "title": {
+        "connectionCheckRunning": "A verificar ligação...",
+        "connectionCheckResult": "Resultado da verificação de ligação",
+        "compilingRunning": "A compilar...",
+        "compilingResult": "Resultado da compilação"
+      },
+      "description": {
+        "connectionCheck": "A verificar a ligação ao dispositivo WiFi",
+        "compiling": "A compilar código Arduino C++ para ESP32"
+      },
+      "waiting": "A aguardar o registo...",
+      "connectionCheck": {
+        "device": "[Verificação de ligação] Dispositivo: {{name}} ({{ip}})",
+        "mdnsResolving": "[Verificação de ligação] A resolver mDNS: {{hostname}}",
+        "mdnsResolved": "[Verificação de ligação] IP resolvido: {{ip}}",
+        "testing": "[Verificação de ligação] A testar ligação... ({{attempt}}/{{max}})",
+        "retrying": "[Verificação de ligação] Sem resposta, a tentar novamente em {{delay}} s...",
+        "success": "[Verificação de ligação] ✓ Ligação ao dispositivo OK",
+        "failure": "[Verificação de ligação] ✗ {{error}}"
+      },
+      "errors": {
+        "deviceNotFound": "Dispositivo «{{hostname}}» não encontrado. Verifique a alimentação e a ligação WiFi.",
+        "noResponse": "O dispositivo não responde. Verifique a alimentação e a ligação WiFi.",
+        "exception": "Erro de verificação de ligação: {{error}}"
+      },
+      "analysis": {
+        "start": "A iniciar análise do código...",
+        "usbStart": "A iniciar compilação USB (modelo DigiCodeUSB.ino)...",
+        "bleStart": "A iniciar compilação BLE (modelo DigiCodeBLE.ino)...",
+        "includesDetected": "#include: {{count}} detetado(s)",
+        "globalsFound": "Variáveis globais: {{status}}",
+        "setupFound": "setup(): {{status}}",
+        "loopFound": "loop(): {{status}}",
+        "detected": "detetado",
+        "none": "nenhum"
+      },
+      "server": {
+        "sending": "A enviar pedido de compilação para o servidor...",
+        "sendingUsb": "A enviar pedido de compilação para o servidor (connectionType=usb)...",
+        "sendingBle": "A enviar pedido de compilação para o servidor (connectionType=ble)..."
+      },
+      "result": {
+        "compileSuccess": "✓ Compilação bem-sucedida!",
+        "compileSuccessUsb": "✓ Compilação USB bem-sucedida!",
+        "compileSuccessBle": "✓ Compilação BLE bem-sucedida!",
+        "firmwareSize": "Tamanho do binário: {{size}} KB",
+        "fullPackageInfo": "📦 Modo fullPackage: 4 ficheiros (bootloader, partitions, boot_app0, firmware) obtidos",
+        "fullPackageUsb": "📦 Modo fullPackage: 4 ficheiros obtidos",
+        "compileError": "✗ Erro de compilação: {{error}}",
+        "compileErrorNoBinary": "✗ Erro de compilação: Não foi possível obter os dados binários",
+        "details": "Detalhes: {{details}}",
+        "genericError": "✗ Erro: {{error}}"
+      },
+      "statusBar": {
+        "binaryMissing": "Não foi possível obter os dados binários",
+        "compilingUsb": "A compilar firmware USB...",
+        "compilingBle": "A compilar firmware BLE...",
+        "compileSuccessUsb": "Compilação USB bem-sucedida",
+        "compileSuccessBle": "Compilação BLE bem-sucedida",
+        "compileFailed": "Falha na compilação",
+        "unknownError": "Erro desconhecido"
+      }
+    },
     "unknownError": "Erro desconhecido",
     "ipResolved": "Endereço IP resolvido",
     "deviceResponseOk": "Resposta do dispositivo OK",

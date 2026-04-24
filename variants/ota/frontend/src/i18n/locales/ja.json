@@ -391,6 +391,70 @@
       "bleWriteSuccess": "✓ BLE書き込みが完了しました！\n\nデバイスが自動的に再起動します。",
       "bleWriteError": "✗ BLE書き込みエラー:\n{{error}}"
     },
+    "compileLog": {
+      "title": {
+        "connectionCheckRunning": "接続確認中...",
+        "connectionCheckResult": "接続確認結果",
+        "compilingRunning": "コンパイル中...",
+        "compilingResult": "コンパイル結果"
+      },
+      "description": {
+        "connectionCheck": "WiFiデバイスへの接続を確認しています",
+        "compiling": "Arduino C++コードをESP32用にコンパイルしています"
+      },
+      "waiting": "ログを待機中...",
+      "connectionCheck": {
+        "device": "[接続確認] デバイス: {{name}} ({{ip}})",
+        "mdnsResolving": "[接続確認] mDNS解決中: {{hostname}}",
+        "mdnsResolved": "[接続確認] IP解決: {{ip}}",
+        "testing": "[接続確認] 接続テスト中... ({{attempt}}/{{max}})",
+        "retrying": "[接続確認] 応答なし、{{delay}}秒後にリトライ...",
+        "success": "[接続確認] ✓ デバイス接続OK",
+        "failure": "[接続確認] ✗ {{error}}"
+      },
+      "errors": {
+        "deviceNotFound": "デバイス「{{hostname}}」が見つかりません。電源とWiFi接続を確認してください。",
+        "noResponse": "デバイスが応答しません。電源とWiFi接続を確認してください。",
+        "exception": "接続確認エラー: {{error}}"
+      },
+      "analysis": {
+        "start": "コード解析開始...",
+        "usbStart": "USB用コンパイル開始（DigiCodeUSB.inoテンプレート）...",
+        "bleStart": "BLE用コンパイル開始（DigiCodeBLE.inoテンプレート）...",
+        "includesDetected": "#include: {{count}}件検出",
+        "globalsFound": "グローバル変数: {{status}}",
+        "setupFound": "setup(): {{status}}",
+        "loopFound": "loop(): {{status}}",
+        "detected": "検出",
+        "none": "なし"
+      },
+      "server": {
+        "sending": "サーバーにコンパイルリクエスト送信中...",
+        "sendingUsb": "サーバーにコンパイルリクエスト送信中（connectionType=usb）...",
+        "sendingBle": "サーバーにコンパイルリクエスト送信中（connectionType=ble）..."
+      },
+      "result": {
+        "compileSuccess": "✓ コンパイル成功！",
+        "compileSuccessUsb": "✓ USB用コンパイル成功！",
+        "compileSuccessBle": "✓ BLE用コンパイル成功！",
+        "firmwareSize": "バイナリサイズ: {{size}} KB",
+        "fullPackageInfo": "📦 fullPackageモード: 4ファイル（bootloader, partitions, boot_app0, firmware）取得",
+        "fullPackageUsb": "📦 fullPackageモード: 4ファイル取得完了",
+        "compileError": "✗ コンパイルエラー: {{error}}",
+        "compileErrorNoBinary": "✗ コンパイルエラー: バイナリデータが取得できませんでした",
+        "details": "詳細: {{details}}",
+        "genericError": "✗ エラー: {{error}}"
+      },
+      "statusBar": {
+        "binaryMissing": "バイナリデータが取得できませんでした",
+        "compilingUsb": "USB用ファームウェアをコンパイル中...",
+        "compilingBle": "BLE用ファームウェアをコンパイル中...",
+        "compileSuccessUsb": "USB用コンパイル成功",
+        "compileSuccessBle": "BLE用コンパイル成功",
+        "compileFailed": "コンパイル失敗",
+        "unknownError": "不明なエラー"
+      }
+    },
     "unknownError": "不明なエラー",
     "ipResolved": "IPアドレス解決",
     "deviceResponseOk": "デバイス応答確認OK",

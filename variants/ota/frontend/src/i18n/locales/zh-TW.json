@@ -391,6 +391,70 @@
       "bleWriteSuccess": "✓ BLE 寫入完成！\n\n裝置將會自動重新啟動。",
       "bleWriteError": "✗ BLE 寫入錯誤：\n{{error}}"
     },
+    "compileLog": {
+      "title": {
+        "connectionCheckRunning": "連線確認中...",
+        "connectionCheckResult": "連線確認結果",
+        "compilingRunning": "編譯中...",
+        "compilingResult": "編譯結果"
+      },
+      "description": {
+        "connectionCheck": "正在確認與 WiFi 裝置的連線",
+        "compiling": "正在將 Arduino C++ 程式碼編譯為 ESP32 韌體"
+      },
+      "waiting": "等待日誌中...",
+      "connectionCheck": {
+        "device": "[連線確認] 裝置：{{name}} ({{ip}})",
+        "mdnsResolving": "[連線確認] 正在解析 mDNS：{{hostname}}",
+        "mdnsResolved": "[連線確認] IP 已解析：{{ip}}",
+        "testing": "[連線確認] 正在測試連線... ({{attempt}}/{{max}})",
+        "retrying": "[連線確認] 未收到回應，{{delay}} 秒後重試...",
+        "success": "[連線確認] ✓ 裝置連線正常",
+        "failure": "[連線確認] ✗ {{error}}"
+      },
+      "errors": {
+        "deviceNotFound": "找不到裝置「{{hostname}}」。請確認電源與 WiFi 連線。",
+        "noResponse": "裝置沒有回應。請確認電源與 WiFi 連線。",
+        "exception": "連線確認錯誤：{{error}}"
+      },
+      "analysis": {
+        "start": "開始分析程式碼...",
+        "usbStart": "開始 USB 編譯（DigiCodeUSB.ino 範本）...",
+        "bleStart": "開始 BLE 編譯（DigiCodeBLE.ino 範本）...",
+        "includesDetected": "#include：偵測到 {{count}} 個",
+        "globalsFound": "全域變數：{{status}}",
+        "setupFound": "setup()：{{status}}",
+        "loopFound": "loop()：{{status}}",
+        "detected": "已偵測",
+        "none": "無"
+      },
+      "server": {
+        "sending": "正在向伺服器發送編譯請求...",
+        "sendingUsb": "正在向伺服器發送編譯請求（connectionType=usb）...",
+        "sendingBle": "正在向伺服器發送編譯請求（connectionType=ble）..."
+      },
+      "result": {
+        "compileSuccess": "✓ 編譯成功！",
+        "compileSuccessUsb": "✓ USB 編譯成功！",
+        "compileSuccessBle": "✓ BLE 編譯成功！",
+        "firmwareSize": "二進位大小：{{size}} KB",
+        "fullPackageInfo": "📦 fullPackage 模式：已取得 4 個檔案（bootloader、partitions、boot_app0、firmware）",
+        "fullPackageUsb": "📦 fullPackage 模式：已取得 4 個檔案",
+        "compileError": "✗ 編譯錯誤：{{error}}",
+        "compileErrorNoBinary": "✗ 編譯錯誤：無法取得二進位資料",
+        "details": "詳細資訊：{{details}}",
+        "genericError": "✗ 錯誤：{{error}}"
+      },
+      "statusBar": {
+        "binaryMissing": "無法取得二進位資料",
+        "compilingUsb": "正在編譯 USB 韌體...",
+        "compilingBle": "正在編譯 BLE 韌體...",
+        "compileSuccessUsb": "USB 編譯成功",
+        "compileSuccessBle": "BLE 編譯成功",
+        "compileFailed": "編譯失敗",
+        "unknownError": "不明錯誤"
+      }
+    },
     "unknownError": "不明錯誤",
     "ipResolved": "IP 位址已解析",
     "deviceResponseOk": "裝置回應正常",

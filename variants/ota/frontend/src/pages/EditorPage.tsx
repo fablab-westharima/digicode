@@ -94,6 +94,11 @@ export function EditorPage() {
   const [showSerialPlotter, setShowSerialPlotter] = useState(false);
   const [isCompiling, setIsCompiling] = useState(false);
   const [compileLog, setCompileLog] = useState<string[]>([]);
+  const [compileLogMeta, setCompileLogMeta] = useState({
+    hasConnectionCheck: false,
+    hasCodeAnalysis: false,
+    hasError: false,
+  });
   const [compileDialogOpen, setCompileDialogOpen] = useState(false);
   const [flashDialogOpen, setFlashDialogOpen] = useState(false);
   const [flashProgress, setFlashProgress] = useState<FlashProgress>({
@@ -418,6 +423,29 @@ export function EditorPage() {
     }
   };
 
+  // コンパイルログ state を初期化（flag meta も同時に reset）
+  const resetCompileLog = () => {
+    setCompileLog([]);
+    setCompileLogMeta({ hasConnectionCheck: false, hasCodeAnalysis: false, hasError: false });
+  };
+
+  // コンパイルログへの追記（phase/error フラグを state meta に反映）
+  // 判定は compileLogMeta で行うため、ログ文字列は i18n 化されても panel 制御は壊れない
+  type LogPhase = 'connection-check' | 'code-analysis';
+  type LogOpts = { phase?: LogPhase; isError?: boolean };
+  const addLog = (message: string, opts?: LogOpts) => {
+    setCompileLog(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${message}`]);
+    if (opts?.phase === 'connection-check') {
+      setCompileLogMeta(m => ({ ...m, hasConnectionCheck: true }));
+    }
+    if (opts?.phase === 'code-analysis') {
+      setCompileLogMeta(m => ({ ...m, hasCodeAnalysis: true }));
+    }
+    if (opts?.isError) {
+      setCompileLogMeta(m => ({ ...m, hasError: true }));
+    }
+  };
+
   // デバイス接続確認（コンパイル前チェック用）- リトライ付き
   const checkDeviceConnection = async (
     deviceUrl: string,
@@ -435,19 +463,19 @@ export function EditorPage() {
       let resolvedUrl = deviceUrl;
       if (deviceUrl.includes('.local')) {
         const hostname = new URL(deviceUrl).hostname;
-        log(`[接続確認] mDNS解決中: ${hostname}`);
+        log(t('editor.compileLog.connectionCheck.mdnsResolving', { hostname }));
         const resolvedIp = await firmwareService.resolveMdns(hostname);
         if (resolvedIp) {
           resolvedUrl = `http://${resolvedIp}`;
-          log(`[接続確認] IP解決: ${resolvedIp}`);
+          log(t('editor.compileLog.connectionCheck.mdnsResolved', { ip: resolvedIp }));
         } else {
-          return { ok: false, error: `デバイス「${hostname}」が見つかりません。電源とWiFi接続を確認してください。` };
+          return { ok: false, error: t('editor.compileLog.errors.deviceNotFound', { hostname }) };
         }
       }
 
       // デバイスにping（リトライ付き）
       for (let attempt = 0; attempt < maxRetries; attempt++) {
-        log(`[接続確認] 接続テスト中... (${attempt + 1}/${maxRetries})`);
+        log(t('editor.compileLog.connectionCheck.testing', { attempt: attempt + 1, max: maxRetries }));
         const online = await firmwareService.checkDeviceOnline(resolvedUrl, 30000);
         if (online) {
           return { ok: true, resolvedUrl };
@@ -455,14 +483,14 @@ export function EditorPage() {
 
         // 最後のリトライでなければ待機
         if (attempt < maxRetries - 1) {
-          log(`[接続確認] 応答なし、${retryDelay / 1000}秒後にリトライ...`);
+          log(t('editor.compileLog.connectionCheck.retrying', { delay: retryDelay / 1000 }));
           await new Promise(resolve => setTimeout(resolve, retryDelay));
         }
       }
 
-      return { ok: false, error: 'デバイスが応答しません。電源とWiFi接続を確認してください。' };
+      return { ok: false, error: t('editor.compileLog.errors.noResponse') };
     } catch (error) {
-      return { ok: false, error: `接続確認エラー: ${error instanceof Error ? error.message : '不明なエラー'}` };
+      return { ok: false, error: t('editor.compileLog.errors.exception', { error: error instanceof Error ? error.message : t('editor.unknownError') }) };
     }
   };
 
@@ -513,23 +541,19 @@ export function EditorPage() {
   // OTA/USB書込み用のコンパイル（firmware.binのBlobを返す）
   const executeCompile = async (format: 'bin' | 'uf2' = 'bin'): Promise<Blob | null> => {
     setIsCompiling(true);
-    setCompileLog([]);
+    resetCompileLog();
     setCompileDialogOpen(true);
     setStatusBarState('compiling');
     setStatusBarMessage(t('status.compilingCode'));
 
-    const addLog = (message: string) => {
-      setCompileLog(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${message}`]);
-    };
-
     try {
-      addLog('コード解析開始...');
+      addLog(t('editor.compileLog.analysis.start'), { phase: 'code-analysis' });
 
       // コードを解析してincludes, globals, setup, loopに分割
       // #includeを抽出
       const includeLines = generatedCode.match(/^#include\s+.+$/gm) || [];
       const includes = includeLines.join('\n');
-      addLog(`#include: ${includeLines.length}件検出`);
+      addLog(t('editor.compileLog.analysis.includesDetected', { count: includeLines.length }));
 
       // 括弧のバランスを考慮した抽出関数
       const extractFunctionBody = (code: string, functionName: string): string => {
@@ -559,16 +583,18 @@ export function EditorPage() {
         ? generatedCode.substring(0, setupMatch.index).replace(/^#include\s+.+$\n?/gm, '').trim()
         : '';
 
-      addLog(`グローバル変数: ${globals ? '検出' : 'なし'}`);
-      addLog(`setup(): ${setupCode ? '検出' : 'なし'}`);
-      addLog(`loop(): ${loopCode ? '検出' : 'なし'}`);
+      const detected = t('editor.compileLog.analysis.detected');
+      const none = t('editor.compileLog.analysis.none');
+      addLog(t('editor.compileLog.analysis.globalsFound', { status: globals ? detected : none }));
+      addLog(t('editor.compileLog.analysis.setupFound', { status: setupCode ? detected : none }));
+      addLog(t('editor.compileLog.analysis.loopFound', { status: loopCode ? detected : none }));
 
       console.log('Compiling with includes:', includes);
       console.log('Compiling with globals:', globals);
       console.log('Compiling with setup:', setupCode);
       console.log('Compiling with loop:', loopCode);
 
-      addLog('サーバーにコンパイルリクエスト送信中...');
+      addLog(t('editor.compileLog.server.sending'));
 
       // コンパイル実行
       const result = await compileService.compile(includes, globals, setupCode, loopCode, undefined, format);
@@ -579,20 +605,20 @@ export function EditorPage() {
         const firmwareBinary = result.fullPackage?.firmware || result.binary || null;
 
         if (!firmwareBinary) {
-          addLog('✗ コンパイルエラー: バイナリデータが取得できませんでした');
+          addLog(t('editor.compileLog.result.compileErrorNoBinary'), { isError: true });
           setIsCompiling(false);
           setStatusBarState('error');
-          setStatusBarMessage('バイナリデータが取得できませんでした');
+          setStatusBarMessage(t('editor.compileLog.statusBar.binaryMissing'));
           return null;
         }
 
         // サイズ表示
         const firmwareSize = firmwareBinary.size;
 
-        addLog('✓ コンパイル成功！');
-        addLog(`バイナリサイズ: ${(firmwareSize / 1024).toFixed(1)} KB`);
+        addLog(t('editor.compileLog.result.compileSuccess'));
+        addLog(t('editor.compileLog.result.firmwareSize', { size: (firmwareSize / 1024).toFixed(1) }));
         if (result.fullPackage) {
-          addLog('📦 fullPackageモード: 4ファイル（bootloader, partitions, boot_app0, firmware）取得');
+          addLog(t('editor.compileLog.result.fullPackageInfo'));
         }
 
         // fullPackageの場合もfirmware.binだけを保存（OTA用）
@@ -610,9 +636,9 @@ export function EditorPage() {
         // fullPackageモードでもfirmwareだけを返す（OTA updateはfirmware.binのみ必要）
         return firmwareBinary;
       } else {
-        addLog(`✗ コンパイルエラー: ${result.error}`);
+        addLog(t('editor.compileLog.result.compileError', { error: result.error }), { isError: true });
         if (result.details) {
-          addLog(`詳細: ${result.details}`);
+          addLog(t('editor.compileLog.result.details', { details: result.details }));
         }
         setIsCompiling(false);
         setStatusBarState('error');
@@ -620,7 +646,7 @@ export function EditorPage() {
         return null;
       }
     } catch (error) {
-      addLog(`✗ エラー: ${error instanceof Error ? error.message : '不明なエラー'}`);
+      addLog(t('editor.compileLog.result.genericError', { error: error instanceof Error ? error.message : t('editor.unknownError') }), { isError: true });
       setIsCompiling(false);
       setStatusBarState('error');
       setStatusBarMessage(error instanceof Error ? error.message : t('status.unknownError'));
@@ -713,18 +739,17 @@ export function EditorPage() {
     await connectWifi();
 
     // コンパイル前にデバイス接続確認
-    setCompileLog([
-      `[接続確認] デバイス: ${device.name} (${device.ipAddress})`
-    ]);
+    resetCompileLog();
+    addLog(t('editor.compileLog.connectionCheck.device', { name: device.name, ip: device.ipAddress }), { phase: 'connection-check' });
     setCompileDialogOpen(true);
     setIsCompiling(true);
 
     const checkResult = await checkDeviceConnection(
       deviceUrl,
-      (msg) => setCompileLog(prev => [...prev, msg])
+      (msg) => addLog(msg, { phase: 'connection-check' })
     );
     if (!checkResult.ok) {
-      setCompileLog(prev => [...prev, `[接続確認] ✗ ${checkResult.error}`]);
+      addLog(t('editor.compileLog.connectionCheck.failure', { error: checkResult.error }), { phase: 'connection-check', isError: true });
       setIsCompiling(false);
       await new Promise(resolve => setTimeout(resolve, 2000));
       alert(t('editor.alerts.deviceConnectionError', { error: checkResult.error }));
@@ -732,7 +757,7 @@ export function EditorPage() {
       return;
     }
 
-    setCompileLog(prev => [...prev, '[接続確認] ✓ デバイス接続OK']);
+    addLog(t('editor.compileLog.connectionCheck.success'), { phase: 'connection-check' });
     setCompileDialogOpen(false);
     setIsCompiling(false);
 
@@ -750,22 +775,18 @@ export function EditorPage() {
    */
   const executeCompileForUsb = async (): Promise<FullPackage | null> => {
     setIsCompiling(true);
-    setCompileLog([]);
+    resetCompileLog();
     setCompileDialogOpen(true);
     setStatusBarState('compiling');
-    setStatusBarMessage('USB用ファームウェアをコンパイル中...');
-
-    const addLog = (message: string) => {
-      setCompileLog(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${message}`]);
-    };
+    setStatusBarMessage(t('editor.compileLog.statusBar.compilingUsb'));
 
     try {
-      addLog('USB用コンパイル開始（DigiCodeUSB.inoテンプレート）...');
+      addLog(t('editor.compileLog.analysis.usbStart'), { phase: 'code-analysis' });
 
       // コードを解析してincludes, globals, setup, loopに分割
       const includeLines = generatedCode.match(/^#include\s+.+$/gm) || [];
       const includes = includeLines.join('\n');
-      addLog(`#include: ${includeLines.length}件検出`);
+      addLog(t('editor.compileLog.analysis.includesDetected', { count: includeLines.length }));
 
       const extractFunctionBody = (code: string, functionName: string): string => {
         const regex = new RegExp(`void ${functionName}\\(\\)\\s*\\{`);
@@ -793,42 +814,44 @@ export function EditorPage() {
         ? generatedCode.substring(0, setupMatch.index).replace(/^#include\s+.+$\n?/gm, '').trim()
         : '';
 
-      addLog(`グローバル変数: ${globals ? '検出' : 'なし'}`);
-      addLog(`setup(): ${setupCode ? '検出' : 'なし'}`);
-      addLog(`loop(): ${loopCode ? '検出' : 'なし'}`);
+      const detected = t('editor.compileLog.analysis.detected');
+      const none = t('editor.compileLog.analysis.none');
+      addLog(t('editor.compileLog.analysis.globalsFound', { status: globals ? detected : none }));
+      addLog(t('editor.compileLog.analysis.setupFound', { status: setupCode ? detected : none }));
+      addLog(t('editor.compileLog.analysis.loopFound', { status: loopCode ? detected : none }));
 
-      addLog('サーバーにコンパイルリクエスト送信中（connectionType=usb）...');
+      addLog(t('editor.compileLog.server.sendingUsb'));
 
       // USB用コンパイル実行（connectionType='usb'を指定）
       const result = await compileService.compile(includes, globals, setupCode, loopCode, undefined, 'bin', 'usb');
 
       if (result.success && result.fullPackage) {
-        addLog('✓ USB用コンパイル成功！');
-        addLog(`ファームウェアサイズ: ${(result.fullPackage.firmware.size / 1024).toFixed(1)} KB`);
-        addLog('📦 fullPackageモード: 4ファイル取得完了');
+        addLog(t('editor.compileLog.result.compileSuccessUsb'));
+        addLog(t('editor.compileLog.result.firmwareSize', { size: (result.fullPackage.firmware.size / 1024).toFixed(1) }));
+        addLog(t('editor.compileLog.result.fullPackageUsb'));
 
         refreshUsage();
         setIsCompiling(false);
         setCompileDialogOpen(false);
         setStatusBarState('success');
-        setStatusBarMessage('USB用コンパイル成功');
+        setStatusBarMessage(t('editor.compileLog.statusBar.compileSuccessUsb'));
 
         return result.fullPackage;
       } else {
-        addLog(`✗ コンパイルエラー: ${result.error || 'fullPackageが取得できませんでした'}`);
+        addLog(t('editor.compileLog.result.compileError', { error: result.error || t('editor.compileLog.result.compileErrorNoBinary') }), { isError: true });
         if (result.details) {
-          addLog(`詳細: ${result.details}`);
+          addLog(t('editor.compileLog.result.details', { details: result.details }));
         }
         setIsCompiling(false);
         setStatusBarState('error');
-        setStatusBarMessage(result.error || 'コンパイル失敗');
+        setStatusBarMessage(result.error || t('editor.compileLog.statusBar.compileFailed'));
         return null;
       }
     } catch (error) {
-      addLog(`✗ エラー: ${error instanceof Error ? error.message : '不明なエラー'}`);
+      addLog(t('editor.compileLog.result.genericError', { error: error instanceof Error ? error.message : t('editor.compileLog.statusBar.unknownError') }), { isError: true });
       setIsCompiling(false);
       setStatusBarState('error');
-      setStatusBarMessage(error instanceof Error ? error.message : '不明なエラー');
+      setStatusBarMessage(error instanceof Error ? error.message : t('editor.compileLog.statusBar.unknownError'));
       return null;
     }
   };
@@ -934,22 +957,18 @@ export function EditorPage() {
    */
   const executeCompileForBle = async (): Promise<Blob | null> => {
     setIsCompiling(true);
-    setCompileLog([]);
+    resetCompileLog();
     setCompileDialogOpen(true);
     setStatusBarState('compiling');
-    setStatusBarMessage('BLE用ファームウェアをコンパイル中...');
-
-    const addLog = (message: string) => {
-      setCompileLog(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${message}`]);
-    };
+    setStatusBarMessage(t('editor.compileLog.statusBar.compilingBle'));
 
     try {
-      addLog('BLE用コンパイル開始（DigiCodeBLE.inoテンプレート）...');
+      addLog(t('editor.compileLog.analysis.bleStart'), { phase: 'code-analysis' });
 
       // コードを解析してincludes, globals, setup, loopに分割
       const includeLines = generatedCode.match(/^#include\s+.+$/gm) || [];
       const includes = includeLines.join('\n');
-      addLog(`#include: ${includeLines.length}件検出`);
+      addLog(t('editor.compileLog.analysis.includesDetected', { count: includeLines.length }));
 
       const extractFunctionBody = (code: string, functionName: string): string => {
         const regex = new RegExp(`void ${functionName}\\(\\)\\s*\\{`);
@@ -977,42 +996,44 @@ export function EditorPage() {
         ? generatedCode.substring(0, setupMatch.index).replace(/^#include\s+.+$\n?/gm, '').trim()
         : '';
 
-      addLog(`グローバル変数: ${globals ? '検出' : 'なし'}`);
-      addLog(`setup(): ${setupCode ? '検出' : 'なし'}`);
-      addLog(`loop(): ${loopCode ? '検出' : 'なし'}`);
+      const detected = t('editor.compileLog.analysis.detected');
+      const none = t('editor.compileLog.analysis.none');
+      addLog(t('editor.compileLog.analysis.globalsFound', { status: globals ? detected : none }));
+      addLog(t('editor.compileLog.analysis.setupFound', { status: setupCode ? detected : none }));
+      addLog(t('editor.compileLog.analysis.loopFound', { status: loopCode ? detected : none }));
 
-      addLog('サーバーにコンパイルリクエスト送信中（connectionType=ble）...');
+      addLog(t('editor.compileLog.server.sendingBle'));
 
       // BLE用コンパイル実行（connectionType='ble'を指定）
       const result = await compileService.compile(includes, globals, setupCode, loopCode, undefined, 'bin', 'ble');
 
       if (result.success && result.fullPackage) {
         // fullPackageのfirmwareだけを使用
-        addLog('✓ BLE用コンパイル成功！');
-        addLog(`ファームウェアサイズ: ${(result.fullPackage.firmware.size / 1024).toFixed(1)} KB`);
+        addLog(t('editor.compileLog.result.compileSuccessBle'));
+        addLog(t('editor.compileLog.result.firmwareSize', { size: (result.fullPackage.firmware.size / 1024).toFixed(1) }));
 
         refreshUsage();
         setIsCompiling(false);
         setCompileDialogOpen(false);
         setStatusBarState('success');
-        setStatusBarMessage('BLE用コンパイル成功');
+        setStatusBarMessage(t('editor.compileLog.statusBar.compileSuccessBle'));
 
         return result.fullPackage.firmware;
       } else {
-        addLog(`✗ コンパイルエラー: ${result.error || 'ファームウェアが取得できませんでした'}`);
+        addLog(t('editor.compileLog.result.compileError', { error: result.error || t('editor.compileLog.result.compileErrorNoBinary') }), { isError: true });
         if (result.details) {
-          addLog(`詳細: ${result.details}`);
+          addLog(t('editor.compileLog.result.details', { details: result.details }));
         }
         setIsCompiling(false);
         setStatusBarState('error');
-        setStatusBarMessage(result.error || 'コンパイル失敗');
+        setStatusBarMessage(result.error || t('editor.compileLog.statusBar.compileFailed'));
         return null;
       }
     } catch (error) {
-      addLog(`✗ エラー: ${error instanceof Error ? error.message : '不明なエラー'}`);
+      addLog(t('editor.compileLog.result.genericError', { error: error instanceof Error ? error.message : t('editor.compileLog.statusBar.unknownError') }), { isError: true });
       setIsCompiling(false);
       setStatusBarState('error');
-      setStatusBarMessage(error instanceof Error ? error.message : '不明なエラー');
+      setStatusBarMessage(error instanceof Error ? error.message : t('editor.compileLog.statusBar.unknownError'));
       return null;
     }
   };
@@ -1347,20 +1368,20 @@ export function EditorPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {isCompiling && <Loader2 className="h-4 w-4 animate-spin" />}
-              {compileLog.some(log => log.includes('[接続確認]')) && !compileLog.some(log => log.includes('コード解析'))
-                ? (isCompiling ? '接続確認中...' : '接続確認結果')
-                : `コンパイル${isCompiling ? '中...' : '結果'}`}
+              {compileLogMeta.hasConnectionCheck && !compileLogMeta.hasCodeAnalysis
+                ? (isCompiling ? t('editor.compileLog.title.connectionCheckRunning') : t('editor.compileLog.title.connectionCheckResult'))
+                : (isCompiling ? t('editor.compileLog.title.compilingRunning') : t('editor.compileLog.title.compilingResult'))}
             </DialogTitle>
             <DialogDescription>
-              {compileLog.some(log => log.includes('[接続確認]')) && !compileLog.some(log => log.includes('コード解析'))
-                ? 'WiFiデバイスへの接続を確認しています'
-                : 'Arduino C++コードをESP32用にコンパイルしています'}
+              {compileLogMeta.hasConnectionCheck && !compileLogMeta.hasCodeAnalysis
+                ? t('editor.compileLog.description.connectionCheck')
+                : t('editor.compileLog.description.compiling')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2 py-2">
             <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 p-3 rounded-md font-mono text-xs max-h-64 overflow-y-auto">
               {compileLog.length === 0 ? (
-                <div className="text-gray-400 dark:text-gray-500">ログを待機中...</div>
+                <div className="text-gray-400 dark:text-gray-500">{t('editor.compileLog.waiting')}</div>
               ) : (
                 compileLog.map((log, index) => (
                   <div key={index} className={log.includes('✗') ? 'text-red-600 dark:text-red-400' : log.includes('✓') ? 'text-green-600 dark:text-green-400' : ''}>
@@ -1369,7 +1390,7 @@ export function EditorPage() {
                 ))
               )}
             </div>
-            {!isCompiling && compileLog.some(log => log.includes('✗')) && (
+            {!isCompiling && compileLogMeta.hasError && (
               <Button
                 onClick={() => setCompileDialogOpen(false)}
                 className="w-full"

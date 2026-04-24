@@ -391,6 +391,70 @@
       "bleWriteSuccess": "✓ BLE write complete!\n\nThe device will restart automatically.",
       "bleWriteError": "✗ BLE write error:\n{{error}}"
     },
+    "compileLog": {
+      "title": {
+        "connectionCheckRunning": "Checking connection...",
+        "connectionCheckResult": "Connection check result",
+        "compilingRunning": "Compiling...",
+        "compilingResult": "Compile result"
+      },
+      "description": {
+        "connectionCheck": "Verifying connection to the WiFi device",
+        "compiling": "Compiling Arduino C++ code for ESP32"
+      },
+      "waiting": "Waiting for log...",
+      "connectionCheck": {
+        "device": "[Connection Check] Device: {{name}} ({{ip}})",
+        "mdnsResolving": "[Connection Check] Resolving mDNS: {{hostname}}",
+        "mdnsResolved": "[Connection Check] IP resolved: {{ip}}",
+        "testing": "[Connection Check] Testing connection... ({{attempt}}/{{max}})",
+        "retrying": "[Connection Check] No response, retrying in {{delay}}s...",
+        "success": "[Connection Check] ✓ Device connection OK",
+        "failure": "[Connection Check] ✗ {{error}}"
+      },
+      "errors": {
+        "deviceNotFound": "Device \"{{hostname}}\" not found. Please check power and WiFi connection.",
+        "noResponse": "Device is not responding. Please check power and WiFi connection.",
+        "exception": "Connection check error: {{error}}"
+      },
+      "analysis": {
+        "start": "Starting code analysis...",
+        "usbStart": "Starting USB compile (DigiCodeUSB.ino template)...",
+        "bleStart": "Starting BLE compile (DigiCodeBLE.ino template)...",
+        "includesDetected": "#include: {{count}} detected",
+        "globalsFound": "Global variables: {{status}}",
+        "setupFound": "setup(): {{status}}",
+        "loopFound": "loop(): {{status}}",
+        "detected": "detected",
+        "none": "none"
+      },
+      "server": {
+        "sending": "Sending compile request to server...",
+        "sendingUsb": "Sending compile request to server (connectionType=usb)...",
+        "sendingBle": "Sending compile request to server (connectionType=ble)..."
+      },
+      "result": {
+        "compileSuccess": "✓ Compile succeeded!",
+        "compileSuccessUsb": "✓ USB compile succeeded!",
+        "compileSuccessBle": "✓ BLE compile succeeded!",
+        "firmwareSize": "Binary size: {{size}} KB",
+        "fullPackageInfo": "📦 fullPackage mode: 4 files (bootloader, partitions, boot_app0, firmware) retrieved",
+        "fullPackageUsb": "📦 fullPackage mode: 4 files retrieved",
+        "compileError": "✗ Compile error: {{error}}",
+        "compileErrorNoBinary": "✗ Compile error: Failed to retrieve binary data",
+        "details": "Details: {{details}}",
+        "genericError": "✗ Error: {{error}}"
+      },
+      "statusBar": {
+        "binaryMissing": "Failed to retrieve binary data",
+        "compilingUsb": "Compiling USB firmware...",
+        "compilingBle": "Compiling BLE firmware...",
+        "compileSuccessUsb": "USB compile succeeded",
+        "compileSuccessBle": "BLE compile succeeded",
+        "compileFailed": "Compile failed",
+        "unknownError": "Unknown error"
+      }
+    },
     "unknownError": "Unknown error",
     "ipResolved": "IP address resolved",
     "deviceResponseOk": "Device response OK",
