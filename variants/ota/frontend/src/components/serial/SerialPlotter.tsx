@@ -182,7 +182,7 @@ export function SerialPlotter({ className }: SerialPlotterProps) {
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 bg-[#161B22] border-b border-[#2E333D]">
         <span className="text-sm text-[#E6EDF3] font-medium">
-          {t('editor.menu.plotter', { defaultValue: 'シリアルプロッター' })}
+          {t('editor.menu.plotter', { defaultValue: 'プロッター' })}
         </span>
         <div className="flex items-center gap-2">
           <Button

@@ -375,6 +375,22 @@
     "deviceNotFound": "デバイス「{{hostname}}」が見つかりません。電源とWiFi接続を確認してください。",
     "deviceNotResponding": "デバイスが応答しません。電源とWiFi接続を確認してください。",
     "connectionError": "接続確認エラー",
+    "alerts": {
+      "usbReleased": "{{count}}個のUSBポートを解放しました。\n\n接続がうまくいかない場合は、USBケーブルを抜き差ししてから再度接続してください。",
+      "usbReleaseNone": "解放する必要のあるUSBポートはありませんでした。\n\n接続がうまくいかない場合は、USBケーブルを抜き差ししてから再度接続してください。",
+      "usbReleaseError": "USBポートの解放中にエラーが発生しました。\n\nブラウザでWeb Serial APIが有効になっているか確認してください。",
+      "logoutConfirm": "ログアウトしますか？",
+      "otaSuccess": "✓ OTA更新が完了しました！\nESP32が再起動します。",
+      "otaError": "✗ OTA更新エラー:\n{{error}}",
+      "noDeviceIp": "デバイスにIPアドレスが設定されていません。\n「接続」→「無線LAN接続」から再設定してください。",
+      "deviceConnectionError": "デバイス接続エラー: {{error}}\n\nコンパイルチケットを節約するため、コンパイルは実行されませんでした。",
+      "usbConnectError": "✗ USB接続エラー:\n{{error}}",
+      "usbWriteSuccess": "✓ USB書き込みが完了しました！\n\nESP32のENボタンを押して再起動してください。",
+      "usbWriteError": "✗ USB書き込みエラー:\n{{error}}",
+      "bleConnectError": "✗ BLE接続エラー:\n{{error}}",
+      "bleWriteSuccess": "✓ BLE書き込みが完了しました！\n\nデバイスが自動的に再起動します。",
+      "bleWriteError": "✗ BLE書き込みエラー:\n{{error}}"
+    },
     "unknownError": "不明なエラー",
     "ipResolved": "IPアドレス解決",
     "deviceResponseOk": "デバイス応答確認OK",
@@ -3839,6 +3855,13 @@
     "clearWorkspace": "ワークスペースをクリア",
     "systemMetaAdded": "{{count}} 個のブロックを追加しました",
     "exportChat": "会話を書き出す",
-    "expandPanel": "ダイアログで開く"
+    "expandPanel": "ダイアログで開く",
+    "export": {
+      "title": "AI アシスタント会話記録",
+      "date": "日時",
+      "mode": "モード",
+      "provider": "プロバイダー",
+      "generatedResult": "ブロック生成結果"
+    }
   }
 }

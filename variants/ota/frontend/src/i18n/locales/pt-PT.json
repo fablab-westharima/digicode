@@ -375,6 +375,22 @@
     "deviceNotFound": "Dispositivo \"{{hostname}}\" não encontrado. Verifique a alimentação e a conexão WiFi.",
     "deviceNotResponding": "Dispositivo não respondendo. Verifique a alimentação e a conexão WiFi.",
     "connectionError": "Erro de verificação de conexão",
+    "alerts": {
+      "usbReleased": "Foram libertadas {{count}} porta(s) USB.\n\nSe a ligação continuar a falhar, desligue e volte a ligar o cabo USB.",
+      "usbReleaseNone": "Não havia portas USB que precisassem de ser libertadas.\n\nSe a ligação falhar, desligue e volte a ligar o cabo USB.",
+      "usbReleaseError": "Ocorreu um erro ao libertar as portas USB.\n\nVerifique se a Web Serial API está ativada no navegador.",
+      "logoutConfirm": "Terminar sessão?",
+      "otaSuccess": "✓ Atualização OTA concluída!\nO ESP32 será reiniciado.",
+      "otaError": "✗ Erro de atualização OTA:\n{{error}}",
+      "noDeviceIp": "Não está configurado nenhum endereço IP para o dispositivo.\nReconfigure-o em \"Ligar\" → \"Ligação WiFi\".",
+      "deviceConnectionError": "Erro de ligação ao dispositivo: {{error}}\n\nA compilação não foi executada para poupar o seu crédito de compilação.",
+      "usbConnectError": "✗ Erro de ligação USB:\n{{error}}",
+      "usbWriteSuccess": "✓ Escrita USB concluída!\n\nPrima o botão EN no ESP32 para reiniciar.",
+      "usbWriteError": "✗ Erro de escrita USB:\n{{error}}",
+      "bleConnectError": "✗ Erro de ligação BLE:\n{{error}}",
+      "bleWriteSuccess": "✓ Escrita BLE concluída!\n\nO dispositivo será reiniciado automaticamente.",
+      "bleWriteError": "✗ Erro de escrita BLE:\n{{error}}"
+    },
     "unknownError": "Erro desconhecido",
     "ipResolved": "Endereço IP resolvido",
     "deviceResponseOk": "Resposta do dispositivo OK",
@@ -4034,6 +4050,13 @@
     "clearWorkspace": "Limpar área de trabalho",
     "systemMetaAdded": "{{count}} blocos adicionados",
     "exportChat": "Exportar conversa",
-    "expandPanel": "Abrir em diálogo"
+    "expandPanel": "Abrir em diálogo",
+    "export": {
+      "title": "Conversa do Assistente IA",
+      "date": "Data",
+      "mode": "Modo",
+      "provider": "Fornecedor",
+      "generatedResult": "Resultado da Geração de Blocos"
+    }
   }
 }

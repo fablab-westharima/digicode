@@ -262,7 +262,7 @@ export function PinPresetDialog({ open, onOpenChange }: PinPresetDialogProps) {
 
               <ScrollArea className="h-[350px]">
                 <TabsContent value="humanoid" className="space-y-4 pr-4">
-                  <h4 className="font-medium mb-2">{t('pinPreset.sections.humanoid', { defaultValue: 'Humanoid' })}</h4>
+                  <h4 className="font-medium mb-2">{t('pinPreset.sections.humanoid', { defaultValue: 'Humanoid ロボット' })}</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>{t('pinPreset.pins.leftLeg', { defaultValue: '左足 (Left Leg)' })}</Label>

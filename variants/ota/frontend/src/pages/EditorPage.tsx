@@ -272,19 +272,19 @@ export function EditorPage() {
     try {
       const releasedCount = await forceReleaseAllPorts();
       if (releasedCount > 0) {
-        alert(`${releasedCount}個のUSBポートを解放しました。\n\n接続がうまくいかない場合は、USBケーブルを抜き差ししてから再度接続してください。`);
+        alert(t('editor.alerts.usbReleased', { count: releasedCount }));
       } else {
-        alert('解放する必要のあるUSBポートはありませんでした。\n\n接続がうまくいかない場合は、USBケーブルを抜き差ししてから再度接続してください。');
+        alert(t('editor.alerts.usbReleaseNone'));
       }
     } catch (error) {
       console.error('USBポート解放エラー:', error);
-      alert('USBポートの解放中にエラーが発生しました。\n\nブラウザでWeb Serial APIが有効になっているか確認してください。');
+      alert(t('editor.alerts.usbReleaseError'));
     }
   };
 
   // ログアウト（エディタに残る）
   const handleLogout = () => {
-    if (confirm('ログアウトしますか？')) {
+    if (confirm(t('editor.alerts.logoutConfirm'))) {
       logout();
     }
   };
@@ -682,14 +682,14 @@ export function EditorPage() {
         // 成功後、少し待ってからダイアログを閉じる
         setTimeout(() => {
           setFlashDialogOpen(false);
-          alert('✓ OTA更新が完了しました！\nESP32が再起動します。');
+          alert(t('editor.alerts.otaSuccess'));
         }, 2000);
       } else {
         setFlashDialogOpen(false);
       }
     } catch (error) {
       setFlashDialogOpen(false);
-      alert(`✗ OTA更新エラー:\n${error instanceof Error ? error.message : '不明なエラー'}`);
+      alert(t('editor.alerts.otaError', { error: error instanceof Error ? error.message : t('editor.unknownError') }));
     }
   };
 
@@ -701,7 +701,7 @@ export function EditorPage() {
     setWifiDeviceSelectDialogOpen(false);
 
     if (!device.ipAddress) {
-      alert('デバイスにIPアドレスが設定されていません。\n「接続」→「無線LAN接続」から再設定してください。');
+      alert(t('editor.alerts.noDeviceIp'));
       return;
     }
 
@@ -727,7 +727,7 @@ export function EditorPage() {
       setCompileLog(prev => [...prev, `[接続確認] ✗ ${checkResult.error}`]);
       setIsCompiling(false);
       await new Promise(resolve => setTimeout(resolve, 2000));
-      alert(`デバイス接続エラー: ${checkResult.error}\n\nコンパイルチケットを節約するため、コンパイルは実行されませんでした。`);
+      alert(t('editor.alerts.deviceConnectionError', { error: checkResult.error }));
       setCompileDialogOpen(false);
       return;
     }
@@ -876,7 +876,7 @@ export function EditorPage() {
       });
     } catch (error) {
       setFlashDialogOpen(false);
-      alert(`✗ USB接続エラー:\n${error instanceof Error ? error.message : '不明なエラー'}`);
+      alert(t('editor.alerts.usbConnectError', { error: error instanceof Error ? error.message : t('editor.unknownError') }));
       return;
     }
 
@@ -914,14 +914,14 @@ export function EditorPage() {
       if (success) {
         setTimeout(() => {
           setFlashDialogOpen(false);
-          alert('✓ USB書き込みが完了しました！\n\nESP32のENボタンを押して再起動してください。');
+          alert(t('editor.alerts.usbWriteSuccess'));
         }, 2000);
       } else {
         setFlashDialogOpen(false);
       }
     } catch (error) {
       setFlashDialogOpen(false);
-      alert(`✗ USB書き込みエラー:\n${error instanceof Error ? error.message : '不明なエラー'}`);
+      alert(t('editor.alerts.usbWriteError', { error: error instanceof Error ? error.message : t('editor.unknownError') }));
     } finally {
       // 接続解除
       await usbFirmwareService.disconnect();
@@ -1058,7 +1058,7 @@ export function EditorPage() {
       });
     } catch (error) {
       setFlashDialogOpen(false);
-      alert(`✗ BLE接続エラー:\n${error instanceof Error ? error.message : '不明なエラー'}`);
+      alert(t('editor.alerts.bleConnectError', { error: error instanceof Error ? error.message : t('editor.unknownError') }));
       return;
     }
 
@@ -1095,14 +1095,14 @@ export function EditorPage() {
       if (success) {
         setTimeout(() => {
           setFlashDialogOpen(false);
-          alert('✓ BLE書き込みが完了しました！\n\nデバイスが自動的に再起動します。');
+          alert(t('editor.alerts.bleWriteSuccess'));
         }, 2000);
       } else {
         setFlashDialogOpen(false);
       }
     } catch (error) {
       setFlashDialogOpen(false);
-      alert(`✗ BLE書き込みエラー:\n${error instanceof Error ? error.message : '不明なエラー'}`);
+      alert(t('editor.alerts.bleWriteError', { error: error instanceof Error ? error.message : t('editor.unknownError') }));
     } finally {
       // 接続解除
       await bleFirmwareService.disconnect();

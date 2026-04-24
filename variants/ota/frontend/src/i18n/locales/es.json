@@ -375,6 +375,22 @@
     "deviceNotFound": "Dispositivo \"{{hostname}}\" no encontrado. Verifique la alimentación y la conexión WiFi.",
     "deviceNotResponding": "Dispositivo sin respuesta. Verifique la alimentación y la conexión WiFi.",
     "connectionError": "Error de verificación de conexión",
+    "alerts": {
+      "usbReleased": "Se liberaron {{count}} puerto(s) USB.\n\nSi la conexión sigue fallando, desconecte y vuelva a conectar el cable USB.",
+      "usbReleaseNone": "No había puertos USB que necesitaran liberarse.\n\nSi la conexión falla, desconecte y vuelva a conectar el cable USB.",
+      "usbReleaseError": "Ocurrió un error al liberar los puertos USB.\n\nVerifique que la API Web Serial esté habilitada en su navegador.",
+      "logoutConfirm": "¿Cerrar sesión?",
+      "otaSuccess": "✓ ¡Actualización OTA completada!\nEl ESP32 se reiniciará.",
+      "otaError": "✗ Error de actualización OTA:\n{{error}}",
+      "noDeviceIp": "No hay dirección IP configurada para el dispositivo.\nReconfigúrela desde \"Conectar\" → \"Conexión WiFi\".",
+      "deviceConnectionError": "Error de conexión del dispositivo: {{error}}\n\nNo se ejecutó la compilación para ahorrar su crédito de compilación.",
+      "usbConnectError": "✗ Error de conexión USB:\n{{error}}",
+      "usbWriteSuccess": "✓ ¡Escritura USB completada!\n\nPresione el botón EN del ESP32 para reiniciar.",
+      "usbWriteError": "✗ Error de escritura USB:\n{{error}}",
+      "bleConnectError": "✗ Error de conexión BLE:\n{{error}}",
+      "bleWriteSuccess": "✓ ¡Escritura BLE completada!\n\nEl dispositivo se reiniciará automáticamente.",
+      "bleWriteError": "✗ Error de escritura BLE:\n{{error}}"
+    },
     "unknownError": "Error desconocido",
     "ipResolved": "Dirección IP resuelta",
     "deviceResponseOk": "Respuesta del dispositivo OK",
@@ -4034,6 +4050,13 @@
     "clearWorkspace": "Limpiar área de trabajo",
     "systemMetaAdded": "Se añadieron {{count}} bloques",
     "exportChat": "Exportar conversación",
-    "expandPanel": "Abrir en diálogo"
+    "expandPanel": "Abrir en diálogo",
+    "export": {
+      "title": "Conversación del Asistente IA",
+      "date": "Fecha",
+      "mode": "Modo",
+      "provider": "Proveedor",
+      "generatedResult": "Resultado de Generación de Bloques"
+    }
   }
 }

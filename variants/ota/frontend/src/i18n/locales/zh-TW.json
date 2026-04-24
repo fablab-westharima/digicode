@@ -375,6 +375,22 @@
     "deviceNotFound": "找不到裝置 \"{{hostname}}\"。檢查電源和 WiFi 連線。",
     "deviceNotResponding": "裝置無回應。檢查電源和 WiFi 連線。",
     "connectionError": "連線檢查錯誤",
+    "alerts": {
+      "usbReleased": "已釋放 {{count}} 個 USB 連接埠。\n\n如果連線仍然失敗，請拔出 USB 線後再重新連接。",
+      "usbReleaseNone": "沒有需要釋放的 USB 連接埠。\n\n如果連線失敗，請拔出 USB 線後再重新連接。",
+      "usbReleaseError": "釋放 USB 連接埠時發生錯誤。\n\n請確認瀏覽器是否啟用 Web Serial API。",
+      "logoutConfirm": "要登出嗎？",
+      "otaSuccess": "✓ OTA 更新完成！\nESP32 將會重新啟動。",
+      "otaError": "✗ OTA 更新錯誤：\n{{error}}",
+      "noDeviceIp": "裝置未設定 IP 位址。\n請從「連線」→「Wi-Fi 連線」重新設定。",
+      "deviceConnectionError": "裝置連線錯誤：{{error}}\n\n為節省編譯點數，編譯未執行。",
+      "usbConnectError": "✗ USB 連線錯誤：\n{{error}}",
+      "usbWriteSuccess": "✓ USB 寫入完成！\n\n請按下 ESP32 的 EN 按鈕以重新啟動。",
+      "usbWriteError": "✗ USB 寫入錯誤：\n{{error}}",
+      "bleConnectError": "✗ BLE 連線錯誤：\n{{error}}",
+      "bleWriteSuccess": "✓ BLE 寫入完成！\n\n裝置將會自動重新啟動。",
+      "bleWriteError": "✗ BLE 寫入錯誤：\n{{error}}"
+    },
     "unknownError": "不明錯誤",
     "ipResolved": "IP 位址已解析",
     "deviceResponseOk": "裝置回應正常",
@@ -4034,6 +4050,13 @@
     "clearWorkspace": "清除工作區",
     "systemMetaAdded": "已新增 {{count}} 個積木",
     "exportChat": "匯出對話",
-    "expandPanel": "在對話框中開啟"
+    "expandPanel": "在對話框中開啟",
+    "export": {
+      "title": "AI 助手對話記錄",
+      "date": "日期",
+      "mode": "模式",
+      "provider": "提供商",
+      "generatedResult": "積木生成結果"
+    }
   }
 }

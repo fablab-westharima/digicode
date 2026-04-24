@@ -169,10 +169,23 @@ export function AIAssistantPanel({
 
   const handleExport = () => {
     if (conversation.length === 0) return;
+    const localeMap: Record<string, string> = {
+      ja: 'ja-JP', en: 'en-US', es: 'es-ES', 'pt-PT': 'pt-PT', 'zh-TW': 'zh-TW',
+    };
     const markdown = exportConversationToMarkdown(conversation, {
       mode: currentMode,
       provider,
       model: model ?? undefined,
+      labels: {
+        title: t('ai.export.title'),
+        date: t('ai.export.date'),
+        mode: t('ai.export.mode'),
+        provider: t('ai.export.provider'),
+        modeBlockGen: t('ai.tabBlockGen'),
+        modeHelpBot: t('ai.tabHelp'),
+        generatedResult: t('ai.export.generatedResult'),
+      },
+      locale: localeMap[i18n.language] ?? 'en-US',
     });
     const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);

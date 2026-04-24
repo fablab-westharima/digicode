@@ -375,6 +375,22 @@
     "deviceNotFound": "Device \"{{hostname}}\" not found. Check power and WiFi connection.",
     "deviceNotResponding": "Device not responding. Check power and WiFi connection.",
     "connectionError": "Connection check error",
+    "alerts": {
+      "usbReleased": "Released {{count}} USB port(s).\n\nIf the connection still fails, please unplug and reconnect the USB cable.",
+      "usbReleaseNone": "No USB ports needed releasing.\n\nIf the connection fails, please unplug and reconnect the USB cable.",
+      "usbReleaseError": "An error occurred while releasing USB ports.\n\nPlease check that the Web Serial API is enabled in your browser.",
+      "logoutConfirm": "Log out?",
+      "otaSuccess": "✓ OTA update complete!\nThe ESP32 will restart.",
+      "otaError": "✗ OTA update error:\n{{error}}",
+      "noDeviceIp": "No IP address is configured for the device.\nPlease reconfigure it from \"Connect\" → \"WiFi Connection\".",
+      "deviceConnectionError": "Device connection error: {{error}}\n\nCompile was not executed to save your compile credit.",
+      "usbConnectError": "✗ USB connection error:\n{{error}}",
+      "usbWriteSuccess": "✓ USB write complete!\n\nPress the EN button on the ESP32 to restart.",
+      "usbWriteError": "✗ USB write error:\n{{error}}",
+      "bleConnectError": "✗ BLE connection error:\n{{error}}",
+      "bleWriteSuccess": "✓ BLE write complete!\n\nThe device will restart automatically.",
+      "bleWriteError": "✗ BLE write error:\n{{error}}"
+    },
     "unknownError": "Unknown error",
     "ipResolved": "IP address resolved",
     "deviceResponseOk": "Device response OK",
@@ -3849,6 +3865,13 @@
     "clearWorkspace": "Clear workspace",
     "systemMetaAdded": "Added {{count}} blocks",
     "exportChat": "Export conversation",
-    "expandPanel": "Open in dialog"
+    "expandPanel": "Open in dialog",
+    "export": {
+      "title": "AI Assistant Conversation",
+      "date": "Date",
+      "mode": "Mode",
+      "provider": "Provider",
+      "generatedResult": "Block Generation Result"
+    }
   }
 }

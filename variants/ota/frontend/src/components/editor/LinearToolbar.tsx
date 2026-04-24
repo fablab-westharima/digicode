@@ -294,7 +294,7 @@ export function LinearToolbar({
             onClick={onToggleSerialMonitor}
           >
             <Terminal className="w-3.5 h-3.5 mr-1" />
-            <span className="text-xs">{t('editor.menu.serialMonitor', { defaultValue: 'モニター' })}</span>
+            <span className="text-xs">{t('editor.menu.serialMonitor', { defaultValue: 'シリアルモニター' })}</span>
           </Button>
         )}
 

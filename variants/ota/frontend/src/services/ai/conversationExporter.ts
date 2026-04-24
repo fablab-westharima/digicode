@@ -1,32 +1,43 @@
 import type { Message, AiMode, AiProvider } from './index';
 
+export interface ExportLabels {
+  title: string;
+  date: string;
+  mode: string;
+  provider: string;
+  modeBlockGen: string;
+  modeHelpBot: string;
+  generatedResult: string;
+}
+
 export interface ExportOptions {
   mode: AiMode;
   provider: AiProvider;
   model?: string;
+  labels: ExportLabels;
+  locale: string;
 }
 
-// 判断 4 のサンプルフォーマットに準拠
 export function exportConversationToMarkdown(messages: Message[], options: ExportOptions): string {
   const now = new Date().toISOString();
-  const modeLabel = options.mode === 'blockGen' ? 'ブロック生成' : 'ヘルプ';
+  const modeLabel = options.mode === 'blockGen' ? options.labels.modeBlockGen : options.labels.modeHelpBot;
   const providerLabel = options.model
     ? `${options.provider} (${options.model})`
     : options.provider;
 
   const lines: string[] = [
-    '# AI アシスタント会話記録',
+    `# ${options.labels.title}`,
     '',
-    `**日時**: ${now}`,
-    `**モード**: ${modeLabel}`,
-    `**プロバイダー**: ${providerLabel}`,
+    `**${options.labels.date}**: ${now}`,
+    `**${options.labels.mode}**: ${modeLabel}`,
+    `**${options.labels.provider}**: ${providerLabel}`,
     '',
   ];
 
   let turnNumber = 0;
 
   for (const msg of messages) {
-    const time = new Date(msg.timestamp).toLocaleTimeString('ja-JP', {
+    const time = new Date(msg.timestamp).toLocaleTimeString(options.locale, {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
@@ -41,7 +52,7 @@ export function exportConversationToMarkdown(messages: Message[], options: Expor
         : '';
       lines.push(`## [${turnNumber}] Assistant (${time})${tokenInfo}`, msg.content, '');
     } else if (msg.role === 'system-meta') {
-      lines.push(`## ブロック生成結果 (${time})`, msg.content, '');
+      lines.push(`## ${options.labels.generatedResult} (${time})`, msg.content, '');
       if (msg.generatedXml) {
         lines.push('```xml', msg.generatedXml, '```', '');
       }
