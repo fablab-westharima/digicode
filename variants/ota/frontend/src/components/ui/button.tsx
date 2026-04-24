@@ -54,4 +54,5 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 )
 Button.displayName = "Button"
 
+// eslint-disable-next-line react-refresh/only-export-components -- shadcn/ui テンプレートの慣用（cva variants 同居）、分離より維持を優先
 export { Button, buttonVariants }

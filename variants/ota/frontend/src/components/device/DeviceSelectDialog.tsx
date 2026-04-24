@@ -149,7 +149,6 @@ export function DeviceSelectDialog({ open, onOpenChange, onSelect, multiSelect =
   useEffect(() => {
     if (!open) {
       // Props→State sync: open=false 遷移時の選択リセット（意図的）
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedUrls(new Set());
     }
   }, [open]);
@@ -316,7 +315,6 @@ export function DeviceSelectDialog({ open, onOpenChange, onSelect, multiSelect =
         scanDevices();
       } else {
         // 既存のデバイスリストがあれば、オンライン状態をチェック
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         checkDevicesOnline(devices);
       }
     }

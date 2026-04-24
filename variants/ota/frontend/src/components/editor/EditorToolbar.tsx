@@ -36,92 +36,87 @@ export function EditorToolbar({
   const { isMobile, isTablet } = useBreakpoint();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // モバイル用メニュー
-  const MobileMenu = () => (
-    <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="sm" className="md:hidden">
-          <Menu className="w-5 h-5" />
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-72">
-        <SheetHeader>
-          <SheetTitle>{t('editor.menu.file')}</SheetTitle>
-        </SheetHeader>
-        <div className="flex flex-col gap-2 mt-4">
-          <Button
-            variant="ghost"
-            className="justify-start"
-            onClick={() => {
-              navigate('/');
-              setMobileMenuOpen(false);
-            }}
-          >
-            <Home className="w-4 h-4 mr-2" />
-            {t('nav.home')}
-          </Button>
-          <Button
-            variant="ghost"
-            className="justify-start"
-            onClick={() => {
-              onNew();
-              setMobileMenuOpen(false);
-            }}
-          >
-            <FilePlus className="w-4 h-4 mr-2" />
-            {t('editor.menu.new')}
-          </Button>
-          <Button
-            variant="ghost"
-            className="justify-start"
-            onClick={() => {
-              onOpen();
-              setMobileMenuOpen(false);
-            }}
-          >
-            <FolderOpen className="w-4 h-4 mr-2" />
-            {t('editor.menu.open')}
-          </Button>
-          {onSample && (
-            <Button
-              variant="ghost"
-              className="justify-start text-purple-600"
-              onClick={() => {
-                onSample();
-                setMobileMenuOpen(false);
-              }}
-            >
-              <BookOpen className="w-4 h-4 mr-2" />
-              {t('editor.sample')}
-            </Button>
-          )}
-          <Button
-            variant="default"
-            className="justify-start"
-            onClick={() => {
-              onSave();
-              setMobileMenuOpen(false);
-            }}
-            disabled={isSaving}
-          >
-            <Save className="w-4 h-4 mr-2" />
-            {isSaving ? t('project.saving') : t('editor.menu.save')}
-          </Button>
-          <hr className="my-2" />
-          {/* 追加コントロール（children）をモバイルメニュー内に表示 */}
-          <div className="flex flex-col gap-2">
-            {children}
-          </div>
-        </div>
-      </SheetContent>
-    </Sheet>
-  );
-
   // モバイル表示
   if (isMobile) {
     return (
       <div className="flex items-center justify-between px-2 py-2 bg-white border-b">
-        <MobileMenu />
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="sm" className="md:hidden">
+              <Menu className="w-5 h-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-72">
+            <SheetHeader>
+              <SheetTitle>{t('editor.menu.file')}</SheetTitle>
+            </SheetHeader>
+            <div className="flex flex-col gap-2 mt-4">
+              <Button
+                variant="ghost"
+                className="justify-start"
+                onClick={() => {
+                  navigate('/');
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <Home className="w-4 h-4 mr-2" />
+                {t('nav.home')}
+              </Button>
+              <Button
+                variant="ghost"
+                className="justify-start"
+                onClick={() => {
+                  onNew();
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <FilePlus className="w-4 h-4 mr-2" />
+                {t('editor.menu.new')}
+              </Button>
+              <Button
+                variant="ghost"
+                className="justify-start"
+                onClick={() => {
+                  onOpen();
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <FolderOpen className="w-4 h-4 mr-2" />
+                {t('editor.menu.open')}
+              </Button>
+              {onSample && (
+                <Button
+                  variant="ghost"
+                  className="justify-start text-purple-600"
+                  onClick={() => {
+                    onSample();
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  {t('editor.sample')}
+                </Button>
+              )}
+              <Button
+                variant="default"
+                className="justify-start"
+                onClick={() => {
+                  onSave();
+                  setMobileMenuOpen(false);
+                }}
+                disabled={isSaving}
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {isSaving ? t('project.saving') : t('editor.menu.save')}
+              </Button>
+              <hr className="my-2" />
+              {/* 追加コントロール（children）をモバイルメニュー内に表示 */}
+              <div className="flex flex-col gap-2">
+                {children}
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
         <span className="text-sm font-semibold truncate max-w-[200px]">
           {projectTitle || t('editor.untitled')}
         </span>

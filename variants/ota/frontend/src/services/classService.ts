@@ -302,6 +302,7 @@ export async function exportClass(
   // サーバー側の Content-Disposition にもファイル名があるが、フロント側で
   // 明示的に設定することで確実にダウンロード時のファイル名を制御
   const dateStr = new Date().toISOString().slice(0, 10);
+  // eslint-disable-next-line no-control-regex -- ファイル名から制御文字 (NUL-US) を除去する意図的なサニタイゼーション
   const safeName = className.replace(/[<>:"/\\|?*\x00-\x1f]/g, '_').slice(0, 100);
   a.download = `${safeName || 'class'}_export_${dateStr}.zip`;
   a.click();

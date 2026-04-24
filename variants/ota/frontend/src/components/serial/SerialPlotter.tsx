@@ -54,7 +54,11 @@ export function SerialPlotter({ className }: SerialPlotterProps) {
   const [yMax, setYMax] = useState<number | undefined>(undefined);
 
   const lastProcessedIndexRef = useRef({ serial: 0, wifi: 0 });
-  const startTimeRef = useRef<number>(Date.now());
+  // mount 時に初期化（render 中の Date.now() 呼び出しは react-hooks/purity 違反のため useEffect で遅延）
+  const startTimeRef = useRef<number | null>(null);
+  useEffect(() => {
+    startTimeRef.current = Date.now();
+  }, []);
 
   const parseDataLine = useCallback((line: string): { values: number[], labels?: string[] } | null => {
     const trimmed = line.trim();
@@ -112,7 +116,7 @@ export function SerialPlotter({ className }: SerialPlotterProps) {
         if (!parsed) return;
 
         const { values, labels } = parsed;
-        const currentTime = (Date.now() - startTimeRef.current) / 1000;
+        const currentTime = (Date.now() - (startTimeRef.current ?? Date.now())) / 1000;
         const dataPoint: DataPoint = { time: currentTime };
 
         values.forEach((value, index) => {

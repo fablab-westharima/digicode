@@ -33,4 +33,5 @@ function Badge({ className, variant, ...props }: BadgeProps) {
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- shadcn/ui テンプレートの慣用（cva variants 同居）、分離より維持を優先
 export { Badge, badgeVariants }

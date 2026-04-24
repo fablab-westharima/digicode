@@ -281,7 +281,7 @@ function parseModeCategories(content: string): Record<string, string[]> {
   const section = endIdx !== -1 ? content.substring(startIdx, endIdx + 3) : content.substring(startIdx);
 
   // Match each mode array:  robots_humanoid: [\n    ...\n  ],
-  const modeRe = /(\w+):\s*\[([\s\S]*?)\n  \]/g;
+  const modeRe = /(\w+):\s*\[([\s\S]*?)\n {2}\]/g;
   let m: RegExpExecArray | null;
   while ((m = modeRe.exec(section)) !== null) {
     const modeKey = m[1];

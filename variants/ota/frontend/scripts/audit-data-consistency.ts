@@ -153,7 +153,7 @@ function parseObjectBody(body: string): ParsedValue[] {
       out.push({ key, kind: 'array', value: arr.body });
       i = arr.end;
     } else {
-      const m = body.slice(i).match(/^[^,\}\]]+/);
+      const m = body.slice(i).match(/^[^,}\]]+/);
       if (m) {
         out.push({ key, kind: 'primitive', value: m[0].trim() });
         i += m[0].length;

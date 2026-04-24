@@ -43,24 +43,38 @@ export function FirmwareInstaller() {
     activateButton.textContent = 'INSTALL';
     installButton.appendChild(activateButton);
 
+    // 訳文に <br/> を含む可能性があるため、innerHTML ではなく textContent + createElement('br') で組み立てる（XSS safe）
+    const buildMessageCard = (msg: string, divClass: string, pClass: string): HTMLSpanElement => {
+      const span = document.createElement('span');
+      const div = document.createElement('div');
+      div.className = divClass;
+      const p = document.createElement('p');
+      p.className = pClass;
+      msg.split('<br/>').forEach((line, i) => {
+        if (i > 0) p.appendChild(document.createElement('br'));
+        p.appendChild(document.createTextNode(line.trim()));
+      });
+      div.appendChild(p);
+      span.appendChild(div);
+      return span;
+    };
+
     const unsupportedMsg = t('firmwareInstaller.browserUnsupported', { defaultValue: 'お使いのブラウザはサポートされていません。<br/>Chrome または Edge をお使いください。' });
-    const unsupportedSpan = document.createElement('span');
+    const unsupportedSpan = buildMessageCard(
+      unsupportedMsg,
+      'bg-red-50 border border-red-200 p-4 rounded-lg text-center',
+      'text-red-700 text-sm',
+    );
     unsupportedSpan.setAttribute('slot', 'unsupported');
-    unsupportedSpan.innerHTML = `
-      <div class="bg-red-50 border border-red-200 p-4 rounded-lg text-center">
-        <p class="text-red-700 text-sm">${unsupportedMsg}</p>
-      </div>
-    `;
     installButton.appendChild(unsupportedSpan);
 
     const notAllowedMsg = t('firmwareInstaller.notAllowedHttps', { defaultValue: 'HTTPSまたはlocalhostでのみ動作します。' });
-    const notAllowedSpan = document.createElement('span');
+    const notAllowedSpan = buildMessageCard(
+      notAllowedMsg,
+      'bg-yellow-50 border border-yellow-200 p-4 rounded-lg text-center',
+      'text-yellow-700 text-sm',
+    );
     notAllowedSpan.setAttribute('slot', 'not-allowed');
-    notAllowedSpan.innerHTML = `
-      <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg text-center">
-        <p class="text-yellow-700 text-sm">${notAllowedMsg}</p>
-      </div>
-    `;
     installButton.appendChild(notAllowedSpan);
 
     // イベントリスナー

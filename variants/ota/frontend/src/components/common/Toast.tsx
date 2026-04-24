@@ -12,6 +12,7 @@ interface ToastMessage {
 let toastId = 0;
 let addToastFn: ((text: string, type: ToastType) => void) | null = null;
 
+// eslint-disable-next-line react-refresh/only-export-components -- showToast は ToastContainer の副作用経由で動作する既存 API、分離より維持を優先
 export function showToast(text: string, type: ToastType = 'info') {
   addToastFn?.(text, type);
 }

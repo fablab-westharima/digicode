@@ -455,6 +455,10 @@ export const usePinPresetStore = create<PinPresetStore>()(
         }
 
         // バージョン8: ピンフィールド名を otto* から humanoid*/wheel*/transform* にリネーム
+        // sunset: 2027-04-21（OTTO 排除 2026-04-21 の 1 年後）以降、
+        //   この version < 8 ブロック全体と関連 pin rename ロジックを削除、
+        //   必要なら version を 9 に上げて再初期化扱いとする。
+        //   理由: 1 年あれば全アクティブユーザーが 1 度以上 migrate 完了する想定。
         if (version < 8) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Historic state has varying shapes
           const presets = state?.presets?.map((preset: any) => {

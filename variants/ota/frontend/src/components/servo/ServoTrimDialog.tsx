@@ -110,6 +110,11 @@ function buildServosFromPreset(presetId: string, t: TFunc): ServoItem[] {
   }));
 }
 
+// サーボプリセット名の localStorage マイグレーション map。
+// sunset: 2027-04-21（OTTO 排除 2026-04-21 の 1 年後）以降、
+//   この map と loadServoConfig 内の PRESET_MIGRATION 適用を削除、
+//   未知 key は既定の 'humanoid-basic' に fallback する単純ロジックで置換可能。
+//   理由: 1 年あれば全アクティブユーザーが 1 度以上 ServoTrim を開いて migrate 完了する想定。
 const PRESET_MIGRATION: Record<string, string> = {
   'otto-diy': 'humanoid-basic',
   'otto-diy-plus': 'humanoid-plus',

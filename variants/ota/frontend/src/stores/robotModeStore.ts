@@ -145,6 +145,11 @@ export const useRobotModeStore = create<RobotModeState>()(
     {
       name: 'robot-mode-storage',
       // 旧モード名から新モード名へのマイグレーション
+      // sunset: 2027-04-21（OTTO 排除 2026-04-21 の 1 年後）以降、
+      //   この migrate 関数と modeMap の OTTO エントリを削除、version を 2 に上げて
+      //   version < 2 の旧 state は再初期化扱いとする。
+      //   理由: 1 年あれば全アクティブユーザーが 1 度以上アプリを開いて migrate 完了する想定。
+      //   削除後のリスク: inactive 半年超のユーザーは最後に使ったモードが失われるが UX 影響 acceptable。
       migrate: (persistedState: any, _version: number) => {
         const modeMap: Record<string, RobotMode> = {
           otto_bipedal: 'robots_humanoid',
