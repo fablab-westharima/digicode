@@ -43,18 +43,16 @@ import { useWifiStore } from '@/stores/wifiStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { useBoardStore, type FlashMethod } from '@/stores/boardStore';
 import { getTutorialById } from '@/data/tutorials';
-import { useBreakpoint } from '@/hooks/useMediaQuery';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import type { Project } from '@/stores/projectStore';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { compileService, type CompileServerMode, type FullPackage } from '@/services/compileService';
 import { usbFirmwareService, type UsbFlashProgress, type UsbChipInfo } from '@/services/usbFirmwareService';
 import { bleFirmwareService, type BleFlashProgress, type BleDeviceInfo } from '@/services/bleFirmwareService';
 import { checkADC2Usage, type ADC2Warning } from '@/utils/adc2Check';
 import { api } from '@/lib/api';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
-import { Loader2, Zap, SlidersHorizontal, LineChart, Code, Terminal, ChevronUp, ChevronDown, Usb, Wifi, Bluetooth, AlertTriangle } from 'lucide-react';
+import { Loader2, Zap, SlidersHorizontal, Code, Usb, Wifi, Bluetooth, AlertTriangle } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -140,7 +138,6 @@ export function EditorPage() {
   const [adc2Warnings, setAdc2Warnings] = useState<ADC2Warning[]>([]);
   const [pendingCompileAction, setPendingCompileAction] = useState<(() => void) | null>(null);
   const [limitReachedDialogOpen, setLimitReachedDialogOpen] = useState(false);
-  const [bottomPanelExpanded, setBottomPanelExpanded] = useState(false);
   const [serverMode, setServerMode] = useState<CompileServerMode>('cloud');
   const [compileUsage, setCompileUsage] = useState<{
     count: number;
@@ -149,12 +146,10 @@ export function EditorPage() {
     isOverLimit: boolean;
     planType: string;
   } | null>(null);
-  const [activeBottomTab, setActiveBottomTab] = useState<string>('code');
   const [statusBarState, setStatusBarState] = useState<StatusBarState>('ready');
   const [statusBarMessage, setStatusBarMessage] = useState<string>('');
   const blocklyEditorRef = useRef<BlocklyEditorRef>(null);
   const compiledBinaryRef = useRef<Blob | null>(null);
-  const { isMobileOrTablet } = useBreakpoint();
   const { currentTutorial, isActive: isTutorialActive } = useTutorialStore();
   // ブラウザを閉じる/リロード時の確認
   useEffect(() => {
@@ -1174,65 +1169,6 @@ export function EditorPage() {
     setCompiledBinary(null);
   };
 
-  // モバイル/タブレット用下部パネル
-  const MobileBottomPanel = () => (
-    <div className={`bg-white border-t transition-all duration-300 ${bottomPanelExpanded ? 'h-72' : 'h-12'}`}>
-      {/* パネルヘッダー */}
-      <div className="flex items-center justify-between px-2 h-12 border-b">
-        <Tabs value={activeBottomTab} onValueChange={setActiveBottomTab} className="flex-1">
-          <TabsList className="h-9">
-            <TabsTrigger value="code" className="text-xs px-2">
-              <Code className="w-3 h-3 mr-1" />
-              {t('editor.bottom.code')}
-            </TabsTrigger>
-            <TabsTrigger value="monitor" className="text-xs px-2">
-              <Terminal className="w-3 h-3 mr-1" />
-              {t('editor.bottom.monitor')}
-            </TabsTrigger>
-            <TabsTrigger value="plotter" className="text-xs px-2">
-              <LineChart className="w-3 h-3 mr-1" />
-              {t('editor.bottom.plotter')}
-            </TabsTrigger>
-            <TabsTrigger value="pid" className="text-xs px-2">
-              <SlidersHorizontal className="w-3 h-3 mr-1" />
-              {t('editor.bottom.pid')}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setBottomPanelExpanded(!bottomPanelExpanded)}
-          className="ml-2"
-        >
-          {bottomPanelExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
-        </Button>
-      </div>
-
-      {/* パネルコンテンツ */}
-      {bottomPanelExpanded && (
-        <div className="h-[calc(100%-3rem)] overflow-hidden">
-          {activeBottomTab === 'code' && (
-            <CodePreview
-              code={generatedCode}
-              language="cpp"
-              className="h-full"
-            />
-          )}
-          {activeBottomTab === 'monitor' && (
-            <SerialMonitor className="h-full" />
-          )}
-          {activeBottomTab === 'plotter' && (
-            <SerialPlotter className="h-full" />
-          )}
-          {activeBottomTab === 'pid' && (
-            <PIDTuningPanel className="h-full overflow-y-auto" />
-          )}
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <div className="flex flex-col h-screen bg-white">
       {/* ツールバー（Linear風ミニマルデザイン） */}
@@ -1258,10 +1194,43 @@ export function EditorPage() {
       />
 
       {/* メインコンテンツ */}
-      {isMobileOrTablet ? (
-        // モバイル/タブレットレイアウト
-        <div className="flex flex-col flex-1 overflow-hidden">
-          {/* Blocklyエディタ（フルスクリーン） */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* サイドバー */}
+        <Sidebar
+          isAuthenticated={isAuthenticated}
+          onProjectOpen={handleOpen}
+          onBleFirmwareWrite={handleBleFirmwareWrite}
+          onWifiPrerequisites={() => setWifiPrerequisitesDialogOpen(true)}
+          onWifiFirmwareWrite={handleWifiFirmwareWrite}
+          onApSetup={() => setWifiSetupDialogOpen(true)}
+          onDeviceName={() => setDeviceNameDialogOpen(true)}
+          onUsbPortRelease={handleUsbPortRelease}
+          onServoTrim={() => setServoTrimDialogOpen(true)}
+          onPinAssignment={() => setPinSettingsDialogOpen(true)}
+          onCompileServerSettings={() => setCompileServerSettingsDialogOpen(true)}
+          onDocs={() => window.open('/docs', '_blank')}
+          onCodePreview={() => setCodePreviewDialogOpen(true)}
+          onPidTuning={() => setPidTuningDialogOpen(true)}
+          onUsbDriver={() => window.open('https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers', '_blank')}
+          onLogin={() => navigate('/auth')}
+          onLogout={handleLogout}
+          onPasskeyRegister={handlePasskeyRegister}
+          onTwoFactorSettings={handleTwoFactorSettings}
+          onAccountDelete={handleAccountDelete}
+          onChangePassword={() => setChangePasswordDialogOpen(true)}
+          onSubmissionList={() => setSubmissionListOpen(true)}
+          onSubmissionSaveDialog={() => setSubmissionSaveDialogOpen(true)}
+          onGradedList={() => setGradedListOpen(true)}
+          currentSubmissionTitle={currentSubmission?.assignmentTitle || null}
+          onAiAppendBlocks={(xml) => blocklyEditorRef.current?.appendBlocks(xml)}
+          onAiClearWorkspace={() => blocklyEditorRef.current?.loadXml('<xml xmlns="https://developers.google.com/blockly/xml"></xml>')}
+          workspaceXml={workspaceXml}
+          onOpenAiSettings={() => setAiSettingsDialogOpen(true)}
+        />
+
+        {/* メインコンテンツエリア (Blocklyワークスペース) */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Blocklyエディタ */}
           <div className="flex-1">
             <BlocklyEditor
               ref={blocklyEditorRef}
@@ -1270,70 +1239,19 @@ export function EditorPage() {
             />
           </div>
 
-          {/* 下部パネル（タブ切り替え式） */}
-          <MobileBottomPanel />
-        </div>
-      ) : (
-        // デスクトップレイアウト
-        <div className="flex flex-1 overflow-hidden">
-          {/* サイドバー */}
-          <Sidebar
-            isAuthenticated={isAuthenticated}
-            onProjectOpen={handleOpen}
-            onBleFirmwareWrite={handleBleFirmwareWrite}
-            onWifiPrerequisites={() => setWifiPrerequisitesDialogOpen(true)}
-            onWifiFirmwareWrite={handleWifiFirmwareWrite}
-            onApSetup={() => setWifiSetupDialogOpen(true)}
-            onDeviceName={() => setDeviceNameDialogOpen(true)}
-            onUsbPortRelease={handleUsbPortRelease}
-            onServoTrim={() => setServoTrimDialogOpen(true)}
-            onPinAssignment={() => setPinSettingsDialogOpen(true)}
-            onCompileServerSettings={() => setCompileServerSettingsDialogOpen(true)}
-            onDocs={() => window.open('/docs', '_blank')}
-            onCodePreview={() => setCodePreviewDialogOpen(true)}
-            onPidTuning={() => setPidTuningDialogOpen(true)}
-            onUsbDriver={() => window.open('https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers', '_blank')}
-            onLogin={() => navigate('/auth')}
-            onLogout={handleLogout}
-            onPasskeyRegister={handlePasskeyRegister}
-            onTwoFactorSettings={handleTwoFactorSettings}
-            onAccountDelete={handleAccountDelete}
-            onChangePassword={() => setChangePasswordDialogOpen(true)}
-            onSubmissionList={() => setSubmissionListOpen(true)}
-            onSubmissionSaveDialog={() => setSubmissionSaveDialogOpen(true)}
-            onGradedList={() => setGradedListOpen(true)}
-            currentSubmissionTitle={currentSubmission?.assignmentTitle || null}
-            onAiAppendBlocks={(xml) => blocklyEditorRef.current?.appendBlocks(xml)}
-            onAiClearWorkspace={() => blocklyEditorRef.current?.loadXml('<xml xmlns="https://developers.google.com/blockly/xml"></xml>')}
-            workspaceXml={workspaceXml}
-            onOpenAiSettings={() => setAiSettingsDialogOpen(true)}
-          />
-
-          {/* メインコンテンツエリア (Blocklyワークスペース) */}
-          <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Blocklyエディタ */}
-            <div className="flex-1">
-              <BlocklyEditor
-                ref={blocklyEditorRef}
-                initialXml={workspaceXml}
-                onWorkspaceChange={handleWorkspaceChange}
-              />
+          {/* 下部パネル（シリアルモニター/プロッター） */}
+          {showSerialMonitor && (
+            <div className="h-64 border-t border-[#2E333D]">
+              <SerialMonitor className="h-full" />
             </div>
-
-            {/* 下部パネル（シリアルモニター/プロッター） */}
-            {showSerialMonitor && (
-              <div className="h-64 border-t border-[#2E333D]">
-                <SerialMonitor className="h-full" />
-              </div>
-            )}
-            {showSerialPlotter && (
-              <div className="h-64 border-t border-[#2E333D]">
-                <SerialPlotter className="h-full" />
-              </div>
-            )}
-          </div>
+          )}
+          {showSerialPlotter && (
+            <div className="h-64 border-t border-[#2E333D]">
+              <SerialPlotter className="h-full" />
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* 保存ダイアログ */}
       <SaveProjectDialog

@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { useRobotModeStore } from '../../stores/robotModeStore';
 import { useFavoriteCategoriesStore } from '../../stores/favoriteCategoriesStore';
 import { useBoardStore } from '../../stores/boardStore';
-import { useBreakpoint } from '../../hooks/useMediaQuery';
 import { digiCodeDarkTheme } from './blocklyTheme';
 import { populateBlocklyMessages } from '@/utils/blocklyMessages';
 import { FavoriteSettingsDialog } from './FavoriteSettingsDialog';
@@ -105,7 +104,6 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
     const selectedBoardId = useBoardStore(s => s.selectedBoardId);
     const selectedBoard = useBoardStore.getState().getSelectedBoard();
     void selectedBoardId; // 購読目的、lint 抑制
-    const { isMobile } = useBreakpoint();
     const { i18n } = useTranslation();
     const [uiLanguage, setUiLanguage] = useState(i18n.language);
     const [isFavoriteDialogOpen, setIsFavoriteDialogOpen] = useState(false);
@@ -310,10 +308,9 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
       populateBlocklyMessages(uiLanguage);
       console.error('📦 [BlocklyEditor] Step 5: After populateBlocklyMessages, Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT:', Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT);
 
-      // モバイル向け設定
-      const mobileOptions: Blockly.BlocklyOptions = {
+      const blocklyOptions: Blockly.BlocklyOptions = {
         toolbox: currentToolbox,
-        theme: digiCodeDarkTheme, // ダークテーマを適用
+        theme: digiCodeDarkTheme,
         grid: {
           spacing: 20,
           length: 3,
@@ -323,11 +320,11 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         zoom: {
           controls: true,
           wheel: true,
-          pinch: true, // ピンチズーム有効
-          startScale: isMobile ? 0.7 : 0.85, // ブロックサイズを少し小さく
+          pinch: true,
+          startScale: 0.85,
           maxScale: 3,
           minScale: 0.2,
-          scaleSpeed: isMobile ? 1.1 : 1.2, // モバイルでは少し緩やかに
+          scaleSpeed: 1.2,
         },
         trashcan: true,
         move: {
@@ -338,15 +335,14 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
           drag: true,
           wheel: true,
         },
-        // モバイル向け追加設定
-        renderer: 'zelos', // よりモダンなレンダラー
-        sounds: false, // モバイルでは音を無効化
-        horizontalLayout: isMobile, // モバイルでは水平レイアウト
-        toolboxPosition: isMobile ? 'end' : 'start', // モバイルでは右側
+        renderer: 'zelos',
+        sounds: false,
+        horizontalLayout: false,
+        toolboxPosition: 'start',
       };
 
       // ワークスペース作成
-      const workspace = Blockly.inject(blocklyDiv.current, mobileOptions);
+      const workspace = Blockly.inject(blocklyDiv.current, blocklyOptions);
 
       workspaceRef.current = workspace;
 
@@ -508,7 +504,7 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         workspaceRef.current = null;
       };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentToolbox, robotMode, isMobile, uiLanguage]);
+    }, [currentToolbox, robotMode, uiLanguage]);
 
     // リサイズ対応
     useEffect(() => {
@@ -527,7 +523,7 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         <div
           ref={blocklyDiv}
           className="w-full h-full touch-manipulation"
-          style={{ minHeight: isMobile ? '300px' : '400px' }}
+          style={{ minHeight: '400px' }}
         />
         <FavoriteSettingsDialog
           open={isFavoriteDialogOpen}
