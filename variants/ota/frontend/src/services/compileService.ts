@@ -5,6 +5,7 @@
 
 import { api } from '@/lib/api';
 import { useBoardStore } from '@/stores/boardStore';
+import i18n from '@/i18n';
 import {
   COMPILE_SERVERS,
   getCompileServerMode,
@@ -120,7 +121,8 @@ export const compileService = {
       try {
         const response = await fetch(`${COMPILE_SERVERS.primary}/api/compile${queryParams}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja' },
           body: requestBody,
           signal: AbortSignal.timeout(120000) // 120秒タイムアウト
         });
@@ -186,7 +188,8 @@ export const compileService = {
       try {
         const response = await fetch(`${COMPILE_SERVERS.fallback}/api/compile${queryParams}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja' },
           body: requestBody,
           signal: AbortSignal.timeout(120000)
         });
@@ -270,7 +273,8 @@ export const compileService = {
       const serverUrl = getCompileServerUrl();
       const response = await fetch(`${serverUrl}/api/compile${queryParams}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja' },
         body: requestBody,
       });
 

@@ -15,6 +15,7 @@
 
 import type { MiddlewareHandler } from 'hono';
 import { getUserPlan, type PlanType } from '../utils/plan';
+import { errorJson } from '../utils/errorJson';
 
 type Bindings = {
   DB: D1Database;
@@ -35,7 +36,7 @@ export function requirePlan(
     const user = c.get('user');
     if (!user) {
       // Should never happen if authMiddleware ran first, but fail closed.
-      return c.json({ error: '認証が必要です' }, 401);
+      return errorJson(c, 'auth.required', 401);
     }
 
     const plan = await getUserPlan(c.env.DB, user.userId);

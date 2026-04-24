@@ -100,7 +100,8 @@ export async function triggerHelperSearch(): Promise<void> {
   try {
     await fetch(`${HELPER_BASE_URL}/api/search`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja' },
       body: JSON.stringify({ timeout: 5000 }),
       // @ts-expect-error - Chrome 138+ Private Network Access (remove when TypeScript adds targetAddressSpace to RequestInit)
       targetAddressSpace: 'local',

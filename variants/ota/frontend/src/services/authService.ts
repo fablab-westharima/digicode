@@ -18,6 +18,7 @@ export async function register(email: string, password: string): Promise<{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
     body: JSON.stringify({ email, password }),
   });
@@ -43,6 +44,7 @@ export async function login(email: string, password: string): Promise<{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
     body: JSON.stringify({ email, password }),
   });
@@ -73,6 +75,7 @@ export async function logout(): Promise<void> {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
         },
         body: JSON.stringify({ refreshToken }),
       });
@@ -100,6 +103,7 @@ export async function logoutAll(): Promise<void> {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
+      'Accept-Language': i18n.language || 'ja',
     },
   });
 
@@ -137,6 +141,7 @@ export async function getMe(): Promise<{
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
+      'Accept-Language': i18n.language || 'ja',
     },
   });
 
@@ -166,6 +171,7 @@ export async function refreshToken(): Promise<{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
     body: JSON.stringify({ refreshToken }),
   });
@@ -199,6 +205,7 @@ export async function forgotPassword(email: string): Promise<{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
     body: JSON.stringify({ email }),
   });
@@ -221,6 +228,7 @@ export async function resetPassword(token: string, password: string): Promise<{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
     body: JSON.stringify({ token, password }),
   });
@@ -245,6 +253,7 @@ export async function sendVerificationEmail(email: string): Promise<{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
     body: JSON.stringify({ email }),
   });
@@ -268,6 +277,7 @@ export async function verifyEmail(token: string): Promise<{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
   });
 
@@ -291,6 +301,7 @@ export async function requestRecovery(email: string): Promise<{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
     body: JSON.stringify({ email }),
   });
@@ -317,6 +328,7 @@ export async function verifyRecovery(token: string): Promise<{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
     body: JSON.stringify({ token }),
   });
@@ -358,6 +370,7 @@ export async function sendOtp(email: string, password: string): Promise<{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
     credentials: 'include', // Cookie送受信のために必要（信頼済みデバイス）
     body: JSON.stringify({ email, password }),
@@ -393,6 +406,7 @@ export async function verifyOtp(email: string, code: string, trustDevice?: boole
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
     credentials: 'include', // Cookie送受信のために必要
     body: JSON.stringify({ email, code, trustDevice }),
@@ -424,6 +438,7 @@ export async function resendOtp(email: string): Promise<{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
     body: JSON.stringify({ email }),
   });
@@ -453,6 +468,7 @@ export async function getTwoFactorStatus(): Promise<{
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
+      'Accept-Language': i18n.language || 'ja',
     },
   });
 
@@ -481,6 +497,7 @@ export async function enableTwoFactor(): Promise<{
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
+      'Accept-Language': i18n.language || 'ja',
     },
   });
 

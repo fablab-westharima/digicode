@@ -1,8 +1,16 @@
 // API client for DigiCode
 // Cloudflare Pagesでは環境変数が使えないため、hostnameで判定
+import i18n from '@/i18n';
+
 const API_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
   ? 'http://localhost:8787'
   : 'https://esp32-blockly-backend.kazunari-takeda.workers.dev';
+
+// Phase 10-A A-2: backend i18n の Accept-Language ヘッダ
+// frontend i18n.language を backend locale middleware に伝える
+function getAcceptLanguageHeader(): string {
+  return i18n.language || 'ja';
+}
 
 // トークン取得
 function getAccessToken(): string | null {
@@ -45,7 +53,10 @@ async function refreshAccessToken(): Promise<boolean> {
   try {
     const response = await fetch(`${API_URL}/api/auth/refresh`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept-Language': getAcceptLanguageHeader(),
+      },
       body: JSON.stringify({ refreshToken }),
     });
 
@@ -72,6 +83,7 @@ export async function fetchWithAuth(
   const token = getAccessToken();
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    'Accept-Language': getAcceptLanguageHeader(),
     ...options.headers,
   };
 
@@ -108,7 +120,7 @@ export const api = {
     register: async (email: string, password: string) => {
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept-Language': getAcceptLanguageHeader() },
         body: JSON.stringify({ email, password }),
       });
       return response;
@@ -117,7 +129,7 @@ export const api = {
     login: async (email: string, password: string) => {
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept-Language': getAcceptLanguageHeader() },
         body: JSON.stringify({ email, password }),
       });
       return response;
@@ -139,7 +151,7 @@ export const api = {
       if (!refreshToken) return;
       return fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept-Language': getAcceptLanguageHeader() },
         body: JSON.stringify({ refreshToken }),
       });
     },
@@ -147,7 +159,7 @@ export const api = {
     forgotPassword: async (email: string) => {
       const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept-Language': getAcceptLanguageHeader() },
         body: JSON.stringify({ email }),
       });
       return response;
@@ -156,7 +168,7 @@ export const api = {
     resetPassword: async (token: string, password: string) => {
       const response = await fetch(`${API_URL}/api/auth/reset-password`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept-Language': getAcceptLanguageHeader() },
         body: JSON.stringify({ token, password }),
       });
       return response;

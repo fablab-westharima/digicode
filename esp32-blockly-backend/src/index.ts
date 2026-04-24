@@ -12,6 +12,7 @@ import admin from './routes/admin';
 import classes, { deleteClassCascade } from './routes/classes';
 import submissionsRoute from './routes/submissions';
 import { rateLimitPresets } from './middleware/rateLimit';
+import { localeMiddleware } from './middleware/locale';
 
 export type Bindings = {
   DB: D1Database;
@@ -67,9 +68,12 @@ app.use('*', cors({
     return null;
   },
   allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization'],
+  allowHeaders: ['Content-Type', 'Authorization', 'Accept-Language'],
   credentials: true,
 }));
+
+// i18n locale middleware: Accept-Language → c.set('locale', ...) — 全ルート前に適用
+app.use('*', localeMiddleware);
 
 // ヘルスチェック
 app.get('/health', (c) => {

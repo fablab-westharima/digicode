@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { errorJson } from '../utils/errorJson';
 import {
   generateRegistrationOptions,
   verifyRegistrationResponse,
@@ -183,7 +184,7 @@ app.post('/register/verify', authMiddleware, async (c) => {
     });
 
     if (!verification.verified || !verification.registrationInfo) {
-      return c.json({ error: 'パスキーの検証に失敗しました' }, 400);
+      return errorJson(c, 'passkey.verifyFailed', 400);
     }
 
     // v13では registrationInfo.credential の下にデータがある
@@ -225,7 +226,7 @@ app.post('/register/verify', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Error verifying registration:', error);
-    return c.json({ error: 'パスキーの登録に失敗しました' }, 500);
+    return errorJson(c, 'passkey.registerFailed', 500);
   }
 });
 
@@ -237,7 +238,7 @@ app.post('/login/options', async (c) => {
     const { email } = await c.req.json();
 
     if (!email) {
-      return c.json({ error: 'メールアドレスが必要です' }, 400);
+      return errorJson(c, 'auth.emailRequired', 400);
     }
 
     // ユーザーを取得
@@ -248,7 +249,7 @@ app.post('/login/options', async (c) => {
       .first();
 
     if (!userResult) {
-      return c.json({ error: 'ユーザーが見つかりません' }, 404);
+      return errorJson(c, 'auth.userNotFound', 404);
     }
 
     const userId = userResult.id as number;
@@ -261,7 +262,7 @@ app.post('/login/options', async (c) => {
       .all();
 
     if (authenticators.results.length === 0) {
-      return c.json({ error: 'パスキーが登録されていません' }, 404);
+      return errorJson(c, 'passkey.notRegistered', 404);
     }
 
     console.log('[Passkey Login] User ID:', userId);
@@ -292,10 +293,7 @@ app.post('/login/options', async (c) => {
     return c.json(options);
   } catch (error) {
     console.error('Error generating authentication options:', error);
-    return c.json(
-      { error: 'パスキー認証オプションの生成に失敗しました' },
-      500
-    );
+    return errorJson(c, 'passkey.optionsGenFailed', 500);
   }
 });
 
@@ -311,7 +309,7 @@ app.post('/login/verify', async (c) => {
     };
 
     if (!email || !credential) {
-      return c.json({ error: 'メールアドレスとクレデンシャルが必要です' }, 400);
+      return errorJson(c, 'auth.emailAndCredentialRequired', 400);
     }
 
     // ユーザーを取得
@@ -322,7 +320,7 @@ app.post('/login/verify', async (c) => {
       .first();
 
     if (!userResult) {
-      return c.json({ error: 'ユーザーが見つかりません' }, 404);
+      return errorJson(c, 'auth.userNotFound', 404);
     }
 
     const userId = userResult.id as number;
@@ -330,10 +328,7 @@ app.post('/login/verify', async (c) => {
 
     // メール確認チェック
     if (!emailVerified) {
-      return c.json(
-        { error: 'メールアドレスが確認されていません' },
-        403
-      );
+      return errorJson(c, 'auth.emailNotVerified', 403);
     }
 
     // KVからChallengeを取得
@@ -368,7 +363,7 @@ app.post('/login/verify', async (c) => {
         'SELECT credential_id FROM authenticators WHERE user_id = ?'
       ).bind(userId).all();
       console.log('[Passkey Login Verify] All authenticators for user:', JSON.stringify(allAuths.results));
-      return c.json({ error: 'パスキーが見つかりません' }, 404);
+      return errorJson(c, 'passkey.notFound', 404);
     }
 
     // Base64URLからUint8Arrayに変換（Cloudflare Workers対応）
@@ -391,7 +386,7 @@ app.post('/login/verify', async (c) => {
     });
 
     if (!verification.verified) {
-      return c.json({ error: 'パスキーの検証に失敗しました' }, 400);
+      return errorJson(c, 'passkey.verifyFailed', 400);
     }
 
     // カウンターを更新、last_used_atを更新
@@ -440,7 +435,7 @@ app.post('/login/verify', async (c) => {
     });
   } catch (error) {
     console.error('Error verifying authentication:', error);
-    return c.json({ error: 'パスキー認証に失敗しました' }, 500);
+    return errorJson(c, 'passkey.authFailed', 500);
   }
 });
 
@@ -465,7 +460,7 @@ app.get('/list', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Error listing authenticators:', error);
-    return c.json({ error: 'パスキー一覧の取得に失敗しました' }, 500);
+    return errorJson(c, 'passkey.listFailed', 500);
   }
 });
 
@@ -476,7 +471,7 @@ app.delete('/:id', authMiddleware, async (c) => {
     const authenticatorId = parseInt(c.req.param('id'));
 
     if (isNaN(authenticatorId)) {
-      return c.json({ error: '無効なIDです' }, 400);
+      return errorJson(c, 'validation.invalidId', 400);
     }
 
     // 認証器がユーザーのものか確認
@@ -487,7 +482,7 @@ app.delete('/:id', authMiddleware, async (c) => {
       .first();
 
     if (!authenticator) {
-      return c.json({ error: 'パスキーが見つかりません' }, 404);
+      return errorJson(c, 'passkey.notFound', 404);
     }
 
     // 削除
@@ -498,7 +493,7 @@ app.delete('/:id', authMiddleware, async (c) => {
     return c.json({ success: true });
   } catch (error) {
     console.error('Error deleting authenticator:', error);
-    return c.json({ error: 'パスキーの削除に失敗しました' }, 500);
+    return errorJson(c, 'passkey.deleteFailed', 500);
   }
 });
 
@@ -509,7 +504,7 @@ app.post('/set-only-mode', authMiddleware, async (c) => {
     const { enabled } = await c.req.json();
 
     if (typeof enabled !== 'boolean') {
-      return c.json({ error: 'enabledはboolean型である必要があります' }, 400);
+      return errorJson(c, 'validation.enabledMustBeBoolean', 400);
     }
 
     // 有効化する場合、少なくとも1つのパスキーが登録されているか確認
@@ -521,10 +516,7 @@ app.post('/set-only-mode', authMiddleware, async (c) => {
         .first();
 
       if (!authenticatorCount || (authenticatorCount.count as number) === 0) {
-        return c.json(
-          { error: 'パスキーのみモードを有効にするには、少なくとも1つのパスキーを登録してください' },
-          400
-        );
+        return errorJson(c, 'passkey.onlyModeRequiresOne', 400);
       }
     }
 
@@ -536,7 +528,7 @@ app.post('/set-only-mode', authMiddleware, async (c) => {
     return c.json({ success: true, passkeyOnly: enabled });
   } catch (error) {
     console.error('Error setting passkey-only mode:', error);
-    return c.json({ error: 'パスキーのみモードの設定に失敗しました' }, 500);
+    return errorJson(c, 'passkey.onlyModeSetFailed', 500);
   }
 });
 

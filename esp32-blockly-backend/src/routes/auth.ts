@@ -2,6 +2,8 @@ import { Hono } from 'hono';
 import { generateTokenPair, generateRefreshToken } from '../utils/jwt';
 import { hashPassword, verifyPassword } from '../utils/password';
 import { authMiddleware } from '../middleware/auth';
+import { errorJson } from '../utils/errorJson';
+import { getMessage, resolveLocale } from '../i18n/messages';
 import {
   sendPasswordResetEmail,
   sendVerificationEmail,
@@ -71,11 +73,11 @@ auth.post('/register', async (c) => {
 
     // バリデーション
     if (!email || !password) {
-      return c.json({ error: 'メールアドレスとパスワードは必須です' }, 400);
+      return errorJson(c, 'auth.emailAndPasswordRequired', 400);
     }
 
     if (!isValidEmail(email)) {
-      return c.json({ error: '有効なメールアドレスを入力してください' }, 400);
+      return errorJson(c, 'validation.invalidEmail', 400);
     }
 
     // パスワード強度チェック
@@ -90,7 +92,7 @@ auth.post('/register', async (c) => {
     ).bind(email).first();
 
     if (existingUser) {
-      return c.json({ error: 'このメールアドレスは既に登録されています' }, 409);
+      return errorJson(c, 'auth.emailAlreadyRegistered', 409);
     }
 
     // パスワードハッシュ化
@@ -102,7 +104,7 @@ auth.post('/register', async (c) => {
     ).bind(email, passwordHash).first<{ id: number; email: string; created_at: string }>();
 
     if (!userResult) {
-      return c.json({ error: 'ユーザー作成に失敗しました' }, 500);
+      return errorJson(c, 'admin.userCreateFailed', 500);
     }
 
     // サブスクリプション作成（無料プラン）
@@ -162,7 +164,7 @@ auth.post('/register', async (c) => {
     }, 201);
   } catch (error) {
     console.error('Registration error:', error);
-    return c.json({ error: '登録処理中にエラーが発生しました' }, 500);
+    return errorJson(c, 'auth.signupFailed', 500);
   }
 });
 
@@ -174,7 +176,7 @@ auth.post('/login', async (c) => {
 
     // バリデーション
     if (!email || !password) {
-      return c.json({ error: 'メールアドレスとパスワードは必須です' }, 400);
+      return errorJson(c, 'auth.emailAndPasswordRequired', 400);
     }
 
     // ユーザー検索
@@ -191,7 +193,7 @@ auth.post('/login', async (c) => {
     }>();
 
     if (!user) {
-      return c.json({ error: 'メールアドレスまたはパスワードが正しくありません' }, 401);
+      return errorJson(c, 'auth.emailOrPasswordIncorrect', 401);
     }
 
     // メール確認チェック（student は代理作成時に email_verified=1 済み）
@@ -214,7 +216,7 @@ auth.post('/login', async (c) => {
     const { valid, needsRehash } = await verifyPassword(password, user.password_hash);
 
     if (!valid) {
-      return c.json({ error: 'メールアドレスまたはパスワードが正しくありません' }, 401);
+      return errorJson(c, 'auth.emailOrPasswordIncorrect', 401);
     }
 
     // Lazy upgrade: iterations 不足なら新形式で再 hash して DB 更新
@@ -271,7 +273,7 @@ auth.post('/login', async (c) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    return c.json({ error: 'ログイン処理中にエラーが発生しました' }, 500);
+    return errorJson(c, 'auth.loginFailed', 500);
   }
 });
 
@@ -281,7 +283,7 @@ auth.get('/check-passkey-mode', async (c) => {
     const email = c.req.query('email');
 
     if (!email) {
-      return c.json({ error: 'メールアドレスが必要です' }, 400);
+      return errorJson(c, 'auth.emailRequired', 400);
     }
 
     const user = await c.env.DB.prepare(
@@ -296,7 +298,7 @@ auth.get('/check-passkey-mode', async (c) => {
     return c.json({ passkeyOnly: user.passkey_only === 1 });
   } catch (error) {
     console.error('Check passkey mode error:', error);
-    return c.json({ error: 'パスキーのみモードの確認中にエラーが発生しました' }, 500);
+    return errorJson(c, 'passkey.onlyModeCheckFailed', 500);
   }
 });
 
@@ -329,7 +331,7 @@ auth.get('/me', authMiddleware, async (c) => {
     }>();
 
     if (!user) {
-      return c.json({ error: 'ユーザーが見つかりません' }, 404);
+      return errorJson(c, 'auth.userNotFound', 404);
     }
 
     return c.json({
@@ -351,7 +353,7 @@ auth.get('/me', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Get me error:', error);
-    return c.json({ error: 'ユーザー情報の取得に失敗しました' }, 500);
+    return errorJson(c, 'auth.userInfoFailed', 500);
   }
 });
 
@@ -364,7 +366,7 @@ auth.patch('/me', authMiddleware, async (c) => {
 
     const supportedLangs = ['ja', 'en', 'es', 'pt-PT', 'zh-TW'];
     if (preferredLang !== undefined && preferredLang !== null && !supportedLangs.includes(preferredLang)) {
-      return c.json({ error: '無効な言語コードです' }, 400);
+      return errorJson(c, 'auth.invalidLangCode', 400);
     }
 
     await c.env.DB.prepare(
@@ -374,7 +376,7 @@ auth.patch('/me', authMiddleware, async (c) => {
     return c.json({ success: true });
   } catch (error) {
     console.error('Update me error:', error);
-    return c.json({ error: 'ユーザー設定の更新に失敗しました' }, 500);
+    return errorJson(c, 'auth.settingsUpdateFailed', 500);
   }
 });
 
@@ -385,7 +387,7 @@ auth.post('/refresh', async (c) => {
     const { refreshToken } = body;
 
     if (!refreshToken) {
-      return c.json({ error: 'リフレッシュトークンが必要です' }, 400);
+      return errorJson(c, 'auth.refreshTokenRequired', 400);
     }
 
     // リフレッシュトークンのハッシュを計算
@@ -406,17 +408,17 @@ auth.post('/refresh', async (c) => {
     }>();
 
     if (!storedToken) {
-      return c.json({ error: '無効なリフレッシュトークンです' }, 401);
+      return errorJson(c, 'auth.invalidRefreshToken', 401);
     }
 
     // 失効チェック
     if (storedToken.revoked_at) {
-      return c.json({ error: 'リフレッシュトークンは失効しています' }, 401);
+      return errorJson(c, 'auth.refreshTokenRevoked', 401);
     }
 
     // 有効期限チェック
     if (new Date(storedToken.expires_at) < new Date()) {
-      return c.json({ error: 'リフレッシュトークンの有効期限が切れています' }, 401);
+      return errorJson(c, 'auth.refreshTokenExpired', 401);
     }
 
     // 古いリフレッシュトークンを失効させる（ローテーション）
@@ -445,7 +447,7 @@ auth.post('/refresh', async (c) => {
     });
   } catch (error) {
     console.error('Token refresh error:', error);
-    return c.json({ error: 'トークン更新に失敗しました' }, 500);
+    return errorJson(c, 'auth.tokenRefreshFailed', 500);
   }
 });
 
@@ -462,10 +464,11 @@ auth.post('/logout', async (c) => {
       ).bind(tokenHash).run();
     }
 
-    return c.json({ message: 'ログアウトしました' });
+    const locale = resolveLocale(c.req.header('Accept-Language'));
+    return c.json({ message: getMessage(locale, 'auth.loggedOut') });
   } catch (error) {
     console.error('Logout error:', error);
-    return c.json({ error: 'ログアウト処理に失敗しました' }, 500);
+    return errorJson(c, 'auth.logoutFailed', 500);
   }
 });
 
@@ -478,10 +481,11 @@ auth.post('/logout-all', authMiddleware, async (c) => {
       'UPDATE refresh_tokens SET revoked_at = datetime(\'now\') WHERE user_id = ? AND revoked_at IS NULL'
     ).bind(userId).run();
 
-    return c.json({ message: '全デバイスからログアウトしました' });
+    const locale = resolveLocale(c.req.header('Accept-Language'));
+    return c.json({ message: getMessage(locale, 'auth.loggedOutAllDevices') });
   } catch (error) {
     console.error('Logout all error:', error);
-    return c.json({ error: 'ログアウト処理に失敗しました' }, 500);
+    return errorJson(c, 'auth.logoutFailed', 500);
   }
 });
 
@@ -508,11 +512,11 @@ auth.post('/forgot-password', async (c) => {
     const { email } = body;
 
     if (!email) {
-      return c.json({ error: 'メールアドレスは必須です' }, 400);
+      return errorJson(c, 'auth.emailRequired', 400);
     }
 
     if (!isValidEmail(email)) {
-      return c.json({ error: '有効なメールアドレスを入力してください' }, 400);
+      return errorJson(c, 'validation.invalidEmail', 400);
     }
 
     // ユーザー検索
@@ -578,7 +582,7 @@ auth.post('/forgot-password', async (c) => {
     });
   } catch (error) {
     console.error('Forgot password error:', error);
-    return c.json({ error: 'パスワードリセット処理に失敗しました' }, 500);
+    return errorJson(c, 'auth.passwordResetProcessFailed', 500);
   }
 });
 
@@ -589,7 +593,7 @@ auth.post('/reset-password', async (c) => {
     const { token, password } = body;
 
     if (!token || !password) {
-      return c.json({ error: 'トークンと新しいパスワードは必須です' }, 400);
+      return errorJson(c, 'auth.tokenAndPasswordRequired', 400);
     }
 
     // パスワード強度チェック
@@ -616,17 +620,17 @@ auth.post('/reset-password', async (c) => {
     }>();
 
     if (!resetToken) {
-      return c.json({ error: '無効なリセットトークンです' }, 400);
+      return errorJson(c, 'auth.invalidResetToken', 400);
     }
 
     // 使用済みチェック
     if (resetToken.used_at) {
-      return c.json({ error: 'このリセットトークンは既に使用されています' }, 400);
+      return errorJson(c, 'auth.resetTokenAlreadyUsed', 400);
     }
 
     // 有効期限チェック
     if (new Date(resetToken.expires_at) < new Date()) {
-      return c.json({ error: 'リセットトークンの有効期限が切れています' }, 400);
+      return errorJson(c, 'auth.resetTokenExpired', 400);
     }
 
     // パスワードをハッシュ化
@@ -652,7 +656,7 @@ auth.post('/reset-password', async (c) => {
     });
   } catch (error) {
     console.error('Reset password error:', error);
-    return c.json({ error: 'パスワードリセットに失敗しました' }, 500);
+    return errorJson(c, 'auth.passwordResetFailed', 500);
   }
 });
 
@@ -663,7 +667,7 @@ auth.post('/verify-email/send', async (c) => {
     const { email } = body;
 
     if (!email) {
-      return c.json({ error: 'メールアドレスは必須です' }, 400);
+      return errorJson(c, 'auth.emailRequired', 400);
     }
 
     // ユーザー検索
@@ -734,7 +738,7 @@ auth.post('/verify-email/send', async (c) => {
     });
   } catch (error) {
     console.error('Verification email send error:', error);
-    return c.json({ error: '確認メール送信に失敗しました' }, 500);
+    return errorJson(c, 'auth.verifyEmailSendFailed', 500);
   }
 });
 
@@ -744,7 +748,7 @@ auth.post('/verify-email/:token', async (c) => {
     const token = c.req.param('token');
 
     if (!token) {
-      return c.json({ error: 'トークンは必須です' }, 400);
+      return errorJson(c, 'auth.tokenRequired', 400);
     }
 
     // トークンのハッシュを計算
@@ -766,17 +770,17 @@ auth.post('/verify-email/:token', async (c) => {
     }>();
 
     if (!verificationToken) {
-      return c.json({ error: '無効な確認トークンです' }, 400);
+      return errorJson(c, 'auth.invalidVerifyToken', 400);
     }
 
     // 使用済みチェック
     if (verificationToken.used_at) {
-      return c.json({ error: 'この確認トークンは既に使用されています' }, 400);
+      return errorJson(c, 'auth.verifyTokenAlreadyUsed', 400);
     }
 
     // 有効期限チェック
     if (new Date(verificationToken.expires_at) < new Date()) {
-      return c.json({ error: '確認トークンの有効期限が切れています' }, 400);
+      return errorJson(c, 'auth.verifyTokenExpired', 400);
     }
 
     // 既に確認済みの場合
@@ -803,7 +807,7 @@ auth.post('/verify-email/:token', async (c) => {
     });
   } catch (error) {
     console.error('Email verification error:', error);
-    return c.json({ error: 'メール確認に失敗しました' }, 500);
+    return errorJson(c, 'auth.emailVerifyFailed', 500);
   }
 });
 
@@ -814,11 +818,11 @@ auth.post('/recovery/request', async (c) => {
     const { email } = body;
 
     if (!email) {
-      return c.json({ error: 'メールアドレスは必須です' }, 400);
+      return errorJson(c, 'auth.emailRequired', 400);
     }
 
     if (!isValidEmail(email)) {
-      return c.json({ error: '有効なメールアドレスを入力してください' }, 400);
+      return errorJson(c, 'validation.invalidEmail', 400);
     }
 
     // ユーザー検索
@@ -882,7 +886,7 @@ auth.post('/recovery/request', async (c) => {
     });
   } catch (error) {
     console.error('Recovery request error:', error);
-    return c.json({ error: 'リカバリー申請に失敗しました' }, 500);
+    return errorJson(c, 'recovery.requestFailed', 500);
   }
 });
 
@@ -893,7 +897,7 @@ auth.post('/recovery/verify', async (c) => {
     const { token } = body;
 
     if (!token) {
-      return c.json({ error: 'トークンは必須です' }, 400);
+      return errorJson(c, 'auth.tokenRequired', 400);
     }
 
     // トークンのハッシュを計算
@@ -914,17 +918,17 @@ auth.post('/recovery/verify', async (c) => {
     }>();
 
     if (!recoveryToken) {
-      return c.json({ error: '無効なリカバリートークンです' }, 400);
+      return errorJson(c, 'recovery.invalidToken', 400);
     }
 
     // 使用済みチェック
     if (recoveryToken.used_at) {
-      return c.json({ error: 'このリカバリートークンは既に使用されています' }, 400);
+      return errorJson(c, 'recovery.tokenAlreadyUsed', 400);
     }
 
     // 有効期限チェック
     if (new Date(recoveryToken.expires_at) < new Date()) {
-      return c.json({ error: 'リカバリートークンの有効期限が切れています' }, 400);
+      return errorJson(c, 'recovery.tokenExpired', 400);
     }
 
     // トークンを使用済みにする
@@ -958,7 +962,7 @@ auth.post('/recovery/verify', async (c) => {
     });
   } catch (error) {
     console.error('Recovery verify error:', error);
-    return c.json({ error: 'リカバリーに失敗しました' }, 500);
+    return errorJson(c, 'recovery.failed', 500);
   }
 });
 
@@ -1018,7 +1022,7 @@ auth.delete('/account', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Account deletion error:', error);
-    return c.json({ error: 'アカウント削除に失敗しました' }, 500);
+    return errorJson(c, 'auth.accountDeleteFailed', 500);
   }
 });
 
@@ -1029,11 +1033,11 @@ auth.post('/change-password', authMiddleware, async (c) => {
     const body = await c.req.json<{ currentPassword?: string; newPassword?: string }>();
 
     if (!body.currentPassword || !body.newPassword) {
-      return c.json({ error: '現在のパスワードと新しいパスワードは必須です' }, 400);
+      return errorJson(c, 'auth.currentAndNewPasswordRequired', 400);
     }
 
     if (body.newPassword.length < 4) {
-      return c.json({ error: 'パスワードは4文字以上にしてください' }, 400);
+      return errorJson(c, 'auth.passwordTooShort', 400);
     }
 
     const user = await c.env.DB.prepare(
@@ -1041,12 +1045,12 @@ auth.post('/change-password', authMiddleware, async (c) => {
     ).bind(userId).first<{ password_hash: string }>();
 
     if (!user) {
-      return c.json({ error: 'ユーザーが見つかりません' }, 404);
+      return errorJson(c, 'auth.userNotFound', 404);
     }
 
     const { valid } = await verifyPassword(body.currentPassword, user.password_hash);
     if (!valid) {
-      return c.json({ error: '現在のパスワードが正しくありません' }, 401);
+      return errorJson(c, 'auth.currentPasswordIncorrect', 401);
     }
 
     const newHash = await hashPassword(body.newPassword);
@@ -1059,7 +1063,7 @@ auth.post('/change-password', authMiddleware, async (c) => {
     return c.json({ success: true });
   } catch (error) {
     console.error('Change password error:', error);
-    return c.json({ error: 'パスワード変更に失敗しました' }, 500);
+    return errorJson(c, 'auth.passwordChangeFailed', 500);
   }
 });
 

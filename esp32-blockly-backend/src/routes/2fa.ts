@@ -9,6 +9,7 @@ import { authMiddleware } from '../middleware/auth';
 import { hashPassword, verifyPassword } from '../utils/password';
 import { generateTokenPair } from '../utils/jwt';
 import { sendLoginOtpEmail } from '../services/emailService';
+import { errorJson } from '../utils/errorJson';
 
 type Bindings = {
   DB: D1Database;
@@ -81,7 +82,7 @@ twoFactor.post('/send-otp', async (c) => {
   const { email, password } = await c.req.json<{ email: string; password: string }>();
 
   if (!email || !password) {
-    return c.json({ error: 'メールアドレスとパスワードが必要です' }, 400);
+    return errorJson(c, 'auth.emailAndPasswordRequired', 400);
   }
 
   try {
@@ -98,23 +99,23 @@ twoFactor.post('/send-otp', async (c) => {
     }>();
 
     if (!user) {
-      return c.json({ error: 'メールアドレスまたはパスワードが正しくありません' }, 401);
+      return errorJson(c, 'auth.emailOrPasswordIncorrect', 401);
     }
 
     // パスキー専用モードのチェック
     if (user.passkey_only) {
-      return c.json({ error: 'このアカウントはパスキー専用です' }, 401);
+      return errorJson(c, 'auth.passkeyOnly', 401);
     }
 
     // メール未確認チェック
     if (!user.email_verified) {
-      return c.json({ error: 'メールアドレスが確認されていません' }, 401);
+      return errorJson(c, 'auth.emailNotVerified', 401);
     }
 
     // パスワード検証
     const { valid: isValidPassword, needsRehash } = await verifyPassword(password, user.password_hash);
     if (!isValidPassword) {
-      return c.json({ error: 'メールアドレスまたはパスワードが正しくありません' }, 401);
+      return errorJson(c, 'auth.emailOrPasswordIncorrect', 401);
     }
 
     // Lazy upgrade: iterations 不足なら新形式で再 hash
@@ -243,7 +244,7 @@ twoFactor.post('/send-otp', async (c) => {
     });
   } catch (error) {
     console.error('2FA send-otp error:', error);
-    return c.json({ error: '認証処理に失敗しました' }, 500);
+    return errorJson(c, 'twoFa.failed', 500);
   }
 });
 
@@ -260,12 +261,12 @@ twoFactor.post('/verify-otp', async (c) => {
   }>();
 
   if (!email || !code) {
-    return c.json({ error: 'メールアドレスと認証コードが必要です' }, 400);
+    return errorJson(c, 'auth.emailAndOtpRequired', 400);
   }
 
   // 6桁数字の形式チェック
   if (!/^\d{6}$/.test(code)) {
-    return c.json({ error: '認証コードは6桁の数字です' }, 400);
+    return errorJson(c, 'twoFa.codeMustBe6Digits', 400);
   }
 
   try {
@@ -275,7 +276,7 @@ twoFactor.post('/verify-otp', async (c) => {
     ).bind(email).first<{ id: number; email: string }>();
 
     if (!user) {
-      return c.json({ error: '認証に失敗しました' }, 401);
+      return errorJson(c, 'auth.failed', 401);
     }
 
     // 未使用で有効期限内のOTPを取得
@@ -286,12 +287,12 @@ twoFactor.post('/verify-otp', async (c) => {
     ).bind(user.id).first<{ id: number; code_hash: string; attempts: number }>();
 
     if (!otpRecord) {
-      return c.json({ error: '認証コードが見つからないか期限切れです' }, 401);
+      return errorJson(c, 'twoFa.codeNotFoundOrExpired', 401);
     }
 
     // 試行回数チェック（5回まで）
     if (otpRecord.attempts >= 5) {
-      return c.json({ error: '試行回数の上限に達しました。新しいコードを送信してください' }, 429);
+      return errorJson(c, 'twoFa.maxAttemptsExceeded', 429);
     }
 
     // 試行回数をインクリメント
@@ -375,7 +376,7 @@ twoFactor.post('/verify-otp', async (c) => {
     });
   } catch (error) {
     console.error('2FA verify-otp error:', error);
-    return c.json({ error: '認証処理に失敗しました' }, 500);
+    return errorJson(c, 'twoFa.failed', 500);
   }
 });
 
@@ -387,7 +388,7 @@ twoFactor.post('/resend-otp', async (c) => {
   const { email } = await c.req.json<{ email: string }>();
 
   if (!email) {
-    return c.json({ error: 'メールアドレスが必要です' }, 400);
+    return errorJson(c, 'auth.emailRequired', 400);
   }
 
   try {
@@ -411,7 +412,7 @@ twoFactor.post('/resend-otp', async (c) => {
     ).bind(user.id).first<{ enabled: number }>();
 
     if (!twoFaSetting || !twoFaSetting.enabled) {
-      return c.json({ error: '2段階認証が有効ではありません' }, 400);
+      return errorJson(c, 'twoFa.notEnabled', 400);
     }
 
     // レート制限チェック（直近10分で3回まで）
@@ -421,7 +422,7 @@ twoFactor.post('/resend-otp', async (c) => {
     ).bind(user.id).first<{ count: number }>();
 
     if (recentCount && recentCount.count >= 3) {
-      return c.json({ error: 'しばらく待ってから再送信してください' }, 429);
+      return errorJson(c, 'auth.resendTooSoon', 429);
     }
 
     // OTPコード生成
@@ -459,7 +460,7 @@ twoFactor.post('/resend-otp', async (c) => {
     });
   } catch (error) {
     console.error('2FA resend-otp error:', error);
-    return c.json({ error: '再送信に失敗しました' }, 500);
+    return errorJson(c, 'auth.resendFailed', 500);
   }
 });
 
@@ -481,7 +482,7 @@ twoFactor.get('/status', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('2FA status error:', error);
-    return c.json({ error: '設定の取得に失敗しました' }, 500);
+    return errorJson(c, 'auth.settingsFetchFailed', 500);
   }
 });
 
@@ -516,7 +517,7 @@ twoFactor.post('/enable', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('2FA enable error:', error);
-    return c.json({ error: '設定の更新に失敗しました' }, 500);
+    return errorJson(c, 'auth.settingsUpdateFailed', 500);
   }
 });
 
@@ -529,7 +530,7 @@ twoFactor.post('/disable', authMiddleware, async (c) => {
   const { password } = await c.req.json<{ password: string }>();
 
   if (!password) {
-    return c.json({ error: 'パスワードが必要です' }, 400);
+    return errorJson(c, 'auth.passwordRequired', 400);
   }
 
   try {
@@ -539,13 +540,13 @@ twoFactor.post('/disable', authMiddleware, async (c) => {
     ).bind(user.userId).first<{ password_hash: string }>();
 
     if (!userData) {
-      return c.json({ error: 'ユーザーが見つかりません' }, 404);
+      return errorJson(c, 'auth.userNotFound', 404);
     }
 
     // パスワード検証
     const { valid: isValidPassword, needsRehash } = await verifyPassword(password, userData.password_hash);
     if (!isValidPassword) {
-      return c.json({ error: 'パスワードが正しくありません' }, 401);
+      return errorJson(c, 'auth.passwordIncorrect', 401);
     }
 
     // Lazy upgrade: iterations 不足なら新形式で再 hash
@@ -567,7 +568,7 @@ twoFactor.post('/disable', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('2FA disable error:', error);
-    return c.json({ error: '設定の更新に失敗しました' }, 500);
+    return errorJson(c, 'auth.settingsUpdateFailed', 500);
   }
 });
 

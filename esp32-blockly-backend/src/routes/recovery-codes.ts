@@ -3,6 +3,7 @@ import { authMiddleware } from '../middleware/auth';
 import type { Bindings } from '../index';
 import { hashPassword, verifyPassword, RECOVERY_CODE_ITERATIONS } from '../utils/password';
 import { generateTokenPair } from '../utils/jwt';
+import { errorJson } from '../utils/errorJson';
 
 const recoveryCodes = new Hono<{ Bindings: Bindings }>();
 
@@ -59,7 +60,7 @@ recoveryCodes.post('/generate', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Recovery code generation error:', error);
-    return c.json({ error: 'リカバリーコード生成に失敗しました' }, 500);
+    return errorJson(c, 'recovery.genFailed', 500);
   }
 });
 
@@ -79,7 +80,7 @@ recoveryCodes.get('/count', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Recovery code count error:', error);
-    return c.json({ error: 'リカバリーコード数の取得に失敗しました' }, 500);
+    return errorJson(c, 'recovery.countFailed', 500);
   }
 });
 
@@ -89,7 +90,7 @@ recoveryCodes.post('/verify', async (c) => {
   const { email, code } = await c.req.json<{ email: string; code: string }>();
 
   if (!email || !code) {
-    return c.json({ error: 'メールアドレスとリカバリーコードが必要です' }, 400);
+    return errorJson(c, 'auth.emailAndRecoveryCodeRequired', 400);
   }
 
   try {
@@ -102,7 +103,7 @@ recoveryCodes.post('/verify', async (c) => {
 
     if (!user) {
       console.log('[Recovery Code Verify] User not found');
-      return c.json({ error: 'メールアドレスまたはリカバリーコードが無効です' }, 401);
+      return errorJson(c, 'auth.emailOrRecoveryCodeInvalid', 401);
     }
 
     console.log('[Recovery Code Verify] User found:', user.id);
@@ -116,7 +117,7 @@ recoveryCodes.post('/verify', async (c) => {
 
     if (!recoveryCodes.results || recoveryCodes.results.length === 0) {
       console.log('[Recovery Code Verify] No recovery codes found');
-      return c.json({ error: 'リカバリーコードがありません' }, 401);
+      return errorJson(c, 'recovery.noCodes', 401);
     }
 
     // コードを検証
@@ -135,7 +136,7 @@ recoveryCodes.post('/verify', async (c) => {
 
     if (!validCodeId) {
       console.log('[Recovery Code Verify] No valid code found');
-      return c.json({ error: 'メールアドレスまたはリカバリーコードが無効です' }, 401);
+      return errorJson(c, 'auth.emailOrRecoveryCodeInvalid', 401);
     }
 
     console.log('[Recovery Code Verify] Valid code ID:', validCodeId);
@@ -181,7 +182,7 @@ recoveryCodes.post('/verify', async (c) => {
     });
   } catch (error) {
     console.error('Recovery code verification error:', error);
-    return c.json({ error: 'リカバリーコード検証に失敗しました' }, 500);
+    return errorJson(c, 'recovery.verifyFailed', 500);
   }
 });
 
@@ -218,7 +219,7 @@ recoveryCodes.post('/regenerate', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Recovery code regeneration error:', error);
-    return c.json({ error: 'リカバリーコード再生成に失敗しました' }, 500);
+    return errorJson(c, 'recovery.regenFailed', 500);
   }
 });
 

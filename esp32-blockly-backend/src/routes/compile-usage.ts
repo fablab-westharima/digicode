@@ -4,6 +4,7 @@
  */
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
+import { errorJson } from '../utils/errorJson';
 
 type Bindings = {
   DB: D1Database;
@@ -75,7 +76,7 @@ compileUsage.post('/increment', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Compile usage increment error:', error);
-    return c.json({ error: 'コンパイル回数の記録に失敗しました' }, 500);
+    return errorJson(c, 'compileUsage.recordFailed', 500);
   }
 });
 
@@ -130,7 +131,7 @@ compileUsage.get('/', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Get compile usage error:', error);
-    return c.json({ error: 'コンパイル使用量の取得に失敗しました' }, 500);
+    return errorJson(c, 'compileUsage.fetchFailed', 500);
   }
 });
 
@@ -152,7 +153,7 @@ compileUsage.get('/history', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Get compile usage history error:', error);
-    return c.json({ error: '履歴の取得に失敗しました' }, 500);
+    return errorJson(c, 'submission.historyFailed', 500);
   }
 });
 

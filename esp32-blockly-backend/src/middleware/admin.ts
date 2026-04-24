@@ -1,4 +1,5 @@
 import type { MiddlewareHandler } from 'hono';
+import { errorJson } from '../utils/errorJson';
 
 type Bindings = {
   DB: D1Database;
@@ -23,7 +24,7 @@ export const adminMiddleware: MiddlewareHandler<{
   ).bind(userId).first<{ is_admin: number }>();
 
   if (!user || user.is_admin !== 1) {
-    return c.json({ error: '管理者権限が必要です' }, 403);
+    return errorJson(c, 'auth.adminRequired', 403);
   }
 
   await next();

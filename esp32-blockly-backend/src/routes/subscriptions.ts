@@ -9,6 +9,7 @@ import { Hono } from 'hono';
 import Stripe from 'stripe';
 import { authMiddleware } from '../middleware/auth';
 import { getUserPlan } from '../utils/plan';
+import { errorJson } from '../utils/errorJson';
 
 type Bindings = {
   DB: D1Database;
@@ -100,7 +101,7 @@ subscriptions.get('/status', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Get subscription status error:', error);
-    return c.json({ error: 'サブスクリプション情報の取得に失敗しました' }, 500);
+    return errorJson(c, 'subscription.fetchFailed', 500);
   }
 });
 
@@ -113,7 +114,7 @@ subscriptions.post('/checkout', authMiddleware, async (c) => {
     const { priceId } = await c.req.json<{ priceId: string }>();
 
     if (!priceId) {
-      return c.json({ error: 'priceId は必須です' }, 400);
+      return errorJson(c, 'validation.priceIdRequired', 400);
     }
 
     const stripe = getStripe(c.env);
@@ -174,7 +175,7 @@ subscriptions.post('/portal', authMiddleware, async (c) => {
     ).bind(userId).first<{ stripe_customer_id: string | null }>();
 
     if (!sub?.stripe_customer_id) {
-      return c.json({ error: 'Stripe の顧客情報がありません。先にプランをご契約ください' }, 400);
+      return errorJson(c, 'subscription.noStripeCustomer', 400);
     }
 
     const stripe = getStripe(c.env);
@@ -188,7 +189,7 @@ subscriptions.post('/portal', authMiddleware, async (c) => {
     return c.json({ url: session.url });
   } catch (error) {
     console.error('Portal session error:', error);
-    return c.json({ error: 'ポータルセッションの作成に失敗しました' }, 500);
+    return errorJson(c, 'subscription.portalSessionFailed', 500);
   }
 });
 

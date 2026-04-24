@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
+import { errorJson } from '../utils/errorJson';
 
 type Bindings = {
   DB: D1Database;
@@ -36,7 +37,7 @@ projects.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Get projects error:', error);
-    return c.json({ error: 'プロジェクト一覧の取得に失敗しました' }, 500);
+    return errorJson(c, 'project.listFailed', 500);
   }
 });
 
@@ -47,7 +48,7 @@ projects.get('/:id', async (c) => {
     const projectId = parseInt(c.req.param('id'));
 
     if (isNaN(projectId)) {
-      return c.json({ error: '無効なプロジェクトIDです' }, 400);
+      return errorJson(c, 'validation.invalidProjectId', 400);
     }
 
     const project = await c.env.DB.prepare(`
@@ -57,18 +58,18 @@ projects.get('/:id', async (c) => {
     `).bind(projectId).first();
 
     if (!project) {
-      return c.json({ error: 'プロジェクトが見つかりません' }, 404);
+      return errorJson(c, 'project.notFound', 404);
     }
 
     // 所有者チェック（公開プロジェクトは誰でも閲覧可能）
     if (project.user_id !== userId && !project.is_public) {
-      return c.json({ error: 'このプロジェクトへのアクセス権がありません' }, 403);
+      return errorJson(c, 'project.accessForbidden', 403);
     }
 
     return c.json({ project });
   } catch (error) {
     console.error('Get project error:', error);
-    return c.json({ error: 'プロジェクトの取得に失敗しました' }, 500);
+    return errorJson(c, 'project.getFailed', 500);
   }
 });
 
@@ -81,15 +82,15 @@ projects.post('/', async (c) => {
 
     // バリデーション
     if (!title || title.length === 0) {
-      return c.json({ error: 'タイトルは必須です' }, 400);
+      return errorJson(c, 'validation.titleRequired', 400);
     }
 
     if (title.length > 100) {
-      return c.json({ error: 'タイトルは100文字以内で入力してください' }, 400);
+      return errorJson(c, 'validation.titleTooLong', 400);
     }
 
     if (!blocklyXml) {
-      return c.json({ error: 'blocklyXmlは必須です' }, 400);
+      return errorJson(c, 'validation.blocklyXmlRequired', 400);
     }
 
     const result = await c.env.DB.prepare(`
@@ -99,13 +100,13 @@ projects.post('/', async (c) => {
     `).bind(userId, title, description || null, blocklyXml, language || 'micropython').first();
 
     if (!result) {
-      return c.json({ error: 'プロジェクトの作成に失敗しました' }, 500);
+      return errorJson(c, 'project.createFailed', 500);
     }
 
     return c.json({ project: result }, 201);
   } catch (error) {
     console.error('Create project error:', error);
-    return c.json({ error: 'プロジェクトの作成に失敗しました' }, 500);
+    return errorJson(c, 'project.createFailed', 500);
   }
 });
 
@@ -116,7 +117,7 @@ projects.put('/:id', async (c) => {
     const projectId = parseInt(c.req.param('id'));
 
     if (isNaN(projectId)) {
-      return c.json({ error: '無効なプロジェクトIDです' }, 400);
+      return errorJson(c, 'validation.invalidProjectId', 400);
     }
 
     // 所有者チェック
@@ -125,11 +126,11 @@ projects.put('/:id', async (c) => {
     ).bind(projectId).first<{ user_id: number }>();
 
     if (!existing) {
-      return c.json({ error: 'プロジェクトが見つかりません' }, 404);
+      return errorJson(c, 'project.notFound', 404);
     }
 
     if (existing.user_id !== userId) {
-      return c.json({ error: 'このプロジェクトを編集する権限がありません' }, 403);
+      return errorJson(c, 'project.editForbidden', 403);
     }
 
     const body = await c.req.json();
@@ -141,10 +142,10 @@ projects.put('/:id', async (c) => {
 
     if (title !== undefined) {
       if (title.length === 0) {
-        return c.json({ error: 'タイトルは必須です' }, 400);
+        return errorJson(c, 'validation.titleRequired', 400);
       }
       if (title.length > 100) {
-        return c.json({ error: 'タイトルは100文字以内で入力してください' }, 400);
+        return errorJson(c, 'validation.titleTooLong', 400);
       }
       updates.push('title = ?');
       values.push(title);
@@ -171,7 +172,7 @@ projects.put('/:id', async (c) => {
     }
 
     if (updates.length === 0) {
-      return c.json({ error: '更新するフィールドがありません' }, 400);
+      return errorJson(c, 'validation.noFieldsToUpdate', 400);
     }
 
     values.push(projectId);
@@ -186,7 +187,7 @@ projects.put('/:id', async (c) => {
     return c.json({ project: result });
   } catch (error) {
     console.error('Update project error:', error);
-    return c.json({ error: 'プロジェクトの更新に失敗しました' }, 500);
+    return errorJson(c, 'project.updateFailed', 500);
   }
 });
 
@@ -197,7 +198,7 @@ projects.delete('/:id', async (c) => {
     const projectId = parseInt(c.req.param('id'));
 
     if (isNaN(projectId)) {
-      return c.json({ error: '無効なプロジェクトIDです' }, 400);
+      return errorJson(c, 'validation.invalidProjectId', 400);
     }
 
     // 所有者チェック
@@ -206,11 +207,11 @@ projects.delete('/:id', async (c) => {
     ).bind(projectId).first<{ user_id: number }>();
 
     if (!existing) {
-      return c.json({ error: 'プロジェクトが見つかりません' }, 404);
+      return errorJson(c, 'project.notFound', 404);
     }
 
     if (existing.user_id !== userId) {
-      return c.json({ error: 'このプロジェクトを削除する権限がありません' }, 403);
+      return errorJson(c, 'project.deleteForbidden', 403);
     }
 
     await c.env.DB.prepare('DELETE FROM projects WHERE id = ?')
@@ -220,7 +221,7 @@ projects.delete('/:id', async (c) => {
     return c.json({ success: true });
   } catch (error) {
     console.error('Delete project error:', error);
-    return c.json({ error: 'プロジェクトの削除に失敗しました' }, 500);
+    return errorJson(c, 'project.deleteFailed', 500);
   }
 });
 

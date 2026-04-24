@@ -24,6 +24,7 @@ import { requirePlan } from '../middleware/plan';
 import { hashPassword } from '../utils/password';
 import { proxyClassApi, type ClassApiEnv } from '../utils/classApi';
 import type { PlanType } from '../utils/plan';
+import { errorJson } from '../utils/errorJson';
 
 type Bindings = {
   DB: D1Database;
@@ -96,7 +97,7 @@ classes.get('/', async (c) => {
     return c.json({ classes: (result.results || []).map(rowToCamel) });
   } catch (error) {
     console.error('List classes error:', error);
-    return c.json({ error: 'クラス一覧の取得に失敗しました' }, 500);
+    return errorJson(c, 'class.listFailed', 500);
   }
 });
 
@@ -111,8 +112,8 @@ classes.post('/', async (c) => {
     }>();
 
     const name = typeof body.name === 'string' ? body.name.trim() : '';
-    if (!name) return c.json({ error: 'クラス名は必須です' }, 400);
-    if (name.length > 100) return c.json({ error: 'クラス名は100文字以内にしてください' }, 400);
+    if (!name) return errorJson(c, 'class.nameRequired', 400);
+    if (name.length > 100) return errorJson(c, 'class.nameTooLong', 400);
 
     const classType = body.classType === 'workshop' ? 'workshop' : 'classroom';
 
@@ -131,7 +132,7 @@ classes.post('/', async (c) => {
     ).bind(userId).first<{ n: number }>();
 
     if (count && count.n >= 3) {
-      return c.json({ error: '同時に開講できるクラスは3つまでです' }, 409);
+      return errorJson(c, 'class.classLimit3', 409);
     }
 
     // invite_code 生成（衝突時 1 回リトライ）
@@ -154,7 +155,7 @@ classes.post('/', async (c) => {
     }
 
     if (!created) {
-      return c.json({ error: '招待コードの生成に失敗しました' }, 500);
+      return errorJson(c, 'class.inviteCodeFailed', 500);
     }
 
     // owner を class_members に自動追加
@@ -165,7 +166,7 @@ classes.post('/', async (c) => {
     return c.json({ class: rowToCamel(created) }, 201);
   } catch (error) {
     console.error('Create class error:', error);
-    return c.json({ error: 'クラスの作成に失敗しました' }, 500);
+    return errorJson(c, 'class.createFailed', 500);
   }
 });
 
@@ -174,19 +175,19 @@ classes.get('/:id', async (c) => {
   try {
     const { userId } = c.get('user');
     const id = parseInt(c.req.param('id'));
-    if (isNaN(id)) return c.json({ error: '無効なIDです' }, 400);
+    if (isNaN(id)) return errorJson(c, 'validation.invalidId', 400);
 
     const row = await c.env.DB.prepare(
       `SELECT * FROM classes WHERE id = ?`
     ).bind(id).first<ClassRow>();
 
-    if (!row) return c.json({ error: 'クラスが見つかりません' }, 404);
-    if (row.owner_id !== userId) return c.json({ error: '権限がありません' }, 403);
+    if (!row) return errorJson(c, 'class.notFound', 404);
+    if (row.owner_id !== userId) return errorJson(c, 'auth.forbidden', 403);
 
     return c.json({ class: rowToCamel(row) });
   } catch (error) {
     console.error('Get class error:', error);
-    return c.json({ error: 'クラスの取得に失敗しました' }, 500);
+    return errorJson(c, 'class.getFailed', 500);
   }
 });
 
@@ -195,14 +196,14 @@ classes.delete('/:id', async (c) => {
   try {
     const { userId } = c.get('user');
     const id = parseInt(c.req.param('id'));
-    if (isNaN(id)) return c.json({ error: '無効なIDです' }, 400);
+    if (isNaN(id)) return errorJson(c, 'validation.invalidId', 400);
 
     const row = await c.env.DB.prepare(
       `SELECT owner_id FROM classes WHERE id = ?`
     ).bind(id).first<{ owner_id: number }>();
 
-    if (!row) return c.json({ error: 'クラスが見つかりません' }, 404);
-    if (row.owner_id !== userId) return c.json({ error: '権限がありません' }, 403);
+    if (!row) return errorJson(c, 'class.notFound', 404);
+    if (row.owner_id !== userId) return errorJson(c, 'auth.forbidden', 403);
 
     // 削除前に所属 student を取得（CASCADE 後は取得できない）
     const students = await c.env.DB.prepare(
@@ -243,7 +244,7 @@ classes.delete('/:id', async (c) => {
     return c.json({ success: true });
   } catch (error) {
     console.error('Delete class error:', error);
-    return c.json({ error: 'クラスの削除に失敗しました' }, 500);
+    return errorJson(c, 'class.deleteFailed', 500);
   }
 });
 
@@ -270,8 +271,8 @@ async function verifyClassOwner(
     `SELECT owner_id, invite_code FROM classes WHERE id = ?`
   ).bind(classId).first<{ owner_id: number; invite_code: string }>();
 
-  if (!cls) return { error: c.json({ error: 'クラスが見つかりません' }, 404) };
-  if (cls.owner_id !== userId) return { error: c.json({ error: '権限がありません' }, 403) };
+  if (!cls) return { error: errorJson(c, 'class.notFound', 404) };
+  if (cls.owner_id !== userId) return { error: errorJson(c, 'auth.forbidden', 403) };
   return { cls };
 }
 
@@ -290,7 +291,7 @@ classes.post('/:classId/students', async (c) => {
   try {
     const { userId } = c.get('user');
     const classId = parseInt(c.req.param('classId'));
-    if (isNaN(classId)) return c.json({ error: '無効なクラスIDです' }, 400);
+    if (isNaN(classId)) return errorJson(c, 'validation.invalidClassId', 400);
 
     const result = await verifyClassOwner(c, classId, userId);
     if ('error' in result) return result.error;
@@ -299,10 +300,10 @@ classes.post('/:classId/students', async (c) => {
     const body = await c.req.json<{ students?: { name: string }[] }>();
     const names = body.students;
     if (!Array.isArray(names) || names.length === 0) {
-      return c.json({ error: '生徒名のリストが必要です' }, 400);
+      return errorJson(c, 'class.studentNamesRequired', 400);
     }
     if (names.length > 40) {
-      return c.json({ error: '1回の作成は40名までです' }, 400);
+      return errorJson(c, 'class.batchLimit40', 400);
     }
 
     // 40人/クラス上限チェック
@@ -372,7 +373,7 @@ classes.post('/:classId/students', async (c) => {
     return c.json({ students: created, count: created.length }, 201);
   } catch (error) {
     console.error('Create students error:', error);
-    return c.json({ error: '生徒アカウントの作成に失敗しました' }, 500);
+    return errorJson(c, 'class.studentCreateFailed', 500);
   }
 });
 
@@ -381,7 +382,7 @@ classes.get('/:classId/students', async (c) => {
   try {
     const { userId } = c.get('user');
     const classId = parseInt(c.req.param('classId'));
-    if (isNaN(classId)) return c.json({ error: '無効なクラスIDです' }, 400);
+    if (isNaN(classId)) return errorJson(c, 'validation.invalidClassId', 400);
 
     const result = await verifyClassOwner(c, classId, userId);
     if ('error' in result) return result.error;
@@ -407,7 +408,7 @@ classes.get('/:classId/students', async (c) => {
     return c.json({ students });
   } catch (error) {
     console.error('List students error:', error);
-    return c.json({ error: '生徒一覧の取得に失敗しました' }, 500);
+    return errorJson(c, 'class.studentListFailed', 500);
   }
 });
 
@@ -417,7 +418,7 @@ classes.delete('/:classId/students/:studentId', async (c) => {
     const { userId } = c.get('user');
     const classId = parseInt(c.req.param('classId'));
     const studentId = parseInt(c.req.param('studentId'));
-    if (isNaN(classId) || isNaN(studentId)) return c.json({ error: '無効なIDです' }, 400);
+    if (isNaN(classId) || isNaN(studentId)) return errorJson(c, 'validation.invalidId', 400);
 
     const result = await verifyClassOwner(c, classId, userId);
     if ('error' in result) return result.error;
@@ -441,7 +442,7 @@ classes.delete('/:classId/students/:studentId', async (c) => {
     return c.json({ success: true });
   } catch (error) {
     console.error('Delete student error:', error);
-    return c.json({ error: '生徒の削除に失敗しました' }, 500);
+    return errorJson(c, 'class.studentDeleteFailed', 500);
   }
 });
 
@@ -451,7 +452,7 @@ classes.post('/:classId/students/:studentId/reset-password', async (c) => {
     const { userId } = c.get('user');
     const classId = parseInt(c.req.param('classId'));
     const studentId = parseInt(c.req.param('studentId'));
-    if (isNaN(classId) || isNaN(studentId)) return c.json({ error: '無効なIDです' }, 400);
+    if (isNaN(classId) || isNaN(studentId)) return errorJson(c, 'validation.invalidId', 400);
 
     const result = await verifyClassOwner(c, classId, userId);
     if ('error' in result) return result.error;
@@ -461,7 +462,7 @@ classes.post('/:classId/students/:studentId/reset-password', async (c) => {
       `SELECT user_id FROM class_members WHERE class_id = ? AND user_id = ? AND role = 'student'`
     ).bind(classId, studentId).first();
 
-    if (!member) return c.json({ error: 'この生徒はこのクラスに所属していません' }, 404);
+    if (!member) return errorJson(c, 'class.studentNotInClass', 404);
 
     const newPassword = generatePassword();
     const newHash = await hashPassword(newPassword);
@@ -481,7 +482,7 @@ classes.post('/:classId/students/:studentId/reset-password', async (c) => {
     });
   } catch (error) {
     console.error('Reset password error:', error);
-    return c.json({ error: 'パスワードリセットに失敗しました' }, 500);
+    return errorJson(c, 'auth.passwordResetFailed', 500);
   }
 });
 
@@ -501,7 +502,7 @@ classes.get('/:classId/assignments', async (c) => {
   try {
     const { userId } = c.get('user');
     const classId = parseInt(c.req.param('classId'));
-    if (isNaN(classId)) return c.json({ error: '無効なクラスIDです' }, 400);
+    if (isNaN(classId)) return errorJson(c, 'validation.invalidClassId', 400);
 
     const result = await verifyClassOwner(c, classId, userId);
     if ('error' in result) return result.error;
@@ -516,7 +517,7 @@ classes.get('/:classId/assignments', async (c) => {
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('List assignments error:', error);
-    return c.json({ error: '課題一覧の取得に失敗しました' }, 500);
+    return errorJson(c, 'assignment.listFailed', 500);
   }
 });
 
@@ -525,7 +526,7 @@ classes.post('/:classId/assignments', async (c) => {
   try {
     const { userId } = c.get('user');
     const classId = parseInt(c.req.param('classId'));
-    if (isNaN(classId)) return c.json({ error: '無効なクラスIDです' }, 400);
+    if (isNaN(classId)) return errorJson(c, 'validation.invalidClassId', 400);
 
     const result = await verifyClassOwner(c, classId, userId);
     if ('error' in result) return result.error;
@@ -543,7 +544,7 @@ classes.post('/:classId/assignments', async (c) => {
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('Create assignment error:', error);
-    return c.json({ error: '課題の作成に失敗しました' }, 500);
+    return errorJson(c, 'assignment.createFailed', 500);
   }
 });
 
@@ -553,7 +554,7 @@ classes.get('/:classId/assignments/:assignmentId', async (c) => {
     const { userId } = c.get('user');
     const classId = parseInt(c.req.param('classId'));
     const assignmentId = parseInt(c.req.param('assignmentId'));
-    if (isNaN(classId) || isNaN(assignmentId)) return c.json({ error: '無効なIDです' }, 400);
+    if (isNaN(classId) || isNaN(assignmentId)) return errorJson(c, 'validation.invalidId', 400);
 
     const result = await verifyClassOwner(c, classId, userId);
     if ('error' in result) return result.error;
@@ -568,7 +569,7 @@ classes.get('/:classId/assignments/:assignmentId', async (c) => {
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('Get assignment error:', error);
-    return c.json({ error: '課題の取得に失敗しました' }, 500);
+    return errorJson(c, 'assignment.getFailed', 500);
   }
 });
 
@@ -578,7 +579,7 @@ classes.get('/:classId/assignments/:assignmentId/attachment', async (c) => {
     const { userId } = c.get('user');
     const classId = parseInt(c.req.param('classId'));
     const assignmentId = parseInt(c.req.param('assignmentId'));
-    if (isNaN(classId) || isNaN(assignmentId)) return c.json({ error: '無効なIDです' }, 400);
+    if (isNaN(classId) || isNaN(assignmentId)) return errorJson(c, 'validation.invalidId', 400);
 
     const result = await verifyClassOwner(c, classId, userId);
     if ('error' in result) return result.error;
@@ -609,7 +610,7 @@ classes.get('/:classId/assignments/:assignmentId/attachment', async (c) => {
     });
   } catch (error) {
     console.error('Download attachment error:', error);
-    return c.json({ error: '添付ファイルのダウンロードに失敗しました' }, 500);
+    return errorJson(c, 'submission.downloadFailed', 500);
   }
 });
 
@@ -619,7 +620,7 @@ classes.delete('/:classId/assignments/:assignmentId', async (c) => {
     const { userId } = c.get('user');
     const classId = parseInt(c.req.param('classId'));
     const assignmentId = parseInt(c.req.param('assignmentId'));
-    if (isNaN(classId) || isNaN(assignmentId)) return c.json({ error: '無効なIDです' }, 400);
+    if (isNaN(classId) || isNaN(assignmentId)) return errorJson(c, 'validation.invalidId', 400);
 
     const result = await verifyClassOwner(c, classId, userId);
     if ('error' in result) return result.error;
@@ -634,7 +635,7 @@ classes.delete('/:classId/assignments/:assignmentId', async (c) => {
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('Delete assignment error:', error);
-    return c.json({ error: '課題の削除に失敗しました' }, 500);
+    return errorJson(c, 'assignment.deleteFailed', 500);
   }
 });
 
@@ -644,7 +645,7 @@ classes.post('/:classId/assignments/:assignmentId/distribute', async (c) => {
     const { userId } = c.get('user');
     const classId = parseInt(c.req.param('classId'));
     const assignmentId = parseInt(c.req.param('assignmentId'));
-    if (isNaN(classId) || isNaN(assignmentId)) return c.json({ error: '無効なIDです' }, 400);
+    if (isNaN(classId) || isNaN(assignmentId)) return errorJson(c, 'validation.invalidId', 400);
 
     const result = await verifyClassOwner(c, classId, userId);
     if ('error' in result) return result.error;
@@ -657,7 +658,7 @@ classes.post('/:classId/assignments/:assignmentId/distribute', async (c) => {
     const studentUserIds = (students.results || []).map((s) => s.user_id);
 
     if (studentUserIds.length === 0) {
-      return c.json({ error: '配布対象の生徒がいません' }, 400);
+      return errorJson(c, 'assignment.noTargetStudents', 400);
     }
 
     // ML30 に student_user_ids をヘッダーで渡す
@@ -679,7 +680,7 @@ classes.post('/:classId/assignments/:assignmentId/distribute', async (c) => {
     return c.json(data);
   } catch (error) {
     console.error('Distribute assignment error:', error);
-    return c.json({ error: '課題の配布に失敗しました' }, 500);
+    return errorJson(c, 'assignment.distributeFailed', 500);
   }
 });
 
@@ -691,7 +692,7 @@ classes.get('/:classId/assignments/:assignmentId/submissions', async (c) => {
     const { userId } = c.get('user');
     const classId = parseInt(c.req.param('classId'));
     const assignmentId = parseInt(c.req.param('assignmentId'));
-    if (isNaN(classId) || isNaN(assignmentId)) return c.json({ error: '無効なIDです' }, 400);
+    if (isNaN(classId) || isNaN(assignmentId)) return errorJson(c, 'validation.invalidId', 400);
 
     const result = await verifyClassOwner(c, classId, userId);
     if ('error' in result) return result.error;
@@ -735,7 +736,7 @@ classes.get('/:classId/assignments/:assignmentId/submissions', async (c) => {
     return c.json(body, 200);
   } catch (error) {
     console.error('List assignment submissions error:', error);
-    return c.json({ error: '答案一覧の取得に失敗しました' }, 500);
+    return errorJson(c, 'submission.listFailed', 500);
   }
 });
 
@@ -749,7 +750,7 @@ classes.put(
       const classId = parseInt(c.req.param('classId'));
       const submissionId = parseInt(c.req.param('submissionId'));
       if (isNaN(classId) || isNaN(submissionId)) {
-        return c.json({ error: '無効なIDです' }, 400);
+        return errorJson(c, 'validation.invalidId', 400);
       }
 
       const result = await verifyClassOwner(c, classId, userId);
@@ -771,7 +772,7 @@ classes.put(
       return c.json(apiResult.body, apiResult.status);
     } catch (error) {
       console.error('Grade submission error:', error);
-      return c.json({ error: '採点に失敗しました' }, 500);
+      return errorJson(c, 'submission.gradeFailed', 500);
     }
   }
 );
@@ -786,7 +787,7 @@ classes.post(
       const classId = parseInt(c.req.param('classId'));
       const submissionId = parseInt(c.req.param('submissionId'));
       if (isNaN(classId) || isNaN(submissionId)) {
-        return c.json({ error: '無効なIDです' }, 400);
+        return errorJson(c, 'validation.invalidId', 400);
       }
 
       const result = await verifyClassOwner(c, classId, userId);
@@ -802,7 +803,7 @@ classes.post(
       return c.json(apiResult.body, apiResult.status);
     } catch (error) {
       console.error('Return submission error:', error);
-      return c.json({ error: '差戻しに失敗しました' }, 500);
+      return errorJson(c, 'submission.returnFailed', 500);
     }
   }
 );
@@ -824,7 +825,7 @@ classes.get('/:classId/export', async (c) => {
   try {
     const { userId } = c.get('user');
     const classId = parseInt(c.req.param('classId'));
-    if (isNaN(classId)) return c.json({ error: '無効なIDです' }, 400);
+    if (isNaN(classId)) return errorJson(c, 'validation.invalidId', 400);
 
     const result = await verifyClassOwner(c, classId, userId);
     if ('error' in result) return result.error;
@@ -841,7 +842,7 @@ classes.get('/:classId/export', async (c) => {
         expires_at: string | null;
       }>();
 
-    if (!cls) return c.json({ error: 'クラスが見つかりません' }, 404);
+    if (!cls) return errorJson(c, 'class.notFound', 404);
 
     // 生徒一覧を D1 から取得(email と display_name を含める)
     const studentsResult = await c.env.DB.prepare(
@@ -900,7 +901,7 @@ classes.get('/:classId/export', async (c) => {
     });
   } catch (error) {
     console.error('Export class error:', error);
-    return c.json({ error: 'エクスポートに失敗しました' }, 500);
+    return errorJson(c, 'class.exportFailed', 500);
   }
 });
 
@@ -913,7 +914,7 @@ classes.post('/:classId/duplicate', async (c) => {
   try {
     const { userId } = c.get('user');
     const classId = parseInt(c.req.param('classId'));
-    if (isNaN(classId)) return c.json({ error: '無効なクラスIDです' }, 400);
+    if (isNaN(classId)) return errorJson(c, 'validation.invalidClassId', 400);
 
     // 1. 認可チェック（元クラスの所有者であること）
     const ownerCheck = await verifyClassOwner(c, classId, userId);
@@ -924,7 +925,7 @@ classes.post('/:classId/duplicate', async (c) => {
       `SELECT COUNT(*) AS n FROM classes WHERE owner_id = ? AND status = 'active'`
     ).bind(userId).first<{ n: number }>();
     if (count && count.n >= 3) {
-      return c.json({ error: '同時に開講できるクラスは3つまでです' }, 409);
+      return errorJson(c, 'class.classLimit3', 409);
     }
 
     // 3. 元クラスの classType を取得
@@ -936,8 +937,8 @@ classes.post('/:classId/duplicate', async (c) => {
     // 4. 新クラス名の取得・バリデーション
     const body = await c.req.json<{ name?: string }>();
     const name = typeof body.name === 'string' ? body.name.trim() : '';
-    if (!name) return c.json({ error: 'クラス名を入力してください' }, 400);
-    if (name.length > 100) return c.json({ error: 'クラス名は100文字以内にしてください' }, 400);
+    if (!name) return errorJson(c, 'class.nameRequired', 400);
+    if (name.length > 100) return errorJson(c, 'class.nameTooLong', 400);
 
     // 5. expiresAt 算出（classType に基づく新規算出）
     const now = new Date();
@@ -968,7 +969,7 @@ classes.post('/:classId/duplicate', async (c) => {
     }
 
     if (!created) {
-      return c.json({ error: '招待コードの生成に失敗しました' }, 500);
+      return errorJson(c, 'class.inviteCodeFailed', 500);
     }
 
     const newClassId = created.id;
@@ -990,13 +991,13 @@ classes.post('/:classId/duplicate', async (c) => {
       // ML30 失敗 → D1 のクラスをロールバック（CASCADE で class_members も削除）
       await c.env.DB.prepare('DELETE FROM classes WHERE id = ?').bind(newClassId).run();
       console.error('Class duplicate ML30 error:', ml30Result.error);
-      return c.json({ error: '課題の複製に失敗しました。しばらくしてからお試しください' }, 500);
+      return errorJson(c, 'assignment.duplicateFailed', 500);
     }
 
     return c.json({ class: rowToCamel(created) }, 201);
   } catch (error) {
     console.error('Duplicate class error:', error);
-    return c.json({ error: 'クラスの複製に失敗しました' }, 500);
+    return errorJson(c, 'class.duplicateFailed', 500);
   }
 });
 

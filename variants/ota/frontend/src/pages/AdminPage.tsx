@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Search, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import i18n from '@/i18n';
 
 // i18n.language → toLocaleDateString locale 対応
 const LOCALE_MAP: Record<string, string> = {
@@ -30,6 +31,7 @@ function getAuthHeaders() {
   const token = localStorage.getItem('accessToken');
   return {
     'Content-Type': 'application/json',
+    'Accept-Language': i18n.language || 'ja',
     'Authorization': `Bearer ${token}`,
   };
 }

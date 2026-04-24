@@ -5,6 +5,7 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import { adminMiddleware } from '../middleware/admin';
+import { errorJson } from '../utils/errorJson';
 
 type Bindings = {
   DB: D1Database;
@@ -93,7 +94,7 @@ admin.get('/users', authMiddleware, adminMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Admin get users error:', error);
-    return c.json({ error: 'ユーザー一覧の取得に失敗しました' }, 500);
+    return errorJson(c, 'admin.userListFailed', 500);
   }
 });
 
@@ -109,7 +110,7 @@ admin.post('/users/:id/plan', authMiddleware, adminMiddleware, async (c) => {
 
     const validPlans = ['free', 'lite', 'pro', 'enterprise'];
     if (!validPlans.includes(plan)) {
-      return c.json({ error: '無効なプランです。free, lite, pro, enterprise のいずれかを指定してください' }, 400);
+      return errorJson(c, 'validation.invalidPlan', 400);
     }
 
     // 対象ユーザーの存在確認
@@ -118,7 +119,7 @@ admin.post('/users/:id/plan', authMiddleware, adminMiddleware, async (c) => {
     ).bind(targetUserId).first<{ id: number; email: string }>();
 
     if (!targetUser) {
-      return c.json({ error: 'ユーザーが見つかりません' }, 404);
+      return errorJson(c, 'auth.userNotFound', 404);
     }
 
     await c.env.DB.prepare(
@@ -139,7 +140,7 @@ admin.post('/users/:id/plan', authMiddleware, adminMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Admin set plan error:', error);
-    return c.json({ error: 'プラン変更に失敗しました' }, 500);
+    return errorJson(c, 'admin.planChangeFailed', 500);
   }
 });
 
@@ -151,7 +152,7 @@ admin.delete('/users/:id', authMiddleware, adminMiddleware, async (c) => {
 
     // 管理者自身は削除不可
     if (adminUserId === targetUserId) {
-      return c.json({ error: '管理者自身のアカウントは削除できません' }, 400);
+      return errorJson(c, 'admin.cannotDeleteSelf', 400);
     }
 
     // 対象ユーザーの存在確認
@@ -160,7 +161,7 @@ admin.delete('/users/:id', authMiddleware, adminMiddleware, async (c) => {
     ).bind(targetUserId).first<{ id: number; email: string }>();
 
     if (!targetUser) {
-      return c.json({ error: 'ユーザーが見つかりません' }, 404);
+      return errorJson(c, 'auth.userNotFound', 404);
     }
 
     // 関連データ削除（auth.tsのアカウント削除ロジックと同じ順序）
@@ -192,7 +193,7 @@ admin.delete('/users/:id', authMiddleware, adminMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Admin delete user error:', error);
-    return c.json({ error: 'ユーザー削除に失敗しました' }, 500);
+    return errorJson(c, 'admin.userDeleteFailed', 500);
   }
 });
 
@@ -220,7 +221,7 @@ admin.get('/flags', authMiddleware, adminMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Admin get flags error:', error);
-    return c.json({ error: 'Feature Flagsの取得に失敗しました' }, 500);
+    return errorJson(c, 'feature.fetchFailed', 500);
   }
 });
 
@@ -270,7 +271,7 @@ admin.post('/flags/:key', authMiddleware, adminMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Admin update flag error:', error);
-    return c.json({ error: 'Feature Flagの更新に失敗しました' }, 500);
+    return errorJson(c, 'feature.updateFailed', 500);
   }
 });
 

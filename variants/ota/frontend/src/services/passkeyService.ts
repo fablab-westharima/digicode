@@ -98,6 +98,7 @@ export async function authenticateWithPasskey(email: string): Promise<{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
     body: JSON.stringify({ email }),
   });
@@ -125,6 +126,7 @@ export async function authenticateWithPasskey(email: string): Promise<{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
     body: JSON.stringify({
       email,
@@ -165,6 +167,7 @@ export async function listPasskeys(): Promise<Array<{
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
+      'Accept-Language': i18n.language || 'ja',
     },
   });
 
@@ -192,6 +195,7 @@ export async function deletePasskey(id: number): Promise<void> {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
+      'Accept-Language': i18n.language || 'ja',
     },
   });
 
@@ -242,6 +246,7 @@ export async function generateRecoveryCodes(): Promise<string[]> {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
+      'Accept-Language': i18n.language || 'ja',
     },
   });
 
@@ -269,6 +274,7 @@ export async function getRecoveryCodesCount(): Promise<number> {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
+      'Accept-Language': i18n.language || 'ja',
     },
   });
 
@@ -298,6 +304,7 @@ export async function verifyRecoveryCode(email: string, code: string): Promise<{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language || 'ja',
     },
     body: JSON.stringify({ email, code }),
   });
@@ -325,6 +332,7 @@ export async function regenerateRecoveryCodes(): Promise<string[]> {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
+      'Accept-Language': i18n.language || 'ja',
     },
   });
 

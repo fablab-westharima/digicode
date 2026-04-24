@@ -14,6 +14,7 @@ import { Hono, type Context } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import { authMiddleware } from '../middleware/auth';
 import { proxyClassApi, type ClassApiEnv } from '../utils/classApi';
+import { errorJson } from '../utils/errorJson';
 
 type Bindings = {
   DB: D1Database;
@@ -55,7 +56,7 @@ submissions.get('/my', async (c) => {
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('List my submissions error:', error);
-    return c.json({ error: '答案一覧の取得に失敗しました' }, 500);
+    return errorJson(c, 'submission.listFailed', 500);
   }
 });
 
@@ -75,7 +76,7 @@ submissions.get('/:id/attachment', async (c) => {
   try {
     const { userId } = c.get('user');
     const id = parseInt(c.req.param('id'));
-    if (isNaN(id)) return c.json({ error: '無効なIDです' }, 400);
+    if (isNaN(id)) return errorJson(c, 'validation.invalidId', 400);
 
     // 1. ML30 から submission メタデータを取得
     const metaResult = await proxyClassApi(getClassApiEnv(c), {
@@ -104,13 +105,13 @@ submissions.get('/:id/attachment', async (c) => {
       ).bind(sub.classId).first<{ owner_id: number }>();
 
       if (!cls || cls.owner_id !== userId) {
-        return c.json({ error: '権限がありません' }, 403);
+        return errorJson(c, 'auth.forbidden', 403);
       }
     }
 
     // 添付ファイルが無い場合は 404 を早期返却
     if (!sub.attachmentFilename) {
-      return c.json({ error: '添付ファイルがありません' }, 404);
+      return errorJson(c, 'submission.noAttachment', 404);
     }
 
     // 3. ML30 から binary を proxy（classes.ts の管理者用ルートと同じパターン）
@@ -144,7 +145,7 @@ submissions.get('/:id/attachment', async (c) => {
     });
   } catch (error) {
     console.error('Download submission attachment error:', error);
-    return c.json({ error: '添付ファイルのダウンロードに失敗しました' }, 500);
+    return errorJson(c, 'submission.downloadFailed', 500);
   }
 });
 
@@ -153,7 +154,7 @@ submissions.get('/:id', async (c) => {
   try {
     const { userId } = c.get('user');
     const id = parseInt(c.req.param('id'));
-    if (isNaN(id)) return c.json({ error: '無効なIDです' }, 400);
+    if (isNaN(id)) return errorJson(c, 'validation.invalidId', 400);
 
     const apiResult = await proxyClassApi(getClassApiEnv(c), {
       method: 'GET',
@@ -173,14 +174,14 @@ submissions.get('/:id', async (c) => {
       ).bind(sub.classId).first<{ owner_id: number }>();
 
       if (!cls || cls.owner_id !== userId) {
-        return c.json({ error: '権限がありません' }, 403);
+        return errorJson(c, 'auth.forbidden', 403);
       }
     }
 
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('Get submission error:', error);
-    return c.json({ error: '答案の取得に失敗しました' }, 500);
+    return errorJson(c, 'submission.getFailed', 500);
   }
 });
 
@@ -189,7 +190,7 @@ submissions.put('/:id', async (c) => {
   try {
     const { userId } = c.get('user');
     const id = parseInt(c.req.param('id'));
-    if (isNaN(id)) return c.json({ error: '無効なIDです' }, 400);
+    if (isNaN(id)) return errorJson(c, 'validation.invalidId', 400);
 
     // 自分の submission かチェック
     const check = await proxyClassApi(getClassApiEnv(c), {
@@ -198,11 +199,14 @@ submissions.put('/:id', async (c) => {
       userId,
     });
 
-    if (!check.ok) return c.json({ error: check.error || '答案が見つかりません' }, check.status);
+    if (!check.ok) {
+      if (check.error) return c.json({ error: check.error }, check.status);
+      return errorJson(c, 'submission.notFound', check.status);
+    }
 
     const sub = (check.body as { submission: { studentUserId: number } }).submission;
     if (sub.studentUserId !== userId) {
-      return c.json({ error: '権限がありません' }, 403);
+      return errorJson(c, 'auth.forbidden', 403);
     }
 
     const body = await c.req.json();
@@ -218,7 +222,7 @@ submissions.put('/:id', async (c) => {
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('Save submission error:', error);
-    return c.json({ error: '答案の保存に失敗しました' }, 500);
+    return errorJson(c, 'submission.saveFailed', 500);
   }
 });
 
@@ -227,7 +231,7 @@ submissions.post('/:id/submit', async (c) => {
   try {
     const { userId } = c.get('user');
     const id = parseInt(c.req.param('id'));
-    if (isNaN(id)) return c.json({ error: '無効なIDです' }, 400);
+    if (isNaN(id)) return errorJson(c, 'validation.invalidId', 400);
 
     // 自分の submission かチェック
     const check = await proxyClassApi(getClassApiEnv(c), {
@@ -236,11 +240,14 @@ submissions.post('/:id/submit', async (c) => {
       userId,
     });
 
-    if (!check.ok) return c.json({ error: check.error || '答案が見つかりません' }, check.status);
+    if (!check.ok) {
+      if (check.error) return c.json({ error: check.error }, check.status);
+      return errorJson(c, 'submission.notFound', check.status);
+    }
 
     const sub = (check.body as { submission: { studentUserId: number } }).submission;
     if (sub.studentUserId !== userId) {
-      return c.json({ error: '権限がありません' }, 403);
+      return errorJson(c, 'auth.forbidden', 403);
     }
 
     const apiResult = await proxyClassApi(getClassApiEnv(c), {
@@ -253,7 +260,7 @@ submissions.post('/:id/submit', async (c) => {
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('Submit submission error:', error);
-    return c.json({ error: '答案の提出に失敗しました' }, 500);
+    return errorJson(c, 'submission.submitFailed', 500);
   }
 });
 
