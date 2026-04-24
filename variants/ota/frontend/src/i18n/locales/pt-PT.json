@@ -1474,12 +1474,12 @@
       "digitalWrite": {
         "pin": "Pin",
         "to": " ",
-        "output": "output",
+        "output": "saída",
         "tooltip": "Escrever HIGH(1) ou LOW(0) no pino digital"
       },
       "digitalRead": {
         "pin": "Pin",
-        "input": "read",
+        "input": "ler",
         "tooltip": "Ler estado do pino digital (HIGH=1, LOW=0)"
       },
       "analogRead": {
@@ -1530,7 +1530,7 @@
       "servoWrite": {
         "pin": "Pin",
         "servo": "servo",
-        "degrees": "degrees",
+        "degrees": "graus",
         "tooltip": "Mover servo para o ângulo especificado (0-180 graus) [Premium]"
       },
       "neopixel": {
@@ -1544,14 +1544,14 @@
       },
       "i2cWrite": {
         "address": "Endereço I2C",
-        "data": "data",
-        "write": "write",
+        "data": "dados",
+        "write": "escrever",
         "tooltip": "Escrever dados no dispositivo I2C [Premium]"
       },
       "dhtRead": {
         "sensor": "DHT",
         "pin": "pin",
-        "read": "read",
+        "read": "ler",
         "temperature": "Temperatura",
         "humidity": "Humidade",
         "tooltip": "Ler temperatura ou humidade do sensor DHT11/DHT22 [Premium]"
@@ -1567,14 +1567,14 @@
         "in4": "IN4",
         "move": "Motor passo a passo",
         "moveTooltip": "Mover motor o número de passos especificado",
-        "steps": "steps",
-        "speed": "speed",
+        "steps": "passos",
+        "speed": "velocidade",
         "slow": "Lento",
         "normal": "Normal",
         "fast": "Rápido",
         "rotate": "Rodar motor passo a passo",
         "rotateTooltip": "Rodar motor o ângulo especificado",
-        "angle": "angle",
+        "angle": "ângulo",
         "stop": "Parar motor passo a passo",
         "stopTooltip": "Parar motor e libertar corrente da bobina"
       },
@@ -1591,7 +1591,7 @@
         "forward": "Frente",
         "backward": "Trás",
         "stop": "Parar",
-        "speed": "speed",
+        "speed": "velocidade",
         "setSpeed": "Velocidade do motor",
         "setSpeedTooltip": "Alterar apenas a velocidade do motor",
         "stopLabel": "Parar motor",
@@ -1602,7 +1602,7 @@
         "attach": "Ligar servo",
         "attachTooltip": "Ligar servo ao pino especificado",
         "pin": "Pin",
-        "angle": "angle",
+        "angle": "ângulo",
         "write": "Ângulo do servo",
         "writeTooltip": "Mover servo para o ângulo especificado (0-180°)",
         "writeValue": "Ângulo do servo",
@@ -1611,9 +1611,9 @@
         "detachTooltip": "Desligar servo (poupança de energia)",
         "sweep": "Varredura de servo",
         "sweepTooltip": "Mover servo do ângulo inicial ao ângulo final",
-        "start": "start",
-        "end": "end",
-        "speed": "speed"
+        "start": "início",
+        "end": "fim",
+        "speed": "velocidade"
       }
     },
     "neopixel": {
@@ -1645,7 +1645,7 @@
       "bounceTooltip": "O LED ressalta de esquerda para direita",
       "cycle": "Efeito ciclo",
       "cycleTooltip": "O LED roda em volta",
-      "colorRed": "Red",
+      "colorRed": "Vermelho",
       "colorOrange": "Laranja",
       "colorYellow": "Amarelo",
       "colorYellowGreen": "Amarelo-verde",
@@ -1805,13 +1805,13 @@
       "typeInt": "Int",
       "typeBool": "Booleano",
       "hasKey": "JSON tem chave",
-      "hasKeyExists": "exists",
+      "hasKeyExists": "existe",
       "hasKeyTooltip": "Verificar se a chave existe no JSON",
       "arraySize": "Tamanho da matriz JSON",
       "arraySizeTooltip": "Obter o tamanho de uma matriz JSON",
       "arrayGet": "Matriz JSON",
       "arrayGetIndex": "no índice",
-      "arrayGetAs": "as",
+      "arrayGetAs": "como",
       "arrayGetTooltip": "Obter um elemento de uma matriz JSON no índice especificado",
       "createObject": "Iniciar criação de JSON",
       "createObjectTooltip": "Iniciar criação de um novo objeto JSON",
@@ -1870,7 +1870,7 @@
       "setBufferSizeTooltip": "Definir o tamanho máximo da mensagem MQTT (predefinido 256 bytes)",
       "setKeepalive": "Keepalive MQTT",
       "setKeepaliveTooltip": "Definir intervalo keepalive de MQTT (predefinido 15 segundos)",
-      "seconds": "seconds",
+      "seconds": "segundos",
       "lastWill": "Última vontade MQTT",
       "lastWillTopic": "Tópico",
       "lastWillMessage": "Mensagem",
@@ -1921,7 +1921,7 @@
       "deepSleepTooltip": "Entrar em sono profundo durante os segundos especificados (modo de poupança de energia)",
       "lightSleep": "Sono leve",
       "lightSleepTooltip": "Entrar em sono leve durante os segundos especificados (retoma depois)",
-      "seconds": "seconds",
+      "seconds": "segundos",
       "getFreeHeap": "Memória livre (bytes)",
       "getFreeHeapTooltip": "Obter memória heap livre em bytes",
       "getChipId": "ID do chip ESP",
@@ -1977,7 +1977,7 @@
       "moisture": "Humidade",
       "vibration": "Vibração",
       "occupancy": "Ocupação",
-      "gas": "Gas",
+      "gas": "Gás",
       "problem": "Problema",
       "connectivity": "Conectividade",
       "switchCreate": "Criar interruptor HA",
@@ -2026,7 +2026,7 @@
       "step": "Passo",
       "mode": "Modo",
       "modeAuto": "Cursor (auto)",
-      "modeBox": "Box",
+      "modeBox": "Caixa",
       "modeSlider": "Cursor deslizante",
       "numberOnCommand": "HA ao mudar número",
       "numberOnCommandTooltip": "Executar quando o número é alterado a partir de Home Assistant. ha_number_value está disponível.",
@@ -2101,25 +2101,25 @@
       "execute": "Executar"
     },
     "common": {
-      "steps": "steps",
-      "times": "times",
-      "speed": "speed",
-      "direction": "direction",
+      "steps": "passos",
+      "times": "vezes",
+      "speed": "velocidade",
+      "direction": "direção",
       "speedNormal": "normal",
-      "speedFast": "fast",
-      "speedSlow": "slow",
-      "forward": "forward",
-      "backward": "backward",
-      "left": "left",
-      "right": "right",
+      "speedFast": "rápido",
+      "speedSlow": "lento",
+      "forward": "para a frente",
+      "backward": "para trás",
+      "left": "esquerda",
+      "right": "direita",
       "leftFoot": "pé esquerdo",
       "rightFoot": "pé direito",
       "leftLeg": "pino da perna esquerda",
       "rightLeg": "pino da perna direita",
       "leftAnkle": "pino do tornozelo esquerdo",
       "rightAnkle": "pino do tornozelo direito",
-      "front": "front",
-      "back": "back"
+      "front": "frente",
+      "back": "trás"
     },
     "humanoid": {
       "init": {
@@ -2163,7 +2163,7 @@
         "tooltip": "Humanoid expressa emoções com movimento e som",
         "happy": "Feliz",
         "superHappy": "Muito feliz",
-        "sad": "Sad",
+        "sad": "Triste",
         "victory": "Vitória",
         "angry": "Irritado",
         "sleeping": "A dormir",
@@ -2192,7 +2192,7 @@
         "happy": "Feliz",
         "superHappy": "Muito feliz",
         "happyShort": "Feliz curto",
-        "sad": "Sad",
+        "sad": "Triste",
         "confused": "Confuso",
         "fart1": "Peido 1",
         "fart2": "Peido 2",
@@ -2306,8 +2306,8 @@
         "frequency": "Frequência",
         "baudRate": "Taxa de baud",
         "bytes": "Bytes",
-        "milliseconds": "milliseconds",
-        "seconds": "seconds",
+        "milliseconds": "milissegundos",
+        "seconds": "segundos",
         "high": "HIGH",
         "low": "LOW",
         "pullUp": "Pull Up",
@@ -2401,19 +2401,19 @@
         },
         "append": {
           "label": "Lista",
-          "to": "append",
+          "to": "anexar",
           "tooltip": "Anexar elemento ao final da lista"
         },
         "insert": {
           "label": "Lista",
           "atIndex": "no índice",
-          "insert": "insert",
+          "insert": "inserir",
           "tooltip": "Inserir elemento na posição especificada da lista"
         },
         "removeIndex": {
           "label": "Lista",
           "atIndex": "no índice",
-          "remove": "remove",
+          "remove": "remover",
           "tooltip": "Remover elemento na posição especificada da lista"
         },
         "removeValue": {
@@ -2437,7 +2437,7 @@
         },
         "contains": {
           "label": "Lista",
-          "in": "contains",
+          "in": "contém",
           "contains": "?",
           "tooltip": "Verificar se a lista contém o valor"
         },
@@ -2449,17 +2449,17 @@
         },
         "clear": {
           "label": "Lista",
-          "clear": "clear",
+          "clear": "limpar",
           "tooltip": "Remover todos os elementos da lista"
         },
         "reverse": {
           "label": "Lista",
-          "reverse": "reverse",
+          "reverse": "inverter",
           "tooltip": "Inverter ordem da lista"
         },
         "sort": {
           "label": "Lista",
-          "sort": "sort",
+          "sort": "ordenar",
           "ascending": "Ascendente",
           "descending": "Descendente",
           "tooltip": "Ordenar lista"
@@ -2502,9 +2502,9 @@
         },
         "buttonSensor": {
           "label": "Botão",
-          "state": "is",
-          "pressed": "pressed",
-          "released": "released",
+          "state": "é",
+          "pressed": "premido",
+          "released": "libertado",
           "tooltip": "Verificar estado do botão (usando resistência pull-up)"
         },
         "pirSensor": {
@@ -2514,22 +2514,22 @@
         },
         "analogSensor": {
           "label": "Sensor analógico",
-          "value": "value",
+          "value": "valor",
           "tooltip": "Ler valor de sensor analógico (0-4095)"
         },
         "ldrSensor": {
           "label": "Sensor de luz LDR",
-          "brightness": "brightness",
+          "brightness": "brilho",
           "tooltip": "Medir brilho usando LDR (resistência dependente da luz)"
         },
         "soilSensor": {
           "label": "Sensor de humidade do solo",
-          "moisture": "moisture",
+          "moisture": "humidade",
           "tooltip": "Medir nível de humidade do solo"
         },
         "potentiometer": {
           "label": "Potenciómetro",
-          "value": "value",
+          "value": "valor",
           "tooltip": "Ler valor do potenciómetro (0-4095)",
           "angle": "Ângulo (0-270)"
         }

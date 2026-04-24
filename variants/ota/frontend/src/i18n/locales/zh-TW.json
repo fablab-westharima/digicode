@@ -1474,12 +1474,12 @@
       "digitalWrite": {
         "pin": "Pin",
         "to": " ",
-        "output": "output",
+        "output": "輸出",
         "tooltip": "對數位腳位寫入 HIGH(1) 或 LOW(0)"
       },
       "digitalRead": {
         "pin": "Pin",
-        "input": "read",
+        "input": "讀取",
         "tooltip": "讀取數位腳位狀態 (HIGH=1, LOW=0)"
       },
       "analogRead": {
@@ -1530,7 +1530,7 @@
       "servoWrite": {
         "pin": "Pin",
         "servo": "servo",
-        "degrees": "degrees",
+        "degrees": "度",
         "tooltip": "將伺服馬達移動到指定角度 (0-180 度) [Premium]"
       },
       "neopixel": {
@@ -1544,14 +1544,14 @@
       },
       "i2cWrite": {
         "address": "I2C 位址",
-        "data": "data",
-        "write": "write",
+        "data": "資料",
+        "write": "寫入",
         "tooltip": "寫入資料到 I2C 裝置 [Premium]"
       },
       "dhtRead": {
         "sensor": "DHT",
         "pin": "pin",
-        "read": "read",
+        "read": "讀取",
         "temperature": "溫度",
         "humidity": "濕度",
         "tooltip": "從 DHT11/DHT22 感測器讀取溫度或濕度 [Premium]"
@@ -1567,14 +1567,14 @@
         "in4": "IN4",
         "move": "步進馬達",
         "moveTooltip": "將馬達移動指定步數",
-        "steps": "steps",
-        "speed": "speed",
+        "steps": "步數",
+        "speed": "速度",
         "slow": "慢",
         "normal": "正常",
         "fast": "快",
         "rotate": "旋轉步進馬達",
         "rotateTooltip": "將馬達旋轉指定角度",
-        "angle": "angle",
+        "angle": "角度",
         "stop": "停止步進馬達",
         "stopTooltip": "停止馬達並釋放線圈電流"
       },
@@ -1591,7 +1591,7 @@
         "forward": "向前",
         "backward": "後退",
         "stop": "停止",
-        "speed": "speed",
+        "speed": "速度",
         "setSpeed": "馬達速度",
         "setSpeedTooltip": "僅變更馬達速度",
         "stopLabel": "停止馬達",
@@ -1602,7 +1602,7 @@
         "attach": "接上伺服",
         "attachTooltip": "將伺服接到指定腳位",
         "pin": "Pin",
-        "angle": "angle",
+        "angle": "角度",
         "write": "伺服角度",
         "writeTooltip": "將伺服移動到指定角度 (0-180°)",
         "writeValue": "伺服角度",
@@ -1611,9 +1611,9 @@
         "detachTooltip": "斷開伺服（節能）",
         "sweep": "伺服掃掠",
         "sweepTooltip": "將伺服從起始角度移動到終止角度",
-        "start": "start",
-        "end": "end",
-        "speed": "speed"
+        "start": "起點",
+        "end": "終點",
+        "speed": "速度"
       }
     },
     "neopixel": {
@@ -1645,7 +1645,7 @@
       "bounceTooltip": "LED 左右彈跳",
       "cycle": "循環效果",
       "cycleTooltip": "LED 繞圈旋轉",
-      "colorRed": "Red",
+      "colorRed": "紅色",
       "colorOrange": "橙色",
       "colorYellow": "黃色",
       "colorYellowGreen": "黃綠色",
@@ -1805,13 +1805,13 @@
       "typeInt": "Int",
       "typeBool": "布林值",
       "hasKey": "JSON 包含鍵",
-      "hasKeyExists": "exists",
+      "hasKeyExists": "存在",
       "hasKeyTooltip": "檢查該鍵是否存在於 JSON 中",
       "arraySize": "JSON 陣列大小",
       "arraySizeTooltip": "取得 JSON 陣列的大小",
       "arrayGet": "JSON 陣列",
       "arrayGetIndex": "於索引",
-      "arrayGetAs": "as",
+      "arrayGetAs": "作為",
       "arrayGetTooltip": "從 JSON 陣列取得指定索引的元素",
       "createObject": "開始建立 JSON",
       "createObjectTooltip": "開始建立新的 JSON 物件",
@@ -1870,7 +1870,7 @@
       "setBufferSizeTooltip": "設定 MQTT 訊息最大大小（預設 256 bytes）",
       "setKeepalive": "MQTT Keepalive",
       "setKeepaliveTooltip": "設定 MQTT keepalive 間隔（預設 15 秒）",
-      "seconds": "seconds",
+      "seconds": "秒",
       "lastWill": "MQTT 遺囑訊息",
       "lastWillTopic": "主題",
       "lastWillMessage": "訊息",
@@ -1921,7 +1921,7 @@
       "deepSleepTooltip": "進入指定秒數的深度睡眠（省電模式）",
       "lightSleep": "輕度睡眠",
       "lightSleepTooltip": "進入指定秒數的輕度睡眠（之後恢復）",
-      "seconds": "seconds",
+      "seconds": "秒",
       "getFreeHeap": "可用記憶體 (bytes)",
       "getFreeHeapTooltip": "取得可用 heap 記憶體 (bytes)",
       "getChipId": "ESP 晶片 ID",
@@ -1977,7 +1977,7 @@
       "moisture": "濕度",
       "vibration": "震動",
       "occupancy": "佔用",
-      "gas": "Gas",
+      "gas": "氣體",
       "problem": "問題",
       "connectivity": "連線",
       "switchCreate": "建立 HA 開關",
@@ -2026,7 +2026,7 @@
       "step": "步進",
       "mode": "模式",
       "modeAuto": "滑桿 (自動)",
-      "modeBox": "Box",
+      "modeBox": "方框",
       "modeSlider": "滑桿",
       "numberOnCommand": "HA 數字變更時",
       "numberOnCommandTooltip": "當 Home Assistant 變更數字時執行。ha_number_value 可用。",
@@ -2101,25 +2101,25 @@
       "execute": "執行"
     },
     "common": {
-      "steps": "steps",
-      "times": "times",
-      "speed": "speed",
-      "direction": "direction",
-      "speedNormal": "normal",
-      "speedFast": "fast",
-      "speedSlow": "slow",
-      "forward": "forward",
-      "backward": "backward",
-      "left": "left",
-      "right": "right",
+      "steps": "步數",
+      "times": "次",
+      "speed": "速度",
+      "direction": "方向",
+      "speedNormal": "正常",
+      "speedFast": "快",
+      "speedSlow": "慢",
+      "forward": "前進",
+      "backward": "後退",
+      "left": "左",
+      "right": "右",
       "leftFoot": "左腳",
       "rightFoot": "右腳",
       "leftLeg": "左腿腳位",
       "rightLeg": "右腿腳位",
       "leftAnkle": "左腳踝腳位",
       "rightAnkle": "右腳踝腳位",
-      "front": "front",
-      "back": "back"
+      "front": "前",
+      "back": "後"
     },
     "humanoid": {
       "init": {
@@ -2163,7 +2163,7 @@
         "tooltip": "Humanoid 以動作和聲音表現情緒",
         "happy": "快樂",
         "superHappy": "超級快樂",
-        "sad": "Sad",
+        "sad": "難過",
         "victory": "勝利",
         "angry": "生氣",
         "sleeping": "睡眠中",
@@ -2192,7 +2192,7 @@
         "happy": "快樂",
         "superHappy": "超級快樂",
         "happyShort": "短暫快樂",
-        "sad": "Sad",
+        "sad": "難過",
         "confused": "困惑",
         "fart1": "放屁 1",
         "fart2": "放屁 2",
@@ -2306,8 +2306,8 @@
         "frequency": "頻率",
         "baudRate": "鮑率",
         "bytes": "位元組",
-        "milliseconds": "milliseconds",
-        "seconds": "seconds",
+        "milliseconds": "毫秒",
+        "seconds": "秒",
         "high": "HIGH",
         "low": "LOW",
         "pullUp": "上拉",
@@ -2401,19 +2401,19 @@
         },
         "append": {
           "label": "清單",
-          "to": "append",
+          "to": "附加",
           "tooltip": "將元素附加到清單末尾"
         },
         "insert": {
           "label": "清單",
           "atIndex": "於索引",
-          "insert": "insert",
+          "insert": "插入",
           "tooltip": "在清單指定位置插入元素"
         },
         "removeIndex": {
           "label": "清單",
           "atIndex": "於索引",
-          "remove": "remove",
+          "remove": "移除",
           "tooltip": "從清單移除指定位置的元素"
         },
         "removeValue": {
@@ -2437,7 +2437,7 @@
         },
         "contains": {
           "label": "清單",
-          "in": "contains",
+          "in": "包含",
           "contains": "?",
           "tooltip": "檢查清單是否包含該值"
         },
@@ -2449,17 +2449,17 @@
         },
         "clear": {
           "label": "清單",
-          "clear": "clear",
+          "clear": "清除",
           "tooltip": "從清單移除所有元素"
         },
         "reverse": {
           "label": "清單",
-          "reverse": "reverse",
+          "reverse": "反轉",
           "tooltip": "反轉清單順序"
         },
         "sort": {
           "label": "清單",
-          "sort": "sort",
+          "sort": "排序",
           "ascending": "遞增",
           "descending": "下降",
           "tooltip": "排序清單"
@@ -2502,9 +2502,9 @@
         },
         "buttonSensor": {
           "label": "按鈕",
-          "state": "is",
-          "pressed": "pressed",
-          "released": "released",
+          "state": "是",
+          "pressed": "按下",
+          "released": "放開",
           "tooltip": "檢查按鈕狀態（使用上拉電阻）"
         },
         "pirSensor": {
@@ -2514,22 +2514,22 @@
         },
         "analogSensor": {
           "label": "類比感測器",
-          "value": "value",
+          "value": "值",
           "tooltip": "讀取類比感測器數值 (0-4095)"
         },
         "ldrSensor": {
           "label": "LDR 光感測器",
-          "brightness": "brightness",
+          "brightness": "亮度",
           "tooltip": "使用 LDR（光敏電阻）量測亮度"
         },
         "soilSensor": {
           "label": "土壤濕度感測器",
-          "moisture": "moisture",
+          "moisture": "濕度",
           "tooltip": "量測土壤濕度"
         },
         "potentiometer": {
           "label": "電位器",
-          "value": "value",
+          "value": "值",
           "tooltip": "讀取電位器數值 (0-4095)",
           "angle": "角度 (0-270)"
         }
