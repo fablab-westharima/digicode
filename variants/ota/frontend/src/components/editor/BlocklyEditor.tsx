@@ -3,6 +3,9 @@ import * as Blockly from 'blockly';
 import 'blockly/blocks';
 import * as Ja from 'blockly/msg/ja';
 import * as En from 'blockly/msg/en';
+import * as Es from 'blockly/msg/es';
+import * as Pt from 'blockly/msg/pt';
+import * as ZhHant from 'blockly/msg/zh-hant';
 import { javascriptGenerator } from 'blockly/javascript';
 import { useTranslation } from 'react-i18next';
 import { useRobotModeStore } from '../../stores/robotModeStore';
@@ -297,8 +300,13 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
 
       console.error('📦 [BlocklyEditor] Step 1: Rebuilding workspace for uiLanguage:', uiLanguage);
 
-      // i18nの現在言語に応じてBlocklyロケールを設定
-      const locale = uiLanguage === 'ja' ? Ja : En;
+      // i18nの現在言語に応じてBlocklyロケールを設定（BUG-039: 5 言語対応）
+      const locale =
+        uiLanguage === 'ja' ? Ja :
+        uiLanguage === 'es' ? Es :
+        uiLanguage === 'pt-PT' ? Pt :
+        uiLanguage === 'zh-TW' ? ZhHant :
+        En;
       console.error('📦 [BlocklyEditor] Step 2: Before setLocale, Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT:', Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT);
       Blockly.setLocale(locale);
       console.error('📦 [BlocklyEditor] Step 3: After setLocale, Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT:', Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT);
