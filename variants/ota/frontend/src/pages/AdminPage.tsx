@@ -4,6 +4,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +12,15 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Search, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+
+// i18n.language → toLocaleDateString locale 対応
+const LOCALE_MAP: Record<string, string> = {
+  ja: 'ja-JP',
+  en: 'en-US',
+  es: 'es-ES',
+  'pt-PT': 'pt-PT',
+  'zh-TW': 'zh-TW',
+};
 
 const API_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
   ? 'http://localhost:8787'
@@ -64,6 +74,7 @@ function PlanBadge({ plan }: { plan: string }) {
 // ---- Users Tab ----
 
 function UsersTab() {
+  const { t, i18n } = useTranslation();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState('');
@@ -128,7 +139,7 @@ function UsersTab() {
   };
 
   const handleDelete = async (userId: number, email: string) => {
-    if (!confirm(`本当に ${email} を削除しますか？この操作は取り消せません。`)) return;
+    if (!confirm(t('admin.users.delete.confirm', { email }))) return;
     try {
       const res = await fetch(`${API_URL}/api/admin/users/${userId}`, {
         method: 'DELETE',
@@ -149,7 +160,8 @@ function UsersTab() {
 
   const formatDate = (date: string | null) => {
     if (!date) return '-';
-    return new Date(date).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    const locale = LOCALE_MAP[i18n.language] ?? 'en-US';
+    return new Date(date).toLocaleDateString(locale, { year: 'numeric', month: '2-digit', day: '2-digit' });
   };
 
   const totalPages = Math.ceil(total / limit);
@@ -160,11 +172,11 @@ function UsersTab() {
       {/* Filters */}
       <div className="flex gap-3 items-end flex-wrap">
         <div className="flex-1 min-w-[200px]">
-          <Label className="text-[#8B949E] text-xs mb-1 block">検索</Label>
+          <Label className="text-[#8B949E] text-xs mb-1 block">{t('admin.users.filters.searchLabel')}</Label>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8B949E]" />
             <Input
-              placeholder="メールアドレスで検索..."
+              placeholder={t('admin.users.filters.searchPlaceholder')}
               value={search}
               onChange={(e) => { setSearch(e.target.value); setOffset(0); }}
               className="pl-9 bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]"
@@ -172,13 +184,13 @@ function UsersTab() {
           </div>
         </div>
         <div className="w-[140px]">
-          <Label className="text-[#8B949E] text-xs mb-1 block">プラン</Label>
+          <Label className="text-[#8B949E] text-xs mb-1 block">{t('admin.users.filters.planLabel')}</Label>
           <Select value={planFilter} onValueChange={(v) => { setPlanFilter(v === 'all' ? '' : v); setOffset(0); }}>
             <SelectTrigger className="bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]">
-              <SelectValue placeholder="全て" />
+              <SelectValue placeholder={t('admin.users.filters.planAll')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">全て</SelectItem>
+              <SelectItem value="all">{t('admin.users.filters.planAll')}</SelectItem>
               <SelectItem value="free">Free</SelectItem>
               <SelectItem value="lite">Lite</SelectItem>
               <SelectItem value="pro">Pro</SelectItem>
@@ -187,16 +199,16 @@ function UsersTab() {
           </Select>
         </div>
         <div className="w-[160px]">
-          <Label className="text-[#8B949E] text-xs mb-1 block">放置アカウント</Label>
+          <Label className="text-[#8B949E] text-xs mb-1 block">{t('admin.users.filters.inactiveLabel')}</Label>
           <Select value={inactiveDays} onValueChange={(v) => { setInactiveDays(v === 'none' ? '' : v); setOffset(0); }}>
             <SelectTrigger className="bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]">
-              <SelectValue placeholder="フィルタなし" />
+              <SelectValue placeholder={t('admin.users.filters.inactiveNone')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">フィルタなし</SelectItem>
-              <SelectItem value="30">30日以上</SelectItem>
-              <SelectItem value="90">90日以上</SelectItem>
-              <SelectItem value="180">180日以上</SelectItem>
+              <SelectItem value="none">{t('admin.users.filters.inactiveNone')}</SelectItem>
+              <SelectItem value="30">{t('admin.users.filters.inactive30')}</SelectItem>
+              <SelectItem value="90">{t('admin.users.filters.inactive90')}</SelectItem>
+              <SelectItem value="180">{t('admin.users.filters.inactive180')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -207,18 +219,18 @@ function UsersTab() {
         <table className="w-full text-sm">
           <thead className="bg-[#161B22]">
             <tr className="text-[#8B949E]">
-              <th className="text-left px-4 py-3 font-medium">Email</th>
-              <th className="text-left px-4 py-3 font-medium w-[100px]">プラン</th>
-              <th className="text-left px-4 py-3 font-medium w-[100px]">付与元</th>
-              <th className="text-left px-4 py-3 font-medium w-[100px]">最終ログイン</th>
-              <th className="text-right px-4 py-3 font-medium w-[140px]">操作</th>
+              <th className="text-left px-4 py-3 font-medium">{t('admin.users.table.email')}</th>
+              <th className="text-left px-4 py-3 font-medium w-[100px]">{t('admin.users.table.plan')}</th>
+              <th className="text-left px-4 py-3 font-medium w-[100px]">{t('admin.users.table.source')}</th>
+              <th className="text-left px-4 py-3 font-medium w-[100px]">{t('admin.users.table.lastLogin')}</th>
+              <th className="text-right px-4 py-3 font-medium w-[140px]">{t('admin.users.table.actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#2E333D]">
             {loading ? (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-[#8B949E]">読み込み中...</td></tr>
+              <tr><td colSpan={5} className="px-4 py-8 text-center text-[#8B949E]">{t('admin.users.loading')}</td></tr>
             ) : users.length === 0 ? (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-[#8B949E]">ユーザーが見つかりません</td></tr>
+              <tr><td colSpan={5} className="px-4 py-8 text-center text-[#8B949E]">{t('admin.users.empty')}</td></tr>
             ) : users.map((u) => (
               <tr key={u.id} className={`${isInactive(u.lastLoginAt) ? 'bg-red-900/10' : ''}`}>
                 <td className="px-4 py-3 text-[#E6EDF3]">
@@ -232,7 +244,7 @@ function UsersTab() {
                   <PlanBadge plan={u.plan} />
                 </td>
                 <td className="px-4 py-3 text-[#8B949E] text-xs">
-                  {u.planSource === 'admin_granted' ? '管理者' : u.planSource === 'stripe' ? 'Stripe' : '-'}
+                  {u.planSource === 'admin_granted' ? t('admin.users.sources.admin') : u.planSource === 'stripe' ? 'Stripe' : '-'}
                 </td>
                 <td className={`px-4 py-3 text-xs ${isInactive(u.lastLoginAt) ? 'text-red-400' : 'text-[#8B949E]'}`}>
                   {formatDate(u.lastLoginAt)}
@@ -242,7 +254,7 @@ function UsersTab() {
                     <div className="flex flex-col gap-2">
                       <Select value={editPlan} onValueChange={setEditPlan}>
                         <SelectTrigger className="h-8 bg-[#0D1117] border-[#2E333D] text-[#E6EDF3] text-xs">
-                          <SelectValue placeholder="プラン選択" />
+                          <SelectValue placeholder={t('admin.users.edit.planPlaceholder')} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="free">Free</SelectItem>
@@ -252,17 +264,17 @@ function UsersTab() {
                         </SelectContent>
                       </Select>
                       <Input
-                        placeholder="メモ（任意）"
+                        placeholder={t('admin.users.edit.notePlaceholder')}
                         value={editNote}
                         onChange={(e) => setEditNote(e.target.value)}
                         className="h-8 bg-[#0D1117] border-[#2E333D] text-[#E6EDF3] text-xs"
                       />
                       <div className="flex gap-1">
                         <Button size="sm" className="h-7 text-xs flex-1" onClick={() => handlePlanChange(u.id)} disabled={!editPlan}>
-                          適用
+                          {t('admin.common.apply')}
                         </Button>
                         <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setEditingUser(null)}>
-                          取消
+                          {t('admin.common.cancel')}
                         </Button>
                       </div>
                     </div>
@@ -274,7 +286,7 @@ function UsersTab() {
                         className="h-7 text-xs text-[#8B949E] hover:text-[#E6EDF3]"
                         onClick={() => { setEditingUser(u.id); setEditPlan(u.plan); setEditNote(u.planNote || ''); }}
                       >
-                        変更
+                        {t('admin.users.actions.edit')}
                       </Button>
                       {!u.isAdmin && (
                         <Button
@@ -297,7 +309,7 @@ function UsersTab() {
 
       {/* Pagination */}
       <div className="flex items-center justify-between text-sm text-[#8B949E]">
-        <span>合計: {total}ユーザー</span>
+        <span>{t('admin.users.pagination.total', { count: total })}</span>
         {totalPages > 1 && (
           <div className="flex items-center gap-2">
             <Button
@@ -327,6 +339,7 @@ function UsersTab() {
 // ---- Feature Flags Tab ----
 
 function FlagsTab() {
+  const { t, i18n } = useTranslation();
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
   const [loading, setLoading] = useState(false);
   const [editingKey, setEditingKey] = useState<string | null>(null);
@@ -376,11 +389,12 @@ function FlagsTab() {
   };
 
   const getFlagStatus = (flag: FeatureFlag) => {
-    if (!flag.enabled) return { label: '全員に開放中', color: 'bg-green-600' };
+    if (!flag.enabled) return { label: t('admin.flags.status.open'), color: 'bg-green-600' };
     if (flag.freeUntil && new Date(flag.freeUntil) > new Date()) {
-      return { label: `無料開放中 (${new Date(flag.freeUntil).toLocaleDateString('ja-JP')}まで)`, color: 'bg-green-600' };
+      const locale = LOCALE_MAP[i18n.language] ?? 'en-US';
+      return { label: t('admin.flags.status.freeUntil', { date: new Date(flag.freeUntil).toLocaleDateString(locale) }), color: 'bg-green-600' };
     }
-    return { label: '課金が必要', color: 'bg-orange-600' };
+    return { label: t('admin.flags.status.paid'), color: 'bg-orange-600' };
   };
 
   const formatDateForInput = (isoDate: string | null) => {
@@ -388,12 +402,12 @@ function FlagsTab() {
     return new Date(isoDate).toISOString().split('T')[0];
   };
 
-  if (loading) return <div className="text-center text-[#8B949E] py-8">読み込み中...</div>;
+  if (loading) return <div className="text-center text-[#8B949E] py-8">{t('admin.flags.loading')}</div>;
 
   return (
     <div className="space-y-4">
       {flags.length === 0 ? (
-        <div className="text-center text-[#8B949E] py-8">Feature Flagsが登録されていません</div>
+        <div className="text-center text-[#8B949E] py-8">{t('admin.flags.empty')}</div>
       ) : flags.map((flag) => {
         const status = getFlagStatus(flag);
         const isEditing = editingKey === flag.key;
@@ -411,19 +425,19 @@ function FlagsTab() {
             {isEditing ? (
               <div className="space-y-3 pt-3 border-t border-[#2E333D]">
                 <div className="flex items-center gap-3">
-                  <Label className="text-[#8B949E] text-sm w-[100px]">課金制限</Label>
+                  <Label className="text-[#8B949E] text-sm w-[100px]">{t('admin.flags.edit.limitLabel')}</Label>
                   <Select value={editEnabled ? 'true' : 'false'} onValueChange={(v) => setEditEnabled(v === 'true')}>
                     <SelectTrigger className="w-[200px] bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="true">課金が必要（Pro以上）</SelectItem>
-                      <SelectItem value="false">全員に開放</SelectItem>
+                      <SelectItem value="true">{t('admin.flags.edit.limitPaid')}</SelectItem>
+                      <SelectItem value="false">{t('admin.flags.edit.limitOpen')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Label className="text-[#8B949E] text-sm w-[100px]">無料開放終了日</Label>
+                  <Label className="text-[#8B949E] text-sm w-[100px]">{t('admin.flags.edit.freeUntilLabel')}</Label>
                   <Input
                     type="date"
                     value={editFreeUntil}
@@ -432,22 +446,22 @@ function FlagsTab() {
                   />
                   {editFreeUntil && (
                     <Button size="sm" variant="ghost" className="text-xs text-[#8B949E]" onClick={() => setEditFreeUntil('')}>
-                      クリア
+                      {t('admin.flags.edit.freeUntilClear')}
                     </Button>
                   )}
                 </div>
                 <div className="flex items-center gap-3">
-                  <Label className="text-[#8B949E] text-sm w-[100px]">メモ</Label>
+                  <Label className="text-[#8B949E] text-sm w-[100px]">{t('admin.flags.edit.noteLabel')}</Label>
                   <Input
-                    placeholder="キャンペーン名など"
+                    placeholder={t('admin.flags.edit.notePlaceholder')}
                     value={editFreeReason}
                     onChange={(e) => setEditFreeReason(e.target.value)}
                     className="flex-1 bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]"
                   />
                 </div>
                 <div className="flex gap-2 justify-end">
-                  <Button size="sm" variant="ghost" onClick={() => setEditingKey(null)}>取消</Button>
-                  <Button size="sm" onClick={() => handleSave(flag.key)}>適用</Button>
+                  <Button size="sm" variant="ghost" onClick={() => setEditingKey(null)}>{t('admin.common.cancel')}</Button>
+                  <Button size="sm" onClick={() => handleSave(flag.key)}>{t('admin.common.apply')}</Button>
                 </div>
               </div>
             ) : (
@@ -463,7 +477,7 @@ function FlagsTab() {
                     setEditFreeReason(flag.freeReason || '');
                   }}
                 >
-                  設定を変更
+                  {t('admin.flags.edit.button')}
                 </Button>
               </div>
             )}
@@ -477,6 +491,7 @@ function FlagsTab() {
 // ---- Main AdminPage ----
 
 export function AdminPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const [activeTab, setActiveTab] = useState<'users' | 'flags'>('users');
@@ -486,9 +501,9 @@ export function AdminPage() {
     return (
       <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
         <div className="text-center text-[#8B949E]">
-          <p>管理者権限が必要です</p>
+          <p>{t('admin.notAdmin.message')}</p>
           <Button variant="ghost" className="mt-4" onClick={() => navigate('/')}>
-            ホームに戻る
+            {t('admin.notAdmin.backHome')}
           </Button>
         </div>
       </div>
@@ -502,9 +517,9 @@ export function AdminPage() {
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={() => navigate('/')}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            戻る
+            {t('admin.backLink')}
           </Button>
-          <h1 className="text-lg font-semibold">DigiCode Admin</h1>
+          <h1 className="text-lg font-semibold">{t('admin.title')}</h1>
         </div>
       </div>
 
@@ -520,7 +535,7 @@ export function AdminPage() {
             }`}
             onClick={() => setActiveTab('users')}
           >
-            ユーザー管理
+            {t('admin.tabs.users')}
           </button>
           <button
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
@@ -530,7 +545,7 @@ export function AdminPage() {
             }`}
             onClick={() => setActiveTab('flags')}
           >
-            Feature Flags
+            {t('admin.tabs.flags')}
           </button>
         </div>
 

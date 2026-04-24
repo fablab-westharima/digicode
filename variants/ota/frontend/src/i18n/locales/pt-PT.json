@@ -2978,7 +2978,7 @@
       "description": "Como configurar a gravação de programas via WiFi"
     },
     "ai-block-generation": {
-      "title": "Geração de Blocos com IA",
+      "title": "Geração de Blocos com AI",
       "description": "Gere blocos Blockly automaticamente com linguagem natural (BYOK)"
     }
   },
@@ -3884,8 +3884,8 @@
       "basicBlocks": "Blocos básicos",
       "allBlocks": "Todos os blocos",
       "pinAssign": "Função de atribuição de pinos",
-      "aiBlockGeneration": "Geração de blocos com IA (BYOK)",
-      "aiChat": "Chat IA (BYOK)",
+      "aiBlockGeneration": "Geração de blocos com AI (BYOK)",
+      "aiChat": "AI Chat (BYOK)",
       "allFeatures": "Todas as funcionalidades",
       "classFeature": "Funcionalidade de turmas"
     }
@@ -4093,7 +4093,7 @@
     "requiresLitePlus": "Disponível para o plano Lite ou superior",
     "upgradePlan": "Atualizar plano",
     "tabBlockGen": "Geração de blocos",
-    "tabHelp": "Chat IA",
+    "tabHelp": "AI Chat",
     "sendButton": "Enviar",
     "sending": "A enviar...",
     "helpBotPlaceholder": "Faz uma pergunta sobre o DigiCode",
@@ -4107,6 +4107,79 @@
       "mode": "Modo",
       "provider": "Fornecedor",
       "generatedResult": "Resultado da Geração de Blocos"
+    }
+  },
+  "admin": {
+    "title": "DigiCode Admin",
+    "backLink": "Voltar",
+    "notAdmin": {
+      "message": "São necessários privilégios de administrador",
+      "backHome": "Voltar ao início"
+    },
+    "tabs": {
+      "users": "Gestão de utilizadores",
+      "flags": "Feature Flags"
+    },
+    "users": {
+      "filters": {
+        "searchLabel": "Pesquisar",
+        "searchPlaceholder": "Pesquisar por email...",
+        "planLabel": "Plano",
+        "planAll": "Todos",
+        "inactiveLabel": "Contas inativas",
+        "inactiveNone": "Sem filtro",
+        "inactive30": "30+ dias",
+        "inactive90": "90+ dias",
+        "inactive180": "180+ dias"
+      },
+      "table": {
+        "email": "Email",
+        "plan": "Plano",
+        "source": "Origem",
+        "lastLogin": "Último acesso",
+        "actions": "Ações"
+      },
+      "loading": "A carregar...",
+      "empty": "Nenhum utilizador encontrado",
+      "sources": {
+        "admin": "Admin"
+      },
+      "edit": {
+        "planPlaceholder": "Selecionar plano",
+        "notePlaceholder": "Nota (opcional)"
+      },
+      "delete": {
+        "confirm": "Tem a certeza que pretende eliminar {{email}}? Esta ação não pode ser anulada."
+      },
+      "actions": {
+        "edit": "Editar"
+      },
+      "pagination": {
+        "total": "Total: {{count}} utilizadores"
+      }
+    },
+    "flags": {
+      "loading": "A carregar...",
+      "empty": "Não há Feature Flags registados",
+      "status": {
+        "open": "Aberto a todos",
+        "freeUntil": "Grátis até {{date}}",
+        "paid": "Acesso pago"
+      },
+      "edit": {
+        "button": "Editar configurações",
+        "limitLabel": "Limite de acesso",
+        "limitPaid": "Pago (Pro ou superior)",
+        "limitOpen": "Aberto a todos",
+        "freeUntilLabel": "Data de fim de acesso gratuito",
+        "freeUntilClear": "Limpar",
+        "noteLabel": "Nota",
+        "notePlaceholder": "Nome da campanha, etc."
+      }
+    },
+    "common": {
+      "apply": "Aplicar",
+      "cancel": "Cancelar"
     }
   }
 }

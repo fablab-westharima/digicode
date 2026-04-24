@@ -3923,5 +3923,78 @@
       "provider": "Provider",
       "generatedResult": "Block Generation Result"
     }
+  },
+  "admin": {
+    "title": "DigiCode Admin",
+    "backLink": "Back",
+    "notAdmin": {
+      "message": "Administrator privileges required",
+      "backHome": "Return home"
+    },
+    "tabs": {
+      "users": "User Management",
+      "flags": "Feature Flags"
+    },
+    "users": {
+      "filters": {
+        "searchLabel": "Search",
+        "searchPlaceholder": "Search by email...",
+        "planLabel": "Plan",
+        "planAll": "All",
+        "inactiveLabel": "Inactive accounts",
+        "inactiveNone": "No filter",
+        "inactive30": "30+ days",
+        "inactive90": "90+ days",
+        "inactive180": "180+ days"
+      },
+      "table": {
+        "email": "Email",
+        "plan": "Plan",
+        "source": "Source",
+        "lastLogin": "Last login",
+        "actions": "Actions"
+      },
+      "loading": "Loading...",
+      "empty": "No users found",
+      "sources": {
+        "admin": "Admin"
+      },
+      "edit": {
+        "planPlaceholder": "Select plan",
+        "notePlaceholder": "Note (optional)"
+      },
+      "delete": {
+        "confirm": "Are you sure you want to delete {{email}}? This action cannot be undone."
+      },
+      "actions": {
+        "edit": "Edit"
+      },
+      "pagination": {
+        "total": "Total: {{count}} users"
+      }
+    },
+    "flags": {
+      "loading": "Loading...",
+      "empty": "No Feature Flags registered",
+      "status": {
+        "open": "Open to all",
+        "freeUntil": "Free until {{date}}",
+        "paid": "Paid access"
+      },
+      "edit": {
+        "button": "Edit settings",
+        "limitLabel": "Access limit",
+        "limitPaid": "Paid (Pro and above)",
+        "limitOpen": "Open to all",
+        "freeUntilLabel": "Free access end date",
+        "freeUntilClear": "Clear",
+        "noteLabel": "Note",
+        "notePlaceholder": "Campaign name, etc."
+      }
+    },
+    "common": {
+      "apply": "Apply",
+      "cancel": "Cancel"
+    }
   }
 }

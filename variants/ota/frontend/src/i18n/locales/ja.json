@@ -3913,5 +3913,78 @@
       "provider": "プロバイダー",
       "generatedResult": "ブロック生成結果"
     }
+  },
+  "admin": {
+    "title": "DigiCode Admin",
+    "backLink": "戻る",
+    "notAdmin": {
+      "message": "管理者権限が必要です",
+      "backHome": "ホームに戻る"
+    },
+    "tabs": {
+      "users": "ユーザー管理",
+      "flags": "Feature Flags"
+    },
+    "users": {
+      "filters": {
+        "searchLabel": "検索",
+        "searchPlaceholder": "メールアドレスで検索...",
+        "planLabel": "プラン",
+        "planAll": "全て",
+        "inactiveLabel": "放置アカウント",
+        "inactiveNone": "フィルタなし",
+        "inactive30": "30日以上",
+        "inactive90": "90日以上",
+        "inactive180": "180日以上"
+      },
+      "table": {
+        "email": "Email",
+        "plan": "プラン",
+        "source": "付与元",
+        "lastLogin": "最終ログイン",
+        "actions": "操作"
+      },
+      "loading": "読み込み中...",
+      "empty": "ユーザーが見つかりません",
+      "sources": {
+        "admin": "管理者"
+      },
+      "edit": {
+        "planPlaceholder": "プラン選択",
+        "notePlaceholder": "メモ(任意)"
+      },
+      "delete": {
+        "confirm": "本当に {{email}} を削除しますか？この操作は取り消せません。"
+      },
+      "actions": {
+        "edit": "変更"
+      },
+      "pagination": {
+        "total": "合計: {{count}}ユーザー"
+      }
+    },
+    "flags": {
+      "loading": "読み込み中...",
+      "empty": "Feature Flagsが登録されていません",
+      "status": {
+        "open": "全員に開放中",
+        "freeUntil": "無料開放中 ({{date}}まで)",
+        "paid": "課金が必要"
+      },
+      "edit": {
+        "button": "設定を変更",
+        "limitLabel": "課金制限",
+        "limitPaid": "課金が必要(Pro以上)",
+        "limitOpen": "全員に開放",
+        "freeUntilLabel": "無料開放終了日",
+        "freeUntilClear": "クリア",
+        "noteLabel": "メモ",
+        "notePlaceholder": "キャンペーン名など"
+      }
+    },
+    "common": {
+      "apply": "適用",
+      "cancel": "取消"
+    }
   }
 }
