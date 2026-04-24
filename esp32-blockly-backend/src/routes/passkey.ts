@@ -8,7 +8,7 @@ import {
 import type {
   RegistrationResponseJSON,
   AuthenticationResponseJSON,
-} from '@simplewebauthn/types';
+} from '@simplewebauthn/server';
 import { authMiddleware } from '../middleware/auth';
 
 type Bindings = {
@@ -103,8 +103,9 @@ app.post('/register/options', authMiddleware, async (c) => {
     console.log('[Passkey Register] Existing authenticators:', existingAuthenticators.results.length);
 
     // userIDをUint8Arrayに変換（Cloudflare WorkersではBufferが使えないのでTextEncoderを使用）
+    // v13 API は Uint8Array<ArrayBuffer> を期待するため new Uint8Array() で明示再パック
     const userIdString = user.userId.toString();
-    const userIdUint8Array = new TextEncoder().encode(userIdString);
+    const userIdUint8Array = new Uint8Array(new TextEncoder().encode(userIdString));
 
     const options = await generateRegistrationOptions({
       rpName: RP_NAME,
@@ -371,8 +372,9 @@ app.post('/login/verify', async (c) => {
     }
 
     // Base64URLからUint8Arrayに変換（Cloudflare Workers対応）
-    const publicKeyBuffer = base64urlToUint8Array(authenticator.public_key as string);
-    const credentialIDBuffer = base64urlToUint8Array(credentialIDBase64);
+    // v13: publicKey は Uint8Array<ArrayBuffer> 期待のため new Uint8Array() で明示再パック
+    // v13: credential.id は Base64URLString (string) に変更されたため Uint8Array 変換不要
+    const publicKeyBuffer = new Uint8Array(base64urlToUint8Array(authenticator.public_key as string));
 
     // 検証
     const verification = await verifyAuthenticationResponse({
@@ -381,7 +383,7 @@ app.post('/login/verify', async (c) => {
       expectedOrigin: origin || `https://${rpId}`,
       expectedRPID: rpId,
       credential: {
-        id: credentialIDBuffer,
+        id: credentialIDBase64,
         publicKey: publicKeyBuffer,
         counter: authenticator.counter as number,
       },
@@ -405,10 +407,10 @@ app.post('/login/verify', async (c) => {
       { userId, email: userResult.email as string },
       c.env.JWT_SECRET
     );
-    const refreshToken = await generateRefreshToken(
-      { userId, email: userResult.email as string },
-      c.env.JWT_SECRET
-    );
+    // generateRefreshToken は引数を取らない（opaque 32-byte hex）。
+    // 旧コードは payload + secret を渡していたが JS が黙って drop しており runtime 動作は不変。
+    // v13 API typecheck で表面化したため正しい signature に修正。
+    const refreshToken = generateRefreshToken();
 
     // リフレッシュトークンをDBに保存
     await c.env.DB.prepare(
