@@ -13,7 +13,7 @@ import classes, { deleteClassCascade } from './routes/classes';
 import submissionsRoute from './routes/submissions';
 import { rateLimitPresets } from './middleware/rateLimit';
 
-type Bindings = {
+export type Bindings = {
   DB: D1Database;
   R2: R2Bucket;
   WEBAUTHN_CHALLENGES: KVNamespace;
@@ -57,7 +57,7 @@ app.use('*', cors({
     if (defaultOrigins.includes(origin)) return origin;
 
     // Check additional origins from environment variable
-    const additionalOrigins = c.env.CORS_ORIGINS?.split(',').map(o => o.trim()) || [];
+    const additionalOrigins = c.env.CORS_ORIGINS?.split(',').map((o: string) => o.trim()) || [];
     if (additionalOrigins.includes(origin)) return origin;
 
     // Allow Cloudflare Pages preview deployments
@@ -173,7 +173,7 @@ app.get('/api/test/kv', async (c) => {
 // - 1 件の失敗で全体を止めず、エラーログのみ出して続行
 
 async function handleScheduled(
-  _event: ScheduledEvent,
+  _controller: ScheduledController,
   env: Bindings,
   _ctx: ExecutionContext
 ): Promise<void> {

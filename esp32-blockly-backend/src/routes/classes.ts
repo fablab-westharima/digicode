@@ -18,7 +18,7 @@
  *     section "DB 配置原則"
  */
 
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import { requirePlan } from '../middleware/plan';
 import { hashPassword } from '../utils/password';
@@ -261,7 +261,11 @@ function generatePassword(): string {
 }
 
 // Verify that the caller owns the specified class. Returns the class row or an error response.
-async function verifyClassOwner(c: any, classId: number, userId: number) {
+async function verifyClassOwner(
+  c: Context<{ Bindings: Bindings; Variables: Variables }>,
+  classId: number,
+  userId: number
+) {
   const cls = await c.env.DB.prepare(
     `SELECT owner_id, invite_code FROM classes WHERE id = ?`
   ).bind(classId).first<{ owner_id: number; invite_code: string }>();
@@ -485,7 +489,7 @@ classes.post('/:classId/students/:studentId/reset-password', async (c) => {
 // Assignments proxy (ML30 digicode-class-server)
 // ============================================================
 
-function getClassApiEnv(c: any): ClassApiEnv {
+function getClassApiEnv(c: Context<{ Bindings: Bindings; Variables: Variables }>): ClassApiEnv {
   return {
     CLASS_API_URL: c.env.CLASS_API_URL,
     CLASS_API_SECRET: c.env.CLASS_API_SECRET,

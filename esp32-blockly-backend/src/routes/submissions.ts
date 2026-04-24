@@ -10,7 +10,8 @@
  * Authorization: enforced per-route (student = own submissions, owner = class submissions).
  */
 
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
+import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import { authMiddleware } from '../middleware/auth';
 import { proxyClassApi, type ClassApiEnv } from '../utils/classApi';
 
@@ -32,7 +33,7 @@ const submissions = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 submissions.use('*', authMiddleware);
 
-function getClassApiEnv(c: any): ClassApiEnv {
+function getClassApiEnv(c: Context<{ Bindings: Bindings; Variables: Variables }>): ClassApiEnv {
   return {
     CLASS_API_URL: c.env.CLASS_API_URL,
     CLASS_API_SECRET: c.env.CLASS_API_SECRET,
@@ -130,7 +131,7 @@ submissions.get('/:id/attachment', async (c) => {
       const data = await res
         .json()
         .catch(() => ({ error: 'ダウンロードに失敗しました' }));
-      return c.json(data, res.status as any);
+      return c.json(data, res.status as ContentfulStatusCode);
     }
 
     return new Response(res.body, {
@@ -197,7 +198,7 @@ submissions.put('/:id', async (c) => {
       userId,
     });
 
-    if (!check.ok) return c.json({ error: (check as any).error || '答案が見つかりません' }, check.status);
+    if (!check.ok) return c.json({ error: check.error || '答案が見つかりません' }, check.status);
 
     const sub = (check.body as { submission: { studentUserId: number } }).submission;
     if (sub.studentUserId !== userId) {
@@ -235,7 +236,7 @@ submissions.post('/:id/submit', async (c) => {
       userId,
     });
 
-    if (!check.ok) return c.json({ error: (check as any).error || '答案が見つかりません' }, check.status);
+    if (!check.ok) return c.json({ error: check.error || '答案が見つかりません' }, check.status);
 
     const sub = (check.body as { submission: { studentUserId: number } }).submission;
     if (sub.studentUserId !== userId) {

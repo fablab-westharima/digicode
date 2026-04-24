@@ -18,14 +18,16 @@
  * 関連: prompt/maintenance/15_2026-04-11_PhaseC_クラス機能実装進捗.md (プレ調査E)
  */
 
+import type { ContentfulStatusCode } from 'hono/utils/http-status';
+
 export type ClassApiEnv = {
   CLASS_API_URL: string; // e.g. "https://class.digital-fab.jp"
   CLASS_API_SECRET: string; // Workers Secret
 };
 
 export type ClassApiResult =
-  | { ok: true; status: number; body: unknown }
-  | { ok: false; status: number; error: string };
+  | { ok: true; status: ContentfulStatusCode; body: unknown }
+  | { ok: false; status: ContentfulStatusCode; error: string };
 
 type ProxyOptions = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -108,7 +110,7 @@ export async function proxyClassApi(
       }
     }
 
-    return { ok: true, status: res.status, body };
+    return { ok: true, status: res.status as ContentfulStatusCode, body };
   } catch (err) {
     const name = err instanceof Error ? err.name : '';
     if (name === 'AbortError') {
