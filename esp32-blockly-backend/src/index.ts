@@ -17,6 +17,7 @@ type Bindings = {
   DB: D1Database;
   R2: R2Bucket;
   WEBAUTHN_CHALLENGES: KVNamespace;
+  RATE_LIMIT_KV: KVNamespace;
   JWT_SECRET: string;
   CORS_ORIGINS?: string; // Optional: comma-separated list of additional origins
   // Phase D-1: Stripe 決済連携

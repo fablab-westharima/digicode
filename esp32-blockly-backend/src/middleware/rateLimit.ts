@@ -1,82 +1,61 @@
 /**
- * レート制限ミドルウェア
- * Cloudflare Workers用の簡易レート制限
+ * レート制限ミドルウェア (Cloudflare KV ベース)
  *
- * Note: この実装はワーカーインスタンスごとのメモリ内で動作します。
- * 本番環境での厳密なレート制限にはCloudflare KVまたはDurable Objectsを使用してください。
+ * 以前のインメモリ実装はワーカーインスタンスごとにカウンタが分離し、
+ * Cloudflare のロードバランサがリクエストを複数インスタンスに分散すると
+ * 実質的なレート制限として機能しなかった。
+ * 現行実装は RATE_LIMIT_KV namespace にカウンタを保存し、
+ * インスタンス間で共有する。KV 自体の eventual consistency により
+ * 厳密な atomic カウンタではない（±数件の誤差あり）が、
+ * レート制限用途では許容範囲。
  */
 import { Context, Next } from 'hono';
 
-// リクエスト記録の型
 interface RequestRecord {
   count: number;
   resetTime: number;
 }
 
-// メモリ内ストレージ（ワーカーインスタンスごと）
-const requestStore = new Map<string, RequestRecord>();
-
-// 古いエントリをクリーンアップ
-function cleanup() {
-  const now = Date.now();
-  for (const [key, record] of requestStore.entries()) {
-    if (record.resetTime < now) {
-      requestStore.delete(key);
-    }
-  }
+interface RateLimitBindings {
+  RATE_LIMIT_KV: KVNamespace;
 }
 
-// 定期的にクリーンアップ（100リクエストごと）
-let requestCount = 0;
-
-/**
- * レート制限オプション
- */
 interface RateLimitOptions {
-  windowMs: number;  // ウィンドウサイズ（ミリ秒）
-  max: number;       // ウィンドウ内の最大リクエスト数
-  keyGenerator?: (c: Context) => string;  // キー生成関数
-  message?: string;  // エラーメッセージ
-  skipFailedRequests?: boolean;  // 失敗したリクエストをカウントしない
+  windowMs: number;
+  max: number;
+  keyGenerator?: (c: Context) => string;
+  message?: string;
+  skipFailedRequests?: boolean;
 }
 
-/**
- * レート制限ミドルウェアを作成
- */
 export function rateLimit(options: RateLimitOptions) {
   const {
-    windowMs = 60000, // デフォルト: 1分
-    max = 100,        // デフォルト: 100リクエスト/分
+    windowMs = 60000,
+    max = 100,
     keyGenerator = defaultKeyGenerator,
     message = 'リクエスト数が制限を超えました。しばらくしてから再試行してください。',
   } = options;
 
-  return async (c: Context, next: Next) => {
-    // クリーンアップ
-    requestCount++;
-    if (requestCount % 100 === 0) {
-      cleanup();
-    }
-
+  return async (c: Context<{ Bindings: RateLimitBindings }>, next: Next) => {
     const key = keyGenerator(c);
     const now = Date.now();
 
-    // 現在のレコードを取得または作成
-    let record = requestStore.get(key);
+    const stored = await c.env.RATE_LIMIT_KV.get<RequestRecord>(key, 'json');
 
-    if (!record || record.resetTime < now) {
-      // 新しいウィンドウを開始
-      record = {
-        count: 0,
-        resetTime: now + windowMs,
-      };
+    let record: RequestRecord;
+    if (!stored || stored.resetTime < now) {
+      record = { count: 1, resetTime: now + windowMs };
+    } else {
+      record = { count: stored.count + 1, resetTime: stored.resetTime };
     }
 
-    // リクエストをカウント
-    record.count++;
-    requestStore.set(key, record);
+    // KV の TTL で自動 cleanup（旧実装の cleanup 関数は削除）
+    // window 経過後 + 60 秒の余裕をもって expire
+    const ttlSeconds = Math.max(60, Math.ceil((record.resetTime - now) / 1000) + 60);
+    await c.env.RATE_LIMIT_KV.put(key, JSON.stringify(record), {
+      expirationTtl: ttlSeconds,
+    });
 
-    // レスポンスヘッダーを設定
     const remaining = Math.max(0, max - record.count);
     const resetSeconds = Math.ceil((record.resetTime - now) / 1000);
 
@@ -84,7 +63,6 @@ export function rateLimit(options: RateLimitOptions) {
     c.header('X-RateLimit-Remaining', remaining.toString());
     c.header('X-RateLimit-Reset', resetSeconds.toString());
 
-    // 制限を超えた場合
     if (record.count > max) {
       c.header('Retry-After', resetSeconds.toString());
       return c.json(
@@ -102,11 +80,9 @@ export function rateLimit(options: RateLimitOptions) {
 }
 
 /**
- * デフォルトのキー生成関数
- * IPアドレスを使用
+ * デフォルトのキー生成関数 (IP ベース)
  */
 function defaultKeyGenerator(c: Context): string {
-  // Cloudflare Workersでは cf-connecting-ip ヘッダーを使用
   const ip =
     c.req.header('cf-connecting-ip') ||
     c.req.header('x-forwarded-for')?.split(',')[0] ||
@@ -117,8 +93,7 @@ function defaultKeyGenerator(c: Context): string {
 }
 
 /**
- * 認証済みユーザー用のキー生成関数
- * ユーザーIDを使用
+ * 認証済みユーザー用のキー生成関数 (user ID ベース)
  */
 export function userKeyGenerator(c: Context): string {
   const user = c.get('user') as { userId: number } | undefined;
@@ -129,7 +104,7 @@ export function userKeyGenerator(c: Context): string {
 }
 
 /**
- * エンドポイント別のキー生成関数
+ * エンドポイント別のキー生成関数 (IP + path)
  */
 export function endpointKeyGenerator(c: Context): string {
   const ip =
@@ -142,30 +117,28 @@ export function endpointKeyGenerator(c: Context): string {
 }
 
 // プリセット設定
-// Note: 開発環境では wrangler dev が使用され、レート制限はワーカーインスタンスごとに動作
 export const rateLimitPresets = {
-  // 一般的なAPI（100リクエスト/分）
+  // 一般 API: 100 req/min
   standard: rateLimit({
     windowMs: 60000,
     max: 100,
   }),
 
-  // 認証エンドポイント（60リクエスト/分 - E2Eテスト対応）
-  // Note: 本番環境ではCloudflare WAFでより厳しい制限を設定することを推奨
+  // 認証エンドポイント: 60 req/min
   auth: rateLimit({
     windowMs: 60000,
     max: 60,
     message: 'ログイン試行回数が多すぎます。しばらくしてから再試行してください。',
   }),
 
-  // コンパイルエンドポイント（30リクエスト/分）
+  // コンパイルエンドポイント: 30 req/min
   compile: rateLimit({
     windowMs: 60000,
     max: 30,
     message: 'コンパイルリクエストが多すぎます。しばらくしてから再試行してください。',
   }),
 
-  // Webhook（制限緩め: 1000リクエスト/分）
+  // Webhook: 1000 req/min
   webhook: rateLimit({
     windowMs: 60000,
     max: 1000,

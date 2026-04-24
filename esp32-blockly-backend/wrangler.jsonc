@@ -33,6 +33,11 @@
 		{
 			"binding": "WEBAUTHN_CHALLENGES",
 			"id": "c44460f3263542d8a1826904e49e02a4"
+		},
+		{
+			"binding": "RATE_LIMIT_KV",
+			"id": "bce384a2d31440bd92816f123f2e105f",
+			"preview_id": "7a46df8c953646bc92ec9d5d0f81c4a5"
 		}
 	],
 	// Step 8: Cron Triggers for lifecycle management
