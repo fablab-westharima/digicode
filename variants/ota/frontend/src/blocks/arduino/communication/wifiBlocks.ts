@@ -43,17 +43,17 @@ const WIFI_COLOR = '#00BCD4'; // シアン系、通信カテゴリ色
 Blockly.Blocks['wifi_connect'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + ((Blockly.Msg as any).BLOCKS_WIFI_CONNECT || 'Connect WiFi'));
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_WIFI_CONNECT || 'Connect WiFi'));
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_WIFI_SSID || 'SSID')
+        .appendField(Blockly.Msg.BLOCKS_WIFI_SSID || 'SSID')
         .appendField(new Blockly.FieldTextInput('your_ssid'), 'SSID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_WIFI_PASSWORD || 'WiFi Password')
+        .appendField(Blockly.Msg.BLOCKS_WIFI_PASSWORD || 'WiFi Password')
         .appendField(new Blockly.FieldTextInput('your_password'), 'PASSWORD');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WIFI_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_WIFI_CONNECTTOOLTIP || 'Connect to a WiFi network using SSID and password');
+    this.setTooltip(Blockly.Msg.BLOCKS_WIFI_CONNECTTOOLTIP || 'Connect to a WiFi network using SSID and password');
   }
 };
 

@@ -13,14 +13,14 @@ import { javascriptGenerator, Order } from 'blockly/javascript';
 Blockly.Blocks['pid_init'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_PID_INIT || 'PID Control Init'));
+      .appendField('🎯 ' + (Blockly.Msg.BLOCKS_PID_INIT || 'PID Control Init'));
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_PID_NAME || 'Name')
+      .appendField(Blockly.Msg.BLOCKS_PID_NAME || 'Name')
       .appendField(new Blockly.FieldDropdown([
-        [(Blockly.Msg as any).BLOCKS_PID_LINEFOLLOW || 'Line Follow', 'line'],
-        [(Blockly.Msg as any).BLOCKS_PID_WALLCONTROL || 'Wall Control', 'wall'],
-        [(Blockly.Msg as any).BLOCKS_PID_SPEEDCONTROL || 'Speed Control', 'speed'],
-        [(Blockly.Msg as any).BLOCKS_PID_ANGLECONTROL || 'Angle Control', 'angle']
+        [Blockly.Msg.BLOCKS_PID_LINEFOLLOW || 'Line Follow', 'line'],
+        [Blockly.Msg.BLOCKS_PID_WALLCONTROL || 'Wall Control', 'wall'],
+        [Blockly.Msg.BLOCKS_PID_SPEEDCONTROL || 'Speed Control', 'speed'],
+        [Blockly.Msg.BLOCKS_PID_ANGLECONTROL || 'Angle Control', 'angle']
       ]), 'NAME');
     this.appendValueInput('KP')
       .setCheck('Number')
@@ -34,7 +34,7 @@ Blockly.Blocks['pid_init'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#3F51B5');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_PID_INITTOOLTIP || 'Initialize PID controller');
+    this.setTooltip(Blockly.Msg.BLOCKS_PID_INITTOOLTIP || 'Initialize PID controller');
   }
 };
 
@@ -91,19 +91,19 @@ javascriptGenerator.forBlock['pid_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['pid_calculate'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_PID_CALCULATE || 'PID'))
+      .appendField('🎯 ' + (Blockly.Msg.BLOCKS_PID_CALCULATE || 'PID'))
       .appendField(new Blockly.FieldDropdown([
-        [(Blockly.Msg as any).BLOCKS_PID_LINEFOLLOW || 'Line Follow', 'line'],
-        [(Blockly.Msg as any).BLOCKS_PID_WALLCONTROL || 'Wall Control', 'wall'],
-        [(Blockly.Msg as any).BLOCKS_PID_SPEEDCONTROL || 'Speed Control', 'speed'],
-        [(Blockly.Msg as any).BLOCKS_PID_ANGLECONTROL || 'Angle Control', 'angle']
+        [Blockly.Msg.BLOCKS_PID_LINEFOLLOW || 'Line Follow', 'line'],
+        [Blockly.Msg.BLOCKS_PID_WALLCONTROL || 'Wall Control', 'wall'],
+        [Blockly.Msg.BLOCKS_PID_SPEEDCONTROL || 'Speed Control', 'speed'],
+        [Blockly.Msg.BLOCKS_PID_ANGLECONTROL || 'Angle Control', 'angle']
       ]), 'NAME');
     this.appendValueInput('ERROR')
       .setCheck('Number')
-      .appendField((Blockly.Msg as any).BLOCKS_PID_ERROR || 'Error');
+      .appendField(Blockly.Msg.BLOCKS_PID_ERROR || 'Error');
     this.setOutput(true, 'Number');
     this.setColour('#3F51B5');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_PID_CALCULATETOOLTIP || 'Calculate PID control output');
+    this.setTooltip(Blockly.Msg.BLOCKS_PID_CALCULATETOOLTIP || 'Calculate PID control output');
   }
 };
 
@@ -124,12 +124,12 @@ Blockly.Blocks['pid_set_gains'] = {
     this.appendDummyInput()
       .appendField('🎯 PID')
       .appendField(new Blockly.FieldDropdown([
-        [(Blockly.Msg as any).BLOCKS_PID_LINEFOLLOW || 'Line Follow', 'line'],
-        [(Blockly.Msg as any).BLOCKS_PID_WALLCONTROL || 'Wall Control', 'wall'],
-        [(Blockly.Msg as any).BLOCKS_PID_SPEEDCONTROL || 'Speed Control', 'speed'],
-        [(Blockly.Msg as any).BLOCKS_PID_ANGLECONTROL || 'Angle Control', 'angle']
+        [Blockly.Msg.BLOCKS_PID_LINEFOLLOW || 'Line Follow', 'line'],
+        [Blockly.Msg.BLOCKS_PID_WALLCONTROL || 'Wall Control', 'wall'],
+        [Blockly.Msg.BLOCKS_PID_SPEEDCONTROL || 'Speed Control', 'speed'],
+        [Blockly.Msg.BLOCKS_PID_ANGLECONTROL || 'Angle Control', 'angle']
       ]), 'NAME')
-      .appendField((Blockly.Msg as any).BLOCKS_PID_SETGAINS || 'Set Gains');
+      .appendField(Blockly.Msg.BLOCKS_PID_SETGAINS || 'Set Gains');
     this.appendValueInput('KP')
       .setCheck('Number')
       .appendField('Kp');
@@ -142,7 +142,7 @@ Blockly.Blocks['pid_set_gains'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#3F51B5');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_PID_SETGAINSTOOLTIP || 'Dynamically change PID gains');
+    this.setTooltip(Blockly.Msg.BLOCKS_PID_SETGAINSTOOLTIP || 'Dynamically change PID gains');
   }
 };
 
@@ -166,16 +166,16 @@ Blockly.Blocks['pid_reset'] = {
     this.appendDummyInput()
       .appendField('🎯 PID')
       .appendField(new Blockly.FieldDropdown([
-        [(Blockly.Msg as any).BLOCKS_PID_LINEFOLLOW || 'Line Follow', 'line'],
-        [(Blockly.Msg as any).BLOCKS_PID_WALLCONTROL || 'Wall Control', 'wall'],
-        [(Blockly.Msg as any).BLOCKS_PID_SPEEDCONTROL || 'Speed Control', 'speed'],
-        [(Blockly.Msg as any).BLOCKS_PID_ANGLECONTROL || 'Angle Control', 'angle']
+        [Blockly.Msg.BLOCKS_PID_LINEFOLLOW || 'Line Follow', 'line'],
+        [Blockly.Msg.BLOCKS_PID_WALLCONTROL || 'Wall Control', 'wall'],
+        [Blockly.Msg.BLOCKS_PID_SPEEDCONTROL || 'Speed Control', 'speed'],
+        [Blockly.Msg.BLOCKS_PID_ANGLECONTROL || 'Angle Control', 'angle']
       ]), 'NAME')
-      .appendField((Blockly.Msg as any).BLOCKS_PID_RESET || 'Reset');
+      .appendField(Blockly.Msg.BLOCKS_PID_RESET || 'Reset');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#3F51B5');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_PID_RESETTOOLTIP || 'Reset PID integral and derivative values');
+    this.setTooltip(Blockly.Msg.BLOCKS_PID_RESETTOOLTIP || 'Reset PID integral and derivative values');
   }
 };
 
@@ -194,18 +194,18 @@ javascriptGenerator.forBlock['pid_reset'] = function(block: Blockly.Block) {
 Blockly.Blocks['pid_line_trace'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_PID_LINETRACEPID || 'Line Trace PID Calc'));
+      .appendField('🎯 ' + (Blockly.Msg.BLOCKS_PID_LINETRACEPID || 'Line Trace PID Calc'));
     this.appendValueInput('BASE_SPEED')
       .setCheck('Number')
-      .appendField((Blockly.Msg as any).BLOCKS_PID_BASESPEED || 'Base Speed');
+      .appendField(Blockly.Msg.BLOCKS_PID_BASESPEED || 'Base Speed');
     this.appendValueInput('ERROR')
       .setCheck('Number')
-      .appendField((Blockly.Msg as any).BLOCKS_PID_LINEPOSITION || 'Line Position');
+      .appendField(Blockly.Msg.BLOCKS_PID_LINEPOSITION || 'Line Position');
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_PID_LEFTMOTORSPEED || '→ Left Motor Speed');
+      .appendField(Blockly.Msg.BLOCKS_PID_LEFTMOTORSPEED || '→ Left Motor Speed');
     this.setOutput(true, 'Number');
     this.setColour('#3F51B5');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_PID_LINETRACEPIDTOOLTIP || 'Returns PID-controlled left motor speed for line tracing');
+    this.setTooltip(Blockly.Msg.BLOCKS_PID_LINETRACEPIDTOOLTIP || 'Returns PID-controlled left motor speed for line tracing');
   }
 };
 
@@ -221,18 +221,18 @@ javascriptGenerator.forBlock['pid_line_trace'] = function(block: Blockly.Block) 
 Blockly.Blocks['pid_line_trace_right'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_PID_LINETRACEPID || 'Line Trace PID Calc'));
+      .appendField('🎯 ' + (Blockly.Msg.BLOCKS_PID_LINETRACEPID || 'Line Trace PID Calc'));
     this.appendValueInput('BASE_SPEED')
       .setCheck('Number')
-      .appendField((Blockly.Msg as any).BLOCKS_PID_BASESPEED || 'Base Speed');
+      .appendField(Blockly.Msg.BLOCKS_PID_BASESPEED || 'Base Speed');
     this.appendValueInput('ERROR')
       .setCheck('Number')
-      .appendField((Blockly.Msg as any).BLOCKS_PID_LINEPOSITION || 'Line Position');
+      .appendField(Blockly.Msg.BLOCKS_PID_LINEPOSITION || 'Line Position');
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_PID_RIGHTMOTORSPEED || '→ Right Motor Speed');
+      .appendField(Blockly.Msg.BLOCKS_PID_RIGHTMOTORSPEED || '→ Right Motor Speed');
     this.setOutput(true, 'Number');
     this.setColour('#3F51B5');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_PID_LINETRACEPIDTOOLTIP || 'Returns PID-controlled right motor speed for line tracing');
+    this.setTooltip(Blockly.Msg.BLOCKS_PID_LINETRACEPIDTOOLTIP || 'Returns PID-controlled right motor speed for line tracing');
   }
 };
 
@@ -251,23 +251,23 @@ javascriptGenerator.forBlock['pid_line_trace_right'] = function(block: Blockly.B
 Blockly.Blocks['pid_motor_speeds'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_PID_MOTORSPEEDCALC || 'PID Motor Speed Calc'));
+      .appendField('🎯 ' + (Blockly.Msg.BLOCKS_PID_MOTORSPEEDCALC || 'PID Motor Speed Calc'));
     this.appendValueInput('BASE_SPEED')
       .setCheck('Number')
-      .appendField((Blockly.Msg as any).BLOCKS_PID_BASESPEED || 'Base Speed');
+      .appendField(Blockly.Msg.BLOCKS_PID_BASESPEED || 'Base Speed');
     this.appendValueInput('ERROR')
       .setCheck('Number')
-      .appendField((Blockly.Msg as any).BLOCKS_PID_ERROR || 'Error');
+      .appendField(Blockly.Msg.BLOCKS_PID_ERROR || 'Error');
     this.appendDummyInput()
       .appendField('PID')
       .appendField(new Blockly.FieldDropdown([
-        [(Blockly.Msg as any).BLOCKS_PID_LINEFOLLOW || 'Line Follow', 'line'],
-        [(Blockly.Msg as any).BLOCKS_PID_WALLCONTROL || 'Wall Control', 'wall']
+        [Blockly.Msg.BLOCKS_PID_LINEFOLLOW || 'Line Follow', 'line'],
+        [Blockly.Msg.BLOCKS_PID_WALLCONTROL || 'Wall Control', 'wall']
       ]), 'NAME');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#3F51B5');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_PID_MOTORSPEEDCALCTOOLTIP || 'Calculate left/right motor speeds with PID and store in global variables');
+    this.setTooltip(Blockly.Msg.BLOCKS_PID_MOTORSPEEDCALCTOOLTIP || 'Calculate left/right motor speeds with PID and store in global variables');
   }
 };
 
@@ -296,15 +296,15 @@ javascriptGenerator.forBlock['pid_motor_speeds'] = function(block: Blockly.Block
 Blockly.Blocks['pid_get_speed'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_PID_GETSPEED || 'PID Calculated'))
+      .appendField('🎯 ' + (Blockly.Msg.BLOCKS_PID_GETSPEED || 'PID Calculated'))
       .appendField(new Blockly.FieldDropdown([
-        [(Blockly.Msg as any).BLOCKS_PID_LEFT || 'Left', 'LEFT'],
-        [(Blockly.Msg as any).BLOCKS_PID_RIGHT || 'Right', 'RIGHT']
+        [Blockly.Msg.BLOCKS_PID_LEFT || 'Left', 'LEFT'],
+        [Blockly.Msg.BLOCKS_PID_RIGHT || 'Right', 'RIGHT']
       ]), 'SIDE')
-      .appendField((Blockly.Msg as any).BLOCKS_PID_MOTORSPEED || 'Motor Speed');
+      .appendField(Blockly.Msg.BLOCKS_PID_MOTORSPEED || 'Motor Speed');
     this.setOutput(true, 'Number');
     this.setColour('#3F51B5');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_PID_GETSPEEDTOOLTIP || 'Get PID-calculated left/right motor speed');
+    this.setTooltip(Blockly.Msg.BLOCKS_PID_GETSPEEDTOOLTIP || 'Get PID-calculated left/right motor speed');
   }
 };
 

@@ -60,9 +60,9 @@ void mpuUpdate() {
 Blockly.Blocks['mpu6050_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_MPU6050_INIT || 'MPU6050 Init'));
+        .appendField('🎯 ' + (Blockly.Msg.BLOCKS_MPU6050_INIT || 'MPU6050 Init'));
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MPU6050_ACCELRANGE || 'accel range')
+        .appendField(Blockly.Msg.BLOCKS_MPU6050_ACCELRANGE || 'accel range')
         .appendField(new Blockly.FieldDropdown([
           ['±2g', 'MPU6050_RANGE_2_G'],
           ['±4g', 'MPU6050_RANGE_4_G'],
@@ -70,7 +70,7 @@ Blockly.Blocks['mpu6050_init'] = {
           ['±16g', 'MPU6050_RANGE_16_G'],
         ]), 'ACCEL_RANGE');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MPU6050_GYRORANGE || 'gyro range')
+        .appendField(Blockly.Msg.BLOCKS_MPU6050_GYRORANGE || 'gyro range')
         .appendField(new Blockly.FieldDropdown([
           ['±250°/s', 'MPU6050_RANGE_250_DEG'],
           ['±500°/s', 'MPU6050_RANGE_500_DEG'],
@@ -79,7 +79,7 @@ Blockly.Blocks['mpu6050_init'] = {
         ]), 'GYRO_RANGE');
     this.setOutput(true, 'Boolean');
     this.setColour(MOTION_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MPU6050_INITTOOLTIP || 'Initialize MPU6050 sensor via I2C. Returns true if found. Requires Adafruit MPU6050 library.');
+    this.setTooltip(Blockly.Msg.BLOCKS_MPU6050_INITTOOLTIP || 'Initialize MPU6050 sensor via I2C. Returns true if found. Requires Adafruit MPU6050 library.');
   }
 };
 
@@ -98,11 +98,11 @@ generator.forBlock['mpu6050_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['mpu6050_update'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_MPU6050_UPDATE || 'MPU6050 Update'));
+        .appendField('🎯 ' + (Blockly.Msg.BLOCKS_MPU6050_UPDATE || 'MPU6050 Update'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(MOTION_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MPU6050_UPDATETOOLTIP || 'Read sensor values and update pitch/roll with complementary filter. Call in loop block for smooth angle tracking.');
+    this.setTooltip(Blockly.Msg.BLOCKS_MPU6050_UPDATETOOLTIP || 'Read sensor values and update pitch/roll with complementary filter. Call in loop block for smooth angle tracking.');
   }
 };
 
@@ -119,13 +119,13 @@ generator.forBlock['mpu6050_update'] = function() {
 Blockly.Blocks['mpu6050_read_accel'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_MPU6050_ACCEL || 'MPU6050 Accel'))
+        .appendField('🎯 ' + (Blockly.Msg.BLOCKS_MPU6050_ACCEL || 'MPU6050 Accel'))
         .appendField(new Blockly.FieldDropdown([
           ['X', 'mpu_ax'], ['Y', 'mpu_ay'], ['Z', 'mpu_az'],
         ]), 'AXIS');
     this.setOutput(true, 'Number');
     this.setColour(MOTION_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MPU6050_ACCELTOOLTIP || 'Get acceleration on the specified axis (m/s²). Call mpu6050_update first.');
+    this.setTooltip(Blockly.Msg.BLOCKS_MPU6050_ACCELTOOLTIP || 'Get acceleration on the specified axis (m/s²). Call mpu6050_update first.');
   }
 };
 
@@ -141,13 +141,13 @@ generator.forBlock['mpu6050_read_accel'] = function(block: Blockly.Block) {
 Blockly.Blocks['mpu6050_read_gyro'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_MPU6050_GYRO || 'MPU6050 Gyro'))
+        .appendField('🎯 ' + (Blockly.Msg.BLOCKS_MPU6050_GYRO || 'MPU6050 Gyro'))
         .appendField(new Blockly.FieldDropdown([
           ['X', 'mpu_gx'], ['Y', 'mpu_gy'], ['Z', 'mpu_gz'],
         ]), 'AXIS');
     this.setOutput(true, 'Number');
     this.setColour(MOTION_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MPU6050_GYROTOOLTIP || 'Get angular velocity on the specified axis (rad/s). Call mpu6050_update first.');
+    this.setTooltip(Blockly.Msg.BLOCKS_MPU6050_GYROTOOLTIP || 'Get angular velocity on the specified axis (rad/s). Call mpu6050_update first.');
   }
 };
 
@@ -163,10 +163,10 @@ generator.forBlock['mpu6050_read_gyro'] = function(block: Blockly.Block) {
 Blockly.Blocks['mpu6050_read_temperature'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_MPU6050_TEMP || 'MPU6050 Temperature'));
+        .appendField('🎯 ' + (Blockly.Msg.BLOCKS_MPU6050_TEMP || 'MPU6050 Temperature'));
     this.setOutput(true, 'Number');
     this.setColour(MOTION_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MPU6050_TEMPTOOLTIP || 'Get MPU6050 internal temperature in °C. Note: this is the chip temperature, not ambient.');
+    this.setTooltip(Blockly.Msg.BLOCKS_MPU6050_TEMPTOOLTIP || 'Get MPU6050 internal temperature in °C. Note: this is the chip temperature, not ambient.');
   }
 };
 
@@ -181,14 +181,14 @@ generator.forBlock['mpu6050_read_temperature'] = function() {
 Blockly.Blocks['mpu6050_get_angle'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_MPU6050_ANGLE || 'MPU6050 Angle'))
+        .appendField('🎯 ' + (Blockly.Msg.BLOCKS_MPU6050_ANGLE || 'MPU6050 Angle'))
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_MPU6050_PITCH || 'Pitch', 'mpu_pitch'],
-          [(Blockly.Msg as any).BLOCKS_MPU6050_ROLL || 'Roll', 'mpu_roll'],
+          [Blockly.Msg.BLOCKS_MPU6050_PITCH || 'Pitch', 'mpu_pitch'],
+          [Blockly.Msg.BLOCKS_MPU6050_ROLL || 'Roll', 'mpu_roll'],
         ]), 'ANGLE');
     this.setOutput(true, 'Number');
     this.setColour(MOTION_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MPU6050_ANGLETOOLTIP || 'Get pitch or roll angle (degrees) using complementary filter. Call mpu6050_update in loop for accurate results.');
+    this.setTooltip(Blockly.Msg.BLOCKS_MPU6050_ANGLETOOLTIP || 'Get pitch or roll angle (degrees) using complementary filter. Call mpu6050_update in loop for accurate results.');
   }
 };
 
@@ -205,13 +205,13 @@ generator.forBlock['mpu6050_get_angle'] = function(block: Blockly.Block) {
 Blockly.Blocks['mpu6050_calibrate'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎯 ' + ((Blockly.Msg as any).BLOCKS_MPU6050_CALIBRATE || 'MPU6050 Calibrate'))
-        .appendField((Blockly.Msg as any).BLOCKS_MPU6050_SAMPLES || 'samples')
+        .appendField('🎯 ' + (Blockly.Msg.BLOCKS_MPU6050_CALIBRATE || 'MPU6050 Calibrate'))
+        .appendField(Blockly.Msg.BLOCKS_MPU6050_SAMPLES || 'samples')
         .appendField(new Blockly.FieldNumber(200, 10, 1000), 'SAMPLES');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(MOTION_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_MPU6050_CALIBRATETOOLTIP || 'Calibrate MPU6050 by averaging measurements while stationary. Offsets stored in RAM (mpu_offset_*). Save to NVS with Preferences blocks if needed.');
+    this.setTooltip(Blockly.Msg.BLOCKS_MPU6050_CALIBRATETOOLTIP || 'Calibrate MPU6050 by averaging measurements while stationary. Offsets stored in RAM (mpu_offset_*). Save to NVS with Preferences blocks if needed.');
   }
 };
 

@@ -28,16 +28,16 @@ const RTC_COLOR = '#9C27B0';
 Blockly.Blocks['ntp_sync'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⏰ ' + ((Blockly.Msg as any).BLOCKS_NTP_SYNC || 'NTP Sync'))
-        .appendField((Blockly.Msg as any).BLOCKS_NTP_SERVER || 'server')
+        .appendField('⏰ ' + (Blockly.Msg.BLOCKS_NTP_SYNC || 'NTP Sync'))
+        .appendField(Blockly.Msg.BLOCKS_NTP_SERVER || 'server')
         .appendField(new Blockly.FieldTextInput('pool.ntp.org'), 'SERVER');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_NTP_TIMEZONE || 'timezone offset (sec)')
+        .appendField(Blockly.Msg.BLOCKS_NTP_TIMEZONE || 'timezone offset (sec)')
         .appendField(new Blockly.FieldNumber(32400, -86400, 86400), 'TZ_OFFSET');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NTP_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_NTP_SYNCTOOLTIP || 'Synchronize time from NTP server. Timezone offset in seconds (JST=32400, UTC=0). Requires WiFi connection.');
+    this.setTooltip(Blockly.Msg.BLOCKS_NTP_SYNCTOOLTIP || 'Synchronize time from NTP server. Timezone offset in seconds (JST=32400, UTC=0). Requires WiFi connection.');
   }
 };
 
@@ -62,10 +62,10 @@ NTPClient ntpClient(ntpUDP, "${server}", ${tzOffset}, 60000);
 Blockly.Blocks['ntp_get_unix_time'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⏰ ' + ((Blockly.Msg as any).BLOCKS_NTP_UNIXTIME || 'Get Unix Time'));
+        .appendField('⏰ ' + (Blockly.Msg.BLOCKS_NTP_UNIXTIME || 'Get Unix Time'));
     this.setOutput(true, 'Number');
     this.setColour(NTP_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_NTP_UNIXTIMETOOLTIP || 'Get current Unix timestamp (seconds since 1970-01-01). Returns 0 if not synchronized.');
+    this.setTooltip(Blockly.Msg.BLOCKS_NTP_UNIXTIMETOOLTIP || 'Get current Unix timestamp (seconds since 1970-01-01). Returns 0 if not synchronized.');
   }
 };
 
@@ -84,12 +84,12 @@ generator.forBlock['ntp_get_unix_time'] = function() {
 Blockly.Blocks['ntp_get_formatted'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⏰ ' + ((Blockly.Msg as any).BLOCKS_NTP_FORMATTED || 'Get Formatted Time'))
-        .appendField((Blockly.Msg as any).BLOCKS_NTP_FORMAT || 'format')
+        .appendField('⏰ ' + (Blockly.Msg.BLOCKS_NTP_FORMATTED || 'Get Formatted Time'))
+        .appendField(Blockly.Msg.BLOCKS_NTP_FORMAT || 'format')
         .appendField(new Blockly.FieldTextInput('%Y-%m-%d %H:%M:%S'), 'FORMAT');
     this.setOutput(true, 'String');
     this.setColour(NTP_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_NTP_FORMATTEDTOOLTIP || 'Get current time as a formatted string. Format: %Y=year, %m=month, %d=day, %H=hour, %M=minute, %S=second.');
+    this.setTooltip(Blockly.Msg.BLOCKS_NTP_FORMATTEDTOOLTIP || 'Get current time as a formatted string. Format: %Y=year, %m=month, %d=day, %H=hour, %M=minute, %S=second.');
   }
 };
 
@@ -116,18 +116,18 @@ String getFormattedTime(const char* fmt) {
 Blockly.Blocks['ntp_get_component'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⏰ ' + ((Blockly.Msg as any).BLOCKS_NTP_COMPONENT || 'Get Time Component'))
+        .appendField('⏰ ' + (Blockly.Msg.BLOCKS_NTP_COMPONENT || 'Get Time Component'))
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_NTP_YEAR || 'year', 'year'],
-          [(Blockly.Msg as any).BLOCKS_NTP_MONTH || 'month', 'month'],
-          [(Blockly.Msg as any).BLOCKS_NTP_DAY || 'day', 'day'],
-          [(Blockly.Msg as any).BLOCKS_NTP_HOUR || 'hour', 'hour'],
-          [(Blockly.Msg as any).BLOCKS_NTP_MINUTE || 'minute', 'minute'],
-          [(Blockly.Msg as any).BLOCKS_NTP_SECOND || 'second', 'second'],
+          [Blockly.Msg.BLOCKS_NTP_YEAR || 'year', 'year'],
+          [Blockly.Msg.BLOCKS_NTP_MONTH || 'month', 'month'],
+          [Blockly.Msg.BLOCKS_NTP_DAY || 'day', 'day'],
+          [Blockly.Msg.BLOCKS_NTP_HOUR || 'hour', 'hour'],
+          [Blockly.Msg.BLOCKS_NTP_MINUTE || 'minute', 'minute'],
+          [Blockly.Msg.BLOCKS_NTP_SECOND || 'second', 'second'],
         ]), 'COMPONENT');
     this.setOutput(true, 'Number');
     this.setColour(NTP_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_NTP_COMPONENTTOOLTIP || 'Get a specific component of the current time (year, month, day, hour, minute, or second).');
+    this.setTooltip(Blockly.Msg.BLOCKS_NTP_COMPONENTTOOLTIP || 'Get a specific component of the current time (year, month, day, hour, minute, or second).');
   }
 };
 
@@ -186,14 +186,14 @@ int getTimeComponent(const char* comp) {
 Blockly.Blocks['rtc_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🕰️ ' + ((Blockly.Msg as any).BLOCKS_RTC_INIT || 'RTC Init'))
+        .appendField('🕰️ ' + (Blockly.Msg.BLOCKS_RTC_INIT || 'RTC Init'))
         .appendField(new Blockly.FieldDropdown([
           ['DS3231', 'DS3231'],
           ['DS1307', 'DS1307'],
         ]), 'MODEL');
     this.setOutput(true, 'Boolean');
     this.setColour(RTC_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_RTC_INITTOOLTIP || 'Initialize RTC module (DS3231 or DS1307) via I2C. Returns true if found. Requires RTClib library.');
+    this.setTooltip(Blockly.Msg.BLOCKS_RTC_INITTOOLTIP || 'Initialize RTC module (DS3231 or DS1307) via I2C. Returns true if found. Requires RTClib library.');
   }
 };
 
@@ -210,17 +210,17 @@ generator.forBlock['rtc_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['rtc_set_time'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🕰️ ' + ((Blockly.Msg as any).BLOCKS_RTC_SETTIME || 'RTC Set Time'));
-    this.appendValueInput('YEAR').setCheck('Number').appendField((Blockly.Msg as any).BLOCKS_RTC_YEAR || 'year');
-    this.appendValueInput('MONTH').setCheck('Number').appendField((Blockly.Msg as any).BLOCKS_RTC_MONTH || 'month');
-    this.appendValueInput('DAY').setCheck('Number').appendField((Blockly.Msg as any).BLOCKS_RTC_DAY || 'day');
-    this.appendValueInput('HOUR').setCheck('Number').appendField((Blockly.Msg as any).BLOCKS_RTC_HOUR || 'hour');
-    this.appendValueInput('MINUTE').setCheck('Number').appendField((Blockly.Msg as any).BLOCKS_RTC_MINUTE || 'minute');
-    this.appendValueInput('SECOND').setCheck('Number').appendField((Blockly.Msg as any).BLOCKS_RTC_SECOND || 'second');
+        .appendField('🕰️ ' + (Blockly.Msg.BLOCKS_RTC_SETTIME || 'RTC Set Time'));
+    this.appendValueInput('YEAR').setCheck('Number').appendField(Blockly.Msg.BLOCKS_RTC_YEAR || 'year');
+    this.appendValueInput('MONTH').setCheck('Number').appendField(Blockly.Msg.BLOCKS_RTC_MONTH || 'month');
+    this.appendValueInput('DAY').setCheck('Number').appendField(Blockly.Msg.BLOCKS_RTC_DAY || 'day');
+    this.appendValueInput('HOUR').setCheck('Number').appendField(Blockly.Msg.BLOCKS_RTC_HOUR || 'hour');
+    this.appendValueInput('MINUTE').setCheck('Number').appendField(Blockly.Msg.BLOCKS_RTC_MINUTE || 'minute');
+    this.appendValueInput('SECOND').setCheck('Number').appendField(Blockly.Msg.BLOCKS_RTC_SECOND || 'second');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(RTC_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_RTC_SETTIMETOOLTIP || 'Set the RTC date and time.');
+    this.setTooltip(Blockly.Msg.BLOCKS_RTC_SETTIMETOOLTIP || 'Set the RTC date and time.');
   }
 };
 
@@ -241,19 +241,19 @@ generator.forBlock['rtc_set_time'] = function(block: Blockly.Block) {
 Blockly.Blocks['rtc_get_component'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🕰️ ' + ((Blockly.Msg as any).BLOCKS_RTC_GETCOMPONENT || 'RTC Get'))
+        .appendField('🕰️ ' + (Blockly.Msg.BLOCKS_RTC_GETCOMPONENT || 'RTC Get'))
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_RTC_YEAR || 'year', 'year'],
-          [(Blockly.Msg as any).BLOCKS_RTC_MONTH || 'month', 'month'],
-          [(Blockly.Msg as any).BLOCKS_RTC_DAY || 'day', 'day'],
-          [(Blockly.Msg as any).BLOCKS_RTC_HOUR || 'hour', 'hour'],
-          [(Blockly.Msg as any).BLOCKS_RTC_MINUTE || 'minute', 'minute'],
-          [(Blockly.Msg as any).BLOCKS_RTC_SECOND || 'second', 'second'],
-          [(Blockly.Msg as any).BLOCKS_RTC_UNIXTIME || 'unix time', 'unixtime'],
+          [Blockly.Msg.BLOCKS_RTC_YEAR || 'year', 'year'],
+          [Blockly.Msg.BLOCKS_RTC_MONTH || 'month', 'month'],
+          [Blockly.Msg.BLOCKS_RTC_DAY || 'day', 'day'],
+          [Blockly.Msg.BLOCKS_RTC_HOUR || 'hour', 'hour'],
+          [Blockly.Msg.BLOCKS_RTC_MINUTE || 'minute', 'minute'],
+          [Blockly.Msg.BLOCKS_RTC_SECOND || 'second', 'second'],
+          [Blockly.Msg.BLOCKS_RTC_UNIXTIME || 'unix time', 'unixtime'],
         ]), 'COMPONENT');
     this.setOutput(true, 'Number');
     this.setColour(RTC_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_RTC_GETCOMPONENTTOOLTIP || 'Get a time component from the RTC module.');
+    this.setTooltip(Blockly.Msg.BLOCKS_RTC_GETCOMPONENTTOOLTIP || 'Get a time component from the RTC module.');
   }
 };
 
@@ -279,10 +279,10 @@ generator.forBlock['rtc_get_component'] = function(block: Blockly.Block) {
 Blockly.Blocks['rtc_get_formatted'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🕰️ ' + ((Blockly.Msg as any).BLOCKS_RTC_FORMATTED || 'RTC Formatted Time'));
+        .appendField('🕰️ ' + (Blockly.Msg.BLOCKS_RTC_FORMATTED || 'RTC Formatted Time'));
     this.setOutput(true, 'String');
     this.setColour(RTC_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_RTC_FORMATTEDTOOLTIP || 'Get RTC time as "YYYY-MM-DD HH:MM:SS" formatted string.');
+    this.setTooltip(Blockly.Msg.BLOCKS_RTC_FORMATTEDTOOLTIP || 'Get RTC time as "YYYY-MM-DD HH:MM:SS" formatted string.');
   }
 };
 

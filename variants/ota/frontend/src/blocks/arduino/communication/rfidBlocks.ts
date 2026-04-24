@@ -30,10 +30,10 @@ byte rfidDefaultKey[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};`;
 Blockly.Blocks['rfid_init_m5stack'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🪪 ' + ((Blockly.Msg as any).BLOCKS_RFID_INITM5 || 'RFID Init (M5Stack)'));
+        .appendField('🪪 ' + (Blockly.Msg.BLOCKS_RFID_INITM5 || 'RFID Init (M5Stack)'));
     this.setOutput(true, 'Boolean');
     this.setColour(RFID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_RFID_INITM5TOOLTIP || 'Initialize M5Stack RFID 2 Unit (WS1850S) via I2C. I2C address 0x28, no CS/RST pins needed. This device has Japanese 技適 certification.');
+    this.setTooltip(Blockly.Msg.BLOCKS_RFID_INITM5TOOLTIP || 'Initialize M5Stack RFID 2 Unit (WS1850S) via I2C. I2C address 0x28, no CS/RST pins needed. This device has Japanese 技適 certification.');
   }
 };
 
@@ -52,13 +52,13 @@ MFRC522 mfrc522(0x28, -1);`;
 Blockly.Blocks['rfid_init_generic'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⚠️🪪 ' + ((Blockly.Msg as any).BLOCKS_RFID_INITGENERIC || 'RFID Init (Generic)'));
+        .appendField('⚠️🪪 ' + (Blockly.Msg.BLOCKS_RFID_INITGENERIC || 'RFID Init (Generic)'));
     this.appendDummyInput()
         .appendField('CS pin').appendField(new Blockly.FieldNumber(5, 0, 39), 'CS')
         .appendField('RST pin').appendField(new Blockly.FieldNumber(22, 0, 39), 'RST');
     this.setOutput(true, 'Boolean');
     this.setColour(RFID_WARN_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_RFID_INITGENERICTOOLTIP || '⚠️ Initialize generic MFRC522 via SPI. IMPORTANT: In Japan, only devices with 技適 certification may legally transmit radio waves. Non-certified MFRC522 modules may violate the Radio Act. For Japan, use rfid_init_m5stack instead.\n\nFor use outside Japan: check your local radio regulations for 13.56 MHz RFID modules.');
+    this.setTooltip(Blockly.Msg.BLOCKS_RFID_INITGENERICTOOLTIP || '⚠️ Initialize generic MFRC522 via SPI. IMPORTANT: In Japan, only devices with 技適 certification may legally transmit radio waves. Non-certified MFRC522 modules may violate the Radio Act. For Japan, use rfid_init_m5stack instead.\n\nFor use outside Japan: check your local radio regulations for 13.56 MHz RFID modules.');
   }
 };
 
@@ -79,10 +79,10 @@ MFRC522 mfrc522(${cs}, ${rst});`;
 Blockly.Blocks['rfid_is_card_present'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🪪 ' + ((Blockly.Msg as any).BLOCKS_RFID_ISPRESENT || 'RFID Card Present?'));
+        .appendField('🪪 ' + (Blockly.Msg.BLOCKS_RFID_ISPRESENT || 'RFID Card Present?'));
     this.setOutput(true, 'Boolean');
     this.setColour(RFID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_RFID_ISPRESENTTOOLTIP || 'Returns true if an RFID card/tag is detected. Place in loop block to continuously check for cards.');
+    this.setTooltip(Blockly.Msg.BLOCKS_RFID_ISPRESENTTOOLTIP || 'Returns true if an RFID card/tag is detected. Place in loop block to continuously check for cards.');
   }
 };
 
@@ -100,10 +100,10 @@ MFRC522 mfrc522(0x28, -1);`;
 Blockly.Blocks['rfid_read_uid'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🪪 ' + ((Blockly.Msg as any).BLOCKS_RFID_READUID || 'RFID Read UID'));
+        .appendField('🪪 ' + (Blockly.Msg.BLOCKS_RFID_READUID || 'RFID Read UID'));
     this.setOutput(true, 'String');
     this.setColour(RFID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_RFID_READUIDTOOLTIP || 'Read the UID of the detected card as a hex string (e.g. "04:A3:B5:C9"). Call after rfid_is_card_present returns true.');
+    this.setTooltip(Blockly.Msg.BLOCKS_RFID_READUIDTOOLTIP || 'Read the UID of the detected card as a hex string (e.g. "04:A3:B5:C9"). Call after rfid_is_card_present returns true.');
   }
 };
 
@@ -132,12 +132,12 @@ String rfidReadUID() {
 Blockly.Blocks['rfid_read_data'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🪪 ' + ((Blockly.Msg as any).BLOCKS_RFID_READDATA || 'RFID Read Data'))
-        .appendField((Blockly.Msg as any).BLOCKS_RFID_BLOCK || 'block')
+        .appendField('🪪 ' + (Blockly.Msg.BLOCKS_RFID_READDATA || 'RFID Read Data'))
+        .appendField(Blockly.Msg.BLOCKS_RFID_BLOCK || 'block')
         .appendField(new Blockly.FieldNumber(1, 0, 63), 'BLOCK');
     this.setOutput(true, 'String');
     this.setColour(RFID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_RFID_READDATATOOLTIP || 'Read 16 bytes from the specified block (0-63) as a string. Uses default authentication key (0xFF×6). Avoid block 0 (manufacturer data).');
+    this.setTooltip(Blockly.Msg.BLOCKS_RFID_READDATATOOLTIP || 'Read 16 bytes from the specified block (0-63) as a string. Uses default authentication key (0xFF×6). Avoid block 0 (manufacturer data).');
   }
 };
 
@@ -168,15 +168,15 @@ String rfidReadData(byte blockNum) {
 Blockly.Blocks['rfid_write_data'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🪪 ' + ((Blockly.Msg as any).BLOCKS_RFID_WRITEDATA || 'RFID Write Data'))
-        .appendField((Blockly.Msg as any).BLOCKS_RFID_BLOCK || 'block')
+        .appendField('🪪 ' + (Blockly.Msg.BLOCKS_RFID_WRITEDATA || 'RFID Write Data'))
+        .appendField(Blockly.Msg.BLOCKS_RFID_BLOCK || 'block')
         .appendField(new Blockly.FieldNumber(1, 0, 62), 'BLOCK');
     this.appendValueInput('DATA')
         .setCheck('String')
-        .appendField((Blockly.Msg as any).BLOCKS_RFID_DATA || 'data (max 16 chars)');
+        .appendField(Blockly.Msg.BLOCKS_RFID_DATA || 'data (max 16 chars)');
     this.setOutput(true, 'Boolean');
     this.setColour(RFID_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_RFID_WRITEDATATOOLTIP || 'Write up to 16 characters to the specified block. Uses default authentication key (0xFF×6). Returns true on success. Avoid blocks 0 and sector trailer blocks (3,7,11...).');
+    this.setTooltip(Blockly.Msg.BLOCKS_RFID_WRITEDATATOOLTIP || 'Write up to 16 characters to the specified block. Uses default authentication key (0xFF×6). Returns true on success. Avoid blocks 0 and sector trailer blocks (3,7,11...).');
   }
 };
 

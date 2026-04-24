@@ -150,7 +150,11 @@ export const useRobotModeStore = create<RobotModeState>()(
       //   version < 2 の旧 state は再初期化扱いとする。
       //   理由: 1 年あれば全アクティブユーザーが 1 度以上アプリを開いて migrate 完了する想定。
       //   削除後のリスク: inactive 半年超のユーザーは最後に使ったモードが失われるが UX 影響 acceptable。
-      migrate: (persistedState: any, _version: number) => {
+      migrate: (persistedState: unknown, _version: number) => {
+        if (typeof persistedState !== 'object' || persistedState === null) {
+          return persistedState;
+        }
+        const state = persistedState as { mode?: string };
         const modeMap: Record<string, RobotMode> = {
           otto_bipedal: 'robots_humanoid',
           otto_wheel: 'robots_wheel',
@@ -158,10 +162,10 @@ export const useRobotModeStore = create<RobotModeState>()(
           micromouse: 'robots_wheel',
           line_trace: 'robots_wheel',
         };
-        if (persistedState?.mode && modeMap[persistedState.mode]) {
-          persistedState.mode = modeMap[persistedState.mode];
+        if (state.mode && modeMap[state.mode]) {
+          state.mode = modeMap[state.mode];
         }
-        return persistedState;
+        return state;
       },
       version: 1,
     }

@@ -116,6 +116,7 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         console.log('[BlocklyEditor] UI language changed to:', lang);
 
         // 重要: 言語変更前に現在のワークスペースのXMLを保存
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Blockly workspace の internal disposal flag は public 型に未収録
         if (workspaceRef.current && !(workspaceRef.current as any).isDisposed) {
           const xml = Blockly.Xml.workspaceToDom(workspaceRef.current);
           const xmlText = Blockly.Xml.domToText(xml);
@@ -288,14 +289,14 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
 
       // i18nの現在言語に応じてBlocklyロケールを設定
       const locale = uiLanguage === 'ja' ? Ja : En;
-      console.error('📦 [BlocklyEditor] Step 2: Before setLocale, Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT:', (Blockly.Msg as any).BLOCKS_ACTUATOR_STEPPER_INIT);
+      console.error('📦 [BlocklyEditor] Step 2: Before setLocale, Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT:', Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT);
       Blockly.setLocale(locale);
-      console.error('📦 [BlocklyEditor] Step 3: After setLocale, Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT:', (Blockly.Msg as any).BLOCKS_ACTUATOR_STEPPER_INIT);
+      console.error('📦 [BlocklyEditor] Step 3: After setLocale, Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT:', Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT);
 
       // Blockly.Msg.*を更新（setLocaleの後に実行して上書きを防ぐ）
       console.error('📦 [BlocklyEditor] Step 4: Calling populateBlocklyMessages...');
       populateBlocklyMessages(uiLanguage);
-      console.error('📦 [BlocklyEditor] Step 5: After populateBlocklyMessages, Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT:', (Blockly.Msg as any).BLOCKS_ACTUATOR_STEPPER_INIT);
+      console.error('📦 [BlocklyEditor] Step 5: After populateBlocklyMessages, Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT:', Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT);
 
       // モバイル向け設定
       const mobileOptions: Blockly.BlocklyOptions = {
@@ -353,6 +354,7 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         console.log('[Favorites] Setting up event listener for custom mode');
 
         // Blockly changeイベントでのリスン
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Blockly ToolboxItemSelect event shape (newItem.getName()) は public 型に未収録
         const handleToolboxItemSelect = (event: any) => {
           // イベントからカテゴリ名を取得（newItemプロパティを持つイベントのみ処理）
           if (event.newItem && typeof event.newItem.getName === 'function') {
@@ -412,9 +414,10 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
       console.log('[BlocklyEditor] savedXmlRef.current:', savedXmlRef.current ? savedXmlRef.current.substring(0, 100) : 'empty');
 
       // デバッグ: ブロック定義の確認
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Blockly.Blocks の BlockDefinition 型は internal、toString() 経由の debug 目的のため cast
       const stepperDef = (Blockly.Blocks as any)['stepper_init'];
       console.error('🔍 [BlocklyEditor] BEFORE RESTORE - stepper_init definition exists:', !!stepperDef);
-      console.error('🔍 [BlocklyEditor] BEFORE RESTORE - Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT:', (Blockly.Msg as any).BLOCKS_ACTUATOR_STEPPER_INIT);
+      console.error('🔍 [BlocklyEditor] BEFORE RESTORE - Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT:', Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT);
 
       // init関数の中身を確認
       if (stepperDef && stepperDef.init) {
@@ -441,11 +444,13 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
       }
 
       // 変更イベントリスナー（ワークスペース変更時にXMLを自動保存）
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Blockly.Events.Abstract の subtype (Create/Delete) は event.type 動的判定で使用、public 型の union が狭すぎるため cast
       const changeListener = (event: any) => {
         // 言語変更中は保存しない（disposeでイベントが発火して空XMLで上書きされるのを防ぐ）
         if (languageChangeSavedRef.current) {
           return;
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Blockly workspace の internal disposal flag は public 型に未収録
         if (workspaceRef.current && !(workspaceRef.current as any).isDisposed) {
           const xml = Blockly.Xml.workspaceToDom(workspaceRef.current);
           const xmlText = Blockly.Xml.domToText(xml);
@@ -468,6 +473,7 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         // 言語変更ハンドラで既に保存済みの場合はスキップ（フラグはworkspace復元後にリセット）
         if (languageChangeSavedRef.current) {
           console.log('[BlocklyEditor] Cleanup: Skipping XML save (already saved by language change handler)');
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Blockly workspace の internal disposal flag は public 型に未収録
         } else if (workspace && !(workspace as any).isDisposed) {
           const blockCount = workspace.getAllBlocks(false).length;
           // ブロックが存在する場合のみ保存（React Strict Modeの2回目cleanup対策）

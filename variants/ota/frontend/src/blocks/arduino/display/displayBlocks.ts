@@ -26,13 +26,13 @@ Blockly.Blocks['display_init'] = {
   init: function() {
     const pins = getDisplayPins();
     this.appendDummyInput()
-        .appendField('📺 ' + ((Blockly.Msg as any).BLOCKS_DISPLAY_OLEDINIT || 'Initialize OLED'))
-        .appendField((Blockly.Msg as any).BLOCKS_DISPLAY_WIDTH || 'Width')
+        .appendField('📺 ' + (Blockly.Msg.BLOCKS_DISPLAY_OLEDINIT || 'Initialize OLED'))
+        .appendField(Blockly.Msg.BLOCKS_DISPLAY_WIDTH || 'Width')
         .appendField(new Blockly.FieldDropdown([
           ['128', '128'],
           ['64', '64']
         ]), 'WIDTH')
-        .appendField((Blockly.Msg as any).BLOCKS_DISPLAY_HEIGHT || 'Height')
+        .appendField(Blockly.Msg.BLOCKS_DISPLAY_HEIGHT || 'Height')
         .appendField(new Blockly.FieldDropdown([
           ['64', '64'],
           ['32', '32']
@@ -45,7 +45,7 @@ Blockly.Blocks['display_init'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DISPLAY_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_DISPLAY_OLEDINITTOOLTIP || 'Initialize I2C OLED display (SSD1306)');
+    this.setTooltip(Blockly.Msg.BLOCKS_DISPLAY_OLEDINITTOOLTIP || 'Initialize I2C OLED display (SSD1306)');
   }
 };
 
@@ -91,23 +91,23 @@ Blockly.Blocks['display_text'] = {
   init: function() {
     this.appendValueInput('TEXT')
         .setCheck('String')
-        .appendField('📝 ' + ((Blockly.Msg as any).BLOCKS_DISPLAY_OLEDTEXT || 'OLED Text'))
-        .appendField((Blockly.Msg as any).BLOCKS_DISPLAY_TEXT || 'Text');
+        .appendField('📝 ' + (Blockly.Msg.BLOCKS_DISPLAY_OLEDTEXT || 'OLED Text'))
+        .appendField(Blockly.Msg.BLOCKS_DISPLAY_TEXT || 'Text');
     this.appendDummyInput()
         .appendField('X:')
         .appendField(new Blockly.FieldNumber(0, 0, 128), 'X')
         .appendField('Y:')
         .appendField(new Blockly.FieldNumber(0, 0, 64), 'Y')
-        .appendField((Blockly.Msg as any).BLOCKS_DISPLAY_SIZE || 'Size')
+        .appendField(Blockly.Msg.BLOCKS_DISPLAY_SIZE || 'Size')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_DISPLAY_SIZESMALL || 'Small', '1'],
-          [(Blockly.Msg as any).BLOCKS_DISPLAY_SIZEMEDIUM || 'Medium', '2'],
-          [(Blockly.Msg as any).BLOCKS_DISPLAY_SIZELARGE || 'Large', '3']
+          [Blockly.Msg.BLOCKS_DISPLAY_SIZESMALL || 'Small', '1'],
+          [Blockly.Msg.BLOCKS_DISPLAY_SIZEMEDIUM || 'Medium', '2'],
+          [Blockly.Msg.BLOCKS_DISPLAY_SIZELARGE || 'Large', '3']
         ]), 'SIZE');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DISPLAY_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_DISPLAY_OLEDTEXTTOOLTIP || 'Display text on OLED');
+    this.setTooltip(Blockly.Msg.BLOCKS_DISPLAY_OLEDTEXTTOOLTIP || 'Display text on OLED');
   }
 };
 
@@ -140,11 +140,11 @@ pythonGenerator.forBlock['display_text'] = function(block: Blockly.Block) {
 Blockly.Blocks['display_clear'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🗑️ ' + ((Blockly.Msg as any).BLOCKS_DISPLAY_OLEDCLEAR || 'Clear OLED'));
+        .appendField('🗑️ ' + (Blockly.Msg.BLOCKS_DISPLAY_OLEDCLEAR || 'Clear OLED'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DISPLAY_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_DISPLAY_OLEDCLEARTOOLTIP || 'Clear OLED display');
+    this.setTooltip(Blockly.Msg.BLOCKS_DISPLAY_OLEDCLEARTOOLTIP || 'Clear OLED display');
   }
 };
 
@@ -160,11 +160,11 @@ pythonGenerator.forBlock['display_clear'] = function() {
 Blockly.Blocks['display_show'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('✅ ' + ((Blockly.Msg as any).BLOCKS_DISPLAY_OLEDSHOW || 'Update OLED'));
+        .appendField('✅ ' + (Blockly.Msg.BLOCKS_DISPLAY_OLEDSHOW || 'Update OLED'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DISPLAY_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_DISPLAY_OLEDSHOWTOOLTIP || 'Update OLED display');
+    this.setTooltip(Blockly.Msg.BLOCKS_DISPLAY_OLEDSHOWTOOLTIP || 'Update OLED display');
   }
 };
 
@@ -180,20 +180,20 @@ pythonGenerator.forBlock['display_show'] = function() {
 Blockly.Blocks['display_line'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📏 ' + ((Blockly.Msg as any).BLOCKS_DISPLAY_OLEDLINE || 'OLED Line'))
-        .appendField((Blockly.Msg as any).BLOCKS_DISPLAY_STARTX || 'Start X:')
+        .appendField('📏 ' + (Blockly.Msg.BLOCKS_DISPLAY_OLEDLINE || 'OLED Line'))
+        .appendField(Blockly.Msg.BLOCKS_DISPLAY_STARTX || 'Start X:')
         .appendField(new Blockly.FieldNumber(0, 0, 128), 'X1')
         .appendField('Y:')
         .appendField(new Blockly.FieldNumber(0, 0, 64), 'Y1');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_DISPLAY_ENDX || 'End X:')
+        .appendField(Blockly.Msg.BLOCKS_DISPLAY_ENDX || 'End X:')
         .appendField(new Blockly.FieldNumber(127, 0, 128), 'X2')
         .appendField('Y:')
         .appendField(new Blockly.FieldNumber(63, 0, 64), 'Y2');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DISPLAY_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_DISPLAY_OLEDLINETOOLTIP || 'Draw line on OLED');
+    this.setTooltip(Blockly.Msg.BLOCKS_DISPLAY_OLEDLINETOOLTIP || 'Draw line on OLED');
   }
 };
 
@@ -219,24 +219,24 @@ pythonGenerator.forBlock['display_line'] = function(block: Blockly.Block) {
 Blockly.Blocks['display_rect'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('▭ ' + ((Blockly.Msg as any).BLOCKS_DISPLAY_OLEDRECT || 'OLED Rectangle'))
+        .appendField('▭ ' + (Blockly.Msg.BLOCKS_DISPLAY_OLEDRECT || 'OLED Rectangle'))
         .appendField('X:')
         .appendField(new Blockly.FieldNumber(10, 0, 128), 'X')
         .appendField('Y:')
         .appendField(new Blockly.FieldNumber(10, 0, 64), 'Y');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_DISPLAY_WIDTHCOLON || 'Width:')
+        .appendField(Blockly.Msg.BLOCKS_DISPLAY_WIDTHCOLON || 'Width:')
         .appendField(new Blockly.FieldNumber(50, 1, 128), 'W')
-        .appendField((Blockly.Msg as any).BLOCKS_DISPLAY_HEIGHTCOLON || 'Height:')
+        .appendField(Blockly.Msg.BLOCKS_DISPLAY_HEIGHTCOLON || 'Height:')
         .appendField(new Blockly.FieldNumber(30, 1, 64), 'H')
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_DISPLAY_OUTLINE || 'Outline', 'false'],
-          [(Blockly.Msg as any).BLOCKS_DISPLAY_FILLED || 'Filled', 'true']
+          [Blockly.Msg.BLOCKS_DISPLAY_OUTLINE || 'Outline', 'false'],
+          [Blockly.Msg.BLOCKS_DISPLAY_FILLED || 'Filled', 'true']
         ]), 'FILL');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DISPLAY_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_DISPLAY_OLEDRECTTOOLTIP || 'Draw rectangle on OLED');
+    this.setTooltip(Blockly.Msg.BLOCKS_DISPLAY_OLEDRECTTOOLTIP || 'Draw rectangle on OLED');
   }
 };
 

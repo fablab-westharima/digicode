@@ -22,7 +22,7 @@ const ENV_COLOR = '#4CAF50';
 Blockly.Blocks['bme280_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🌡️ ' + ((Blockly.Msg as any).BLOCKS_BME280_INIT || 'BME280 Init'))
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_BME280_INIT || 'BME280 Init'))
         .appendField('I2C addr')
         .appendField(new Blockly.FieldDropdown([
           ['0x76', '0x76'],
@@ -30,7 +30,7 @@ Blockly.Blocks['bme280_init'] = {
         ]), 'ADDR');
     this.setOutput(true, 'Boolean');
     this.setColour(ENV_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BME280_INITTOOLTIP || 'Initialize BME280 sensor via I2C. Returns true if found. Default address 0x76, use 0x77 if SDO pin is HIGH.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BME280_INITTOOLTIP || 'Initialize BME280 sensor via I2C. Returns true if found. Default address 0x76, use 0x77 if SDO pin is HIGH.');
   }
 };
 
@@ -48,15 +48,15 @@ Adafruit_BME280 bme280;`;
 Blockly.Blocks['bme280_read'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🌡️ ' + ((Blockly.Msg as any).BLOCKS_BME280_READ || 'BME280 Read'))
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_BME280_READ || 'BME280 Read'))
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_ENV_TEMPERATURE || 'temperature (°C)', 'temp'],
-          [(Blockly.Msg as any).BLOCKS_ENV_HUMIDITY || 'humidity (%)', 'hum'],
-          [(Blockly.Msg as any).BLOCKS_ENV_PRESSURE || 'pressure (hPa)', 'pres'],
+          [Blockly.Msg.BLOCKS_ENV_TEMPERATURE || 'temperature (°C)', 'temp'],
+          [Blockly.Msg.BLOCKS_ENV_HUMIDITY || 'humidity (%)', 'hum'],
+          [Blockly.Msg.BLOCKS_ENV_PRESSURE || 'pressure (hPa)', 'pres'],
         ]), 'TYPE');
     this.setOutput(true, 'Number');
     this.setColour(ENV_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BME280_READTOOLTIP || 'Read a value from BME280 sensor (temperature °C, humidity %, or pressure hPa).');
+    this.setTooltip(Blockly.Msg.BLOCKS_BME280_READTOOLTIP || 'Read a value from BME280 sensor (temperature °C, humidity %, or pressure hPa).');
   }
 };
 
@@ -79,7 +79,7 @@ Adafruit_BME280 bme280;`;
 Blockly.Blocks['bmp280_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🌡️ ' + ((Blockly.Msg as any).BLOCKS_BMP280_INIT || 'BMP280 Init'))
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_BMP280_INIT || 'BMP280 Init'))
         .appendField('I2C addr')
         .appendField(new Blockly.FieldDropdown([
           ['0x76', '0x76'],
@@ -87,7 +87,7 @@ Blockly.Blocks['bmp280_init'] = {
         ]), 'ADDR');
     this.setOutput(true, 'Boolean');
     this.setColour(ENV_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BMP280_INITTOOLTIP || 'Initialize BMP280 sensor via I2C. Returns true if found. Note: BMP280 has no humidity sensor.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BMP280_INITTOOLTIP || 'Initialize BMP280 sensor via I2C. Returns true if found. Note: BMP280 has no humidity sensor.');
   }
 };
 
@@ -105,14 +105,14 @@ Adafruit_BMP280 bmp280;`;
 Blockly.Blocks['bmp280_read'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🌡️ ' + ((Blockly.Msg as any).BLOCKS_BMP280_READ || 'BMP280 Read'))
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_BMP280_READ || 'BMP280 Read'))
         .appendField(new Blockly.FieldDropdown([
-          [(Blockly.Msg as any).BLOCKS_ENV_TEMPERATURE || 'temperature (°C)', 'temp'],
-          [(Blockly.Msg as any).BLOCKS_ENV_PRESSURE || 'pressure (hPa)', 'pres'],
+          [Blockly.Msg.BLOCKS_ENV_TEMPERATURE || 'temperature (°C)', 'temp'],
+          [Blockly.Msg.BLOCKS_ENV_PRESSURE || 'pressure (hPa)', 'pres'],
         ]), 'TYPE');
     this.setOutput(true, 'Number');
     this.setColour(ENV_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BMP280_READTOOLTIP || 'Read temperature (°C) or pressure (hPa) from BMP280 sensor.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BMP280_READTOOLTIP || 'Read temperature (°C) or pressure (hPa) from BMP280 sensor.');
   }
 };
 
@@ -134,13 +134,13 @@ Adafruit_BMP280 bmp280;`;
 Blockly.Blocks['bmp280_read_altitude'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🌡️ ' + ((Blockly.Msg as any).BLOCKS_BMP280_ALTITUDE || 'BMP280 Altitude (m)'));
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_BMP280_ALTITUDE || 'BMP280 Altitude (m)'));
     this.appendValueInput('SEA_LEVEL')
         .setCheck('Number')
-        .appendField((Blockly.Msg as any).BLOCKS_BMP280_SEALEVEL || 'sea level pressure (hPa)');
+        .appendField(Blockly.Msg.BLOCKS_BMP280_SEALEVEL || 'sea level pressure (hPa)');
     this.setOutput(true, 'Number');
     this.setColour(ENV_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_BMP280_ALTITUDETOOLTIP || 'Calculate altitude in meters from current pressure vs sea level pressure. Standard sea level = 1013.25 hPa.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BMP280_ALTITUDETOOLTIP || 'Calculate altitude in meters from current pressure vs sea level pressure. Standard sea level = 1013.25 hPa.');
   }
 };
 

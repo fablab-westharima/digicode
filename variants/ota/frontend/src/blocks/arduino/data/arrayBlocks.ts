@@ -7,6 +7,16 @@
 import * as Blockly from 'blockly';
 import { javascriptGenerator, Order } from 'blockly/javascript';
 
+// Blockly Mutator pattern: Blockly v10+ lacks public types for dynamic-shape
+// mutator blocks, so we extend Blockly.Block with the custom properties/methods
+// this file installs on array blocks (array_create / array_set / array_get / array_content).
+interface ArrayMutatorBlock extends Blockly.Block {
+  dimCount_?: number;
+  initType_?: string;
+  itemCount_?: number;
+  updateShape_: (value: string) => string | null | undefined;
+}
+
 // 配列ブロックの色
 const ARRAY_HUE = '#FF8900';
 
@@ -26,46 +36,46 @@ const TYPE_OPTIONS: [string, string][] = [
 // 配列作成ブロック
 // ========================================
 Blockly.Blocks['array_create'] = {
-  init: function(this: Blockly.Block) {
+  init: function(this: ArrayMutatorBlock) {
     this.appendDummyInput()
-      .appendField('📦 ' + ((Blockly.Msg as any).BLOCKS_ARRAY_CREATE || 'Create Array'))
+      .appendField('📦 ' + (Blockly.Msg.BLOCKS_ARRAY_CREATE || 'Create Array'))
       .appendField(new Blockly.FieldTextInput('myArray'), 'VAR')
-      .appendField((Blockly.Msg as any).BLOCKS_TYPE || 'Type')
-      .appendField(new Blockly.FieldDropdown(TYPE_OPTIONS) as any, 'TYPE');
+      .appendField(Blockly.Msg.BLOCKS_TYPE || 'Type')
+      .appendField(new Blockly.FieldDropdown(TYPE_OPTIONS) as unknown as Blockly.Field, 'TYPE');
     this.appendDummyInput('DIM_INPUT')
-      .appendField((Blockly.Msg as any).BLOCKS_ARRAY_DIMENSION || 'Dimension')
+      .appendField(Blockly.Msg.BLOCKS_ARRAY_DIMENSION || 'Dimension')
       .appendField(new Blockly.FieldDropdown([
-        [((Blockly.Msg as any).BLOCKS_ARRAY_1D || '1D'), '1'],
-        [((Blockly.Msg as any).BLOCKS_ARRAY_2D || '2D'), '2'],
-        [((Blockly.Msg as any).BLOCKS_ARRAY_3D || '3D'), '3']
+        [(Blockly.Msg.BLOCKS_ARRAY_1D || '1D'), '1'],
+        [(Blockly.Msg.BLOCKS_ARRAY_2D || '2D'), '2'],
+        [(Blockly.Msg.BLOCKS_ARRAY_3D || '3D'), '3']
       ],
-        (this as any).updateShape_.bind(this)
-      ) as any, 'DIM')
-      .appendField((Blockly.Msg as any).BLOCKS_ARRAY_INIT || 'Init')
+        this.updateShape_.bind(this)
+      ) as unknown as Blockly.Field, 'DIM')
+      .appendField(Blockly.Msg.BLOCKS_ARRAY_INIT || 'Init')
       .appendField(new Blockly.FieldDropdown([
-        [((Blockly.Msg as any).BLOCKS_ARRAY_BYSIZE || 'By Size'), 'size'],
-        [((Blockly.Msg as any).BLOCKS_ARRAY_BYCONTENT || 'By Content'), 'content']
+        [(Blockly.Msg.BLOCKS_ARRAY_BYSIZE || 'By Size'), 'size'],
+        [(Blockly.Msg.BLOCKS_ARRAY_BYCONTENT || 'By Content'), 'content']
       ],
-        (this as any).updateShape_.bind(this)
-      ) as any, 'INIT_TYPE');
+        this.updateShape_.bind(this)
+      ) as unknown as Blockly.Field, 'INIT_TYPE');
 
     // 初期状態：1次元、サイズ指定
     this.appendValueInput('SIZE0')
       .setCheck('Number')
       .setAlign(Blockly.inputs.Align.RIGHT)
-      .appendField((Blockly.Msg as any).BLOCKS_SIZE || 'Size');
+      .appendField(Blockly.Msg.BLOCKS_SIZE || 'Size');
 
     this.setInputsInline(false);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(ARRAY_HUE);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_ARRAY_CREATETOOLTIP || 'Create an array. Specify type, dimension, size or content.');
+    this.setTooltip(Blockly.Msg.BLOCKS_ARRAY_CREATETOOLTIP || 'Create an array. Specify type, dimension, size or content.');
   },
 
   dimCount_: 1,
   initType_: 'size',
 
-  updateShape_: function(this: Blockly.Block, _newValue: string) {
+  updateShape_: function(this: ArrayMutatorBlock, _newValue: string) {
     const dim = parseInt(this.getFieldValue('DIM') || '1', 10);
     const initType = this.getFieldValue('INIT_TYPE') || 'size';
 
@@ -75,8 +85,8 @@ Blockly.Blocks['array_create'] = {
       if (this.getInput(`CONTENT${i}`)) this.removeInput(`CONTENT${i}`);
     }
 
-    const sizeLabel = (Blockly.Msg as any).BLOCKS_SIZE || 'Size';
-    const contentLabel = (Blockly.Msg as any).BLOCKS_CONTENT || 'Content';
+    const sizeLabel = Blockly.Msg.BLOCKS_SIZE || 'Size';
+    const contentLabel = Blockly.Msg.BLOCKS_CONTENT || 'Content';
 
     if (initType === 'size') {
       // サイズ指定モード
@@ -95,24 +105,24 @@ Blockly.Blocks['array_create'] = {
       }
     }
 
-    (this as any).dimCount_ = dim;
-    (this as any).initType_ = initType;
+    this.dimCount_ = dim;
+    this.initType_ = initType;
     return _newValue;
   },
 
-  mutationToDom: function(this: Blockly.Block) {
+  mutationToDom: function(this: ArrayMutatorBlock) {
     const container = Blockly.utils.xml.createElement('mutation');
     container.setAttribute('dim', String(this.getFieldValue('DIM') || '1'));
     container.setAttribute('init_type', this.getFieldValue('INIT_TYPE') || 'size');
     return container;
   },
 
-  domToMutation: function(this: Blockly.Block, xmlElement: Element) {
+  domToMutation: function(this: ArrayMutatorBlock, xmlElement: Element) {
     const dim = xmlElement.getAttribute('dim') || '1';
     const initType = xmlElement.getAttribute('init_type') || 'size';
     this.setFieldValue(dim, 'DIM');
     this.setFieldValue(initType, 'INIT_TYPE');
-    (this as any).updateShape_(dim);
+    this.updateShape_(dim);
   }
 };
 
@@ -156,19 +166,19 @@ javascriptGenerator.forBlock['array_create'] = function(block: Blockly.Block) {
 // 配列要素設定ブロック
 // ========================================
 Blockly.Blocks['array_set'] = {
-  init: function(this: Blockly.Block) {
+  init: function(this: ArrayMutatorBlock) {
     this.appendDummyInput()
-      .appendField('📦 ' + ((Blockly.Msg as any).BLOCKS_ARRAY || 'Array'))
+      .appendField('📦 ' + (Blockly.Msg.BLOCKS_ARRAY || 'Array'))
       .appendField(new Blockly.FieldTextInput('myArray'), 'VAR');
     this.appendDummyInput('DIM_INPUT')
-      .appendField((Blockly.Msg as any).BLOCKS_ARRAY_DIMENSION || 'Dimension')
+      .appendField(Blockly.Msg.BLOCKS_ARRAY_DIMENSION || 'Dimension')
       .appendField(new Blockly.FieldDropdown([
-        [((Blockly.Msg as any).BLOCKS_ARRAY_1D || '1D'), '1'],
-        [((Blockly.Msg as any).BLOCKS_ARRAY_2D || '2D'), '2'],
-        [((Blockly.Msg as any).BLOCKS_ARRAY_3D || '3D'), '3']
+        [(Blockly.Msg.BLOCKS_ARRAY_1D || '1D'), '1'],
+        [(Blockly.Msg.BLOCKS_ARRAY_2D || '2D'), '2'],
+        [(Blockly.Msg.BLOCKS_ARRAY_3D || '3D'), '3']
       ],
-        (this as any).updateShape_.bind(this)
-      ) as any, 'DIM');
+        this.updateShape_.bind(this)
+      ) as unknown as Blockly.Field, 'DIM');
     this.appendValueInput('INDEX0')
       .setCheck('Number')
       .appendField('[');
@@ -177,18 +187,18 @@ Blockly.Blocks['array_set'] = {
     this.appendValueInput('VALUE')
       .appendField('=');
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_SET || 'Set');
+      .appendField(Blockly.Msg.BLOCKS_SET || 'Set');
 
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(ARRAY_HUE);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_ARRAY_SETTOOLTIP || 'Set value at specified position in array.');
+    this.setTooltip(Blockly.Msg.BLOCKS_ARRAY_SETTOOLTIP || 'Set value at specified position in array.');
   },
 
   dimCount_: 1,
 
-  updateShape_: function(this: Blockly.Block, newValue: string) {
+  updateShape_: function(this: ArrayMutatorBlock, newValue: string) {
     const dim = parseInt(newValue, 10);
 
     // 既存のインデックス入力を削除
@@ -213,22 +223,22 @@ Blockly.Blocks['array_set'] = {
     this.appendValueInput('VALUE')
       .appendField('=');
     this.appendDummyInput()
-      .appendField((Blockly.Msg as any).BLOCKS_SET || 'Set');
+      .appendField(Blockly.Msg.BLOCKS_SET || 'Set');
 
-    (this as any).dimCount_ = dim;
+    this.dimCount_ = dim;
     return newValue;
   },
 
-  mutationToDom: function(this: Blockly.Block) {
+  mutationToDom: function(this: ArrayMutatorBlock) {
     const container = Blockly.utils.xml.createElement('mutation');
     container.setAttribute('dim', String(this.getFieldValue('DIM') || '1'));
     return container;
   },
 
-  domToMutation: function(this: Blockly.Block, xmlElement: Element) {
+  domToMutation: function(this: ArrayMutatorBlock, xmlElement: Element) {
     const dim = xmlElement.getAttribute('dim') || '1';
     this.setFieldValue(dim, 'DIM');
-    (this as any).updateShape_(dim);
+    this.updateShape_(dim);
   }
 };
 
@@ -250,18 +260,18 @@ javascriptGenerator.forBlock['array_set'] = function(block: Blockly.Block) {
 // 配列要素取得ブロック
 // ========================================
 Blockly.Blocks['array_get'] = {
-  init: function(this: Blockly.Block) {
+  init: function(this: ArrayMutatorBlock) {
     this.appendDummyInput()
-      .appendField('📦 ' + ((Blockly.Msg as any).BLOCKS_ARRAY || 'Array'))
+      .appendField('📦 ' + (Blockly.Msg.BLOCKS_ARRAY || 'Array'))
       .appendField(new Blockly.FieldTextInput('myArray'), 'VAR')
-      .appendField((Blockly.Msg as any).BLOCKS_ARRAY_DIMENSION || 'Dimension')
+      .appendField(Blockly.Msg.BLOCKS_ARRAY_DIMENSION || 'Dimension')
       .appendField(new Blockly.FieldDropdown([
-        [((Blockly.Msg as any).BLOCKS_ARRAY_1D || '1D'), '1'],
-        [((Blockly.Msg as any).BLOCKS_ARRAY_2D || '2D'), '2'],
-        [((Blockly.Msg as any).BLOCKS_ARRAY_3D || '3D'), '3']
+        [(Blockly.Msg.BLOCKS_ARRAY_1D || '1D'), '1'],
+        [(Blockly.Msg.BLOCKS_ARRAY_2D || '2D'), '2'],
+        [(Blockly.Msg.BLOCKS_ARRAY_3D || '3D'), '3']
       ],
-        (this as any).updateShape_.bind(this)
-      ) as any, 'DIM');
+        this.updateShape_.bind(this)
+      ) as unknown as Blockly.Field, 'DIM');
     this.appendValueInput('INDEX0')
       .setCheck('Number')
       .appendField('[');
@@ -271,12 +281,12 @@ Blockly.Blocks['array_get'] = {
     this.setInputsInline(true);
     this.setOutput(true);
     this.setColour(ARRAY_HUE);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_ARRAY_GETTOOLTIP || 'Get value at specified position in array.');
+    this.setTooltip(Blockly.Msg.BLOCKS_ARRAY_GETTOOLTIP || 'Get value at specified position in array.');
   },
 
   dimCount_: 1,
 
-  updateShape_: function(this: Blockly.Block, newValue: string) {
+  updateShape_: function(this: ArrayMutatorBlock, newValue: string) {
     const dim = parseInt(newValue, 10);
 
     // 既存のインデックス入力を削除
@@ -294,20 +304,20 @@ Blockly.Blocks['array_get'] = {
         .appendField(']');
     }
 
-    (this as any).dimCount_ = dim;
+    this.dimCount_ = dim;
     return newValue;
   },
 
-  mutationToDom: function(this: Blockly.Block) {
+  mutationToDom: function(this: ArrayMutatorBlock) {
     const container = Blockly.utils.xml.createElement('mutation');
     container.setAttribute('dim', String(this.getFieldValue('DIM') || '1'));
     return container;
   },
 
-  domToMutation: function(this: Blockly.Block, xmlElement: Element) {
+  domToMutation: function(this: ArrayMutatorBlock, xmlElement: Element) {
     const dim = xmlElement.getAttribute('dim') || '1';
     this.setFieldValue(dim, 'DIM');
-    (this as any).updateShape_(dim);
+    this.updateShape_(dim);
   }
 };
 
@@ -328,16 +338,16 @@ javascriptGenerator.forBlock['array_get'] = function(block: Blockly.Block) {
 // 配列サイズ取得ブロック
 // ========================================
 Blockly.Blocks['array_size'] = {
-  init: function(this: Blockly.Block) {
+  init: function(this: ArrayMutatorBlock) {
     this.appendDummyInput()
-      .appendField('📦 ' + ((Blockly.Msg as any).BLOCKS_ARRAY || 'Array'))
+      .appendField('📦 ' + (Blockly.Msg.BLOCKS_ARRAY || 'Array'))
       .appendField(new Blockly.FieldTextInput('myArray'), 'VAR')
-      .appendField((Blockly.Msg as any).BLOCKS_ARRAY_SIZE || 'Size');
+      .appendField(Blockly.Msg.BLOCKS_ARRAY_SIZE || 'Size');
 
     this.setInputsInline(true);
     this.setOutput(true, 'Number');
     this.setColour(ARRAY_HUE);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_ARRAY_SIZETOOLTIP || 'Get the number of elements in the array.');
+    this.setTooltip(Blockly.Msg.BLOCKS_ARRAY_SIZETOOLTIP || 'Get the number of elements in the array.');
   }
 };
 
@@ -350,29 +360,29 @@ javascriptGenerator.forBlock['array_size'] = function(block: Blockly.Block) {
 // 配列内容ブロック（{1, 2, 3}形式）
 // ========================================
 Blockly.Blocks['array_content'] = {
-  init: function(this: Blockly.Block) {
+  init: function(this: ArrayMutatorBlock) {
     this.appendDummyInput()
       .appendField('📦 {');
     this.appendDummyInput('ITEM_COUNT')
-      .appendField((Blockly.Msg as any).BLOCKS_ARRAY_ITEMCOUNT || 'Items')
+      .appendField(Blockly.Msg.BLOCKS_ARRAY_ITEMCOUNT || 'Items')
       .appendField(new Blockly.FieldDropdown(
         [['2', '2'], ['3', '3'], ['4', '4'], ['5', '5'], ['6', '6'], ['8', '8'], ['10', '10']],
-        (this as any).updateShape_.bind(this)
-      ) as any, 'COUNT');
+        this.updateShape_.bind(this)
+      ) as unknown as Blockly.Field, 'COUNT');
 
     // 初期状態：3要素
-    (this as any).itemCount_ = 3;
-    (this as any).updateShape_('3');
+    this.itemCount_ = 3;
+    this.updateShape_('3');
 
     this.setInputsInline(true);
     this.setOutput(true, 'Array');
     this.setColour(ARRAY_HUE);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_ARRAY_CONTENTTOOLTIP || 'Create array content. Example: {1, 2, 3}');
+    this.setTooltip(Blockly.Msg.BLOCKS_ARRAY_CONTENTTOOLTIP || 'Create array content. Example: {1, 2, 3}');
   },
 
   itemCount_: 3,
 
-  updateShape_: function(this: Blockly.Block, newValue: string) {
+  updateShape_: function(this: ArrayMutatorBlock, newValue: string) {
     const count = parseInt(newValue, 10);
 
     // 既存の入力を削除
@@ -393,25 +403,25 @@ Blockly.Blocks['array_content'] = {
     this.appendDummyInput('CLOSE')
       .appendField('}');
 
-    (this as any).itemCount_ = count;
+    this.itemCount_ = count;
     return newValue;
   },
 
-  mutationToDom: function(this: Blockly.Block) {
+  mutationToDom: function(this: ArrayMutatorBlock) {
     const container = Blockly.utils.xml.createElement('mutation');
-    container.setAttribute('items', String((this as any).itemCount_));
+    container.setAttribute('items', String(this.itemCount_));
     return container;
   },
 
-  domToMutation: function(this: Blockly.Block, xmlElement: Element) {
+  domToMutation: function(this: ArrayMutatorBlock, xmlElement: Element) {
     const items = xmlElement.getAttribute('items') || '3';
     this.setFieldValue(items, 'COUNT');
-    (this as any).updateShape_(items);
+    this.updateShape_(items);
   }
 };
 
 javascriptGenerator.forBlock['array_content'] = function(block: Blockly.Block) {
-  const count = (block as any).itemCount_ || 3;
+  const count = (block as ArrayMutatorBlock).itemCount_ || 3;
   const items: string[] = [];
 
   for (let i = 0; i < count; i++) {

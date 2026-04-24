@@ -26,8 +26,8 @@ HardwareSerial Serial2(2);`;
 Blockly.Blocks['serial2_begin'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📠 ' + ((Blockly.Msg as any).BLOCKS_UART2_BEGIN || 'Serial2 Begin'))
-        .appendField((Blockly.Msg as any).BLOCKS_UART2_BAUD || 'baud')
+        .appendField('📠 ' + (Blockly.Msg.BLOCKS_UART2_BEGIN || 'Serial2 Begin'))
+        .appendField(Blockly.Msg.BLOCKS_UART2_BAUD || 'baud')
         .appendField(new Blockly.FieldDropdown([
           ['9600', '9600'],
           ['19200', '19200'],
@@ -36,14 +36,14 @@ Blockly.Blocks['serial2_begin'] = {
           ['115200', '115200'],
         ]), 'BAUD');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_UART2_RX || 'RX pin')
+        .appendField(Blockly.Msg.BLOCKS_UART2_RX || 'RX pin')
         .appendField(new Blockly.FieldNumber(16, 0, 39), 'RX')
-        .appendField((Blockly.Msg as any).BLOCKS_UART2_TX || 'TX pin')
+        .appendField(Blockly.Msg.BLOCKS_UART2_TX || 'TX pin')
         .appendField(new Blockly.FieldNumber(17, 0, 39), 'TX');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(UART2_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_UART2_BEGINTOOLTIP || 'Initialize Serial2 (UART2) with specified baud rate and GPIO pins. Default: RX=16, TX=17.');
+    this.setTooltip(Blockly.Msg.BLOCKS_UART2_BEGINTOOLTIP || 'Initialize Serial2 (UART2) with specified baud rate and GPIO pins. Default: RX=16, TX=17.');
   }
 };
 
@@ -62,11 +62,11 @@ Blockly.Blocks['serial2_print'] = {
   init: function() {
     this.appendValueInput('TEXT')
         .setCheck(null)
-        .appendField('📠 ' + ((Blockly.Msg as any).BLOCKS_UART2_PRINT || 'Serial2 Print'));
+        .appendField('📠 ' + (Blockly.Msg.BLOCKS_UART2_PRINT || 'Serial2 Print'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(UART2_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_UART2_PRINTTOOLTIP || 'Send data via Serial2 without newline.');
+    this.setTooltip(Blockly.Msg.BLOCKS_UART2_PRINTTOOLTIP || 'Send data via Serial2 without newline.');
   }
 };
 
@@ -83,11 +83,11 @@ Blockly.Blocks['serial2_println'] = {
   init: function() {
     this.appendValueInput('TEXT')
         .setCheck(null)
-        .appendField('📠 ' + ((Blockly.Msg as any).BLOCKS_UART2_PRINTLN || 'Serial2 Println'));
+        .appendField('📠 ' + (Blockly.Msg.BLOCKS_UART2_PRINTLN || 'Serial2 Println'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(UART2_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_UART2_PRINTLNTOOLTIP || 'Send data via Serial2 with newline at the end.');
+    this.setTooltip(Blockly.Msg.BLOCKS_UART2_PRINTLNTOOLTIP || 'Send data via Serial2 with newline at the end.');
   }
 };
 
@@ -103,10 +103,10 @@ generator.forBlock['serial2_println'] = function(block: Blockly.Block) {
 Blockly.Blocks['serial2_read'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📠 ' + ((Blockly.Msg as any).BLOCKS_UART2_READ || 'Serial2 Read'));
+        .appendField('📠 ' + (Blockly.Msg.BLOCKS_UART2_READ || 'Serial2 Read'));
     this.setOutput(true, 'Number');
     this.setColour(UART2_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_UART2_READTOOLTIP || 'Read one byte from Serial2. Returns -1 if no data available.');
+    this.setTooltip(Blockly.Msg.BLOCKS_UART2_READTOOLTIP || 'Read one byte from Serial2. Returns -1 if no data available.');
   }
 };
 
@@ -121,12 +121,12 @@ generator.forBlock['serial2_read'] = function() {
 Blockly.Blocks['serial2_read_string_until'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📠 ' + ((Blockly.Msg as any).BLOCKS_UART2_READUNTIL || 'Serial2 Read Until'))
-        .appendField((Blockly.Msg as any).BLOCKS_UART2_TERMINATOR || 'terminator')
+        .appendField('📠 ' + (Blockly.Msg.BLOCKS_UART2_READUNTIL || 'Serial2 Read Until'))
+        .appendField(Blockly.Msg.BLOCKS_UART2_TERMINATOR || 'terminator')
         .appendField(new Blockly.FieldTextInput('\\n'), 'TERM');
     this.setOutput(true, 'String');
     this.setColour(UART2_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_UART2_READUNTILTOOLTIP || 'Read from Serial2 until the terminator character. Returns the received string (without terminator).');
+    this.setTooltip(Blockly.Msg.BLOCKS_UART2_READUNTILTOOLTIP || 'Read from Serial2 until the terminator character. Returns the received string (without terminator).');
   }
 };
 
@@ -142,10 +142,10 @@ generator.forBlock['serial2_read_string_until'] = function(block: Blockly.Block)
 Blockly.Blocks['serial2_available'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📠 ' + ((Blockly.Msg as any).BLOCKS_UART2_AVAILABLE || 'Serial2 Available'));
+        .appendField('📠 ' + (Blockly.Msg.BLOCKS_UART2_AVAILABLE || 'Serial2 Available'));
     this.setOutput(true, 'Number');
     this.setColour(UART2_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_UART2_AVAILABLETOOLTIP || 'Returns the number of bytes available to read from Serial2.');
+    this.setTooltip(Blockly.Msg.BLOCKS_UART2_AVAILABLETOOLTIP || 'Returns the number of bytes available to read from Serial2.');
   }
 };
 

@@ -30,10 +30,10 @@ const TICKER_COLOR = '#9C27B0';
 Blockly.Blocks['attach_interrupt'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⚡ ' + ((Blockly.Msg as any).BLOCKS_INTERRUPT_ATTACH || 'Attach Interrupt'))
-        .appendField((Blockly.Msg as any).BLOCKS_INTERRUPT_PIN || 'pin')
+        .appendField('⚡ ' + (Blockly.Msg.BLOCKS_INTERRUPT_ATTACH || 'Attach Interrupt'))
+        .appendField(Blockly.Msg.BLOCKS_INTERRUPT_PIN || 'pin')
         .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN')
-        .appendField((Blockly.Msg as any).BLOCKS_INTERRUPT_MODE || 'mode')
+        .appendField(Blockly.Msg.BLOCKS_INTERRUPT_MODE || 'mode')
         .appendField(new Blockly.FieldDropdown([
           ['RISING', 'RISING'],
           ['FALLING', 'FALLING'],
@@ -41,11 +41,11 @@ Blockly.Blocks['attach_interrupt'] = {
         ]), 'MODE');
     this.appendStatementInput('HANDLER')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_INTERRUPT_HANDLER || 'handler');
+        .appendField(Blockly.Msg.BLOCKS_INTERRUPT_HANDLER || 'handler');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(INTERRUPT_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_INTERRUPT_ATTACHTOOLTIP || 'Attach an interrupt handler to a pin. Handler runs when the pin state changes. Avoid delay() and Serial inside the handler.');
+    this.setTooltip(Blockly.Msg.BLOCKS_INTERRUPT_ATTACHTOOLTIP || 'Attach an interrupt handler to a pin. Handler runs when the pin state changes. Avoid delay() and Serial inside the handler.');
   }
 };
 
@@ -78,13 +78,13 @@ ${handler}  }
 Blockly.Blocks['detach_interrupt'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⚡ ' + ((Blockly.Msg as any).BLOCKS_INTERRUPT_DETACH || 'Detach Interrupt'))
-        .appendField((Blockly.Msg as any).BLOCKS_INTERRUPT_PIN || 'pin')
+        .appendField('⚡ ' + (Blockly.Msg.BLOCKS_INTERRUPT_DETACH || 'Detach Interrupt'))
+        .appendField(Blockly.Msg.BLOCKS_INTERRUPT_PIN || 'pin')
         .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(INTERRUPT_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_INTERRUPT_DETACHTOOLTIP || 'Remove the interrupt handler from a pin');
+    this.setTooltip(Blockly.Msg.BLOCKS_INTERRUPT_DETACHTOOLTIP || 'Remove the interrupt handler from a pin');
   }
 };
 
@@ -99,13 +99,13 @@ javascriptGenerator.forBlock['detach_interrupt'] = function(block: Blockly.Block
 Blockly.Blocks['check_interrupt'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⚡ ' + ((Blockly.Msg as any).BLOCKS_INTERRUPT_CHECK || 'Check Interrupt'))
-        .appendField((Blockly.Msg as any).BLOCKS_INTERRUPT_PIN || 'pin')
+        .appendField('⚡ ' + (Blockly.Msg.BLOCKS_INTERRUPT_CHECK || 'Check Interrupt'))
+        .appendField(Blockly.Msg.BLOCKS_INTERRUPT_PIN || 'pin')
         .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(INTERRUPT_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_INTERRUPT_CHECKTOOLTIP || 'Check and execute the interrupt handler if triggered. Place this in the loop block.');
+    this.setTooltip(Blockly.Msg.BLOCKS_INTERRUPT_CHECKTOOLTIP || 'Check and execute the interrupt handler if triggered. Place this in the loop block.');
   }
 };
 
@@ -122,17 +122,17 @@ javascriptGenerator.forBlock['check_interrupt'] = function(block: Blockly.Block)
 Blockly.Blocks['ticker_attach'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⏱️ ' + ((Blockly.Msg as any).BLOCKS_TICKER_ATTACH || 'Ticker Start'))
-        .appendField((Blockly.Msg as any).BLOCKS_TICKER_INTERVAL || 'interval')
+        .appendField('⏱️ ' + (Blockly.Msg.BLOCKS_TICKER_ATTACH || 'Ticker Start'))
+        .appendField(Blockly.Msg.BLOCKS_TICKER_INTERVAL || 'interval')
         .appendField(new Blockly.FieldNumber(1000, 1, 60000), 'INTERVAL_MS')
         .appendField('ms');
     this.appendStatementInput('CALLBACK')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_TICKER_HANDLER || 'handler');
+        .appendField(Blockly.Msg.BLOCKS_TICKER_HANDLER || 'handler');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TICKER_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_TICKER_ATTACHTOOLTIP || 'Execute handler code periodically at the specified interval (ESP32 only, uses Ticker.h)');
+    this.setTooltip(Blockly.Msg.BLOCKS_TICKER_ATTACHTOOLTIP || 'Execute handler code periodically at the specified interval (ESP32 only, uses Ticker.h)');
   }
 };
 
@@ -164,11 +164,11 @@ ${callback}  }
 Blockly.Blocks['ticker_detach'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⏱️ ' + ((Blockly.Msg as any).BLOCKS_TICKER_DETACH || 'Ticker Stop'));
+        .appendField('⏱️ ' + (Blockly.Msg.BLOCKS_TICKER_DETACH || 'Ticker Stop'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TICKER_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_TICKER_DETACHTOOLTIP || 'Stop the periodic ticker');
+    this.setTooltip(Blockly.Msg.BLOCKS_TICKER_DETACHTOOLTIP || 'Stop the periodic ticker');
   }
 };
 
@@ -182,11 +182,11 @@ javascriptGenerator.forBlock['ticker_detach'] = function() {
 Blockly.Blocks['check_ticker'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⏱️ ' + ((Blockly.Msg as any).BLOCKS_TICKER_CHECK || 'Check Ticker'));
+        .appendField('⏱️ ' + (Blockly.Msg.BLOCKS_TICKER_CHECK || 'Check Ticker'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TICKER_COLOR);
-    this.setTooltip((Blockly.Msg as any).BLOCKS_TICKER_CHECKTOOLTIP || 'Check and execute the ticker handler if triggered. Place this in the loop block.');
+    this.setTooltip(Blockly.Msg.BLOCKS_TICKER_CHECKTOOLTIP || 'Check and execute the ticker handler if triggered. Place this in the loop block.');
   }
 };
 

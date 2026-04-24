@@ -19,29 +19,29 @@ const generator = javascriptGenerator as any;
 Blockly.Blocks['ha_device_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🏠 ' + ((Blockly.Msg as any).BLOCKS_HA_DEVICEINIT || 'HA Device Init'));
+        .appendField('🏠 ' + (Blockly.Msg.BLOCKS_HA_DEVICEINIT || 'HA Device Init'));
     this.appendDummyInput()
         .appendField('WiFi SSID')
         .appendField(new Blockly.FieldTextInput('your_ssid'), 'SSID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_WIFI_PASSWORD || 'WiFi Password')
+        .appendField(Blockly.Msg.BLOCKS_WIFI_PASSWORD || 'WiFi Password')
         .appendField(new Blockly.FieldTextInput('your_password'), 'WIFI_PASS');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_BROKER || 'MQTT Broker')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_BROKER || 'MQTT Broker')
         .appendField(new Blockly.FieldTextInput('192.168.1.100'), 'BROKER');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_PORT || 'Port')
+        .appendField(Blockly.Msg.BLOCKS_PORT || 'Port')
         .appendField(new Blockly.FieldNumber(1883, 1, 65535), 'PORT');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_HA_DEVICENAME || 'Device Name')
+        .appendField(Blockly.Msg.BLOCKS_HA_DEVICENAME || 'Device Name')
         .appendField(new Blockly.FieldTextInput('ESP32センサー'), 'DEVICE_NAME');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_HA_DEVICEID || 'Device ID')
+        .appendField(Blockly.Msg.BLOCKS_HA_DEVICEID || 'Device ID')
         .appendField(new Blockly.FieldTextInput('esp32_sensor'), 'DEVICE_ID');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#4CAF50');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_DEVICEINITTOOLTIP || 'Initialize a device that auto-registers with Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_DEVICEINITTOOLTIP || 'Initialize a device that auto-registers with Home Assistant');
   }
 };
 
@@ -93,35 +93,35 @@ void haWifiConnect() {
 Blockly.Blocks['ha_device_init_auth'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔐 ' + ((Blockly.Msg as any).BLOCKS_HA_DEVICEINITAUTH || 'HA Device Init (Auth)'));
+        .appendField('🔐 ' + (Blockly.Msg.BLOCKS_HA_DEVICEINITAUTH || 'HA Device Init (Auth)'));
     this.appendDummyInput()
         .appendField('WiFi SSID')
         .appendField(new Blockly.FieldTextInput('your_ssid'), 'SSID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_WIFI_PASSWORD || 'WiFi Password')
+        .appendField(Blockly.Msg.BLOCKS_WIFI_PASSWORD || 'WiFi Password')
         .appendField(new Blockly.FieldTextInput('your_password'), 'WIFI_PASS');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_BROKER || 'MQTT Broker')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_BROKER || 'MQTT Broker')
         .appendField(new Blockly.FieldTextInput('192.168.1.100'), 'BROKER');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_PORT || 'Port')
+        .appendField(Blockly.Msg.BLOCKS_PORT || 'Port')
         .appendField(new Blockly.FieldNumber(1883, 1, 65535), 'PORT');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_USER || 'MQTT User')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_USER || 'MQTT User')
         .appendField(new Blockly.FieldTextInput(''), 'MQTT_USER');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MQTT_PASSWORD || 'MQTT Password')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_PASSWORD || 'MQTT Password')
         .appendField(new Blockly.FieldTextInput(''), 'MQTT_PASS');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_HA_DEVICENAME || 'Device Name')
+        .appendField(Blockly.Msg.BLOCKS_HA_DEVICENAME || 'Device Name')
         .appendField(new Blockly.FieldTextInput('ESP32センサー'), 'DEVICE_NAME');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_HA_DEVICEID || 'Device ID')
+        .appendField(Blockly.Msg.BLOCKS_HA_DEVICEID || 'Device ID')
         .appendField(new Blockly.FieldTextInput('esp32_sensor'), 'DEVICE_ID');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#4CAF50');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_DEVICEINITAUTHTOOLTIP || 'Initialize HA device with MQTT authentication');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_DEVICEINITAUTHTOOLTIP || 'Initialize HA device with MQTT authentication');
   }
 };
 
@@ -175,35 +175,35 @@ void haWifiConnect() {
 Blockly.Blocks['ha_sensor_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📊 ' + ((Blockly.Msg as any).BLOCKS_HA_SENSORCREATE || 'HA Sensor Register'))
+        .appendField('📊 ' + (Blockly.Msg.BLOCKS_HA_SENSORCREATE || 'HA Sensor Register'))
         .appendField(new Blockly.FieldTextInput('temperature'), 'SENSOR_ID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
         .appendField(new Blockly.FieldTextInput('温度'), 'NAME');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_HA_DEVICECLASS || 'Device Class')
+        .appendField(Blockly.Msg.BLOCKS_HA_DEVICECLASS || 'Device Class')
         .appendField(new Blockly.FieldDropdown([
-          [((Blockly.Msg as any).BLOCKS_HA_DC_TEMPERATURE || 'Temperature'), 'temperature'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_HUMIDITY || 'Humidity'), 'humidity'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_PRESSURE || 'Pressure'), 'pressure'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_ILLUMINANCE || 'Illuminance'), 'illuminance'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_VOLTAGE || 'Voltage'), 'voltage'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_CURRENT || 'Current'), 'current'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_POWER || 'Power'), 'power'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_ENERGY || 'Energy'), 'energy'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_BATTERY || 'Battery'), 'battery'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_CO2 || 'CO2'), 'carbon_dioxide'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_PM25 || 'PM2.5'), 'pm25'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_DISTANCE || 'Distance'), 'distance'],
-          [((Blockly.Msg as any).BLOCKS_NONE || 'None'), 'None']
+          [(Blockly.Msg.BLOCKS_HA_DC_TEMPERATURE || 'Temperature'), 'temperature'],
+          [(Blockly.Msg.BLOCKS_HA_DC_HUMIDITY || 'Humidity'), 'humidity'],
+          [(Blockly.Msg.BLOCKS_HA_DC_PRESSURE || 'Pressure'), 'pressure'],
+          [(Blockly.Msg.BLOCKS_HA_DC_ILLUMINANCE || 'Illuminance'), 'illuminance'],
+          [(Blockly.Msg.BLOCKS_HA_DC_VOLTAGE || 'Voltage'), 'voltage'],
+          [(Blockly.Msg.BLOCKS_HA_DC_CURRENT || 'Current'), 'current'],
+          [(Blockly.Msg.BLOCKS_HA_DC_POWER || 'Power'), 'power'],
+          [(Blockly.Msg.BLOCKS_HA_DC_ENERGY || 'Energy'), 'energy'],
+          [(Blockly.Msg.BLOCKS_HA_DC_BATTERY || 'Battery'), 'battery'],
+          [(Blockly.Msg.BLOCKS_HA_DC_CO2 || 'CO2'), 'carbon_dioxide'],
+          [(Blockly.Msg.BLOCKS_HA_DC_PM25 || 'PM2.5'), 'pm25'],
+          [(Blockly.Msg.BLOCKS_HA_DC_DISTANCE || 'Distance'), 'distance'],
+          [(Blockly.Msg.BLOCKS_NONE || 'None'), 'None']
         ]), 'DEVICE_CLASS');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_UNIT || 'Unit')
+        .appendField(Blockly.Msg.BLOCKS_UNIT || 'Unit')
         .appendField(new Blockly.FieldTextInput('°C'), 'UNIT');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FF9800');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_SENSORCREATETOOLTIP || 'Create a sensor to register with Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_SENSORCREATETOOLTIP || 'Create a sensor to register with Home Assistant');
   }
 };
 
@@ -234,13 +234,13 @@ Blockly.Blocks['ha_sensor_update'] = {
   init: function() {
     this.appendValueInput('VALUE')
         .setCheck('Number')
-        .appendField('📤 ' + ((Blockly.Msg as any).BLOCKS_HA_SENSORUPDATE || 'HA Sensor Update'))
+        .appendField('📤 ' + (Blockly.Msg.BLOCKS_HA_SENSORUPDATE || 'HA Sensor Update'))
         .appendField(new Blockly.FieldTextInput('temperature'), 'SENSOR_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_VALUE || 'Value');
+        .appendField(Blockly.Msg.BLOCKS_VALUE || 'Value');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FF9800');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_SENSORUPDATETOOLTIP || 'Send sensor value to Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_SENSORUPDATETOOLTIP || 'Send sensor value to Home Assistant');
   }
 };
 
@@ -260,30 +260,30 @@ javascriptGenerator.forBlock['ha_sensor_update'] = function(block: Blockly.Block
 Blockly.Blocks['ha_binary_sensor_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔘 ' + ((Blockly.Msg as any).BLOCKS_HA_BINARYSENSORCREATE || 'HA Binary Sensor Register'))
+        .appendField('🔘 ' + (Blockly.Msg.BLOCKS_HA_BINARYSENSORCREATE || 'HA Binary Sensor Register'))
         .appendField(new Blockly.FieldTextInput('motion'), 'SENSOR_ID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
         .appendField(new Blockly.FieldTextInput('人感センサー'), 'NAME');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_HA_DEVICECLASS || 'Device Class')
+        .appendField(Blockly.Msg.BLOCKS_HA_DEVICECLASS || 'Device Class')
         .appendField(new Blockly.FieldDropdown([
-          [((Blockly.Msg as any).BLOCKS_HA_DC_MOTION || 'Motion'), 'motion'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_DOOR || 'Door'), 'door'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_WINDOW || 'Window'), 'window'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_SMOKE || 'Smoke'), 'smoke'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_MOISTURE || 'Moisture'), 'moisture'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_VIBRATION || 'Vibration'), 'vibration'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_OCCUPANCY || 'Occupancy'), 'occupancy'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_GAS || 'Gas'), 'gas'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_PROBLEM || 'Problem'), 'problem'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_CONNECTIVITY || 'Connectivity'), 'connectivity'],
-          [((Blockly.Msg as any).BLOCKS_NONE || 'None'), 'None']
+          [(Blockly.Msg.BLOCKS_HA_DC_MOTION || 'Motion'), 'motion'],
+          [(Blockly.Msg.BLOCKS_HA_DC_DOOR || 'Door'), 'door'],
+          [(Blockly.Msg.BLOCKS_HA_DC_WINDOW || 'Window'), 'window'],
+          [(Blockly.Msg.BLOCKS_HA_DC_SMOKE || 'Smoke'), 'smoke'],
+          [(Blockly.Msg.BLOCKS_HA_DC_MOISTURE || 'Moisture'), 'moisture'],
+          [(Blockly.Msg.BLOCKS_HA_DC_VIBRATION || 'Vibration'), 'vibration'],
+          [(Blockly.Msg.BLOCKS_HA_DC_OCCUPANCY || 'Occupancy'), 'occupancy'],
+          [(Blockly.Msg.BLOCKS_HA_DC_GAS || 'Gas'), 'gas'],
+          [(Blockly.Msg.BLOCKS_HA_DC_PROBLEM || 'Problem'), 'problem'],
+          [(Blockly.Msg.BLOCKS_HA_DC_CONNECTIVITY || 'Connectivity'), 'connectivity'],
+          [(Blockly.Msg.BLOCKS_NONE || 'None'), 'None']
         ]), 'DEVICE_CLASS');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#E91E63');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_BINARYSENSORCREATETOOLTIP || 'Create an ON/OFF binary sensor');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_BINARYSENSORCREATETOOLTIP || 'Create an ON/OFF binary sensor');
   }
 };
 
@@ -312,13 +312,13 @@ Blockly.Blocks['ha_binary_sensor_update'] = {
   init: function() {
     this.appendValueInput('VALUE')
         .setCheck('Boolean')
-        .appendField('📤 ' + ((Blockly.Msg as any).BLOCKS_HA_BINARYSENSORUPDATE || 'HA Binary Sensor Update'))
+        .appendField('📤 ' + (Blockly.Msg.BLOCKS_HA_BINARYSENSORUPDATE || 'HA Binary Sensor Update'))
         .appendField(new Blockly.FieldTextInput('motion'), 'SENSOR_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_STATE || 'State');
+        .appendField(Blockly.Msg.BLOCKS_STATE || 'State');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#E91E63');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_BINARYSENSORUPDATETOOLTIP || 'Send binary sensor state to Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_BINARYSENSORUPDATETOOLTIP || 'Send binary sensor state to Home Assistant');
   }
 };
 
@@ -338,25 +338,25 @@ javascriptGenerator.forBlock['ha_binary_sensor_update'] = function(block: Blockl
 Blockly.Blocks['ha_switch_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔌 ' + ((Blockly.Msg as any).BLOCKS_HA_SWITCHCREATE || 'HA Switch Register'))
+        .appendField('🔌 ' + (Blockly.Msg.BLOCKS_HA_SWITCHCREATE || 'HA Switch Register'))
         .appendField(new Blockly.FieldTextInput('relay'), 'SWITCH_ID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
         .appendField(new Blockly.FieldTextInput('リレー'), 'NAME');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_ICON || 'Icon')
+        .appendField(Blockly.Msg.BLOCKS_ICON || 'Icon')
         .appendField(new Blockly.FieldDropdown([
-          [((Blockly.Msg as any).BLOCKS_HA_ICON_POWER || 'Power (mdi:power)'), 'mdi:power'],
-          [((Blockly.Msg as any).BLOCKS_HA_ICON_LIGHTBULB || 'Lightbulb (mdi:lightbulb)'), 'mdi:lightbulb'],
-          [((Blockly.Msg as any).BLOCKS_HA_ICON_FAN || 'Fan (mdi:fan)'), 'mdi:fan'],
-          [((Blockly.Msg as any).BLOCKS_HA_ICON_PLUG || 'Plug (mdi:power-plug)'), 'mdi:power-plug'],
-          [((Blockly.Msg as any).BLOCKS_HA_ICON_SWITCH || 'Switch (mdi:toggle-switch)'), 'mdi:toggle-switch'],
-          [((Blockly.Msg as any).BLOCKS_NONE || 'None'), '']
+          [(Blockly.Msg.BLOCKS_HA_ICON_POWER || 'Power (mdi:power)'), 'mdi:power'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_LIGHTBULB || 'Lightbulb (mdi:lightbulb)'), 'mdi:lightbulb'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_FAN || 'Fan (mdi:fan)'), 'mdi:fan'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_PLUG || 'Plug (mdi:power-plug)'), 'mdi:power-plug'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_SWITCH || 'Switch (mdi:toggle-switch)'), 'mdi:toggle-switch'],
+          [(Blockly.Msg.BLOCKS_NONE || 'None'), '']
         ]), 'ICON');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#2196F3');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_SWITCHCREATETOOLTIP || 'Create a switch controllable from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_SWITCHCREATETOOLTIP || 'Create a switch controllable from Home Assistant');
   }
 };
 
@@ -384,17 +384,17 @@ javascriptGenerator.forBlock['ha_switch_create'] = function(block: Blockly.Block
 Blockly.Blocks['ha_switch_on_command'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎮 ' + ((Blockly.Msg as any).BLOCKS_HA_SWITCH || 'HA Switch'))
+        .appendField('🎮 ' + (Blockly.Msg.BLOCKS_HA_SWITCH || 'HA Switch'))
         .appendField(new Blockly.FieldTextInput('relay'), 'SWITCH_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_ONCOMMAND || 'On Command');
+        .appendField(Blockly.Msg.BLOCKS_HA_ONCOMMAND || 'On Command');
     this.appendStatementInput('ON_CALLBACK')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_HA_WHENON || 'When ON');
+        .appendField(Blockly.Msg.BLOCKS_HA_WHENON || 'When ON');
     this.appendStatementInput('OFF_CALLBACK')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_HA_WHENOFF || 'When OFF');
+        .appendField(Blockly.Msg.BLOCKS_HA_WHENOFF || 'When OFF');
     this.setColour('#2196F3');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_SWITCHONCOMMANDTOOLTIP || 'Handle switch commands from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_SWITCHONCOMMANDTOOLTIP || 'Handle switch commands from Home Assistant');
   }
 };
 
@@ -424,13 +424,13 @@ Blockly.Blocks['ha_switch_set_state'] = {
   init: function() {
     this.appendValueInput('STATE')
         .setCheck('Boolean')
-        .appendField('📤 ' + ((Blockly.Msg as any).BLOCKS_HA_SWITCH || 'HA Switch'))
+        .appendField('📤 ' + (Blockly.Msg.BLOCKS_HA_SWITCH || 'HA Switch'))
         .appendField(new Blockly.FieldTextInput('relay'), 'SWITCH_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_SETSTATE || 'Set State');
+        .appendField(Blockly.Msg.BLOCKS_HA_SETSTATE || 'Set State');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#2196F3');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_SWITCHSETSTATETOOLTIP || 'Send switch state to Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_SWITCHSETSTATETOOLTIP || 'Send switch state to Home Assistant');
   }
 };
 
@@ -450,18 +450,18 @@ javascriptGenerator.forBlock['ha_switch_set_state'] = function(block: Blockly.Bl
 Blockly.Blocks['ha_light_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💡 ' + ((Blockly.Msg as any).BLOCKS_HA_LIGHTCREATE || 'HA Light Register'))
+        .appendField('💡 ' + (Blockly.Msg.BLOCKS_HA_LIGHTCREATE || 'HA Light Register'))
         .appendField(new Blockly.FieldTextInput('led'), 'LIGHT_ID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
         .appendField(new Blockly.FieldTextInput('LED'), 'NAME');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_HA_BRIGHTNESS || 'Brightness')
+        .appendField(Blockly.Msg.BLOCKS_HA_BRIGHTNESS || 'Brightness')
         .appendField(new Blockly.FieldCheckbox('TRUE'), 'BRIGHTNESS');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FFEB3B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_LIGHTCREATETOOLTIP || 'Create a light controllable from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_LIGHTCREATETOOLTIP || 'Create a light controllable from Home Assistant');
   }
 };
 
@@ -487,14 +487,14 @@ javascriptGenerator.forBlock['ha_light_create'] = function(block: Blockly.Block)
 Blockly.Blocks['ha_light_on_command'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎮 ' + ((Blockly.Msg as any).BLOCKS_HA_LIGHT || 'HA Light'))
+        .appendField('🎮 ' + (Blockly.Msg.BLOCKS_HA_LIGHT || 'HA Light'))
         .appendField(new Blockly.FieldTextInput('led'), 'LIGHT_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_ONSTATECHANGE || 'On State Change');
+        .appendField(Blockly.Msg.BLOCKS_HA_ONSTATECHANGE || 'On State Change');
     this.appendStatementInput('CALLBACK')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_DO || 'Do');
+        .appendField(Blockly.Msg.BLOCKS_DO || 'Do');
     this.setColour('#FFEB3B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_LIGHTONCOMMANDTOOLTIP || 'Handle light commands. Use ha_light_state and ha_light_brightness.');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_LIGHTONCOMMANDTOOLTIP || 'Handle light commands. Use ha_light_state and ha_light_brightness.');
   }
 };
 
@@ -523,10 +523,10 @@ ${callback}}`;
 Blockly.Blocks['ha_light_state'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💡 ' + ((Blockly.Msg as any).BLOCKS_HA_LIGHTSTATE || 'HA Light State'));
+        .appendField('💡 ' + (Blockly.Msg.BLOCKS_HA_LIGHTSTATE || 'HA Light State'));
     this.setOutput(true, 'Boolean');
     this.setColour('#FFEB3B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_LIGHTSTATETOOLTIP || 'Received light ON/OFF state');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_LIGHTSTATETOOLTIP || 'Received light ON/OFF state');
   }
 };
 
@@ -540,10 +540,10 @@ javascriptGenerator.forBlock['ha_light_state'] = function() {
 Blockly.Blocks['ha_light_brightness'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💡 ' + ((Blockly.Msg as any).BLOCKS_HA_LIGHTBRIGHTNESS || 'HA Light Brightness'));
+        .appendField('💡 ' + (Blockly.Msg.BLOCKS_HA_LIGHTBRIGHTNESS || 'HA Light Brightness'));
     this.setOutput(true, 'Number');
     this.setColour('#FFEB3B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_LIGHTBRIGHTNESSTOOLTIP || 'Received light brightness (0-255)');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_LIGHTBRIGHTNESSTOOLTIP || 'Received light brightness (0-255)');
   }
 };
 
@@ -557,19 +557,19 @@ javascriptGenerator.forBlock['ha_light_brightness'] = function() {
 Blockly.Blocks['ha_light_set_state'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📤 ' + ((Blockly.Msg as any).BLOCKS_HA_LIGHT || 'HA Light'))
+        .appendField('📤 ' + (Blockly.Msg.BLOCKS_HA_LIGHT || 'HA Light'))
         .appendField(new Blockly.FieldTextInput('led'), 'LIGHT_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_REPORTSTATE || 'Report State');
+        .appendField(Blockly.Msg.BLOCKS_HA_REPORTSTATE || 'Report State');
     this.appendValueInput('STATE')
         .setCheck('Boolean')
         .appendField('ON/OFF');
     this.appendValueInput('BRIGHTNESS')
         .setCheck('Number')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_BRIGHTNESS || 'Brightness');
+        .appendField(Blockly.Msg.BLOCKS_HA_BRIGHTNESS || 'Brightness');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FFEB3B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_LIGHTSETSTATETOOLTIP || 'Report light state to Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_LIGHTSETSTATETOOLTIP || 'Report light state to Home Assistant');
   }
 };
 
@@ -590,24 +590,24 @@ javascriptGenerator.forBlock['ha_light_set_state'] = function(block: Blockly.Blo
 Blockly.Blocks['ha_button_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔘 ' + ((Blockly.Msg as any).BLOCKS_HA_BUTTONCREATE || 'HA Button Register'))
+        .appendField('🔘 ' + (Blockly.Msg.BLOCKS_HA_BUTTONCREATE || 'HA Button Register'))
         .appendField(new Blockly.FieldTextInput('restart'), 'BUTTON_ID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
         .appendField(new Blockly.FieldTextInput('再起動'), 'NAME');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_ICON || 'Icon')
+        .appendField(Blockly.Msg.BLOCKS_ICON || 'Icon')
         .appendField(new Blockly.FieldDropdown([
-          [((Blockly.Msg as any).BLOCKS_HA_ICON_RESTART || 'Restart (mdi:restart)'), 'mdi:restart'],
-          [((Blockly.Msg as any).BLOCKS_HA_ICON_UPDATE || 'Update (mdi:update)'), 'mdi:update'],
-          [((Blockly.Msg as any).BLOCKS_HA_ICON_PLAY || 'Play (mdi:play)'), 'mdi:play'],
-          [((Blockly.Msg as any).BLOCKS_HA_ICON_STOP || 'Stop (mdi:stop)'), 'mdi:stop'],
-          [((Blockly.Msg as any).BLOCKS_NONE || 'None'), '']
+          [(Blockly.Msg.BLOCKS_HA_ICON_RESTART || 'Restart (mdi:restart)'), 'mdi:restart'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_UPDATE || 'Update (mdi:update)'), 'mdi:update'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_PLAY || 'Play (mdi:play)'), 'mdi:play'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_STOP || 'Stop (mdi:stop)'), 'mdi:stop'],
+          [(Blockly.Msg.BLOCKS_NONE || 'None'), '']
         ]), 'ICON');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#9C27B0');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_BUTTONCREATETOOLTIP || 'Create a button pressable from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_BUTTONCREATETOOLTIP || 'Create a button pressable from Home Assistant');
   }
 };
 
@@ -635,14 +635,14 @@ javascriptGenerator.forBlock['ha_button_create'] = function(block: Blockly.Block
 Blockly.Blocks['ha_button_on_press'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎮 ' + ((Blockly.Msg as any).BLOCKS_HA_BUTTON || 'HA Button'))
+        .appendField('🎮 ' + (Blockly.Msg.BLOCKS_HA_BUTTON || 'HA Button'))
         .appendField(new Blockly.FieldTextInput('restart'), 'BUTTON_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_ONPRESS || 'On Press');
+        .appendField(Blockly.Msg.BLOCKS_HA_ONPRESS || 'On Press');
     this.appendStatementInput('CALLBACK')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_DO || 'Do');
+        .appendField(Blockly.Msg.BLOCKS_DO || 'Do');
     this.setColour('#9C27B0');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_BUTTONONPRESSTOOLTIP || 'Handle button press from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_BUTTONONPRESSTOOLTIP || 'Handle button press from Home Assistant');
   }
 };
 
@@ -668,11 +668,11 @@ ${callback}}`;
 Blockly.Blocks['ha_loop'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔄 ' + ((Blockly.Msg as any).BLOCKS_HA_LOOP || 'HA Loop'));
+        .appendField('🔄 ' + (Blockly.Msg.BLOCKS_HA_LOOP || 'HA Loop'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#4CAF50');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_LOOPTOOLTIP || 'Maintain HA communication. Call in loop().');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_LOOPTOOLTIP || 'Maintain HA communication. Call in loop().');
   }
 };
 
@@ -686,10 +686,10 @@ javascriptGenerator.forBlock['ha_loop'] = function() {
 Blockly.Blocks['ha_is_connected'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_HA_ISCONNECTED || 'HA Connected');
+        .appendField(Blockly.Msg.BLOCKS_HA_ISCONNECTED || 'HA Connected');
     this.setOutput(true, 'Boolean');
     this.setColour('#4CAF50');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_ISCONNECTEDTOOLTIP || 'Returns true if connected to Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_ISCONNECTEDTOOLTIP || 'Returns true if connected to Home Assistant');
   }
 };
 
@@ -705,32 +705,32 @@ javascriptGenerator.forBlock['ha_is_connected'] = function() {
 Blockly.Blocks['ha_number_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔢 ' + ((Blockly.Msg as any).BLOCKS_HA_NUMBERCREATE || 'HA Number Register'))
+        .appendField('🔢 ' + (Blockly.Msg.BLOCKS_HA_NUMBERCREATE || 'HA Number Register'))
         .appendField(new Blockly.FieldTextInput('servo_angle'), 'NUMBER_ID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
         .appendField(new Blockly.FieldTextInput('サーボ角度'), 'NAME');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MIN || 'Min')
+        .appendField(Blockly.Msg.BLOCKS_MIN || 'Min')
         .appendField(new Blockly.FieldNumber(0), 'MIN')
-        .appendField((Blockly.Msg as any).BLOCKS_MAX || 'Max')
+        .appendField(Blockly.Msg.BLOCKS_MAX || 'Max')
         .appendField(new Blockly.FieldNumber(180), 'MAX')
-        .appendField((Blockly.Msg as any).BLOCKS_STEP || 'Step')
+        .appendField(Blockly.Msg.BLOCKS_STEP || 'Step')
         .appendField(new Blockly.FieldNumber(1), 'STEP');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_UNIT || 'Unit')
+        .appendField(Blockly.Msg.BLOCKS_UNIT || 'Unit')
         .appendField(new Blockly.FieldTextInput('°'), 'UNIT');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_MODE || 'Mode')
+        .appendField(Blockly.Msg.BLOCKS_MODE || 'Mode')
         .appendField(new Blockly.FieldDropdown([
-          [((Blockly.Msg as any).BLOCKS_HA_MODE_AUTO || 'Slider (auto)'), 'auto'],
-          [((Blockly.Msg as any).BLOCKS_HA_MODE_BOX || 'Box (box)'), 'box'],
-          [((Blockly.Msg as any).BLOCKS_HA_MODE_SLIDER || 'Slider (slider)'), 'slider']
+          [(Blockly.Msg.BLOCKS_HA_MODE_AUTO || 'Slider (auto)'), 'auto'],
+          [(Blockly.Msg.BLOCKS_HA_MODE_BOX || 'Box (box)'), 'box'],
+          [(Blockly.Msg.BLOCKS_HA_MODE_SLIDER || 'Slider (slider)'), 'slider']
         ]), 'MODE');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_NUMBERCREATETOOLTIP || 'Create an entity that accepts number input from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_NUMBERCREATETOOLTIP || 'Create an entity that accepts number input from Home Assistant');
   }
 };
 
@@ -766,14 +766,14 @@ javascriptGenerator.forBlock['ha_number_create'] = function(block: Blockly.Block
 Blockly.Blocks['ha_number_on_command'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎮 ' + ((Blockly.Msg as any).BLOCKS_HA_NUMBER || 'HA Number'))
+        .appendField('🎮 ' + (Blockly.Msg.BLOCKS_HA_NUMBER || 'HA Number'))
         .appendField(new Blockly.FieldTextInput('servo_angle'), 'NUMBER_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_ONCHANGE || 'On Change');
+        .appendField(Blockly.Msg.BLOCKS_HA_ONCHANGE || 'On Change');
     this.appendStatementInput('CALLBACK')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_DO || 'Do');
+        .appendField(Blockly.Msg.BLOCKS_DO || 'Do');
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_NUMBERONCOMMANDTOOLTIP || 'Handle number change. Use ha_number_value.');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_NUMBERONCOMMANDTOOLTIP || 'Handle number change. Use ha_number_value.');
   }
 };
 
@@ -803,10 +803,10 @@ ${callback}    sender->setState(number);
 Blockly.Blocks['ha_number_value'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔢 ' + ((Blockly.Msg as any).BLOCKS_HA_NUMBERVALUE || 'HA Received Number'));
+        .appendField('🔢 ' + (Blockly.Msg.BLOCKS_HA_NUMBERVALUE || 'HA Received Number'));
     this.setOutput(true, 'Number');
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_NUMBERVALUETOOLTIP || 'Received number value');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_NUMBERVALUETOOLTIP || 'Received number value');
   }
 };
 
@@ -821,13 +821,13 @@ Blockly.Blocks['ha_number_set_state'] = {
   init: function() {
     this.appendValueInput('VALUE')
         .setCheck('Number')
-        .appendField('📤 ' + ((Blockly.Msg as any).BLOCKS_HA_NUMBER || 'HA Number'))
+        .appendField('📤 ' + (Blockly.Msg.BLOCKS_HA_NUMBER || 'HA Number'))
         .appendField(new Blockly.FieldTextInput('servo_angle'), 'NUMBER_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_SETVALUE || 'Set');
+        .appendField(Blockly.Msg.BLOCKS_HA_SETVALUE || 'Set');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#00BCD4');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_NUMBERSETSTATETOOLTIP || 'Report number state to Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_NUMBERSETSTATETOOLTIP || 'Report number state to Home Assistant');
   }
 };
 
@@ -847,18 +847,18 @@ javascriptGenerator.forBlock['ha_number_set_state'] = function(block: Blockly.Bl
 Blockly.Blocks['ha_fan_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🌀 ' + ((Blockly.Msg as any).BLOCKS_HA_FANCREATE || 'HA Fan Register'))
+        .appendField('🌀 ' + (Blockly.Msg.BLOCKS_HA_FANCREATE || 'HA Fan Register'))
         .appendField(new Blockly.FieldTextInput('fan'), 'FAN_ID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
         .appendField(new Blockly.FieldTextInput('換気扇'), 'NAME');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_HA_SPEEDCONTROL || 'Speed Control')
+        .appendField(Blockly.Msg.BLOCKS_HA_SPEEDCONTROL || 'Speed Control')
         .appendField(new Blockly.FieldCheckbox('TRUE'), 'SPEEDS');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#795548');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_FANCREATETOOLTIP || 'Create a fan controllable from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_FANCREATETOOLTIP || 'Create a fan controllable from Home Assistant');
   }
 };
 
@@ -891,14 +891,14 @@ javascriptGenerator.forBlock['ha_fan_create'] = function(block: Blockly.Block) {
 Blockly.Blocks['ha_fan_on_command'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎮 ' + ((Blockly.Msg as any).BLOCKS_HA_FAN || 'HA Fan'))
+        .appendField('🎮 ' + (Blockly.Msg.BLOCKS_HA_FAN || 'HA Fan'))
         .appendField(new Blockly.FieldTextInput('fan'), 'FAN_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_ONSTATECHANGE || 'On State Change');
+        .appendField(Blockly.Msg.BLOCKS_HA_ONSTATECHANGE || 'On State Change');
     this.appendStatementInput('CALLBACK')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_DO || 'Do');
+        .appendField(Blockly.Msg.BLOCKS_DO || 'Do');
     this.setColour('#795548');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_FANONCOMMANDTOOLTIP || 'Handle fan commands. Use ha_fan_state and ha_fan_speed.');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_FANONCOMMANDTOOLTIP || 'Handle fan commands. Use ha_fan_state and ha_fan_speed.');
   }
 };
 
@@ -934,10 +934,10 @@ ${callback}  sender->setSpeed(speed);
 Blockly.Blocks['ha_fan_state'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🌀 ' + ((Blockly.Msg as any).BLOCKS_HA_FANSTATE || 'HA Fan State'));
+        .appendField('🌀 ' + (Blockly.Msg.BLOCKS_HA_FANSTATE || 'HA Fan State'));
     this.setOutput(true, 'Boolean');
     this.setColour('#795548');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_FANSTATETOOLTIP || 'Received fan ON/OFF state');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_FANSTATETOOLTIP || 'Received fan ON/OFF state');
   }
 };
 
@@ -951,10 +951,10 @@ javascriptGenerator.forBlock['ha_fan_state'] = function() {
 Blockly.Blocks['ha_fan_speed'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🌀 ' + ((Blockly.Msg as any).BLOCKS_HA_FANSPEED || 'HA Fan Speed'));
+        .appendField('🌀 ' + (Blockly.Msg.BLOCKS_HA_FANSPEED || 'HA Fan Speed'));
     this.setOutput(true, 'Number');
     this.setColour('#795548');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_FANSPEEDTOOLTIP || 'Received fan speed (0-100)');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_FANSPEEDTOOLTIP || 'Received fan speed (0-100)');
   }
 };
 
@@ -969,16 +969,16 @@ Blockly.Blocks['ha_fan_set_state'] = {
   init: function() {
     this.appendValueInput('STATE')
         .setCheck('Boolean')
-        .appendField('📤 ' + ((Blockly.Msg as any).BLOCKS_HA_FAN || 'HA Fan'))
+        .appendField('📤 ' + (Blockly.Msg.BLOCKS_HA_FAN || 'HA Fan'))
         .appendField(new Blockly.FieldTextInput('fan'), 'FAN_ID')
         .appendField('ON/OFF');
     this.appendValueInput('SPEED')
         .setCheck('Number')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_SPEED || 'Speed');
+        .appendField(Blockly.Msg.BLOCKS_HA_SPEED || 'Speed');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#795548');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_FANSETSTATETOOLTIP || 'Report fan state to Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_FANSETSTATETOOLTIP || 'Report fan state to Home Assistant');
   }
 };
 
@@ -999,25 +999,25 @@ javascriptGenerator.forBlock['ha_fan_set_state'] = function(block: Blockly.Block
 Blockly.Blocks['ha_cover_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🚪 ' + ((Blockly.Msg as any).BLOCKS_HA_COVERCREATE || 'HA Cover Register'))
+        .appendField('🚪 ' + (Blockly.Msg.BLOCKS_HA_COVERCREATE || 'HA Cover Register'))
         .appendField(new Blockly.FieldTextInput('shutter'), 'COVER_ID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
         .appendField(new Blockly.FieldTextInput('シャッター'), 'NAME');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_HA_DEVICECLASS || 'Device Class')
+        .appendField(Blockly.Msg.BLOCKS_HA_DEVICECLASS || 'Device Class')
         .appendField(new Blockly.FieldDropdown([
-          [((Blockly.Msg as any).BLOCKS_HA_DC_SHUTTER || 'Shutter'), 'shutter'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_BLIND || 'Blind'), 'blind'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_CURTAIN || 'Curtain'), 'curtain'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_GARAGE || 'Garage'), 'garage'],
-          [((Blockly.Msg as any).BLOCKS_HA_DC_GATE || 'Gate'), 'gate'],
-          [((Blockly.Msg as any).BLOCKS_NONE || 'None'), 'None']
+          [(Blockly.Msg.BLOCKS_HA_DC_SHUTTER || 'Shutter'), 'shutter'],
+          [(Blockly.Msg.BLOCKS_HA_DC_BLIND || 'Blind'), 'blind'],
+          [(Blockly.Msg.BLOCKS_HA_DC_CURTAIN || 'Curtain'), 'curtain'],
+          [(Blockly.Msg.BLOCKS_HA_DC_GARAGE || 'Garage'), 'garage'],
+          [(Blockly.Msg.BLOCKS_HA_DC_GATE || 'Gate'), 'gate'],
+          [(Blockly.Msg.BLOCKS_NONE || 'None'), 'None']
         ]), 'DEVICE_CLASS');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#607D8B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_COVERCREATETOOLTIP || 'Create a cover (shutter, etc.) controllable from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_COVERCREATETOOLTIP || 'Create a cover (shutter, etc.) controllable from Home Assistant');
   }
 };
 
@@ -1045,20 +1045,20 @@ javascriptGenerator.forBlock['ha_cover_create'] = function(block: Blockly.Block)
 Blockly.Blocks['ha_cover_on_command'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎮 ' + ((Blockly.Msg as any).BLOCKS_HA_COVER || 'HA Cover'))
+        .appendField('🎮 ' + (Blockly.Msg.BLOCKS_HA_COVER || 'HA Cover'))
         .appendField(new Blockly.FieldTextInput('shutter'), 'COVER_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_ONCOMMAND || 'On Command');
+        .appendField(Blockly.Msg.BLOCKS_HA_ONCOMMAND || 'On Command');
     this.appendStatementInput('OPEN_CALLBACK')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_HA_WHENOPEN || 'When Open');
+        .appendField(Blockly.Msg.BLOCKS_HA_WHENOPEN || 'When Open');
     this.appendStatementInput('CLOSE_CALLBACK')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_HA_WHENCLOSE || 'When Close');
+        .appendField(Blockly.Msg.BLOCKS_HA_WHENCLOSE || 'When Close');
     this.appendStatementInput('STOP_CALLBACK')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_HA_WHENSTOP || 'When Stop');
+        .appendField(Blockly.Msg.BLOCKS_HA_WHENSTOP || 'When Stop');
     this.setColour('#607D8B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_COVERONCOMMANDTOOLTIP || 'Handle cover commands from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_COVERONCOMMANDTOOLTIP || 'Handle cover commands from Home Assistant');
   }
 };
 
@@ -1091,21 +1091,21 @@ ${stopCallback}    sender->setState(HACover::StateStopped);
 Blockly.Blocks['ha_cover_set_state'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📤 ' + ((Blockly.Msg as any).BLOCKS_HA_COVER || 'HA Cover'))
+        .appendField('📤 ' + (Blockly.Msg.BLOCKS_HA_COVER || 'HA Cover'))
         .appendField(new Blockly.FieldTextInput('shutter'), 'COVER_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_SETSTATE || 'Set State');
+        .appendField(Blockly.Msg.BLOCKS_HA_SETSTATE || 'Set State');
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown([
-          [((Blockly.Msg as any).BLOCKS_HA_STATE_OPEN || 'Open'), 'StateOpen'],
-          [((Blockly.Msg as any).BLOCKS_HA_STATE_CLOSED || 'Closed'), 'StateClosed'],
-          [((Blockly.Msg as any).BLOCKS_HA_STATE_OPENING || 'Opening'), 'StateOpening'],
-          [((Blockly.Msg as any).BLOCKS_HA_STATE_CLOSING || 'Closing'), 'StateClosing'],
-          [((Blockly.Msg as any).BLOCKS_HA_STATE_STOPPED || 'Stopped'), 'StateStopped']
+          [(Blockly.Msg.BLOCKS_HA_STATE_OPEN || 'Open'), 'StateOpen'],
+          [(Blockly.Msg.BLOCKS_HA_STATE_CLOSED || 'Closed'), 'StateClosed'],
+          [(Blockly.Msg.BLOCKS_HA_STATE_OPENING || 'Opening'), 'StateOpening'],
+          [(Blockly.Msg.BLOCKS_HA_STATE_CLOSING || 'Closing'), 'StateClosing'],
+          [(Blockly.Msg.BLOCKS_HA_STATE_STOPPED || 'Stopped'), 'StateStopped']
         ]), 'STATE');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#607D8B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_COVERSETSTATETOOLTIP || 'Report cover state to Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_COVERSETSTATETOOLTIP || 'Report cover state to Home Assistant');
   }
 };
 
@@ -1125,15 +1125,15 @@ javascriptGenerator.forBlock['ha_cover_set_state'] = function(block: Blockly.Blo
 Blockly.Blocks['ha_light_create_rgb'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🌈 ' + ((Blockly.Msg as any).BLOCKS_HA_LIGHTCREATERGB || 'HA Light Register (RGB)'))
+        .appendField('🌈 ' + (Blockly.Msg.BLOCKS_HA_LIGHTCREATERGB || 'HA Light Register (RGB)'))
         .appendField(new Blockly.FieldTextInput('rgb_led'), 'LIGHT_ID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
         .appendField(new Blockly.FieldTextInput('RGB LED'), 'NAME');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FFEB3B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_LIGHTCREATERGBTOOLTIP || 'Create an RGB color-controllable light');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_LIGHTCREATERGBTOOLTIP || 'Create an RGB color-controllable light');
   }
 };
 
@@ -1154,14 +1154,14 @@ javascriptGenerator.forBlock['ha_light_create_rgb'] = function(block: Blockly.Bl
 Blockly.Blocks['ha_light_on_rgb_command'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎮 ' + ((Blockly.Msg as any).BLOCKS_HA_LIGHT || 'HA Light'))
+        .appendField('🎮 ' + (Blockly.Msg.BLOCKS_HA_LIGHT || 'HA Light'))
         .appendField(new Blockly.FieldTextInput('rgb_led'), 'LIGHT_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_ONRGBCHANGE || 'On RGB Change');
+        .appendField(Blockly.Msg.BLOCKS_HA_ONRGBCHANGE || 'On RGB Change');
     this.appendStatementInput('CALLBACK')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_DO || 'Do');
+        .appendField(Blockly.Msg.BLOCKS_DO || 'Do');
     this.setColour('#FFEB3B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_LIGHTONRGBCOMMANDTOOLTIP || 'Handle RGB color change. Use ha_light_r/g/b.');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_LIGHTONRGBCOMMANDTOOLTIP || 'Handle RGB color change. Use ha_light_r/g/b.');
   }
 };
 
@@ -1193,10 +1193,10 @@ ${callback}  sender->setRGBColor(color);
 Blockly.Blocks['ha_light_rgb_r'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔴 ' + ((Blockly.Msg as any).BLOCKS_HA_RGBR || 'HA RGB R Value'));
+        .appendField('🔴 ' + (Blockly.Msg.BLOCKS_HA_RGBR || 'HA RGB R Value'));
     this.setOutput(true, 'Number');
     this.setColour('#FFEB3B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_RGBRTOOLTIP || 'Received RGB red component (0-255)');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_RGBRTOOLTIP || 'Received RGB red component (0-255)');
   }
 };
 
@@ -1210,10 +1210,10 @@ javascriptGenerator.forBlock['ha_light_rgb_r'] = function() {
 Blockly.Blocks['ha_light_rgb_g'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🟢 ' + ((Blockly.Msg as any).BLOCKS_HA_RGBG || 'HA RGB G Value'));
+        .appendField('🟢 ' + (Blockly.Msg.BLOCKS_HA_RGBG || 'HA RGB G Value'));
     this.setOutput(true, 'Number');
     this.setColour('#FFEB3B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_RGBGTOOLTIP || 'Received RGB green component (0-255)');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_RGBGTOOLTIP || 'Received RGB green component (0-255)');
   }
 };
 
@@ -1227,10 +1227,10 @@ javascriptGenerator.forBlock['ha_light_rgb_g'] = function() {
 Blockly.Blocks['ha_light_rgb_b'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔵 ' + ((Blockly.Msg as any).BLOCKS_HA_RGBB || 'HA RGB B Value'));
+        .appendField('🔵 ' + (Blockly.Msg.BLOCKS_HA_RGBB || 'HA RGB B Value'));
     this.setOutput(true, 'Number');
     this.setColour('#FFEB3B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_RGBBTOOLTIP || 'Received RGB blue component (0-255)');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_RGBBTOOLTIP || 'Received RGB blue component (0-255)');
   }
 };
 
@@ -1244,9 +1244,9 @@ javascriptGenerator.forBlock['ha_light_rgb_b'] = function() {
 Blockly.Blocks['ha_light_set_rgb'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📤 ' + ((Blockly.Msg as any).BLOCKS_HA_LIGHT || 'HA Light'))
+        .appendField('📤 ' + (Blockly.Msg.BLOCKS_HA_LIGHT || 'HA Light'))
         .appendField(new Blockly.FieldTextInput('rgb_led'), 'LIGHT_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_REPORTRGB || 'Report RGB');
+        .appendField(Blockly.Msg.BLOCKS_HA_REPORTRGB || 'Report RGB');
     this.appendValueInput('R')
         .setCheck('Number')
         .appendField('R');
@@ -1259,7 +1259,7 @@ Blockly.Blocks['ha_light_set_rgb'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FFEB3B');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_LIGHTSETRGBTOOLTIP || 'Report RGB color to Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_LIGHTSETRGBTOOLTIP || 'Report RGB color to Home Assistant');
   }
 };
 
@@ -1281,22 +1281,22 @@ javascriptGenerator.forBlock['ha_light_set_rgb'] = function(block: Blockly.Block
 Blockly.Blocks['ha_device_trigger_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⚡ ' + ((Blockly.Msg as any).BLOCKS_HA_TRIGGERCREATE || 'HA Trigger Register'))
+        .appendField('⚡ ' + (Blockly.Msg.BLOCKS_HA_TRIGGERCREATE || 'HA Trigger Register'))
         .appendField(new Blockly.FieldTextInput('button_press'), 'TRIGGER_ID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_TYPE || 'Type')
+        .appendField(Blockly.Msg.BLOCKS_TYPE || 'Type')
         .appendField(new Blockly.FieldDropdown([
-          [((Blockly.Msg as any).BLOCKS_HA_TYPE_BUTTON || 'Button'), 'button'],
-          [((Blockly.Msg as any).BLOCKS_HA_TYPE_REMOTE || 'Remote'), 'remote'],
-          [((Blockly.Msg as any).BLOCKS_HA_TYPE_SENSOR || 'Sensor'), 'sensor']
+          [(Blockly.Msg.BLOCKS_HA_TYPE_BUTTON || 'Button'), 'button'],
+          [(Blockly.Msg.BLOCKS_HA_TYPE_REMOTE || 'Remote'), 'remote'],
+          [(Blockly.Msg.BLOCKS_HA_TYPE_SENSOR || 'Sensor'), 'sensor']
         ]), 'TYPE');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_HA_SUBTYPE || 'Subtype')
+        .appendField(Blockly.Msg.BLOCKS_HA_SUBTYPE || 'Subtype')
         .appendField(new Blockly.FieldTextInput('button_1'), 'SUBTYPE');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#673AB7');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_TRIGGERCREATETOOLTIP || 'Register an event as a trigger for HA automation');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_TRIGGERCREATETOOLTIP || 'Register an event as a trigger for HA automation');
   }
 };
 
@@ -1318,12 +1318,12 @@ javascriptGenerator.forBlock['ha_device_trigger_create'] = function(block: Block
 Blockly.Blocks['ha_device_trigger_fire'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⚡ ' + ((Blockly.Msg as any).BLOCKS_HA_TRIGGERFIRE || 'HA Trigger Fire'))
+        .appendField('⚡ ' + (Blockly.Msg.BLOCKS_HA_TRIGGERFIRE || 'HA Trigger Fire'))
         .appendField(new Blockly.FieldTextInput('button_press'), 'TRIGGER_ID');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#673AB7');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_TRIGGERFIRETOOLTIP || 'Fire HA automation trigger');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_TRIGGERFIRETOOLTIP || 'Fire HA automation trigger');
   }
 };
 
@@ -1342,15 +1342,15 @@ javascriptGenerator.forBlock['ha_device_trigger_fire'] = function(block: Blockly
 Blockly.Blocks['ha_scene_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎬 ' + ((Blockly.Msg as any).BLOCKS_HA_SCENECREATE || 'HA Scene Register'))
+        .appendField('🎬 ' + (Blockly.Msg.BLOCKS_HA_SCENECREATE || 'HA Scene Register'))
         .appendField(new Blockly.FieldTextInput('night_mode'), 'SCENE_ID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
         .appendField(new Blockly.FieldTextInput('ナイトモード'), 'NAME');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#3F51B5');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_SCENECREATETOOLTIP || 'Create a scene executable from HA');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_SCENECREATETOOLTIP || 'Create a scene executable from HA');
   }
 };
 
@@ -1371,14 +1371,14 @@ javascriptGenerator.forBlock['ha_scene_create'] = function(block: Blockly.Block)
 Blockly.Blocks['ha_scene_on_command'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎮 ' + ((Blockly.Msg as any).BLOCKS_HA_SCENE || 'HA Scene'))
+        .appendField('🎮 ' + (Blockly.Msg.BLOCKS_HA_SCENE || 'HA Scene'))
         .appendField(new Blockly.FieldTextInput('night_mode'), 'SCENE_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_ONEXECUTE || 'On Execute');
+        .appendField(Blockly.Msg.BLOCKS_HA_ONEXECUTE || 'On Execute');
     this.appendStatementInput('CALLBACK')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_DO || 'Do');
+        .appendField(Blockly.Msg.BLOCKS_DO || 'Do');
     this.setColour('#3F51B5');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_SCENEONCOMMANDTOOLTIP || 'Handle scene execution from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_SCENEONCOMMANDTOOLTIP || 'Handle scene execution from Home Assistant');
   }
 };
 
@@ -1404,15 +1404,15 @@ ${callback}}`;
 Blockly.Blocks['ha_tag_scanner_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🏷️ ' + ((Blockly.Msg as any).BLOCKS_HA_TAGSCANNERCREATE || 'HA Tag Scanner Register'))
+        .appendField('🏷️ ' + (Blockly.Msg.BLOCKS_HA_TAGSCANNERCREATE || 'HA Tag Scanner Register'))
         .appendField(new Blockly.FieldTextInput('nfc_reader'), 'SCANNER_ID');
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
         .appendField(new Blockly.FieldTextInput('NFCリーダー'), 'NAME');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#009688');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_TAGSCANNERCREATETOOLTIP || 'Register NFC tag scanner, etc.');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_TAGSCANNERCREATETOOLTIP || 'Register NFC tag scanner, etc.');
   }
 };
 
@@ -1434,13 +1434,13 @@ Blockly.Blocks['ha_tag_scanner_scanned'] = {
   init: function() {
     this.appendValueInput('TAG_ID')
         .setCheck('String')
-        .appendField('🏷️ ' + ((Blockly.Msg as any).BLOCKS_HA_TAGSCANNED || 'HA Tag Scanned'))
+        .appendField('🏷️ ' + (Blockly.Msg.BLOCKS_HA_TAGSCANNED || 'HA Tag Scanned'))
         .appendField(new Blockly.FieldTextInput('nfc_reader'), 'SCANNER_ID')
-        .appendField((Blockly.Msg as any).BLOCKS_HA_TAGID || 'Tag ID');
+        .appendField(Blockly.Msg.BLOCKS_HA_TAGID || 'Tag ID');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#009688');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_TAGSCANNEDTOOLTIP || 'Report scanned tag ID to HA');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_TAGSCANNEDTOOLTIP || 'Report scanned tag ID to HA');
   }
 };
 
@@ -1461,16 +1461,16 @@ Blockly.Blocks['ha_report_interval'] = {
   init: function() {
     this.appendValueInput('INTERVAL')
         .setCheck('Number')
-        .appendField('⏱️ ' + ((Blockly.Msg as any).BLOCKS_HA_REPORTINTERVAL || 'HA Report Interval'));
+        .appendField('⏱️ ' + (Blockly.Msg.BLOCKS_HA_REPORTINTERVAL || 'HA Report Interval'));
     this.appendDummyInput()
-        .appendField((Blockly.Msg as any).BLOCKS_HA_EVERYSECONDS || 'seconds, do');
+        .appendField(Blockly.Msg.BLOCKS_HA_EVERYSECONDS || 'seconds, do');
     this.appendStatementInput('CALLBACK')
         .setCheck(null)
-        .appendField((Blockly.Msg as any).BLOCKS_EXECUTE || 'Execute');
+        .appendField(Blockly.Msg.BLOCKS_EXECUTE || 'Execute');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#4CAF50');
-    this.setTooltip((Blockly.Msg as any).BLOCKS_HA_REPORTINTERVALTOOLTIP || 'Execute HA reporting at specified interval (use in loop)');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_REPORTINTERVALTOOLTIP || 'Execute HA reporting at specified interval (use in loop)');
   }
 };
 
