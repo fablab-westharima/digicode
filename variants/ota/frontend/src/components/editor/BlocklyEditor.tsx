@@ -115,6 +115,18 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
       const handleLanguageChange = (lang: string) => {
         console.log('[BlocklyEditor] UI language changed to:', lang);
 
+        // Guard (BUG-038): i18n は duplicate 'languageChanged' event を発火することがある。
+        // 典型例: ログイン時の preferred_lang 再適用 (SP3)。lang === uiLanguage だと
+        // 下の setUiLanguage(lang) が React の bail-out で no-op になり、
+        // 主 useEffect (workspace rebuild + languageChangeSavedRef リセット) が再 fire されない。
+        // 結果: languageChangeSavedRef.current が true に stuck → changeListener が
+        // 永続的に handleWorkspaceChange() を skip → generateCode() 呼ばれず
+        // generatedCode state が empty のまま → コンパイル時「コードがありません」alert。
+        if (lang === uiLanguage) {
+          console.log('[BlocklyEditor] Language unchanged, skipping save/flag set (BUG-038 guard)');
+          return;
+        }
+
         // 重要: 言語変更前に現在のワークスペースのXMLを保存
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Blockly workspace の internal disposal flag は public 型に未収録
         if (workspaceRef.current && !(workspaceRef.current as any).isDisposed) {
@@ -130,7 +142,7 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
 
       i18n.on('languageChanged', handleLanguageChange);
       return () => i18n.off('languageChanged', handleLanguageChange);
-    }, [i18n]);
+    }, [i18n, uiLanguage]);
 
     // Arduino C++専用（ロボットモードに応じたツールボックスを使用）
     const currentToolbox = toolboxXml || generateToolbox(robotMode, favorites, selectedBoard);
