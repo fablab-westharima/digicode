@@ -5,11 +5,13 @@
 //   - 旧形式 (legacy): `<salt_b64>:<hash_b64>` (2 splits、iterations=10000 として検証)
 //
 // iterations は用途別:
-//   - DEFAULT_ITERATIONS = 600000: パスワード用 (OWASP 2023 推奨)
-//   - RECOVERY_CODE_ITERATIONS = 100000: recovery code 用 (entropy 十分で性能優先)
+//   - DEFAULT_ITERATIONS = 100000: パスワード用 (Cloudflare Workers crypto.subtle.deriveBits の上限)
+//     Note: OWASP 2023 は 600000 推奨だが Workers は 100000 超を NotSupportedError で reject するため
+//     現実的上限の 100000 を採用。従来 10000 比で 10倍 強化。
+//   - RECOVERY_CODE_ITERATIONS = 100000: recovery code 用
 //   - LEGACY_ITERATIONS = 10000: 旧形式 fallback 専用
 
-const DEFAULT_ITERATIONS = 600000;
+const DEFAULT_ITERATIONS = 100000;
 export const RECOVERY_CODE_ITERATIONS = 100000;
 const LEGACY_ITERATIONS = 10000;
 const KEY_LENGTH = 256;
