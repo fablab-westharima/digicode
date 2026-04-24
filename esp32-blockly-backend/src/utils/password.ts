@@ -1,9 +1,17 @@
 // パスワードハッシュユーティリティ（PBKDF2使用）
+//
+// ハッシュ形式:
+//   - 新形式 (v1): `pbkdf2-<iterations>:<salt_b64>:<hash_b64>` (3 splits)
+//   - 旧形式 (legacy): `<salt_b64>:<hash_b64>` (2 splits、iterations=10000 として検証)
+//
+// iterations は用途別:
+//   - DEFAULT_ITERATIONS = 600000: パスワード用 (OWASP 2023 推奨)
+//   - RECOVERY_CODE_ITERATIONS = 100000: recovery code 用 (entropy 十分で性能優先)
+//   - LEGACY_ITERATIONS = 10000: 旧形式 fallback 専用
 
-// 開発環境では反復回数を減らしてレスポンス速度を改善
-// 本番: 100000回（セキュア）
-// 開発: 10000回（高速）
-const ITERATIONS = 10000;
+const DEFAULT_ITERATIONS = 600000;
+export const RECOVERY_CODE_ITERATIONS = 100000;
+const LEGACY_ITERATIONS = 10000;
 const KEY_LENGTH = 256;
 const SALT_LENGTH = 16;
 
@@ -28,7 +36,11 @@ function base64ToArray(base64: string): Uint8Array {
 }
 
 // PBKDF2 でハッシュ生成
-async function pbkdf2Hash(password: string, salt: Uint8Array): Promise<Uint8Array> {
+async function pbkdf2Hash(
+  password: string,
+  salt: Uint8Array,
+  iterations: number,
+): Promise<Uint8Array> {
   const encoder = new TextEncoder();
   const passwordKey = await crypto.subtle.importKey(
     'raw',
@@ -42,7 +54,7 @@ async function pbkdf2Hash(password: string, salt: Uint8Array): Promise<Uint8Arra
     {
       name: 'PBKDF2',
       salt: salt,
-      iterations: ITERATIONS,
+      iterations,
       hash: 'SHA-256',
     },
     passwordKey,
@@ -53,29 +65,59 @@ async function pbkdf2Hash(password: string, salt: Uint8Array): Promise<Uint8Arra
 }
 
 // パスワードハッシュ化
-export async function hashPassword(password: string): Promise<string> {
+export async function hashPassword(
+  password: string,
+  iterations: number = DEFAULT_ITERATIONS,
+): Promise<string> {
   const salt = generateSalt();
-  const hash = await pbkdf2Hash(password, salt);
+  const hash = await pbkdf2Hash(password, salt, iterations);
 
-  // 形式: salt:hash (両方Base64エンコード)
-  return `${arrayToBase64(salt)}:${arrayToBase64(hash)}`;
+  return `pbkdf2-${iterations}:${arrayToBase64(salt)}:${arrayToBase64(hash)}`;
 }
 
 // パスワード検証
-export async function verifyPassword(password: string, storedHash: string): Promise<boolean> {
+// 戻り値: { valid, needsRehash }
+//   - valid: パスワード一致 or 不一致
+//   - needsRehash: 旧形式 or DEFAULT_ITERATIONS 未満で保存されている (呼び出し側で UPDATE 推奨)
+export async function verifyPassword(
+  password: string,
+  storedHash: string,
+): Promise<{ valid: boolean; needsRehash: boolean }> {
   try {
-    const [saltBase64, hashBase64] = storedHash.split(':');
+    const parts = storedHash.split(':');
+    let iterations: number;
+    let saltBase64: string;
+    let hashBase64: string;
+
+    if (parts.length === 3 && parts[0].startsWith('pbkdf2-')) {
+      // 新形式
+      const parsed = parseInt(parts[0].substring(7), 10);
+      if (!Number.isFinite(parsed) || parsed <= 0) {
+        return { valid: false, needsRehash: false };
+      }
+      iterations = parsed;
+      saltBase64 = parts[1];
+      hashBase64 = parts[2];
+    } else if (parts.length === 2) {
+      // 旧形式 (legacy, iterations=10000 固定)
+      iterations = LEGACY_ITERATIONS;
+      saltBase64 = parts[0];
+      hashBase64 = parts[1];
+    } else {
+      return { valid: false, needsRehash: false };
+    }
+
     if (!saltBase64 || !hashBase64) {
-      return false;
+      return { valid: false, needsRehash: false };
     }
 
     const salt = base64ToArray(saltBase64);
     const storedHashArray = base64ToArray(hashBase64);
-    const computedHash = await pbkdf2Hash(password, salt);
+    const computedHash = await pbkdf2Hash(password, salt, iterations);
 
     // タイミング攻撃対策: 固定時間比較
     if (storedHashArray.length !== computedHash.length) {
-      return false;
+      return { valid: false, needsRehash: false };
     }
 
     let result = 0;
@@ -83,8 +125,10 @@ export async function verifyPassword(password: string, storedHash: string): Prom
       result |= storedHashArray[i] ^ computedHash[i];
     }
 
-    return result === 0;
+    const valid = result === 0;
+    const needsRehash = valid && iterations < DEFAULT_ITERATIONS;
+    return { valid, needsRehash };
   } catch {
-    return false;
+    return { valid: false, needsRehash: false };
   }
 }

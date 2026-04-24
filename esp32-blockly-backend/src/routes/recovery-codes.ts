@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import type { Bindings } from '../index';
-import { hashPassword, verifyPassword } from '../utils/password';
+import { hashPassword, verifyPassword, RECOVERY_CODE_ITERATIONS } from '../utils/password';
 import { generateTokenPair } from '../utils/jwt';
 
 const recoveryCodes = new Hono<{ Bindings: Bindings }>();
@@ -43,7 +43,7 @@ recoveryCodes.post('/generate', authMiddleware, async (c) => {
     for (let i = 0; i < 10; i++) {
       const code = generateRecoveryCode();
       console.log('[Recovery Code Generate] Code:', code);
-      const codeHash = await hashPassword(code);
+      const codeHash = await hashPassword(code, RECOVERY_CODE_ITERATIONS);
       console.log('[Recovery Code Generate] Hash:', codeHash);
 
       await c.env.DB.prepare(
@@ -125,9 +125,9 @@ recoveryCodes.post('/verify', async (c) => {
       console.log('[Recovery Code Verify] Checking code ID:', recoveryCode.id);
       console.log('[Recovery Code Verify] Input code:', code);
       console.log('[Recovery Code Verify] Stored hash:', recoveryCode.code_hash);
-      const isValid = await verifyPassword(code, recoveryCode.code_hash);
-      console.log('[Recovery Code Verify] Code valid:', isValid);
-      if (isValid) {
+      const { valid } = await verifyPassword(code, recoveryCode.code_hash);
+      console.log('[Recovery Code Verify] Code valid:', valid);
+      if (valid) {
         validCodeId = recoveryCode.id;
         break;
       }
@@ -202,7 +202,7 @@ recoveryCodes.post('/regenerate', authMiddleware, async (c) => {
     for (let i = 0; i < 10; i++) {
       const code = generateRecoveryCode();
       console.log('[Recovery Code Generate] Code:', code);
-      const codeHash = await hashPassword(code);
+      const codeHash = await hashPassword(code, RECOVERY_CODE_ITERATIONS);
       console.log('[Recovery Code Generate] Hash:', codeHash);
 
       await c.env.DB.prepare(

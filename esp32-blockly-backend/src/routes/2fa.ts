@@ -6,7 +6,7 @@
  */
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
-import { verifyPassword } from '../utils/password';
+import { hashPassword, verifyPassword } from '../utils/password';
 import { generateTokenPair } from '../utils/jwt';
 import { sendLoginOtpEmail } from '../services/emailService';
 
@@ -112,9 +112,17 @@ twoFactor.post('/send-otp', async (c) => {
     }
 
     // パスワード検証
-    const isValidPassword = await verifyPassword(password, user.password_hash);
+    const { valid: isValidPassword, needsRehash } = await verifyPassword(password, user.password_hash);
     if (!isValidPassword) {
       return c.json({ error: 'メールアドレスまたはパスワードが正しくありません' }, 401);
+    }
+
+    // Lazy upgrade: iterations 不足なら新形式で再 hash
+    if (needsRehash) {
+      const newHash = await hashPassword(password);
+      await c.env.DB.prepare(
+        "UPDATE users SET password_hash = ?, updated_at = datetime('now') WHERE id = ?"
+      ).bind(newHash, user.id).run();
     }
 
     // 2FA設定確認
@@ -535,9 +543,17 @@ twoFactor.post('/disable', authMiddleware, async (c) => {
     }
 
     // パスワード検証
-    const isValidPassword = await verifyPassword(password, userData.password_hash);
+    const { valid: isValidPassword, needsRehash } = await verifyPassword(password, userData.password_hash);
     if (!isValidPassword) {
       return c.json({ error: 'パスワードが正しくありません' }, 401);
+    }
+
+    // Lazy upgrade: iterations 不足なら新形式で再 hash
+    if (needsRehash) {
+      const newHash = await hashPassword(password);
+      await c.env.DB.prepare(
+        "UPDATE users SET password_hash = ?, updated_at = datetime('now') WHERE id = ?"
+      ).bind(newHash, user.userId).run();
     }
 
     // 2FA設定を無効化

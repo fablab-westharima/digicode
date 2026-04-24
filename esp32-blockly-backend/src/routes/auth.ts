@@ -211,10 +211,18 @@ auth.post('/login', async (c) => {
     }
 
     // パスワード検証
-    const isValid = await verifyPassword(password, user.password_hash);
+    const { valid, needsRehash } = await verifyPassword(password, user.password_hash);
 
-    if (!isValid) {
+    if (!valid) {
       return c.json({ error: 'メールアドレスまたはパスワードが正しくありません' }, 401);
+    }
+
+    // Lazy upgrade: iterations 不足なら新形式で再 hash して DB 更新
+    if (needsRehash) {
+      const newHash = await hashPassword(password);
+      await c.env.DB.prepare(
+        "UPDATE users SET password_hash = ?, updated_at = datetime('now') WHERE id = ?"
+      ).bind(newHash, user.id).run();
     }
 
     // 生徒ログイン制限: student かつクラス未所属ならログイン不可
@@ -1036,8 +1044,8 @@ auth.post('/change-password', authMiddleware, async (c) => {
       return c.json({ error: 'ユーザーが見つかりません' }, 404);
     }
 
-    const isValid = await verifyPassword(body.currentPassword, user.password_hash);
-    if (!isValid) {
+    const { valid } = await verifyPassword(body.currentPassword, user.password_hash);
+    if (!valid) {
       return c.json({ error: '現在のパスワードが正しくありません' }, 401);
     }
 
