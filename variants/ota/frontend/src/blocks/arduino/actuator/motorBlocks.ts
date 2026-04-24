@@ -22,25 +22,25 @@ Blockly.Blocks['motor_init'] = {
   init: function() {
     const pins = getMotorPins();
     const motorField = new Blockly.FieldDropdown([
-      [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOTORA || 'Motor A', 'A'],
-      [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOTORB || 'Motor B', 'B']
+      [(Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_MOTORA || 'Motor A', 'A'],
+      [(Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_MOTORB || 'Motor B', 'B']
     ]);
 
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_INIT || 'Initialize Motor')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_INIT || 'Initialize Motor')
         .appendField(motorField, 'MOTOR');
 
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_IN1 || 'IN1')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_IN1 || 'IN1')
         .appendField(new Blockly.FieldNumber(pins.aIn1, 0, 39), 'IN1')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_IN2 || 'IN2')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_IN2 || 'IN2')
         .appendField(new Blockly.FieldNumber(pins.aIn2, 0, 39), 'IN2')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_ENA || 'ENA')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_ENA || 'ENA')
         .appendField(new Blockly.FieldNumber(pins.aEna, 0, 39), 'ENA');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(MOTOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_INITTOOLTIP || 'Initialize L298N motor driver');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_INITTOOLTIP || 'Initialize L298N motor driver');
   }
 };
 
@@ -79,22 +79,22 @@ motor_${motor}_ena = PWM(Pin(${ena}), freq=1000)`;
 Blockly.Blocks['motor_move'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOVE || 'Motor Move')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_MOVE || 'Motor Move')
         .appendField(new Blockly.FieldDropdown([
-          [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOTORA || 'Motor A', 'A'],
-          [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOTORB || 'Motor B', 'B']
+          [(Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_MOTORA || 'Motor A', 'A'],
+          [(Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_MOTORB || 'Motor B', 'B']
         ]), 'MOTOR')
         .appendField(new Blockly.FieldDropdown([
-          [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_FORWARD || 'Forward', 'forward'],
-          [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_BACKWARD || 'Backward', 'backward'],
-          [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_STOP || 'Stop', 'stop']
+          [(Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_FORWARD || 'Forward', 'forward'],
+          [(Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_BACKWARD || 'Backward', 'backward'],
+          [(Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_STOP || 'Stop', 'stop']
         ]), 'DIRECTION')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_SPEED || 'speed')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_SPEED || 'speed')
         .appendField(new Blockly.FieldNumber(255, 0, 255), 'SPEED');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(MOTOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOVETOOLTIP || 'Move motor in specified direction and speed');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_MOVETOOLTIP || 'Move motor in specified direction and speed');
   }
 };
 
@@ -154,17 +154,17 @@ motor_${motor}_ena.duty(0)
 Blockly.Blocks['motor_speed'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_SETSPEED || 'Motor Speed')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_SETSPEED || 'Motor Speed')
         .appendField(new Blockly.FieldDropdown([
-          [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOTORA || 'Motor A', 'A'],
-          [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOTORB || 'Motor B', 'B']
+          [(Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_MOTORA || 'Motor A', 'A'],
+          [(Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_MOTORB || 'Motor B', 'B']
         ]), 'MOTOR')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_SPEED || 'speed')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_SPEED || 'speed')
         .appendField(new Blockly.FieldNumber(255, 0, 255), 'SPEED');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(MOTOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_SETSPEEDTOOLTIP || 'Change motor speed only');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_SETSPEEDTOOLTIP || 'Change motor speed only');
   }
 };
 
@@ -185,16 +185,16 @@ pythonGenerator.forBlock['motor_speed'] = function(block: Blockly.Block) {
 Blockly.Blocks['motor_stop'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_STOPLABEL || 'Stop Motor')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_STOPLABEL || 'Stop Motor')
         .appendField(new Blockly.FieldDropdown([
-          [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOTORA || 'Motor A', 'A'],
-          [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOTORB || 'Motor B', 'B'],
-          [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_BOTH || 'Both', 'BOTH']
+          [(Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_MOTORA || 'Motor A', 'A'],
+          [(Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_MOTORB || 'Motor B', 'B'],
+          [(Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_BOTH || 'Both', 'BOTH']
         ]), 'MOTOR');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(MOTOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_STOPTOOLTIP || 'Stop the motor');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ACTUATOR_MOTOR_STOPTOOLTIP || 'Stop the motor');
   }
 };
 

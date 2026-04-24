@@ -31,13 +31,13 @@ Blockly.Blocks['servo_attach'] = {
   init: function() {
     const pins = getServoPins();
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_ATTACH || 'Attach Servo')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_ATTACH || 'Attach Servo')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
         .appendField(new Blockly.FieldNumber(pins.servo1, 0, 39), 'PIN');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SERVO_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_ATTACHTOOLTIP || 'Attach servo to specified pin');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_ATTACHTOOLTIP || 'Attach servo to specified pin');
   }
 };
 
@@ -69,16 +69,16 @@ Blockly.Blocks['servo_write'] = {
   init: function() {
     const pins = getServoPins();
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_WRITE || 'Servo Angle')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_WRITE || 'Servo Angle')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
         .appendField(new Blockly.FieldNumber(pins.servo1, 0, 39), 'PIN')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_ANGLE || 'angle')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_ANGLE || 'angle')
         .appendField(new Blockly.FieldAngle(90), 'ANGLE')
         .appendField('°');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SERVO_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_WRITETOOLTIP || 'Move servo to specified angle');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_WRITETOOLTIP || 'Move servo to specified angle');
   }
 };
 
@@ -100,16 +100,16 @@ Blockly.Blocks['servo_write_value'] = {
     const pins = getServoPins();
     this.appendValueInput('ANGLE')
         .setCheck('Number')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_WRITEVALUE || 'Servo Angle')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_WRITEVALUE || 'Servo Angle')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
         .appendField(new Blockly.FieldNumber(pins.servo1, 0, 39), 'PIN')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_ANGLE || 'angle');
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_ANGLE || 'angle');
     this.appendDummyInput()
         .appendField('°');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SERVO_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_WRITEVALUETOOLTIP || 'Move servo to angle from variable');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_WRITEVALUETOOLTIP || 'Move servo to angle from variable');
   }
 };
 
@@ -130,13 +130,13 @@ Blockly.Blocks['servo_detach'] = {
   init: function() {
     const pins = getServoPins();
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_DETACH || 'Detach Servo')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_DETACH || 'Detach Servo')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
         .appendField(new Blockly.FieldNumber(pins.servo1, 0, 39), 'PIN');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SERVO_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_DETACHTOOLTIP || 'Detach servo (power saving)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_DETACHTOOLTIP || 'Detach servo (power saving)');
   }
 };
 
@@ -155,22 +155,22 @@ Blockly.Blocks['servo_sweep'] = {
   init: function() {
     const pins = getServoPins();
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_SWEEP || 'Servo Sweep')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_SWEEP || 'Servo Sweep')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
         .appendField(new Blockly.FieldNumber(pins.servo1, 0, 39), 'PIN')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_START || 'start')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_START || 'start')
         .appendField(new Blockly.FieldNumber(0, 0, 180), 'START')
         .appendField('°');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_END || 'end')
+        .appendField((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_END || 'end')
         .appendField(new Blockly.FieldNumber(180, 0, 180), 'END')
-        .appendField('° ' + (Blockly.Msg.BLOCKS_ACTUATOR_SERVO_SPEED || 'speed'))
+        .appendField('° ' + ((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_SPEED || 'speed'))
         .appendField(new Blockly.FieldNumber(15, 1, 100), 'SPEED')
         .appendField('ms');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SERVO_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_SWEEPTOOLTIP || 'Move servo from start angle to end angle');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ACTUATOR_SERVO_SWEEPTOOLTIP || 'Move servo from start angle to end angle');
   }
 };
 

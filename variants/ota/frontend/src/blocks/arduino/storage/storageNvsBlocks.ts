@@ -25,15 +25,15 @@ const EEPROM_COLOR = '#607D8B';
 Blockly.Blocks['preferences_begin'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💾 ' + (Blockly.Msg.BLOCKS_PREFERENCES_BEGIN || 'Preferences Begin'))
-        .appendField(Blockly.Msg.BLOCKS_PREFERENCES_NAMESPACE || 'namespace')
+        .appendField('💾 ' + ((Blockly.Msg as any).BLOCKS_PREFERENCES_BEGIN || 'Preferences Begin'))
+        .appendField((Blockly.Msg as any).BLOCKS_PREFERENCES_NAMESPACE || 'namespace')
         .appendField(new Blockly.FieldTextInput('config'), 'NAMESPACE')
-        .appendField(Blockly.Msg.BLOCKS_PREFERENCES_READONLY || 'read-only')
+        .appendField((Blockly.Msg as any).BLOCKS_PREFERENCES_READONLY || 'read-only')
         .appendField(new Blockly.FieldCheckbox('FALSE'), 'READONLY');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NVS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_PREFERENCES_BEGINTOOLTIP || 'Open a Preferences namespace for read/write. ESP32: NVS flash storage. RP2040: EEPROM emulation.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_PREFERENCES_BEGINTOOLTIP || 'Open a Preferences namespace for read/write. ESP32: NVS flash storage. RP2040: EEPROM emulation.');
   }
 };
 
@@ -51,11 +51,11 @@ generator.forBlock['preferences_begin'] = function(block: Blockly.Block) {
 Blockly.Blocks['preferences_end'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💾 ' + (Blockly.Msg.BLOCKS_PREFERENCES_END || 'Preferences End'));
+        .appendField('💾 ' + ((Blockly.Msg as any).BLOCKS_PREFERENCES_END || 'Preferences End'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NVS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_PREFERENCES_ENDTOOLTIP || 'Close the Preferences namespace and free resources.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_PREFERENCES_ENDTOOLTIP || 'Close the Preferences namespace and free resources.');
   }
 };
 
@@ -69,21 +69,21 @@ generator.forBlock['preferences_end'] = function() {
 Blockly.Blocks['preferences_put'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💾 ' + (Blockly.Msg.BLOCKS_PREFERENCES_PUT || 'Preferences Put'))
+        .appendField('💾 ' + ((Blockly.Msg as any).BLOCKS_PREFERENCES_PUT || 'Preferences Put'))
         .appendField(new Blockly.FieldDropdown([
           ['Int', 'Int'],
           ['Float', 'Float'],
           ['String', 'String'],
         ]), 'TYPE')
-        .appendField(Blockly.Msg.BLOCKS_PREFERENCES_KEY || 'key')
+        .appendField((Blockly.Msg as any).BLOCKS_PREFERENCES_KEY || 'key')
         .appendField(new Blockly.FieldTextInput('myKey'), 'KEY');
     this.appendValueInput('VALUE')
         .setCheck(null)
-        .appendField(Blockly.Msg.BLOCKS_PREFERENCES_VALUE || 'value');
+        .appendField((Blockly.Msg as any).BLOCKS_PREFERENCES_VALUE || 'value');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NVS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_PREFERENCES_PUTTOOLTIP || 'Save a value (int/float/string) to Preferences storage with the given key.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_PREFERENCES_PUTTOOLTIP || 'Save a value (int/float/string) to Preferences storage with the given key.');
   }
 };
 
@@ -100,20 +100,20 @@ generator.forBlock['preferences_put'] = function(block: Blockly.Block) {
 Blockly.Blocks['preferences_get'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💾 ' + (Blockly.Msg.BLOCKS_PREFERENCES_GET || 'Preferences Get'))
+        .appendField('💾 ' + ((Blockly.Msg as any).BLOCKS_PREFERENCES_GET || 'Preferences Get'))
         .appendField(new Blockly.FieldDropdown([
           ['Int', 'Int'],
           ['Float', 'Float'],
           ['String', 'String'],
         ]), 'TYPE')
-        .appendField(Blockly.Msg.BLOCKS_PREFERENCES_KEY || 'key')
+        .appendField((Blockly.Msg as any).BLOCKS_PREFERENCES_KEY || 'key')
         .appendField(new Blockly.FieldTextInput('myKey'), 'KEY');
     this.appendValueInput('DEFAULT')
         .setCheck(null)
-        .appendField(Blockly.Msg.BLOCKS_PREFERENCES_DEFAULT || 'default');
+        .appendField((Blockly.Msg as any).BLOCKS_PREFERENCES_DEFAULT || 'default');
     this.setOutput(true, null);
     this.setColour(NVS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_PREFERENCES_GETTOOLTIP || 'Read a value from Preferences storage. Returns the default value if the key does not exist.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_PREFERENCES_GETTOOLTIP || 'Read a value from Preferences storage. Returns the default value if the key does not exist.');
   }
 };
 
@@ -130,13 +130,13 @@ generator.forBlock['preferences_get'] = function(block: Blockly.Block) {
 Blockly.Blocks['preferences_remove'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💾 ' + (Blockly.Msg.BLOCKS_PREFERENCES_REMOVE || 'Preferences Remove'))
-        .appendField(Blockly.Msg.BLOCKS_PREFERENCES_KEY || 'key')
+        .appendField('💾 ' + ((Blockly.Msg as any).BLOCKS_PREFERENCES_REMOVE || 'Preferences Remove'))
+        .appendField((Blockly.Msg as any).BLOCKS_PREFERENCES_KEY || 'key')
         .appendField(new Blockly.FieldTextInput('myKey'), 'KEY');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NVS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_PREFERENCES_REMOVETOOLTIP || 'Delete a specific key from Preferences storage.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_PREFERENCES_REMOVETOOLTIP || 'Delete a specific key from Preferences storage.');
   }
 };
 
@@ -151,11 +151,11 @@ generator.forBlock['preferences_remove'] = function(block: Blockly.Block) {
 Blockly.Blocks['preferences_clear'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💾 ' + (Blockly.Msg.BLOCKS_PREFERENCES_CLEAR || 'Preferences Clear'));
+        .appendField('💾 ' + ((Blockly.Msg as any).BLOCKS_PREFERENCES_CLEAR || 'Preferences Clear'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NVS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_PREFERENCES_CLEARTOOLTIP || 'Delete all keys in the current Preferences namespace.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_PREFERENCES_CLEARTOOLTIP || 'Delete all keys in the current Preferences namespace.');
   }
 };
 
@@ -171,17 +171,17 @@ generator.forBlock['preferences_clear'] = function() {
 Blockly.Blocks['eeprom_write'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💿 ' + (Blockly.Msg.BLOCKS_EEPROM_WRITE || 'EEPROM Write'));
+        .appendField('💿 ' + ((Blockly.Msg as any).BLOCKS_EEPROM_WRITE || 'EEPROM Write'));
     this.appendValueInput('ADDRESS')
         .setCheck('Number')
-        .appendField(Blockly.Msg.BLOCKS_EEPROM_ADDRESS || 'address');
+        .appendField((Blockly.Msg as any).BLOCKS_EEPROM_ADDRESS || 'address');
     this.appendValueInput('VALUE')
         .setCheck('Number')
-        .appendField(Blockly.Msg.BLOCKS_EEPROM_VALUE || 'value');
+        .appendField((Blockly.Msg as any).BLOCKS_EEPROM_VALUE || 'value');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(EEPROM_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_EEPROM_WRITETOOLTIP || 'Write a byte value to EEPROM at the specified address (0-511). Call EEPROM.commit() after writing.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_EEPROM_WRITETOOLTIP || 'Write a byte value to EEPROM at the specified address (0-511). Call EEPROM.commit() after writing.');
   }
 };
 
@@ -201,11 +201,11 @@ Blockly.Blocks['eeprom_read'] = {
   init: function() {
     this.appendValueInput('ADDRESS')
         .setCheck('Number')
-        .appendField('💿 ' + (Blockly.Msg.BLOCKS_EEPROM_READ || 'EEPROM Read'))
-        .appendField(Blockly.Msg.BLOCKS_EEPROM_ADDRESS || 'address');
+        .appendField('💿 ' + ((Blockly.Msg as any).BLOCKS_EEPROM_READ || 'EEPROM Read'))
+        .appendField((Blockly.Msg as any).BLOCKS_EEPROM_ADDRESS || 'address');
     this.setOutput(true, 'Number');
     this.setColour(EEPROM_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_EEPROM_READTOOLTIP || 'Read a byte value from EEPROM at the specified address (0-511).');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_EEPROM_READTOOLTIP || 'Read a byte value from EEPROM at the specified address (0-511).');
   }
 };
 

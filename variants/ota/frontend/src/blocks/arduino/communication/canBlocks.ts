@@ -28,14 +28,14 @@ bool canRxAvailable = false;`;
 Blockly.Blocks['can_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🚗 ' + (Blockly.Msg.BLOCKS_CAN_INIT || 'CAN Init'));
+        .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_CAN_INIT || 'CAN Init'));
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_CAN_TXPIN || 'TX pin')
+        .appendField((Blockly.Msg as any).BLOCKS_CAN_TXPIN || 'TX pin')
         .appendField(new Blockly.FieldNumber(5, 0, 39), 'TX')
-        .appendField(Blockly.Msg.BLOCKS_CAN_RXPIN || 'RX pin')
+        .appendField((Blockly.Msg as any).BLOCKS_CAN_RXPIN || 'RX pin')
         .appendField(new Blockly.FieldNumber(4, 0, 39), 'RX');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_CAN_BAUD || 'baud rate')
+        .appendField((Blockly.Msg as any).BLOCKS_CAN_BAUD || 'baud rate')
         .appendField(new Blockly.FieldDropdown([
           ['125 kbps', '125'],
           ['250 kbps', '250'],
@@ -44,7 +44,7 @@ Blockly.Blocks['can_init'] = {
         ]), 'BAUD');
     this.setOutput(true, 'Boolean');
     this.setColour(CAN_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_CAN_INITTOOLTIP || 'Initialize CAN bus with TX/RX pins and baud rate. A CAN transceiver IC (e.g. SN65HVD230) is required between ESP32 and CAN bus. Returns true if successful.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_CAN_INITTOOLTIP || 'Initialize CAN bus with TX/RX pins and baud rate. A CAN transceiver IC (e.g. SN65HVD230) is required between ESP32 and CAN bus. Returns true if successful.');
   }
 };
 
@@ -66,17 +66,17 @@ generator.forBlock['can_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['can_send'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🚗 ' + (Blockly.Msg.BLOCKS_CAN_SEND || 'CAN Send'));
+        .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_CAN_SEND || 'CAN Send'));
     this.appendValueInput('ID')
         .setCheck('Number')
-        .appendField(Blockly.Msg.BLOCKS_CAN_ID || 'ID (hex)');
+        .appendField((Blockly.Msg as any).BLOCKS_CAN_ID || 'ID (hex)');
     this.appendValueInput('DATA')
         .setCheck('String')
-        .appendField(Blockly.Msg.BLOCKS_CAN_DATA || 'data (max 8 bytes)');
+        .appendField((Blockly.Msg as any).BLOCKS_CAN_DATA || 'data (max 8 bytes)');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(CAN_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_CAN_SENDTOOLTIP || 'Send a CAN message with the specified ID and data string (max 8 bytes). ID is an integer (e.g. 0x123 = 291).');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_CAN_SENDTOOLTIP || 'Send a CAN message with the specified ID and data string (max 8 bytes). ID is an integer (e.g. 0x123 = 291).');
   }
 };
 
@@ -101,10 +101,10 @@ generator.forBlock['can_send'] = function(block: Blockly.Block) {
 Blockly.Blocks['can_receive_available'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🚗 ' + (Blockly.Msg.BLOCKS_CAN_AVAILABLE || 'CAN Message Available?'));
+        .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_CAN_AVAILABLE || 'CAN Message Available?'));
     this.setOutput(true, 'Boolean');
     this.setColour(CAN_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_CAN_AVAILABLETOOLTIP || 'Returns true if a new CAN message was received. After this returns true, use can_get_id and can_get_data to read the message. Place in loop block.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_CAN_AVAILABLETOOLTIP || 'Returns true if a new CAN message was received. After this returns true, use can_get_id and can_get_data to read the message. Place in loop block.');
   }
 };
 
@@ -119,10 +119,10 @@ generator.forBlock['can_receive_available'] = function() {
 Blockly.Blocks['can_get_received_id'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🚗 ' + (Blockly.Msg.BLOCKS_CAN_GETID || 'CAN Received ID'));
+        .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_CAN_GETID || 'CAN Received ID'));
     this.setOutput(true, 'Number');
     this.setColour(CAN_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_CAN_GETIDTOOLTIP || 'Get the ID of the last received CAN message. Call after can_receive_available returns true.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_CAN_GETIDTOOLTIP || 'Get the ID of the last received CAN message. Call after can_receive_available returns true.');
   }
 };
 
@@ -137,10 +137,10 @@ generator.forBlock['can_get_received_id'] = function() {
 Blockly.Blocks['can_get_received_data'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🚗 ' + (Blockly.Msg.BLOCKS_CAN_GETDATA || 'CAN Received Data'));
+        .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_CAN_GETDATA || 'CAN Received Data'));
     this.setOutput(true, 'String');
     this.setColour(CAN_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_CAN_GETDATATOOLTIP || 'Get the data of the last received CAN message as a String. Call after can_receive_available returns true.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_CAN_GETDATATOOLTIP || 'Get the data of the last received CAN message as a String. Call after can_receive_available returns true.');
   }
 };
 

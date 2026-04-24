@@ -67,7 +67,7 @@ export default function PlanPage() {
   const isInvited = user?.planSource === 'admin_granted';
   const [inviteConfirmPlan, setInviteConfirmPlan] = useState<string | null>(null);
 
-  const planRank = (p: string) => (PLAN_ORDER as readonly string[]).indexOf(p);
+  const planRank = (p: string) => PLAN_ORDER.indexOf(p as any);
   const isHigherPlan = (planId: string) => planRank(planId) > planRank(currentPlan);
 
   const handleCheckout = async (planId: string) => {

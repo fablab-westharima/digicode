@@ -22,10 +22,10 @@ const TOF_COLOR = '#795548';
 Blockly.Blocks['vl53l0x_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📏 ' + (Blockly.Msg.BLOCKS_VL53L0X_INIT || 'VL53L0X Init'));
+        .appendField('📏 ' + ((Blockly.Msg as any).BLOCKS_VL53L0X_INIT || 'VL53L0X Init'));
     this.setOutput(true, 'Boolean');
     this.setColour(TOF_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_VL53L0X_INITTOOLTIP || 'Initialize VL53L0X ToF distance sensor via I2C (address 0x29). Returns true if found. Requires Adafruit VL53L0X library.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_VL53L0X_INITTOOLTIP || 'Initialize VL53L0X ToF distance sensor via I2C (address 0x29). Returns true if found. Requires Adafruit VL53L0X library.');
   }
 };
 
@@ -43,10 +43,10 @@ Adafruit_VL53L0X vl53l0x;`;
 Blockly.Blocks['vl53l0x_read_distance_mm'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📏 ' + (Blockly.Msg.BLOCKS_VL53L0X_DISTANCE || 'VL53L0X Distance (mm)'));
+        .appendField('📏 ' + ((Blockly.Msg as any).BLOCKS_VL53L0X_DISTANCE || 'VL53L0X Distance (mm)'));
     this.setOutput(true, 'Number');
     this.setColour(TOF_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_VL53L0X_DISTANCETOOLTIP || 'Read distance in mm from VL53L0X. Returns 0 if out of range or error. Effective range: 30-1200mm.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_VL53L0X_DISTANCETOOLTIP || 'Read distance in mm from VL53L0X. Returns 0 if out of range or error. Effective range: 30-1200mm.');
   }
 };
 

@@ -22,13 +22,13 @@ const IR_COLOR = '#FF6F00';
 Blockly.Blocks['ir_receiver_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📺 ' + (Blockly.Msg.BLOCKS_IR_RECEIVERINIT || 'IR Receiver Init'))
-        .appendField(Blockly.Msg.BLOCKS_IR_PIN || 'pin')
+        .appendField('📺 ' + ((Blockly.Msg as any).BLOCKS_IR_RECEIVERINIT || 'IR Receiver Init'))
+        .appendField((Blockly.Msg as any).BLOCKS_IR_PIN || 'pin')
         .appendField(new Blockly.FieldNumber(14, 0, 39), 'PIN');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(IR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_IR_RECEIVERINITTOOLTIP || 'Initialize IR receiver on the specified pin. Call in setup block.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_IR_RECEIVERINITTOOLTIP || 'Initialize IR receiver on the specified pin. Call in setup block.');
   }
 };
 
@@ -49,10 +49,10 @@ decode_results irResults;`;
 Blockly.Blocks['ir_receiver_decode'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📺 ' + (Blockly.Msg.BLOCKS_IR_RECEIVERDECODE || 'IR Receive Code'));
+        .appendField('📺 ' + ((Blockly.Msg as any).BLOCKS_IR_RECEIVERDECODE || 'IR Receive Code'));
     this.setOutput(true, 'String');
     this.setColour(IR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_IR_RECEIVERDECODETOOLTIP || 'Read received IR code as hex string. Returns "0" if no signal received. Place in loop block and compare to known codes.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_IR_RECEIVERDECODETOOLTIP || 'Read received IR code as hex string. Returns "0" if no signal received. Place in loop block and compare to known codes.');
   }
 };
 
@@ -80,13 +80,13 @@ String irDecode() {
 Blockly.Blocks['ir_sender_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📺 ' + (Blockly.Msg.BLOCKS_IR_SENDERINIT || 'IR Sender Init'))
-        .appendField(Blockly.Msg.BLOCKS_IR_PIN || 'pin')
+        .appendField('📺 ' + ((Blockly.Msg as any).BLOCKS_IR_SENDERINIT || 'IR Sender Init'))
+        .appendField((Blockly.Msg as any).BLOCKS_IR_PIN || 'pin')
         .appendField(new Blockly.FieldNumber(4, 0, 39), 'PIN');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(IR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_IR_SENDERINIT_TOOLTIP || 'Initialize IR sender (LED) on the specified pin. Call in setup block.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_IR_SENDERINIT_TOOLTIP || 'Initialize IR sender (LED) on the specified pin. Call in setup block.');
   }
 };
 
@@ -104,7 +104,7 @@ IRsend irSend(${pin});`;
 Blockly.Blocks['ir_sender_send'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📺 ' + (Blockly.Msg.BLOCKS_IR_SEND || 'IR Send'))
+        .appendField('📺 ' + ((Blockly.Msg as any).BLOCKS_IR_SEND || 'IR Send'))
         .appendField(new Blockly.FieldDropdown([
           ['NEC', 'NEC'],
           ['Sony', 'SONY'],
@@ -116,11 +116,11 @@ Blockly.Blocks['ir_sender_send'] = {
         ]), 'PROTOCOL');
     this.appendValueInput('CODE')
         .setCheck('Number')
-        .appendField(Blockly.Msg.BLOCKS_IR_CODE || 'code (hex)');
+        .appendField((Blockly.Msg as any).BLOCKS_IR_CODE || 'code (hex)');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(IR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_IR_SENDTOOLTIP || 'Send an IR signal with the specified protocol and code. Use the same code captured by ir_receiver_decode.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_IR_SENDTOOLTIP || 'Send an IR signal with the specified protocol and code. Use the same code captured by ir_receiver_decode.');
   }
 };
 

@@ -429,8 +429,7 @@ function parseBlockMeta(
 
   // FieldDropdown (identifier — const name or function reference):
   //   new Blockly.FieldDropdown(IDENTIFIER), 'NAME'
-  // Also handles type assertions: ` as any`, ` as unknown as Blockly.Field`, etc.
-  const dynDdRe = /new Blockly\.FieldDropdown\(([a-zA-Z_]\w*)\)(?:\s+as\s+[^,]+?)?,\s*'(\w+)'/g;
+  const dynDdRe = /new Blockly\.FieldDropdown\(([a-zA-Z_]\w*)\)(?:\s*as\s*\w+)?,\s*'(\w+)'/g;
   while ((fm = dynDdRe.exec(body)) !== null) {
     const identifier = fm[1];
     const fieldName = fm[2];

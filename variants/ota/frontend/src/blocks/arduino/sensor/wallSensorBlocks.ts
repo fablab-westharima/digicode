@@ -13,24 +13,24 @@ import { javascriptGenerator, Order } from 'blockly/javascript';
 Blockly.Blocks['wall_sensor_init'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_INIT || 'Initialize Wall Sensors');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_INIT || 'Initialize Wall Sensors');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_FRONTLEFT || 'Front Left')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_FRONTLEFT || 'Front Left')
       .appendField(new Blockly.FieldNumber(36, 0, 39), 'FRONT_LEFT')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_FRONTRIGHT || 'Front Right')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_FRONTRIGHT || 'Front Right')
       .appendField(new Blockly.FieldNumber(39, 0, 39), 'FRONT_RIGHT');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_LEFT || 'Left')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_LEFT || 'Left')
       .appendField(new Blockly.FieldNumber(34, 0, 39), 'LEFT')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_RIGHT || 'Right')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_RIGHT || 'Right')
       .appendField(new Blockly.FieldNumber(35, 0, 39), 'RIGHT');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_THRESHOLD || 'Threshold')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_THRESHOLD || 'Threshold')
       .appendField(new Blockly.FieldNumber(1500, 0, 4095), 'THRESHOLD');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FF5722');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_WALL_INITTOOLTIP || 'Initialize wall sensors');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_WALL_INITTOOLTIP || 'Initialize wall sensors');
   }
 };
 
@@ -107,16 +107,16 @@ javascriptGenerator.forBlock['wall_sensor_init'] = function(block: Blockly.Block
 Blockly.Blocks['wall_sensor_has_wall'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_HASWALL || 'Has Wall')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_HASWALL || 'Has Wall')
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_SENSOR_WALL_DIRECTIONFRONT || 'Front', 'FRONT'],
-        [Blockly.Msg.BLOCKS_SENSOR_WALL_DIRECTIONLEFT || 'Left', 'LEFT'],
-        [Blockly.Msg.BLOCKS_SENSOR_WALL_DIRECTIONRIGHT || 'Right', 'RIGHT']
+        [(Blockly.Msg as any).BLOCKS_SENSOR_WALL_DIRECTIONFRONT || 'Front', 'FRONT'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_WALL_DIRECTIONLEFT || 'Left', 'LEFT'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_WALL_DIRECTIONRIGHT || 'Right', 'RIGHT']
       ]), 'DIRECTION')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_HASWALLSUFFIX || '?');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_HASWALLSUFFIX || '?');
     this.setOutput(true, 'Boolean');
     this.setColour('#FF5722');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_WALL_HASWALLTOOLTIP || 'Check if wall exists');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_WALL_HASWALLTOOLTIP || 'Check if wall exists');
   }
 };
 
@@ -143,17 +143,17 @@ javascriptGenerator.forBlock['wall_sensor_has_wall'] = function(block: Blockly.B
 Blockly.Blocks['wall_sensor_value'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_SENSORVALUE || 'Wall Sensor')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_SENSORVALUE || 'Wall Sensor')
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_SENSOR_WALL_SENSORFRONTLEFT || 'Front Left', 'FRONT_LEFT'],
-        [Blockly.Msg.BLOCKS_SENSOR_WALL_SENSORFRONTRIGHT || 'Front Right', 'FRONT_RIGHT'],
-        [Blockly.Msg.BLOCKS_SENSOR_WALL_SENSORLEFT || 'Left', 'LEFT'],
-        [Blockly.Msg.BLOCKS_SENSOR_WALL_SENSORRIGHT || 'Right', 'RIGHT']
+        [(Blockly.Msg as any).BLOCKS_SENSOR_WALL_SENSORFRONTLEFT || 'Front Left', 'FRONT_LEFT'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_WALL_SENSORFRONTRIGHT || 'Front Right', 'FRONT_RIGHT'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_WALL_SENSORLEFT || 'Left', 'LEFT'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_WALL_SENSORRIGHT || 'Right', 'RIGHT']
       ]), 'SENSOR')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_VALUE || 'Value');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_VALUE || 'Value');
     this.setOutput(true, 'Number');
     this.setColour('#FF5722');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_WALL_SENSORVALUETOOLTIP || 'Get wall sensor value');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_WALL_SENSORVALUETOOLTIP || 'Get wall sensor value');
   }
 };
 
@@ -183,10 +183,10 @@ javascriptGenerator.forBlock['wall_sensor_value'] = function(block: Blockly.Bloc
 Blockly.Blocks['wall_sensor_error'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_ERROR || 'Wall Error');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_ERROR || 'Wall Error');
     this.setOutput(true, 'Number');
     this.setColour('#FF5722');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_WALL_ERRORTOOLTIP || 'Get wall error for PID control');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_WALL_ERRORTOOLTIP || 'Get wall error for PID control');
   }
 };
 
@@ -200,10 +200,10 @@ javascriptGenerator.forBlock['wall_sensor_error'] = function() {
 Blockly.Blocks['wall_sensor_info'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_INFO || 'Wall Info (3-bit)');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_INFO || 'Wall Info (3-bit)');
     this.setOutput(true, 'Number');
     this.setColour('#FF5722');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_WALL_INFOTOOLTIP || 'Get wall info as 3-bit value');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_WALL_INFOTOOLTIP || 'Get wall info as 3-bit value');
   }
 };
 
@@ -226,11 +226,11 @@ javascriptGenerator.forBlock['wall_sensor_info'] = function() {
 Blockly.Blocks['wall_sensor_read'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_READ || 'Read Wall Sensors');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_READ || 'Read Wall Sensors');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FF5722');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_WALL_READTOOLTIP || 'Read all wall sensors');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_WALL_READTOOLTIP || 'Read all wall sensors');
   }
 };
 
@@ -245,13 +245,13 @@ Blockly.Blocks['wall_sensor_set_threshold'] = {
   init: function() {
     this.appendValueInput('THRESHOLD')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_SETTHRESHOLD || 'Set Wall Threshold');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_SETTHRESHOLD || 'Set Wall Threshold');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_WALL_SETTHRESHOLDSUFFIX || '');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_WALL_SETTHRESHOLDSUFFIX || '');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FF5722');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_WALL_SETTHRESHOLDTOOLTIP || 'Set wall detection threshold');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_WALL_SETTHRESHOLDTOOLTIP || 'Set wall detection threshold');
   }
 };
 

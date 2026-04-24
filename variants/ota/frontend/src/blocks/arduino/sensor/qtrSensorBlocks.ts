@@ -14,43 +14,43 @@ import { javascriptGenerator, Order } from 'blockly/javascript';
 Blockly.Blocks['qtr_8a_init'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_QTR8AINIT || 'Initialize QTR-8A');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_QTR8AINIT || 'Initialize QTR-8A');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_SENSORCOUNT || 'Sensor Count')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_SENSORCOUNT || 'Sensor Count')
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_COUNT8 || '8', '8'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_COUNT6 || '6', '6'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_COUNT4 || '4', '4'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_COUNT3 || '3', '3']
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_COUNT8 || '8', '8'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_COUNT6 || '6', '6'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_COUNT4 || '4', '4'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_COUNT3 || '3', '3']
       ]), 'COUNT');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS1 || 'S1')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS1 || 'S1')
       .appendField(new Blockly.FieldNumber(36, 0, 39), 'PIN1')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS2 || 'S2')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS2 || 'S2')
       .appendField(new Blockly.FieldNumber(39, 0, 39), 'PIN2');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS3 || 'S3')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS3 || 'S3')
       .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN3')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS4 || 'S4')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS4 || 'S4')
       .appendField(new Blockly.FieldNumber(35, 0, 39), 'PIN4');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS5 || 'S5')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS5 || 'S5')
       .appendField(new Blockly.FieldNumber(32, 0, 39), 'PIN5')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS6 || 'S6')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS6 || 'S6')
       .appendField(new Blockly.FieldNumber(33, 0, 39), 'PIN6');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS7 || 'S7')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS7 || 'S7')
       .appendField(new Blockly.FieldNumber(25, 0, 39), 'PIN7')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS8 || 'S8')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS8 || 'S8')
       .appendField(new Blockly.FieldNumber(26, 0, 39), 'PIN8');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_EMITTERPIN || 'Emitter Pin')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_EMITTERPIN || 'Emitter Pin')
       .appendField(new Blockly.FieldNumber(27, 0, 39), 'EMITTER')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_EMITTERNONE || '(0=None)');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_EMITTERNONE || '(0=None)');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_QTR_QTR8AINITTOOLTIP || 'Initialize QTR-8A analog line sensor');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_QTR_QTR8AINITTOOLTIP || 'Initialize QTR-8A analog line sensor');
   }
 };
 
@@ -93,43 +93,43 @@ javascriptGenerator.forBlock['qtr_8a_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['qtr_8rc_init'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_QTR8RCINIT || 'Initialize QTR-8RC');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_QTR8RCINIT || 'Initialize QTR-8RC');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_SENSORCOUNT || 'Sensor Count')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_SENSORCOUNT || 'Sensor Count')
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_COUNT8 || '8', '8'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_COUNT6 || '6', '6'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_COUNT4 || '4', '4'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_COUNT3 || '3', '3']
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_COUNT8 || '8', '8'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_COUNT6 || '6', '6'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_COUNT4 || '4', '4'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_COUNT3 || '3', '3']
       ]), 'COUNT');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS1 || 'S1')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS1 || 'S1')
       .appendField(new Blockly.FieldNumber(13, 0, 39), 'PIN1')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS2 || 'S2')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS2 || 'S2')
       .appendField(new Blockly.FieldNumber(12, 0, 39), 'PIN2');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS3 || 'S3')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS3 || 'S3')
       .appendField(new Blockly.FieldNumber(14, 0, 39), 'PIN3')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS4 || 'S4')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS4 || 'S4')
       .appendField(new Blockly.FieldNumber(27, 0, 39), 'PIN4');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS5 || 'S5')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS5 || 'S5')
       .appendField(new Blockly.FieldNumber(26, 0, 39), 'PIN5')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS6 || 'S6')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS6 || 'S6')
       .appendField(new Blockly.FieldNumber(25, 0, 39), 'PIN6');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS7 || 'S7')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS7 || 'S7')
       .appendField(new Blockly.FieldNumber(33, 0, 39), 'PIN7')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_PINS8 || 'S8')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_PINS8 || 'S8')
       .appendField(new Blockly.FieldNumber(32, 0, 39), 'PIN8');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_EMITTERPIN || 'Emitter Pin')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_EMITTERPIN || 'Emitter Pin')
       .appendField(new Blockly.FieldNumber(4, 0, 39), 'EMITTER')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_EMITTERNONE || '(0=None)');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_EMITTERNONE || '(0=None)');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_QTR_QTR8RCINITTOOLTIP || 'Initialize QTR-8RC digital line sensor');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_QTR_QTR8RCINITTOOLTIP || 'Initialize QTR-8RC digital line sensor');
   }
 };
 
@@ -172,16 +172,16 @@ javascriptGenerator.forBlock['qtr_8rc_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['qtr_calibrate'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_CALIBRATE || 'QTR Calibration');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_CALIBRATE || 'QTR Calibration');
     this.appendValueInput('SAMPLES')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_SAMPLES || 'Samples');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_SAMPLES || 'Samples');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_CALIBRATEHINT || '(Move over line during calibration)');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_CALIBRATEHINT || '(Move over line during calibration)');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_QTR_CALIBRATETOOLTIP || 'Calibrate QTR sensors');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_QTR_CALIBRATETOOLTIP || 'Calibrate QTR sensors');
   }
 };
 
@@ -202,16 +202,16 @@ javascriptGenerator.forBlock['qtr_calibrate'] = function(block: Blockly.Block) {
 Blockly.Blocks['qtr_auto_calibrate'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_AUTOCALIBRATE || 'QTR Auto Calibrate');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_AUTOCALIBRATE || 'QTR Auto Calibrate');
     this.appendValueInput('DURATION')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_DURATION || 'Duration (ms)');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_DURATION || 'Duration (ms)');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_AUTOCALIBRATEHINT || '(Rotate robot during calibration)');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_AUTOCALIBRATEHINT || '(Rotate robot during calibration)');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_QTR_AUTOCALIBRATETOOLTIP || 'Auto calibrate while moving');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_QTR_AUTOCALIBRATETOOLTIP || 'Auto calibrate while moving');
   }
 };
 
@@ -235,16 +235,16 @@ javascriptGenerator.forBlock['qtr_auto_calibrate'] = function(block: Blockly.Blo
 Blockly.Blocks['qtr_line_position'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_LINEPOSITION || 'QTR Line Position');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_LINEPOSITION || 'QTR Line Position');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_LINECOLOR || 'Line Color')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_LINECOLOR || 'Line Color')
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_WHITEONBLACK || 'White on Black', 'WHITE'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_BLACKONWHITE || 'Black on White', 'BLACK']
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_WHITEONBLACK || 'White on Black', 'WHITE'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_BLACKONWHITE || 'Black on White', 'BLACK']
       ]), 'COLOR');
     this.setOutput(true, 'Number');
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_QTR_LINEPOSITIONTOOLTIP || 'Get line position');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_QTR_LINEPOSITIONTOOLTIP || 'Get line position');
   }
 };
 
@@ -263,16 +263,16 @@ javascriptGenerator.forBlock['qtr_line_position'] = function(block: Blockly.Bloc
 Blockly.Blocks['qtr_line_position_normalized'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_LINEPOSITIONNORMALIZED || 'QTR Line Position (-1000~1000)');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_LINEPOSITIONNORMALIZED || 'QTR Line Position (-1000~1000)');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_LINECOLOR || 'Line Color')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_LINECOLOR || 'Line Color')
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_WHITEONBLACK || 'White on Black', 'WHITE'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_BLACKONWHITE || 'Black on White', 'BLACK']
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_WHITEONBLACK || 'White on Black', 'WHITE'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_BLACKONWHITE || 'Black on White', 'BLACK']
       ]), 'COLOR');
     this.setOutput(true, 'Number');
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_QTR_LINEPOSITIONNORMALIZEDTOOLTIP || 'Get normalized line position');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_QTR_LINEPOSITIONNORMALIZEDTOOLTIP || 'Get normalized line position');
   }
 };
 
@@ -303,21 +303,21 @@ javascriptGenerator.forBlock['qtr_line_position_normalized'] = function(block: B
 Blockly.Blocks['qtr_sensor_value'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_SENSORVALUE || 'QTR Sensor')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_SENSORVALUE || 'QTR Sensor')
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_SENSOR1LEFT || 'S1 (Left)', '0'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_SENSOR2 || 'S2', '1'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_SENSOR3 || 'S3', '2'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_SENSOR4 || 'S4', '3'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_SENSOR5 || 'S5', '4'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_SENSOR6 || 'S6', '5'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_SENSOR7 || 'S7', '6'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_SENSOR8RIGHT || 'S8 (Right)', '7']
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_SENSOR1LEFT || 'S1 (Left)', '0'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_SENSOR2 || 'S2', '1'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_SENSOR3 || 'S3', '2'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_SENSOR4 || 'S4', '3'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_SENSOR5 || 'S5', '4'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_SENSOR6 || 'S6', '5'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_SENSOR7 || 'S7', '6'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_SENSOR8RIGHT || 'S8 (Right)', '7']
       ]), 'INDEX')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_VALUE || 'Value');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_VALUE || 'Value');
     this.setOutput(true, 'Number');
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_QTR_SENSORVALUETOOLTIP || 'Get individual sensor value');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_QTR_SENSORVALUETOOLTIP || 'Get individual sensor value');
   }
 };
 
@@ -340,11 +340,11 @@ javascriptGenerator.forBlock['qtr_sensor_value'] = function(block: Blockly.Block
 Blockly.Blocks['qtr_read_all'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_READALL || 'Read All QTR Sensors');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_READALL || 'Read All QTR Sensors');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_QTR_READALLTOOLTIP || 'Read all sensor values');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_QTR_READALLTOOLTIP || 'Read all sensor values');
   }
 };
 
@@ -358,12 +358,12 @@ javascriptGenerator.forBlock['qtr_read_all'] = function() {
 Blockly.Blocks['qtr_raw_value'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_RAWVALUE || 'QTR Sensor')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_RAWVALUE || 'QTR Sensor')
       .appendField(new Blockly.FieldNumber(0, 0, 7), 'INDEX')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_RAWVALUELABEL || 'Raw Value');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_RAWVALUELABEL || 'Raw Value');
     this.setOutput(true, 'Number');
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_QTR_RAWVALUETOOLTIP || 'Get raw sensor value');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_QTR_RAWVALUETOOLTIP || 'Get raw sensor value');
   }
 };
 
@@ -386,13 +386,13 @@ javascriptGenerator.forBlock['qtr_raw_value'] = function(block: Blockly.Block) {
 Blockly.Blocks['qtr_line_detected'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_LINEDETECTED || 'QTR Line Detected');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_LINEDETECTED || 'QTR Line Detected');
     this.appendValueInput('THRESHOLD')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_THRESHOLD || 'Threshold');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_THRESHOLD || 'Threshold');
     this.setOutput(true, 'Boolean');
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_QTR_LINEDETECTEDTOOLTIP || 'Check if line is detected');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_QTR_LINEDETECTEDTOOLTIP || 'Check if line is detected');
   }
 };
 
@@ -418,10 +418,10 @@ javascriptGenerator.forBlock['qtr_line_detected'] = function(block: Blockly.Bloc
 Blockly.Blocks['qtr_is_calibrated'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_ISCALIBRATED || 'QTR Is Calibrated');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_ISCALIBRATED || 'QTR Is Calibrated');
     this.setOutput(true, 'Boolean');
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_QTR_ISCALIBRATEDTOOLTIP || 'Check if QTR is calibrated');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_QTR_ISCALIBRATEDTOOLTIP || 'Check if QTR is calibrated');
   }
 };
 
@@ -435,15 +435,15 @@ javascriptGenerator.forBlock['qtr_is_calibrated'] = function() {
 Blockly.Blocks['qtr_emitter_control'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_EMITTERCONTROL || 'QTR Emitter')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_QTR_EMITTERCONTROL || 'QTR Emitter')
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_EMITTERON || 'ON', 'ON'],
-        [Blockly.Msg.BLOCKS_SENSOR_QTR_EMITTEROFF || 'OFF', 'OFF']
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_EMITTERON || 'ON', 'ON'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_QTR_EMITTEROFF || 'OFF', 'OFF']
       ]), 'STATE');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_QTR_EMITTERCONTROLTOOLTIP || 'Control IR emitter');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_QTR_EMITTERCONTROLTOOLTIP || 'Control IR emitter');
   }
 };
 

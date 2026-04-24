@@ -13,27 +13,27 @@ import { javascriptGenerator, Order } from 'blockly/javascript';
 Blockly.Blocks['encoder_init'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_ENCODER_INIT || 'Initialize Encoder (2 wheels)');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_INIT || 'Initialize Encoder (2 wheels)');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_ENCODER_LEFTA || 'Left A')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_LEFTA || 'Left A')
       .appendField(new Blockly.FieldNumber(25, 0, 39), 'LEFT_A')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_ENCODER_LEFTB || 'Left B')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_LEFTB || 'Left B')
       .appendField(new Blockly.FieldNumber(26, 0, 39), 'LEFT_B');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_ENCODER_RIGHTA || 'Right A')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_RIGHTA || 'Right A')
       .appendField(new Blockly.FieldNumber(27, 0, 39), 'RIGHT_A')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_ENCODER_RIGHTB || 'Right B')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_RIGHTB || 'Right B')
       .appendField(new Blockly.FieldNumber(14, 0, 39), 'RIGHT_B');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_ENCODER_PPR || 'Pulses/Rev')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_PPR || 'Pulses/Rev')
       .appendField(new Blockly.FieldNumber(360, 1, 10000), 'PPR');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_ENCODER_WHEELDIAMETER || 'Wheel Diameter (mm)')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_WHEELDIAMETER || 'Wheel Diameter (mm)')
       .appendField(new Blockly.FieldNumber(40, 1, 500), 'WHEEL_DIAMETER');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#795548');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_ENCODER_INITTOOLTIP || 'Initialize rotary encoders');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_INITTOOLTIP || 'Initialize rotary encoders');
   }
 };
 
@@ -128,15 +128,15 @@ javascriptGenerator.forBlock['encoder_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['encoder_distance'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_ENCODER_DISTANCE || 'Travel Distance')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_DISTANCE || 'Travel Distance')
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_SENSOR_ENCODER_AVERAGE || 'Average', 'AVG'],
-        [Blockly.Msg.BLOCKS_SENSOR_ENCODER_LEFTWHEEL || 'Left Wheel', 'LEFT'],
-        [Blockly.Msg.BLOCKS_SENSOR_ENCODER_RIGHTWHEEL || 'Right Wheel', 'RIGHT']
+        [(Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_AVERAGE || 'Average', 'AVG'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_LEFTWHEEL || 'Left Wheel', 'LEFT'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_RIGHTWHEEL || 'Right Wheel', 'RIGHT']
       ]), 'WHEEL');
     this.setOutput(true, 'Number');
     this.setColour('#795548');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_ENCODER_DISTANCETOOLTIP || 'Get travel distance from encoder');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_DISTANCETOOLTIP || 'Get travel distance from encoder');
   }
 };
 
@@ -162,15 +162,15 @@ javascriptGenerator.forBlock['encoder_distance'] = function(block: Blockly.Block
 Blockly.Blocks['encoder_speed'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_ENCODER_SPEED || 'Speed (mm/s)')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_SPEED || 'Speed (mm/s)')
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_SENSOR_ENCODER_AVERAGE || 'Average', 'AVG'],
-        [Blockly.Msg.BLOCKS_SENSOR_ENCODER_LEFTWHEEL || 'Left Wheel', 'LEFT'],
-        [Blockly.Msg.BLOCKS_SENSOR_ENCODER_RIGHTWHEEL || 'Right Wheel', 'RIGHT']
+        [(Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_AVERAGE || 'Average', 'AVG'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_LEFTWHEEL || 'Left Wheel', 'LEFT'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_RIGHTWHEEL || 'Right Wheel', 'RIGHT']
       ]), 'WHEEL');
     this.setOutput(true, 'Number');
     this.setColour('#795548');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_ENCODER_SPEEDTOOLTIP || 'Get current speed');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_SPEEDTOOLTIP || 'Get current speed');
   }
 };
 
@@ -196,14 +196,14 @@ javascriptGenerator.forBlock['encoder_speed'] = function(block: Blockly.Block) {
 Blockly.Blocks['encoder_count'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_ENCODER_COUNT || 'Pulse Count')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_COUNT || 'Pulse Count')
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_SENSOR_ENCODER_LEFTWHEEL || 'Left Wheel', 'LEFT'],
-        [Blockly.Msg.BLOCKS_SENSOR_ENCODER_RIGHTWHEEL || 'Right Wheel', 'RIGHT']
+        [(Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_LEFTWHEEL || 'Left Wheel', 'LEFT'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_RIGHTWHEEL || 'Right Wheel', 'RIGHT']
       ]), 'WHEEL');
     this.setOutput(true, 'Number');
     this.setColour('#795548');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_ENCODER_COUNTTOOLTIP || 'Get encoder pulse count');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_COUNTTOOLTIP || 'Get encoder pulse count');
   }
 };
 
@@ -219,11 +219,11 @@ javascriptGenerator.forBlock['encoder_count'] = function(block: Blockly.Block) {
 Blockly.Blocks['encoder_reset'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_ENCODER_RESET || 'Reset Encoder');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_RESET || 'Reset Encoder');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#795548');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_ENCODER_RESETTOOLTIP || 'Reset encoder count');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_RESETTOOLTIP || 'Reset encoder count');
   }
 };
 
@@ -242,13 +242,13 @@ Blockly.Blocks['encoder_wait_distance'] = {
   init: function() {
     this.appendValueInput('DISTANCE')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_ENCODER_WAITDISTANCE || 'Distance');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_WAITDISTANCE || 'Distance');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_ENCODER_WAITUNTIL || 'mm and wait');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_WAITUNTIL || 'mm and wait');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#795548');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_ENCODER_WAITDISTANCETOOLTIP || 'Wait until specified distance');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_ENCODER_WAITDISTANCETOOLTIP || 'Wait until specified distance');
   }
 };
 

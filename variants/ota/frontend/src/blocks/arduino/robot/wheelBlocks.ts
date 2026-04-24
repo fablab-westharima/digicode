@@ -21,15 +21,15 @@ Blockly.Blocks['wheel_init'] = {
   init: function() {
     const pins = getWheelPins();
     this.appendDummyInput()
-        .appendField('🚗 ' + (Blockly.Msg.BLOCKS_WHEEL_INIT || 'Wheel Init'))
-        .appendField(Blockly.Msg.BLOCKS_WHEEL_LEFTWHEELPIN || 'Left Wheel Pin')
+        .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_WHEEL_INIT || 'Wheel Init'))
+        .appendField((Blockly.Msg as any).BLOCKS_WHEEL_LEFTWHEELPIN || 'Left Wheel Pin')
         .appendField(new Blockly.FieldNumber(pins.left, 0, 39), 'PIN_L')
-        .appendField(Blockly.Msg.BLOCKS_WHEEL_RIGHTWHEELPIN || 'Right Wheel Pin')
+        .appendField((Blockly.Msg as any).BLOCKS_WHEEL_RIGHTWHEELPIN || 'Right Wheel Pin')
         .appendField(new Blockly.FieldNumber(pins.right, 0, 39), 'PIN_R');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WHEEL_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_WHEEL_INITTOOLTIP || 'Initialize Wheel');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_WHEEL_INITTOOLTIP || 'Initialize Wheel');
   }
 };
 
@@ -45,17 +45,17 @@ javascriptGenerator.forBlock['wheel_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['wheel_forward'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⬆️ ' + (Blockly.Msg.BLOCKS_WHEEL_FORWARD || 'Wheel Forward'))
-        .appendField(Blockly.Msg.BLOCKS_WHEEL_SPEED || 'Speed')
+        .appendField('⬆️ ' + ((Blockly.Msg as any).BLOCKS_WHEEL_FORWARD || 'Wheel Forward'))
+        .appendField((Blockly.Msg as any).BLOCKS_WHEEL_SPEED || 'Speed')
         .appendField(new Blockly.FieldDropdown([
-          [Blockly.Msg.BLOCKS_WHEEL_SPEEDFAST || 'Fast', '100'],
-          [Blockly.Msg.BLOCKS_WHEEL_SPEEDNORMAL || 'Normal', '50'],
-          [Blockly.Msg.BLOCKS_WHEEL_SPEEDSLOW || 'Slow', '30']
+          [(Blockly.Msg as any).BLOCKS_WHEEL_SPEEDFAST || 'Fast', '100'],
+          [(Blockly.Msg as any).BLOCKS_WHEEL_SPEEDNORMAL || 'Normal', '50'],
+          [(Blockly.Msg as any).BLOCKS_WHEEL_SPEEDSLOW || 'Slow', '30']
         ]), 'SPEED');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WHEEL_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_WHEEL_FORWARDTOOLTIP || 'Move forward');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_WHEEL_FORWARDTOOLTIP || 'Move forward');
   }
 };
 
@@ -68,17 +68,17 @@ javascriptGenerator.forBlock['wheel_forward'] = function(block: Blockly.Block) {
 Blockly.Blocks['wheel_backward'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⬇️ ' + (Blockly.Msg.BLOCKS_WHEEL_BACKWARD || 'Wheel Backward'))
-        .appendField(Blockly.Msg.BLOCKS_WHEEL_SPEED || 'Speed')
+        .appendField('⬇️ ' + ((Blockly.Msg as any).BLOCKS_WHEEL_BACKWARD || 'Wheel Backward'))
+        .appendField((Blockly.Msg as any).BLOCKS_WHEEL_SPEED || 'Speed')
         .appendField(new Blockly.FieldDropdown([
-          [Blockly.Msg.BLOCKS_WHEEL_SPEEDFAST || 'Fast', '100'],
-          [Blockly.Msg.BLOCKS_WHEEL_SPEEDNORMAL || 'Normal', '50'],
-          [Blockly.Msg.BLOCKS_WHEEL_SPEEDSLOW || 'Slow', '30']
+          [(Blockly.Msg as any).BLOCKS_WHEEL_SPEEDFAST || 'Fast', '100'],
+          [(Blockly.Msg as any).BLOCKS_WHEEL_SPEEDNORMAL || 'Normal', '50'],
+          [(Blockly.Msg as any).BLOCKS_WHEEL_SPEEDSLOW || 'Slow', '30']
         ]), 'SPEED');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WHEEL_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_WHEEL_BACKWARDTOOLTIP || 'Move backward');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_WHEEL_BACKWARDTOOLTIP || 'Move backward');
   }
 };
 
@@ -91,11 +91,11 @@ javascriptGenerator.forBlock['wheel_backward'] = function(block: Blockly.Block) 
 Blockly.Blocks['wheel_turn_left'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↰ ' + (Blockly.Msg.BLOCKS_WHEEL_TURNLEFT || 'Wheel Turn Left'));
+        .appendField('↰ ' + ((Blockly.Msg as any).BLOCKS_WHEEL_TURNLEFT || 'Wheel Turn Left'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WHEEL_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_WHEEL_TURNLEFTTOOLTIP || 'Turn left');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_WHEEL_TURNLEFTTOOLTIP || 'Turn left');
   }
 };
 
@@ -107,11 +107,11 @@ javascriptGenerator.forBlock['wheel_turn_left'] = function() {
 Blockly.Blocks['wheel_turn_right'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↱ ' + (Blockly.Msg.BLOCKS_WHEEL_TURNRIGHT || 'Wheel Turn Right'));
+        .appendField('↱ ' + ((Blockly.Msg as any).BLOCKS_WHEEL_TURNRIGHT || 'Wheel Turn Right'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WHEEL_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_WHEEL_TURNRIGHTTOOLTIP || 'Turn right');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_WHEEL_TURNRIGHTTOOLTIP || 'Turn right');
   }
 };
 
@@ -123,11 +123,11 @@ javascriptGenerator.forBlock['wheel_turn_right'] = function() {
 Blockly.Blocks['wheel_spin_left'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↶ ' + (Blockly.Msg.BLOCKS_WHEEL_SPINLEFT || 'Wheel Spin Left'));
+        .appendField('↶ ' + ((Blockly.Msg as any).BLOCKS_WHEEL_SPINLEFT || 'Wheel Spin Left'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WHEEL_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_WHEEL_SPINLEFTTOOLTIP || 'Spin left in place');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_WHEEL_SPINLEFTTOOLTIP || 'Spin left in place');
   }
 };
 
@@ -139,11 +139,11 @@ javascriptGenerator.forBlock['wheel_spin_left'] = function() {
 Blockly.Blocks['wheel_spin_right'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↷ ' + (Blockly.Msg.BLOCKS_WHEEL_SPINRIGHT || 'Wheel Spin Right'));
+        .appendField('↷ ' + ((Blockly.Msg as any).BLOCKS_WHEEL_SPINRIGHT || 'Wheel Spin Right'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WHEEL_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_WHEEL_SPINRIGHTTOOLTIP || 'Spin right in place');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_WHEEL_SPINRIGHTTOOLTIP || 'Spin right in place');
   }
 };
 
@@ -155,11 +155,11 @@ javascriptGenerator.forBlock['wheel_spin_right'] = function() {
 Blockly.Blocks['wheel_stop'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⏹ ' + (Blockly.Msg.BLOCKS_WHEEL_STOP || 'Wheel Stop'));
+        .appendField('⏹ ' + ((Blockly.Msg as any).BLOCKS_WHEEL_STOP || 'Wheel Stop'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WHEEL_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_WHEEL_STOPTOOLTIP || 'Stop');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_WHEEL_STOPTOOLTIP || 'Stop');
   }
 };
 

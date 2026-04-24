@@ -98,15 +98,13 @@ export function CustomToolbox({ workspace, categories }: CustomToolboxProps) {
     // ツールボックスのカテゴリを検索してフライアウトを表示
     const toolbox = workspace.getToolbox();
     if (toolbox) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Blockly Toolbox の getToolboxItems() は internal API、public 型に未収録
       const toolboxItems = (toolbox as any).getToolboxItems();
-      const findCategory = (items: Blockly.IToolboxItem[], name: string): Blockly.ISelectableToolboxItem | null => {
+      const findCategory = (items: any[], name: string): Blockly.ISelectableToolboxItem | null => {
         for (const item of items) {
           if ('getName' in item && (item as Blockly.ToolboxCategory).getName() === name) {
             return item as Blockly.ISelectableToolboxItem;
           }
           if ('getChildToolboxItems' in item) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Blockly IToolboxItem の getChildToolboxItems() は subtype 限定、union narrowing せずに呼び出すため cast
             const children = (item as any).getChildToolboxItems();
             const found = findCategory(children, name);
             if (found) return found;
@@ -121,7 +119,6 @@ export function CustomToolbox({ workspace, categories }: CustomToolboxProps) {
         toolbox.clearSelection();
         // 少し遅延させてから選択（Blocklyの内部状態更新を待つ）
         setTimeout(() => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Blockly Toolbox の setSelectedItem() は internal API、public 型に未収録
           (toolbox as any).setSelectedItem(targetCategory);
         }, 10);
       }

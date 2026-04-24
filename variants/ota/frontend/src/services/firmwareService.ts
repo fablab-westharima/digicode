@@ -965,7 +965,6 @@ class FirmwareService {
       await port.open({ baudRate: 115200 });
 
       // Transportを作成
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- esptool-js の Transport は独自 SerialPort 互換型を要求、Web Serial SerialPort との型不整合を回避
       this.transport = new Transport(port as any, true);
       this.loader = new ESPLoader({
         transport: this.transport,
@@ -1047,9 +1046,7 @@ class FirmwareService {
       // ポート権限を忘れる（forget()メソッドが利用可能な場合）
       for (const port of ports) {
         try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Web Serial API の SerialPort.forget() は experimental、TypeScript lib.dom 型定義に未収録
           if ('forget' in port && typeof (port as any).forget === 'function') {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Web Serial API の SerialPort.forget() は experimental、TypeScript lib.dom 型定義に未収録
             await (port as any).forget();
             console.log('[ReleasePort] Port permission forgotten');
           }

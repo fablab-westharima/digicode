@@ -47,7 +47,7 @@ Adafruit_GFX* tft = nullptr;`;
 Blockly.Blocks['tft_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_INIT || 'TFT Init'))
+        .appendField('🖼️ ' + ((Blockly.Msg as any).BLOCKS_TFT_INIT || 'TFT Init'))
         .appendField(new Blockly.FieldDropdown([
           ['ILI9341 (320x240)', 'ILI9341'],
           ['ST7789 (240x240/320)', 'ST7789'],
@@ -63,7 +63,7 @@ Blockly.Blocks['tft_init'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TFT_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TFT_INITTOOLTIP || 'Initialize TFT display. Select your driver (ILI9341/ST7789/ST7735) and set CS/DC/RST pins. Uses hardware SPI.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TFT_INITTOOLTIP || 'Initialize TFT display. Select your driver (ILI9341/ST7789/ST7735) and set CS/DC/RST pins. Uses hardware SPI.');
   }
 };
 
@@ -87,12 +87,12 @@ generator.forBlock['tft_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['tft_fill_screen'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_FILLSCREEN || 'TFT Fill Screen'))
+        .appendField('🖼️ ' + ((Blockly.Msg as any).BLOCKS_TFT_FILLSCREEN || 'TFT Fill Screen'))
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TFT_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TFT_FILLSCREENTOOLTIP || 'Fill the entire screen with one color.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TFT_FILLSCREENTOOLTIP || 'Fill the entire screen with one color.');
   }
 };
 
@@ -108,14 +108,14 @@ generator.forBlock['tft_fill_screen'] = function(block: Blockly.Block) {
 Blockly.Blocks['tft_draw_pixel'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_PIXEL || 'TFT Pixel'))
+        .appendField('🖼️ ' + ((Blockly.Msg as any).BLOCKS_TFT_PIXEL || 'TFT Pixel'))
         .appendField('X').appendField(new Blockly.FieldNumber(0, 0, 319), 'X')
         .appendField('Y').appendField(new Blockly.FieldNumber(0, 0, 239), 'Y')
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TFT_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TFT_PIXELTOOLTIP || 'Draw a single pixel at (X, Y).');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TFT_PIXELTOOLTIP || 'Draw a single pixel at (X, Y).');
   }
 };
 
@@ -133,7 +133,7 @@ generator.forBlock['tft_draw_pixel'] = function(block: Blockly.Block) {
 Blockly.Blocks['tft_draw_line'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_LINE || 'TFT Line'))
+        .appendField('🖼️ ' + ((Blockly.Msg as any).BLOCKS_TFT_LINE || 'TFT Line'))
         .appendField('X1').appendField(new Blockly.FieldNumber(0, 0, 319), 'X1')
         .appendField('Y1').appendField(new Blockly.FieldNumber(0, 0, 239), 'Y1')
         .appendField('X2').appendField(new Blockly.FieldNumber(100, 0, 319), 'X2')
@@ -142,7 +142,7 @@ Blockly.Blocks['tft_draw_line'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TFT_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TFT_LINETOOLTIP || 'Draw a line from (X1,Y1) to (X2,Y2).');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TFT_LINETOOLTIP || 'Draw a line from (X1,Y1) to (X2,Y2).');
   }
 };
 
@@ -162,19 +162,19 @@ generator.forBlock['tft_draw_line'] = function(block: Blockly.Block) {
 Blockly.Blocks['tft_draw_rect'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_RECT || 'TFT Rect'))
+        .appendField('🖼️ ' + ((Blockly.Msg as any).BLOCKS_TFT_RECT || 'TFT Rect'))
         .appendField('X').appendField(new Blockly.FieldNumber(10, 0, 319), 'X')
         .appendField('Y').appendField(new Blockly.FieldNumber(10, 0, 239), 'Y')
         .appendField('W').appendField(new Blockly.FieldNumber(100, 1, 320), 'W')
         .appendField('H').appendField(new Blockly.FieldNumber(50, 1, 240), 'H');
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR')
-        .appendField(Blockly.Msg.BLOCKS_TFT_FILL || 'fill')
+        .appendField((Blockly.Msg as any).BLOCKS_TFT_FILL || 'fill')
         .appendField(new Blockly.FieldCheckbox('FALSE'), 'FILL');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TFT_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TFT_RECTTOOLTIP || 'Draw a rectangle. Uncheck fill for outline only, check fill for solid rectangle.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TFT_RECTTOOLTIP || 'Draw a rectangle. Uncheck fill for outline only, check fill for solid rectangle.');
   }
 };
 
@@ -196,18 +196,18 @@ generator.forBlock['tft_draw_rect'] = function(block: Blockly.Block) {
 Blockly.Blocks['tft_draw_circle'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_CIRCLE || 'TFT Circle'))
+        .appendField('🖼️ ' + ((Blockly.Msg as any).BLOCKS_TFT_CIRCLE || 'TFT Circle'))
         .appendField('X').appendField(new Blockly.FieldNumber(60, 0, 319), 'X')
         .appendField('Y').appendField(new Blockly.FieldNumber(60, 0, 239), 'Y')
         .appendField('R').appendField(new Blockly.FieldNumber(30, 1, 160), 'R');
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR')
-        .appendField(Blockly.Msg.BLOCKS_TFT_FILL || 'fill')
+        .appendField((Blockly.Msg as any).BLOCKS_TFT_FILL || 'fill')
         .appendField(new Blockly.FieldCheckbox('FALSE'), 'FILL');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TFT_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TFT_CIRCLETOOLTIP || 'Draw a circle centered at (X,Y) with radius R. Uncheck fill for outline only.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TFT_CIRCLETOOLTIP || 'Draw a circle centered at (X,Y) with radius R. Uncheck fill for outline only.');
   }
 };
 
@@ -228,17 +228,17 @@ generator.forBlock['tft_draw_circle'] = function(block: Blockly.Block) {
 Blockly.Blocks['tft_set_cursor'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_SETCURSOR || 'TFT Set Cursor'))
+        .appendField('🖼️ ' + ((Blockly.Msg as any).BLOCKS_TFT_SETCURSOR || 'TFT Set Cursor'))
         .appendField('X').appendField(new Blockly.FieldNumber(0, 0, 319), 'X')
         .appendField('Y').appendField(new Blockly.FieldNumber(0, 0, 239), 'Y');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_TFT_SIZE || 'size')
+        .appendField((Blockly.Msg as any).BLOCKS_TFT_SIZE || 'size')
         .appendField(new Blockly.FieldNumber(2, 1, 10), 'SIZE')
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TFT_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TFT_SETCURSORTOOLTIP || 'Set text cursor position, size and color. Call before tft_print. Size 1=6x8px, size 2=12x16px etc.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TFT_SETCURSORTOOLTIP || 'Set text cursor position, size and color. Call before tft_print. Size 1=6x8px, size 2=12x16px etc.');
   }
 };
 
@@ -258,11 +258,11 @@ Blockly.Blocks['tft_print'] = {
   init: function() {
     this.appendValueInput('TEXT')
         .setCheck(null)
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_PRINT || 'TFT Print'));
+        .appendField('🖼️ ' + ((Blockly.Msg as any).BLOCKS_TFT_PRINT || 'TFT Print'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TFT_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TFT_PRINTTOOLTIP || 'Print text at the current cursor position. Call tft_set_cursor first to set position, size and color.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TFT_PRINTTOOLTIP || 'Print text at the current cursor position. Call tft_set_cursor first to set position, size and color.');
   }
 };
 
@@ -278,13 +278,13 @@ generator.forBlock['tft_print'] = function(block: Blockly.Block) {
 Blockly.Blocks['tft_color_rgb'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_COLORRGB || 'TFT Color RGB'))
+        .appendField('🖼️ ' + ((Blockly.Msg as any).BLOCKS_TFT_COLORRGB || 'TFT Color RGB'))
         .appendField('R').appendField(new Blockly.FieldNumber(255, 0, 255), 'R')
         .appendField('G').appendField(new Blockly.FieldNumber(0, 0, 255), 'G')
         .appendField('B').appendField(new Blockly.FieldNumber(0, 0, 255), 'B');
     this.setOutput(true, 'Number');
     this.setColour(TFT_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TFT_COLORRGBTOOLTIP || 'Convert RGB values (0-255 each) to a 16-bit RGB565 color code for use with TFT drawing blocks.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_TFT_COLORRGBTOOLTIP || 'Convert RGB values (0-255 each) to a 16-bit RGB565 color code for use with TFT drawing blocks.');
   }
 };
 

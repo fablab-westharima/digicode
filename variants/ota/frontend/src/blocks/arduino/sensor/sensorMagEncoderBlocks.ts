@@ -27,10 +27,10 @@ AS5600 as5600;`;
 Blockly.Blocks['as5600_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🧲 ' + (Blockly.Msg.BLOCKS_AS5600_INIT || 'AS5600 Init'));
+        .appendField('🧲 ' + ((Blockly.Msg as any).BLOCKS_AS5600_INIT || 'AS5600 Init'));
     this.setOutput(true, 'Boolean');
     this.setColour(MAG_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_AS5600_INITTOOLTIP || 'Initialize AS5600 magnetic encoder via I2C (address 0x36). Returns true if magnet is detected. Requires Seeed_Arduino_AS5600 library.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_AS5600_INITTOOLTIP || 'Initialize AS5600 magnetic encoder via I2C (address 0x36). Returns true if magnet is detected. Requires Seeed_Arduino_AS5600 library.');
   }
 };
 
@@ -45,10 +45,10 @@ generator.forBlock['as5600_init'] = function() {
 Blockly.Blocks['as5600_read_angle'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🧲 ' + (Blockly.Msg.BLOCKS_AS5600_ANGLE || 'AS5600 Angle (°)'));
+        .appendField('🧲 ' + ((Blockly.Msg as any).BLOCKS_AS5600_ANGLE || 'AS5600 Angle (°)'));
     this.setOutput(true, 'Number');
     this.setColour(MAG_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_AS5600_ANGLETOOLTIP || 'Read absolute angle (0-360°) from AS5600 magnetic encoder. Provides 12-bit resolution (0.088°/step).');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_AS5600_ANGLETOOLTIP || 'Read absolute angle (0-360°) from AS5600 magnetic encoder. Provides 12-bit resolution (0.088°/step).');
   }
 };
 
@@ -63,10 +63,10 @@ generator.forBlock['as5600_read_angle'] = function() {
 Blockly.Blocks['as5600_read_raw'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🧲 ' + (Blockly.Msg.BLOCKS_AS5600_RAW || 'AS5600 Raw (0-4095)'));
+        .appendField('🧲 ' + ((Blockly.Msg as any).BLOCKS_AS5600_RAW || 'AS5600 Raw (0-4095)'));
     this.setOutput(true, 'Number');
     this.setColour(MAG_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_AS5600_RAWTOOLTIP || 'Read raw 12-bit encoder value (0-4095) from AS5600. Full rotation = 4096 steps.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_AS5600_RAWTOOLTIP || 'Read raw 12-bit encoder value (0-4095) from AS5600. Full rotation = 4096 steps.');
   }
 };
 

@@ -7,14 +7,6 @@
 import * as Blockly from 'blockly';
 import { javascriptGenerator, Order } from 'blockly/javascript';
 
-// Blockly Mutator pattern: Blockly v10+ lacks public types for dynamic-shape
-// mutator blocks, so we extend Blockly.Block with the custom properties/methods
-// the line_sensor_init block installs for dynamic pin-count input generation.
-interface LineSensorMutatorBlock extends Blockly.Block {
-  pinCount_?: number;
-  updatePinInputs_: (value: string) => string | null | undefined;
-}
-
 // ========================================
 // ラインセンサー初期化（動的ピン入力）
 // ========================================
@@ -29,38 +21,38 @@ const DEFAULT_PINS: Record<number, number[]> = {
 };
 
 Blockly.Blocks['line_sensor_init'] = {
-  init: function(this: LineSensorMutatorBlock) {
+  init: function(this: Blockly.Block) {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_INIT || 'Initialize Line Sensors');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_INIT || 'Initialize Line Sensors');
     this.appendDummyInput('COUNT_INPUT')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_COUNT || 'Sensor Count')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_COUNT || 'Sensor Count')
       .appendField(new Blockly.FieldDropdown(
         [
-          [Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_COUNT2 || '2', '2'],
-          [Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_COUNT3 || '3', '3'],
-          [Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_COUNT4 || '4', '4'],
-          [Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_COUNT5 || '5', '5'],
-          [Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_COUNT6 || '6', '6'],
-          [Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_COUNT8 || '8', '8']
+          [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_COUNT2 || '2', '2'],
+          [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_COUNT3 || '3', '3'],
+          [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_COUNT4 || '4', '4'],
+          [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_COUNT5 || '5', '5'],
+          [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_COUNT6 || '6', '6'],
+          [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_COUNT8 || '8', '8']
         ],
-        this.updatePinInputs_.bind(this)
-      ) as unknown as Blockly.Field, 'COUNT');
+        (this as any).updatePinInputs_.bind(this)
+      ) as any, 'COUNT');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#E91E63');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_INITTOOLTIP || 'Initialize line sensors');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_INITTOOLTIP || 'Initialize line sensors');
 
     // 初期状態で2個のピン入力を追加
-    this.pinCount_ = 2;
-    this.updatePinInputs_('2');
+    (this as any).pinCount_ = 2;
+    (this as any).updatePinInputs_('2');
   },
 
   pinCount_: 2,
 
-  updatePinInputs_: function(this: LineSensorMutatorBlock, newValue: string) {
+  updatePinInputs_: function(this: Blockly.Block, newValue: string) {
     const newCount = parseInt(newValue, 10);
     // oldCount preserved for potential future use in incremental updates
-    const _oldCount = this.pinCount_ || 0;
+    const _oldCount = (this as any).pinCount_ || 0;
 
     // 既存のピン入力を削除
     for (let i = 1; i <= 8; i++) {
@@ -91,23 +83,23 @@ Blockly.Blocks['line_sensor_init'] = {
       rowNum++;
     }
 
-    this.pinCount_ = newCount;
+    (this as any).pinCount_ = newCount;
     return newValue;
   },
 
   // ブロックの状態を保存（XMLシリアライズ用）
-  mutationToDom: function(this: LineSensorMutatorBlock) {
+  mutationToDom: function(this: Blockly.Block) {
     const container = Blockly.utils.xml.createElement('mutation');
-    container.setAttribute('pincount', String(this.pinCount_));
+    container.setAttribute('pincount', String((this as any).pinCount_));
     return container;
   },
 
   // ブロックの状態を復元
-  domToMutation: function(this: LineSensorMutatorBlock, xmlElement: Element) {
+  domToMutation: function(this: Blockly.Block, xmlElement: Element) {
     const count = xmlElement.getAttribute('pincount');
     if (count) {
-      this.pinCount_ = parseInt(count, 10);
-      this.updatePinInputs_(count);
+      (this as any).pinCount_ = parseInt(count, 10);
+      (this as any).updatePinInputs_(count);
       // ドロップダウンの値も更新
       this.setFieldValue(count, 'COUNT');
     }
@@ -178,7 +170,7 @@ javascriptGenerator.forBlock['line_sensor_init'] = function(block: Blockly.Block
 Blockly.Blocks['line_sensor_init_simple'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_INITSIMPLE5 || 'Initialize 5-Point Line Sensor');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_INITSIMPLE5 || 'Initialize 5-Point Line Sensor');
     this.appendDummyInput()
       .appendField('S1')
       .appendField(new Blockly.FieldNumber(36, 0, 39), 'PIN1')
@@ -194,7 +186,7 @@ Blockly.Blocks['line_sensor_init_simple'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#E91E63');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_INITSIMPLE5TOOLTIP || 'Initialize 5-point line sensor');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_INITSIMPLE5TOOLTIP || 'Initialize 5-point line sensor');
   }
 };
 
@@ -259,16 +251,16 @@ javascriptGenerator.forBlock['line_sensor_init_simple'] = function(block: Blockl
 Blockly.Blocks['line_sensor_init_simple_2'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_INITTCRT || 'Initialize TCRT5000 (2 sensors)');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_INITTCRT || 'Initialize TCRT5000 (2 sensors)');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_LEFTS1 || 'Left S1')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_LEFTS1 || 'Left S1')
       .appendField(new Blockly.FieldNumber(36, 0, 39), 'PIN1')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_RIGHTS2 || 'Right S2')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_RIGHTS2 || 'Right S2')
       .appendField(new Blockly.FieldNumber(39, 0, 39), 'PIN2');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#E91E63');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_INITTCRTTOOLTIP || 'Initialize 2-point line sensor');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_INITTCRTTOOLTIP || 'Initialize 2-point line sensor');
   }
 };
 
@@ -330,14 +322,14 @@ javascriptGenerator.forBlock['line_sensor_init_simple_2'] = function(block: Bloc
 Blockly.Blocks['line_sensor_calibrate'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_CALIBRATE || 'Calibrate Line Sensors');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_CALIBRATE || 'Calibrate Line Sensors');
     this.appendValueInput('DURATION')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_DURATION || 'Duration (ms)');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_DURATION || 'Duration (ms)');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#E91E63');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_CALIBRATETOOLTIP || 'Calibrate line sensors');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_CALIBRATETOOLTIP || 'Calibrate line sensors');
   }
 };
 
@@ -365,10 +357,10 @@ javascriptGenerator.forBlock['line_sensor_calibrate'] = function(block: Blockly.
 Blockly.Blocks['line_sensor_position'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_POSITION || 'Line Position');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_POSITION || 'Line Position');
     this.setOutput(true, 'Number');
     this.setColour('#E91E63');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_POSITIONTOOLTIP || 'Get line position');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_POSITIONTOOLTIP || 'Get line position');
   }
 };
 
@@ -382,18 +374,18 @@ javascriptGenerator.forBlock['line_sensor_position'] = function() {
 Blockly.Blocks['line_sensor_value'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_SENSOR || 'Sensor')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_SENSOR || 'Sensor')
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_SENSOR1LEFT || 'S1 (Left)', '0'],
-        [Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_SENSOR2 || 'S2', '1'],
-        [Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_SENSOR3CENTER || 'S3 (Center)', '2'],
-        [Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_SENSOR4 || 'S4', '3'],
-        [Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_SENSOR5RIGHT || 'S5 (Right)', '4']
-      ]) as unknown as Blockly.Field, 'INDEX')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_VALUE || 'Value');
+        [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_SENSOR1LEFT || 'S1 (Left)', '0'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_SENSOR2 || 'S2', '1'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_SENSOR3CENTER || 'S3 (Center)', '2'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_SENSOR4 || 'S4', '3'],
+        [(Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_SENSOR5RIGHT || 'S5 (Right)', '4']
+      ]) as any, 'INDEX')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_VALUE || 'Value');
     this.setOutput(true, 'Number');
     this.setColour('#E91E63');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_VALUETOOLTIP || 'Get sensor value');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_VALUETOOLTIP || 'Get sensor value');
   }
 };
 
@@ -408,13 +400,13 @@ javascriptGenerator.forBlock['line_sensor_value'] = function(block: Blockly.Bloc
 Blockly.Blocks['line_sensor_detected'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_DETECTED || 'Line Detected');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_DETECTED || 'Line Detected');
     this.appendValueInput('THRESHOLD')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_THRESHOLD || 'Threshold');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_THRESHOLD || 'Threshold');
     this.setOutput(true, 'Boolean');
     this.setColour('#E91E63');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_DETECTEDTOOLTIP || 'Check if line is detected');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_DETECTEDTOOLTIP || 'Check if line is detected');
   }
 };
 
@@ -439,12 +431,12 @@ javascriptGenerator.forBlock['line_sensor_detected'] = function(block: Blockly.B
 Blockly.Blocks['line_sensor_raw'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_SENSOR || 'Sensor')
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_SENSOR || 'Sensor')
       .appendField(new Blockly.FieldNumber(0, 0, 7), 'INDEX')
-      .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_RAWVALUE || 'Raw Value');
+      .appendField((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_RAWVALUE || 'Raw Value');
     this.setOutput(true, 'Number');
     this.setColour('#E91E63');
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_RAWVALUETOOLTIP || 'Get raw sensor value');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SENSOR_LINESENSOR_RAWVALUETOOLTIP || 'Get raw sensor value');
   }
 };
 

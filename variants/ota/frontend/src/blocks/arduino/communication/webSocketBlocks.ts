@@ -40,17 +40,17 @@ void wsSetupCallbacks() {
 Blockly.Blocks['websocket_connect'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔌 ' + (Blockly.Msg.BLOCKS_WS_CONNECT || 'WebSocket Connect'))
-        .appendField(Blockly.Msg.BLOCKS_WS_HOST || 'host')
+        .appendField('🔌 ' + ((Blockly.Msg as any).BLOCKS_WS_CONNECT || 'WebSocket Connect'))
+        .appendField((Blockly.Msg as any).BLOCKS_WS_HOST || 'host')
         .appendField(new Blockly.FieldTextInput('192.168.1.100'), 'HOST');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_WS_PORT || 'port')
+        .appendField((Blockly.Msg as any).BLOCKS_WS_PORT || 'port')
         .appendField(new Blockly.FieldNumber(8080, 1, 65535), 'PORT')
-        .appendField(Blockly.Msg.BLOCKS_WS_PATH || 'path')
+        .appendField((Blockly.Msg as any).BLOCKS_WS_PATH || 'path')
         .appendField(new Blockly.FieldTextInput('/'), 'PATH');
     this.setOutput(true, 'Boolean');
     this.setColour(WS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_WS_CONNECTTOOLTIP || 'Connect to a WebSocket server. Returns true if successful. Requires WiFi connection.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_WS_CONNECTTOOLTIP || 'Connect to a WebSocket server. Returns true if successful. Requires WiFi connection.');
   }
 };
 
@@ -71,11 +71,11 @@ Blockly.Blocks['websocket_send'] = {
   init: function() {
     this.appendValueInput('TEXT')
         .setCheck(null)
-        .appendField('🔌 ' + (Blockly.Msg.BLOCKS_WS_SEND || 'WebSocket Send'));
+        .appendField('🔌 ' + ((Blockly.Msg as any).BLOCKS_WS_SEND || 'WebSocket Send'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_WS_SENDTOOLTIP || 'Send a text message to the connected WebSocket server.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_WS_SENDTOOLTIP || 'Send a text message to the connected WebSocket server.');
   }
 };
 
@@ -92,14 +92,14 @@ generator.forBlock['websocket_send'] = function(block: Blockly.Block) {
 Blockly.Blocks['websocket_on_message'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔌 ' + (Blockly.Msg.BLOCKS_WS_ONMESSAGE || 'WebSocket On Message'));
+        .appendField('🔌 ' + ((Blockly.Msg as any).BLOCKS_WS_ONMESSAGE || 'WebSocket On Message'));
     this.appendStatementInput('HANDLER')
         .setCheck(null)
-        .appendField(Blockly.Msg.BLOCKS_WS_HANDLER || 'handler');
+        .appendField((Blockly.Msg as any).BLOCKS_WS_HANDLER || 'handler');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_WS_ONMESSAGETOOLTIP || 'Execute handler when a WebSocket message is received. Use wsMessage variable. Place in loop block.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_WS_ONMESSAGETOOLTIP || 'Execute handler when a WebSocket message is received. Use wsMessage variable. Place in loop block.');
   }
 };
 
@@ -123,10 +123,10 @@ ${handler}  }
 Blockly.Blocks['websocket_is_connected'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔌 ' + (Blockly.Msg.BLOCKS_WS_ISCONNECTED || 'WebSocket Connected?'));
+        .appendField('🔌 ' + ((Blockly.Msg as any).BLOCKS_WS_ISCONNECTED || 'WebSocket Connected?'));
     this.setOutput(true, 'Boolean');
     this.setColour(WS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_WS_ISCONNECTEDTOOLTIP || 'Returns true if currently connected to a WebSocket server.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_WS_ISCONNECTEDTOOLTIP || 'Returns true if currently connected to a WebSocket server.');
   }
 };
 
@@ -141,11 +141,11 @@ generator.forBlock['websocket_is_connected'] = function() {
 Blockly.Blocks['websocket_disconnect'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔌 ' + (Blockly.Msg.BLOCKS_WS_DISCONNECT || 'WebSocket Disconnect'));
+        .appendField('🔌 ' + ((Blockly.Msg as any).BLOCKS_WS_DISCONNECT || 'WebSocket Disconnect'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(WS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_WS_DISCONNECTTOOLTIP || 'Close the WebSocket connection.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_WS_DISCONNECTTOOLTIP || 'Close the WebSocket connection.');
   }
 };
 

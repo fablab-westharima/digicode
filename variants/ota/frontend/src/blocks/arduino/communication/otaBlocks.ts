@@ -19,24 +19,24 @@ const generator = javascriptGenerator as any;
 Blockly.Blocks['ota_setup'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📡 ' + (Blockly.Msg.BLOCKS_OTA_SETUP || 'OTA Setup'));
+        .appendField('📡 ' + ((Blockly.Msg as any).BLOCKS_OTA_SETUP || 'OTA Setup'));
     this.appendDummyInput()
         .appendField('WiFi SSID')
         .appendField(new Blockly.FieldTextInput('your_ssid'), 'SSID');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_WIFI_PASSWORD || 'WiFi Password')
+        .appendField((Blockly.Msg as any).BLOCKS_WIFI_PASSWORD || 'WiFi Password')
         .appendField(new Blockly.FieldTextInput('your_password'), 'WIFI_PASS');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_OTA_HOSTNAME || 'Hostname')
+        .appendField((Blockly.Msg as any).BLOCKS_OTA_HOSTNAME || 'Hostname')
         .appendField(new Blockly.FieldTextInput('esp32-ota'), 'HOSTNAME');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_OTA_PASSWORD || 'OTA Password')
+        .appendField((Blockly.Msg as any).BLOCKS_OTA_PASSWORD || 'OTA Password')
         .appendField(new Blockly.FieldTextInput(''), 'OTA_PASS')
-        .appendField(Blockly.Msg.BLOCKS_OTA_EMPTYNOAUTH || '(empty for no auth)');
+        .appendField((Blockly.Msg as any).BLOCKS_OTA_EMPTYNOAUTH || '(empty for no auth)');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_OTA_SETUPTOOLTIP || 'Setup OTA for firmware updates over WiFi');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_OTA_SETUPTOOLTIP || 'Setup OTA for firmware updates over WiFi');
   }
 };
 
@@ -112,14 +112,14 @@ void otaWifiConnect() {
 Blockly.Blocks['ota_setup_simple'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📡 ' + (Blockly.Msg.BLOCKS_OTA_SETUPSIMPLE || 'Simple OTA Setup'));
+        .appendField('📡 ' + ((Blockly.Msg as any).BLOCKS_OTA_SETUPSIMPLE || 'Simple OTA Setup'));
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_OTA_HOSTNAME || 'Hostname')
+        .appendField((Blockly.Msg as any).BLOCKS_OTA_HOSTNAME || 'Hostname')
         .appendField(new Blockly.FieldTextInput('esp32-ota'), 'HOSTNAME');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_OTA_SETUPSIMPLETOOLTIP || 'Enable OTA when WiFi is already connected (use after mqtt_setup or ha_device_init)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_OTA_SETUPSIMPLETOOLTIP || 'Enable OTA when WiFi is already connected (use after mqtt_setup or ha_device_init)');
   }
 };
 
@@ -153,11 +153,11 @@ javascriptGenerator.forBlock['ota_setup_simple'] = function(block: Blockly.Block
 Blockly.Blocks['ota_loop'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📡 ' + (Blockly.Msg.BLOCKS_OTA_LOOP || 'OTA Loop'));
+        .appendField('📡 ' + ((Blockly.Msg as any).BLOCKS_OTA_LOOP || 'OTA Loop'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_OTA_LOOPTOOLTIP || 'Check for OTA updates. Call in loop().');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_OTA_LOOPTOOLTIP || 'Check for OTA updates. Call in loop().');
   }
 };
 
@@ -173,10 +173,10 @@ javascriptGenerator.forBlock['ota_loop'] = function() {
 Blockly.Blocks['ota_get_hostname'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📡 ' + (Blockly.Msg.BLOCKS_OTA_GETHOSTNAME || 'OTA Hostname'));
+        .appendField('📡 ' + ((Blockly.Msg as any).BLOCKS_OTA_GETHOSTNAME || 'OTA Hostname'));
     this.setOutput(true, 'String');
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_OTA_GETHOSTNAMETOOLTIP || 'Get the configured OTA hostname');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_OTA_GETHOSTNAMETOOLTIP || 'Get the configured OTA hostname');
   }
 };
 
@@ -193,10 +193,10 @@ javascriptGenerator.forBlock['ota_get_hostname'] = function() {
 Blockly.Blocks['esp_restart'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔄 ' + (Blockly.Msg.BLOCKS_ESP_RESTART || 'Restart ESP32'));
+        .appendField('🔄 ' + ((Blockly.Msg as any).BLOCKS_ESP_RESTART || 'Restart ESP32'));
     this.setPreviousStatement(true, null);
     this.setColour('#f44336');
-    this.setTooltip(Blockly.Msg.BLOCKS_ESP_RESTARTTOOLTIP || 'Restart the ESP32');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ESP_RESTARTTOOLTIP || 'Restart the ESP32');
   }
 };
 
@@ -211,12 +211,12 @@ Blockly.Blocks['esp_deep_sleep'] = {
   init: function() {
     this.appendValueInput('SECONDS')
         .setCheck('Number')
-        .appendField('😴 ' + (Blockly.Msg.BLOCKS_ESP_DEEPSLEEP || 'Deep Sleep'));
+        .appendField('😴 ' + ((Blockly.Msg as any).BLOCKS_ESP_DEEPSLEEP || 'Deep Sleep'));
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_UNIT_SECONDS || 'seconds');
+        .appendField((Blockly.Msg as any).BLOCKS_UNIT_SECONDS || 'seconds');
     this.setPreviousStatement(true, null);
     this.setColour('#607D8B');
-    this.setTooltip(Blockly.Msg.BLOCKS_ESP_DEEPSLEEPTOOLTIP || 'Enter deep sleep for the specified seconds (power saving mode)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ESP_DEEPSLEEPTOOLTIP || 'Enter deep sleep for the specified seconds (power saving mode)');
   }
 };
 
@@ -235,13 +235,13 @@ Blockly.Blocks['esp_light_sleep'] = {
   init: function() {
     this.appendValueInput('SECONDS')
         .setCheck('Number')
-        .appendField('💤 ' + (Blockly.Msg.BLOCKS_ESP_LIGHTSLEEP || 'Light Sleep'));
+        .appendField('💤 ' + ((Blockly.Msg as any).BLOCKS_ESP_LIGHTSLEEP || 'Light Sleep'));
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_UNIT_SECONDS || 'seconds');
+        .appendField((Blockly.Msg as any).BLOCKS_UNIT_SECONDS || 'seconds');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#607D8B');
-    this.setTooltip(Blockly.Msg.BLOCKS_ESP_LIGHTSLEEPTOOLTIP || 'Enter light sleep for the specified seconds (continues execution after waking)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ESP_LIGHTSLEEPTOOLTIP || 'Enter light sleep for the specified seconds (continues execution after waking)');
   }
 };
 
@@ -261,10 +261,10 @@ javascriptGenerator.forBlock['esp_light_sleep'] = function(block: Blockly.Block)
 Blockly.Blocks['esp_get_free_heap'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📊 ' + (Blockly.Msg.BLOCKS_ESP_GETFREEHEAP || 'Free Memory (bytes)'));
+        .appendField('📊 ' + ((Blockly.Msg as any).BLOCKS_ESP_GETFREEHEAP || 'Free Memory (bytes)'));
     this.setOutput(true, 'Number');
     this.setColour('#607D8B');
-    this.setTooltip(Blockly.Msg.BLOCKS_ESP_GETFREEHEAPTOOLTIP || 'Get free heap memory in bytes');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ESP_GETFREEHEAPTOOLTIP || 'Get free heap memory in bytes');
   }
 };
 
@@ -278,10 +278,10 @@ javascriptGenerator.forBlock['esp_get_free_heap'] = function() {
 Blockly.Blocks['esp_get_chip_id'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔖 ' + (Blockly.Msg.BLOCKS_ESP_GETCHIPID || 'ESP Chip ID'));
+        .appendField('🔖 ' + ((Blockly.Msg as any).BLOCKS_ESP_GETCHIPID || 'ESP Chip ID'));
     this.setOutput(true, 'String');
     this.setColour('#607D8B');
-    this.setTooltip(Blockly.Msg.BLOCKS_ESP_GETCHIPIDTOOLTIP || 'Get the unique chip ID of the ESP32');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ESP_GETCHIPIDTOOLTIP || 'Get the unique chip ID of the ESP32');
   }
 };
 
@@ -303,10 +303,10 @@ String getChipId() {
 Blockly.Blocks['esp_get_cpu_freq'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⚡ ' + (Blockly.Msg.BLOCKS_ESP_GETCPUFREQ || 'CPU Frequency (MHz)'));
+        .appendField('⚡ ' + ((Blockly.Msg as any).BLOCKS_ESP_GETCPUFREQ || 'CPU Frequency (MHz)'));
     this.setOutput(true, 'Number');
     this.setColour('#607D8B');
-    this.setTooltip(Blockly.Msg.BLOCKS_ESP_GETCPUFREQTOOLTIP || 'Get CPU frequency in MHz');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ESP_GETCPUFREQTOOLTIP || 'Get CPU frequency in MHz');
   }
 };
 
@@ -320,10 +320,10 @@ javascriptGenerator.forBlock['esp_get_cpu_freq'] = function() {
 Blockly.Blocks['esp_get_flash_size'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💾 ' + (Blockly.Msg.BLOCKS_ESP_GETFLASHSIZE || 'Flash Size (bytes)'));
+        .appendField('💾 ' + ((Blockly.Msg as any).BLOCKS_ESP_GETFLASHSIZE || 'Flash Size (bytes)'));
     this.setOutput(true, 'Number');
     this.setColour('#607D8B');
-    this.setTooltip(Blockly.Msg.BLOCKS_ESP_GETFLASHSIZETOOLTIP || 'Get flash memory size in bytes');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ESP_GETFLASHSIZETOOLTIP || 'Get flash memory size in bytes');
   }
 };
 
@@ -337,10 +337,10 @@ javascriptGenerator.forBlock['esp_get_flash_size'] = function() {
 Blockly.Blocks['esp_get_sketch_size'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📏 ' + (Blockly.Msg.BLOCKS_ESP_GETSKETCHSIZE || 'Sketch Size (bytes)'));
+        .appendField('📏 ' + ((Blockly.Msg as any).BLOCKS_ESP_GETSKETCHSIZE || 'Sketch Size (bytes)'));
     this.setOutput(true, 'Number');
     this.setColour('#607D8B');
-    this.setTooltip(Blockly.Msg.BLOCKS_ESP_GETSKETCHSIZETOOLTIP || 'Get current sketch size in bytes');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ESP_GETSKETCHSIZETOOLTIP || 'Get current sketch size in bytes');
   }
 };
 
@@ -354,10 +354,10 @@ javascriptGenerator.forBlock['esp_get_sketch_size'] = function() {
 Blockly.Blocks['esp_get_free_sketch_space'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📏 ' + (Blockly.Msg.BLOCKS_ESP_GETFREESKETCHSPACE || 'Free Sketch Space (bytes)'));
+        .appendField('📏 ' + ((Blockly.Msg as any).BLOCKS_ESP_GETFREESKETCHSPACE || 'Free Sketch Space (bytes)'));
     this.setOutput(true, 'Number');
     this.setColour('#607D8B');
-    this.setTooltip(Blockly.Msg.BLOCKS_ESP_GETFREESKETCHSPACETOOLTIP || 'Get free sketch space for OTA in bytes');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_ESP_GETFREESKETCHSPACETOOLTIP || 'Get free sketch space for OTA in bytes');
   }
 };
 

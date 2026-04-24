@@ -26,7 +26,7 @@ Blockly.Blocks['stepper_init'] = {
   init: function() {
     const pins = getStepperPins();
     // Debug: ブロック作成時のBlockly.Msg値を確認
-    const msgValue = Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_INIT;
+    const msgValue = (Blockly.Msg as any).BLOCKS_ACTUATOR_STEPPER_INIT;
     console.warn('🔧 [stepper_init] BLOCK INIT CALLED! Blockly.Msg value =', msgValue);
     this.appendDummyInput()
         .appendField(msgValue || 'MISSING');

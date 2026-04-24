@@ -25,12 +25,12 @@ const FS_COLOR = '#009688';
 Blockly.Blocks['sd_begin'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📂 ' + (Blockly.Msg.BLOCKS_SD_BEGIN || 'SD Begin'))
-        .appendField(Blockly.Msg.BLOCKS_SD_CSPIN || 'CS pin')
+        .appendField('📂 ' + ((Blockly.Msg as any).BLOCKS_SD_BEGIN || 'SD Begin'))
+        .appendField((Blockly.Msg as any).BLOCKS_SD_CSPIN || 'CS pin')
         .appendField(new Blockly.FieldNumber(5, 0, 39), 'CS_PIN');
     this.setOutput(true, 'Boolean');
     this.setColour(SD_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SD_BEGINTOOLTIP || 'Initialize SD card with the specified CS pin. Returns true if successful.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SD_BEGINTOOLTIP || 'Initialize SD card with the specified CS pin. Returns true if successful.');
   }
 };
 
@@ -46,21 +46,21 @@ generator.forBlock['sd_begin'] = function(block: Blockly.Block) {
 Blockly.Blocks['sd_write'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📂 ' + (Blockly.Msg.BLOCKS_SD_WRITE || 'SD Write'))
+        .appendField('📂 ' + ((Blockly.Msg as any).BLOCKS_SD_WRITE || 'SD Write'))
         .appendField(new Blockly.FieldDropdown([
-          [Blockly.Msg.BLOCKS_SD_APPEND || 'append', 'FILE_APPEND'],
-          [Blockly.Msg.BLOCKS_SD_OVERWRITE || 'overwrite', 'FILE_WRITE'],
+          [(Blockly.Msg as any).BLOCKS_SD_APPEND || 'append', 'FILE_APPEND'],
+          [(Blockly.Msg as any).BLOCKS_SD_OVERWRITE || 'overwrite', 'FILE_WRITE'],
         ]), 'MODE');
     this.appendValueInput('FILENAME')
         .setCheck('String')
-        .appendField(Blockly.Msg.BLOCKS_SD_FILENAME || 'file');
+        .appendField((Blockly.Msg as any).BLOCKS_SD_FILENAME || 'file');
     this.appendValueInput('CONTENT')
         .setCheck(null)
-        .appendField(Blockly.Msg.BLOCKS_SD_CONTENT || 'content');
+        .appendField((Blockly.Msg as any).BLOCKS_SD_CONTENT || 'content');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SD_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SD_WRITETOOLTIP || 'Write content to a file on SD card. Append adds to existing file, Overwrite replaces it.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SD_WRITETOOLTIP || 'Write content to a file on SD card. Append adds to existing file, Overwrite replaces it.');
   }
 };
 
@@ -79,10 +79,10 @@ Blockly.Blocks['sd_read'] = {
   init: function() {
     this.appendValueInput('FILENAME')
         .setCheck('String')
-        .appendField('📂 ' + (Blockly.Msg.BLOCKS_SD_READ || 'SD Read'));
+        .appendField('📂 ' + ((Blockly.Msg as any).BLOCKS_SD_READ || 'SD Read'));
     this.setOutput(true, 'String');
     this.setColour(SD_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SD_READTOOLTIP || 'Read all contents of a file from SD card as a String.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SD_READTOOLTIP || 'Read all contents of a file from SD card as a String.');
   }
 };
 
@@ -106,10 +106,10 @@ Blockly.Blocks['sd_exists'] = {
   init: function() {
     this.appendValueInput('FILENAME')
         .setCheck('String')
-        .appendField('📂 ' + (Blockly.Msg.BLOCKS_SD_EXISTS || 'SD Exists'));
+        .appendField('📂 ' + ((Blockly.Msg as any).BLOCKS_SD_EXISTS || 'SD Exists'));
     this.setOutput(true, 'Boolean');
     this.setColour(SD_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SD_EXISTSTOOLTIP || 'Check if a file exists on SD card. Returns true if found.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SD_EXISTSTOOLTIP || 'Check if a file exists on SD card. Returns true if found.');
   }
 };
 
@@ -126,11 +126,11 @@ Blockly.Blocks['sd_delete'] = {
   init: function() {
     this.appendValueInput('FILENAME')
         .setCheck('String')
-        .appendField('📂 ' + (Blockly.Msg.BLOCKS_SD_DELETE || 'SD Delete'));
+        .appendField('📂 ' + ((Blockly.Msg as any).BLOCKS_SD_DELETE || 'SD Delete'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SD_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SD_DELETETOOLTIP || 'Delete a file from SD card.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SD_DELETETOOLTIP || 'Delete a file from SD card.');
   }
 };
 
@@ -146,23 +146,23 @@ generator.forBlock['sd_delete'] = function(block: Blockly.Block) {
 Blockly.Blocks['sd_csv_append'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📂 ' + (Blockly.Msg.BLOCKS_SD_CSV || 'SD CSV Append'));
+        .appendField('📂 ' + ((Blockly.Msg as any).BLOCKS_SD_CSV || 'SD CSV Append'));
     this.appendValueInput('FILENAME')
         .setCheck('String')
-        .appendField(Blockly.Msg.BLOCKS_SD_FILENAME || 'file');
+        .appendField((Blockly.Msg as any).BLOCKS_SD_FILENAME || 'file');
     this.appendValueInput('COL1')
         .setCheck(null)
-        .appendField(Blockly.Msg.BLOCKS_SD_COL1 || 'col1');
+        .appendField((Blockly.Msg as any).BLOCKS_SD_COL1 || 'col1');
     this.appendValueInput('COL2')
         .setCheck(null)
-        .appendField(Blockly.Msg.BLOCKS_SD_COL2 || 'col2');
+        .appendField((Blockly.Msg as any).BLOCKS_SD_COL2 || 'col2');
     this.appendValueInput('COL3')
         .setCheck(null)
-        .appendField(Blockly.Msg.BLOCKS_SD_COL3 || 'col3');
+        .appendField((Blockly.Msg as any).BLOCKS_SD_COL3 || 'col3');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SD_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SD_CSVTOOLTIP || 'Append a 3-column CSV row to a file on SD card. Ideal for data logging.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_SD_CSVTOOLTIP || 'Append a 3-column CSV row to a file on SD card. Ideal for data logging.');
   }
 };
 
@@ -183,10 +183,10 @@ generator.forBlock['sd_csv_append'] = function(block: Blockly.Block) {
 Blockly.Blocks['fs_mount'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🗂️ ' + (Blockly.Msg.BLOCKS_FS_MOUNT || 'LittleFS Mount'));
+        .appendField('🗂️ ' + ((Blockly.Msg as any).BLOCKS_FS_MOUNT || 'LittleFS Mount'));
     this.setOutput(true, 'Boolean');
     this.setColour(FS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_FS_MOUNTTOOLTIP || 'Mount the LittleFS filesystem. Returns true if successful. ESP32 and RP2040 both supported.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_FS_MOUNTTOOLTIP || 'Mount the LittleFS filesystem. Returns true if successful. ESP32 and RP2040 both supported.');
   }
 };
 
@@ -202,21 +202,21 @@ generator.forBlock['fs_mount'] = function() {
 Blockly.Blocks['fs_write'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🗂️ ' + (Blockly.Msg.BLOCKS_FS_WRITE || 'LittleFS Write'))
+        .appendField('🗂️ ' + ((Blockly.Msg as any).BLOCKS_FS_WRITE || 'LittleFS Write'))
         .appendField(new Blockly.FieldDropdown([
-          [Blockly.Msg.BLOCKS_SD_APPEND || 'append', 'a'],
-          [Blockly.Msg.BLOCKS_SD_OVERWRITE || 'overwrite', 'w'],
+          [(Blockly.Msg as any).BLOCKS_SD_APPEND || 'append', 'a'],
+          [(Blockly.Msg as any).BLOCKS_SD_OVERWRITE || 'overwrite', 'w'],
         ]), 'MODE');
     this.appendValueInput('FILENAME')
         .setCheck('String')
-        .appendField(Blockly.Msg.BLOCKS_SD_FILENAME || 'file');
+        .appendField((Blockly.Msg as any).BLOCKS_SD_FILENAME || 'file');
     this.appendValueInput('CONTENT')
         .setCheck(null)
-        .appendField(Blockly.Msg.BLOCKS_SD_CONTENT || 'content');
+        .appendField((Blockly.Msg as any).BLOCKS_SD_CONTENT || 'content');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(FS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_FS_WRITETOOLTIP || 'Write content to a file in LittleFS (internal flash storage).');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_FS_WRITETOOLTIP || 'Write content to a file in LittleFS (internal flash storage).');
   }
 };
 
@@ -236,10 +236,10 @@ Blockly.Blocks['fs_read'] = {
   init: function() {
     this.appendValueInput('FILENAME')
         .setCheck('String')
-        .appendField('🗂️ ' + (Blockly.Msg.BLOCKS_FS_READ || 'LittleFS Read'));
+        .appendField('🗂️ ' + ((Blockly.Msg as any).BLOCKS_FS_READ || 'LittleFS Read'));
     this.setOutput(true, 'String');
     this.setColour(FS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_FS_READTOOLTIP || 'Read all contents of a file from LittleFS as a String.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_FS_READTOOLTIP || 'Read all contents of a file from LittleFS as a String.');
   }
 };
 
@@ -264,10 +264,10 @@ Blockly.Blocks['fs_exists'] = {
   init: function() {
     this.appendValueInput('FILENAME')
         .setCheck('String')
-        .appendField('🗂️ ' + (Blockly.Msg.BLOCKS_FS_EXISTS || 'LittleFS Exists'));
+        .appendField('🗂️ ' + ((Blockly.Msg as any).BLOCKS_FS_EXISTS || 'LittleFS Exists'));
     this.setOutput(true, 'Boolean');
     this.setColour(FS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_FS_EXISTSTOOLTIP || 'Check if a file exists in LittleFS. Returns true if found.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_FS_EXISTSTOOLTIP || 'Check if a file exists in LittleFS. Returns true if found.');
   }
 };
 
@@ -285,11 +285,11 @@ Blockly.Blocks['fs_delete'] = {
   init: function() {
     this.appendValueInput('FILENAME')
         .setCheck('String')
-        .appendField('🗂️ ' + (Blockly.Msg.BLOCKS_FS_DELETE || 'LittleFS Delete'));
+        .appendField('🗂️ ' + ((Blockly.Msg as any).BLOCKS_FS_DELETE || 'LittleFS Delete'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(FS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_FS_DELETETOOLTIP || 'Delete a file from LittleFS.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_FS_DELETETOOLTIP || 'Delete a file from LittleFS.');
   }
 };
 

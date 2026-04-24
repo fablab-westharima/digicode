@@ -16,28 +16,28 @@ const DIFF_DRIVE_COLOR = '#00897B';
 Blockly.Blocks['diff_drive_init'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_INIT || 'Differential Drive Init'));
+      .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_DIFFDRIVE_INIT || 'Differential Drive Init'));
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_LEFTMOTOR || 'Left Motor IN1')
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_LEFTMOTOR || 'Left Motor IN1')
       .appendField(new Blockly.FieldNumber(16, 0, 39), 'L_IN1')
       .appendField(' IN2')
       .appendField(new Blockly.FieldNumber(17, 0, 39), 'L_IN2')
       .appendField(' ENA')
       .appendField(new Blockly.FieldNumber(5, 0, 39), 'L_ENA');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_RIGHTMOTOR || 'Right Motor IN1')
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_RIGHTMOTOR || 'Right Motor IN1')
       .appendField(new Blockly.FieldNumber(23, 0, 39), 'R_IN1')
       .appendField(' IN2')
       .appendField(new Blockly.FieldNumber(22, 0, 39), 'R_IN2')
       .appendField(' ENB')
       .appendField(new Blockly.FieldNumber(21, 0, 39), 'R_ENB');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_TRACKWIDTH || 'Track Width(mm)')
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_TRACKWIDTH || 'Track Width(mm)')
       .appendField(new Blockly.FieldNumber(100, 1, 1000), 'TRACK_WIDTH');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DIFF_DRIVE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_DIFFDRIVE_INITTOOLTIP || 'Initialize differential drive robot');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_DIFFDRIVE_INITTOOLTIP || 'Initialize differential drive robot');
   }
 };
 
@@ -124,18 +124,18 @@ javascriptGenerator.forBlock['diff_drive_init'] = function(block: Blockly.Block)
 Blockly.Blocks['diff_drive_set_speed'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_SETSPEED || 'Set Speed'));
+      .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_DIFFDRIVE_SETSPEED || 'Set Speed'));
     this.appendValueInput('LEFT')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_LEFT || 'Left');
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_LEFT || 'Left');
     this.appendValueInput('RIGHT')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_RIGHT || 'Right');
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_RIGHT || 'Right');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DIFF_DRIVE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_DIFFDRIVE_SETSPEEDTOOLTIP || 'Set left/right motor speeds (-255 to 255)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_DIFFDRIVE_SETSPEEDTOOLTIP || 'Set left/right motor speeds (-255 to 255)');
   }
 };
 
@@ -151,15 +151,15 @@ javascriptGenerator.forBlock['diff_drive_set_speed'] = function(block: Blockly.B
 Blockly.Blocks['diff_drive_forward'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_FORWARD || 'Forward'));
+      .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_DIFFDRIVE_FORWARD || 'Forward'));
     this.appendValueInput('SPEED')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DIFF_DRIVE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_DIFFDRIVE_FORWARDTOOLTIP || 'Move forward at specified speed (0-255)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_DIFFDRIVE_FORWARDTOOLTIP || 'Move forward at specified speed (0-255)');
   }
 };
 
@@ -174,15 +174,15 @@ javascriptGenerator.forBlock['diff_drive_forward'] = function(block: Blockly.Blo
 Blockly.Blocks['diff_drive_backward'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_BACKWARD || 'Backward'));
+      .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_DIFFDRIVE_BACKWARD || 'Backward'));
     this.appendValueInput('SPEED')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DIFF_DRIVE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_DIFFDRIVE_BACKWARDTOOLTIP || 'Move backward at specified speed (0-255)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_DIFFDRIVE_BACKWARDTOOLTIP || 'Move backward at specified speed (0-255)');
   }
 };
 
@@ -197,15 +197,15 @@ javascriptGenerator.forBlock['diff_drive_backward'] = function(block: Blockly.Bl
 Blockly.Blocks['diff_drive_stop'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_STOP || 'Stop'))
+      .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_DIFFDRIVE_STOP || 'Stop'))
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_DIFFDRIVE_BRAKE || 'Brake', 'BRAKE'],
-        [Blockly.Msg.BLOCKS_DIFFDRIVE_FREE || 'Free', 'FREE']
+        [(Blockly.Msg as any).BLOCKS_DIFFDRIVE_BRAKE || 'Brake', 'BRAKE'],
+        [(Blockly.Msg as any).BLOCKS_DIFFDRIVE_FREE || 'Free', 'FREE']
       ]), 'MODE');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DIFF_DRIVE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_DIFFDRIVE_STOPTOOLTIP || 'Brake=immediate stop, Free=coast to stop');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_DIFFDRIVE_STOPTOOLTIP || 'Brake=immediate stop, Free=coast to stop');
   }
 };
 
@@ -220,19 +220,19 @@ javascriptGenerator.forBlock['diff_drive_stop'] = function(block: Blockly.Block)
 Blockly.Blocks['diff_drive_spin'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_SPIN || 'Spin in Place'))
+      .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_DIFFDRIVE_SPIN || 'Spin in Place'))
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_DIFFDRIVE_RIGHT || 'Right', 'RIGHT'],
-        [Blockly.Msg.BLOCKS_DIFFDRIVE_LEFT || 'Left', 'LEFT']
+        [(Blockly.Msg as any).BLOCKS_DIFFDRIVE_RIGHT || 'Right', 'RIGHT'],
+        [(Blockly.Msg as any).BLOCKS_DIFFDRIVE_LEFT || 'Left', 'LEFT']
       ]), 'DIRECTION');
     this.appendValueInput('SPEED')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DIFF_DRIVE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_DIFFDRIVE_SPINTOOLTIP || 'Rotate left or right in place');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_DIFFDRIVE_SPINTOOLTIP || 'Rotate left or right in place');
   }
 };
 
@@ -252,22 +252,22 @@ javascriptGenerator.forBlock['diff_drive_spin'] = function(block: Blockly.Block)
 Blockly.Blocks['diff_drive_curve'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_CURVE || 'Curve'))
+      .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_DIFFDRIVE_CURVE || 'Curve'))
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_DIFFDRIVE_RIGHT || 'Right', 'RIGHT'],
-        [Blockly.Msg.BLOCKS_DIFFDRIVE_LEFT || 'Left', 'LEFT']
+        [(Blockly.Msg as any).BLOCKS_DIFFDRIVE_RIGHT || 'Right', 'RIGHT'],
+        [(Blockly.Msg as any).BLOCKS_DIFFDRIVE_LEFT || 'Left', 'LEFT']
       ]), 'DIRECTION');
     this.appendValueInput('SPEED')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.appendValueInput('RATIO')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_CURVATURE || 'Curvature(0-100%)');
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_CURVATURE || 'Curvature(0-100%)');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DIFF_DRIVE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_DIFFDRIVE_CURVETOOLTIP || 'Curve driving. Curvature 0%=straight, 100%=spin');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_DIFFDRIVE_CURVETOOLTIP || 'Curve driving. Curvature 0%=straight, 100%=spin');
   }
 };
 
@@ -297,18 +297,18 @@ javascriptGenerator.forBlock['diff_drive_curve'] = function(block: Blockly.Block
 Blockly.Blocks['diff_drive_forward_distance'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_FORWARDDISTANCE || 'Forward Distance'));
+      .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_DIFFDRIVE_FORWARDDISTANCE || 'Forward Distance'));
     this.appendValueInput('DISTANCE')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_DISTANCE || 'Distance(mm)');
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_DISTANCE || 'Distance(mm)');
     this.appendValueInput('SPEED')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DIFF_DRIVE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_DIFFDRIVE_FORWARDDISTANCETOOLTIP || 'Drive forward specified distance (encoder required)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_DIFFDRIVE_FORWARDDISTANCETOOLTIP || 'Drive forward specified distance (encoder required)');
   }
 };
 
@@ -337,24 +337,24 @@ javascriptGenerator.forBlock['diff_drive_forward_distance'] = function(block: Bl
 Blockly.Blocks['diff_drive_rotate_angle'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_ROTATEANGLE || 'Rotate'));
+      .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_DIFFDRIVE_ROTATEANGLE || 'Rotate'));
     this.appendValueInput('ANGLE')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_ANGLE || 'Angle(degrees)');
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_ANGLE || 'Angle(degrees)');
     this.appendValueInput('SPEED')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_DIRECTION || 'Direction')
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_DIRECTION || 'Direction')
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_DIFFDRIVE_RIGHT || 'Right', 'RIGHT'],
-        [Blockly.Msg.BLOCKS_DIFFDRIVE_LEFT || 'Left', 'LEFT']
+        [(Blockly.Msg as any).BLOCKS_DIFFDRIVE_RIGHT || 'Right', 'RIGHT'],
+        [(Blockly.Msg as any).BLOCKS_DIFFDRIVE_LEFT || 'Left', 'LEFT']
       ]), 'DIRECTION');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DIFF_DRIVE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_DIFFDRIVE_ROTATEANGLETOOLTIP || 'Rotate specified angle (encoder required)');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_DIFFDRIVE_ROTATEANGLETOOLTIP || 'Rotate specified angle (encoder required)');
   }
 };
 
@@ -390,21 +390,21 @@ javascriptGenerator.forBlock['diff_drive_rotate_angle'] = function(block: Blockl
 Blockly.Blocks['diff_drive_line_trace'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_LINETRACE || 'Line Trace'));
+      .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_DIFFDRIVE_LINETRACE || 'Line Trace'));
     this.appendValueInput('BASE_SPEED')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_BASESPEED || 'Base Speed');
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_BASESPEED || 'Base Speed');
     this.appendValueInput('ERROR')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_ERROR || 'Error');
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_ERROR || 'Error');
     this.appendValueInput('CORRECTION')
       .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_PIDCORRECTION || 'PID Correction');
+      .appendField((Blockly.Msg as any).BLOCKS_DIFFDRIVE_PIDCORRECTION || 'PID Correction');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DIFF_DRIVE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_DIFFDRIVE_LINETRACETOOLTIP || 'Line trace driving with PID correction');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_DIFFDRIVE_LINETRACETOOLTIP || 'Line trace driving with PID correction');
   }
 };
 
@@ -426,14 +426,14 @@ javascriptGenerator.forBlock['diff_drive_line_trace'] = function(block: Blockly.
 Blockly.Blocks['diff_drive_get_speed'] = {
   init: function() {
     this.appendDummyInput()
-      .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_GETSPEED || 'Current Speed'))
+      .appendField('🚗 ' + ((Blockly.Msg as any).BLOCKS_DIFFDRIVE_GETSPEED || 'Current Speed'))
       .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_DIFFDRIVE_LEFT || 'Left', 'LEFT'],
-        [Blockly.Msg.BLOCKS_DIFFDRIVE_RIGHT || 'Right', 'RIGHT']
+        [(Blockly.Msg as any).BLOCKS_DIFFDRIVE_LEFT || 'Left', 'LEFT'],
+        [(Blockly.Msg as any).BLOCKS_DIFFDRIVE_RIGHT || 'Right', 'RIGHT']
       ]), 'MOTOR');
     this.setOutput(true, 'Number');
     this.setColour(DIFF_DRIVE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_DIFFDRIVE_GETSPEEDTOOLTIP || 'Get currently set motor speed');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_DIFFDRIVE_GETSPEEDTOOLTIP || 'Get currently set motor speed');
   }
 };
 

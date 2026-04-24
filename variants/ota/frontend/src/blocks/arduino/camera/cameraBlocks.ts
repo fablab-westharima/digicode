@@ -36,7 +36,7 @@ camera_fb_t* camFb = nullptr;`;
 Blockly.Blocks['camera_init'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📷 ' + (Blockly.Msg.BLOCKS_CAM_INIT || 'Camera Init'))
+        .appendField('📷 ' + ((Blockly.Msg as any).BLOCKS_CAM_INIT || 'Camera Init'))
         .appendField(new Blockly.FieldDropdown([
           ['ESP32-CAM (AI-Thinker)', 'AI_THINKER'],
           ['XIAO ESP32S3 Sense', 'XIAO_ESP32S3'],
@@ -46,7 +46,7 @@ Blockly.Blocks['camera_init'] = {
         ]), 'MODEL');
     this.setOutput(true, 'Boolean');
     this.setColour(CAM_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_CAM_INITTOOLTIP || 'Initialize camera. Select your board model — all pins are automatically configured. Returns true if successful. Call in setup block.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_CAM_INITTOOLTIP || 'Initialize camera. Select your board model — all pins are automatically configured. Returns true if successful. Call in setup block.');
   }
 };
 
@@ -79,10 +79,10 @@ generator.forBlock['camera_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['camera_capture'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📷 ' + (Blockly.Msg.BLOCKS_CAM_CAPTURE || 'Camera Capture'));
+        .appendField('📷 ' + ((Blockly.Msg as any).BLOCKS_CAM_CAPTURE || 'Camera Capture'));
     this.setOutput(true, 'Boolean');
     this.setColour(CAM_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_CAM_CAPTURETOOLTIP || 'Take a photo and store in internal buffer. Returns true if successful. Call camera_save_sd or camera_send_http to use the captured image.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_CAM_CAPTURETOOLTIP || 'Take a photo and store in internal buffer. Returns true if successful. Call camera_save_sd or camera_send_http to use the captured image.');
   }
 };
 
@@ -102,10 +102,10 @@ Blockly.Blocks['camera_save_sd'] = {
   init: function() {
     this.appendValueInput('FILENAME')
         .setCheck('String')
-        .appendField('📷 ' + (Blockly.Msg.BLOCKS_CAM_SAVESD || 'Camera Save SD'));
+        .appendField('📷 ' + ((Blockly.Msg as any).BLOCKS_CAM_SAVESD || 'Camera Save SD'));
     this.setOutput(true, 'Boolean');
     this.setColour(CAM_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_CAM_SAVESDTOOLTIP || 'Save the captured image to SD card as JPEG. Call camera_capture first. Returns true if saved successfully. Requires SD to be initialized (sd_begin block).');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_CAM_SAVESDTOOLTIP || 'Save the captured image to SD card as JPEG. Call camera_capture first. Returns true if saved successfully. Requires SD to be initialized (sd_begin block).');
   }
 };
 
@@ -131,10 +131,10 @@ Blockly.Blocks['camera_send_http'] = {
   init: function() {
     this.appendValueInput('URL')
         .setCheck('String')
-        .appendField('📷 ' + (Blockly.Msg.BLOCKS_CAM_SENDHTTP || 'Camera Send HTTP'));
+        .appendField('📷 ' + ((Blockly.Msg as any).BLOCKS_CAM_SENDHTTP || 'Camera Send HTTP'));
     this.setOutput(true, 'Boolean');
     this.setColour(CAM_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_CAM_SENDHTTPTOOLTIP || 'Send captured image via HTTP POST to a URL. Call camera_capture first. WiFi connection required. Returns true if sent successfully.');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_CAM_SENDHTTPTOOLTIP || 'Send captured image via HTTP POST to a URL. Call camera_capture first. WiFi connection required. Returns true if sent successfully.');
   }
 };
 
@@ -161,13 +161,13 @@ generator.forBlock['camera_send_http'] = function(block: Blockly.Block) {
 Blockly.Blocks['camera_stream_start'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📷 ' + (Blockly.Msg.BLOCKS_CAM_STREAM || 'Camera Stream Start'))
-        .appendField(Blockly.Msg.BLOCKS_CAM_PORT || 'port')
+        .appendField('📷 ' + ((Blockly.Msg as any).BLOCKS_CAM_STREAM || 'Camera Stream Start'))
+        .appendField((Blockly.Msg as any).BLOCKS_CAM_PORT || 'port')
         .appendField(new Blockly.FieldNumber(81, 1, 65535), 'PORT');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(CAM_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_CAM_STREAMTOOLTIP || 'Start MJPEG streaming server on the specified port. WiFi required. View in browser: http://<ESP32-IP>:<port>/stream');
+    this.setTooltip((Blockly.Msg as any).BLOCKS_CAM_STREAMTOOLTIP || 'Start MJPEG streaming server on the specified port. WiFi required. View in browser: http://<ESP32-IP>:<port>/stream');
   }
 };
 
