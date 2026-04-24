@@ -3398,20 +3398,6 @@
     "restartRequired": "⚠ 安裝後需重新啟動電腦。",
     "downloadApple": "下載（Apple 官方）"
   },
-  "mobileWarning": {
-    "title": "請使用桌面版",
-    "description": "DigiCode 是<strong>專為 PC 設計</strong>的積木編輯器。韌體寫入、裝置設定等所有功能皆需桌面環境。",
-    "requirements": {
-      "title": "建議環境",
-      "resolution": "螢幕解析度:",
-      "resolutionValue": "1024px × 768px 以上",
-      "os": "支援作業系統:",
-      "osValue": "Windows / macOS / Linux",
-      "browser": "瀏覽器:",
-      "browserValue": "Chrome、Firefox、Edge（最新版）"
-    },
-    "notSupported": "不支援智慧型手機和平板裝置。"
-  },
   "modeSelector": {
     "groups": {
       "robots": "Robots",

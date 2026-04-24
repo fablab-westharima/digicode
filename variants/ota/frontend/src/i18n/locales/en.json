@@ -1098,20 +1098,6 @@
     "restartRequired": "⚠ A PC restart is required after installation.",
     "downloadApple": "Download (Apple official)"
   },
-  "mobileWarning": {
-    "title": "Please Use the Desktop Version",
-    "description": "DigiCode is a <strong>PC-only</strong> block editor. All features—firmware flashing, device settings, and more—are designed for desktop use.",
-    "requirements": {
-      "title": "Recommended Environment",
-      "resolution": "Screen Resolution:",
-      "resolutionValue": "1024px × 768px or higher",
-      "os": "Supported OS:",
-      "osValue": "Windows / macOS / Linux",
-      "browser": "Browser:",
-      "browserValue": "Chrome, Firefox, Edge (latest)"
-    },
-    "notSupported": "Smartphones and tablets are not supported."
-  },
   "tutorial": {
     "selectTutorial": "Select Tutorial",
     "selectTutorialDesc": "Learn programming step by step",

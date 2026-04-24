@@ -1098,20 +1098,6 @@
     "restartRequired": "⚠ インストール後、PCの再起動が必要です。",
     "downloadApple": "ダウンロード（Apple公式）"
   },
-  "mobileWarning": {
-    "title": "デスクトップ版をご利用ください",
-    "description": "DigiCodeは<strong>PC専用</strong>のブロックエディタです。ファームウェアの書き込みやデバイス設定など、すべての機能はデスクトップ環境を前提としています。",
-    "requirements": {
-      "title": "推奨環境",
-      "resolution": "画面解像度:",
-      "resolutionValue": "1024px × 768px 以上",
-      "os": "対応OS:",
-      "osValue": "Windows / macOS / Linux",
-      "browser": "ブラウザ:",
-      "browserValue": "Chrome, Firefox, Edge (最新版)"
-    },
-    "notSupported": "スマートフォン・タブレットでの動作はサポートしていません。"
-  },
   "tutorial": {
     "selectTutorial": "チュートリアルを選択",
     "selectTutorialDesc": "ステップバイステップでプログラミングを学びましょう",

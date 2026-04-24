@@ -3398,20 +3398,6 @@
     "restartRequired": "⚠ É necessário reiniciar o PC após a instalação.",
     "downloadApple": "Baixar (oficial da Apple)"
   },
-  "mobileWarning": {
-    "title": "Use a versão para desktop",
-    "description": "O DigiCode é um editor de blocos <strong>exclusivo para PC</strong>. Todas as funcionalidades—gravação de firmware, configurações de dispositivo e mais—requerem um ambiente desktop.",
-    "requirements": {
-      "title": "Ambiente recomendado",
-      "resolution": "Resolução da tela:",
-      "resolutionValue": "1024px × 768px ou superior",
-      "os": "Sistema operacional:",
-      "osValue": "Windows / macOS / Linux",
-      "browser": "Navegador:",
-      "browserValue": "Chrome, Firefox, Edge (versão mais recente)"
-    },
-    "notSupported": "O uso em smartphones e tablets não é suportado."
-  },
   "modeSelector": {
     "groups": {
       "_deleted_competition": "",

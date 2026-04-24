@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { EmailVerificationWaiting } from '@/components/auth/EmailVerificationWaiting';
-import { MobileWarning } from '@/components/MobileWarning';
 import { EditorPage } from '@/pages/EditorPage';
 import { FirmwareInstaller } from '@/pages/FirmwareInstaller';
 import { DocsPage } from '@/pages/DocsPage';
@@ -20,23 +19,6 @@ import { ClassDetailPage } from '@/pages/ClassDetailPage';
 import { AssignmentSubmissionsPage } from '@/pages/AssignmentSubmissionsPage';
 import PlanPage from '@/pages/PlanPage';
 import { initBlocklyMessages } from '@/utils/blocklyMessages';
-
-// モバイルデバイス検出フック
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  return isMobile;
-}
 
 // 保護されたルート
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -130,17 +112,6 @@ function AuthRoute() {
   );
 }
 
-// エディタページラッパー（モバイル検出付き）
-function EditorRoute() {
-  const isMobile = useIsMobile();
-
-  if (isMobile) {
-    return <MobileWarning />;
-  }
-
-  return <EditorPage />;
-}
-
 function App() {
   const { checkAuth } = useAuthStore();
 
@@ -186,7 +157,7 @@ function App() {
         } />
         <Route
           path="/"
-          element={<EditorRoute />}
+          element={<EditorPage />}
         />
         {/* 以下のルートはPhase 5で削除予定（EditorPage内に統合） */}
         <Route
