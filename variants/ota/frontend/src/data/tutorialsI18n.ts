@@ -35,7 +35,6 @@ const overrides: Record<string, LocaleOverride> = {
     categories: {
       basic: { name: 'Basics', description: 'Programming fundamentals' },
       robots: { name: 'Robots', description: 'Move your robot' },
-      competition: { name: 'Competition Robots', description: 'Line tracing etc.' },
     },
     tutorials: {
       'led-blink': {
@@ -94,27 +93,17 @@ const overrides: Record<string, LocaleOverride> = {
         steps: {
           'dance-1': {
             title: 'Dance Performance',
-            content: 'Run Swing → Dance → Moonwalker → Crusaito → Jitter → UpDown in sequence.',
-          },
-        },
-      },
-      'humanoid-touch': {
-        title: 'Touch Control',
-        description: 'Move the humanoid with a touch sensor',
-        steps: {
-          'touch-1': {
-            title: 'Touch Control',
-            content: 'Touching GPIO4 makes the humanoid happy and take two steps forward.',
+            content: 'Run Swing → Dance → Moonwalker → Jump in sequence.',
           },
         },
       },
       'humanoid-sound-react': {
-        title: 'Sound Reaction',
-        description: 'Humanoid reacts to claps and voice',
+        title: 'Sound and Dance',
+        description: 'Humanoid plays sound while dancing',
         steps: {
           'sound-1': {
-            title: 'Sound Reaction',
-            content: 'When a clap or loud sound is detected, the humanoid becomes super happy and dances. Adjust the threshold for your environment.',
+            title: 'Sound and Dance',
+            content: 'The humanoid plays the "Super Happy" sound while performing a dance loop.',
           },
         },
       },
@@ -134,7 +123,6 @@ const overrides: Record<string, LocaleOverride> = {
     categories: {
       basic: { name: 'Básicos', description: 'Fundamentos de programación' },
       robots: { name: 'Robots', description: 'Mueve tu robot' },
-      competition: { name: 'Robots de competición', description: 'Seguimiento de línea, etc.' },
     },
     tutorials: {
       'led-blink': {
@@ -193,27 +181,17 @@ const overrides: Record<string, LocaleOverride> = {
         steps: {
           'dance-1': {
             title: 'Coreografía',
-            content: 'Ejecuta Swing → Dance → Moonwalker → Crusaito → Jitter → UpDown en secuencia.',
-          },
-        },
-      },
-      'humanoid-touch': {
-        title: 'Control por tacto',
-        description: 'Mueve al Humanoid con un sensor táctil',
-        steps: {
-          'touch-1': {
-            title: 'Control por tacto',
-            content: 'Al tocar GPIO4 el robot se pone feliz y da dos pasos adelante.',
+            content: 'Ejecuta Swing → Dance → Moonwalker → Jump en secuencia.',
           },
         },
       },
       'humanoid-sound-react': {
-        title: 'Reacción al sonido',
-        description: 'El Humanoid reacciona a aplausos y voz',
+        title: 'Sonido y baile',
+        description: 'El Humanoid reproduce sonido mientras baila',
         steps: {
           'sound-1': {
-            title: 'Reacción al sonido',
-            content: 'Al detectar un aplauso o ruido fuerte, el robot se pone muy feliz y baila. Ajusta el umbral según tu entorno.',
+            title: 'Sonido y baile',
+            content: 'El robot reproduce el sonido "Super Happy" mientras realiza un bucle de baile.',
           },
         },
       },
@@ -233,7 +211,6 @@ const overrides: Record<string, LocaleOverride> = {
     categories: {
       basic: { name: 'Básico', description: 'Fundamentos de programação' },
       robots: { name: 'Robôs', description: 'Mover o robot' },
-      competition: { name: 'Robôs de competição', description: 'Seguimento de linha, etc.' },
     },
     tutorials: {
       'led-blink': {
@@ -292,27 +269,17 @@ const overrides: Record<string, LocaleOverride> = {
         steps: {
           'dance-1': {
             title: 'Coreografia',
-            content: 'Executa Swing → Dance → Moonwalker → Crusaito → Jitter → UpDown em sequência.',
-          },
-        },
-      },
-      'humanoid-touch': {
-        title: 'Controlo por toque',
-        description: 'Mover o Humanoid com um sensor de toque',
-        steps: {
-          'touch-1': {
-            title: 'Controlo por toque',
-            content: 'Ao tocar em GPIO4, o robot fica feliz e dá dois passos em frente.',
+            content: 'Executa Swing → Dance → Moonwalker → Jump em sequência.',
           },
         },
       },
       'humanoid-sound-react': {
-        title: 'Reação ao som',
-        description: 'O Humanoid reage a palmas e voz',
+        title: 'Som e dança',
+        description: 'O Humanoid reproduz som enquanto dança',
         steps: {
           'sound-1': {
-            title: 'Reação ao som',
-            content: 'Ao detetar uma palma ou som alto, o robot fica muito feliz e dança. Ajuste o limiar ao seu ambiente.',
+            title: 'Som e dança',
+            content: 'O robot reproduz o som "Super Happy" enquanto executa um loop de dança.',
           },
         },
       },
@@ -332,7 +299,6 @@ const overrides: Record<string, LocaleOverride> = {
     categories: {
       basic: { name: '基礎', description: '程式設計基礎' },
       robots: { name: '機器人', description: '讓機器人動起來' },
-      competition: { name: '競賽機器人', description: '循線等' },
     },
     tutorials: {
       'led-blink': {
@@ -391,27 +357,17 @@ const overrides: Record<string, LocaleOverride> = {
         steps: {
           'dance-1': {
             title: '舞蹈表演',
-            content: '依序執行 Swing → Dance → Moonwalker → Crusaito → Jitter → UpDown。',
-          },
-        },
-      },
-      'humanoid-touch': {
-        title: '觸控操作',
-        description: '用觸控感測器讓 Humanoid 動',
-        steps: {
-          'touch-1': {
-            title: '觸控操作',
-            content: '觸碰 GPIO4 時 Humanoid 會高興並前進兩步。',
+            content: '依序執行 Swing → Dance → Moonwalker → Jump。',
           },
         },
       },
       'humanoid-sound-react': {
-        title: '聲音反應',
-        description: 'Humanoid 會對拍手或聲音做出反應',
+        title: '聲音與舞蹈',
+        description: 'Humanoid 邊發出聲音邊跳舞',
         steps: {
           'sound-1': {
-            title: '聲音反應',
-            content: '偵測到拍手或大聲響時,Humanoid 會超開心並跳舞。請依環境調整閾值。',
+            title: '聲音與舞蹈',
+            content: '機器人發出「Super Happy」音效並重複跳舞。',
           },
         },
       },

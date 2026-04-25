@@ -1345,16 +1345,12 @@
         "numLeds": "Nº LEDs",
         "distance": "📏 Distância RUS-04 (cm)",
         "rgbBoth": "🌈 RUS-04 RGB Ambos Olhos",
-        "rgbEye": "👁️ RUS-04 RGB Olho",
-        "brightness": "☀️ RUS-04 RGB Brilho",
         "off": "⬛ RUS-04 RGB Desligar",
         "left": "Esquerda",
         "right": "Direita",
         "initTooltip": "Inicializa sensor ultrassónico RUS-04 (RGB integrado)",
         "distanceTooltip": "Mede distância com RUS-04 (requer inicialização)",
         "rgbTooltip": "Configura cores RGB dos olhos esquerdo e direito",
-        "eyeTooltip": "Configura cor do olho individual",
-        "brightnessTooltip": "Configura brilho dos LEDs (0-255)",
         "offTooltip": "Desliga ambos os olhos",
         "bothSimpleTooltip": "Configura cor de ambos os olhos"
       },
@@ -1367,29 +1363,6 @@
         "cyan": "Ciano",
         "white": "Branco",
         "off": "Desligado"
-      },
-      "touch": {
-        "init": "👆 Sensor Táctil Inicializar",
-        "threshold": "Limiar",
-        "read": "👆 Tocado?",
-        "value": "👆 Valor Táctil",
-        "initTooltip": "Inicializa sensor táctil capacitivo",
-        "readTooltip": "Retorna se o sensor táctil está tocado",
-        "valueTooltip": "Retorna valor bruto do sensor táctil"
-      },
-      "sound": {
-        "init": "🎤 Sensor de Som Inicializar",
-        "level": "🎤 Nível de Som",
-        "detected": "🎤 Som Detetado?",
-        "initTooltip": "Inicializa sensor de som/microfone analógico",
-        "levelTooltip": "Retorna nível de som (0-4095)",
-        "detectedTooltip": "Retorna se o som excede o limiar"
-      },
-      "light": {
-        "init": "☀️ Sensor de Luz Inicializar",
-        "level": "☀️ Nível de Luz",
-        "initTooltip": "Inicializa sensor de luz (CdS, fotorresistor)",
-        "levelTooltip": "Retorna nível de luz (0-4095)"
       }
     },
     "display": {
@@ -1412,18 +1385,10 @@
       "oledClearTooltip": "Limpar o ecrã OLED",
       "oledShow": "Atualizar OLED",
       "oledShowTooltip": "Atualizar o ecrã OLED",
-      "oledLine": "Desenhar linha",
-      "oledLineTooltip": "Desenhar uma linha no OLED",
-      "startX": "Início X:",
       "startY": "Y:",
-      "endX": "Fim X:",
       "endY": "Y:",
-      "oledRect": "Desenhar retângulo",
-      "oledRectTooltip": "Desenhar um retângulo no OLED",
       "widthLabel": "Largura:",
-      "heightLabel": "Altura:",
-      "outline": "Contorno",
-      "filled": "Preenchido"
+      "heightLabel": "Altura:"
     },
     "audio": {
       "buzzerTone": "Tom da buzina",
@@ -1520,41 +1485,6 @@
       "builtinLedOff": {
         "label": "LED integrado DESLIGADO",
         "tooltip": "Desligar LED integrado do ESP32 (GPIO2)"
-      },
-      "tone": {
-        "pin": "Pin",
-        "frequency": "frequência Hz",
-        "play": "reproduzir tom",
-        "tooltip": "Reproduzir tom na frequência especificada"
-      },
-      "servoWrite": {
-        "pin": "Pin",
-        "servo": "servo",
-        "degrees": "graus",
-        "tooltip": "Mover servo para o ângulo especificado (0-180 graus) [Premium]"
-      },
-      "neopixel": {
-        "neopixel": "NeoPixel",
-        "index": "LED #",
-        "tooltip": "Definir cor do LED NeoPixel (RGB: 0-255) [Premium]"
-      },
-      "ultrasonic": {
-        "label": "Sensor ultrassónico",
-        "tooltip": "Medir distância com sensor ultrassónico (cm) [Premium]"
-      },
-      "i2cWrite": {
-        "address": "Endereço I2C",
-        "data": "dados",
-        "write": "escrever",
-        "tooltip": "Escrever dados no dispositivo I2C [Premium]"
-      },
-      "dhtRead": {
-        "sensor": "DHT",
-        "pin": "pin",
-        "read": "ler",
-        "temperature": "Temperatura",
-        "humidity": "Humidade",
-        "tooltip": "Ler temperatura ou humidade do sensor DHT11/DHT22 [Premium]"
       }
     },
     "actuator": {
@@ -1633,18 +1563,12 @@
       "showTooltip": "Aplicar configurações de cor aos LEDs",
       "clear": "Limpar todos os NeoPixels",
       "clearTooltip": "Desligar todos os LEDs",
-      "brightness": "Definir brilho",
-      "brightnessTooltip": "Definir brilho do LED (0-255)",
       "range": "(0-255)",
       "rainbow": "Efeito arco-íris",
       "rainbowTooltip": "Mostrar efeito arco-íris",
       "speedNormal": "Normal",
       "speedFast": "Rápido",
       "speedSlow": "Lento",
-      "bounce": "Efeito ressalto",
-      "bounceTooltip": "O LED ressalta de esquerda para direita",
-      "cycle": "Efeito ciclo",
-      "cycleTooltip": "O LED roda em volta",
       "colorRed": "Vermelho",
       "colorOrange": "Laranja",
       "colorYellow": "Amarelo",
@@ -1658,8 +1582,7 @@
       "colorOff": "Desligado",
       "colorSimple": "Cor de todos os LEDs",
       "colorSimpleTooltip": "Definir todos os LEDs para a cor especificada",
-      "lightSimple": "LED #",
-      "lightSimpleTooltip": "Definir cor do LED especificado"
+      "lightSimple": "LED #"
     },
     "diffDrive": {
       "init": "Iniciar tração diferencial",
@@ -1739,12 +1662,7 @@
       "setGainsTooltip": "Alterar dinamicamente os ganhos PID",
       "reset": "Redefinir",
       "resetTooltip": "Reiniciar valores integral e derivada do PID",
-      "lineTracePid": "Cálculo PID de seguimento",
-      "lineTracePidTooltip": "Devolve a velocidade do motor controlada por PID para seguimento de linha",
       "baseSpeed": "Velocidade base",
-      "linePosition": "Posição da linha",
-      "leftMotorSpeed": "→ Velocidade motor esquerdo",
-      "rightMotorSpeed": "→ Velocidade motor direito",
       "motorSpeedCalc": "Cálculo PID de velocidade do motor",
       "motorSpeedCalcTooltip": "Calcular velocidades dos motores esquerdo/direito com PID e guardar em variáveis globais",
       "getSpeed": "PID calculado",
@@ -1769,8 +1687,6 @@
       "putTooltip": "Enviar pedido PUT para o URL especificado",
       "delete": "HTTP DELETE",
       "deleteTooltip": "Enviar pedido DELETE para o URL especificado (devolve código de estado HTTP)",
-      "lastStatus": "Último estado HTTP",
-      "lastStatusTooltip": "Obter o código de estado do último pedido HTTP",
       "isSuccess": "é sucesso (2xx)",
       "isSuccessTooltip": "Verificar se o código de estado HTTP está no intervalo 200",
       "status": "Estado HTTP",
@@ -2197,34 +2113,6 @@
         "fart1": "Peido 1",
         "fart2": "Peido 2",
         "fart3": "Peido 3"
-      },
-      "crusaito": {
-        "label": "Humanoid Crusaito",
-        "tooltip": "Mover com pernas cruzadas"
-      },
-      "flapping": {
-        "label": "Humanoid abanar",
-        "tooltip": "Fazer movimento de abanar"
-      },
-      "tiptoeSwing": {
-        "label": "Humanoid balanceio em bicos de pés",
-        "tooltip": "Balançar em bicos de pés"
-      },
-      "jitter": {
-        "label": "Humanoid tremer",
-        "tooltip": "Fazer movimento de tremer"
-      },
-      "ascendingTurn": {
-        "label": "Humanoid virar ascendente",
-        "tooltip": "Virar enquanto ascende"
-      },
-      "shakeLeg": {
-        "label": "Humanoid sacudir perna",
-        "tooltip": "Sacudir perna"
-      },
-      "updown": {
-        "label": "Humanoid cima baixo",
-        "tooltip": "Mover para cima e para baixo"
       }
     },
     "transform": {
@@ -2242,14 +2130,6 @@
         "label": "Ninja transformar",
         "tooltip": "Transformação física com movimento de servo (Walk↔Roll)"
       },
-      "align": {
-        "label": "Ninja alinhar",
-        "tooltip": "Ajustar ângulos de servo"
-      },
-      "calibrate": {
-        "label": "Ninja calibrar",
-        "tooltip": "Ajustar desvios esquerdo e direito"
-      },
       "home": {
         "label": "Ninja início",
         "tooltip": "Colocar em posição vertical"
@@ -2258,19 +2138,9 @@
         "label": "Ninja andar",
         "tooltip": "Andar em modo Walk"
       },
-      "walkPower": {
-        "label": "Ninja andar",
-        "power": "%",
-        "tooltip": "Andar em modo Walk (com especificação de potência)"
-      },
       "roll": {
         "label": "Ninja rolar",
         "tooltip": "Rolar em modo Roll"
-      },
-      "rollPower": {
-        "label": "Ninja rolar",
-        "power": "%",
-        "tooltip": "Rolar em modo Roll (com especificação de potência)"
       },
       "rollRotate": {
         "label": "Ninja rodar a rolar",
@@ -2284,17 +2154,9 @@
         "label": "Ninja parar",
         "tooltip": "Parar modo especificado"
       },
-      "trot": {
-        "label": "Ninja trotar",
-        "tooltip": "Andar rápido"
-      },
       "pushup": {
         "label": "Ninja flexão",
         "tooltip": "Fazer flexões"
-      },
-      "lateral": {
-        "label": "Ninja lateral",
-        "tooltip": "Deslocar para o lado"
       },
       "dance": {
         "label": "Ninja dançar",

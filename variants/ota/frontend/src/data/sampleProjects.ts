@@ -200,92 +200,30 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-<statement name="SETUP">
+        <statement name="SETUP">
           <block type="servo_attach">
             <field name="PIN">13</field>
           </block>
         </statement>
-</block>
-<block type="arduino_loop" x="50" y="250">
-<statement name="LOOP">
-          <block type="controls_for">
-            <field name="VAR">angle</field>
-            <value name="FROM">
-              <block type="math_number">
-                <field name="NUM">0</field>
-              </block>
-            </value>
-            <value name="TO">
-              <block type="math_number">
-                <field name="NUM">180</field>
-              </block>
-            </value>
-            <value name="BY">
-              <block type="math_number">
-                <field name="NUM">10</field>
-              </block>
-            </value>
-            <statement name="CALLBACK">
-              <block type="servo_write">
-                <field name="PIN">13</field>
-                <value name="ANGLE">
-                  <block type="variables_get">
-                    <field name="VAR">angle</field>
-                  </block>
-                </value>
-                <next>
-                  <block type="esp32_delay">
-                    <value name="TIME">
-                      <block type="math_number">
-                        <field name="NUM">50</field>
-                      </block>
-                    </value>
-                  </block>
-                </next>
-              </block>
-            </statement>
+      </block>
+      <block type="arduino_loop" x="50" y="250">
+        <statement name="LOOP">
+          <block type="servo_sweep">
+            <field name="PIN">13</field>
+            <field name="START">0</field>
+            <field name="END">180</field>
+            <field name="SPEED">15</field>
             <next>
-              <block type="controls_for">
-                <field name="VAR">angle</field>
-                <value name="FROM">
-                  <block type="math_number">
-                    <field name="NUM">180</field>
-                  </block>
-                </value>
-                <value name="TO">
-                  <block type="math_number">
-                    <field name="NUM">0</field>
-                  </block>
-                </value>
-                <value name="BY">
-                  <block type="math_number">
-                    <field name="NUM">10</field>
-                  </block>
-                </value>
-                <statement name="CALLBACK">
-                  <block type="servo_write">
-                    <field name="PIN">13</field>
-                    <value name="ANGLE">
-                      <block type="variables_get">
-                        <field name="VAR">angle</field>
-                      </block>
-                    </value>
-                    <next>
-                      <block type="esp32_delay">
-                        <value name="TIME">
-                          <block type="math_number">
-                            <field name="NUM">50</field>
-                          </block>
-                        </value>
-                      </block>
-                    </next>
-                  </block>
-                </statement>
+              <block type="servo_sweep">
+                <field name="PIN">13</field>
+                <field name="START">180</field>
+                <field name="END">0</field>
+                <field name="SPEED">15</field>
               </block>
             </next>
           </block>
         </statement>
-</block>
+      </block>
     </xml>`
   },
   {
@@ -296,76 +234,29 @@ export const sampleProjects: SampleProject[] = [
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
-<statement name="SETUP">
+        <statement name="SETUP">
           <block type="neopixel_init">
             <field name="PIN">5</field>
-            <field name="NUM">8</field>
+            <field name="NUM_LEDS">8</field>
           </block>
         </statement>
-</block>
-<block type="arduino_loop" x="50" y="250">
-<statement name="LOOP">
-          <block type="neopixel_set_color">
-            <field name="INDEX">0</field>
-            <field name="COLOR">#ff0000</field>
+      </block>
+      <block type="arduino_loop" x="50" y="250">
+        <statement name="LOOP">
+          <block type="neopixel_rainbow">
+            <field name="SPEED">normal</field>
             <next>
-              <block type="neopixel_set_color">
-                <field name="INDEX">1</field>
-                <field name="COLOR">#ff7f00</field>
-                <next>
-                  <block type="neopixel_set_color">
-                    <field name="INDEX">2</field>
-                    <field name="COLOR">#ffff00</field>
-                    <next>
-                      <block type="neopixel_set_color">
-                        <field name="INDEX">3</field>
-                        <field name="COLOR">#00ff00</field>
-                        <next>
-                          <block type="neopixel_set_color">
-                            <field name="INDEX">4</field>
-                            <field name="COLOR">#0000ff</field>
-                            <next>
-                              <block type="neopixel_set_color">
-                                <field name="INDEX">5</field>
-                                <field name="COLOR">#4b0082</field>
-                                <next>
-                                  <block type="neopixel_set_color">
-                                    <field name="INDEX">6</field>
-                                    <field name="COLOR">#9400d3</field>
-                                    <next>
-                                      <block type="neopixel_set_color">
-                                        <field name="INDEX">7</field>
-                                        <field name="COLOR">#ff1493</field>
-                                        <next>
-                                          <block type="neopixel_show">
-                                            <next>
-                                              <block type="esp32_delay">
-                                                <value name="TIME">
-                                                  <block type="math_number">
-                                                    <field name="NUM">1000</field>
-                                                  </block>
-                                                </value>
-                                              </block>
-                                            </next>
-                                          </block>
-                                        </next>
-                                      </block>
-                                    </next>
-                                  </block>
-                                </next>
-                              </block>
-                            </next>
-                          </block>
-                        </next>
-                      </block>
-                    </next>
+              <block type="esp32_delay">
+                <value name="TIME">
+                  <block type="math_number">
+                    <field name="NUM">100</field>
                   </block>
-                </next>
+                </value>
               </block>
             </next>
           </block>
         </statement>
-</block>
+      </block>
     </xml>`
   },
   // Robots examples
@@ -614,7 +505,7 @@ export const sampleProjects: SampleProject[] = [
 <statement name="SETUP">
           <block type="mqtt_setup">
             <field name="SSID">your_ssid</field>
-            <field name="PASSWORD">your_password</field>
+            <field name="WIFI_PASS">your_password</field>
             <field name="BROKER">192.168.1.100</field>
             <field name="PORT">1883</field>
             <field name="CLIENT_ID">esp32_led</field>
@@ -851,7 +742,7 @@ export const sampleProjects: SampleProject[] = [
             <next>
               <block type="neopixel_init">
                 <field name="PIN">4</field>
-                <field name="COUNT">1</field>
+                <field name="NUM_LEDS">1</field>
                 <next>
                   <block type="ha_device_init">
                     <field name="SSID">your_ssid</field>

@@ -189,63 +189,6 @@ javascriptGenerator.forBlock['pid_reset'] = function(block: Blockly.Block) {
 };
 
 // ========================================
-// 簡易PID（ライントレース用）
-// ========================================
-Blockly.Blocks['pid_line_trace'] = {
-  init: function() {
-    this.appendDummyInput()
-      .appendField('🎯 ' + (Blockly.Msg.BLOCKS_PID_LINETRACEPID || 'Line Trace PID Calc'));
-    this.appendValueInput('BASE_SPEED')
-      .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_PID_BASESPEED || 'Base Speed');
-    this.appendValueInput('ERROR')
-      .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_PID_LINEPOSITION || 'Line Position');
-    this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_PID_LEFTMOTORSPEED || '→ Left Motor Speed');
-    this.setOutput(true, 'Number');
-    this.setColour('#3F51B5');
-    this.setTooltip(Blockly.Msg.BLOCKS_PID_LINETRACEPIDTOOLTIP || 'Returns PID-controlled left motor speed for line tracing');
-  }
-};
-
-javascriptGenerator.forBlock['pid_line_trace'] = function(block: Blockly.Block) {
-  const baseSpeed = javascriptGenerator.valueToCode(block, 'BASE_SPEED', Order.ATOMIC) || '150';
-  const error = javascriptGenerator.valueToCode(block, 'ERROR', Order.ATOMIC) || '0';
-
-  const code = `(${baseSpeed} - pidCalculate(${error}, pid_line_integral, pid_line_lastError, ` +
-    `pid_line_lastTime, pid_line_kp, pid_line_ki, pid_line_kd))`;
-  return [code, Order.ATOMIC];
-};
-
-Blockly.Blocks['pid_line_trace_right'] = {
-  init: function() {
-    this.appendDummyInput()
-      .appendField('🎯 ' + (Blockly.Msg.BLOCKS_PID_LINETRACEPID || 'Line Trace PID Calc'));
-    this.appendValueInput('BASE_SPEED')
-      .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_PID_BASESPEED || 'Base Speed');
-    this.appendValueInput('ERROR')
-      .setCheck('Number')
-      .appendField(Blockly.Msg.BLOCKS_PID_LINEPOSITION || 'Line Position');
-    this.appendDummyInput()
-      .appendField(Blockly.Msg.BLOCKS_PID_RIGHTMOTORSPEED || '→ Right Motor Speed');
-    this.setOutput(true, 'Number');
-    this.setColour('#3F51B5');
-    this.setTooltip(Blockly.Msg.BLOCKS_PID_LINETRACEPIDTOOLTIP || 'Returns PID-controlled right motor speed for line tracing');
-  }
-};
-
-javascriptGenerator.forBlock['pid_line_trace_right'] = function(block: Blockly.Block) {
-  const baseSpeed = javascriptGenerator.valueToCode(block, 'BASE_SPEED', Order.ATOMIC) || '150';
-  const error = javascriptGenerator.valueToCode(block, 'ERROR', Order.ATOMIC) || '0';
-
-  const code = `(${baseSpeed} + pidCalculate(${error}, pid_line_integral, pid_line_lastError, ` +
-    `pid_line_lastTime, pid_line_kp, pid_line_ki, pid_line_kd))`;
-  return [code, Order.ATOMIC];
-};
-
-// ========================================
 // 両輪速度を一度に計算
 // ========================================
 Blockly.Blocks['pid_motor_speeds'] = {

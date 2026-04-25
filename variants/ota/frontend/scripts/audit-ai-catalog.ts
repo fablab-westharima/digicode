@@ -46,12 +46,7 @@ const FEW_SHOT_IDS = new Set([
 // without blocking the build on pre-existing data.
 // Remove each entry the moment its sample is reauthored — the audit will then fail
 // if a new drift appears, which is the intended long-term behaviour.
-const KNOWN_BROKEN_SAMPLES = new Set<string>([
-  'servo-sweep',
-  'neopixel-rainbow',
-  'ha-led-control',
-  'ha-rgb-led',
-]);
+const KNOWN_BROKEN_SAMPLES = new Set<string>([]);
 
 // ---------------------------------------------------------------------------
 // Types (mirror generate-ai-block-catalog.ts)

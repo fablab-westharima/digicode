@@ -1345,16 +1345,12 @@
         "numLeds": "LED數量",
         "distance": "📏 RUS-04 距離(cm)",
         "rgbBoth": "🌈 RUS-04 RGB 雙眼",
-        "rgbEye": "👁️ RUS-04 RGB 眼睛",
-        "brightness": "☀️ RUS-04 RGB 亮度",
         "off": "⬛ RUS-04 RGB 關閉",
         "left": "左",
         "right": "右",
         "initTooltip": "初始化 RUS-04 超音波感測器（內建RGB）",
         "distanceTooltip": "使用 RUS-04 測量距離（需要初始化）",
         "rgbTooltip": "分別設置 RUS-04 左右眼 RGB LED 顏色",
-        "eyeTooltip": "設置單獨眼睛顏色",
-        "brightnessTooltip": "設置眼睛 LED 亮度（0-255）",
         "offTooltip": "關閉雙眼",
         "bothSimpleTooltip": "透過下拉選單設置雙眼顏色"
       },
@@ -1367,29 +1363,6 @@
         "cyan": "青",
         "white": "白",
         "off": "關閉"
-      },
-      "touch": {
-        "init": "👆 觸控感測器初始化",
-        "threshold": "閾值",
-        "read": "👆 被觸摸？",
-        "value": "👆 觸控數值",
-        "initTooltip": "初始化電容式觸控感測器",
-        "readTooltip": "返回觸控感測器是否被觸摸",
-        "valueTooltip": "返回觸控感測器原始數值"
-      },
-      "sound": {
-        "init": "🎤 聲音感測器初始化",
-        "level": "🎤 音量等級",
-        "detected": "🎤 偵測到聲音？",
-        "initTooltip": "初始化類比聲音感測器/麥克風",
-        "levelTooltip": "返回音量等級（0-4095）",
-        "detectedTooltip": "返回聲音是否超過閾值"
-      },
-      "light": {
-        "init": "☀️ 光感測器初始化",
-        "level": "☀️ 光量等級",
-        "initTooltip": "初始化光感測器（CdS、光敏電阻）",
-        "levelTooltip": "返回光量等級（0-4095，越大越亮）"
       }
     },
     "display": {
@@ -1412,18 +1385,10 @@
       "oledClearTooltip": "清除 OLED 顯示",
       "oledShow": "更新 OLED",
       "oledShowTooltip": "更新 OLED 顯示",
-      "oledLine": "畫線",
-      "oledLineTooltip": "在 OLED 上畫一條線",
-      "startX": "起點 X:",
       "startY": "Y:",
-      "endX": "終點 X:",
       "endY": "Y:",
-      "oledRect": "畫矩形",
-      "oledRectTooltip": "在 OLED 上畫一個矩形",
       "widthLabel": "寬度:",
-      "heightLabel": "高度:",
-      "outline": "輪廓",
-      "filled": "填充"
+      "heightLabel": "高度:"
     },
     "audio": {
       "buzzerTone": "蜂鳴器音調",
@@ -1520,41 +1485,6 @@
       "builtinLedOff": {
         "label": "內建 LED 關閉",
         "tooltip": "關閉 ESP32 內建 LED (GPIO2)"
-      },
-      "tone": {
-        "pin": "Pin",
-        "frequency": "Hz 頻率",
-        "play": "播放音調",
-        "tooltip": "以指定頻率播放音調"
-      },
-      "servoWrite": {
-        "pin": "Pin",
-        "servo": "servo",
-        "degrees": "度",
-        "tooltip": "將伺服馬達移動到指定角度 (0-180 度) [Premium]"
-      },
-      "neopixel": {
-        "neopixel": "NeoPixel",
-        "index": "LED #",
-        "tooltip": "設定 NeoPixel LED 顏色 (RGB: 0-255) [Premium]"
-      },
-      "ultrasonic": {
-        "label": "超音波感測器",
-        "tooltip": "使用超音波感測器量測距離 (cm) [Premium]"
-      },
-      "i2cWrite": {
-        "address": "I2C 位址",
-        "data": "資料",
-        "write": "寫入",
-        "tooltip": "寫入資料到 I2C 裝置 [Premium]"
-      },
-      "dhtRead": {
-        "sensor": "DHT",
-        "pin": "pin",
-        "read": "讀取",
-        "temperature": "溫度",
-        "humidity": "濕度",
-        "tooltip": "從 DHT11/DHT22 感測器讀取溫度或濕度 [Premium]"
       }
     },
     "actuator": {
@@ -1633,18 +1563,12 @@
       "showTooltip": "將色彩設定套用到 LED",
       "clear": "清除所有 NeoPixel",
       "clearTooltip": "關閉所有 LED",
-      "brightness": "設定亮度",
-      "brightnessTooltip": "設定 LED 亮度 (0-255)",
       "range": "(0-255)",
       "rainbow": "彩虹效果",
       "rainbowTooltip": "顯示彩虹效果",
       "speedNormal": "正常",
       "speedFast": "快",
       "speedSlow": "慢",
-      "bounce": "彈跳效果",
-      "bounceTooltip": "LED 左右彈跳",
-      "cycle": "循環效果",
-      "cycleTooltip": "LED 繞圈旋轉",
       "colorRed": "紅色",
       "colorOrange": "橙色",
       "colorYellow": "黃色",
@@ -1658,8 +1582,7 @@
       "colorOff": "關閉",
       "colorSimple": "所有 LED 顏色",
       "colorSimpleTooltip": "將所有 LED 設為指定顏色",
-      "lightSimple": "LED #",
-      "lightSimpleTooltip": "設定指定 LED 的顏色"
+      "lightSimple": "LED #"
     },
     "diffDrive": {
       "init": "差速驅動初始化",
@@ -1739,12 +1662,7 @@
       "setGainsTooltip": "動態變更 PID 增益",
       "reset": "重設",
       "resetTooltip": "重設 PID 的積分和微分值",
-      "lineTracePid": "循跡 PID 計算",
-      "lineTracePidTooltip": "回傳由 PID 控制用於循跡的馬達速度",
       "baseSpeed": "基礎速度",
-      "linePosition": "線的位置",
-      "leftMotorSpeed": "→ 左馬達速度",
-      "rightMotorSpeed": "→ 右馬達速度",
       "motorSpeedCalc": "PID 馬達速度計算",
       "motorSpeedCalcTooltip": "以 PID 計算左右馬達速度並存入全域變數",
       "getSpeed": "PID 計算",
@@ -1769,8 +1687,6 @@
       "putTooltip": "向指定的 URL 傳送 PUT 請求",
       "delete": "HTTP DELETE",
       "deleteTooltip": "向指定的 URL 傳送 DELETE 請求（回傳 HTTP 狀態碼）",
-      "lastStatus": "HTTP 最後狀態",
-      "lastStatusTooltip": "取得最後一次 HTTP 請求的狀態碼",
       "isSuccess": "成功 (2xx)",
       "isSuccessTooltip": "檢查 HTTP 狀態碼是否在 200 範圍內",
       "status": "HTTP 狀態",
@@ -2197,34 +2113,6 @@
         "fart1": "放屁 1",
         "fart2": "放屁 2",
         "fart3": "放屁 3"
-      },
-      "crusaito": {
-        "label": "Humanoid Crusaito",
-        "tooltip": "交叉腿移動"
-      },
-      "flapping": {
-        "label": "Humanoid 拍翅",
-        "tooltip": "做拍翅動作"
-      },
-      "tiptoeSwing": {
-        "label": "Humanoid 踮腳搖擺",
-        "tooltip": "踮腳搖擺"
-      },
-      "jitter": {
-        "label": "Humanoid 顫抖",
-        "tooltip": "做顫抖動作"
-      },
-      "ascendingTurn": {
-        "label": "Humanoid 上升轉向",
-        "tooltip": "上升時轉向"
-      },
-      "shakeLeg": {
-        "label": "Humanoid 抖腿",
-        "tooltip": "抖腿"
-      },
-      "updown": {
-        "label": "Humanoid 上下",
-        "tooltip": "上下移動"
       }
     },
     "transform": {
@@ -2242,14 +2130,6 @@
         "label": "Ninja 變形",
         "tooltip": "以伺服動作實際變形 (Walk↔Roll)"
       },
-      "align": {
-        "label": "Ninja 對齊",
-        "tooltip": "調整伺服角度"
-      },
-      "calibrate": {
-        "label": "Ninja 校正",
-        "tooltip": "調整左右偏移"
-      },
       "home": {
         "label": "Ninja 歸位",
         "tooltip": "設為直立姿勢"
@@ -2258,19 +2138,9 @@
         "label": "Ninja 行走",
         "tooltip": "以 Walk 模式行走"
       },
-      "walkPower": {
-        "label": "Ninja 行走",
-        "power": "%",
-        "tooltip": "以 Walk 模式行走（含動力設定）"
-      },
       "roll": {
         "label": "Ninja 滾動",
         "tooltip": "以 Roll 模式滾動"
-      },
-      "rollPower": {
-        "label": "Ninja 滾動",
-        "power": "%",
-        "tooltip": "以 Roll 模式滾動（含動力設定）"
       },
       "rollRotate": {
         "label": "Ninja 滾轉",
@@ -2284,17 +2154,9 @@
         "label": "Ninja 停止",
         "tooltip": "停止指定模式"
       },
-      "trot": {
-        "label": "Ninja 小跑步",
-        "tooltip": "快速行走"
-      },
       "pushup": {
         "label": "Ninja 伏地挺身",
         "tooltip": "做伏地挺身"
-      },
-      "lateral": {
-        "label": "Ninja 側向",
-        "tooltip": "側向移動"
       },
       "dance": {
         "label": "Ninja 跳舞",

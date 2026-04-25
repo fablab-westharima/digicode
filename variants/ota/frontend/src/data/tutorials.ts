@@ -341,19 +341,8 @@ export const tutorials: Tutorial[] = [
                 <field name="STEPS">2</field>
                 <field name="DIRECTION">1</field>
                 <next>
-                  <block type="humanoid_crusaito">
+                  <block type="humanoid_jump">
                     <field name="STEPS">2</field>
-                    <field name="DIRECTION">1</field>
-                    <next>
-                      <block type="humanoid_jitter">
-                        <field name="STEPS">4</field>
-                        <next>
-                          <block type="humanoid_updown">
-                            <field name="STEPS">2</field>
-                          </block>
-                        </next>
-                      </block>
-                    </next>
                   </block>
                 </next>
               </block>
@@ -368,78 +357,17 @@ export const tutorials: Tutorial[] = [
       {
         id: 'dance-1',
         title: 'ダンスパフォーマンス',
-        content: 'スウィング→ダンス→ムーンウォーク→クルサイト→ジッター→アップダウンを連続実行します。',
+        content: 'スウィング→ダンス→ムーンウォーク→ジャンプを連続実行します。',
         position: 'center',
       },
     ],
   },
 
-  // チュートリアル7: タッチセンサーでHumanoid操作
-  {
-    id: 'humanoid-touch',
-    title: 'タッチで操作',
-    description: 'タッチセンサーでHumanoidを動かす',
-    difficulty: 'intermediate',
-    estimatedTime: 5,
-    category: 'robots',
-    sampleXml: `
-<xml xmlns="https://developers.google.com/blockly/xml">
-  <block type="arduino_setup" x="50" y="30">
-    <statement name="SETUP">
-      <block type="touch_init">
-        <field name="PIN">4</field>
-        <field name="THRESHOLD">40</field>
-        <next>
-          <block type="humanoid_init">
-            <field name="PIN_LL">2</field>
-            <field name="PIN_RL">14</field>
-            <field name="PIN_LF">5</field>
-            <field name="PIN_RF">18</field>
-            <next>
-              <block type="humanoid_home"></block>
-            </next>
-          </block>
-        </next>
-      </block>
-    </statement>
-  </block>
-  <block type="arduino_loop" x="50" y="220">
-    <statement name="LOOP">
-      <block type="controls_if">
-        <value name="IF0">
-          <block type="touch_read"></block>
-        </value>
-        <statement name="DO0">
-          <block type="humanoid_gesture">
-            <field name="GESTURE">Happy</field>
-            <next>
-              <block type="humanoid_walk">
-                <field name="STEPS">2</field>
-                <field name="DIRECTION">1</field>
-                <field name="SPEED">1000</field>
-              </block>
-            </next>
-          </block>
-        </statement>
-      </block>
-    </statement>
-  </block>
-</xml>`,
-    steps: [
-      {
-        id: 'touch-1',
-        title: 'タッチ操作',
-        content: 'GPIO4に触れるとHumanoidがハッピーになり、2歩前進します。',
-        position: 'center',
-      },
-    ],
-  },
-
-  // チュートリアル8: 音に反応するHumanoid
+  // チュートリアル7: 音と動きの組み合わせ
   {
     id: 'humanoid-sound-react',
-    title: '音に反応',
-    description: '拍手や声でHumanoidが動く',
+    title: '音声とダンス',
+    description: 'Humanoidが音声を発しながらダンス',
     difficulty: 'intermediate',
     estimatedTime: 5,
     category: 'robots',
@@ -447,49 +375,35 @@ export const tutorials: Tutorial[] = [
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="arduino_setup" x="50" y="30">
     <statement name="SETUP">
-      <block type="sound_init">
-        <field name="PIN">34</field>
+      <block type="humanoid_init">
+        <field name="PIN_LL">2</field>
+        <field name="PIN_RL">4</field>
+        <field name="PIN_LF">5</field>
+        <field name="PIN_RF">18</field>
         <next>
-          <block type="humanoid_init">
-            <field name="PIN_LL">2</field>
-            <field name="PIN_RL">4</field>
-            <field name="PIN_LF">5</field>
-            <field name="PIN_RF">18</field>
-            <next>
-              <block type="humanoid_home"></block>
-            </next>
-          </block>
+          <block type="humanoid_home"></block>
         </next>
       </block>
     </statement>
   </block>
-  <block type="arduino_loop" x="50" y="220">
+  <block type="arduino_loop" x="50" y="180">
     <statement name="LOOP">
-      <block type="controls_if">
-        <value name="IF0">
-          <block type="sound_detected">
-            <field name="THRESHOLD">1500</field>
-          </block>
-        </value>
-        <statement name="DO0">
-          <block type="humanoid_gesture">
-            <field name="GESTURE">SuperHappy</field>
+      <block type="humanoid_sound">
+        <field name="SOUND">S_superHappy</field>
+        <next>
+          <block type="humanoid_dance">
+            <field name="STEPS">4</field>
             <next>
-              <block type="humanoid_dance">
-                <field name="STEPS">4</field>
-                <next>
-                  <block type="esp32_delay">
-                    <value name="TIME">
-                      <block type="math_number">
-                        <field name="NUM">1000</field>
-                      </block>
-                    </value>
+              <block type="esp32_delay">
+                <value name="TIME">
+                  <block type="math_number">
+                    <field name="NUM">2000</field>
                   </block>
-                </next>
+                </value>
               </block>
             </next>
           </block>
-        </statement>
+        </next>
       </block>
     </statement>
   </block>
@@ -497,8 +411,8 @@ export const tutorials: Tutorial[] = [
     steps: [
       {
         id: 'sound-1',
-        title: '音反応',
-        content: '拍手や大きな音を検出するとHumanoidが超ハッピーになってダンスします。しきい値は環境に合わせて調整してください。',
+        title: '音声とダンス',
+        content: 'Humanoidが「Super Happy」音声を発しながらダンスを繰り返します。',
         position: 'center',
       },
     ],
@@ -596,11 +510,6 @@ export const tutorialCategories = {
     name: 'ロボット',
     description: 'ロボットを動かす',
     tutorials: tutorials.filter(t => t.category === 'robots'),
-  },
-  competition: {
-    name: '競技ロボット',
-    description: 'ライントレース等',
-    tutorials: tutorials.filter(t => t.category === 'competition'),
   },
 };
 

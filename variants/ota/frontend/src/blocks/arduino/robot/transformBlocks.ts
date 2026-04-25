@@ -88,44 +88,6 @@ javascriptGenerator.forBlock['transform_shift'] = function(block: Blockly.Block)
   return `  transform.transform("${mode}");\n`;
 };
 
-// ===== Align Angle =====
-Blockly.Blocks['transform_align'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField('⊕ ' + (Blockly.Msg.BLOCKS_TRANSFORM_ALIGN_LABEL || 'Ninja Align'));
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(NINJA_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TRANSFORM_ALIGN_TOOLTIP || 'Adjust servo angles');
-  }
-};
-
-javascriptGenerator.forBlock['transform_align'] = function() {
-  return `  transform.alignAngle();\n`;
-};
-
-// ===== Calibrate =====
-Blockly.Blocks['transform_calibrate'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField('🎯 ' + (Blockly.Msg.BLOCKS_TRANSFORM_CALIBRATE_LABEL || 'Ninja Calibration'))
-        .appendField(Blockly.Msg.BLOCKS_COMMON_LEFT || 'left')
-        .appendField(new Blockly.FieldNumber(0, -90, 90), 'LEFT')
-        .appendField(Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right')
-        .appendField(new Blockly.FieldNumber(0, -90, 90), 'RIGHT');
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(NINJA_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TRANSFORM_CALIBRATE_TOOLTIP || 'Adjust left/right offset');
-  }
-};
-
-javascriptGenerator.forBlock['transform_calibrate'] = function(block: Blockly.Block) {
-  const left = block.getFieldValue('LEFT');
-  const right = block.getFieldValue('RIGHT');
-  return `  transform.calibrate(${left}, ${right});\n`;
-};
-
 // ===== Home =====
 Blockly.Blocks['transform_home'] = {
   init: function() {
@@ -171,31 +133,6 @@ javascriptGenerator.forBlock['transform_walk'] = function(block: Blockly.Block) 
   return `  transform.walk(2, ${speedMs}, ${dir});\n`;
 };
 
-// ===== Walk with Power % =====
-Blockly.Blocks['transform_walk_power'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField('🚶 ' + (Blockly.Msg.BLOCKS_TRANSFORM_WALKPOWER_LABEL || 'Ninja Walk'))
-        .appendField(new Blockly.FieldDropdown([
-          [Blockly.Msg.BLOCKS_COMMON_FORWARD || 'forward', 'forward'],
-          [Blockly.Msg.BLOCKS_COMMON_BACKWARD || 'backward', 'backward']
-        ]), 'DIRECTION')
-        .appendField(new Blockly.FieldNumber(50, 0, 100), 'POWER')
-        .appendField('%');
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(NINJA_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TRANSFORM_WALKPOWER_TOOLTIP || 'Walk in Walk mode (with power setting)');
-  }
-};
-
-javascriptGenerator.forBlock['transform_walk_power'] = function(block: Blockly.Block) {
-  const direction = block.getFieldValue('DIRECTION');
-  const power = block.getFieldValue('POWER');
-  const dir = direction === 'forward' ? 1 : -1;
-  return `  transform.walkPower(${dir}, ${power});\n`;
-};
-
 // ===== Roll (HP Robot style) =====
 Blockly.Blocks['transform_roll'] = {
   init: function() {
@@ -223,31 +160,6 @@ javascriptGenerator.forBlock['transform_roll'] = function(block: Blockly.Block) 
   const speedVal = speed === 'fast' ? 100 : speed === 'slow' ? 30 : 50;
   const dir = direction === 'forward' ? 1 : -1;
   return `  transform.roll(${dir}, ${speedVal});\n`;
-};
-
-// ===== Roll with Power % =====
-Blockly.Blocks['transform_roll_power'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField('🛞 ' + (Blockly.Msg.BLOCKS_TRANSFORM_ROLLPOWER_LABEL || 'Ninja Roll'))
-        .appendField(new Blockly.FieldDropdown([
-          [Blockly.Msg.BLOCKS_COMMON_FORWARD || 'forward', 'forward'],
-          [Blockly.Msg.BLOCKS_COMMON_BACKWARD || 'backward', 'backward']
-        ]), 'DIRECTION')
-        .appendField(new Blockly.FieldNumber(100, 0, 100), 'POWER')
-        .appendField('%');
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(NINJA_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TRANSFORM_ROLLPOWER_TOOLTIP || 'Drive in Roll mode (with power setting)');
-  }
-};
-
-javascriptGenerator.forBlock['transform_roll_power'] = function(block: Blockly.Block) {
-  const direction = block.getFieldValue('DIRECTION');
-  const power = block.getFieldValue('POWER');
-  const dir = direction === 'forward' ? 1 : -1;
-  return `  transform.rollPower(${dir}, ${power});\n`;
 };
 
 // ===== Roll Rotate =====
@@ -321,22 +233,6 @@ javascriptGenerator.forBlock['transform_stop'] = function(block: Blockly.Block) 
   return `  transform.stop("${mode}");\n`;
 };
 
-// ===== Trot (Fast walk) =====
-Blockly.Blocks['transform_trot'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField('🏃 ' + (Blockly.Msg.BLOCKS_TRANSFORM_TROT_LABEL || 'Ninja Trot'));
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(NINJA_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TRANSFORM_TROT_TOOLTIP || 'Walk quickly');
-  }
-};
-
-javascriptGenerator.forBlock['transform_trot'] = function() {
-  return `  transform.trot(2, 600);\n`;
-};
-
 // ===== Push-up =====
 Blockly.Blocks['transform_pushup'] = {
   init: function() {
@@ -351,28 +247,6 @@ Blockly.Blocks['transform_pushup'] = {
 
 javascriptGenerator.forBlock['transform_pushup'] = function() {
   return `  transform.pushUp(2, 1000);\n`;
-};
-
-// ===== Lateral =====
-Blockly.Blocks['transform_lateral'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField('↔️ ' + (Blockly.Msg.BLOCKS_TRANSFORM_LATERAL_LABEL || 'Ninja Lateral'))
-        .appendField(new Blockly.FieldDropdown([
-          [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', 'left'],
-          [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', 'right']
-        ]), 'DIRECTION');
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(NINJA_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TRANSFORM_LATERAL_TOOLTIP || 'Move sideways');
-  }
-};
-
-javascriptGenerator.forBlock['transform_lateral'] = function(block: Blockly.Block) {
-  const direction = block.getFieldValue('DIRECTION');
-  const dir = direction === 'left' ? 1 : -1;
-  return `  transform.lateral(2, 1000, ${dir});\n`;
 };
 
 // ===== Dance =====

@@ -1553,16 +1553,12 @@
         "numLeds": "LED数",
         "distance": "📏 RUS-04距離(cm)",
         "rgbBoth": "🌈 RUS-04 RGB両目",
-        "rgbEye": "👁️ RUS-04 RGB 目",
-        "brightness": "☀️ RUS-04 RGB 明るさ",
         "off": "⬛ RUS-04 RGB 消灯",
         "left": "左",
         "right": "右",
         "initTooltip": "RUS-04超音波センサー(RGB内蔵)を初期化します。HC-SR04互換+WS2812B LED×6",
         "distanceTooltip": "RUS-04超音波センサーで距離を測定します（初期化が必要）",
         "rgbTooltip": "RUS-04の目(RGB LED)の色を左右個別に設定します",
-        "eyeTooltip": "左右の目を個別に設定します",
-        "brightnessTooltip": "目のLEDの明るさを設定（0-255）",
         "offTooltip": "両目を消灯します",
         "bothSimpleTooltip": "両目の色をドロップダウンで設定"
       },
@@ -1575,29 +1571,6 @@
         "cyan": "水色",
         "white": "白",
         "off": "消灯"
-      },
-      "touch": {
-        "init": "👆 タッチセンサー初期化",
-        "threshold": "しきい値",
-        "read": "👆 タッチされた？",
-        "value": "👆 タッチセンサー値",
-        "initTooltip": "静電容量式タッチセンサーを初期化します（ESP32タッチピン対応: T0=GPIO4, T2=GPIO2等）",
-        "readTooltip": "タッチセンサーがタッチされているかを返します",
-        "valueTooltip": "タッチセンサーの生の値を返します（小さいほど強くタッチ）"
-      },
-      "sound": {
-        "init": "🎤 サウンドセンサー初期化",
-        "level": "🎤 音量レベル",
-        "detected": "🎤 音が聞こえた？",
-        "initTooltip": "アナログサウンドセンサー/マイクを初期化します（ADC対応ピン: GPIO32-39）",
-        "levelTooltip": "サウンドセンサーの音量レベルを返します（0-4095）",
-        "detectedTooltip": "音がしきい値を超えたかを返します"
-      },
-      "light": {
-        "init": "☀️ 光センサー初期化",
-        "level": "☀️ 光量レベル",
-        "initTooltip": "光センサー（CdS、フォトレジスター）を初期化します",
-        "levelTooltip": "光センサーの光量レベルを返します（0-4095、大きいほど明るい）"
       }
     },
     "display": {
@@ -1620,18 +1593,10 @@
       "oledClearTooltip": "OLEDの表示内容を消去します",
       "oledShow": "OLED更新",
       "oledShowTooltip": "OLEDの描画内容を画面に反映します",
-      "oledLine": "OLED線描画",
-      "oledLineTooltip": "OLEDに線を描画します",
-      "startX": "始点X:",
       "startY": "Y:",
-      "endX": "終点X:",
       "endY": "Y:",
-      "oledRect": "OLED四角形",
-      "oledRectTooltip": "OLEDに四角形を描画します",
       "widthLabel": "幅:",
-      "heightLabel": "高さ:",
-      "outline": "枠のみ",
-      "filled": "塗りつぶし"
+      "heightLabel": "高さ:"
     },
     "audio": {
       "buzzerTone": "ブザー音",
@@ -1728,41 +1693,6 @@
       "builtinLedOff": {
         "label": "内蔵LED OFF",
         "tooltip": "ESP32の内蔵LED（GPIO2）を消灯します"
-      },
-      "tone": {
-        "pin": "ピン",
-        "frequency": "Hz 周波数",
-        "play": "で音を鳴らす",
-        "tooltip": "指定した周波数の音を鳴らします"
-      },
-      "servoWrite": {
-        "pin": "ピン",
-        "servo": "サーボ",
-        "degrees": "度",
-        "tooltip": "サーボモーターを指定した角度に動かします（0-180度）【プレミアム】"
-      },
-      "neopixel": {
-        "neopixel": "NeoPixel",
-        "index": "番のLEDを",
-        "tooltip": "NeoPixel LEDの色を設定します（RGB: 0-255）【プレミアム】"
-      },
-      "ultrasonic": {
-        "label": "超音波センサー",
-        "tooltip": "超音波センサーで距離を測定します（cm）【プレミアム】"
-      },
-      "i2cWrite": {
-        "address": "I2Cアドレス",
-        "data": "データ",
-        "write": "を書き込む",
-        "tooltip": "I2C通信でデバイスにデータを書き込みます【プレミアム】"
-      },
-      "dhtRead": {
-        "sensor": "DHT",
-        "pin": "ピン",
-        "read": "を読み取る",
-        "temperature": "温度",
-        "humidity": "湿度",
-        "tooltip": "DHT11/DHT22センサーから温度または湿度を読み取ります【プレミアム】"
       }
     },
     "actuator": {
@@ -1841,18 +1771,12 @@
       "showTooltip": "設定した色をLEDに反映します",
       "clear": "NeoPixel全消灯",
       "clearTooltip": "全てのLEDを消灯します",
-      "brightness": "NeoPixel明るさ設定",
-      "brightnessTooltip": "LEDの明るさを設定します（0-255）",
       "range": "(0-255)",
       "rainbow": "レインボーエフェクト",
       "rainbowTooltip": "虹色エフェクトを表示します",
       "speedNormal": "普通",
       "speedFast": "速い",
       "speedSlow": "遅い",
-      "bounce": "バウンスエフェクト",
-      "bounceTooltip": "LEDが左右に跳ねるエフェクト",
-      "cycle": "サイクルエフェクト",
-      "cycleTooltip": "LEDが回転するエフェクト",
       "colorRed": "赤",
       "colorOrange": "オレンジ",
       "colorYellow": "黄",
@@ -1866,8 +1790,7 @@
       "colorOff": "消灯",
       "colorSimple": "全LED色",
       "colorSimpleTooltip": "全LEDを指定色に設定",
-      "lightSimple": "LED #",
-      "lightSimpleTooltip": "指定したLEDの色を設定"
+      "lightSimple": "LED #"
     },
     "diffDrive": {
       "init": "差動駆動 初期化",
@@ -1947,12 +1870,7 @@
       "setGainsTooltip": "PIDゲインを動的に変更します",
       "reset": "リセット",
       "resetTooltip": "PIDの積分値と微分値をリセットします",
-      "lineTracePid": "ライントレースPID計算",
-      "lineTracePidTooltip": "ライントレース用にPID制御したモーター速度を返します",
       "baseSpeed": "基本速度",
-      "linePosition": "ライン位置",
-      "leftMotorSpeed": "→ 左モーター速度",
-      "rightMotorSpeed": "→ 右モーター速度",
       "motorSpeedCalc": "PIDでモーター速度計算",
       "motorSpeedCalcTooltip": "PID制御で左右モーター速度を計算し、グローバル変数に格納します",
       "getSpeed": "PID計算済み",
@@ -1977,8 +1895,6 @@
       "putTooltip": "指定したURLにPUTリクエストを送信します",
       "delete": "HTTP DELETE",
       "deleteTooltip": "指定したURLにDELETEリクエストを送信します（HTTPステータスコードを返す）",
-      "lastStatus": "HTTP最終ステータス",
-      "lastStatusTooltip": "最後のHTTPリクエストのステータスコードを取得します",
       "isSuccess": "が成功（2xx）",
       "isSuccessTooltip": "HTTPステータスコードが200番台かどうかを判定します",
       "status": "HTTPステータス",
@@ -2405,34 +2321,6 @@
         "fart1": "おなら1",
         "fart2": "おなら2",
         "fart3": "おなら3"
-      },
-      "crusaito": {
-        "label": "Humanoidクルサイト",
-        "tooltip": "足をクロスさせながら移動します"
-      },
-      "flapping": {
-        "label": "Humanoidフラッピング",
-        "tooltip": "羽ばたくような動きをします"
-      },
-      "tiptoeSwing": {
-        "label": "Humanoidつま先スウィング",
-        "tooltip": "つま先立ちで揺れます"
-      },
-      "jitter": {
-        "label": "Humanoidジッター",
-        "tooltip": "震えるような動きをします"
-      },
-      "ascendingTurn": {
-        "label": "Humanoid上昇ターン",
-        "tooltip": "上昇しながら回転します"
-      },
-      "shakeLeg": {
-        "label": "Humanoid足を振る",
-        "tooltip": "足を振ります"
-      },
-      "updown": {
-        "label": "Humanoidアップダウン",
-        "tooltip": "上下に動きます"
       }
     },
     "transform": {
@@ -2450,14 +2338,6 @@
         "label": "Ninjaトランスフォーム",
         "tooltip": "サーボを動かして物理的に変形します（Walk↔Roll）"
       },
-      "align": {
-        "label": "Ninja角度調整",
-        "tooltip": "サーボの角度を調整します"
-      },
-      "calibrate": {
-        "label": "Ninjaキャリブレーション",
-        "tooltip": "左右のオフセットを調整します"
-      },
       "home": {
         "label": "Ninjaホーム",
         "tooltip": "直立姿勢にします"
@@ -2466,19 +2346,9 @@
         "label": "Ninja歩行",
         "tooltip": "Walkモードで歩きます"
       },
-      "walkPower": {
-        "label": "Ninja歩行",
-        "power": "%",
-        "tooltip": "Walkモードで歩きます（パワー指定）"
-      },
       "roll": {
         "label": "Ninja走行",
         "tooltip": "Rollモードで走行します"
-      },
-      "rollPower": {
-        "label": "Ninja走行",
-        "power": "%",
-        "tooltip": "Rollモードで走行します（パワー指定）"
       },
       "rollRotate": {
         "label": "Ninja回転走行",
@@ -2492,17 +2362,9 @@
         "label": "Ninja停止",
         "tooltip": "指定モードを停止します"
       },
-      "trot": {
-        "label": "Ninja駆け足",
-        "tooltip": "速く歩きます"
-      },
       "pushup": {
         "label": "Ninja腕立て",
         "tooltip": "腕立て伏せをします"
-      },
-      "lateral": {
-        "label": "Ninja側歩",
-        "tooltip": "横に移動します"
       },
       "dance": {
         "label": "Ninjaダンス",

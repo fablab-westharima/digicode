@@ -43,11 +43,7 @@ type Locale = typeof LOCALES[number];
 // Their CATALOG_REF issues are demoted to [KNOWN_BROKEN] warnings so the audit can ship
 // now without blocking builds. Remove each entry the moment its tutorial is reauthored —
 // the audit will then fail on any fresh drift, which is the intended long-term behaviour.
-const KNOWN_BROKEN_TUTORIALS = new Set<string>([
-  'humanoid-dance',
-  'humanoid-touch',
-  'humanoid-sound-react',
-]);
+const KNOWN_BROKEN_TUTORIALS = new Set<string>([]);
 
 // ---------------------------------------------------------------------------
 // Low-level parsing helpers (regex + balanced-brace scanner)

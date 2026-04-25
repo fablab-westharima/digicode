@@ -291,24 +291,6 @@ int httpDelete(String url) {
 // ===== HTTPステータス =====
 
 /**
- * http_status_code - 最後のHTTPステータスコード
- */
-Blockly.Blocks['http_last_status'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField('📊 ' + (Blockly.Msg.BLOCKS_HTTP_LASTSTATUS || 'HTTP Last Status'));
-    this.setOutput(true, 'Number');
-    this.setColour('#607D8B');
-    this.setTooltip(Blockly.Msg.BLOCKS_HTTP_LASTSTATUSTOOLTIP || 'Get the status code of the last HTTP request');
-  }
-};
-
-javascriptGenerator.forBlock['http_last_status'] = function() {
-  generator.definitions_['http_last_status_var'] = 'int _httpLastStatus = 0;';
-  return ['_httpLastStatus', Order.ATOMIC];
-};
-
-/**
  * http_is_success - HTTPステータスが成功か判定
  */
 Blockly.Blocks['http_is_success'] = {
