@@ -63,6 +63,7 @@ export interface BlockGenConversationContext {
   language: AiLanguage;
   mode?: RobotMode;
   board?: BoardDefinition;
+  filteredBlocks?: BlockCatalogEntry[];
 }
 
 // 5000 文字超の既存 XML は切り詰め（MVP 制約）
@@ -143,6 +144,40 @@ function formatBlockSchema(b: BlockCatalogEntry): string {
   return b.type + schema;
 }
 
+/**
+ * Format a block entry as a one-liner overview for the conversation phase.
+ * Schema (fields / inputs / connections) is intentionally omitted —
+ * conversation = "what blocks exist", generation = "how to combine them".
+ */
+function formatBlockOverview(b: BlockCatalogEntry): string {
+  const tooltip = (b.tooltip || '').trim() || '(no tooltip)';
+  return `${b.type}: ${tooltip}`;
+}
+
+/**
+ * Build a category-grouped overview block for the conversation phase.
+ * Output shape:
+ *   ## category
+ *   - block_type: tooltip
+ *   - block_type: tooltip
+ *   ...
+ */
+function buildBlockOverviewSection(blocks: BlockCatalogEntry[]): string {
+  const grouped = new Map<string, BlockCatalogEntry[]>();
+  for (const b of blocks) {
+    const cat = b.category || 'other';
+    if (!grouped.has(cat)) grouped.set(cat, []);
+    grouped.get(cat)!.push(b);
+  }
+  const sortedCategories = Array.from(grouped.keys()).sort();
+  return sortedCategories
+    .map(cat => {
+      const list = grouped.get(cat)!.map(b => `- ${formatBlockOverview(b)}`).join('\n');
+      return `## ${cat}\n${list}`;
+    })
+    .join('\n\n');
+}
+
 // blockGen 生成フェーズ用（XML 出力制約あり、generateFromConversation で使用）
 export function buildSystemPrompt(ctx: SystemPromptContext): string {
   const templates = AI_SYSTEM_PROMPTS[ctx.language].blockGen;
@@ -204,6 +239,8 @@ export function buildHelpBotSystemPrompt(ctx: HelpBotSystemPromptContext): strin
 }
 
 // blockGen 会話フェーズ用（XML 出力制約なし、仕様を対話で固める段階）
+// catalog overview を含むことで AI が DigiCode 固有ブロックを把握できる
+// （schema 詳細は生成フェーズの buildSystemPrompt 側で付与、役割分担）
 export function buildBlockGenConversationPrompt(ctx: BlockGenConversationContext): string {
   const templates = AI_SYSTEM_PROMPTS[ctx.language].blockGen;
   const contextLines = [
@@ -216,6 +253,13 @@ export function buildBlockGenConversationPrompt(ctx: BlockGenConversationContext
     `# Response Style\n${templates.conversationStyle}`,
     ...(contextLines.length > 0 ? [`# Current Context\n${contextLines.join('\n')}`] : []),
   ];
+
+  if (ctx.filteredBlocks && ctx.filteredBlocks.length > 0) {
+    const overview = buildBlockOverviewSection(ctx.filteredBlocks);
+    sections.push(
+      `# Available Blocks (overview, no schema — schema is provided in the generation phase)\n${overview}`
+    );
+  }
 
   return sections.join('\n\n');
 }

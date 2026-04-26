@@ -2,6 +2,8 @@ import type { AIClient, AiConfig, ChatInput, ChatOutput, GenerateFromConversatio
 import {
   buildHelpBotSystemPrompt,
   buildBlockGenConversationPrompt,
+  fetchCatalog,
+  filterCatalog,
 } from './systemPrompt';
 import { trimConversationForContext } from './conversationContext';
 import { ApiAuthError, RateLimitError, ApiServerError, NetworkError } from './errors';
@@ -74,9 +76,21 @@ export class OpenAICompatibleClient implements AIClient {
 
   async chat(input: ChatInput): Promise<ChatOutput> {
     const trimmed = trimConversationForContext(input.messages);
-    const systemPrompt = input.mode === 'helpBot'
-      ? buildHelpBotSystemPrompt({ language: input.language, mode: input.robotMode, board: input.board })
-      : buildBlockGenConversationPrompt({ language: input.language, mode: input.robotMode, board: input.board });
+
+    let systemPrompt: string;
+    if (input.mode === 'helpBot') {
+      systemPrompt = buildHelpBotSystemPrompt({ language: input.language, mode: input.robotMode, board: input.board });
+    } else {
+      // blockGen 会話: catalog overview も渡し、AI が DigiCode 固有ブロックを把握できるようにする
+      const catalog = await fetchCatalog();
+      const filteredBlocks = filterCatalog(catalog);
+      systemPrompt = buildBlockGenConversationPrompt({
+        language: input.language,
+        mode: input.robotMode,
+        board: input.board,
+        filteredBlocks,
+      });
+    }
 
     const messages: ApiMessage[] = [
       { role: 'system', content: systemPrompt },

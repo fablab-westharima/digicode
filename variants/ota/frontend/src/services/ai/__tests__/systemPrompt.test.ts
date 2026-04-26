@@ -221,4 +221,44 @@ describe('buildBlockGenConversationPrompt', () => {
     const prompt = buildBlockGenConversationPrompt({ language: 'en', mode: 'generic', board: mockBoard });
     expect(prompt).not.toContain('## Example 1:');
   });
+
+  it('contains Available Blocks overview section when filteredBlocks is provided', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildBlockGenConversationPrompt({
+      language: 'ja',
+      mode: 'generic',
+      board: mockBoard,
+      filteredBlocks,
+    });
+    expect(prompt).toContain('# Available Blocks (overview');
+    expect(prompt).toContain('humanoid_walk: Walk');
+    expect(prompt).toContain('wifi_connect: WiFi');
+    expect(prompt).toContain('## core');
+    expect(prompt).toContain('## sensor');
+    expect(prompt).toContain('## wifi');
+  });
+
+  it('omits Available Blocks section when filteredBlocks is undefined (backward compat)', () => {
+    const prompt = buildBlockGenConversationPrompt({ language: 'ja', mode: 'generic', board: mockBoard });
+    expect(prompt).not.toContain('# Available Blocks');
+  });
+
+  it('overview lines do not leak schema notation (no parens / brackets / braces from formatBlockSchema)', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildBlockGenConversationPrompt({
+      language: 'ja',
+      mode: 'generic',
+      board: mockBoard,
+      filteredBlocks,
+    });
+    // Extract the overview section to scope the check (avoid matching # Role / context / etc.)
+    const overviewStart = prompt.indexOf('# Available Blocks');
+    expect(overviewStart).toBeGreaterThan(-1);
+    const overview = prompt.slice(overviewStart);
+    // Schema markers from formatBlockSchema: (FIELD:type), [VALUE_INPUT], {STMT_INPUT}
+    // Overview lines are "type: tooltip" and must not contain these markers.
+    expect(overview).not.toMatch(/\(SSID:text/);
+    expect(overview).not.toMatch(/\[TIME:Number\]/);
+    expect(overview).not.toMatch(/\{SETUP\}/);
+  });
 });
