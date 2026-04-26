@@ -22,6 +22,8 @@ const KEYWORD_TO_SAMPLE: ReadonlyArray<readonly [RegExp, string]> = [
   [/温度|湿度|temperature|humidity|alert|°C/i, 'temp-alert'],
   [/距離|障害物|obstacle|proximity|超音波.*停/i, 'proximity-stop'],
   // BLE
+  // 「コマンド」「制御」「分岐」「ON/OFF 切替」等、受信値による条件分岐を示唆する pattern を BLE.*UART より優先
+  [/BLE.*(command|control|コマンド|分岐|制御)|(command|control|コマンド).*BLE|受信値.*(分岐|制御)|BLE.*ON.*OFF/i, 'ble-uart-command-control'],
   [/BLE.*UART|UART.*BLE|BLE.*受信/i, 'ble-uart-receive'],
   [/iBeacon|beacon|ビーコン/i, 'ble-beacon-scanner'],
   [/GATT|characteristic|キャラクタリスティック/i, 'ble-gatt-custom'],

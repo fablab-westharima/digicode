@@ -102,6 +102,10 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'BLE UART Receive',
         description: 'Flash LED for 200ms when BLE message received',
       },
+      'ble-uart-command-control': {
+        title: 'BLE Command Control',
+        description: 'Switch LED HIGH/LOW based on received "ON"/"OFF" command (BLE branching pattern)',
+      },
       'ble-beacon-scanner': {
         title: 'BLE Beacon Scanner',
         description: 'Scan nearby BLE devices and log to serial',
@@ -248,6 +252,10 @@ const overrides: Record<string, LocaleOverride> = {
       'ble-uart-receive': {
         title: 'Recepción BLE UART',
         description: 'Parpadea el LED 200ms al recibir un mensaje BLE',
+      },
+      'ble-uart-command-control': {
+        title: 'Control por comando BLE',
+        description: 'Enciende/apaga el LED según el comando "ON"/"OFF" recibido por BLE (patrón de bifurcación BLE)',
       },
       'ble-beacon-scanner': {
         title: 'Escáner de beacons BLE',
@@ -396,6 +404,10 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Receção BLE UART',
         description: 'Pisca o LED 200ms ao receber uma mensagem BLE',
       },
+      'ble-uart-command-control': {
+        title: 'Controlo por comando BLE',
+        description: 'Liga/desliga o LED conforme o comando "ON"/"OFF" recebido via BLE (padrão de bifurcação BLE)',
+      },
       'ble-beacon-scanner': {
         title: 'Scanner de beacons BLE',
         description: 'Faz scan de dispositivos BLE próximos e imprime na série',
@@ -542,6 +554,10 @@ const overrides: Record<string, LocaleOverride> = {
       'ble-uart-receive': {
         title: 'BLE UART 接收',
         description: '收到 BLE 訊息時 LED 閃爍 200ms',
+      },
+      'ble-uart-command-control': {
+        title: 'BLE 指令控制',
+        description: '依據透過 BLE 接收的 "ON"/"OFF" 指令切換 LED 高/低（BLE 條件分支範例）',
       },
       'ble-beacon-scanner': {
         title: 'BLE 信標掃描',

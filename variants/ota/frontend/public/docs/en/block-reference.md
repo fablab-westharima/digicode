@@ -591,7 +591,8 @@ Control addressable LEDs such as WS2812B.
 |------------|-------------|------------|
 | **BLE UART Setup** | Start NUS service | Device name |
 | **BLE Send** | Send string to phone | Text |
-| **BLE On Receive** | Handle received data (bleMessage variable) | Handler |
+| **BLE On Receive** | Handle received data (use BLE Received block inside the handler) | Handler |
+| **BLE Received** | Get the received text (use inside handler) | → String |
 | **BLE Connected?** | Check connection status | → true/false |
 | **BLE Disconnect** | Disconnect and restart advertising | — |
 

@@ -93,6 +93,17 @@ describe('catalog invariants', () => {
     expect(b.fields.find((f) => f.name === 'COLOR')).toBeDefined();
   });
 
+  // BUG-052: ble_uart_get_received は HANDLER 内で受信値を取得する value block
+  it('ble_uart_get_received is a String value block (BUG-052)', () => {
+    const b = byType['ble_uart_get_received'];
+    expect(b).toBeDefined();
+    expect(b.isStatement).toBe(false);
+    expect(b.hasOutput).toBe(true);
+    expect(b.fields).toEqual([]);
+    expect(b.valueInputs).toEqual([]);
+    expect(b.statementInputs).toEqual([]);
+  });
+
   it('no block has both isStatement and hasOutput true', () => {
     for (const b of blocks) {
       expect(b.isStatement && b.hasOutput, `${b.type}: isStatement and hasOutput both true`).toBe(false);
@@ -169,6 +180,23 @@ describe('selectFewShot (動的 Few-shot 選択)', () => {
   it('dashboard keyword maps to multi-sensor-dashboard', () => {
     const result = selectFewShot('generic', '複数センサーの値を集約して表示');
     expect(result[4]).toBe('multi-sensor-dashboard');
+  });
+
+  // BUG-052: BLE コマンド系の prompt は受信値分岐 sample を選ぶ（BLE.*UART より優先）
+  it('BLE command keyword maps to ble-uart-command-control (BUG-052)', () => {
+    const result = selectFewShot('generic', 'BLE で受信したコマンドで LED 制御');
+    expect(result[4]).toBe('ble-uart-command-control');
+  });
+
+  it('BLE control keyword maps to ble-uart-command-control (BUG-052)', () => {
+    const result = selectFewShot('generic', 'BLE で ON/OFF で制御したい');
+    expect(result[4]).toBe('ble-uart-command-control');
+  });
+
+  // 既存の BLE.*UART pattern は ble-uart-receive を引き続き選ぶ（regression check）
+  it('BLE UART without command keyword still maps to ble-uart-receive (regression check)', () => {
+    const result = selectFewShot('generic', 'BLE UART で受信したい');
+    expect(result[4]).toBe('ble-uart-receive');
   });
 
   it('all referenced sample ids exist in sampleProjects', () => {

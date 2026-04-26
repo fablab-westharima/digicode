@@ -916,6 +916,14 @@ export const sampleProjects: SampleProject[] = [
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="ble_uart_setup"><field name="NAME">LedControl</field><next><block type="esp32_pin_mode"><field name="PIN">2</field><field name="MODE">OUTPUT</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="ble_uart_on_receive"><statement name="HANDLER"><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">HIGH</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">200</field></block></value><next><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">LOW</field></block></next></block></next></block></statement></block></statement></block></xml>`
   },
   {
+    id: 'ble-uart-command-control',
+    title: 'BLEコマンド制御',
+    description: 'BLE受信値「ON」「OFF」でLEDを制御（受信値分岐の正規パターン）',
+    category: 'iot',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="ble_uart_setup"><field name="NAME">CommandLed</field><next><block type="esp32_pin_mode"><field name="PIN">2</field><field name="MODE">OUTPUT</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="ble_uart_on_receive"><statement name="HANDLER"><block type="controls_if"><value name="IF0"><block type="logic_compare"><field name="OP">EQ</field><value name="A"><block type="ble_uart_get_received"></block></value><value name="B"><block type="text"><field name="TEXT">ON</field></block></value></block></value><statement name="DO0"><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">HIGH</field></block></statement><next><block type="controls_if"><value name="IF0"><block type="logic_compare"><field name="OP">EQ</field><value name="A"><block type="ble_uart_get_received"></block></value><value name="B"><block type="text"><field name="TEXT">OFF</field></block></value></block></value><statement name="DO0"><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">LOW</field></block></statement></block></next></block></statement></block></statement></block></xml>`
+  },
+  {
     id: 'ble-beacon-scanner',
     title: 'BLEビーコンスキャン',
     description: '近隣のBLEデバイスをスキャンしてシリアル出力',

@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-04-24T14:58:29.663Z",
+  "generatedAt": "2026-04-26T12:46:39.234Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -2651,7 +2651,7 @@
     {
       "type": "ble_uart_on_receive",
       "category": "ble",
-      "tooltip": "Execute handler when a BLE message is received. Use \"bleMessage\" variable to get the received text. Place in loop block.",
+      "tooltip": "Execute handler when a BLE message is received. Use the \"BLE Received\" value block inside the handler to read the received text. Place in loop block.",
       "colour": "#2196F3",
       "isStatement": true,
       "hasOutput": false,
@@ -2671,6 +2671,26 @@
           "name": "HANDLER"
         }
       ]
+    },
+    {
+      "type": "ble_uart_get_received",
+      "category": "ble",
+      "tooltip": "Get the BLE UART message received last. Use only inside the BLE On Receive handler. Returns an empty string when no message has arrived.",
+      "colour": "#2196F3",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "robots_humanoid",
+        "robots_transform",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsBle",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ble_is_connected",

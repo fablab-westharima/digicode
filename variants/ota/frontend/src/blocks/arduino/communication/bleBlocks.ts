@@ -126,7 +126,7 @@ Blockly.Blocks['ble_uart_on_receive'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(BLE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_BLE_UARTONRECEIVETOOLTIP || 'Execute handler when a BLE message is received. Use "bleMessage" variable to get the received text. Place in loop block.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_UARTONRECEIVETOOLTIP || 'Execute handler when a BLE message is received. Use the "BLE Received" value block inside the handler to read the received text. Place in loop block.');
   }
 };
 
@@ -141,6 +141,26 @@ ${handler}    bleMessage = "";
   }
 }`;
   return `  bleCheckReceive();\n`;
+};
+
+/**
+ * ble_uart_get_received - BLE UART で受信した文字列を取得（HANDLER 内のみ有効）
+ * BUG-052 解消: ble_uart_on_receive HANDLER 内で受信値を Blockly レベルで取得可能に
+ */
+Blockly.Blocks['ble_uart_get_received'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_UARTGETRECEIVED || 'BLE Received'));
+    this.setOutput(true, 'String');
+    this.setColour(BLE_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_UARTGETRECEIVEDTOOLTIP || 'Get the BLE UART message received last. Use only inside the BLE On Receive handler. Returns an empty string when no message has arrived.');
+  }
+};
+
+generator.forBlock['ble_uart_get_received'] = function() {
+  generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
+  generator.definitions_['ble_globals'] = BLE_GLOBALS;
+  return ['bleMessage', 0];
 };
 
 /**

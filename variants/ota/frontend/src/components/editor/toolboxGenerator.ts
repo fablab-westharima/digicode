@@ -468,6 +468,7 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="ble_uart_setup"></block>
     <block type="ble_uart_write"></block>
     <block type="ble_uart_on_receive"></block>
+    <block type="ble_uart_get_received"></block>
     <block type="ble_is_connected"></block>
     <block type="ble_disconnect"></block>
     <sep></sep>

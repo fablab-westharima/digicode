@@ -591,7 +591,8 @@ Controla LEDs endereçáveis como WS2812B.
 |---------------|-----------|------------|
 | **Configurar BLE UART** | Inicia o serviço NUS | Nome do dispositivo |
 | **Enviar BLE** | Envia cadeia para o telemóvel | Texto |
-| **BLE Ao Receber** | Trata dados recebidos (variável bleMessage) | Handler |
+| **BLE Ao Receber** | Trata dados recebidos (use o bloco BLE Recebido dentro do handler) | Handler |
+| **BLE Recebido** | Obtém o texto recebido (uso dentro do handler) | → String |
 | **BLE Ligado?** | Verifica o estado da ligação | → true/false |
 | **Desligar BLE** | Desliga e reinicia a publicidade | — |
 
