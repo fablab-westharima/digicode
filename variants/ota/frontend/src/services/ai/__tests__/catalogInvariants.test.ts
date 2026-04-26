@@ -146,6 +146,31 @@ describe('selectFewShot (動的 Few-shot 選択)', () => {
     expect(result[4]).toBe('mqtt-direct');
   });
 
+  it('NVS keyword maps to nvs-counter', () => {
+    const result = selectFewShot('generic', 'NVS でカウンター永続化したい');
+    expect(result[4]).toBe('nvs-counter');
+  });
+
+  it('interrupt keyword maps to interrupt-button', () => {
+    const result = selectFewShot('generic', 'ボタンの割り込みで反応させたい');
+    expect(result[4]).toBe('interrupt-button');
+  });
+
+  it('LCD keyword maps to lcd-display', () => {
+    const result = selectFewShot('generic', 'I2C LCD に文字を表示したい');
+    expect(result[4]).toBe('lcd-display');
+  });
+
+  it('DFPlayer keyword maps to dfplayer-music', () => {
+    const result = selectFewShot('generic', 'DFPlayer で音楽再生');
+    expect(result[4]).toBe('dfplayer-music');
+  });
+
+  it('dashboard keyword maps to multi-sensor-dashboard', () => {
+    const result = selectFewShot('generic', '複数センサーの値を集約して表示');
+    expect(result[4]).toBe('multi-sensor-dashboard');
+  });
+
   it('all referenced sample ids exist in sampleProjects', () => {
     const allIds = new Set<string>([
       ...Object.values(__testing__.MODE_SPECIFIC_SAMPLES).flat(),

@@ -986,6 +986,71 @@ export const sampleProjects: SampleProject[] = [
     category: 'sensor',
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="dht_init"><field name="PIN">4</field><field name="TYPE">DHT22</field><next><block type="servo_attach"><field name="PIN">13</field><next><block type="esp32_pin_mode"><field name="PIN">2</field><field name="MODE">OUTPUT</field></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="controls_ifelse"><value name="IF0"><block type="logic_compare"><field name="OP">GT</field><value name="A"><block type="dht_temperature"></block></value><value name="B"><block type="math_number"><field name="NUM">25</field></block></value></block></value><statement name="DO0"><block type="servo_write"><field name="PIN">13</field><field name="ANGLE">180</field><next><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">HIGH</field></block></next></block></statement><statement name="ELSE"><block type="servo_write"><field name="PIN">13</field><field name="ANGLE">0</field><next><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">LOW</field></block></next></block></statement><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">3000</field></block></value></block></next></block></statement></block></xml>`
+  },
+  // ===== Phase 2 C 拡充 (2026-04-26): AI Few-shot 用 残 8 sample =====
+  {
+    id: 'humanoid-gesture',
+    title: 'Humanoid ジェスチャー',
+    description: 'Humanoidが手振り・喜び・マジックなど複数のジェスチャーを順に実行',
+    category: 'robots',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="humanoid_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="humanoid_home"><next><block type="humanoid_gesture"><field name="GESTURE">Wave</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="humanoid_gesture"><field name="GESTURE">Happy</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="humanoid_gesture"><field name="GESTURE">Magic</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value></block></next></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'wheel-remote-control',
+    title: 'Wheel リモコン操作',
+    description: 'BLEで受信したらWheelロボットを1秒前進させて停止',
+    category: 'robots',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="ble_uart_setup"><field name="NAME">WheelRemote</field><next><block type="wheel_init"><field name="PIN_L">14</field><field name="PIN_R">13</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="ble_uart_on_receive"><statement name="HANDLER"><block type="wheel_forward"><field name="SPEED">50</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value><next><block type="wheel_stop"></block></next></block></next></block></statement></block></statement></block></xml>`
+  },
+  {
+    id: 'multi-sensor-dashboard',
+    title: '複合センサーダッシュボード',
+    description: '温度・湿度・距離の3センサー値をシリアルにダッシュボード形式で出力',
+    category: 'iot',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_serial_begin"><field name="BAUD">115200</field><next><block type="dht_init"><field name="PIN">4</field><field name="TYPE">DHT22</field><next><block type="ultrasonic_init"><field name="TRIG_PIN">18</field><field name="ECHO_PIN">19</field></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="esp32_serial_print"><value name="VALUE"><block type="text"><field name="TEXT">T=</field></block></value><next><block type="esp32_serial_println"><value name="VALUE"><block type="dht_temperature"></block></value><next><block type="esp32_serial_print"><value name="VALUE"><block type="text"><field name="TEXT">H=</field></block></value><next><block type="esp32_serial_println"><value name="VALUE"><block type="dht_humidity"></block></value><next><block type="esp32_serial_print"><value name="VALUE"><block type="text"><field name="TEXT">Dist=</field></block></value><next><block type="esp32_serial_println"><value name="VALUE"><block type="ultrasonic_distance"></block></value><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value></block></next></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'neopixel-animation',
+    title: 'NeoPixel フェードアニメ',
+    description: 'NeoPixelの明るさを0から255まで段階的に変化させるフェードアニメーション',
+    category: 'motor',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="neopixel_init"><field name="PIN">4</field><field name="NUM_LEDS">8</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="controls_for"><field name="VAR">brightness</field><value name="FROM"><block type="math_number"><field name="NUM">0</field></block></value><value name="TO"><block type="math_number"><field name="NUM">255</field></block></value><value name="BY"><block type="math_number"><field name="NUM">5</field></block></value><statement name="DO"><block type="neopixel_set_color"><field name="INDEX">0</field><value name="RED"><block type="variables_get"><field name="VAR">brightness</field></block></value><value name="GREEN"><block type="math_number"><field name="NUM">0</field></block></value><value name="BLUE"><block type="math_number"><field name="NUM">100</field></block></value><next><block type="neopixel_show"><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">20</field></block></value></block></next></block></next></block></statement></block></statement></block></xml>`
+  },
+  {
+    id: 'nvs-counter',
+    title: 'NVS 起動回数カウンター',
+    description: 'NVS (Preferences) で起動回数を永続化し、起動毎にインクリメント',
+    category: 'basic',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_serial_begin"><field name="BAUD">115200</field><next><block type="preferences_begin"><field name="NAMESPACE">counter</field><field name="READONLY">FALSE</field><next><block type="variables_set"><field name="VAR">count</field><value name="VALUE"><block type="math_arithmetic"><field name="OP">ADD</field><value name="A"><block type="preferences_get"><field name="TYPE">Int</field><field name="KEY">value</field><value name="DEFAULT"><block type="math_number"><field name="NUM">0</field></block></value></block></value><value name="B"><block type="math_number"><field name="NUM">1</field></block></value></block></value><next><block type="preferences_put"><field name="TYPE">Int</field><field name="KEY">value</field><value name="VALUE"><block type="variables_get"><field name="VAR">count</field></block></value><next><block type="preferences_end"></block></next></block></next></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="esp32_serial_print"><value name="VALUE"><block type="text"><field name="TEXT">Boot count: </field></block></value><next><block type="esp32_serial_println"><value name="VALUE"><block type="variables_get"><field name="VAR">count</field></block></value><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">5000</field></block></value></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'interrupt-button',
+    title: 'ボタン割り込み',
+    description: 'ボタン押下を割り込みで検出し、シリアルに通知 (FALLING / INPUT_PULLUP)',
+    category: 'basic',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_serial_begin"><field name="BAUD">115200</field><next><block type="esp32_pin_mode"><field name="PIN">5</field><field name="MODE">INPUT_PULLUP</field><next><block type="attach_interrupt"><field name="PIN">5</field><field name="MODE">FALLING</field><statement name="HANDLER"><block type="esp32_serial_println"><value name="VALUE"><block type="text"><field name="TEXT">Pressed</field></block></value></block></statement></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">100</field></block></value></block></statement></block></xml>`
+  },
+  {
+    id: 'lcd-display',
+    title: 'I2C LCD 文字表示',
+    description: '16x2 I2C LCD に2行のメッセージを表示',
+    category: 'motor',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="lcd_init"><field name="COLS">16</field><field name="ROWS">2</field><field name="ADDR">0x27</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="lcd_clear"><next><block type="lcd_print_at"><field name="X">0</field><field name="Y">0</field><value name="TEXT"><block type="text"><field name="TEXT">Hello</field></block></value><next><block type="lcd_print_at"><field name="X">0</field><field name="Y">1</field><value name="TEXT"><block type="text"><field name="TEXT">DigiCode!</field></block></value><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value></block></next></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'dfplayer-music',
+    title: 'DFPlayer 音楽再生',
+    description: 'DFPlayer Mini で2トラックを順番に再生 (各10秒)',
+    category: 'motor',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_serial_begin"><field name="BAUD">115200</field><next><block type="controls_if"><value name="IF0"><block type="dfplayer_init"><field name="RX">14</field><field name="TX">12</field></block></value><statement name="DO0"><block type="dfplayer_volume"><field name="VOL">20</field></block></statement></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="dfplayer_play"><field name="TRACK">1</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">10000</field></block></value><next><block type="dfplayer_play"><field name="TRACK">2</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">10000</field></block></value></block></next></block></next></block></next></block></statement></block></xml>`
   }
 ];
 

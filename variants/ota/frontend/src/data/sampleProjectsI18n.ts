@@ -138,6 +138,38 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Sensor + Actuator Combo',
         description: 'Control servo angle and LED based on temperature',
       },
+      'humanoid-gesture': {
+        title: 'Humanoid Gestures',
+        description: 'Humanoid performs Wave / Happy / Magic gestures in sequence',
+      },
+      'wheel-remote-control': {
+        title: 'Wheel Remote Control',
+        description: 'Drive Wheel forward for 1 s on BLE message, then stop',
+      },
+      'multi-sensor-dashboard': {
+        title: 'Multi-Sensor Dashboard',
+        description: 'Print temperature, humidity and distance to serial as a dashboard',
+      },
+      'neopixel-animation': {
+        title: 'NeoPixel Fade Animation',
+        description: 'Fade NeoPixel brightness from 0 to 255 step by step',
+      },
+      'nvs-counter': {
+        title: 'NVS Boot Counter',
+        description: 'Persist boot count in NVS (Preferences) and increment on every boot',
+      },
+      'interrupt-button': {
+        title: 'Button Interrupt',
+        description: 'Detect button press via interrupt and log to serial (FALLING / INPUT_PULLUP)',
+      },
+      'lcd-display': {
+        title: 'I2C LCD Text Display',
+        description: 'Show two lines of text on a 16x2 I2C LCD',
+      },
+      'dfplayer-music': {
+        title: 'DFPlayer Music Playback',
+        description: 'Play two tracks in sequence on DFPlayer Mini (10 s each)',
+      },
     },
   },
   es: {
@@ -252,6 +284,38 @@ const overrides: Record<string, LocaleOverride> = {
       'sensor-actuator-combo': {
         title: 'Combo sensor + actuador',
         description: 'Controla ángulo de servo y LED según temperatura',
+      },
+      'humanoid-gesture': {
+        title: 'Gestos Humanoid',
+        description: 'El humanoide realiza los gestos Wave / Happy / Magic en secuencia',
+      },
+      'wheel-remote-control': {
+        title: 'Wheel control remoto',
+        description: 'Avanza Wheel 1 s al recibir un mensaje BLE y luego se detiene',
+      },
+      'multi-sensor-dashboard': {
+        title: 'Dashboard multi-sensor',
+        description: 'Imprime temperatura, humedad y distancia en serie como un dashboard',
+      },
+      'neopixel-animation': {
+        title: 'Animación de fundido NeoPixel',
+        description: 'Aumenta el brillo del NeoPixel de 0 a 255 paso a paso',
+      },
+      'nvs-counter': {
+        title: 'Contador de arranques en NVS',
+        description: 'Guarda el contador de arranques en NVS (Preferences) e incrementa en cada arranque',
+      },
+      'interrupt-button': {
+        title: 'Botón con interrupción',
+        description: 'Detecta la pulsación del botón por interrupción y la registra en serie (FALLING / INPUT_PULLUP)',
+      },
+      'lcd-display': {
+        title: 'LCD I2C texto',
+        description: 'Muestra dos líneas de texto en un LCD I2C de 16x2',
+      },
+      'dfplayer-music': {
+        title: 'Reproducción musical DFPlayer',
+        description: 'Reproduce dos pistas en orden con DFPlayer Mini (10 s cada una)',
       },
     },
   },
@@ -368,6 +432,38 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Combo sensor + atuador',
         description: 'Controla o ângulo do servo e o LED conforme a temperatura',
       },
+      'humanoid-gesture': {
+        title: 'Gestos Humanoid',
+        description: 'O humanoide executa os gestos Wave / Happy / Magic em sequência',
+      },
+      'wheel-remote-control': {
+        title: 'Wheel comando remoto',
+        description: 'Faz o Wheel avançar 1 s ao receber uma mensagem BLE e depois para',
+      },
+      'multi-sensor-dashboard': {
+        title: 'Dashboard multi-sensor',
+        description: 'Imprime temperatura, humidade e distância na série como um dashboard',
+      },
+      'neopixel-animation': {
+        title: 'Animação de fade NeoPixel',
+        description: 'Aumenta o brilho do NeoPixel de 0 a 255 passo a passo',
+      },
+      'nvs-counter': {
+        title: 'Contador de arranques em NVS',
+        description: 'Guarda o contador de arranques em NVS (Preferences) e incrementa a cada arranque',
+      },
+      'interrupt-button': {
+        title: 'Botão com interrupção',
+        description: 'Deteta a pressão do botão por interrupção e regista na série (FALLING / INPUT_PULLUP)',
+      },
+      'lcd-display': {
+        title: 'LCD I2C texto',
+        description: 'Mostra duas linhas de texto num LCD I2C de 16x2',
+      },
+      'dfplayer-music': {
+        title: 'Reprodução musical DFPlayer',
+        description: 'Reproduz duas faixas em sequência no DFPlayer Mini (10 s cada)',
+      },
     },
   },
   'zh-TW': {
@@ -482,6 +578,38 @@ const overrides: Record<string, LocaleOverride> = {
       'sensor-actuator-combo': {
         title: '感測器+致動器組合',
         description: '根據溫度控制伺服角度與 LED',
+      },
+      'humanoid-gesture': {
+        title: 'Humanoid 手勢動作',
+        description: 'Humanoid 依序執行 Wave / Happy / Magic 等手勢',
+      },
+      'wheel-remote-control': {
+        title: 'Wheel 遠端控制',
+        description: '收到 BLE 訊息時 Wheel 前進 1 秒後停止',
+      },
+      'multi-sensor-dashboard': {
+        title: '多感測器儀表板',
+        description: '將溫度、濕度、距離以儀表板格式輸出到序列',
+      },
+      'neopixel-animation': {
+        title: 'NeoPixel 漸變動畫',
+        description: '將 NeoPixel 亮度從 0 漸進到 255',
+      },
+      'nvs-counter': {
+        title: 'NVS 開機計數器',
+        description: '使用 NVS (Preferences) 儲存開機次數，每次開機自動加 1',
+      },
+      'interrupt-button': {
+        title: '按鈕中斷',
+        description: '透過中斷偵測按鈕按下並輸出到序列 (FALLING / INPUT_PULLUP)',
+      },
+      'lcd-display': {
+        title: 'I2C LCD 文字顯示',
+        description: '在 16x2 I2C LCD 顯示兩行文字',
+      },
+      'dfplayer-music': {
+        title: 'DFPlayer 音樂播放',
+        description: '使用 DFPlayer Mini 依序播放兩首曲目 (各 10 秒)',
       },
     },
   },

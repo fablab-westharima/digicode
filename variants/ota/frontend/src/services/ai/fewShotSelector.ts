@@ -16,8 +16,7 @@ const MODE_SPECIFIC_SAMPLES: Record<RobotMode, readonly [string, string]> = {
 };
 
 // 優先度順（上から match 試行、最初に hit したものを採用）
-// Phase 1 範囲: 12 sample のみ登録。Phase 2 で 8 sample (humanoid-gesture / wheel-remote-control /
-// multi-sensor-dashboard / neopixel-animation / nvs-counter / interrupt-button / lcd-display / dfplayer-music) 追加時に keyword も拡張
+// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 計 20 entries
 const KEYWORD_TO_SAMPLE: ReadonlyArray<readonly [RegExp, string]> = [
   // 条件分岐パターン
   [/温度|湿度|temperature|humidity|alert|°C/i, 'temp-alert'],
@@ -30,12 +29,21 @@ const KEYWORD_TO_SAMPLE: ReadonlyArray<readonly [RegExp, string]> = [
   [/walk|歩く|歩行/i, 'humanoid-walk'],
   [/line.?follow|ライントレース|ライン追従/i, 'wheel-line-follow'],
   [/morph|形態変化|変身/i, 'transform-morph'],
+  [/gesture|手振り|首振り|ジェスチャ/i, 'humanoid-gesture'],
+  [/remote|リモコン|リモート操作/i, 'wheel-remote-control'],
   // WiFi 系
   [/HTTP|API.*取得|REST|JSON.*取得|GET.*request/i, 'http-get-request'],
   [/MQTT|broker|メッセージブローカー/i, 'mqtt-direct'],
   [/NTP|時刻同期|時間同期/i, 'ntp-time-sync'],
-  // 複合
+  // 複合 / dashboard
   [/複合|combo|combine/i, 'sensor-actuator-combo'],
+  [/dashboard|集約|複数.?センサー|multi.?sensor/i, 'multi-sensor-dashboard'],
+  // ストレージ / I/O / 表示 / 音声
+  [/animation|アニメ|フェード|アニメーション/i, 'neopixel-animation'],
+  [/NVS|EEPROM|不揮発|永続化|persistent|persist/i, 'nvs-counter'],
+  [/割り?込み|interrupt|debounce|チャタリング/i, 'interrupt-button'],
+  [/LCD|液晶|16x2|文字.?表示/i, 'lcd-display'],
+  [/DFPlayer|MP3|音楽|音声再生/i, 'dfplayer-music'],
 ];
 
 function selectThemedSample(promptText: string, exclude: ReadonlySet<string>): string | null {
