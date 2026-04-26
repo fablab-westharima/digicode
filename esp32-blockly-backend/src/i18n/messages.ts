@@ -187,6 +187,16 @@ export const errorMessages = {
     'validation.enabledMustBeBoolean': 'enabledはboolean型である必要があります',
     'validation.noFieldsToUpdate': '更新するフィールドがありません',
 
+    // ── feedback: 要望フォーム (41.md Wave 3 新規 2 機能 A) ──
+    'feedback.invalidCategory': '無効なカテゴリです',
+    'feedback.titleEmpty': 'タイトルを入力してください',
+    'feedback.titleTooLong': 'タイトルは80文字以内で入力してください',
+    'feedback.bodyEmpty': '本文を入力してください',
+    'feedback.bodyTooLong': '本文は2000文字以内で入力してください',
+    'feedback.unauthorized': '要望投稿には Lite 以上のプランが必要です',
+    'feedback.notFound': '要望が見つかりません',
+    'feedback.invalidStatus': '無効なステータスです',
+
     // ── common: サーバ系 ──
     'common.serverConfigError': 'サーバー設定エラー',
   },
@@ -348,6 +358,15 @@ export const errorMessages = {
     'validation.enabledMustBeBoolean': 'enabled must be a boolean',
     'validation.noFieldsToUpdate': 'No fields to update',
 
+    'feedback.invalidCategory': 'Invalid category',
+    'feedback.titleEmpty': 'Title is required',
+    'feedback.titleTooLong': 'Title must be 80 characters or fewer',
+    'feedback.bodyEmpty': 'Body is required',
+    'feedback.bodyTooLong': 'Body must be 2000 characters or fewer',
+    'feedback.unauthorized': 'Submitting feedback requires the Lite plan or higher',
+    'feedback.notFound': 'Feedback not found',
+    'feedback.invalidStatus': 'Invalid status',
+
     'common.serverConfigError': 'Server configuration error',
   },
   es: {
@@ -507,6 +526,15 @@ export const errorMessages = {
     'validation.priceIdRequired': 'priceId es obligatorio',
     'validation.enabledMustBeBoolean': 'enabled debe ser de tipo booleano',
     'validation.noFieldsToUpdate': 'No hay campos para actualizar',
+
+    'feedback.invalidCategory': 'Categoría no válida',
+    'feedback.titleEmpty': 'El título es obligatorio',
+    'feedback.titleTooLong': 'El título debe tener 80 caracteres o menos',
+    'feedback.bodyEmpty': 'El cuerpo es obligatorio',
+    'feedback.bodyTooLong': 'El cuerpo debe tener 2000 caracteres o menos',
+    'feedback.unauthorized': 'Enviar comentarios requiere el plan Lite o superior',
+    'feedback.notFound': 'Comentario no encontrado',
+    'feedback.invalidStatus': 'Estado no válido',
 
     'common.serverConfigError': 'Error de configuración del servidor',
   },
@@ -668,6 +696,15 @@ export const errorMessages = {
     'validation.enabledMustBeBoolean': 'enabled deve ser do tipo booleano',
     'validation.noFieldsToUpdate': 'Não há campos para atualizar',
 
+    'feedback.invalidCategory': 'Categoria inválida',
+    'feedback.titleEmpty': 'O título é obrigatório',
+    'feedback.titleTooLong': 'O título deve ter 80 caracteres ou menos',
+    'feedback.bodyEmpty': 'O corpo é obrigatório',
+    'feedback.bodyTooLong': 'O corpo deve ter 2000 caracteres ou menos',
+    'feedback.unauthorized': 'Submeter sugestões requer o plano Lite ou superior',
+    'feedback.notFound': 'Sugestão não encontrada',
+    'feedback.invalidStatus': 'Estado inválido',
+
     'common.serverConfigError': 'Erro de configuração do servidor',
   },
   'zh-TW': {
@@ -827,6 +864,15 @@ export const errorMessages = {
     'validation.priceIdRequired': '需要 priceId',
     'validation.enabledMustBeBoolean': 'enabled 必須是布林值',
     'validation.noFieldsToUpdate': '沒有要更新的欄位',
+
+    'feedback.invalidCategory': '無效的類別',
+    'feedback.titleEmpty': '請輸入標題',
+    'feedback.titleTooLong': '標題不得超過 80 個字元',
+    'feedback.bodyEmpty': '請輸入內文',
+    'feedback.bodyTooLong': '內文不得超過 2000 個字元',
+    'feedback.unauthorized': '提交建議需要 Lite 方案以上',
+    'feedback.notFound': '找不到該建議',
+    'feedback.invalidStatus': '無效的狀態',
 
     'common.serverConfigError': '伺服器設定錯誤',
   },

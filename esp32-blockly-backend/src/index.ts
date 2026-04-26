@@ -9,6 +9,8 @@ import compileUsage from './routes/compile-usage';
 import subscriptions from './routes/subscriptions';
 import webhooks from './routes/webhooks';
 import admin from './routes/admin';
+import adminFeedback from './routes/admin-feedback';
+import feedback from './routes/feedback';
 import classes, { deleteClassCascade } from './routes/classes';
 import submissionsRoute from './routes/submissions';
 import { rateLimitPresets } from './middleware/rateLimit';
@@ -97,6 +99,7 @@ app.use('/api/projects/*', rateLimitPresets.standard);
 app.use('/api/subscriptions/*', rateLimitPresets.standard);
 app.use('/api/classes/*', rateLimitPresets.standard);
 app.use('/api/submissions/*', rateLimitPresets.standard);
+app.use('/api/feedback/*', rateLimitPresets.standard);
 
 // Webhook（制限緩め: 1000リクエスト/分）
 app.use('/api/webhooks/*', rateLimitPresets.webhook);
@@ -124,6 +127,12 @@ app.route('/api/subscriptions', subscriptions);
 
 // Webhookルート（Stripe決済連携）
 app.route('/api/webhooks', webhooks);
+
+// 41.md Phase 1: 要望フォームルート (POST /api/feedback)
+app.route('/api/feedback', feedback);
+
+// 41.md Phase 1: 管理者向け要望ルート — `/api/admin` より前に登録 (Hono 登録順マッチ)
+app.route('/api/admin/feedback', adminFeedback);
 
 // 管理者APIルート（Admin + Feature Flags公開API）
 app.route('/api/admin', admin);
