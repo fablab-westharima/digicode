@@ -3988,7 +3988,8 @@
     },
     "tabs": {
       "users": "使用者管理",
-      "flags": "Feature Flags"
+      "flags": "Feature Flags",
+      "feedback": "意見回饋"
     },
     "users": {
       "filters": {
@@ -4050,6 +4051,102 @@
     "common": {
       "apply": "套用",
       "cancel": "取消"
+    },
+    "feedback": {
+      "loading": "載入中...",
+      "empty": "尚無意見",
+      "pagination": {
+        "total": "共 {{count}} 筆"
+      },
+      "filter": {
+        "statusLabel": "狀態",
+        "categoryLabel": "類別",
+        "allStatus": "全部",
+        "allCategory": "全部"
+      },
+      "status": {
+        "new": "新進",
+        "triaged": "已分類",
+        "planned": "規劃中",
+        "closed": "已結案"
+      },
+      "column": {
+        "id": "ID",
+        "createdAt": "受理時間",
+        "userEmail": "使用者",
+        "userPlan": "方案",
+        "category": "類別",
+        "title": "標題",
+        "status": "狀態"
+      },
+      "detail": {
+        "title": "意見詳細",
+        "titleField": "標題",
+        "body": "內容",
+        "category": "類別",
+        "locale": "語言",
+        "appVersion": "版本",
+        "userAgent": "User Agent",
+        "status": "狀態",
+        "adminNote": "管理備註",
+        "adminNotePlaceholder": "管理者內部備註 (重複合併、處理狀態等)",
+        "save": "儲存",
+        "saving": "儲存中...",
+        "close": "關閉"
+      },
+      "export": {
+        "button": "匯出 CSV",
+        "exporting": "匯出中..."
+      },
+      "error": {
+        "fetchFailed": "取得意見列表失敗",
+        "patchFailed": "更新失敗",
+        "exportFailed": "匯出 CSV 失敗"
+      }
+    }
+  },
+  "feedback": {
+    "button": {
+      "label": "送出意見",
+      "requiresLitePlus": "意見回饋功能僅供方案訂閱者使用。",
+      "upgradePlan": "升級方案"
+    },
+    "dialog": {
+      "title": "送出意見",
+      "description": "歡迎送出功能改善建議或問題回報。請勿輸入個人資訊。",
+      "submit": "送出",
+      "cancel": "取消"
+    },
+    "field": {
+      "category": {
+        "label": "類別",
+        "placeholder": "請選擇類別...",
+        "options": {
+          "bug": "錯誤",
+          "feature": "功能建議",
+          "ui": "UI / UX",
+          "block": "積木",
+          "docs": "文件",
+          "other": "其他"
+        }
+      },
+      "title": {
+        "label": "標題",
+        "placeholder": "簡述意見的概要"
+      },
+      "body": {
+        "label": "內容",
+        "placeholder": "請填寫具體意見、重現步驟、預期行為等。"
+      }
+    },
+    "success": {
+      "title": "已送出",
+      "message": "感謝您的意見回饋,我們將盡快處理。",
+      "idLabel": "受理 ID",
+      "close": "關閉"
+    },
+    "error": {
+      "network": "送出失敗,請稍後再試。"
     }
   }
 }

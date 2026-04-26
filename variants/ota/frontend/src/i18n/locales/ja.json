@@ -3793,7 +3793,8 @@
     },
     "tabs": {
       "users": "ユーザー管理",
-      "flags": "Feature Flags"
+      "flags": "Feature Flags",
+      "feedback": "要望"
     },
     "users": {
       "filters": {
@@ -3855,6 +3856,102 @@
     "common": {
       "apply": "適用",
       "cancel": "取消"
+    },
+    "feedback": {
+      "loading": "読み込み中...",
+      "empty": "要望はまだありません",
+      "pagination": {
+        "total": "{{count}} 件"
+      },
+      "filter": {
+        "statusLabel": "ステータス",
+        "categoryLabel": "カテゴリ",
+        "allStatus": "全て",
+        "allCategory": "全て"
+      },
+      "status": {
+        "new": "未確認",
+        "triaged": "確認済",
+        "planned": "対応予定",
+        "closed": "対応完了"
+      },
+      "column": {
+        "id": "ID",
+        "createdAt": "受付日時",
+        "userEmail": "ユーザー",
+        "userPlan": "プラン",
+        "category": "カテゴリ",
+        "title": "タイトル",
+        "status": "ステータス"
+      },
+      "detail": {
+        "title": "要望詳細",
+        "titleField": "タイトル",
+        "body": "本文",
+        "category": "カテゴリ",
+        "locale": "言語",
+        "appVersion": "バージョン",
+        "userAgent": "User Agent",
+        "status": "ステータス",
+        "adminNote": "管理メモ",
+        "adminNotePlaceholder": "管理者向けの内部メモ（重複統合 / 対応状況等）",
+        "save": "保存",
+        "saving": "保存中...",
+        "close": "閉じる"
+      },
+      "export": {
+        "button": "CSV エクスポート",
+        "exporting": "エクスポート中..."
+      },
+      "error": {
+        "fetchFailed": "要望一覧の取得に失敗しました",
+        "patchFailed": "更新に失敗しました",
+        "exportFailed": "CSV エクスポートに失敗しました"
+      }
+    }
+  },
+  "feedback": {
+    "button": {
+      "label": "要望を送る",
+      "requiresLitePlus": "要望機能はプラン契約者のみご利用いただけます。",
+      "upgradePlan": "プランをアップグレード"
+    },
+    "dialog": {
+      "title": "要望を送る",
+      "description": "機能改善のご要望・不具合報告をお送りいただけます。個人情報は含めずにご記入ください。",
+      "submit": "送信",
+      "cancel": "キャンセル"
+    },
+    "field": {
+      "category": {
+        "label": "カテゴリ",
+        "placeholder": "カテゴリを選択...",
+        "options": {
+          "bug": "不具合",
+          "feature": "機能要望",
+          "ui": "UI / 操作性",
+          "block": "ブロック",
+          "docs": "ドキュメント",
+          "other": "その他"
+        }
+      },
+      "title": {
+        "label": "タイトル",
+        "placeholder": "要望の概要を一行で"
+      },
+      "body": {
+        "label": "本文",
+        "placeholder": "具体的な要望・再現手順・期待動作などをお書きください。"
+      }
+    },
+    "success": {
+      "title": "送信しました",
+      "message": "ご要望ありがとうございます。担当者が確認いたします。",
+      "idLabel": "受付 ID",
+      "close": "閉じる"
+    },
+    "error": {
+      "network": "送信に失敗しました。時間をおいて再度お試しください。"
     }
   }
 }

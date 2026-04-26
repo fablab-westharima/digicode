@@ -3988,7 +3988,8 @@
     },
     "tabs": {
       "users": "Gestión de usuarios",
-      "flags": "Feature Flags"
+      "flags": "Feature Flags",
+      "feedback": "Feedback"
     },
     "users": {
       "filters": {
@@ -4050,6 +4051,102 @@
     "common": {
       "apply": "Aplicar",
       "cancel": "Cancelar"
+    },
+    "feedback": {
+      "loading": "Cargando...",
+      "empty": "Aún no hay feedback",
+      "pagination": {
+        "total": "{{count}} elementos"
+      },
+      "filter": {
+        "statusLabel": "Estado",
+        "categoryLabel": "Categoría",
+        "allStatus": "Todos",
+        "allCategory": "Todas"
+      },
+      "status": {
+        "new": "Nuevo",
+        "triaged": "Clasificado",
+        "planned": "Planificado",
+        "closed": "Cerrado"
+      },
+      "column": {
+        "id": "ID",
+        "createdAt": "Recibido",
+        "userEmail": "Usuario",
+        "userPlan": "Plan",
+        "category": "Categoría",
+        "title": "Título",
+        "status": "Estado"
+      },
+      "detail": {
+        "title": "Detalle del feedback",
+        "titleField": "Título",
+        "body": "Descripción",
+        "category": "Categoría",
+        "locale": "Idioma",
+        "appVersion": "Versión",
+        "userAgent": "User Agent",
+        "status": "Estado",
+        "adminNote": "Nota de admin",
+        "adminNotePlaceholder": "Nota interna para administradores (duplicados, estado, etc.)",
+        "save": "Guardar",
+        "saving": "Guardando...",
+        "close": "Cerrar"
+      },
+      "export": {
+        "button": "Exportar CSV",
+        "exporting": "Exportando..."
+      },
+      "error": {
+        "fetchFailed": "Error al obtener feedback",
+        "patchFailed": "Error al actualizar",
+        "exportFailed": "Error al exportar CSV"
+      }
+    }
+  },
+  "feedback": {
+    "button": {
+      "label": "Enviar feedback",
+      "requiresLitePlus": "La función de feedback está disponible para suscriptores con plan.",
+      "upgradePlan": "Actualizar plan"
+    },
+    "dialog": {
+      "title": "Enviar feedback",
+      "description": "Envíe solicitudes de mejora o reportes de errores. No incluya información personal.",
+      "submit": "Enviar",
+      "cancel": "Cancelar"
+    },
+    "field": {
+      "category": {
+        "label": "Categoría",
+        "placeholder": "Seleccione una categoría...",
+        "options": {
+          "bug": "Error",
+          "feature": "Solicitud de función",
+          "ui": "UI / UX",
+          "block": "Bloque",
+          "docs": "Documentación",
+          "other": "Otro"
+        }
+      },
+      "title": {
+        "label": "Título",
+        "placeholder": "Resumen breve en una línea"
+      },
+      "body": {
+        "label": "Descripción",
+        "placeholder": "Detalles, pasos para reproducir, comportamiento esperado, etc."
+      }
+    },
+    "success": {
+      "title": "Enviado",
+      "message": "Gracias por su feedback. Lo revisaremos en breve.",
+      "idLabel": "ID de recepción",
+      "close": "Cerrar"
+    },
+    "error": {
+      "network": "El envío falló. Inténtelo más tarde."
     }
   }
 }

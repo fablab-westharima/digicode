@@ -11,8 +11,25 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Search, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { ArrowLeft, Search, Trash2, ChevronLeft, ChevronRight, Download as DownloadIcon } from 'lucide-react';
 import i18n from '@/i18n';
+import {
+  fetchAdminFeedback,
+  patchAdminFeedback,
+  downloadAdminFeedbackCsv,
+  type FeedbackItem,
+  type FeedbackStatus,
+  type FeedbackCategory,
+} from '@/services/feedbackService';
 
 // i18n.language → toLocaleDateString locale 対応
 const LOCALE_MAP: Record<string, string> = {
@@ -490,13 +507,400 @@ function FlagsTab() {
   );
 }
 
+// ---- Feedback Tab ----
+
+const FEEDBACK_STATUSES: FeedbackStatus[] = ['new', 'triaged', 'planned', 'closed'];
+const FEEDBACK_CATEGORIES: FeedbackCategory[] = ['bug', 'feature', 'ui', 'block', 'docs', 'other'];
+
+function StatusBadge({ status }: { status: FeedbackStatus }) {
+  const colors: Record<FeedbackStatus, string> = {
+    new: 'bg-blue-600',
+    triaged: 'bg-yellow-600',
+    planned: 'bg-purple-600',
+    closed: 'bg-gray-600',
+  };
+  const { t } = useTranslation();
+  return (
+    <Badge className={`${colors[status]} text-white text-xs`}>
+      {t(`admin.feedback.status.${status}`, { defaultValue: status })}
+    </Badge>
+  );
+}
+
+function FeedbackTab() {
+  const { t, i18n: i18nInst } = useTranslation();
+  const [items, setItems] = useState<FeedbackItem[]>([]);
+  const [total, setTotal] = useState(0);
+  const [statusFilter, setStatusFilter] = useState<FeedbackStatus | ''>('');
+  const [categoryFilter, setCategoryFilter] = useState<FeedbackCategory | ''>('');
+  const [offset, setOffset] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [detail, setDetail] = useState<FeedbackItem | null>(null);
+  const [editStatus, setEditStatus] = useState<FeedbackStatus>('new');
+  const [editAdminNote, setEditAdminNote] = useState('');
+  const [saving, setSaving] = useState(false);
+  const limit = 20;
+
+  const fetchList = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchAdminFeedback({
+        status: statusFilter || undefined,
+        category: categoryFilter || undefined,
+        limit,
+        offset,
+        sort: 'created_desc',
+      });
+      setItems(data.items);
+      setTotal(data.total);
+    } catch (err) {
+      console.error('Failed to fetch feedback:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [statusFilter, categoryFilter, offset]);
+
+  useEffect(() => {
+    fetchList();
+  }, [fetchList]);
+
+  const openDetail = (item: FeedbackItem) => {
+    setDetail(item);
+    setEditStatus(item.status);
+    setEditAdminNote(item.adminNote ?? '');
+  };
+
+  const closeDetail = () => {
+    setDetail(null);
+    setEditAdminNote('');
+    setSaving(false);
+  };
+
+  const handleSave = async () => {
+    if (!detail) return;
+    setSaving(true);
+    try {
+      const updated = await patchAdminFeedback(detail.id, {
+        status: editStatus,
+        adminNote: editAdminNote,
+      });
+      setItems((prev) => prev.map((it) => (it.id === updated.id ? updated : it)));
+      setDetail(updated);
+    } catch (err) {
+      console.error('Failed to patch feedback:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await downloadAdminFeedbackCsv();
+    } catch (err) {
+      console.error('Failed to export feedback CSV:', err);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const formatDate = (date: string | null) => {
+    if (!date) return '-';
+    const locale = LOCALE_MAP[i18nInst.language] ?? 'en-US';
+    return new Date(date).toLocaleString(locale, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const totalPages = Math.ceil(total / limit);
+  const currentPage = Math.floor(offset / limit) + 1;
+
+  return (
+    <div className="space-y-4">
+      {/* Filters + Export */}
+      <div className="flex gap-3 items-end flex-wrap">
+        <div className="w-[160px]">
+          <Label className="text-[#8B949E] text-xs mb-1 block">
+            {t('admin.feedback.filter.statusLabel', { defaultValue: 'ステータス' })}
+          </Label>
+          <Select
+            value={statusFilter || 'all'}
+            onValueChange={(v) => {
+              setStatusFilter(v === 'all' ? '' : (v as FeedbackStatus));
+              setOffset(0);
+            }}
+          >
+            <SelectTrigger className="bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">
+                {t('admin.feedback.filter.allStatus', { defaultValue: '全て' })}
+              </SelectItem>
+              {FEEDBACK_STATUSES.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {t(`admin.feedback.status.${s}`, { defaultValue: s })}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="w-[160px]">
+          <Label className="text-[#8B949E] text-xs mb-1 block">
+            {t('admin.feedback.filter.categoryLabel', { defaultValue: 'カテゴリ' })}
+          </Label>
+          <Select
+            value={categoryFilter || 'all'}
+            onValueChange={(v) => {
+              setCategoryFilter(v === 'all' ? '' : (v as FeedbackCategory));
+              setOffset(0);
+            }}
+          >
+            <SelectTrigger className="bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">
+                {t('admin.feedback.filter.allCategory', { defaultValue: '全て' })}
+              </SelectItem>
+              {FEEDBACK_CATEGORIES.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {t(`feedback.field.category.options.${c}`, { defaultValue: c })}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="ml-auto">
+          <Button onClick={handleExport} disabled={exporting} variant="outline">
+            <DownloadIcon className="w-4 h-4 mr-2" />
+            {exporting
+              ? t('admin.feedback.export.exporting', { defaultValue: 'エクスポート中...' })
+              : t('admin.feedback.export.button', { defaultValue: 'CSV エクスポート' })}
+          </Button>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="border border-[#2E333D] rounded-lg overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-[#161B22]">
+            <tr className="text-[#8B949E]">
+              <th className="text-left px-4 py-3 font-medium w-[60px]">
+                {t('admin.feedback.column.id', { defaultValue: 'ID' })}
+              </th>
+              <th className="text-left px-4 py-3 font-medium w-[140px]">
+                {t('admin.feedback.column.createdAt', { defaultValue: '受付日時' })}
+              </th>
+              <th className="text-left px-4 py-3 font-medium w-[200px]">
+                {t('admin.feedback.column.userEmail', { defaultValue: 'ユーザー' })}
+              </th>
+              <th className="text-left px-4 py-3 font-medium w-[80px]">
+                {t('admin.feedback.column.userPlan', { defaultValue: 'プラン' })}
+              </th>
+              <th className="text-left px-4 py-3 font-medium w-[100px]">
+                {t('admin.feedback.column.category', { defaultValue: 'カテゴリ' })}
+              </th>
+              <th className="text-left px-4 py-3 font-medium">
+                {t('admin.feedback.column.title', { defaultValue: 'タイトル' })}
+              </th>
+              <th className="text-left px-4 py-3 font-medium w-[100px]">
+                {t('admin.feedback.column.status', { defaultValue: 'ステータス' })}
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[#2E333D]">
+            {loading ? (
+              <tr>
+                <td colSpan={7} className="px-4 py-8 text-center text-[#8B949E]">
+                  {t('admin.feedback.loading', { defaultValue: '読み込み中...' })}
+                </td>
+              </tr>
+            ) : items.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-4 py-8 text-center text-[#8B949E]">
+                  {t('admin.feedback.empty', { defaultValue: '要望はまだありません' })}
+                </td>
+              </tr>
+            ) : (
+              items.map((it) => (
+                <tr
+                  key={it.id}
+                  className="cursor-pointer hover:bg-[#161B22]"
+                  onClick={() => openDetail(it)}
+                >
+                  <td className="px-4 py-3 text-[#8B949E] text-xs">#{it.id}</td>
+                  <td className="px-4 py-3 text-[#8B949E] text-xs">{formatDate(it.createdAt)}</td>
+                  <td className="px-4 py-3 text-[#E6EDF3] text-xs truncate max-w-[200px]">
+                    {it.userEmail ?? '-'}
+                  </td>
+                  <td className="px-4 py-3">
+                    {it.userPlan ? <PlanBadge plan={it.userPlan} /> : '-'}
+                  </td>
+                  <td className="px-4 py-3 text-[#8B949E] text-xs">
+                    {t(`feedback.field.category.options.${it.category}`, { defaultValue: it.category })}
+                  </td>
+                  <td className="px-4 py-3 text-[#E6EDF3] truncate max-w-[300px]">{it.title}</td>
+                  <td className="px-4 py-3">
+                    <StatusBadge status={it.status} />
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between text-sm text-[#8B949E]">
+        <span>{t('admin.feedback.pagination.total', { count: total, defaultValue: '{{count}} 件' })}</span>
+        {totalPages > 1 && (
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="ghost"
+              disabled={currentPage <= 1}
+              onClick={() => setOffset(Math.max(0, offset - limit))}
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <span>{currentPage} / {totalPages}</span>
+            <Button
+              size="sm"
+              variant="ghost"
+              disabled={currentPage >= totalPages}
+              onClick={() => setOffset(offset + limit)}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* Detail Dialog */}
+      <Dialog open={detail !== null} onOpenChange={(o) => { if (!o) closeDetail(); }}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          {detail && (
+            <>
+              <DialogHeader>
+                <DialogTitle>
+                  {t('admin.feedback.detail.title', { defaultValue: '要望詳細' })} #{detail.id}
+                </DialogTitle>
+                <DialogDescription>
+                  {formatDate(detail.createdAt)} — {detail.userEmail ?? '-'}{' '}
+                  {detail.userPlan && `(${detail.userPlan})`}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4 py-2">
+                {/* Meta info */}
+                <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                  <div>
+                    <span className="font-medium">
+                      {t('admin.feedback.detail.category', { defaultValue: 'カテゴリ' })}:
+                    </span>{' '}
+                    {t(`feedback.field.category.options.${detail.category}`, { defaultValue: detail.category })}
+                  </div>
+                  <div>
+                    <span className="font-medium">
+                      {t('admin.feedback.detail.locale', { defaultValue: '言語' })}:
+                    </span>{' '}
+                    {detail.locale ?? '-'}
+                  </div>
+                  <div>
+                    <span className="font-medium">
+                      {t('admin.feedback.detail.appVersion', { defaultValue: 'バージョン' })}:
+                    </span>{' '}
+                    {detail.appVersion ?? '-'}
+                  </div>
+                  <div className="truncate">
+                    <span className="font-medium">
+                      {t('admin.feedback.detail.userAgent', { defaultValue: 'User Agent' })}:
+                    </span>{' '}
+                    <span title={detail.userAgent ?? ''}>{detail.userAgent ?? '-'}</span>
+                  </div>
+                </div>
+
+                {/* Title (read-only) */}
+                <div className="space-y-1.5">
+                  <Label>{t('admin.feedback.detail.titleField', { defaultValue: 'タイトル' })}</Label>
+                  <div className="rounded-md border border-[#2E333D] bg-[#0D1117] px-3 py-2 text-sm text-[#E6EDF3]">
+                    {detail.title}
+                  </div>
+                </div>
+
+                {/* Body (read-only) */}
+                <div className="space-y-1.5">
+                  <Label>{t('admin.feedback.detail.body', { defaultValue: '本文' })}</Label>
+                  <div className="rounded-md border border-[#2E333D] bg-[#0D1117] px-3 py-2 text-sm text-[#E6EDF3] whitespace-pre-wrap break-words">
+                    {detail.body}
+                  </div>
+                </div>
+
+                {/* Status (editable) */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="feedback-edit-status">
+                    {t('admin.feedback.detail.status', { defaultValue: 'ステータス' })}
+                  </Label>
+                  <Select value={editStatus} onValueChange={(v) => setEditStatus(v as FeedbackStatus)}>
+                    <SelectTrigger id="feedback-edit-status" className="bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FEEDBACK_STATUSES.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {t(`admin.feedback.status.${s}`, { defaultValue: s })}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* admin_note */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="feedback-admin-note">
+                    {t('admin.feedback.detail.adminNote', { defaultValue: '管理メモ' })}
+                  </Label>
+                  <Textarea
+                    id="feedback-admin-note"
+                    value={editAdminNote}
+                    onChange={(e) => setEditAdminNote(e.target.value)}
+                    rows={4}
+                    placeholder={t('admin.feedback.detail.adminNotePlaceholder', { defaultValue: '管理者向けの内部メモ（重複統合 / 対応状況等）' })}
+                  />
+                </div>
+              </div>
+
+              <DialogFooter className="gap-2">
+                <Button variant="ghost" onClick={closeDetail}>
+                  {t('admin.feedback.detail.close', { defaultValue: '閉じる' })}
+                </Button>
+                <Button onClick={handleSave} disabled={saving}>
+                  {saving
+                    ? t('admin.feedback.detail.saving', { defaultValue: '保存中...' })
+                    : t('admin.feedback.detail.save', { defaultValue: '保存' })}
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 // ---- Main AdminPage ----
 
 export function AdminPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
-  const [activeTab, setActiveTab] = useState<'users' | 'flags'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'flags' | 'feedback'>('users');
 
   // 非adminはリダイレクト
   if (!user?.isAdmin) {
@@ -549,10 +953,22 @@ export function AdminPage() {
           >
             {t('admin.tabs.flags')}
           </button>
+          <button
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'feedback'
+                ? 'border-blue-500 text-[#E6EDF3]'
+                : 'border-transparent text-[#8B949E] hover:text-[#E6EDF3]'
+            }`}
+            onClick={() => setActiveTab('feedback')}
+          >
+            {t('admin.tabs.feedback', { defaultValue: '要望' })}
+          </button>
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'users' ? <UsersTab /> : <FlagsTab />}
+        {activeTab === 'users' && <UsersTab />}
+        {activeTab === 'flags' && <FlagsTab />}
+        {activeTab === 'feedback' && <FeedbackTab />}
       </div>
     </div>
   );

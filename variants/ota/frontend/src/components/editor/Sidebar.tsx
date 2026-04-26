@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AIAssistantPanel } from './AIAssistantPanel';
 import { AIAssistantDialog } from './AIAssistantDialog';
+import { FeedbackFormButton } from '../feedback/FeedbackFormButton';
 import {
   FolderOpen,
   Zap,
@@ -122,7 +123,7 @@ export function Sidebar({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
-  const { canUsePinAssign, isFreeOpenNow, fetchFlags, canUseAiBlockGeneration, canUseAiHelpBot } = useFeatureFlagStore();
+  const { canUsePinAssign, isFreeOpenNow, fetchFlags, canUseAiBlockGeneration, canUseAiHelpBot, canSubmitFeedback } = useFeatureFlagStore();
   const [isPinned, setIsPinned] = useState(false); // ピン留めなし
   const [isHovered, setIsHovered] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['project'])); // デフォルトでprojectを開く
@@ -139,6 +140,8 @@ export function Sidebar({
   const isAiAvailable = canUseAiBlockGeneration(user?.plan, user?.accountType);
   const isHelpBotAvailable = canUseAiHelpBot(user?.plan, user?.accountType);
   const isAiUpgradeCandidate = isAuthenticated && user?.accountType !== 'student' && !isAiAvailable;
+  const isFeedbackAvailable = canSubmitFeedback(user?.plan, user?.accountType);
+  const isFeedbackUpgradeCandidate = isAuthenticated && user?.accountType !== 'student' && !isFeedbackAvailable;
 
   const toggleCategory = (category: string) => {
     setExpandedCategories(prev => {
@@ -611,6 +614,16 @@ export function Sidebar({
             onExpand={() => setIsAiDialogOpen(true)}
           />
         </div>
+      )}
+
+      {/* 要望フォーム（Lite+ または upgrade 候補ユーザーに表示）— AI アシスタントの直下に配置 */}
+      {isAuthenticated && (isFeedbackAvailable || isFeedbackUpgradeCandidate) && (
+        <FeedbackFormButton
+          shouldShowFull={shouldShowFull}
+          isAvailable={isFeedbackAvailable}
+          isUpgradeCandidate={isFeedbackUpgradeCandidate}
+          onUpgradePlan={() => navigate('/plan')}
+        />
       )}
 
       {/* AI アシスタント 展開ダイアログ */}

@@ -3803,7 +3803,8 @@
     },
     "tabs": {
       "users": "User Management",
-      "flags": "Feature Flags"
+      "flags": "Feature Flags",
+      "feedback": "Feedback"
     },
     "users": {
       "filters": {
@@ -3865,6 +3866,102 @@
     "common": {
       "apply": "Apply",
       "cancel": "Cancel"
+    },
+    "feedback": {
+      "loading": "Loading...",
+      "empty": "No feedback yet",
+      "pagination": {
+        "total": "{{count}} items"
+      },
+      "filter": {
+        "statusLabel": "Status",
+        "categoryLabel": "Category",
+        "allStatus": "All",
+        "allCategory": "All"
+      },
+      "status": {
+        "new": "New",
+        "triaged": "Triaged",
+        "planned": "Planned",
+        "closed": "Closed"
+      },
+      "column": {
+        "id": "ID",
+        "createdAt": "Received at",
+        "userEmail": "User",
+        "userPlan": "Plan",
+        "category": "Category",
+        "title": "Title",
+        "status": "Status"
+      },
+      "detail": {
+        "title": "Feedback Detail",
+        "titleField": "Title",
+        "body": "Description",
+        "category": "Category",
+        "locale": "Locale",
+        "appVersion": "App version",
+        "userAgent": "User Agent",
+        "status": "Status",
+        "adminNote": "Admin note",
+        "adminNotePlaceholder": "Internal note for admins (dedup, status, etc.)",
+        "save": "Save",
+        "saving": "Saving...",
+        "close": "Close"
+      },
+      "export": {
+        "button": "Export CSV",
+        "exporting": "Exporting..."
+      },
+      "error": {
+        "fetchFailed": "Failed to fetch feedback",
+        "patchFailed": "Failed to update",
+        "exportFailed": "Failed to export CSV"
+      }
+    }
+  },
+  "feedback": {
+    "button": {
+      "label": "Send Feedback",
+      "requiresLitePlus": "Feedback is available to plan subscribers.",
+      "upgradePlan": "Upgrade plan"
+    },
+    "dialog": {
+      "title": "Send Feedback",
+      "description": "Send feature requests or bug reports. Please don't include personal information.",
+      "submit": "Submit",
+      "cancel": "Cancel"
+    },
+    "field": {
+      "category": {
+        "label": "Category",
+        "placeholder": "Select a category...",
+        "options": {
+          "bug": "Bug",
+          "feature": "Feature request",
+          "ui": "UI / UX",
+          "block": "Block",
+          "docs": "Documentation",
+          "other": "Other"
+        }
+      },
+      "title": {
+        "label": "Title",
+        "placeholder": "Brief summary in one line"
+      },
+      "body": {
+        "label": "Description",
+        "placeholder": "Specific request, steps to reproduce, expected behavior, etc."
+      }
+    },
+    "success": {
+      "title": "Submitted",
+      "message": "Thank you for your feedback. We'll review it shortly.",
+      "idLabel": "Reception ID",
+      "close": "Close"
+    },
+    "error": {
+      "network": "Submission failed. Please try again later."
     }
   }
 }

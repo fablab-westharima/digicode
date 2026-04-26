@@ -20,6 +20,7 @@ interface FeatureFlagState {
   canUsePinAssign: (userPlan?: string) => boolean;
   canUseAiBlockGeneration: (userPlan?: string, accountType?: string) => boolean;
   canUseAiHelpBot: (userPlan?: string, accountType?: string) => boolean;
+  canSubmitFeedback: (userPlan?: string, accountType?: string) => boolean;
   isFreeOpenNow: (key: string) => boolean;
   getFreeReason: (key: string) => string | null;
   getFreeUntil: (key: string) => string | null;
@@ -82,6 +83,14 @@ export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
   // AI チャット: blockGen と同じく Lite+ 非 student 限定（判断 10 変更 2026-04-22）
   // BYOK + 有料プランの差別化機能として位置づけ
   canUseAiHelpBot: (userPlan?: string, accountType?: string) => {
+    if (accountType === 'student') return false;
+    if (!userPlan) return false;
+    return ['lite', 'pro', 'enterprise'].includes(userPlan);
+  },
+
+  // 要望フォーム: 課金ユーザー限定 (Lite / Pro / Enterprise admin)、Enterprise student / Free / ゲストは投稿不可
+  // 41.md §2 認可マトリクス、backend `routes/feedback.ts` の二段階認可と同型 (defense in depth)
+  canSubmitFeedback: (userPlan?: string, accountType?: string) => {
     if (accountType === 'student') return false;
     if (!userPlan) return false;
     return ['lite', 'pro', 'enterprise'].includes(userPlan);
