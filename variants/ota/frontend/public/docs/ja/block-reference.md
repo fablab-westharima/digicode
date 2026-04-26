@@ -604,7 +604,7 @@ WS2812B 等のアドレッサブル LED を制御します。
 | **GATT サービス追加** | カスタム GATT サービスを作成 | サービス UUID |
 | **Characteristic 追加** | Characteristic を追加 | サービス UUID、Char UUID、read/write/notify |
 | **BLE Notify 送信** | Characteristic に Notify 送信 | Char UUID、値 |
-| **BLE Write 受信時** | Characteristic への Write 受信処理 | Char UUID、処理ブロック |
+| **BLE Write 受信時** | Characteristic への Write 受信処理（HANDLER 内で BLE 受信値ブロックを使用） | Char UUID、処理ブロック |
 | **BLE アドバタイズ開始** | BLE アドバタイズを開始 | — |
 
 **iBeacon・スキャン:**
@@ -613,7 +613,10 @@ WS2812B 等のアドレッサブル LED を制御します。
 |-----------|------|-----------|
 | **iBeacon 送信** | iBeacon としてブロードキャスト | UUID、major、minor |
 | **BLE スキャン開始** | 周辺 BLE デバイスをスキャン | スキャン時間(秒) |
-| **BLE デバイス発見時** | デバイス検出時の処理（bleFoundName / bleFoundAddress / bleFoundRssi 変数で参照） | 処理ブロック |
+| **BLE デバイス発見時** | デバイス検出時の処理（HANDLER 内で BLE スキャン名 / アドレス / RSSI ブロックを使用） | 処理ブロック |
+| **BLE スキャン名** | HANDLER 内で検出したデバイス名を取得 | → String |
+| **BLE スキャンアドレス** | HANDLER 内で検出した MAC アドレスを取得 | → String |
+| **BLE スキャン RSSI** | HANDLER 内で検出した RSSI を取得（dBm、負値、0 に近いほど強い） | → Number |
 | **BLE RSSI 取得** | 接続中デバイスの電波強度 | → dBm |
 
 ### WebSocket クライアント

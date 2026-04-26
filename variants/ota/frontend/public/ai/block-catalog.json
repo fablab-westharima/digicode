@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-04-26T12:46:39.234Z",
+  "generatedAt": "2026-04-26T13:35:47.246Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -2651,7 +2651,7 @@
     {
       "type": "ble_uart_on_receive",
       "category": "ble",
-      "tooltip": "Execute handler when a BLE message is received. Use the \"BLE Received\" value block inside the handler to read the received text. Place in loop block.",
+      "tooltip": "Execute handler when a BLE UART message is received. Use the \"BLE Received\" value block inside the handler to read the received text. Place in loop block.",
       "colour": "#2196F3",
       "isStatement": true,
       "hasOutput": false,
@@ -2673,9 +2673,9 @@
       ]
     },
     {
-      "type": "ble_uart_get_received",
+      "type": "ble_received_value",
       "category": "ble",
-      "tooltip": "Get the BLE UART message received last. Use only inside the BLE On Receive handler. Returns an empty string when no message has arrived.",
+      "tooltip": "Get the message received last via BLE. Use only inside a BLE On Receive or BLE On Write handler. Returns an empty string when no message has arrived.",
       "colour": "#2196F3",
       "isStatement": false,
       "hasOutput": true,
@@ -2864,7 +2864,7 @@
     {
       "type": "ble_on_write",
       "category": "ble",
-      "tooltip": "Execute handler when the specified characteristic is written by the connected device. Use bleMessage for the received value. Place in loop block.",
+      "tooltip": "Execute handler when the specified characteristic is written by the connected device. Use the \"BLE Received\" value block inside the handler to read the received text. Place in loop block.",
       "colour": "#1565C0",
       "isStatement": true,
       "hasOutput": false,
@@ -2982,7 +2982,7 @@
     {
       "type": "ble_on_device_found",
       "category": "ble",
-      "tooltip": "Execute handler when a BLE device is found during scan. Use bleFoundName, bleFoundAddress, bleFoundRssi variables.",
+      "tooltip": "Execute handler when a BLE device is found during scan. Use the \"BLE Scan Name / Address / RSSI\" value blocks inside the handler to read the detected values.",
       "colour": "#00BCD4",
       "isStatement": true,
       "hasOutput": false,
@@ -3002,6 +3002,66 @@
           "name": "HANDLER"
         }
       ]
+    },
+    {
+      "type": "ble_scan_found_name",
+      "category": "ble",
+      "tooltip": "Get the name of the BLE device just detected. Use only inside a BLE On Device Found handler. Returns an empty string when no device has been detected.",
+      "colour": "#00BCD4",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "robots_humanoid",
+        "robots_transform",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsBle",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "ble_scan_found_address",
+      "category": "ble",
+      "tooltip": "Get the MAC address of the BLE device just detected. Use only inside a BLE On Device Found handler. Returns an empty string when no device has been detected.",
+      "colour": "#00BCD4",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "robots_humanoid",
+        "robots_transform",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsBle",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "ble_scan_found_rssi",
+      "category": "ble",
+      "tooltip": "Get the RSSI (dBm, negative; closer to 0 = stronger) of the BLE device just detected. Use only inside a BLE On Device Found handler. Returns 0 when no device has been detected.",
+      "colour": "#00BCD4",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "robots_humanoid",
+        "robots_transform",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsBle",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "ble_get_rssi",

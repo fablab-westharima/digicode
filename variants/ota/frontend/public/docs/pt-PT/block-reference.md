@@ -604,7 +604,7 @@ Controla LEDs endereçáveis como WS2812B.
 | **Adicionar Serviço GATT** | Cria serviço GATT personalizado | UUID do serviço |
 | **Adicionar Característica** | Adiciona característica | UUID de serviço, UUID de característica, ler/escrever/notificar |
 | **Notificação BLE** | Envia notificação via característica | UUID de característica, Valor |
-| **BLE Ao Escrever** | Trata escrita na característica | UUID de característica, Handler |
+| **BLE Ao Escrever** | Trata escrita na característica (use o bloco BLE Recebido dentro do handler) | UUID de característica, Handler |
 | **Iniciar Publicidade BLE** | Inicia a publicidade BLE | — |
 
 **iBeacon e Varrimento:**
@@ -613,7 +613,10 @@ Controla LEDs endereçáveis como WS2812B.
 |---------------|-----------|------------|
 | **Transmitir iBeacon** | Transmite como iBeacon | UUID, Major, Minor |
 | **Iniciar Varrimento BLE** | Varre dispositivos BLE próximos | Duração (seg) |
-| **BLE Ao Encontrar Dispositivo** | Trata dispositivo descoberto (bleFoundName / bleFoundAddress / bleFoundRssi) | Handler |
+| **BLE Ao Encontrar Dispositivo** | Trata dispositivo descoberto (use os blocos BLE Nome / Endereço / RSSI Pesquisa dentro do handler) | Handler |
+| **BLE Nome Pesquisa** | Obtém o nome do dispositivo detetado (usar dentro do handler) | → String |
+| **BLE Endereço Pesquisa** | Obtém o endereço MAC detetado (usar dentro do handler) | → String |
+| **BLE RSSI Pesquisa** | Obtém o RSSI detetado (dBm, negativo; mais perto de 0 = mais forte) | → Number |
 | **RSSI BLE** | Obtém a intensidade do sinal do dispositivo ligado | → dBm |
 
 ### Cliente WebSocket

@@ -114,6 +114,14 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'BLE GATT Custom',
         description: 'Periodically notify a custom GATT characteristic',
       },
+      'ble-gatt-command-control': {
+        title: 'BLE GATT Command Control',
+        description: 'Switch LED HIGH/LOW based on GATT Write received "ON"/"OFF" command (GATT branching pattern)',
+      },
+      'ble-scan-filter-by-name': {
+        title: 'BLE Scan Filter by Name',
+        description: 'Log address and RSSI to serial when a specific device name is detected during scan (scan-result branching pattern)',
+      },
       'humanoid-walk': {
         title: 'Humanoid Walk',
         description: 'Humanoid robot walks back and forth (basic motion)',
@@ -264,6 +272,14 @@ const overrides: Record<string, LocaleOverride> = {
       'ble-gatt-custom': {
         title: 'BLE GATT personalizado',
         description: 'Notifica periódicamente una característica GATT personalizada',
+      },
+      'ble-gatt-command-control': {
+        title: 'Control por comando GATT BLE',
+        description: 'Enciende/apaga el LED según el comando "ON"/"OFF" recibido por GATT Write (patrón de bifurcación GATT)',
+      },
+      'ble-scan-filter-by-name': {
+        title: 'Filtro de escaneo BLE por nombre',
+        description: 'Registra address y RSSI por serie al detectar un nombre específico durante el escaneo (patrón de bifurcación por resultado de escaneo)',
       },
       'humanoid-walk': {
         title: 'Caminata Humanoid',
@@ -416,6 +432,14 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'BLE GATT personalizado',
         description: 'Notifica periodicamente uma característica GATT personalizada',
       },
+      'ble-gatt-command-control': {
+        title: 'Controlo por comando GATT BLE',
+        description: 'Liga/desliga o LED conforme o comando "ON"/"OFF" recebido via GATT Write (padrão de bifurcação GATT)',
+      },
+      'ble-scan-filter-by-name': {
+        title: 'Filtro de pesquisa BLE por nome',
+        description: 'Regista address e RSSI na série ao detetar um nome específico durante a pesquisa (padrão de bifurcação por resultado de pesquisa)',
+      },
       'humanoid-walk': {
         title: 'Caminhada Humanoid',
         description: 'O robot humanoide caminha para frente e para trás',
@@ -566,6 +590,14 @@ const overrides: Record<string, LocaleOverride> = {
       'ble-gatt-custom': {
         title: 'BLE GATT 自訂',
         description: '定期通知自訂 GATT 特徵',
+      },
+      'ble-gatt-command-control': {
+        title: 'BLE GATT 指令控制',
+        description: '依據透過 GATT Write 接收的 "ON"/"OFF" 指令切換 LED 高/低（GATT 條件分支範例）',
+      },
+      'ble-scan-filter-by-name': {
+        title: 'BLE 掃描名稱篩選',
+        description: '掃描期間偵測到特定裝置名稱時，將位址與 RSSI 輸出到序列埠（依掃描結果分支的範例）',
       },
       'humanoid-walk': {
         title: 'Humanoid 行走',

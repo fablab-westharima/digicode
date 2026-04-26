@@ -93,15 +93,45 @@ describe('catalog invariants', () => {
     expect(b.fields.find((f) => f.name === 'COLOR')).toBeDefined();
   });
 
-  // BUG-052: ble_uart_get_received は HANDLER 内で受信値を取得する value block
-  it('ble_uart_get_received is a String value block (BUG-052)', () => {
-    const b = byType['ble_uart_get_received'];
+  // BUG-052/053: ble_received_value (旧 ble_uart_get_received) は NUS UART / GATT 両 HANDLER で受信値を取得する value block
+  it('ble_received_value is a String value block (BUG-052/053)', () => {
+    const b = byType['ble_received_value'];
     expect(b).toBeDefined();
     expect(b.isStatement).toBe(false);
     expect(b.hasOutput).toBe(true);
     expect(b.fields).toEqual([]);
     expect(b.valueInputs).toEqual([]);
     expect(b.statementInputs).toEqual([]);
+  });
+
+  // BUG-053: 旧名 ble_uart_get_received は alias、catalog に出さない（重複防止）
+  it('ble_uart_get_received is NOT in catalog (alias only, BUG-053)', () => {
+    expect(byType['ble_uart_get_received']).toBeUndefined();
+  });
+
+  // BUG-054: スキャン結果取得 3 ブロック
+  it('ble_scan_found_name is a String value block (BUG-054)', () => {
+    const b = byType['ble_scan_found_name'];
+    expect(b).toBeDefined();
+    expect(b.isStatement).toBe(false);
+    expect(b.hasOutput).toBe(true);
+    expect(b.fields).toEqual([]);
+  });
+
+  it('ble_scan_found_address is a String value block (BUG-054)', () => {
+    const b = byType['ble_scan_found_address'];
+    expect(b).toBeDefined();
+    expect(b.isStatement).toBe(false);
+    expect(b.hasOutput).toBe(true);
+    expect(b.fields).toEqual([]);
+  });
+
+  it('ble_scan_found_rssi is a Number value block (BUG-054)', () => {
+    const b = byType['ble_scan_found_rssi'];
+    expect(b).toBeDefined();
+    expect(b.isStatement).toBe(false);
+    expect(b.hasOutput).toBe(true);
+    expect(b.fields).toEqual([]);
   });
 
   it('no block has both isStatement and hasOutput true', () => {
@@ -197,6 +227,40 @@ describe('selectFewShot (動的 Few-shot 選択)', () => {
   it('BLE UART without command keyword still maps to ble-uart-receive (regression check)', () => {
     const result = selectFewShot('generic', 'BLE UART で受信したい');
     expect(result[4]).toBe('ble-uart-receive');
+  });
+
+  // BUG-053: GATT command/control prompt は受信値分岐 sample を選ぶ（generic GATT より優先）
+  it('GATT command keyword maps to ble-gatt-command-control (BUG-053)', () => {
+    const result = selectFewShot('generic', 'GATT カスタム characteristic で command を受け取って LED 制御');
+    expect(result[4]).toBe('ble-gatt-command-control');
+  });
+
+  it('GATT write keyword maps to ble-gatt-command-control (BUG-053)', () => {
+    const result = selectFewShot('generic', 'GATT write で受信値を取得して分岐');
+    expect(result[4]).toBe('ble-gatt-command-control');
+  });
+
+  // BUG-053 regression: 一般的な GATT prompt は ble-gatt-custom を引き続き選ぶ
+  it('generic GATT keyword still maps to ble-gatt-custom (regression check)', () => {
+    const result = selectFewShot('generic', 'GATT カスタムサービスで定期通知');
+    expect(result[4]).toBe('ble-gatt-custom');
+  });
+
+  // BUG-054: スキャン結果フィルタリング prompt は filter sample を選ぶ（generic iBeacon/scanner より優先）
+  it('BLE scan filter keyword maps to ble-scan-filter-by-name (BUG-054)', () => {
+    const result = selectFewShot('generic', 'BLE スキャンで特定の名前のデバイスを検出したい');
+    expect(result[4]).toBe('ble-scan-filter-by-name');
+  });
+
+  it('BLE scan RSSI keyword maps to ble-scan-filter-by-name (BUG-054)', () => {
+    const result = selectFewShot('generic', 'BLE スキャン中に RSSI でフィルタしたい');
+    expect(result[4]).toBe('ble-scan-filter-by-name');
+  });
+
+  // BUG-054 regression: 一般的な beacon prompt は ble-beacon-scanner を引き続き選ぶ
+  it('iBeacon keyword still maps to ble-beacon-scanner (regression check)', () => {
+    const result = selectFewShot('generic', 'iBeacon を周辺スキャンしてシリアル出力');
+    expect(result[4]).toBe('ble-beacon-scanner');
   });
 
   it('all referenced sample ids exist in sampleProjects', () => {

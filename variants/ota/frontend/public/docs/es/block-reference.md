@@ -604,7 +604,7 @@ Controla LEDs direccionables como WS2812B.
 | **Agregar Servicio GATT** | Crea servicio GATT personalizado | UUID del servicio |
 | **Agregar Característica** | Agrega característica | UUID de servicio, UUID de característica, leer/escribir/notificar |
 | **Notificación BLE** | Envía notificación via característica | UUID de característica, Valor |
-| **BLE Al Escribir** | Maneja escritura en característica | UUID de característica, Manejador |
+| **BLE Al Escribir** | Maneja escritura en característica (use el bloque BLE Recibido dentro del manejador) | UUID de característica, Manejador |
 | **Iniciar Publicidad BLE** | Inicia la publicidad BLE | — |
 
 **iBeacon y Escaneo:**
@@ -613,7 +613,10 @@ Controla LEDs direccionables como WS2812B.
 |-------------------|-------------|------------|
 | **Transmitir iBeacon** | Transmite como iBeacon | UUID, Major, Minor |
 | **Iniciar Escaneo BLE** | Escanea dispositivos BLE cercanos | Duración (seg) |
-| **BLE Al Encontrar Dispositivo** | Maneja dispositivo descubierto (bleFoundName / bleFoundAddress / bleFoundRssi) | Manejador |
+| **BLE Al Encontrar Dispositivo** | Maneja dispositivo descubierto (use los bloques BLE Nombre / Dirección / RSSI Escaneo dentro del manejador) | Manejador |
+| **BLE Nombre Escaneo** | Obtiene el nombre del dispositivo detectado (usar dentro del manejador) | → String |
+| **BLE Dirección Escaneo** | Obtiene la dirección MAC detectada (usar dentro del manejador) | → String |
+| **BLE RSSI Escaneo** | Obtiene el RSSI detectado (dBm, negativo; más cerca de 0 = más fuerte) | → Number |
 | **RSSI BLE** | Obtiene la intensidad de señal del dispositivo conectado | → dBm |
 
 ### Cliente WebSocket

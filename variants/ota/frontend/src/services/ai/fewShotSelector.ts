@@ -16,15 +16,19 @@ const MODE_SPECIFIC_SAMPLES: Record<RobotMode, readonly [string, string]> = {
 };
 
 // 優先度順（上から match 試行、最初に hit したものを採用）
-// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 計 20 entries
+// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 20 / Phase 3 (BUG-052): +1 → 21 / BUG-053+054: +2 → 23 entries
 const KEYWORD_TO_SAMPLE: ReadonlyArray<readonly [RegExp, string]> = [
   // 条件分岐パターン
   [/温度|湿度|temperature|humidity|alert|°C/i, 'temp-alert'],
   [/距離|障害物|obstacle|proximity|超音波.*停/i, 'proximity-stop'],
   // BLE
   // 「コマンド」「制御」「分岐」「ON/OFF 切替」等、受信値による条件分岐を示唆する pattern を BLE.*UART より優先
-  [/BLE.*(command|control|コマンド|分岐|制御)|(command|control|コマンド).*BLE|受信値.*(分岐|制御)|BLE.*ON.*OFF/i, 'ble-uart-command-control'],
+  [/BLE.*(command|control|コマンド|分岐|制御)|(command|control|コマンド).*BLE|BLE.*受信値.*(分岐|制御)|BLE.*ON.*OFF/i, 'ble-uart-command-control'],
   [/BLE.*UART|UART.*BLE|BLE.*受信/i, 'ble-uart-receive'],
+  // GATT 系: command/control/分岐 を含む場合は専用 sample へ（generic GATT より優先）
+  [/GATT.*(command|control|コマンド|分岐|制御|write|受信)|(command|control|コマンド|分岐|write).*GATT/i, 'ble-gatt-command-control'],
+  // BLE スキャン特定デバイス検出: filter/名前/RSSI 等を含む場合は filter sample へ（generic iBeacon/scanner より優先）
+  [/(scan|スキャン).*(filter|フィルタ|名前|name|RSSI|特定)|filter.*BLE.*device|find.*specific.*BLE|(特定|specific).*(BLE.*デバイス|BLE.*device)/i, 'ble-scan-filter-by-name'],
   [/iBeacon|beacon|ビーコン/i, 'ble-beacon-scanner'],
   [/GATT|characteristic|キャラクタリスティック/i, 'ble-gatt-custom'],
   // ロボット動作

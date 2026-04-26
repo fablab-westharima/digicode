@@ -604,7 +604,7 @@ DigiCode 中所有可用積木的完整清單及使用方法。
 | **新增GATT服務** | 建立自訂 GATT 服務 | 服務 UUID |
 | **新增特徵值** | 新增特徵值 | 服務 UUID、特徵值 UUID、讀取/寫入/通知 |
 | **BLE 傳送通知** | 透過特徵值傳送通知 | 特徵值 UUID、值 |
-| **BLE 收到Write時** | 處理特徵值的 Write | 特徵值 UUID、處理積木 |
+| **BLE 收到Write時** | 處理特徵值的 Write（在處理積木內使用「BLE 接收值」積木） | 特徵值 UUID、處理積木 |
 | **開始BLE廣播** | 開始 BLE 廣播 | — |
 
 **iBeacon 與掃描：**
@@ -613,7 +613,10 @@ DigiCode 中所有可用積木的完整清單及使用方法。
 |----------|------|------|
 | **iBeacon 廣播** | 以 iBeacon 方式廣播 | UUID、Major、Minor |
 | **開始BLE掃描** | 掃描周邊 BLE 裝置 | 掃描時間（秒） |
-| **BLE 發現裝置時** | 處理發現的裝置（bleFoundName / bleFoundAddress / bleFoundRssi） | 處理積木 |
+| **BLE 發現裝置時** | 處理發現的裝置（在處理積木內使用「BLE 掃描名稱 / 位址 / RSSI」積木） | 處理積木 |
+| **BLE 掃描名稱** | 取得偵測到的裝置名稱（在處理積木內使用） | → String |
+| **BLE 掃描位址** | 取得偵測到的 MAC 位址（在處理積木內使用） | → String |
+| **BLE 掃描 RSSI** | 取得偵測到的 RSSI（dBm，負值，越接近 0 越強） | → Number |
 | **BLE RSSI** | 取得已連線裝置的訊號強度 | → dBm |
 
 ### WebSocket 客戶端

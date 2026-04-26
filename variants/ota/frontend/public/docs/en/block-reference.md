@@ -604,7 +604,7 @@ Control addressable LEDs such as WS2812B.
 | **Add GATT Service** | Create custom GATT service | Service UUID |
 | **Add Characteristic** | Add characteristic | Service UUID, Char UUID, read/write/notify |
 | **BLE Notify** | Send notification via characteristic | Char UUID, Value |
-| **BLE On Write** | Handle write to characteristic | Char UUID, Handler |
+| **BLE On Write** | Handle write to characteristic (use BLE Received block inside the handler) | Char UUID, Handler |
 | **BLE Start Advertising** | Start BLE advertising | — |
 
 **iBeacon & Scanning:**
@@ -613,7 +613,10 @@ Control addressable LEDs such as WS2812B.
 |------------|-------------|------------|
 | **iBeacon Broadcast** | Broadcast as iBeacon | UUID, Major, Minor |
 | **BLE Scan Start** | Scan for nearby BLE devices | Duration (sec) |
-| **BLE On Device Found** | Handle discovered device (bleFoundName / bleFoundAddress / bleFoundRssi) | Handler |
+| **BLE On Device Found** | Handle discovered device (use BLE Scan Name / Address / RSSI blocks inside the handler) | Handler |
+| **BLE Scan Name** | Get the detected device name (use inside handler) | → String |
+| **BLE Scan Address** | Get the detected MAC address (use inside handler) | → String |
+| **BLE Scan RSSI** | Get the detected RSSI (dBm, negative; closer to 0 = stronger) | → Number |
 | **BLE RSSI** | Get signal strength of connected device | → dBm |
 
 ### WebSocket Client

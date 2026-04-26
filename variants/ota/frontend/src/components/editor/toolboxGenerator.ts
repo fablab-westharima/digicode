@@ -468,7 +468,7 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="ble_uart_setup"></block>
     <block type="ble_uart_write"></block>
     <block type="ble_uart_on_receive"></block>
-    <block type="ble_uart_get_received"></block>
+    <block type="ble_received_value"></block>
     <block type="ble_is_connected"></block>
     <block type="ble_disconnect"></block>
     <sep></sep>
@@ -478,6 +478,7 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="ble_add_characteristic"></block>
     <block type="ble_notify"></block>
     <block type="ble_on_write"></block>
+    <block type="ble_received_value"></block>
     <block type="ble_start_advertising"></block>
     <sep></sep>
     <label text="${label('bleBeacon') || 'iBeacon'}"></label>
@@ -486,6 +487,9 @@ const getToolboxCategories = (): Record<string, string> => ({
     <label text="${label('bleScan') || 'Scan'}"></label>
     <block type="ble_scan_start"></block>
     <block type="ble_on_device_found"></block>
+    <block type="ble_scan_found_name"></block>
+    <block type="ble_scan_found_address"></block>
+    <block type="ble_scan_found_rssi"></block>
     <block type="ble_get_rssi"></block>
   </category>`,
 

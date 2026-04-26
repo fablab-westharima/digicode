@@ -126,7 +126,7 @@ Blockly.Blocks['ble_uart_on_receive'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(BLE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_BLE_UARTONRECEIVETOOLTIP || 'Execute handler when a BLE message is received. Use the "BLE Received" value block inside the handler to read the received text. Place in loop block.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_UARTONRECEIVETOOLTIP || 'Execute handler when a BLE UART message is received. Use the "BLE Received" value block inside the handler to read the received text. Place in loop block.');
   }
 };
 
@@ -144,24 +144,30 @@ ${handler}    bleMessage = "";
 };
 
 /**
- * ble_uart_get_received - BLE UART で受信した文字列を取得（HANDLER 内のみ有効）
- * BUG-052 解消: ble_uart_on_receive HANDLER 内で受信値を Blockly レベルで取得可能に
+ * ble_received_value - BLE 受信値取得（NUS UART / GATT On Write 両 HANDLER で有効）
+ * BUG-052 / BUG-053 解消: 各 HANDLER 内で受信値を Blockly レベル取得可能に
+ * （旧 ble_uart_get_received を汎用化、3 系統の HANDLER で再利用）
  */
-Blockly.Blocks['ble_uart_get_received'] = {
+Blockly.Blocks['ble_received_value'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_UARTGETRECEIVED || 'BLE Received'));
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_RECEIVEDVALUE || 'BLE Received'));
     this.setOutput(true, 'String');
     this.setColour(BLE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_BLE_UARTGETRECEIVEDTOOLTIP || 'Get the BLE UART message received last. Use only inside the BLE On Receive handler. Returns an empty string when no message has arrived.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_RECEIVEDVALUETOOLTIP || 'Get the message received last via BLE. Use only inside a BLE On Receive or BLE On Write handler. Returns an empty string when no message has arrived.');
   }
 };
 
-generator.forBlock['ble_uart_get_received'] = function() {
+generator.forBlock['ble_received_value'] = function() {
   generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
   generator.definitions_['ble_globals'] = BLE_GLOBALS;
   return ['bleMessage', 0];
 };
+
+// Legacy alias: ble_uart_get_received (BUG-052, sunset: 2027-04-26)
+// 既存ユーザー XML の互換維持。catalog 生成スクリプトは Blockly.Blocks['xxx'] = { init: ... } のパターンのみ拾うため、本 alias は catalog に露出しない。
+Blockly.Blocks['ble_uart_get_received'] = Blockly.Blocks['ble_received_value'];
+generator.forBlock['ble_uart_get_received'] = generator.forBlock['ble_received_value'];
 
 /**
  * ble_is_connected - BLE 接続状態（Boolean 出力）
@@ -276,7 +282,7 @@ class BleScanCallbacks : public NimBLEScanCallbacks {
 
 /**
  * ble_on_device_found - デバイス検出コールバック（loop 内で呼ぶ）
- * bleFoundName / bleFoundAddress / bleFoundRssi 変数で参照可能
+ * HANDLER 内では ble_scan_found_name / ble_scan_found_address / ble_scan_found_rssi で値取得
  */
 Blockly.Blocks['ble_on_device_found'] = {
   init: function() {
@@ -288,7 +294,7 @@ Blockly.Blocks['ble_on_device_found'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(BLE_SCAN_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_BLE_ONDEVICEFOUNDTOOLTIP || 'Execute handler when a BLE device is found during scan. Use bleFoundName, bleFoundAddress, bleFoundRssi variables.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_ONDEVICEFOUNDTOOLTIP || 'Execute handler when a BLE device is found during scan. Use the "BLE Scan Name / Address / RSSI" value blocks inside the handler to read the detected values.');
   }
 };
 
@@ -307,6 +313,71 @@ void bleCheckDeviceFound() {
 ${handler}  }
 }`;
   return `  bleCheckDeviceFound();\n`;
+};
+
+// 共通 globals 参照用（scan_found 系 value block で再利用）
+const BLE_SCAN_GLOBALS = `
+bool bleDeviceFound = false;
+String bleFoundName = "";
+String bleFoundAddress = "";
+int bleFoundRssi = 0;`;
+
+/**
+ * ble_scan_found_name - スキャンで検出したデバイス名（HANDLER 内のみ有効）
+ * BUG-054 解消: ble_on_device_found HANDLER 内で deviceName を Blockly レベル取得可能に
+ */
+Blockly.Blocks['ble_scan_found_name'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📡 ' + (Blockly.Msg.BLOCKS_BLE_SCANFOUNDNAME || 'BLE Scan Name'));
+    this.setOutput(true, 'String');
+    this.setColour(BLE_SCAN_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_SCANFOUNDNAMETOOLTIP || 'Get the name of the BLE device just detected. Use only inside a BLE On Device Found handler. Returns an empty string when no device has been detected.');
+  }
+};
+
+generator.forBlock['ble_scan_found_name'] = function() {
+  generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
+  generator.definitions_['ble_scan_globals'] = BLE_SCAN_GLOBALS;
+  return ['bleFoundName', 0];
+};
+
+/**
+ * ble_scan_found_address - 検出デバイスの MAC アドレス（HANDLER 内のみ有効）
+ */
+Blockly.Blocks['ble_scan_found_address'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📡 ' + (Blockly.Msg.BLOCKS_BLE_SCANFOUNDADDRESS || 'BLE Scan Address'));
+    this.setOutput(true, 'String');
+    this.setColour(BLE_SCAN_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_SCANFOUNDADDRESSTOOLTIP || 'Get the MAC address of the BLE device just detected. Use only inside a BLE On Device Found handler. Returns an empty string when no device has been detected.');
+  }
+};
+
+generator.forBlock['ble_scan_found_address'] = function() {
+  generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
+  generator.definitions_['ble_scan_globals'] = BLE_SCAN_GLOBALS;
+  return ['bleFoundAddress', 0];
+};
+
+/**
+ * ble_scan_found_rssi - 検出デバイスの RSSI（dBm、Number 出力、HANDLER 内のみ有効）
+ */
+Blockly.Blocks['ble_scan_found_rssi'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📡 ' + (Blockly.Msg.BLOCKS_BLE_SCANFOUNDRSSI || 'BLE Scan RSSI'));
+    this.setOutput(true, 'Number');
+    this.setColour(BLE_SCAN_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_SCANFOUNDRSSITOOLTIP || 'Get the RSSI (dBm, negative; closer to 0 = stronger) of the BLE device just detected. Use only inside a BLE On Device Found handler. Returns 0 when no device has been detected.');
+  }
+};
+
+generator.forBlock['ble_scan_found_rssi'] = function() {
+  generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
+  generator.definitions_['ble_scan_globals'] = BLE_SCAN_GLOBALS;
+  return ['bleFoundRssi', 0];
 };
 
 /**
@@ -515,7 +586,7 @@ generator.forBlock['ble_notify'] = function(block: Blockly.Block) {
 
 /**
  * ble_on_write - 任意 Characteristic への Write コールバック（loop 内）
- * bleMessage に受信値、bleWriteCharUuid に対象 UUID が格納される
+ * BUG-053 解消: ble_received_value で HANDLER 内の受信値を Blockly レベル取得可能に
  */
 Blockly.Blocks['ble_on_write'] = {
   init: function() {
@@ -529,7 +600,7 @@ Blockly.Blocks['ble_on_write'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(GATT_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_BLE_ONWRITETOOLTIP || 'Execute handler when the specified characteristic is written by the connected device. Use bleMessage for the received value. Place in loop block.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_ONWRITETOOLTIP || 'Execute handler when the specified characteristic is written by the connected device. Use the "BLE Received" value block inside the handler to read the received text. Place in loop block.');
   }
 };
 
@@ -540,13 +611,14 @@ generator.forBlock['ble_on_write'] = function(block: Blockly.Block) {
   generator.definitions_['ble_globals'] = BLE_GLOBALS;
   generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
   const funcKey = `ble_on_write_${charUuid.replace(/-/g, '_')}`;
+  // BUG-053 fix: bleMessage / bleWriteCharUuid のリセットを HANDLER 後に移動。
+  // NUS UART (bleCheckReceive) と対称、ble_received_value が HANDLER 内で受信値を取得可能になる。
   generator.definitions_[funcKey] = `
 void bleCheckWrite_${charUuid.replace(/-/g, '_')}() {
   if (bleWriteCharUuid == "${charUuid}" && bleMessage.length() > 0) {
-    String _msg = bleMessage;
-    bleMessage = "";
+${handler}    bleMessage = "";
     bleWriteCharUuid = "";
-${handler}  }
+  }
 }`;
   return `  bleCheckWrite_${charUuid.replace(/-/g, '_')}();\n`;
 };
