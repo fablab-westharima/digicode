@@ -90,6 +90,54 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'HA Multi-Sensor Node',
         description: 'Combined temperature/humidity/motion sensor node',
       },
+      'temp-alert': {
+        title: 'Temperature Alert',
+        description: 'Send BLE alert when temperature exceeds 30°C, otherwise turn off LED',
+      },
+      'proximity-stop': {
+        title: 'Proximity Stop',
+        description: 'Stop when obstacle within 20cm, otherwise drive forward',
+      },
+      'ble-uart-receive': {
+        title: 'BLE UART Receive',
+        description: 'Flash LED for 200ms when BLE message received',
+      },
+      'ble-beacon-scanner': {
+        title: 'BLE Beacon Scanner',
+        description: 'Scan nearby BLE devices and log to serial',
+      },
+      'ble-gatt-custom': {
+        title: 'BLE GATT Custom',
+        description: 'Periodically notify a custom GATT characteristic',
+      },
+      'humanoid-walk': {
+        title: 'Humanoid Walk',
+        description: 'Humanoid robot walks back and forth (basic motion)',
+      },
+      'wheel-line-follow': {
+        title: 'Wheel Line Follow',
+        description: 'Follow a line forward using light sensors',
+      },
+      'transform-morph': {
+        title: 'Transform Morph',
+        description: 'Move while morphing between Walk and Roll modes',
+      },
+      'http-get-request': {
+        title: 'HTTP GET Request',
+        description: 'Fetch data from URL via HTTP GET and print to serial',
+      },
+      'mqtt-direct': {
+        title: 'MQTT Direct Publish',
+        description: 'Publish DHT temperature directly to MQTT broker (no HA)',
+      },
+      'ntp-time-sync': {
+        title: 'NTP Time Sync',
+        description: 'Sync time via NTP and print to serial periodically',
+      },
+      'sensor-actuator-combo': {
+        title: 'Sensor + Actuator Combo',
+        description: 'Control servo angle and LED based on temperature',
+      },
     },
   },
   es: {
@@ -156,6 +204,54 @@ const overrides: Record<string, LocaleOverride> = {
       'ha-multi-sensor': {
         title: 'HA nodo multi-sensor',
         description: 'Nodo sensor combinado de temperatura/humedad/movimiento',
+      },
+      'temp-alert': {
+        title: 'Alerta de temperatura',
+        description: 'Envía alerta BLE cuando la temperatura supera 30°C, si no apaga el LED',
+      },
+      'proximity-stop': {
+        title: 'Parada por proximidad',
+        description: 'Para cuando hay obstáculo a menos de 20cm, si no avanza',
+      },
+      'ble-uart-receive': {
+        title: 'Recepción BLE UART',
+        description: 'Parpadea el LED 200ms al recibir un mensaje BLE',
+      },
+      'ble-beacon-scanner': {
+        title: 'Escáner de beacons BLE',
+        description: 'Escanea dispositivos BLE cercanos y muestra por serie',
+      },
+      'ble-gatt-custom': {
+        title: 'BLE GATT personalizado',
+        description: 'Notifica periódicamente una característica GATT personalizada',
+      },
+      'humanoid-walk': {
+        title: 'Caminata Humanoid',
+        description: 'El robot humanoide camina hacia adelante y atrás',
+      },
+      'wheel-line-follow': {
+        title: 'Seguimiento de línea Wheel',
+        description: 'Sigue una línea hacia adelante con sensores de luz',
+      },
+      'transform-morph': {
+        title: 'Transformación Transform',
+        description: 'Se mueve cambiando entre modos Walk y Roll',
+      },
+      'http-get-request': {
+        title: 'Petición HTTP GET',
+        description: 'Obtiene datos de una URL por HTTP GET y los imprime',
+      },
+      'mqtt-direct': {
+        title: 'MQTT publicación directa',
+        description: 'Publica la temperatura DHT directamente al broker MQTT',
+      },
+      'ntp-time-sync': {
+        title: 'Sincronización NTP',
+        description: 'Sincroniza la hora vía NTP e imprime periódicamente',
+      },
+      'sensor-actuator-combo': {
+        title: 'Combo sensor + actuador',
+        description: 'Controla ángulo de servo y LED según temperatura',
       },
     },
   },
@@ -224,6 +320,54 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'HA nó multi-sensor',
         description: 'Nó combinado de temperatura/humidade/movimento',
       },
+      'temp-alert': {
+        title: 'Alerta de temperatura',
+        description: 'Envia alerta BLE quando a temperatura excede 30°C, senão desliga o LED',
+      },
+      'proximity-stop': {
+        title: 'Paragem por proximidade',
+        description: 'Para quando há obstáculo a menos de 20cm, senão avança',
+      },
+      'ble-uart-receive': {
+        title: 'Receção BLE UART',
+        description: 'Pisca o LED 200ms ao receber uma mensagem BLE',
+      },
+      'ble-beacon-scanner': {
+        title: 'Scanner de beacons BLE',
+        description: 'Faz scan de dispositivos BLE próximos e imprime na série',
+      },
+      'ble-gatt-custom': {
+        title: 'BLE GATT personalizado',
+        description: 'Notifica periodicamente uma característica GATT personalizada',
+      },
+      'humanoid-walk': {
+        title: 'Caminhada Humanoid',
+        description: 'O robot humanoide caminha para frente e para trás',
+      },
+      'wheel-line-follow': {
+        title: 'Seguimento de linha Wheel',
+        description: 'Segue uma linha em frente com sensores de luz',
+      },
+      'transform-morph': {
+        title: 'Transformação Transform',
+        description: 'Move-se alternando entre modos Walk e Roll',
+      },
+      'http-get-request': {
+        title: 'Pedido HTTP GET',
+        description: 'Obtém dados de um URL via HTTP GET e imprime na série',
+      },
+      'mqtt-direct': {
+        title: 'MQTT publicação direta',
+        description: 'Publica a temperatura DHT diretamente no broker MQTT',
+      },
+      'ntp-time-sync': {
+        title: 'Sincronização NTP',
+        description: 'Sincroniza a hora via NTP e imprime periodicamente',
+      },
+      'sensor-actuator-combo': {
+        title: 'Combo sensor + atuador',
+        description: 'Controla o ângulo do servo e o LED conforme a temperatura',
+      },
     },
   },
   'zh-TW': {
@@ -290,6 +434,54 @@ const overrides: Record<string, LocaleOverride> = {
       'ha-multi-sensor': {
         title: 'HA 複合感測節點',
         description: '溫度/濕度/動作的複合感測節點',
+      },
+      'temp-alert': {
+        title: '溫度警報',
+        description: '溫度超過 30°C 時透過 BLE 發送警報，否則熄滅 LED',
+      },
+      'proximity-stop': {
+        title: '障礙物停止',
+        description: '偵測到 20cm 內的障礙物時停止，否則前進',
+      },
+      'ble-uart-receive': {
+        title: 'BLE UART 接收',
+        description: '收到 BLE 訊息時 LED 閃爍 200ms',
+      },
+      'ble-beacon-scanner': {
+        title: 'BLE 信標掃描',
+        description: '掃描附近的 BLE 裝置並輸出到序列',
+      },
+      'ble-gatt-custom': {
+        title: 'BLE GATT 自訂',
+        description: '定期通知自訂 GATT 特徵',
+      },
+      'humanoid-walk': {
+        title: 'Humanoid 行走',
+        description: '仿人形機器人前後行走',
+      },
+      'wheel-line-follow': {
+        title: 'Wheel 循跡',
+        description: '用光感測器循線前進',
+      },
+      'transform-morph': {
+        title: 'Transform 形態變化',
+        description: '在 Walk 與 Roll 模式間切換移動',
+      },
+      'http-get-request': {
+        title: 'HTTP GET 請求',
+        description: '透過 HTTP GET 從 URL 取得資料並輸出到序列',
+      },
+      'mqtt-direct': {
+        title: 'MQTT 直接發布',
+        description: '將 DHT 溫度直接發布到 MQTT broker (不經 HA)',
+      },
+      'ntp-time-sync': {
+        title: 'NTP 時間同步',
+        description: '透過 NTP 同步時間並定期輸出到序列',
+      },
+      'sensor-actuator-combo': {
+        title: '感測器+致動器組合',
+        description: '根據溫度控制伺服角度與 LED',
       },
     },
   },

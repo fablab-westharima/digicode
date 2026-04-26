@@ -29,12 +29,19 @@ export async function generateWithRetry(
   const filteredBlocks = filterCatalog(catalog);
   const allowedTypes = getAllowedTypes(filteredBlocks);
 
+  // 動的 Few-shot 選択用に、ユーザー発言を結合
+  const userPromptText = [
+    ...input.messages.filter(m => m.role === 'user').map(m => m.content),
+    input.generateRequest,
+  ].join(' ');
+
   const systemPrompt = buildSystemPrompt({
     language: input.language,
     mode: input.robotMode,
     board: input.board,
     existingXml: input.existingXml,
     filteredBlocks,
+    userPromptText,
   });
 
   const historyMessages = trimConversationForContext(input.messages);

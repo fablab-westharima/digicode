@@ -3,6 +3,7 @@ import type { BoardDefinition } from '@/stores/boardStore';
 import { AI_SYSTEM_PROMPTS } from '@/data/aiSystemPrompts';
 import type { AiLanguage } from '@/data/aiSystemPrompts';
 import { sampleProjects } from '@/data/sampleProjects';
+import { selectFewShot } from './fewShotSelector';
 
 export interface FieldDef {
   name: string;
@@ -49,6 +50,7 @@ export interface SystemPromptContext {
   board: BoardDefinition;
   existingXml?: string;
   filteredBlocks: BlockCatalogEntry[];
+  userPromptText: string;
 }
 
 export interface HelpBotSystemPromptContext {
@@ -65,17 +67,6 @@ export interface BlockGenConversationContext {
 
 // 5000 文字超の既存 XML は切り詰め（MVP 制約）
 const MAX_EXISTING_XML_LENGTH = 5000;
-
-// モードごとの Few-shot サンプル ID（sampleProjects.ts の id と対応）
-const FEW_SHOT_MODE_IDS: Record<RobotMode, string[]> = {
-  robots_humanoid:  ['humanoid-dance', 'led-blink', 'serial-hello'],
-  robots_wheel:     ['wheel-obstacle', 'led-blink', 'serial-hello'],
-  robots_transform: ['transform-ninja', 'led-blink', 'serial-hello'],
-  homeassistant:    ['dht-sensor', 'led-blink', 'serial-hello'],
-  generic:          ['led-blink', 'serial-hello', 'ultrasonic-distance'],
-  all_blocks:       ['led-blink', 'serial-hello', 'ultrasonic-distance'],
-  custom:           ['led-blink', 'serial-hello', 'ultrasonic-distance'],
-};
 
 let catalogCache: BlockCatalog | null = null;
 
@@ -102,12 +93,11 @@ export function getAllowedTypes(blocks: BlockCatalogEntry[]): Set<string> {
   return new Set(blocks.map(b => b.type));
 }
 
-function getFewShotExamples(mode: RobotMode): string {
-  const ids = FEW_SHOT_MODE_IDS[mode] ?? FEW_SHOT_MODE_IDS.generic;
+function getFewShotExamples(mode: RobotMode, userPromptText: string): string {
+  const ids = selectFewShot(mode, userPromptText);
   const examples = ids
     .map(id => sampleProjects.find(s => s.id === id))
-    .filter((s): s is NonNullable<typeof s> => s !== undefined)
-    .slice(0, 3);
+    .filter((s): s is NonNullable<typeof s> => s !== undefined);
 
   return examples
     .map((s, i) => `## Example ${i + 1}: ${s.title}\n${s.blocklyXml.trim()}`)
@@ -188,7 +178,7 @@ export function buildSystemPrompt(ctx: SystemPromptContext): string {
     `# Role\n${templates.role}`,
     `# Output Format\n${templates.outputLock}`,
     `# Available Block Types (mode: ${ctx.mode}, board: ${ctx.board.name})\n${blockTypeSection}`,
-    `# Examples\n${getFewShotExamples(ctx.mode)}`,
+    `# Examples\n${getFewShotExamples(ctx.mode, ctx.userPromptText)}`,
     `# Current Context\n${contextLines.join('\n')}`,
     `# Prohibitions\n${templates.prohibitions}`,
   ].join('\n\n');

@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import catalog from '../../../../public/ai/block-catalog.json';
+import { selectFewShot, __testing__ } from '../fewShotSelector';
+import { sampleProjects } from '../../../data/sampleProjects';
 
 interface CatalogField {
   name: string;
@@ -94,6 +96,71 @@ describe('catalog invariants', () => {
   it('no block has both isStatement and hasOutput true', () => {
     for (const b of blocks) {
       expect(b.isStatement && b.hasOutput, `${b.type}: isStatement and hasOutput both true`).toBe(false);
+    }
+  });
+});
+
+describe('selectFewShot (動的 Few-shot 選択)', () => {
+  it('returns 4 samples when no themed match (mode-specific 2 + shared basic 2)', () => {
+    const result = selectFewShot('generic', 'こんにちは');
+    expect(result.length).toBe(4);
+  });
+
+  it('returns 5 samples when themed match exists', () => {
+    const result = selectFewShot('generic', '温度を測りたい');
+    expect(result.length).toBe(5);
+    expect(result[4]).toBe('temp-alert');
+  });
+
+  it('mode-specific samples come first (positions 0-1) for robots_humanoid', () => {
+    const result = selectFewShot('robots_humanoid', '');
+    expect(result[0]).toBe('humanoid-dance');
+    expect(result[1]).toBe('humanoid-walk');
+  });
+
+  it('shared basic samples follow at positions 2-3', () => {
+    const result = selectFewShot('robots_humanoid', '');
+    expect(result[2]).toBe('led-blink');
+    expect(result[3]).toBe('serial-hello');
+  });
+
+  it('mode-specific keyword is excluded from themed slot', () => {
+    // robots_humanoid + walk: humanoid-walk is mode-specific, themed slot is empty
+    const result = selectFewShot('robots_humanoid', '歩く動作を作って');
+    expect(result.length).toBe(4);
+    expect(result.includes('humanoid-walk')).toBe(true);
+  });
+
+  it('BLE UART keyword maps to ble-uart-receive', () => {
+    const result = selectFewShot('generic', 'BLE で UART 受信したい');
+    expect(result[4]).toBe('ble-uart-receive');
+  });
+
+  it('NTP keyword maps to ntp-time-sync', () => {
+    const result = selectFewShot('generic', 'NTP で時刻同期');
+    expect(result[4]).toBe('ntp-time-sync');
+  });
+
+  it('MQTT keyword maps to mqtt-direct', () => {
+    const result = selectFewShot('generic', 'MQTT broker に publish');
+    expect(result[4]).toBe('mqtt-direct');
+  });
+
+  it('all referenced sample ids exist in sampleProjects', () => {
+    const allIds = new Set<string>([
+      ...Object.values(__testing__.MODE_SPECIFIC_SAMPLES).flat(),
+      ...__testing__.SHARED_BASIC,
+      ...__testing__.KEYWORD_TO_SAMPLE.map(([, id]) => id),
+    ]);
+    for (const id of allIds) {
+      expect(sampleProjects.find((s) => s.id === id), `Sample id "${id}" not found in sampleProjects`).toBeDefined();
+    }
+  });
+
+  it('returned ids point to existing samples', () => {
+    const result = selectFewShot('generic', '温度センサーで湿度測定');
+    for (const id of result) {
+      expect(sampleProjects.find((s) => s.id === id)).toBeDefined();
     }
   });
 });

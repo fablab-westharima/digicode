@@ -889,6 +889,103 @@ export const sampleProjects: SampleProject[] = [
         </statement>
 </block>
     </xml>`
+  },
+  // ===== Phase 1 C 拡充 (2026-04-26): AI Few-shot 用 12 sample =====
+  {
+    id: 'temp-alert',
+    title: '温度アラート',
+    description: '温度センサーで30°Cを超えたらBLE送信、それ以外でLEDオフ',
+    category: 'sensor',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="dht_init"><field name="PIN">4</field><field name="TYPE">DHT22</field><next><block type="ble_uart_setup"><field name="NAME">TempAlert</field><next><block type="esp32_pin_mode"><field name="PIN">2</field><field name="MODE">OUTPUT</field></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="controls_ifelse"><value name="IF0"><block type="logic_compare"><field name="OP">GT</field><value name="A"><block type="dht_temperature"></block></value><value name="B"><block type="math_number"><field name="NUM">30</field></block></value></block></value><statement name="DO0"><block type="ble_uart_write"><value name="TEXT"><block type="text_join"><value name="ADD0"><block type="text"><field name="TEXT">Alert: </field></block></value><value name="ADD1"><block type="dht_temperature"></block></value></block></value><next><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">HIGH</field></block></next></block></statement><statement name="ELSE"><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">LOW</field></block></statement><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'proximity-stop',
+    title: '障害物検知停止',
+    description: '超音波センサーで20cm以内に物体検知したら停止、それ以外で前進',
+    category: 'sensor',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="ultrasonic_init"><field name="TRIG_PIN">18</field><field name="ECHO_PIN">19</field><next><block type="wheel_init"><field name="PIN_L">14</field><field name="PIN_R">13</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="controls_ifelse"><value name="IF0"><block type="logic_compare"><field name="OP">LT</field><value name="A"><block type="ultrasonic_distance"></block></value><value name="B"><block type="math_number"><field name="NUM">20</field></block></value></block></value><statement name="DO0"><block type="wheel_stop"></block></statement><statement name="ELSE"><block type="wheel_forward"><field name="SPEED">50</field></block></statement><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">100</field></block></value></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'ble-uart-receive',
+    title: 'BLE UART受信',
+    description: 'BLEで受信したらLEDを200msフラッシュ',
+    category: 'iot',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="ble_uart_setup"><field name="NAME">LedControl</field><next><block type="esp32_pin_mode"><field name="PIN">2</field><field name="MODE">OUTPUT</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="ble_uart_on_receive"><statement name="HANDLER"><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">HIGH</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">200</field></block></value><next><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">LOW</field></block></next></block></next></block></statement></block></statement></block></xml>`
+  },
+  {
+    id: 'ble-beacon-scanner',
+    title: 'BLEビーコンスキャン',
+    description: '近隣のBLEデバイスをスキャンしてシリアル出力',
+    category: 'iot',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_serial_begin"><field name="BAUD">115200</field><next><block type="ble_scan_start"><field name="DURATION">5</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="ble_on_device_found"><statement name="HANDLER"><block type="esp32_serial_println"><value name="VALUE"><block type="text"><field name="TEXT">BLE device found</field></block></value></block></statement><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'ble-gatt-custom',
+    title: 'BLE GATTカスタム',
+    description: 'GATTカスタム characteristicを定期通知',
+    category: 'iot',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="ble_init"><field name="NAME">GattDemo</field><next><block type="ble_add_service"><field name="UUID">12345678-1234-1234-1234-123456789ABC</field><next><block type="ble_add_characteristic"><field name="SERVICE_UUID">12345678-1234-1234-1234-123456789ABC</field><field name="CHAR_UUID">00001111-1234-1234-1234-123456789ABC</field><field name="READ">TRUE</field><field name="WRITE">TRUE</field><field name="NOTIFY">TRUE</field><next><block type="ble_start_advertising"></block></next></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="ble_notify"><field name="CHAR_UUID">00001111-1234-1234-1234-123456789ABC</field><value name="VALUE"><block type="text"><field name="TEXT">Hello</field></block></value><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">5000</field></block></value></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'humanoid-walk',
+    title: 'Humanoid 歩行',
+    description: 'Humanoidが前後に歩行する基本動作',
+    category: 'robots',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="humanoid_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="humanoid_home"><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">500</field></block></value><next><block type="humanoid_walk"><field name="STEPS">4</field><field name="DIRECTION">1</field><field name="SPEED">1000</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value><next><block type="humanoid_walk"><field name="STEPS">4</field><field name="DIRECTION">-1</field><field name="SPEED">1000</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'wheel-line-follow',
+    title: 'Wheel ライントレース',
+    description: '光センサーでラインに沿って前進',
+    category: 'robots',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="wheel_init"><field name="PIN_L">14</field><field name="PIN_R">13</field><next><block type="line_sensor_init_simple_2"><field name="PIN1">36</field><field name="PIN2">39</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="controls_ifelse"><value name="IF0"><block type="logic_compare"><field name="OP">LT</field><value name="A"><block type="line_sensor_position"></block></value><value name="B"><block type="math_number"><field name="NUM">0</field></block></value></block></value><statement name="DO0"><block type="wheel_turn_left"></block></statement><statement name="ELSE"><block type="wheel_turn_right"></block></statement><next><block type="wheel_forward"><field name="SPEED">30</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">50</field></block></value></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'transform-morph',
+    title: 'Transform 形態変化',
+    description: 'Walk → Roll の形態変化で移動',
+    category: 'robots',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="transform_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="transform_shift"><field name="MODE">walk</field><next><block type="transform_walk"><field name="DIRECTION">forward</field><field name="SPEED">normal</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="transform_shift"><field name="MODE">roll</field><next><block type="transform_roll"><field name="DIRECTION">forward</field><field name="SPEED">fast</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="transform_stop"><field name="MODE">roll</field></block></next></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'http-get-request',
+    title: 'HTTP GETリクエスト',
+    description: 'HTTP GETでURLからデータ取得してシリアル出力',
+    category: 'iot',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_serial_begin"><field name="BAUD">115200</field><next><block type="wifi_connect"><field name="SSID">your_ssid</field><field name="PASSWORD">your_password</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="esp32_serial_println"><value name="VALUE"><block type="http_get"><value name="URL"><block type="text"><field name="TEXT">http://example.com/api/data</field></block></value></block></value><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">10000</field></block></value></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'mqtt-direct',
+    title: 'MQTT直接publish',
+    description: 'DHTセンサーの温度をMQTT brokerに直接publish (HA経由なし)',
+    category: 'iot',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="mqtt_setup"><field name="PORT">1883</field><field name="SSID">your_ssid</field><field name="WIFI_PASS">your_password</field><field name="BROKER">192.168.1.100</field><field name="CLIENT_ID">esp32_pub</field><next><block type="dht_init"><field name="PIN">4</field><field name="TYPE">DHT22</field><next><block type="mqtt_connect"><field name="USERNAME"></field><field name="PASSWORD"></field></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="mqtt_loop"><next><block type="mqtt_publish"><field name="TOPIC">sensors/temperature</field><field name="RETAIN">FALSE</field><value name="MESSAGE"><block type="text_join"><value name="ADD0"><block type="text"><field name="TEXT">temp=</field></block></value><value name="ADD1"><block type="dht_temperature"></block></value></block></value><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">5000</field></block></value></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'ntp-time-sync',
+    title: 'NTP時刻同期',
+    description: 'NTPで時刻同期して定期的にシリアル出力',
+    category: 'iot',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_serial_begin"><field name="BAUD">115200</field><next><block type="wifi_connect"><field name="SSID">your_ssid</field><field name="PASSWORD">your_password</field><next><block type="ntp_sync"><field name="TZ_OFFSET">32400</field><field name="SERVER">pool.ntp.org</field></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="esp32_serial_println"><value name="VALUE"><block type="ntp_get_formatted"><field name="FORMAT">%Y-%m-%d %H:%M:%S</field></block></value><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'sensor-actuator-combo',
+    title: 'センサー・アクチュエーター複合',
+    description: '温度に応じてサーボ角度とLEDを制御する複合動作',
+    category: 'sensor',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="dht_init"><field name="PIN">4</field><field name="TYPE">DHT22</field><next><block type="servo_attach"><field name="PIN">13</field><next><block type="esp32_pin_mode"><field name="PIN">2</field><field name="MODE">OUTPUT</field></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="controls_ifelse"><value name="IF0"><block type="logic_compare"><field name="OP">GT</field><value name="A"><block type="dht_temperature"></block></value><value name="B"><block type="math_number"><field name="NUM">25</field></block></value></block></value><statement name="DO0"><block type="servo_write"><field name="PIN">13</field><field name="ANGLE">180</field><next><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">HIGH</field></block></next></block></statement><statement name="ELSE"><block type="servo_write"><field name="PIN">13</field><field name="ANGLE">0</field><next><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">LOW</field></block></next></block></statement><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">3000</field></block></value></block></next></block></statement></block></xml>`
   }
 ];
 
