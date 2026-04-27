@@ -124,7 +124,7 @@ export function Sidebar({
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const { canUsePinAssign, isFreeOpenNow, fetchFlags, canUseAiBlockGeneration, canUseAiHelpBot, canSubmitFeedback } = useFeatureFlagStore();
-  const [isPinned, setIsPinned] = useState(false); // ピン留めなし
+  const [isPinned, setIsPinned] = useState(true); // デフォルトでピン留め
   const [isHovered, setIsHovered] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['project'])); // デフォルトでprojectを開く
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set()); // サブメニュー展開状態
@@ -445,7 +445,7 @@ export function Sidebar({
   }, {} as Record<string, NavItem[]>);
 
   // カテゴリの表示順序を定義
-  const categoryOrder = ['project', 'assignment', 'otaSetup', 'usbDriver', 'tuning', 'advanced', 'help', 'account'];
+  const categoryOrder = ['account', 'project', 'assignment', 'otaSetup', 'usbDriver', 'tuning', 'advanced', 'help'];
   const orderedCategories = categoryOrder.filter(cat => groupedItems[cat]);
 
   // 表示状態を計算
