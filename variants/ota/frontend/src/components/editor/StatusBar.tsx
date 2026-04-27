@@ -76,16 +76,8 @@ export function StatusBar({
   };
 
   return (
-    <div className="flex items-center justify-between h-7 px-4 bg-[#1C1F26] text-[#E6EDF3] text-xs border-t border-[#2E333D]">
-      {/* 左側: 状態インジケーター */}
-      <div className={`flex items-center gap-2 ${stateDisplay.color}`}>
-        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded ${stateDisplay.bgColor}`}>
-          {stateDisplay.icon}
-          <span className="font-medium">{stateDisplay.text}</span>
-        </div>
-      </div>
-
-      {/* 中央: バイナリサイズ / メモリ使用量 */}
+    <div className="flex items-center justify-end gap-4 h-7 px-4 bg-[#1C1F26] text-[#E6EDF3] text-xs border-t border-[#2E333D]">
+      {/* バイナリサイズ / メモリ使用量 */}
       {(binarySize || flashSize) && (
         <div className="flex items-center gap-4 text-gray-400">
           {binarySize && (
@@ -103,24 +95,29 @@ export function StatusBar({
         </div>
       )}
 
-      {/* 右側: デバイス情報 */}
-      <div className="flex items-center gap-4 text-gray-400">
-        {/* デバイス情報 */}
-        {deviceInfo && (
-          <div className="flex items-center gap-1.5">
-            {deviceInfo.connected ? (
-              <Wifi className="w-3 h-3 text-green-400" />
-            ) : (
-              <WifiOff className="w-3 h-3 text-gray-500" />
-            )}
-            {deviceInfo.connected && (
-              <span className="text-[#E6EDF3]">
-                {deviceInfo.name || deviceInfo.ip || 'Device'}
-              </span>
-            )}
-          </div>
-        )}
+      {/* 状態インジケーター */}
+      <div className={`flex items-center gap-2 ${stateDisplay.color}`}>
+        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded ${stateDisplay.bgColor}`}>
+          {stateDisplay.icon}
+          <span className="font-medium">{stateDisplay.text}</span>
+        </div>
       </div>
+
+      {/* デバイス情報（最右端）*/}
+      {deviceInfo && (
+        <div className="flex items-center gap-1.5 text-gray-400">
+          {deviceInfo.connected ? (
+            <Wifi className="w-3 h-3 text-green-400" />
+          ) : (
+            <WifiOff className="w-3 h-3 text-gray-500" />
+          )}
+          {deviceInfo.connected && (
+            <span className="text-[#E6EDF3]">
+              {deviceInfo.name || deviceInfo.ip || 'Device'}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
