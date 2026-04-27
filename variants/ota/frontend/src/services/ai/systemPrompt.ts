@@ -57,6 +57,7 @@ export interface HelpBotSystemPromptContext {
   language: AiLanguage;
   mode?: RobotMode;
   board?: BoardDefinition;
+  filteredBlocks?: BlockCatalogEntry[];
 }
 
 export interface BlockGenConversationContext {
@@ -220,6 +221,8 @@ export function buildSystemPrompt(ctx: SystemPromptContext): string {
 }
 
 // HELP Bot 用（自由応答、XML 禁止、Few-shot なし、判断 11 Q-B）
+// catalog overview を含むことで AI が DigiCode 固有ブロック type 名を正確に引用できる
+// （pwm_set / pwm_write 等の hallucination を防止、S7 OpenAI で発覚した pre-existing 設計欠陥を解消）
 export function buildHelpBotSystemPrompt(ctx: HelpBotSystemPromptContext): string {
   const templates = AI_SYSTEM_PROMPTS[ctx.language].helpBot;
   const contextLines = [
@@ -231,9 +234,19 @@ export function buildHelpBotSystemPrompt(ctx: HelpBotSystemPromptContext): strin
     `# Role\n${templates.role}`,
     `# Response Style\n${templates.style}`,
     ...(contextLines.length > 0 ? [`# Current Context\n${contextLines.join('\n')}`] : []),
+  ];
+
+  if (ctx.filteredBlocks && ctx.filteredBlocks.length > 0) {
+    const overview = buildBlockOverviewSection(ctx.filteredBlocks);
+    sections.push(
+      `# Available Blocks (overview, no schema — refer to these exact type names; do not invent block names)\n${overview}`
+    );
+  }
+
+  sections.push(
     `# Prohibitions\n${templates.xmlProhibition}`,
     `# Tab Switching Hint\n${templates.switchTabHint}`,
-  ];
+  );
 
   return sections.join('\n\n');
 }

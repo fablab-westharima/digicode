@@ -73,13 +73,19 @@ export class AnthropicClient implements AIClient {
   async chat(input: ChatInput): Promise<ChatOutput> {
     const trimmed = trimConversationForContext(input.messages);
 
+    // helpBot / blockGen 両方で catalog overview を渡し、AI が DigiCode 固有ブロック type 名を把握できるようにする
+    const catalog = await fetchCatalog();
+    const filteredBlocks = filterCatalog(catalog);
+
     let systemPrompt: string;
     if (input.mode === 'helpBot') {
-      systemPrompt = buildHelpBotSystemPrompt({ language: input.language, mode: input.robotMode, board: input.board });
+      systemPrompt = buildHelpBotSystemPrompt({
+        language: input.language,
+        mode: input.robotMode,
+        board: input.board,
+        filteredBlocks,
+      });
     } else {
-      // blockGen 会話: catalog overview も渡し、AI が DigiCode 固有ブロックを把握できるようにする
-      const catalog = await fetchCatalog();
-      const filteredBlocks = filterCatalog(catalog);
       systemPrompt = buildBlockGenConversationPrompt({
         language: input.language,
         mode: input.robotMode,

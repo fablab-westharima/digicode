@@ -200,6 +200,57 @@ describe('buildHelpBotSystemPrompt', () => {
     expect(prompt).not.toContain('## Example 1:');
     expect(prompt).not.toContain('## Example 2:');
   });
+
+  it('contains Available Blocks overview section when filteredBlocks is provided', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildHelpBotSystemPrompt({
+      language: 'ja',
+      mode: 'generic',
+      board: mockBoard,
+      filteredBlocks,
+    });
+    expect(prompt).toContain('# Available Blocks (overview');
+    expect(prompt).toContain('humanoid_walk: Walk');
+    expect(prompt).toContain('wifi_connect: WiFi');
+    expect(prompt).toContain('## core');
+    expect(prompt).toContain('## sensor');
+  });
+
+  it('omits Available Blocks section when filteredBlocks is undefined (backward compat)', () => {
+    const prompt = buildHelpBotSystemPrompt({ language: 'ja', mode: 'generic', board: mockBoard });
+    expect(prompt).not.toContain('# Available Blocks');
+  });
+
+  it('overview lines do not leak schema notation (no parens / brackets / braces)', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildHelpBotSystemPrompt({
+      language: 'ja',
+      mode: 'generic',
+      board: mockBoard,
+      filteredBlocks,
+    });
+    const overviewStart = prompt.indexOf('# Available Blocks');
+    expect(overviewStart).toBeGreaterThan(-1);
+    const overview = prompt.slice(overviewStart);
+    expect(overview).not.toMatch(/\(SSID:text/);
+    expect(overview).not.toMatch(/\[TIME:Number\]/);
+    expect(overview).not.toMatch(/\{SETUP\}/);
+  });
+
+  it('overview is placed before Prohibitions section (factual context before behavioral constraints)', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildHelpBotSystemPrompt({
+      language: 'ja',
+      mode: 'generic',
+      board: mockBoard,
+      filteredBlocks,
+    });
+    const overviewIdx = prompt.indexOf('# Available Blocks');
+    const prohibitionsIdx = prompt.indexOf('# Prohibitions');
+    expect(overviewIdx).toBeGreaterThan(-1);
+    expect(prohibitionsIdx).toBeGreaterThan(-1);
+    expect(overviewIdx).toBeLessThan(prohibitionsIdx);
+  });
 });
 
 describe('buildBlockGenConversationPrompt', () => {
