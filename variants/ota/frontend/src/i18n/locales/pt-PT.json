@@ -4109,9 +4109,7 @@
   },
   "feedback": {
     "button": {
-      "label": "Enviar feedback",
-      "requiresLitePlus": "A funcionalidade de feedback está disponível para subscritores de planos.",
-      "upgradePlan": "Atualizar plano"
+      "label": "Enviar feedback"
     },
     "dialog": {
       "title": "Enviar feedback",

@@ -4109,9 +4109,7 @@
   },
   "feedback": {
     "button": {
-      "label": "送出意見",
-      "requiresLitePlus": "意見回饋功能僅供方案訂閱者使用。",
-      "upgradePlan": "升級方案"
+      "label": "送出意見"
     },
     "dialog": {
       "title": "送出意見",

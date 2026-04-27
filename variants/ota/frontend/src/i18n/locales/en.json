@@ -3924,9 +3924,7 @@
   },
   "feedback": {
     "button": {
-      "label": "Send Feedback",
-      "requiresLitePlus": "Feedback is available to plan subscribers.",
-      "upgradePlan": "Upgrade plan"
+      "label": "Send Feedback"
     },
     "dialog": {
       "title": "Send Feedback",

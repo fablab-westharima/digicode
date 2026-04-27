@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AIAssistantPanel } from './AIAssistantPanel';
 import { AIAssistantDialog } from './AIAssistantDialog';
-import { FeedbackFormButton } from '../feedback/FeedbackFormButton';
+import { FeedbackFormDialog } from '../feedback/FeedbackFormDialog';
 import {
   FolderOpen,
   Zap,
@@ -33,7 +33,8 @@ import {
   Save,
   Award,
   CreditCard,
-  Bot
+  Bot,
+  Megaphone
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAuthStore } from '@/stores/authStore';
@@ -129,6 +130,7 @@ export function Sidebar({
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['project'])); // デフォルトでprojectを開く
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set()); // サブメニュー展開状態
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
+  const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
 
   // Feature Flagsを取得
   useEffect(() => {
@@ -141,7 +143,6 @@ export function Sidebar({
   const isHelpBotAvailable = canUseAiHelpBot(user?.plan, user?.accountType);
   const isAiUpgradeCandidate = isAuthenticated && user?.accountType !== 'student' && !isAiAvailable;
   const isFeedbackAvailable = canSubmitFeedback(user?.plan, user?.accountType);
-  const isFeedbackUpgradeCandidate = isAuthenticated && user?.accountType !== 'student' && !isFeedbackAvailable;
 
   const toggleCategory = (category: string) => {
     setExpandedCategories(prev => {
@@ -332,6 +333,14 @@ export function Sidebar({
       action: onDocs || (() => {}),
       category: 'help'
     },
+    // 要望を送る（課金ユーザーのみ、ヘルプ category 内）
+    ...(isAuthenticated && isFeedbackAvailable ? [{
+      id: 'feedback',
+      label: t('feedback.button.label', { defaultValue: '要望を送る' }),
+      icon: <Megaphone className="w-4 h-4" />,
+      action: () => setIsFeedbackDialogOpen(true),
+      category: 'help' as const,
+    }] : []),
     // アカウント（認証状態・アカウント種別で表示を切り替え）
     ...(isAuthenticated ? [
       ...(user?.accountType !== 'student' ? [{
@@ -616,16 +625,6 @@ export function Sidebar({
         </div>
       )}
 
-      {/* 要望フォーム（Lite+ または upgrade 候補ユーザーに表示）— AI アシスタントの直下に配置 */}
-      {isAuthenticated && (isFeedbackAvailable || isFeedbackUpgradeCandidate) && (
-        <FeedbackFormButton
-          shouldShowFull={shouldShowFull}
-          isAvailable={isFeedbackAvailable}
-          isUpgradeCandidate={isFeedbackUpgradeCandidate}
-          onUpgradePlan={() => navigate('/plan')}
-        />
-      )}
-
       {/* AI アシスタント 展開ダイアログ */}
       <AIAssistantDialog
         open={isAiDialogOpen}
@@ -637,6 +636,14 @@ export function Sidebar({
         isHelpBotAvailable={isHelpBotAvailable}
         onUpgradePlan={() => navigate('/plan')}
       />
+
+      {/* 要望フォーム ダイアログ（ヘルプメニューから起動） */}
+      {isAuthenticated && isFeedbackAvailable && (
+        <FeedbackFormDialog
+          open={isFeedbackDialogOpen}
+          onOpenChange={setIsFeedbackDialogOpen}
+        />
+      )}
     </div>
   );
 }

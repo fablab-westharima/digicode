@@ -3914,9 +3914,7 @@
   },
   "feedback": {
     "button": {
-      "label": "要望を送る",
-      "requiresLitePlus": "要望機能はプラン契約者のみご利用いただけます。",
-      "upgradePlan": "プランをアップグレード"
+      "label": "要望を送る"
     },
     "dialog": {
       "title": "要望を送る",
