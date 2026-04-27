@@ -42,5 +42,5 @@ arduino-compile-server/
 # (定期的に削除されるためGit管理対象外)
 prompt/image/
 
-# Claude Code local settings (個人ごとのBash許可リスト等)
-.claude/settings.local.json
+# Claude Code local artifacts (個人ごとのBash許可リスト + scheduled_tasks lock 等)
+.claude/
