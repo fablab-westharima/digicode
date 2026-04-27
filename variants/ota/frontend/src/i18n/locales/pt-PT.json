@@ -3968,6 +3968,8 @@
     "sending": "A enviar...",
     "helpBotPlaceholder": "Faz uma pergunta sobre o DigiCode",
     "clearWorkspace": "Limpar área de trabalho",
+    "clear": "Limpar",
+    "expand": "Ampliar",
     "systemMetaAdded": "{{count}} blocos adicionados",
     "exportChat": "Exportar conversa",
     "expandPanel": "Abrir em diálogo",

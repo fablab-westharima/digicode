@@ -3968,6 +3968,8 @@
     "sending": "傳送中...",
     "helpBotPlaceholder": "請詢問 DigiCode 的使用方法",
     "clearWorkspace": "清除工作區",
+    "clear": "清除",
+    "expand": "放大",
     "systemMetaAdded": "已新增 {{count}} 個積木",
     "exportChat": "匯出對話",
     "expandPanel": "在對話框中開啟",

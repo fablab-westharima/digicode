@@ -258,15 +258,6 @@ export function AIAssistantPanel({
             <Download className="w-3 h-3" />
           </button>
         )}
-        {showExpandButton && onExpand && (
-          <button
-            onClick={onExpand}
-            title={t('ai.expandPanel')}
-            className="px-2 text-muted-foreground hover:text-foreground hover:bg-[#2E333D] transition-colors"
-          >
-            <Maximize2 className="w-3 h-3" />
-          </button>
-        )}
       </div>
 
       {/* 会話履歴 */}
@@ -315,48 +306,37 @@ export function AIAssistantPanel({
           className="block w-full px-2 py-1.5 text-xs bg-[#0D1117] border border-[#2E333D] rounded text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:border-blue-500 disabled:opacity-50 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#3E4451] [&::-webkit-scrollbar-thumb:hover]:bg-[#5C6370]"
         />
 
+        {/* 上段: 生成 (左) / 送信 (右) */}
         {currentMode === 'blockGen' ? (
-          <>
-            <div className="mt-1 flex gap-1">
-              {isAvailable && (
-                <button
-                  onClick={handleGenerate}
-                  disabled={isBusy}
-                  className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                >
-                  {isGenerating
-                    ? <Loader2 className="w-3 h-3 animate-spin" />
-                    : <Sparkles className="w-3 h-3" />}
-                  {isGenerating ? t('ai.generating') : t('ai.generateButton')}
-                </button>
-              )}
-              <button
-                onClick={handleSend}
-                disabled={isBusy || !input.trim()}
-                title={t('ai.sendButton')}
-                aria-label={t('ai.sendButton')}
-                className={`flex-1 flex items-center justify-center px-2 py-1.5 text-xs font-medium rounded transition-colors ${
-                  isBusy || !input.trim()
-                    ? 'bg-[#2E333D] text-muted-foreground cursor-not-allowed'
-                    : 'bg-blue-600 text-white hover:bg-blue-500'
-                }`}
-              >
-                {isSending
-                  ? <Loader2 className="w-4 h-4 animate-spin" />
-                  : <ArrowUp className="w-4 h-4" />}
-              </button>
-            </div>
+          <div className="mt-1 flex gap-1">
             {isAvailable && (
               <button
-                onClick={onClearWorkspace}
+                onClick={handleGenerate}
                 disabled={isBusy}
-                className="mt-1 w-full flex items-center justify-center gap-1 px-2 py-1 text-[10px] text-muted-foreground hover:text-red-400 hover:bg-[#2E333D] rounded disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded border border-[#3E4451] bg-transparent text-foreground hover:bg-[#2E333D] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                <Trash2 className="w-3 h-3" />
-                {t('ai.clearWorkspace')}
+                {isGenerating
+                  ? <Loader2 className="w-3 h-3 animate-spin" />
+                  : <Sparkles className="w-3 h-3" />}
+                {isGenerating ? t('ai.generating') : t('ai.generateButton')}
               </button>
             )}
-          </>
+            <button
+              onClick={handleSend}
+              disabled={isBusy || !input.trim()}
+              title={t('ai.sendButton')}
+              aria-label={t('ai.sendButton')}
+              className={`flex-1 flex items-center justify-center px-2 py-1.5 text-xs font-medium rounded transition-colors ${
+                isBusy || !input.trim()
+                  ? 'bg-[#2E333D] text-muted-foreground cursor-not-allowed'
+                  : 'bg-blue-500 text-white hover:bg-blue-400 shadow-sm shadow-blue-500/30'
+              }`}
+            >
+              {isSending
+                ? <Loader2 className="w-5 h-5 animate-spin" />
+                : <ArrowUp className="w-5 h-5" strokeWidth={2.5} />}
+            </button>
+          </div>
         ) : (
           <button
             onClick={handleSend}
@@ -366,13 +346,40 @@ export function AIAssistantPanel({
             className={`mt-1 w-full flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded transition-colors ${
               isBusy || !input.trim()
                 ? 'bg-[#2E333D] text-muted-foreground cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-500'
+                : 'bg-blue-500 text-white hover:bg-blue-400 shadow-sm shadow-blue-500/30'
             }`}
           >
             {isSending
-              ? <Loader2 className="w-4 h-4 animate-spin" />
-              : <ArrowUp className="w-4 h-4" />}
+              ? <Loader2 className="w-5 h-5 animate-spin" />
+              : <ArrowUp className="w-5 h-5" strokeWidth={2.5} />}
           </button>
+        )}
+
+        {/* 下段: クリア (左) / 拡大 (右) */}
+        {((currentMode === 'blockGen' && isAvailable) || (showExpandButton && onExpand)) && (
+          <div className="mt-1 flex gap-1">
+            {currentMode === 'blockGen' && isAvailable ? (
+              <button
+                onClick={onClearWorkspace}
+                disabled={isBusy}
+                title={t('ai.clearWorkspace')}
+                className="flex-1 flex items-center justify-center gap-1 px-2 py-1 text-[11px] text-muted-foreground hover:text-red-400 hover:bg-[#2E333D] rounded disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <Trash2 className="w-3 h-3" />
+                {t('ai.clear')}
+              </button>
+            ) : null}
+            {showExpandButton && onExpand && (
+              <button
+                onClick={onExpand}
+                title={t('ai.expandPanel')}
+                className="flex-1 flex items-center justify-center gap-1 px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground hover:bg-[#2E333D] rounded transition-colors"
+              >
+                <Maximize2 className="w-3 h-3" />
+                {t('ai.expand')}
+              </button>
+            )}
+          </div>
         )}
 
         {errorMsg && (

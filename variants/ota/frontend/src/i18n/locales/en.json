@@ -3783,6 +3783,8 @@
     "sending": "Sending...",
     "helpBotPlaceholder": "Ask a question about DigiCode",
     "clearWorkspace": "Clear workspace",
+    "clear": "Clear",
+    "expand": "Expand",
     "systemMetaAdded": "Added {{count}} blocks",
     "exportChat": "Export conversation",
     "expandPanel": "Open in dialog",
