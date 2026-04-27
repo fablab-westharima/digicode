@@ -291,67 +291,88 @@ export function AIAssistantPanel({
 
       {/* 入力エリア */}
       <div className="shrink-0 border-t border-[#2E333D] px-2 pt-2 pb-2">
-        <div className="relative">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                e.preventDefault();
-                if (e.shiftKey && currentMode === 'blockGen' && isAvailable) {
-                  handleGenerate();
-                } else {
-                  handleSend();
-                }
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+              e.preventDefault();
+              if (e.shiftKey && currentMode === 'blockGen' && isAvailable) {
+                handleGenerate();
+              } else {
+                handleSend();
               }
-            }}
-            placeholder={
-              currentMode === 'blockGen'
-                ? t('ai.placeholder')
-                : t('ai.helpBotPlaceholder')
             }
-            rows={4}
-            disabled={isBusy}
-            className="w-full pl-2 pr-10 py-1.5 text-xs bg-[#0D1117] border border-[#2E333D] rounded text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:border-blue-500 disabled:opacity-50"
-          />
+          }}
+          placeholder={
+            currentMode === 'blockGen'
+              ? t('ai.placeholder')
+              : t('ai.helpBotPlaceholder')
+          }
+          rows={4}
+          disabled={isBusy}
+          style={{ scrollbarWidth: 'thin', scrollbarColor: '#3E4451 transparent' }}
+          className="block w-full px-2 py-1.5 text-xs bg-[#0D1117] border border-[#2E333D] rounded text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:border-blue-500 disabled:opacity-50 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#3E4451] [&::-webkit-scrollbar-thumb:hover]:bg-[#5C6370]"
+        />
+
+        {currentMode === 'blockGen' ? (
+          <>
+            <div className="mt-1 flex gap-1">
+              {isAvailable && (
+                <button
+                  onClick={handleGenerate}
+                  disabled={isBusy}
+                  className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isGenerating
+                    ? <Loader2 className="w-3 h-3 animate-spin" />
+                    : <Sparkles className="w-3 h-3" />}
+                  {isGenerating ? t('ai.generating') : t('ai.generateButton')}
+                </button>
+              )}
+              <button
+                onClick={handleSend}
+                disabled={isBusy || !input.trim()}
+                title={t('ai.sendButton')}
+                aria-label={t('ai.sendButton')}
+                className={`flex-1 flex items-center justify-center px-2 py-1.5 text-xs font-medium rounded transition-colors ${
+                  isBusy || !input.trim()
+                    ? 'bg-[#2E333D] text-muted-foreground cursor-not-allowed'
+                    : 'bg-blue-600 text-white hover:bg-blue-500'
+                }`}
+              >
+                {isSending
+                  ? <Loader2 className="w-4 h-4 animate-spin" />
+                  : <ArrowUp className="w-4 h-4" />}
+              </button>
+            </div>
+            {isAvailable && (
+              <button
+                onClick={onClearWorkspace}
+                disabled={isBusy}
+                className="mt-1 w-full flex items-center justify-center gap-1 px-2 py-1 text-[10px] text-muted-foreground hover:text-red-400 hover:bg-[#2E333D] rounded disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <Trash2 className="w-3 h-3" />
+                {t('ai.clearWorkspace')}
+              </button>
+            )}
+          </>
+        ) : (
           <button
             onClick={handleSend}
             disabled={isBusy || !input.trim()}
             title={t('ai.sendButton')}
             aria-label={t('ai.sendButton')}
-            className={`absolute right-1.5 bottom-1.5 flex items-center justify-center w-7 h-7 rounded transition-colors ${
+            className={`mt-1 w-full flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded transition-colors ${
               isBusy || !input.trim()
                 ? 'bg-[#2E333D] text-muted-foreground cursor-not-allowed'
                 : 'bg-blue-600 text-white hover:bg-blue-500'
             }`}
           >
             {isSending
-              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              : <ArrowUp className="w-3.5 h-3.5" />}
+              ? <Loader2 className="w-4 h-4 animate-spin" />
+              : <ArrowUp className="w-4 h-4" />}
           </button>
-        </div>
-
-        {currentMode === 'blockGen' && isAvailable && (
-          <>
-            <button
-              onClick={handleGenerate}
-              disabled={isBusy}
-              className="mt-1 w-full flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              {isGenerating
-                ? <Loader2 className="w-3 h-3 animate-spin" />
-                : <Sparkles className="w-3 h-3" />}
-              {isGenerating ? t('ai.generating') : t('ai.generateButton')}
-            </button>
-            <button
-              onClick={onClearWorkspace}
-              disabled={isBusy}
-              className="mt-1 w-full flex items-center justify-center gap-1 px-2 py-1 text-[10px] text-muted-foreground hover:text-red-400 hover:bg-[#2E333D] rounded disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              <Trash2 className="w-3 h-3" />
-              {t('ai.clearWorkspace')}
-            </button>
-          </>
         )}
 
         {errorMsg && (
