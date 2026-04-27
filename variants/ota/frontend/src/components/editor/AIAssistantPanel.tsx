@@ -363,7 +363,7 @@ export function AIAssistantPanel({
                 onClick={onClearWorkspace}
                 disabled={isBusy}
                 title={t('ai.clearWorkspace')}
-                className="flex-1 flex items-center justify-center gap-1 px-2 py-1 text-[11px] text-muted-foreground hover:text-red-400 hover:bg-[#2E333D] rounded disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 flex items-center justify-center gap-1 px-2 py-1 text-[11px] font-medium rounded border border-[#3E4451] bg-transparent text-muted-foreground hover:text-red-400 hover:border-red-400/50 hover:bg-red-500/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <Trash2 className="w-3 h-3" />
                 {t('ai.clear')}
@@ -373,7 +373,7 @@ export function AIAssistantPanel({
               <button
                 onClick={onExpand}
                 title={t('ai.expandPanel')}
-                className="flex-1 flex items-center justify-center gap-1 px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground hover:bg-[#2E333D] rounded transition-colors"
+                className="flex-1 flex items-center justify-center gap-1 px-2 py-1 text-[11px] font-medium rounded border border-[#3E4451] bg-transparent text-muted-foreground hover:text-foreground hover:border-[#5C6370] hover:bg-[#2E333D] transition-colors"
               >
                 <Maximize2 className="w-3 h-3" />
                 {t('ai.expand')}
