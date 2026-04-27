@@ -70,7 +70,7 @@ app.use('*', cors({
     return null;
   },
   allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization', 'Accept-Language'],
+  allowHeaders: ['Content-Type', 'Authorization', 'Accept-Language', 'X-App-Version'],
   credentials: true,
 }));
 
