@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# probabilistic-debug runtime artifacts (Phase 1-4, 43.md)
+scripts/probabilistic-debug-cases/
+scripts/probabilistic-debug-results/
+scripts/probabilistic-debug-reports/
