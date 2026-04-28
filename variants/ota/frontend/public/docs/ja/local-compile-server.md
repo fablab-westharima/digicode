@@ -184,34 +184,6 @@ curl http://localhost:3001/health
 
 ---
 
-## 旧イメージからの移行（旧 user 向け、1 ステップ）
-
-2026-04 までは `ghcr.io/fablab-westharima/digicode-compile-server`（arduino-cli ベース）を配布していました。新イメージ `digicode-compile-api`（PlatformIO Core ベース）への移行は **イメージ名の変更のみ** で完了します。
-
-```bash
-# 旧 image を停止・削除
-docker stop digicode-compiler 2>/dev/null
-docker rm digicode-compiler 2>/dev/null
-docker rmi ghcr.io/fablab-westharima/digicode-compile-server:latest 2>/dev/null
-
-# 新 image を起動
-docker pull ghcr.io/fablab-westharima/digicode-compile-api:latest
-docker run -d -p 3001:3001 --name digicode-compile-api \
-  ghcr.io/fablab-westharima/digicode-compile-api:latest
-```
-
-**変更点:**
-
-- イメージ名: `digicode-compile-server` → `digicode-compile-api`
-- コンテナ名: `digicode-compiler` → `digicode-compile-api`（任意、用途で変更可）
-- ポート: 3001 据え置き
-- DigiCode UI 設定（URL `http://localhost:3001`）: 据え置き、変更不要
-- API contract: 互換（`/health` の `service` / `version` フィールドのみ変更）
-
-旧イメージのリポジトリ [fablab-westharima/arduino-compile-server](https://github.com/fablab-westharima/arduino-compile-server) は 2026-04-29 にアーカイブ済です。クラウド側で修正した lib drift（QTRSensors / MFRC522 I2C / NewPing v1.9 等）は新イメージのみに反映されているため、移行を推奨します。
-
----
-
 ## サーバーの操作
 
 ```bash

@@ -184,34 +184,6 @@ La primera compilación (cold) tarda ~30-60 s — PlatformIO + framework + libre
 
 ---
 
-## Migración desde la imagen anterior (usuarios existentes, 1 paso)
-
-Hasta 2026-04 distribuíamos `ghcr.io/fablab-westharima/digicode-compile-server` (basado en arduino-cli). La migración a la nueva `digicode-compile-api` (basada en PlatformIO Core) consiste **solo en cambiar el nombre de la imagen**.
-
-```bash
-# Detener y eliminar la imagen anterior
-docker stop digicode-compiler 2>/dev/null
-docker rm digicode-compiler 2>/dev/null
-docker rmi ghcr.io/fablab-westharima/digicode-compile-server:latest 2>/dev/null
-
-# Iniciar la nueva imagen
-docker pull ghcr.io/fablab-westharima/digicode-compile-api:latest
-docker run -d -p 3001:3001 --name digicode-compile-api \
-  ghcr.io/fablab-westharima/digicode-compile-api:latest
-```
-
-**Cambios:**
-
-- Nombre de la imagen: `digicode-compile-server` → `digicode-compile-api`
-- Nombre del contenedor: `digicode-compiler` → `digicode-compile-api` (opcional)
-- Puerto: 3001 sin cambios
-- Configuración de DigiCode (URL `http://localhost:3001`): sin cambios
-- Contrato API: compatible — solo cambian los campos `service` / `version` en `/health`
-
-El repositorio anterior [fablab-westharima/arduino-compile-server](https://github.com/fablab-westharima/arduino-compile-server) fue archivado el 2026-04-29. Las correcciones de librerías hechas en la nube (QTRSensors / MFRC522 I2C / NewPing v1.9, etc.) solo están en la nueva imagen, por lo que se recomienda migrar.
-
----
-
 ## Operaciones del servidor
 
 ```bash

@@ -184,34 +184,6 @@ curl http://localhost:3001/health
 
 ---
 
-## 從舊映像遷移（既有使用者，1 個步驟）
-
-到 2026-04 為止我們發行的是 `ghcr.io/fablab-westharima/digicode-compile-server`（arduino-cli 基礎）。遷移到新映像 `digicode-compile-api`（PlatformIO Core 基礎）**只需更換映像名稱**。
-
-```bash
-# 停止並移除舊映像
-docker stop digicode-compiler 2>/dev/null
-docker rm digicode-compiler 2>/dev/null
-docker rmi ghcr.io/fablab-westharima/digicode-compile-server:latest 2>/dev/null
-
-# 啟動新映像
-docker pull ghcr.io/fablab-westharima/digicode-compile-api:latest
-docker run -d -p 3001:3001 --name digicode-compile-api \
-  ghcr.io/fablab-westharima/digicode-compile-api:latest
-```
-
-**變更點：**
-
-- 映像名稱: `digicode-compile-server` → `digicode-compile-api`
-- 容器名稱: `digicode-compiler` → `digicode-compile-api`（可選）
-- 連接埠: 3001 不變
-- DigiCode UI 設定（URL `http://localhost:3001`）: 不變
-- API contract: 相容 — 僅 `/health` 的 `service` / `version` 欄位變動
-
-舊版 repository [fablab-westharima/arduino-compile-server](https://github.com/fablab-westharima/arduino-compile-server) 已於 2026-04-29 封存。雲端側修正的函式庫問題（QTRSensors / MFRC522 I2C / NewPing v1.9 等）僅反映在新映像，建議遷移。
-
----
-
 ## 伺服器操作
 
 ```bash
