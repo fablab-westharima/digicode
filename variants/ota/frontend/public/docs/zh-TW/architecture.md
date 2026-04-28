@@ -1,6 +1,6 @@
 # DigiCode 架構概覽
 
-**最後更新：** 2026-04-21
+**最後更新：** 2026-04-29
 
 說明 DigiCode 系統的整體架構與技術堆疊。
 
@@ -11,7 +11,7 @@
 | **前端** | React 19 + Blockly | Cloudflare Pages |
 | **後端 API** | Hono + Cloudflare Workers | Cloudflare Workers |
 | **班級伺服器** | Hono + better-sqlite3 | HPE ML30（`class.digital-fab.jp`） |
-| **編譯伺服器** | Node.js + Arduino CLI | HPE ML30 / Railway |
+| **編譯伺服器** | Node.js + Hono + PlatformIO Core | HPE ML30（Docker 容器） |
 | **資料庫** | Cloudflare D1（SQLite） | Cloudflare |
 | **檔案儲存** | Cloudflare R2 | Cloudflare（Bucket 已建立，目前未使用） |
 | **金流** | Stripe Billing | Stripe（正式上線中） |
@@ -48,12 +48,12 @@
 
 ### 編譯伺服器
 
-- **儲存庫：** `fablab-westharima/arduino-compile-server`（公開）
-- **執行環境：** Node.js + Express
-- **編譯器：** Arduino CLI 1.3.1
-- **目標平台：** ESP32 Arduino Core 3.3.4
-- **部署位置：** HPE ML30（雲端編譯）/ Railway（備援）
-- **本地版本：** 已公開 Docker 映像（`ghcr.io/fablab-westharima/digicode-compile-server`）
+- **原始碼：** DigiCode monorepo `compile-api/`（proprietary）
+- **執行環境：** Node.js + Hono
+- **編譯器：** PlatformIO Core
+- **目標平台：** ESP32 + RP2040（Arduino framework）
+- **部署位置：** HPE ML30（Docker 容器，雲端編譯）/ 使用者環境（Docker，本地編譯）
+- **映像：** `ghcr.io/fablab-westharima/digicode-compile-api:latest`（雲端與本地共用）
 
 ### ESP32 韌體
 
@@ -155,7 +155,7 @@ esp32-blockly-backend/
 ### 水平擴充
 - Cloudflare Workers：自動擴充
 - Cloudflare D1：自動複製
-- 編譯伺服器：ML30 + Railway 雙重架構
+- 編譯伺服器：ML30（Docker 容器，單機）
 
 ### 效能最佳化
 - 前端：Vite 高速建置與程式碼分割

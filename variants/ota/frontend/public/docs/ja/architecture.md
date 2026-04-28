@@ -1,6 +1,6 @@
 # DigiCode アーキテクチャ概要
 
-**最終更新:** 2026-04-21
+**最終更新:** 2026-04-29
 
 DigiCodeシステムの全体構成と技術スタックを説明します。
 
@@ -11,7 +11,7 @@ DigiCodeシステムの全体構成と技術スタックを説明します。
 | **フロントエンド** | React 19 + Blockly | Cloudflare Pages |
 | **バックエンド API** | Hono + Cloudflare Workers | Cloudflare Workers |
 | **クラスサーバー** | Hono + better-sqlite3 | HPE ML30 (`class.digital-fab.jp`) |
-| **コンパイルサーバー** | Node.js + Arduino CLI | HPE ML30 / Railway |
+| **コンパイルサーバー** | Node.js + Hono + PlatformIO Core | HPE ML30 (Docker コンテナ) |
 | **データベース** | Cloudflare D1 (SQLite) | Cloudflare |
 | **ファイルストレージ** | Cloudflare R2 | Cloudflare（Bucket配置済み、現状未使用） |
 | **決済** | Stripe Billing | Stripe（本番稼働中） |
@@ -48,12 +48,12 @@ DigiCodeシステムの全体構成と技術スタックを説明します。
 
 ### コンパイルサーバー
 
-- **リポジトリ:** `fablab-westharima/arduino-compile-server`（Public）
-- **ランタイム:** Node.js + Express
-- **コンパイラ:** Arduino CLI 1.3.1
-- **ターゲット:** ESP32 Arduino Core 3.3.4
-- **デプロイ先:** HPE ML30（クラウドコンパイル）/ Railway（バックアップ）
-- **ローカル版:** Docker イメージ公開済み（`ghcr.io/fablab-westharima/digicode-compile-server`）
+- **ソース:** DigiCode モノレポ `compile-api/`（proprietary）
+- **ランタイム:** Node.js + Hono
+- **コンパイラ:** PlatformIO Core
+- **ターゲット:** ESP32 + RP2040（Arduino framework）
+- **デプロイ先:** HPE ML30（Docker コンテナ、クラウドコンパイル）/ ユーザー環境（Docker、ローカルコンパイル）
+- **イメージ:** `ghcr.io/fablab-westharima/digicode-compile-api:latest`（クラウド・ローカル共通）
 
 ### ESP32ファームウェア
 
@@ -155,7 +155,7 @@ esp32-blockly-backend/
 ### 水平スケーリング
 - Cloudflare Workers: 自動スケール
 - Cloudflare D1: 自動レプリケーション
-- コンパイルサーバー: ML30 + Railway のデュアル構成
+- コンパイルサーバー: ML30 (Docker コンテナ、単独)
 
 ### パフォーマンス最適化
 - フロントエンド: Vite による高速ビルド、コード分割

@@ -1,6 +1,6 @@
 # Visión General de la Arquitectura de DigiCode
 
-**Última actualización:** 2026-04-21
+**Última actualización:** 2026-04-29
 
 Explica la configuración general del sistema y el stack tecnológico de DigiCode.
 
@@ -11,7 +11,7 @@ Explica la configuración general del sistema y el stack tecnológico de DigiCod
 | **Frontend** | React 19 + Blockly | Cloudflare Pages |
 | **API Backend** | Hono + Cloudflare Workers | Cloudflare Workers |
 | **Servidor de Clases** | Hono + better-sqlite3 | HPE ML30 (`class.digital-fab.jp`) |
-| **Servidor de Compilación** | Node.js + Arduino CLI | HPE ML30 / Railway |
+| **Servidor de Compilación** | Node.js + Hono + PlatformIO Core | HPE ML30 (contenedor Docker) |
 | **Base de Datos** | Cloudflare D1 (SQLite) | Cloudflare |
 | **Almacenamiento de Archivos** | Cloudflare R2 | Cloudflare (bucket configurado, sin uso actual) |
 | **Pagos** | Stripe Billing | Stripe (en producción) |
@@ -48,12 +48,12 @@ Explica la configuración general del sistema y el stack tecnológico de DigiCod
 
 ### Servidor de Compilación
 
-- **Repositorio:** `fablab-westharima/arduino-compile-server` (público)
-- **Runtime:** Node.js + Express
-- **Compilador:** Arduino CLI 1.3.1
-- **Plataforma objetivo:** ESP32 Arduino Core 3.3.4
-- **Despliegue:** HPE ML30 (compilación en la nube) / Railway (respaldo)
-- **Versión local:** Imagen Docker publicada (`ghcr.io/fablab-westharima/digicode-compile-server`)
+- **Fuente:** monorepo DigiCode `compile-api/` (propietario)
+- **Runtime:** Node.js + Hono
+- **Compilador:** PlatformIO Core
+- **Plataforma objetivo:** ESP32 + RP2040 (framework Arduino)
+- **Despliegue:** HPE ML30 (contenedor Docker, compilación en la nube) / entorno del usuario (Docker, compilación local)
+- **Imagen:** `ghcr.io/fablab-westharima/digicode-compile-api:latest` (compartida entre nube y local)
 
 ### Firmware ESP32
 
@@ -155,7 +155,7 @@ esp32-blockly-backend/
 ### Escalado Horizontal
 - Cloudflare Workers: escalado automático
 - Cloudflare D1: replicación automática
-- Servidor de compilación: configuración dual ML30 + Railway
+- Servidor de compilación: ML30 (contenedor Docker, único)
 
 ### Optimización de Rendimiento
 - Frontend: builds rápidos con Vite y división de código

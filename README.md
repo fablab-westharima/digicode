@@ -45,7 +45,7 @@ ESP32マイコンを使ったロボット・IoTデバイスのプログラミン
 DigiCode/
 ├── esp32-blockly-frontend/  # React + Blockly フロントエンド
 ├── esp32-blockly-backend/   # Cloudflare Workers バックエンドAPI
-├── arduino-compile-server/  # Node.js コンパイルサーバー
+├── compile-api/             # Node.js + Hono コンパイルサーバー (PlatformIO Core)
 ├── Arduino/                 # ESP32ファームウェア
 ├── docs/                    # ドキュメント
 └── prompt/                  # 開発計画・記録
@@ -57,7 +57,7 @@ DigiCode/
 |---------|------|
 | **フロントエンド** | React 19, Vite, TypeScript, Blockly, Tailwind CSS |
 | **バックエンドAPI** | Cloudflare Workers, Hono, D1 (SQLite) |
-| **コンパイルサーバー** | Node.js, Express, Arduino CLI |
+| **コンパイルサーバー** | Node.js, Hono, PlatformIO Core |
 | **ファームウェア** | ESP32 (Arduino C++ / MicroPython) |
 
 ## 開発
@@ -75,10 +75,9 @@ cd esp32-blockly-backend
 npm install
 npm run dev  # http://localhost:8787
 
-# コンパイルサーバー
-cd arduino-compile-server
-npm install
-npm start    # http://localhost:3001
+# コンパイルサーバー (Docker)
+docker pull ghcr.io/fablab-westharima/digicode-compile-api:latest
+docker run -d -p 3001:3001 ghcr.io/fablab-westharima/digicode-compile-api:latest
 ```
 
 ### テスト
