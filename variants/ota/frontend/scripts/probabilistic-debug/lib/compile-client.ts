@@ -42,10 +42,8 @@ export interface CompileClientOptions {
   fetchImpl?: typeof fetch;
 }
 
-// arduino-cli routinely takes 30-60s per compile because every request
-// re-resolves libraries from scratch — observed empirically across machine
-// classes (ML30, MBP M3 Pro, Z4). Heavy targets (BLE / MPU6050 / HA) push
-// past 60s; 180s gives those headroom while still cutting truly stuck runs.
+// PlatformIO Core: cold compile (first per board×template) ~52s, warm ~9.6s.
+// 180s gives cold compiles ~3.5× headroom while cutting truly stuck runs.
 const DEFAULT_TIMEOUT_MS = 180_000;
 
 export async function compileCpp(

@@ -6,18 +6,30 @@ Internal QA tool for DigiCode block compilation coverage.
 
 ## Status
 
-✅ **Phase 1 (use-case generator) — complete**
+✅ **Phase 1 (use-case generator) — complete** (commit `0bec25d`, 2026-04-28)
+✅ **Phase 2 (compile orchestrator) — complete** (commit `8b031b9`, 2026-04-28)
+⏸ **Phase 3 (failure analyzer + report) — next**
+⏸ **Phase 4 (1000-case run + UAT) — pending Phase 3**
 
-| Step | Component | Status |
-|------|-----------|--------|
-| 1a/1c | `lib/catalog-types.ts` | ✅ |
-| 1c    | `lib/catalog.ts` (loader + filters + hash) | ✅ |
-| 1d    | `lib/xml-builder.ts` (Blockly XML emitter) | ✅ |
-| 1e    | `lib/case-types.ts` / `case-helpers.ts` / `synthesize-block.ts` / `primitive-fillers.ts` / `case-validator.ts` | ✅ |
-| 1e    | `lib/strategies/{singleton,edge,matrix,pair,template}.ts` (5 strategies) | ✅ |
-| 1f    | `generate-cases.ts` CLI + `generate-cases.test.ts` integrity assertions | ✅ |
+**Compile server:** PlatformIO Core (ML30 Docker `digicode-compile-api`, `compile.digital-fab.jp`) — arduino-cli は 44.md+45.md で廃止済。orchestrator はそのまま動作。
 
-Phase 2 (orchestrator), Phase 3 (analyzer), Phase 4 (UAT) follow per 43.md §5.
+**PIO baseline (60-case):** `scripts/probabilistic-debug-results/2026-04-28_15-00_p3_full60_pio-new` — passRate=58.3%
+
+**Generated cases:** `scripts/probabilistic-debug-cases/2026-04-28_12-02/` (1000 XML, reusable)
+
+| Phase | Component | Status |
+|-------|-----------|--------|
+| 1 | `lib/catalog-types.ts` / `catalog.ts` / `xml-builder.ts` | ✅ |
+| 1 | `lib/case-types.ts` / `case-helpers.ts` / `synthesize-block.ts` / `primitive-fillers.ts` / `case-validator.ts` | ✅ |
+| 1 | `lib/strategies/{singleton,edge,matrix,pair,template}.ts` | ✅ |
+| 1 | `generate-cases.ts` CLI + `generate-cases.test.ts` | ✅ |
+| 2 | `orchestrator.ts` (parallel worker pool, noise-test mode) | ✅ |
+| 2 | `lib/compile-client.ts` (POST /api/compile, retry, timeout 180s) | ✅ |
+| 2 | `lib/result-store.ts` (results.jsonl + results.json + metadata.json) | ✅ |
+| 3 | `analyze-failures.ts` (cluster by error pattern) | ⏸ |
+| 3 | `render-report.ts` (Markdown report renderer) | ⏸ |
+| 3 | `lib/report-builder.ts` | ⏸ |
+| 4 | 1000-case full run + UAT | ⏸ |
 
 ## Generate cases
 
@@ -97,6 +109,27 @@ scripts/probabilistic-debug/
         └── template.test.ts
 ```
 
-## Future
+## Run orchestrator (Phase 2 — already implemented)
 
-Phase 2–4 add: ML30 compile orchestrator (parallel POST), failure clustering, Claude-Code in-session RCA, Markdown report renderer. Generated XMLs / results / reports go under `scripts/probabilistic-debug-{cases,results,reports}/` (all `.gitignore`'d, see 43.md §4.2).
+```bash
+cd variants/ota/frontend
+
+# Smoke run (20 cases, verify PIO timing)
+npx tsx scripts/probabilistic-debug/orchestrator.ts \
+  --in scripts/probabilistic-debug-cases/2026-04-28_12-02 \
+  --limit 20 --parallel 4 --verbose
+
+# Full 1000-case run
+npx tsx scripts/probabilistic-debug/orchestrator.ts \
+  --in scripts/probabilistic-debug-cases/2026-04-28_12-02 \
+  --parallel 4
+
+# Help
+npx tsx scripts/probabilistic-debug/orchestrator.ts --help
+```
+
+Output goes to `scripts/probabilistic-debug-results/<runId>/` (git-ignored).
+
+## Next (Phase 3)
+
+Implement `analyze-failures.ts` + `render-report.ts` + `lib/report-builder.ts` per 43.md §5.3. Then run Phase 4 (1000-case + UAT).
