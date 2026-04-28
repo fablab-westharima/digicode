@@ -198,7 +198,7 @@ export default function AboutPagePt() {
           />
           <UniqueFeature
             title="Servidor de compilação local (Docker)"
-            description="Execute a imagem Docker pública (ghcr.io/fablab-westharima/digicode-compile-server) na sua própria máquina para compilar localmente. Funciona sem ligação à Internet e não consome a sua quota de compilação na nuvem (ilimitada). Ideal para salas de aula com acesso à Internet restrito ou programadores que compilam frequentemente."
+            description="Executa a imagem Docker pública (ghcr.io/fablab-westharima/digicode-compile-api) no teu próprio computador para compilar localmente. Utiliza a mesma imagem que a nuvem, pelo que os resultados de compilação coincidem exatamente (sem lib drift). Funciona sem ligação à Internet e não consome a tua quota de compilação na nuvem (ilimitada). Ideal para salas de aula com acesso à Internet restrito ou programadores que compilam frequentemente."
             tag="Funciona offline"
           />
         </div>

@@ -9,6 +9,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { compileService, type CompileServerMode } from '@/services/compileService';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
@@ -234,14 +235,9 @@ export const CompileServerSettings = () => {
                         defaultValue: 'ローカルサーバーが起動していません。Dockerでサーバーを起動してください。'
                       })}
                       <div className="mt-1">
-                        <a
-                          href="https://github.com/fablab-westharima/arduino-compile-server"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="underline"
-                        >
+                        <Link to="/docs?doc=local-compile-server" className="underline">
                           {t('settings.setupGuide', { defaultValue: 'セットアップガイドはこちら' })}
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>

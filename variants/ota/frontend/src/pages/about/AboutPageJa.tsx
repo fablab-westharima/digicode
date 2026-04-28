@@ -200,7 +200,7 @@ export default function AboutPageJa() {
           />
           <UniqueFeature
             title="ローカルコンパイルサーバー（Docker）"
-            description="公開 Docker イメージ（ghcr.io/fablab-westharima/digicode-compile-server）を手元で起動すれば、コンパイルを自分の PC で行えます。オフラインでも動作し、クラウドのコンパイル枠を消費しません（無制限）。学校・社内ネットワークで外部接続が制限される環境や、コンパイル頻度が高い開発者に最適。"
+            description="公開 Docker イメージ（ghcr.io/fablab-westharima/digicode-compile-api）を手元で起動すれば、コンパイルを自分の PC で行えます。クラウドと同じイメージを使用するためコンパイル結果は完全に一致（lib drift なし）。オフラインでも動作し、クラウドのコンパイル枠を消費しません（無制限）。学校・社内ネットワークで外部接続が制限される環境や、コンパイル頻度が高い開発者に最適。"
             tag="オフライン対応"
           />
         </div>

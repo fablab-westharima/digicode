@@ -1,37 +1,39 @@
 # Configuración del Servidor de Compilación Local
 
-**Última actualización:** 2026-04-21
+**Última actualización:** 2026-04-29
 
-Puedes ejecutar un servidor de compilación en tu propia computadora en lugar del servidor en la nube de DigiCode.
+Puedes ejecutar un servidor de compilación en tu propio ordenador en lugar del servidor en la nube de DigiCode. La nube y el local utilizan **la misma imagen Docker**, por lo que los resultados de compilación son idénticos (sin lib drift).
 
 ---
 
-## Casos de Uso
+## Casos de uso
 
-- **Compilaciones ilimitadas** — sin consumo de cuota de nube
-- **Compilación rápida** — sin latencia de red
-- **Uso sin conexión** — sin internet después de la descarga inicial
+- **Compilaciones ilimitadas** — no consume la cuota de la nube
+- **Compilación rápida** — sin latencia de red, la caché persistente entrega ~1 ms en cache HIT y ~9,6 s en warm rebuild
+- **Uso offline** — no se necesita Internet tras la descarga inicial
 
-### Recomendaciones por Plan
+### Recomendación por plan
 
 | Plan | Recomendación | Razón |
 |------|:-------------:|-------|
-| Free | — | La cuota de compilación en nube (50/mes) suele ser suficiente |
-| Lite | ▲ | Considera si 250/mes no es suficiente |
-| Pro | ◎ | Para uso de alta frecuencia que supera los 500/mes |
-| Enterprise | ◎ | Efectivo para compilación a nivel de toda la clase |
+| Free | — | La cuota en la nube (50/mes) suele ser suficiente |
+| Lite | ▲ | A considerar si 250/mes no es suficiente |
+| Pro | ◎ | Para uso intensivo que supera 500/mes |
+| Enterprise | ◎ | Eficaz para compilación a nivel de toda la clase |
 
 ---
 
-## ⚠️ Notas Importantes
+## ⚠️ Notas importantes
 
-> **Nota: Tamaño de la imagen Docker**
+> **Aviso: tamaño de la imagen Docker**
 >
-> La imagen Docker del servidor de compilación local es de aproximadamente **10 GB**.
+> Imagen Docker del servidor de compilación local (basada en PlatformIO Core, v0.1.0):
 >
-> - **No descargues mediante tethering de teléfono** (puede superar el límite de datos o generar cargos altos)
-> - **Usa una conexión fija estable (fibra óptica, etc.)**
-> - Tiempo estimado de descarga: ~15-20 min a 100 Mbps de fibra
+> - **Descarga (comprimida): ~1 GB**
+> - **Espacio en disco (descomprimida): ~3,8 GB**
+>
+> - **No descargues por tethering desde el móvil** — usa una conexión fija estable (fibra, etc.)
+> - Tiempo estimado: ~1-2 min en fibra de 100 Mbps
 
 ---
 
@@ -42,51 +44,51 @@ Necesitas un entorno con Docker. Elige una de las siguientes opciones.
 ### Opción A: Docker Desktop (Estándar)
 
 - Compatible con **Windows / Mac / Linux**
-- **Gratis para uso personal**; planes de pago requeridos para uso comercial
+- **Gratuito para uso personal**; los planes de pago son necesarios para uso comercial
 - https://www.docker.com/products/docker-desktop/
 
-### Opción B: Alternativas a Docker Desktop (Ligero / OSS)
+### Opción B: Alternativas a Docker Desktop (ligeras / OSS)
 
 Para uso comercial o si prefieres una solución más ligera:
 
 | Herramienta | SO | Características |
-|-------------|----|--------------:|
-| **OrbStack** | macOS | Ligero, rápido, bajo consumo de memoria, nativo Apple Silicon |
+|-------------|----|-----------------|
+| **OrbStack** | macOS | Ligero, rápido, bajo consumo de memoria, nativo en Apple Silicon |
 | **Rancher Desktop** | Windows / macOS / Linux | OSS (gratuito) |
-| **Podman Desktop** | Windows / macOS / Linux | OSS, sin demonio |
+| **Podman Desktop** | Windows / macOS / Linux | OSS, sin daemon |
 
-### Opción C: Docker Engine Directamente (Linux)
+### Opción C: Docker Engine directamente (Linux)
 
 En Linux puedes instalar Docker Engine directamente sin Docker Desktop.
 
 ---
 
-## Paso 1: Instalar el Entorno Docker
+## Paso 1: Instalar el entorno Docker
 
 ### Windows
 
 1. Descarga Docker Desktop for Windows desde https://www.docker.com/products/docker-desktop/
-2. Ejecuta el instalador (se necesita WSL2, el instalador te guiará)
-3. Reinicia el PC después de la instalación
+2. Ejecuta el instalador (se requiere WSL2; el instalador te guía)
+3. Reinicia el PC tras la instalación
 
 ### Mac (Intel)
 
 1. Descarga Docker Desktop for Mac (Intel) desde https://www.docker.com/products/docker-desktop/
-2. Abre el `.dmg` y arrastra a Applications
-3. Abre "Docker" desde Applications
+2. Abre el `.dmg` y arrástralo a Aplicaciones
+3. Inicia "Docker" desde Aplicaciones
 
 ### Mac (Apple Silicon: M1/M2/M3/M4)
 
 **Recomendado: OrbStack**
 
-Docker Desktop for Mac (versión Apple Silicon) funciona, pero OrbStack es más rápido y usa menos memoria.
+Docker Desktop for Mac (Apple Silicon) funciona, pero OrbStack es más rápido y consume menos memoria.
 
 1. Descarga OrbStack desde https://orbstack.dev/
-2. Después de instalar, el comando `docker` está disponible inmediatamente
+2. Tras instalar, el comando `docker` está disponible inmediatamente
 
 Si usas Docker Desktop, instala la versión Apple Silicon (`.dmg`).
 
-> El núcleo ESP32 ya soporta arm64 nativamente, por lo que generalmente no se necesita emulación x86.
+> El core de ESP32 soporta arm64 de forma nativa, por lo que la emulación x86 no es necesaria en uso normal.
 
 ### Linux
 
@@ -95,49 +97,58 @@ Si usas Docker Desktop, instala la versión Apple Silicon (`.dmg`).
 sudo apt update && sudo apt install -y docker.io
 sudo systemctl enable --now docker
 sudo usermod -aG docker $USER
-# Cierra sesión y vuelve a entrar para aplicar el cambio de grupo
+# Cierra sesión y vuelve a iniciarla para aplicar el cambio de grupo
 ```
 
-### Verificar Instalación
+### Verificar la instalación
 
 ```bash
 docker --version
 ```
 
-Si ves `Docker version 20.x.x`, estás listo.
+Si ves `Docker version 20.x.x`, todo está listo.
 
 ---
 
-## Paso 2: Descargar e Iniciar el Servidor de Compilación
+## Paso 2: Descargar e iniciar el servidor de compilación
 
-### Método A: Inicio con un comando (recomendado)
+### Método A: arranque de una línea
 
 ```bash
-docker run -d -p 3001:3001 --name digicode-compiler \
-  ghcr.io/fablab-westharima/digicode-compile-server:latest
+docker run -d -p 3001:3001 --name digicode-compile-api \
+  ghcr.io/fablab-westharima/digicode-compile-api:latest
 ```
 
-La primera ejecución descarga ~10 GB de imagen. **Usa una conexión fija.**
+La primera ejecución descarga ~1 GB (3,8 GB descomprimidos). **Usa una conexión fija.**
 
-### Método B: Usar docker-compose
+### Método B: docker-compose.yml (recomendado, con caché persistente)
 
 Crea un archivo `docker-compose.yml` en cualquier carpeta:
 
 ```yaml
 services:
-  digicode-compiler:
-    image: ghcr.io/fablab-westharima/digicode-compile-server:latest
-    container_name: digicode-compiler
+  digicode-compile-api:
+    image: ghcr.io/fablab-westharima/digicode-compile-api:latest
+    container_name: digicode-compile-api
     ports:
       - "3001:3001"
     restart: unless-stopped
+    volumes:
+      - digicode-projects:/opt/digicode-compile/projects
+      - digicode-cache:/opt/digicode-compile/cache
+
+volumes:
+  digicode-projects:
+  digicode-cache:
 ```
 
-Luego en esa carpeta:
+Después, en esa carpeta:
 
 ```bash
 docker compose up -d
 ```
+
+> `digicode-projects` y `digicode-cache` son volúmenes con nombre que persisten el estado de compilación. **Una segunda compilación con código idéntico tarda ~1 ms (cache HIT)**, y un cambio de 1 byte completa el warm rebuild en ~9,6 s. Con volúmenes efímeros (`docker run` sin `-v`), la caché se pierde al eliminar el contenedor.
 
 ---
 
@@ -147,116 +158,163 @@ docker compose up -d
 curl http://localhost:3001/health
 ```
 
-Si ves lo siguiente, está funcionando:
+Si ves lo siguiente, está funcionando (comprueba `service` y `version`):
 
 ```json
-{"status":"ok","timestamp":"...","service":"digicode-compile-server","templateAvailable":true}
+{
+  "status": "ok",
+  "service": "digicode-compile-api",
+  "version": "0.1.0",
+  "timestamp": "..."
+}
 ```
 
-También puedes visitar `http://localhost:3001/health` en tu navegador.
+También puedes visitar `http://localhost:3001/health` en el navegador.
 
 ---
 
-## Paso 4: Configurar en DigiCode
+## Paso 4: Configurar DigiCode
 
 1. Abre DigiCode
-2. Haz clic en ▼ junto al botón **"Cargar"**
-3. Selecciona **"Servidor Local"**
+2. Pulsa ▼ junto al botón **"Subir"**
+3. Selecciona **"Servidor local"**
 4. Ejecuta una compilación para verificar
+
+La primera compilación (cold) tarda ~30-60 s — PlatformIO + framework + librerías están dentro de la imagen, por lo que el resultado coincide byte a byte con la nube (ML30).
 
 ---
 
-## Operaciones del Servidor
+## Migración desde la imagen anterior (usuarios existentes, 1 paso)
+
+Hasta 2026-04 distribuíamos `ghcr.io/fablab-westharima/digicode-compile-server` (basado en arduino-cli). La migración a la nueva `digicode-compile-api` (basada en PlatformIO Core) consiste **solo en cambiar el nombre de la imagen**.
+
+```bash
+# Detener y eliminar la imagen anterior
+docker stop digicode-compiler 2>/dev/null
+docker rm digicode-compiler 2>/dev/null
+docker rmi ghcr.io/fablab-westharima/digicode-compile-server:latest 2>/dev/null
+
+# Iniciar la nueva imagen
+docker pull ghcr.io/fablab-westharima/digicode-compile-api:latest
+docker run -d -p 3001:3001 --name digicode-compile-api \
+  ghcr.io/fablab-westharima/digicode-compile-api:latest
+```
+
+**Cambios:**
+
+- Nombre de la imagen: `digicode-compile-server` → `digicode-compile-api`
+- Nombre del contenedor: `digicode-compiler` → `digicode-compile-api` (opcional)
+- Puerto: 3001 sin cambios
+- Configuración de DigiCode (URL `http://localhost:3001`): sin cambios
+- Contrato API: compatible — solo cambian los campos `service` / `version` en `/health`
+
+El repositorio anterior [fablab-westharima/arduino-compile-server](https://github.com/fablab-westharima/arduino-compile-server) fue archivado el 2026-04-29. Las correcciones de librerías hechas en la nube (QTRSensors / MFRC522 I2C / NewPing v1.9, etc.) solo están en la nueva imagen, por lo que se recomienda migrar.
+
+---
+
+## Operaciones del servidor
 
 ```bash
 # Detener
-docker stop digicode-compiler
+docker stop digicode-compile-api
 
 # Reiniciar
-docker start digicode-compiler
+docker start digicode-compile-api
 
-# Ver registros
-docker logs digicode-compiler
+# Ver logs
+docker logs digicode-compile-api
 
-# Eliminar completamente
-docker rm -f digicode-compiler
-docker rmi ghcr.io/fablab-westharima/digicode-compile-server:latest
+# Eliminar por completo
+docker rm -f digicode-compile-api
+docker rmi ghcr.io/fablab-westharima/digicode-compile-api:latest
 ```
 
 ---
 
 ## Actualizaciones
 
-Cuando se lanza una nueva versión:
+Cuando se publica una nueva versión:
 
 ```bash
-docker stop digicode-compiler
-docker rm digicode-compiler
-docker pull ghcr.io/fablab-westharima/digicode-compile-server:latest
-docker run -d -p 3001:3001 --name digicode-compiler \
-  ghcr.io/fablab-westharima/digicode-compile-server:latest
+# docker-compose
+docker compose pull
+docker compose up -d
+```
+
+```bash
+# docker run
+docker stop digicode-compile-api
+docker rm digicode-compile-api
+docker pull ghcr.io/fablab-westharima/digicode-compile-api:latest
+docker run -d -p 3001:3001 --name digicode-compile-api \
+  ghcr.io/fablab-westharima/digicode-compile-api:latest
 ```
 
 ---
 
-## Solución de Problemas
+## Solución de problemas
 
-### Puerto 3001 en Uso
+### Puerto 3001 en uso
 
 Si otra aplicación usa el puerto 3001:
 
 ```bash
-# Usar puerto 3002
-docker run -d -p 3002:3001 --name digicode-compiler \
-  ghcr.io/fablab-westharima/digicode-compile-server:latest
+# Usa el puerto 3002
+docker run -d -p 3002:3001 --name digicode-compile-api \
+  ghcr.io/fablab-westharima/digicode-compile-api:latest
 ```
 
 Cambia la URL del servidor a `http://localhost:3002` en la configuración de DigiCode.
 
-### Docker No Inicia (Windows)
+### Docker no inicia (Windows)
 
-- Verifica que WSL2 esté instalado
-- Verifica que la virtualización esté habilitada en BIOS/UEFI
+- Comprueba que WSL2 está instalado
+- Verifica que la virtualización está activada en la BIOS/UEFI
 - Reinicia el PC
 
-### Docker No Inicia (Mac)
+### Docker no inicia (Mac)
 
-- Permite Docker en Configuración del sistema > Privacidad y seguridad
+- Permite Docker en Configuración del Sistema > Privacidad y Seguridad
 - Reinicia el Mac
 
-### Errores de Compilación en Apple Silicon
+### Errores de compilación en Apple Silicon
 
-- Verifica que estés usando OrbStack o Docker Desktop for Apple Silicon
-- Confirma que no se necesita emulación x86 (el núcleo ESP32 ya es arm64 nativo)
+- Comprueba que usas OrbStack o Docker Desktop para Apple Silicon
+- Confirma que la emulación x86 no es necesaria (el core de ESP32 es arm64 nativo)
 
-### Error de Compilación
+### Error de compilación
 
 ```bash
-# Reiniciar el contenedor
-docker restart digicode-compiler
+# Reinicia el contenedor
+docker restart digicode-compile-api
 
-# Si aún falla, recrear
-docker rm -f digicode-compiler
-docker run -d -p 3001:3001 --name digicode-compiler \
-  ghcr.io/fablab-westharima/digicode-compile-server:latest
+# Si sigue fallando, recréalo
+docker rm -f digicode-compile-api
+docker run -d -p 3001:3001 --name digicode-compile-api \
+  ghcr.io/fablab-westharima/digicode-compile-api:latest
 ```
 
----
+### La caché no hace HIT (el mismo código provoca warm rebuild)
 
-## Pros y Contras
-
-| Elemento | Contenido |
-|----------|-----------|
-| ✅ Compilaciones | **Ilimitadas** (sin cuota de nube) |
-| ✅ Velocidad | Sin latencia de red |
-| ✅ Sin conexión | Sin internet después de la descarga |
-| ⚠️ Descarga inicial | ~10 GB (se recomienda conexión fija) |
-| ⚠️ Instalación | Requiere configurar Docker |
-| ⚠️ Recursos | Usa memoria y CPU del PC (mínimo 4 GB RAM recomendado) |
+Revisa la sección `volumes` de tu `docker-compose.yml`. Los volúmenes con nombre `digicode-projects` y `digicode-cache` deben mantenerse.
 
 ---
 
-## Documentos Relacionados
+## Ventajas y desventajas
 
-- [Primeros Pasos](./getting-started.md) — Uso básico
-- [Solución de Problemas](./troubleshooting.md) — Problemas comunes y soluciones
+| Aspecto | Contenido |
+|---------|-----------|
+| ✅ Compilaciones | **Ilimitadas** (no consume cuota de la nube) |
+| ✅ Velocidad | cache HIT ~1 ms / warm rebuild ~9,6 s / cold ~30-60 s |
+| ✅ Offline | Sin Internet tras la descarga inicial (framework + librerías en la imagen) |
+| ✅ Igual que la nube | Misma imagen que la nube (ML30) — la salida binaria coincide físicamente (sin lib drift) |
+| ⚠️ Descarga inicial | ~1 GB comprimido, ~3,8 GB descomprimido |
+| ⚠️ Instalación | Se necesita instalar Docker |
+| ⚠️ Recursos | Usa memoria y CPU del PC (mínimo 4 GB de RAM recomendados) |
+
+---
+
+## Documentos relacionados
+
+- [Primeros pasos](./getting-started.md) — Uso básico
+- [Solución de problemas](./troubleshooting.md) — Problemas y soluciones comunes

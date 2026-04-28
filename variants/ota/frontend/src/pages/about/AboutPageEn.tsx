@@ -198,7 +198,7 @@ export default function AboutPageEn() {
           />
           <UniqueFeature
             title="Local Compile Server (Docker)"
-            description="Run the public Docker image (ghcr.io/fablab-westharima/digicode-compile-server) on your own machine to compile locally. Works offline and doesn't consume your cloud compile quota (unlimited). Ideal for classrooms with restricted internet access or developers who compile frequently."
+            description="Run the public Docker image (ghcr.io/fablab-westharima/digicode-compile-api) on your own machine to compile locally. Uses the same image as the cloud, so compile results match exactly (no lib drift). Works offline and doesn't consume your cloud compile quota (unlimited). Ideal for classrooms with restricted internet access or developers who compile frequently."
             tag="Offline Ready"
           />
         </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import i18n from 'i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -78,7 +79,10 @@ const docItems: DocItem[] = [
 
 export function DocsPage() {
   const { t } = useTranslation();
-  const [selectedDoc, setSelectedDoc] = useState<DocItem>(docItems[0]);
+  const [searchParams] = useSearchParams();
+  const initialDoc =
+    docItems.find((d) => d.id === searchParams.get('doc')) ?? docItems[0];
+  const [selectedDoc, setSelectedDoc] = useState<DocItem>(initialDoc);
   const [content, setContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
