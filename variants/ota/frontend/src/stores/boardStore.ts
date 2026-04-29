@@ -85,17 +85,13 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
-  {
-    id: 'esp32-c6-generic',
-    name: 'ESP32-C6',
-    fqbn: 'esp32:esp32:esp32c6',
-    description: 'WiFi 6、Thread/Zigbee、OTA可',
-    category: 'generic',
-    supportsWifi: true,
-    supportsOta: true,
-    supportsBle: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
-  },
+  // ESP32-C6 (BUG-059, 2026-04-30): hidden from the picker. The
+  // official `espressif32@6.13.0` platform ships arduino-esp32 v2.x which
+  // does not support C6, so any compile fails at PIO env validation with
+  // "This board doesn't support arduino framework!". The pioarduino fork
+  // would solve it but cannot be installed alongside the official platform
+  // (same `name=espressif32` collides; full v3.x migration is out of
+  // scope). Re-enable when one of the BUG-059 X1/X2 paths is implemented.
   // M5Stackシリーズ
   {
     id: 'm5stack-basic',
@@ -208,17 +204,8 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
-  {
-    id: 'xiao-esp32c6',
-    name: 'XIAO ESP32C6',
-    fqbn: 'esp32:esp32:esp32c6',
-    description: '21x17.5mm、WiFi 6、OTA可',
-    category: 'xiao',
-    supportsWifi: true,
-    supportsOta: true,
-    supportsBle: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
-  },
+  // XIAO ESP32C6 (BUG-059, 2026-04-30): hidden alongside esp32-c6-generic.
+  // Same FQBN `esp32:esp32:esp32c6`, same blocker.
   // Raspberry Pi / RP2040 系 (BP1-2a, 2026-04-20 追加)
   // 全ボード WiFi OTA 非対応 (DigiCodeOTA ファームウェアが ESP32 専用)、USB 書き込みのみ対応
   {
