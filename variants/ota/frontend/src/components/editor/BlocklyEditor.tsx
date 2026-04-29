@@ -76,6 +76,7 @@ import '../../blocks/arduino/sensor/sensorEnvironmentBlocks';
 import '../../blocks/arduino/sensor/sensorTofBlocks';
 import '../../blocks/arduino/sensor/sensorMagEncoderBlocks';
 import '../../blocks/arduino/display/lcdBlocks';
+import '../../blocks/common/builtinBlockOverrides';
 import { generateToolbox } from './toolboxGenerator';
 
 // 日本語ロケールを設定

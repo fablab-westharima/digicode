@@ -60,3 +60,4 @@ import '../../../src/blocks/arduino/sensor/sensorEnvironmentBlocks';
 import '../../../src/blocks/arduino/sensor/sensorTofBlocks';
 import '../../../src/blocks/arduino/sensor/sensorMagEncoderBlocks';
 import '../../../src/blocks/arduino/display/lcdBlocks';
+import '../../../src/blocks/common/builtinBlockOverrides';
