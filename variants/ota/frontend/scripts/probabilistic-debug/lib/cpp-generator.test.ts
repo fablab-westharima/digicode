@@ -242,3 +242,31 @@ describe('xmlToCpp — NimBLE v2 API (BUG-056)', () => {
     expect(out.fullCode).not.toContain('NimBLEDevice::getInitialized()');
   });
 });
+
+describe('xmlToCpp — ArduinoHA defensive include (BUG-057)', () => {
+  // ha_xxx_create generators declare globals with HA classes (HASensorNumber,
+  // HALight, ...). Before BUG-057, only ha_device_init emitted
+  // `#include <ArduinoHA.h>`, so any case using ha_sensor_create alone (no
+  // ha_device_init) failed with "'HASensorNumber' does not name a type".
+  // The fix adds an idempotent ensureArduinoHAInclude() call to every HA
+  // forBlock generator.
+  it('ha_sensor_create alone (no ha_device_init) emits <ArduinoHA.h>', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="ha_sensor_create">' +
+      '<field name="SENSOR_ID">temperature</field>' +
+      '<field name="NAME">温度</field>' +
+      '<field name="DEVICE_CLASS">temperature</field>' +
+      '<field name="UNIT">°C</field>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    expect(out.fullCode).toContain('#include <ArduinoHA.h>');
+    expect(out.fullCode).toContain('HASensorNumber haSensor_temperature');
+  });
+});
