@@ -58,6 +58,7 @@ interface CliArgs {
   connectionType: 'ota' | 'usb' | 'ble';
   timeoutMs: number;
   limit?: number;
+  offset: number;
 }
 
 export interface OrchestratorOptions {
@@ -68,8 +69,10 @@ export interface OrchestratorOptions {
   serverUrl: string;
   connectionType: 'ota' | 'usb' | 'ble';
   timeoutMs: number;
-  /** Process only the first N cases (smoke runs, defaults to all). */
+  /** Process only `limit` cases starting at `offset` (defaults to full manifest). */
   limit?: number;
+  /** Skip the first `offset` cases of the manifest (default 0). */
+  offset?: number;
 }
 
 // --- CLI parsing -------------------------------------------------------
@@ -112,6 +115,7 @@ function parseArgs(argv: string[]): CliArgs {
       ? Number.parseInt(args['timeout-ms'], 10)
       : DEFAULT_TIMEOUT_MS,
     limit: args.limit ? Number.parseInt(args.limit, 10) : undefined,
+    offset: args.offset ? Number.parseInt(args.offset, 10) : 0,
   };
 }
 
@@ -127,7 +131,8 @@ function printHelp(): void {
   --server-url URL       arduino-compile-server URL (default ${DEFAULT_SERVER_URL})
   --connection-type T    'ota' | 'usb' | 'ble' (default ${DEFAULT_CONNECTION_TYPE})
   --timeout-ms N         Per-case compile timeout (default ${DEFAULT_TIMEOUT_MS})
-  --limit N              Process only the first N cases from the manifest
+  --limit N              Process only N cases (combine with --offset to slice a window)
+  --offset N             Skip the first N cases of the manifest (default 0)
   --help                 Show this message
 `,
   );
@@ -206,9 +211,9 @@ export async function runOrchestrator(opts: OrchestratorOptions): Promise<void> 
     fs.readFileSync(manifestPath, 'utf-8'),
   ) as Manifest;
 
-  const cases = opts.limit
-    ? manifest.cases.slice(0, opts.limit)
-    : manifest.cases;
+  const offset = opts.offset ?? 0;
+  const end = opts.limit !== undefined ? offset + opts.limit : manifest.cases.length;
+  const cases = manifest.cases.slice(offset, end);
 
   const catalog = loadCatalog();
   const metadata: RunMetadata = {
@@ -394,6 +399,7 @@ async function main(): Promise<void> {
     connectionType: args.connectionType,
     timeoutMs: args.timeoutMs,
     limit: args.limit,
+    offset: args.offset,
   });
 }
 
