@@ -22,6 +22,7 @@ export const BOARD_FQBN: Record<string, string> = {
   'm5stamp-pico': 'm5stack:esp32:stamp_pico',
   'm5stamp-c3': 'esp32:esp32:esp32c3',
   'm5stamp-s3a': 'esp32:esp32:esp32s3',
+  'm5stack-atoms3-lite': 'm5stack:esp32:m5stack_atoms3',
   // Seeed XIAO
   'xiao-esp32c3': 'esp32:esp32:esp32c3',
   'xiao-esp32s3': 'esp32:esp32:esp32s3',
