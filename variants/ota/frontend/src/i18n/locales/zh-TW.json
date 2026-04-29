@@ -3442,6 +3442,10 @@
         "name": "M5Stamp C3/C3U",
         "description": "搭載 C3 郵票型、支援 OTA"
       },
+      "m5stack-atoms3-lite": {
+        "name": "ATOMS3 Lite",
+        "description": "24x24mm、ESP32-S3FN8 (8MB Flash)、RGB LED、支援 OTA"
+      },
       "xiao-esp32c3": {
         "name": "XIAO ESP32C3",
         "description": "21x17.5mm、RISC-V、支援 OTA"

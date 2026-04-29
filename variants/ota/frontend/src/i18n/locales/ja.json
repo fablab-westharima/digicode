@@ -3247,6 +3247,10 @@
         "name": "M5Stamp C3/C3U",
         "description": "C3搭載スタンプ型、OTA可"
       },
+      "m5stack-atoms3-lite": {
+        "name": "ATOMS3 Lite",
+        "description": "24x24mm、ESP32-S3FN8 (8MB Flash)、RGB LED、OTA可"
+      },
       "xiao-esp32c3": {
         "name": "XIAO ESP32C3",
         "description": "21x17.5mm、RISC-V、OTA可"

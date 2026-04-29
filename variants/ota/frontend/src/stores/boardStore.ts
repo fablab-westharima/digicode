@@ -174,6 +174,17 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
+  {
+    id: 'm5stack-atoms3-lite',
+    name: 'ATOMS3 Lite',
+    fqbn: 'm5stack:esp32:m5stack_atoms3',
+    description: '24x24mm、ESP32-S3FN8 (8MB Flash)、RGB LED、OTA可',
+    category: 'm5stack',
+    supportsWifi: true,
+    supportsOta: true,
+    supportsBle: true,
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+  },
   // Seeed Xiaoシリーズ
   {
     id: 'xiao-esp32c3',

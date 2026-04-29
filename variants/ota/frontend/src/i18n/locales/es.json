@@ -3442,6 +3442,10 @@
         "name": "M5Stamp C3/C3U",
         "description": "Formato stamp con C3, OTA compatible"
       },
+      "m5stack-atoms3-lite": {
+        "name": "ATOMS3 Lite",
+        "description": "24x24mm, ESP32-S3FN8 (8MB Flash), LED RGB, compatible con OTA"
+      },
       "xiao-esp32c3": {
         "name": "XIAO ESP32C3",
         "description": "21x17.5mm, RISC-V, OTA compatible"
