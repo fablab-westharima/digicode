@@ -193,3 +193,29 @@ describe('xmlToCpp — built-in block overrides (BUG-060 / BUG-061)', () => {
     expect(out.loopCode).toContain('Serial.println("a\\\\b\\"c")');
   });
 });
+
+describe('xmlToCpp — NTP block header casing (BUG-058)', () => {
+  // arduino-esp32 / arduino-mbed framework ship the header as `WiFiUdp.h`
+  // (lowercase 'd'); a literal `<WiFiUDP.h>` (uppercase 'D') leaks into the
+  // unconditional includes via splitFragments and fails on case-sensitive
+  // filesystems. The class name `WiFiUDP` (uppercase) stays as the WiFi
+  // library defines it.
+  it('ntp_sync emits <WiFiUdp.h> (lowercase d), not <WiFiUDP.h>', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="ntp_sync">' +
+      '<field name="SERVER">pool.ntp.org</field>' +
+      '<field name="TZ_OFFSET">32400</field>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    expect(out.fullCode).toContain('#include <WiFiUdp.h>');
+    expect(out.fullCode).not.toContain('#include <WiFiUDP.h>');
+    expect(out.fullCode).toContain('WiFiUDP ntpUDP;');
+  });
+});

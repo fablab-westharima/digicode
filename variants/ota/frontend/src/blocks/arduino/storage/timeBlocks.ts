@@ -48,7 +48,7 @@ generator.forBlock['ntp_sync'] = function(block: Blockly.Block) {
 #if defined(ESP32)
 #include <time.h>
 #else
-#include <WiFiUDP.h>
+#include <WiFiUdp.h>
 #include <NTPClient.h>
 WiFiUDP ntpUDP;
 NTPClient ntpClient(ntpUDP, "${server}", ${tzOffset}, 60000);
