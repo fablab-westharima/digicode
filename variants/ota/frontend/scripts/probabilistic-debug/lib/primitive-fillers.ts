@@ -10,6 +10,17 @@
  * - `text` is absent from the three robots_* modes, so String/ANY in a robots
  *   mode falls back to `math_number` (Arduino Serial.print accepts numbers).
  * - `math_number` and `logic_boolean` exist in all 7 modes.
+ *
+ * BUG-062 (2026-04-29): ANY_PRIMITIVES now picks `math_number` before `text`.
+ * Sockets with `setCheck(null)` (variables_set.VALUE, preferences_put.VALUE
+ * with TYPE=Int default, array_set.VALUE on int arrays, ...) flow into C++
+ * contexts that the BUG-060 monkey-patch declares as `int`. A `text` filler
+ * leaves an empty string `""` there, which the compiler rejects with
+ * "invalid conversion from 'const char*' to 'int'". `math_number` (`0`)
+ * compiles cleanly in every numeric context and is also valid as a
+ * fallback wherever a String would go (Serial.print(0) is fine). The
+ * tradeoff is reduced surface for `text`-related latent bugs; that risk is
+ * monitored by 1000-case re-runs.
  */
 
 import type { CatalogBlock, Mode } from './catalog-types';
@@ -22,7 +33,7 @@ const CHECK_TO_PRIMITIVES: Record<string, string[]> = {
   Colour: ['tft_color_rgb', 'math_number'],
 };
 
-const ANY_PRIMITIVES = ['text', 'math_number'];
+const ANY_PRIMITIVES = ['math_number', 'text'];
 
 function buildPrimitive(type: string): BlockNode {
   switch (type) {
