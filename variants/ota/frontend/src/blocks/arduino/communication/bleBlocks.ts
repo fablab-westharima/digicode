@@ -272,7 +272,7 @@ class BleScanCallbacks : public NimBLEScanCallbacks {
   }
 };`;
   return `
-  if (!NimBLEDevice::getInitialized()) NimBLEDevice::init("");
+  if (!NimBLEDevice::isInitialized()) NimBLEDevice::init("");
   NimBLEScan* pScan = NimBLEDevice::getScan();
   pScan->setScanCallbacks(new BleScanCallbacks(), false);
   pScan->setActiveScan(true);

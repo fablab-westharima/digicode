@@ -219,3 +219,26 @@ describe('xmlToCpp — NTP block header casing (BUG-058)', () => {
     expect(out.fullCode).toContain('WiFiUDP ntpUDP;');
   });
 });
+
+describe('xmlToCpp — NimBLE v2 API (BUG-056)', () => {
+  // The vendored NimBLE-Arduino is v2.4.0 (compile-api/libs/NimBLE-Arduino).
+  // The 1.x→2.x migration guide renamed the static check
+  // `NimBLEDevice::getInitialized` to `NimBLEDevice::isInitialized`. Generators
+  // that emit `getInitialized()` fail to compile against the vendored copy.
+  it('ble_scan_start emits NimBLEDevice::isInitialized (v2 API), not getInitialized', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="ble_scan_start">' +
+      '<field name="DURATION">5</field>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    expect(out.fullCode).toContain('NimBLEDevice::isInitialized()');
+    expect(out.fullCode).not.toContain('NimBLEDevice::getInitialized()');
+  });
+});
