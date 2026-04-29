@@ -85,17 +85,11 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
-  {
-    id: 'esp32-c6-generic',
-    name: 'ESP32-C6',
-    fqbn: 'esp32:esp32:esp32c6',
-    description: 'WiFi 6、Thread/Zigbee、OTA可',
-    category: 'generic',
-    supportsWifi: true,
-    supportsOta: true,
-    supportsBle: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
-  },
+  // ESP32-C6 (BUG-059, hidden during pioarduino X2 lib triage 2026-04-30):
+  // ML30 is rolled back to the official-espressif32 baseline image
+  // (`main-43eb809`) while we work through the v3.x lib compat issues
+  // (ESP32Servo360 / Adafruit NeoPixel / VL53L0X). Re-enable after
+  // pioarduino smoke is fully green.
   // M5Stackシリーズ
   {
     id: 'm5stack-basic',
@@ -208,17 +202,8 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
-  {
-    id: 'xiao-esp32c6',
-    name: 'XIAO ESP32C6',
-    fqbn: 'esp32:esp32:esp32c6',
-    description: '21x17.5mm、WiFi 6、OTA可',
-    category: 'xiao',
-    supportsWifi: true,
-    supportsOta: true,
-    supportsBle: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
-  },
+  // XIAO ESP32C6 (BUG-059, hidden alongside esp32-c6-generic during
+  // pioarduino X2 lib triage). Same FQBN, same blocker.
   // Raspberry Pi / RP2040 系 (BP1-2a, 2026-04-20 追加)
   // 全ボード WiFi OTA 非対応 (DigiCodeOTA ファームウェアが ESP32 専用)、USB 書き込みのみ対応
   {
