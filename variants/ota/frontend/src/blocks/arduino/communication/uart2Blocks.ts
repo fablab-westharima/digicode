@@ -17,8 +17,13 @@ if (!generator.definitions_) generator.definitions_ = {};
 
 const UART2_COLOR = '#607D8B';
 
+// arduino-esp32 v3.x ships Serial2 as a definition in
+// cores/esp32/HardwareSerial.cpp:49 (HardwareSerial Serial2(2);). Declaring it
+// again here would cause `multiple definition of 'Serial2'` at link time.
+// We keep the definitions_['include_uart2'] key for idempotent emit but the
+// payload is comment-only — the framework's Serial2 is used directly. (BUG-067)
 const UART2_INCLUDE = `
-HardwareSerial Serial2(2);`;
+// Serial2 is provided by arduino-esp32 framework (BUG-067).`;
 
 /**
  * serial2_begin - Serial2 初期化（ボーレート + ピン指定）
