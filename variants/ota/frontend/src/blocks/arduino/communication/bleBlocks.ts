@@ -35,10 +35,15 @@ NimBLECharacteristic* pBleTxChar = nullptr;
 bool bleConnected = false;
 String bleMessage = "";`;
 
+// NimBLE-Arduino v2.4.0 (vendored) signatures: onConnect / onDisconnect now
+// take NimBLEConnInfo&, and onDisconnect adds an int reason. The library no
+// longer auto-restarts advertising on disconnect (migration guide § Server),
+// so the manual NimBLEDevice::startAdvertising() call below is the supported
+// migrate path. Args are unused by us — body unchanged from v1. (BUG-065)
 const SERVER_CALLBACKS = `
 class BleServerCallbacks : public NimBLEServerCallbacks {
-  void onConnect(NimBLEServer* s) { bleConnected = true; }
-  void onDisconnect(NimBLEServer* s) {
+  void onConnect(NimBLEServer* s, NimBLEConnInfo& connInfo) { bleConnected = true; }
+  void onDisconnect(NimBLEServer* s, NimBLEConnInfo& connInfo, int reason) {
     bleConnected = false;
     NimBLEDevice::startAdvertising();
   }
@@ -68,9 +73,10 @@ generator.forBlock['ble_uart_setup'] = function(block: Blockly.Block) {
   generator.definitions_['nus_uuids'] = NUS_UUIDS;
   generator.definitions_['ble_globals'] = BLE_GLOBALS;
   generator.definitions_['ble_server_callbacks'] = SERVER_CALLBACKS;
+  // NimBLE v2: onWrite takes NimBLEConnInfo& (BUG-065). Arg unused, body unchanged.
   generator.definitions_['ble_rx_callbacks'] = `
 class BleRxCallbacks : public NimBLECharacteristicCallbacks {
-  void onWrite(NimBLECharacteristic* c) {
+  void onWrite(NimBLECharacteristic* c, NimBLEConnInfo& connInfo) {
     std::string v = c->getValue();
     bleMessage = String(v.c_str());
   }
@@ -262,21 +268,25 @@ bool bleDeviceFound = false;
 String bleFoundName = "";
 String bleFoundAddress = "";
 int bleFoundRssi = 0;`;
+  // NimBLE v2: onResult takes const NimBLEAdvertisedDevice* (was non-const).
+  // d->getName / getAddress / getRSSI are const methods → body unchanged. (BUG-065)
   generator.definitions_['ble_scan_callbacks'] = `
 class BleScanCallbacks : public NimBLEScanCallbacks {
-  void onResult(NimBLEAdvertisedDevice* d) {
+  void onResult(const NimBLEAdvertisedDevice* d) {
     bleDeviceFound = true;
     bleFoundName = String(d->getName().c_str());
     bleFoundAddress = String(d->getAddress().toString().c_str());
     bleFoundRssi = d->getRSSI();
   }
 };`;
+  // NimBLE v2: NimBLEScan::start time unit changed from seconds → milliseconds.
+  // UI label keeps "duration (sec)" for UX continuity; convert here. (BUG-065)
   return `
   if (!NimBLEDevice::isInitialized()) NimBLEDevice::init("");
   NimBLEScan* pScan = NimBLEDevice::getScan();
   pScan->setScanCallbacks(new BleScanCallbacks(), false);
   pScan->setActiveScan(true);
-  pScan->start(${duration}, false);
+  pScan->start(${duration} * 1000, false);
 `;
 };
 
@@ -429,12 +439,13 @@ std::map<std::string, NimBLECharacteristic*> bleCharMap;
 std::map<std::string, NimBLEService*> bleServiceMap;
 String bleWriteCharUuid = "";`;
 
+// NimBLE v2: onWrite takes NimBLEConnInfo& (BUG-065). Arg unused, body unchanged.
 const GATT_WRITE_CALLBACKS = `
 class GattWriteCallbacks : public NimBLECharacteristicCallbacks {
   std::string _uuid;
 public:
   GattWriteCallbacks(const std::string& uuid) : _uuid(uuid) {}
-  void onWrite(NimBLECharacteristic* c) {
+  void onWrite(NimBLECharacteristic* c, NimBLEConnInfo& connInfo) {
     bleWriteCharUuid = String(_uuid.c_str());
     std::string v = c->getValue();
     bleMessage = String(v.c_str());

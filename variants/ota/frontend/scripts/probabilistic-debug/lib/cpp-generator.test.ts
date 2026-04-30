@@ -243,6 +243,105 @@ describe('xmlToCpp — NimBLE v2 API (BUG-056)', () => {
   });
 });
 
+describe('xmlToCpp — NimBLE v2 callback signatures + scan ms (BUG-065)', () => {
+  // The vendored NimBLE-Arduino v2.4.0 changed callback signatures and time units:
+  //   * NimBLEServerCallbacks::onConnect(NimBLEServer*, NimBLEConnInfo&)
+  //   * NimBLEServerCallbacks::onDisconnect(NimBLEServer*, NimBLEConnInfo&, int reason)
+  //   * NimBLECharacteristicCallbacks::onWrite(NimBLECharacteristic*, NimBLEConnInfo&)
+  //   * NimBLEScanCallbacks::onResult(const NimBLEAdvertisedDevice*)  // const-ified
+  //   * NimBLEScan::start(<ms>, ...)  // seconds → milliseconds
+  // v1 signatures compile against v2 (base virtual + default empty body) but the
+  // user override is never called → silent runtime fail (production user impact).
+
+  it('ble_uart_setup emits BleServerCallbacks with NimBLEConnInfo& signatures (onConnect / onDisconnect)', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="ble_uart_setup">' +
+      '<field name="NAME">Test</field>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    expect(out.fullCode).toContain('void onConnect(NimBLEServer* s, NimBLEConnInfo& connInfo)');
+    expect(out.fullCode).toContain('void onDisconnect(NimBLEServer* s, NimBLEConnInfo& connInfo, int reason)');
+    expect(out.fullCode).not.toMatch(/void onConnect\(NimBLEServer\* s\) \{/);
+    expect(out.fullCode).not.toMatch(/void onDisconnect\(NimBLEServer\* s\) \{/);
+  });
+
+  it('ble_uart_setup emits BleRxCallbacks with NimBLEConnInfo& onWrite signature', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="ble_uart_setup">' +
+      '<field name="NAME">Test</field>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    expect(out.fullCode).toContain('void onWrite(NimBLECharacteristic* c, NimBLEConnInfo& connInfo)');
+    expect(out.fullCode).not.toMatch(/void onWrite\(NimBLECharacteristic\* c\) \{/);
+  });
+
+  it('ble_scan_start emits const NimBLEAdvertisedDevice* in onResult and ms-converted start()', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="ble_scan_start">' +
+      '<field name="DURATION">5</field>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    expect(out.fullCode).toContain('void onResult(const NimBLEAdvertisedDevice* d)');
+    expect(out.fullCode).not.toMatch(/void onResult\(NimBLEAdvertisedDevice\* d\)/);
+    // duration sec → ms conversion at emit
+    expect(out.fullCode).toContain('pScan->start(5 * 1000, false)');
+    expect(out.fullCode).not.toMatch(/pScan->start\(5, false\)/);
+  });
+
+  it('ble_add_characteristic (write) emits GattWriteCallbacks with NimBLEConnInfo& onWrite signature', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="ble_init">' +
+      '<field name="NAME">Test</field>' +
+      '<next>' +
+      '<block type="ble_add_service">' +
+      '<field name="UUID">12345678-1234-1234-1234-123456789ABC</field>' +
+      '<next>' +
+      '<block type="ble_add_characteristic">' +
+      '<field name="SERVICE_UUID">12345678-1234-1234-1234-123456789ABC</field>' +
+      '<field name="CHAR_UUID">00001111-1234-1234-1234-123456789ABC</field>' +
+      '<field name="READ">FALSE</field>' +
+      '<field name="WRITE">TRUE</field>' +
+      '<field name="NOTIFY">FALSE</field>' +
+      '</block>' +
+      '</next>' +
+      '</block>' +
+      '</next>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    // GattWriteCallbacks must use the v2 onWrite signature (NimBLECharacteristic*, NimBLEConnInfo&)
+    expect(out.fullCode).toContain('class GattWriteCallbacks');
+    expect(out.fullCode).toMatch(/GattWriteCallbacks[\s\S]*void onWrite\(NimBLECharacteristic\* c, NimBLEConnInfo& connInfo\)/);
+  });
+});
+
 describe('xmlToCpp — ArduinoHA defensive include (BUG-057)', () => {
   // ha_xxx_create generators declare globals with HA classes (HASensorNumber,
   // HALight, ...). Before BUG-057, only ha_device_init emitted
