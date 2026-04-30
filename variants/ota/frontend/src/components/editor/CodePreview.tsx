@@ -74,9 +74,20 @@ export function CodePreview({ code, language = 'cpp', className }: CodePreviewPr
               padding: '1rem',
               fontSize: '0.875rem',
               lineHeight: '1.5',
+              // overflow: 'visible' = react-syntax-highlighter の <pre> 内部 scroll を
+              // 無効化、wrapper div に scroll を委譲。これで wrapper div の
+              // [&::-webkit-scrollbar]:w-3 スタイルが本来の scrollbar に適用される。
+              overflow: 'visible',
             }}
             wrapLongLines={true}
-            codeTagProps={{ style: { fontFamily: 'inherit', background: 'transparent' } }}
+            codeTagProps={{
+              style: {
+                fontFamily: 'inherit',
+                background: 'transparent',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+              },
+            }}
           >
             {code}
           </SyntaxHighlighter>
