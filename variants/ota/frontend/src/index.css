@@ -44,6 +44,56 @@
   }
 }
 
+/* ===== Custom scrollbars (rules/digicode/08-ui-theme.md § Scrollable areas) ===== */
+/*
+  以下 2 class はダーク UI の「常時可視 scrollbar」のための明示 CSS。Tailwind
+  arbitrary syntax `[&::-webkit-scrollbar]:w-3` は条件によって CSS 生成が
+  unreliable な場合があるため、guaranteed CSS generation のため layer
+  components で global class として定義。
+  - .scrollbar-dialog: dialog / modal context 向け、wider (12px、明確 visible)
+  - .scrollbar-panel: sidebar / panel context 向け、thin (6px、minimal UX)
+  両者とも track + thumb を常時 visible で macOS overlay scrollbar mode を
+  override、Firefox `scrollbar-width` も明示。
+*/
+.scrollbar-dialog {
+  scrollbar-width: auto;
+  scrollbar-color: #4A5160 #161B22;
+}
+.scrollbar-dialog::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+.scrollbar-dialog::-webkit-scrollbar-track {
+  background: #161B22;
+}
+.scrollbar-dialog::-webkit-scrollbar-thumb {
+  background: #4A5160;
+  border-radius: 6px;
+  border: 2px solid #161B22;
+}
+.scrollbar-dialog::-webkit-scrollbar-thumb:hover {
+  background: #6E7681;
+}
+
+.scrollbar-panel {
+  scrollbar-width: thin;
+  scrollbar-color: #3E4451 transparent;
+}
+.scrollbar-panel::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-panel::-webkit-scrollbar-thumb {
+  background: #3E4451;
+  border-radius: 3px;
+}
+.scrollbar-panel::-webkit-scrollbar-thumb:hover {
+  background: #5C6370;
+}
+
 /* ===== Blockly ツールボックス スタイル（統合） ===== */
 
 /* Blocklyのz-indexを制御 */

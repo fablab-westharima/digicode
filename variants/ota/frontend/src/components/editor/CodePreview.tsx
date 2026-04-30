@@ -56,14 +56,13 @@ export function CodePreview({ code, language = 'cpp', className }: CodePreviewPr
 
       {/*
         コード表示 — シンタックスハイライト (react-syntax-highlighter Prism + oneDark theme)
-        + 強化 scrollbar 可視化 (rules/digicode/08-ui-theme.md § Scrollable areas、
-        ダイアログ context は wider scrollbar を使用、sidebar context の AIAssistantPanel /
-        Sidebar の thin variant とは別 design)。
+        + 強化 scrollbar 可視化 (.scrollbar-dialog class、index.css で global 定義、
+        rules/digicode/08-ui-theme.md § Scrollable areas)。
+        Tailwind arbitrary [&::-webkit-scrollbar]:w-3 syntax は条件によって CSS
+        生成が unreliable で本件で scrollbar 完全不可視となったため、guaranteed
+        CSS generation のため explicit class に切替。
       */}
-      <div
-        className="flex-1 overflow-auto bg-[#0D1117] min-h-0 [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-[#161B22] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#4A5160] [&::-webkit-scrollbar-thumb]:border-2 [&::-webkit-scrollbar-thumb]:border-[#161B22] [&::-webkit-scrollbar-thumb:hover]:bg-[#6E7681]"
-        style={{ scrollbarWidth: 'auto', scrollbarColor: '#4A5160 #161B22' }}
-      >
+      <div className="flex-1 overflow-auto bg-[#0D1117] min-h-0 scrollbar-dialog">
         {code ? (
           <SyntaxHighlighter
             language={language}
@@ -76,7 +75,7 @@ export function CodePreview({ code, language = 'cpp', className }: CodePreviewPr
               lineHeight: '1.5',
               // overflow: 'visible' = react-syntax-highlighter の <pre> 内部 scroll を
               // 無効化、wrapper div に scroll を委譲。これで wrapper div の
-              // [&::-webkit-scrollbar]:w-3 スタイルが本来の scrollbar に適用される。
+              // .scrollbar-dialog class が本来の scrollbar に適用される。
               overflow: 'visible',
             }}
             wrapLongLines={true}
