@@ -33,8 +33,8 @@ describe('generateMatrixCases (defaults)', () => {
     expect(boards.size).toBeGreaterThanOrEqual(15);
   });
 
-  it('hits all 18 boards when the cap is large enough (mode×board = 126)', () => {
-    const fullCases = generateMatrixCases(cat, { maxCount: 126 });
+  it('hits all 19 boards when the cap is large enough (mode×board = 133)', () => {
+    const fullCases = generateMatrixCases(cat, { maxCount: 133 });
     const boards = new Set(fullCases.map((c) => c.boardId));
     for (const b of cat.boards) {
       expect(boards.has(b.id)).toBe(true);
