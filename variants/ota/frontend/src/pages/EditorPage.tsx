@@ -1576,8 +1576,8 @@ export function EditorPage() {
 
       {/* 生成コードプレビューダイアログ */}
       <Dialog open={codePreviewDialogOpen} onOpenChange={setCodePreviewDialogOpen}>
-        <DialogContent className="sm:max-w-3xl max-h-[85vh] flex flex-col">
-          <DialogHeader className="shrink-0">
+        <DialogContent className="sm:max-w-3xl">
+          <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Code className="h-5 w-5" />
               {t('editor.generatedCode')}
@@ -1586,8 +1586,16 @@ export function EditorPage() {
               {t('editor.codePreview.description')}
             </DialogDescription>
           </DialogHeader>
-          {/* min-h-0 が必須: flex 子要素が overflow-auto を効かせるため (BUG-070 fix 2026-04-30) */}
-          <div className="flex-1 min-h-0 overflow-hidden">
+          {/*
+            Defensive fix (2026-04-30): flex chain (DialogContent flex-col + child
+            flex-1 + min-h-0) では tailwind-merge が DialogContent default の grid
+            を override する保証が条件依存で、wrapper div が intrinsic content
+            height に膨らみ overflow しない silent bug が発生していた。
+            explicit `h-[60vh]` で wrapper を必ず 60% viewport 高に固定 →
+            content は確実にこの container を超過 → CodePreview 内部の
+            overflow-auto + .scrollbar-dialog で scrollbar 確実 visible。
+          */}
+          <div className="h-[60vh] overflow-hidden">
             <CodePreview
               code={generatedCode}
               language="cpp"
