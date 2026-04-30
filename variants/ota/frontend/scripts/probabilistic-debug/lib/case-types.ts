@@ -12,7 +12,8 @@ export type Strategy =
   | 'pair'
   | 'template'
   | 'matrix'
-  | 'edge';
+  | 'edge'
+  | 'combo';
 
 export interface GeneratedCase {
   /** Zero-padded id, e.g. 'case_0001'. */

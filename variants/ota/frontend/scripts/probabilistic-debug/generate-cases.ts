@@ -28,6 +28,7 @@ import { generateEdgeCases } from './lib/strategies/edge';
 import { generateMatrixCases } from './lib/strategies/matrix';
 import { generatePairCases } from './lib/strategies/pair';
 import { generateTemplateCases } from './lib/strategies/template';
+import { generateComboCases } from './lib/strategies/combo';
 
 interface CliArgs {
   out: string;
@@ -84,7 +85,7 @@ function printHelp(): void {
   --seed <N>      Reserved for future randomized strategies (default: 42)
   --help          Show this message
 
-Strategy allocation (count=1000): singleton=414 edge=86 matrix=100 pair=200 template=200.
+Strategy allocation (count=1000): singleton=414 edge=86 matrix=100 pair=185 template=200 combo=15.
 For non-1000 counts the allocation is scaled proportionally.
 `,
   );
@@ -110,14 +111,16 @@ interface StrategyAllocation {
   matrix: number;
   pair: number;
   template: number;
+  combo: number;
 }
 
 const FULL_ALLOCATION: StrategyAllocation = {
   singleton: 414,
   edge: 86,
   matrix: 100,
-  pair: 200,
+  pair: 185,
   template: 200,
+  combo: 15,
 };
 
 export function allocate(count: number): StrategyAllocation {
@@ -129,10 +132,16 @@ export function allocate(count: number): StrategyAllocation {
     matrix: Math.floor((count * FULL_ALLOCATION.matrix) / total),
     pair: Math.floor((count * FULL_ALLOCATION.pair) / total),
     template: Math.floor((count * FULL_ALLOCATION.template) / total),
+    combo: Math.floor((count * FULL_ALLOCATION.combo) / total),
   };
   // Floor leaves a remainder; bump singleton (largest bucket) to absorb it.
   const used =
-    alloc.singleton + alloc.edge + alloc.matrix + alloc.pair + alloc.template;
+    alloc.singleton +
+    alloc.edge +
+    alloc.matrix +
+    alloc.pair +
+    alloc.template +
+    alloc.combo;
   alloc.singleton += count - used;
   return alloc;
 }
@@ -176,7 +185,15 @@ export function buildAllCases(count: number): RunResult {
     cases.push(...out);
     seq += out.length;
   }
-  // Template absorbs any shortfall from earlier strategies (pair/matrix may
+  if (alloc.combo > 0) {
+    const out = generateComboCases(catalog, {
+      startIndex: seq,
+      maxCount: alloc.combo,
+    });
+    cases.push(...out);
+    seq += out.length;
+  }
+  // Template absorbs any shortfall from earlier strategies (pair/matrix/combo may
   // emit fewer than their nominal allocation when recipes hit the boundary).
   const elastic = Math.max(alloc.template, count - cases.length);
   if (elastic > 0) {
@@ -237,7 +254,7 @@ function main(): void {
   process.stdout.write(`  Seed:   ${args.seed}\n`);
   const result = buildAllCases(args.count);
   process.stdout.write(
-    `  Strategy allocation: singleton=${result.alloc.singleton} edge=${result.alloc.edge} matrix=${result.alloc.matrix} pair=${result.alloc.pair} template=${result.alloc.template}\n`,
+    `  Strategy allocation: singleton=${result.alloc.singleton} edge=${result.alloc.edge} matrix=${result.alloc.matrix} pair=${result.alloc.pair} template=${result.alloc.template} combo=${result.alloc.combo}\n`,
   );
   process.stdout.write(`  Generated: ${result.cases.length} cases\n`);
   writeOutput(args, result);

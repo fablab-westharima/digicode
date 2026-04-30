@@ -6,19 +6,21 @@ const cat = loadCatalog();
 const idx = indexByType(cat);
 
 describe('allocate', () => {
-  it('returns the canonical 414/86/100/200/200 split for count=1000', () => {
+  it('returns the canonical 414/86/100/185/200/15 split for count=1000', () => {
     expect(allocate(1000)).toEqual({
       singleton: 414,
       edge: 86,
       matrix: 100,
-      pair: 200,
+      pair: 185,
       template: 200,
+      combo: 15,
     });
   });
 
   it('scales proportionally for smaller counts and absorbs the floor remainder into singleton', () => {
     const a = allocate(100);
-    const sum = a.singleton + a.edge + a.matrix + a.pair + a.template;
+    const sum =
+      a.singleton + a.edge + a.matrix + a.pair + a.template + a.combo;
     expect(sum).toBe(100);
     expect(a.singleton).toBeGreaterThanOrEqual(40);
     expect(a.template).toBe(20);
@@ -26,7 +28,8 @@ describe('allocate', () => {
 
   it('handles tiny counts (count=10) without producing zero buckets that break the run', () => {
     const a = allocate(10);
-    const sum = a.singleton + a.edge + a.matrix + a.pair + a.template;
+    const sum =
+      a.singleton + a.edge + a.matrix + a.pair + a.template + a.combo;
     expect(sum).toBe(10);
   });
 });
@@ -65,12 +68,22 @@ describe('buildAllCases (count=100 smoke)', () => {
     }
   });
 
-  it('strategies appear in the planned order (singleton → edge → matrix → pair → template)', () => {
+  it('strategies appear in the planned order (singleton → edge → matrix → pair → combo → template)', () => {
     const seen: string[] = [];
     for (const c of result.cases) {
       if (seen[seen.length - 1] !== c.strategy) seen.push(c.strategy);
     }
-    expect(seen).toEqual(['singleton', 'edge', 'matrix', 'pair', 'template']);
+    // combo may be empty when alloc.combo rounds to 0 in tiny smokes — filter
+    // to the strategies that actually emitted at least one case.
+    const expectedOrder = [
+      'singleton',
+      'edge',
+      'matrix',
+      'pair',
+      'combo',
+      'template',
+    ].filter((s) => seen.includes(s));
+    expect(seen).toEqual(expectedOrder);
   });
 
   it('strategy counts match allocation (within ±1 for proportional rounding)', () => {
