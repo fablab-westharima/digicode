@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Copy, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface CodePreviewProps {
   code: string;
@@ -52,14 +54,37 @@ export function CodePreview({ code, language = 'cpp', className }: CodePreviewPr
         </div>
       </div>
 
-      {/* コード表示 — スクロールバー可視化 (rules/digicode/08-ui-theme.md scrollbar visibility section、AIAssistantPanel/Sidebar と同パターン) */}
+      {/*
+        コード表示 — シンタックスハイライト (react-syntax-highlighter Prism + oneDark theme)
+        + 強化 scrollbar 可視化 (rules/digicode/08-ui-theme.md § Scrollable areas、
+        ダイアログ context は wider scrollbar を使用、sidebar context の AIAssistantPanel /
+        Sidebar の thin variant とは別 design)。
+      */}
       <div
-        className="flex-1 overflow-auto p-4 bg-[#0D1117] min-h-0 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#3E4451] [&::-webkit-scrollbar-thumb:hover]:bg-[#5C6370]"
-        style={{ scrollbarWidth: 'thin', scrollbarColor: '#3E4451 transparent' }}
+        className="flex-1 overflow-auto bg-[#0D1117] min-h-0 [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-[#161B22] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#4A5160] [&::-webkit-scrollbar-thumb]:border-2 [&::-webkit-scrollbar-thumb]:border-[#161B22] [&::-webkit-scrollbar-thumb:hover]:bg-[#6E7681]"
+        style={{ scrollbarWidth: 'auto', scrollbarColor: '#4A5160 #161B22' }}
       >
-        <pre className="text-sm text-[#E6EDF3] font-mono whitespace-pre-wrap">
-          {code || t('editor.codePreview.placeholder')}
-        </pre>
+        {code ? (
+          <SyntaxHighlighter
+            language={language}
+            style={oneDark}
+            customStyle={{
+              background: 'transparent',
+              margin: 0,
+              padding: '1rem',
+              fontSize: '0.875rem',
+              lineHeight: '1.5',
+            }}
+            wrapLongLines={true}
+            codeTagProps={{ style: { fontFamily: 'inherit', background: 'transparent' } }}
+          >
+            {code}
+          </SyntaxHighlighter>
+        ) : (
+          <pre className="text-sm text-[#E6EDF3] font-mono whitespace-pre-wrap p-4">
+            {t('editor.codePreview.placeholder')}
+          </pre>
+        )}
       </div>
     </div>
   );
