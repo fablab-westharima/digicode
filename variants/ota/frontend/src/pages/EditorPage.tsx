@@ -1576,8 +1576,8 @@ export function EditorPage() {
 
       {/* 生成コードプレビューダイアログ */}
       <Dialog open={codePreviewDialogOpen} onOpenChange={setCodePreviewDialogOpen}>
-        <DialogContent className="sm:max-w-3xl max-h-[80vh]">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-3xl max-h-[85vh] flex flex-col">
+          <DialogHeader className="shrink-0">
             <DialogTitle className="flex items-center gap-2">
               <Code className="h-5 w-5" />
               {t('editor.generatedCode')}
@@ -1586,11 +1586,12 @@ export function EditorPage() {
               {t('editor.codePreview.description')}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex-1 overflow-hidden">
+          {/* min-h-0 が必須: flex 子要素が overflow-auto を効かせるため (BUG-070 fix 2026-04-30) */}
+          <div className="flex-1 min-h-0 overflow-hidden">
             <CodePreview
               code={generatedCode}
               language="cpp"
-              className="h-[60vh]"
+              className="h-full"
             />
           </div>
         </DialogContent>
