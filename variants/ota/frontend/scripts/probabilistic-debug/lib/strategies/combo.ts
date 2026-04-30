@@ -146,6 +146,19 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
       'json_to_string', 'json_to_string_pretty',
     ],
   },
+  {
+    // diff_drive_init が `diffSetMotors` / `DIFF_L_*` / `DIFF_R_*` / track-width
+    // 関連の definitions_ を declares、全 diff_drive_* operation block が
+    // diffSetMotors / 速度変数を参照 (BUG-072、第64回まで漏れていた 11 番目 prefix)。
+    init: 'diff_drive_init',
+    label: 'diff-drive',
+    operations: [
+      'diff_drive_set_speed', 'diff_drive_forward', 'diff_drive_backward',
+      'diff_drive_stop', 'diff_drive_spin', 'diff_drive_curve',
+      'diff_drive_forward_distance', 'diff_drive_rotate_angle',
+      'diff_drive_line_trace', 'diff_drive_get_speed',
+    ],
+  },
 ];
 
 /**

@@ -44,8 +44,9 @@ describe('INIT_DEPENDENCIES (manual map)', () => {
   });
 
   it('covers cluster top of the 1000-case run', () => {
-    // 9 prefix (第64回 mqtt expand + json split): ~101 fail (35%) cluster top
-    // を解消、json は read (_jsonDoc) と write (_jsonOutDoc) の 2 系統。
+    // 10 prefix (第64回 mqtt expand + json split + 第65回 BUG-072 diff_drive add):
+    // ~101 fail (35%) cluster top + 第64回 cluster #3 (6 件) を解消、json は read
+    // (_jsonDoc) と write (_jsonOutDoc) の 2 系統。
     const labels = INIT_DEPENDENCIES.map((d) => d.label).filter(Boolean);
     expect(labels).toEqual(
       expect.arrayContaining([
@@ -57,6 +58,7 @@ describe('INIT_DEPENDENCIES (manual map)', () => {
         'neopixel',
         'json-read',
         'json-write',
+        'diff-drive',
       ]),
     );
   });
@@ -104,15 +106,36 @@ describe('OPERATION_TO_INIT_MAP (derived)', () => {
     // so the singleton-init-aware path picks the first declared init.
     expect(OPERATION_TO_INIT_MAP.get('qtr_calibrate')).toBe('qtr_8a_init');
   });
+
+  it('maps diff_drive_* operation blocks → diff_drive_init (BUG-072)', () => {
+    // diff_drive_init declares diffSetMotors / DIFF_L_* / DIFF_R_* in
+    // generator.definitions_; without it any diff_drive_* operation block
+    // hits `'diffSetMotors' was not declared in this scope`.
+    expect(OPERATION_TO_INIT_MAP.get('diff_drive_forward')).toBe(
+      'diff_drive_init',
+    );
+    expect(OPERATION_TO_INIT_MAP.get('diff_drive_backward')).toBe(
+      'diff_drive_init',
+    );
+    expect(OPERATION_TO_INIT_MAP.get('diff_drive_set_speed')).toBe(
+      'diff_drive_init',
+    );
+    expect(OPERATION_TO_INIT_MAP.get('diff_drive_curve')).toBe(
+      'diff_drive_init',
+    );
+    expect(OPERATION_TO_INIT_MAP.get('diff_drive_line_trace')).toBe(
+      'diff_drive_init',
+    );
+  });
 });
 
 describe('generateComboCases', () => {
   const cases = generateComboCases(cat);
 
   it('emits at least one case per init prefix (when catalog has the init)', () => {
-    // 9 init prefixes (第64回): humanoid + transform + wheel + qtr-8a + qtr-8rc
-    // + mqtt + neopixel + json-read + json-write
-    expect(cases.length).toBeGreaterThanOrEqual(9);
+    // 10 init prefixes (第64回 + 第65回 BUG-072): humanoid + transform + wheel +
+    // qtr-8a + qtr-8rc + mqtt + neopixel + json-read + json-write + diff-drive
+    expect(cases.length).toBeGreaterThanOrEqual(10);
   });
 
   it('every case is tagged with strategy="combo"', () => {
