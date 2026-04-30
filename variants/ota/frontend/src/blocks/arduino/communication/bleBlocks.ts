@@ -81,6 +81,10 @@ class BleRxCallbacks : public NimBLECharacteristicCallbacks {
     bleMessage = String(v.c_str());
   }
 };`;
+  // NimBLE v2: advertising name は default 非自動 (migration guide § Advertising)。
+  // pAdv->setName() を start() 前に明示呼出 → onDisconnect 内の
+  // NimBLEDevice::startAdvertising() 再 advertise 時も同 config で名前付き
+  // advertising が継続。(BUG-069)
   return `
   NimBLEDevice::init("${name}");
   pBleServer = NimBLEDevice::createServer();
@@ -92,6 +96,7 @@ class BleRxCallbacks : public NimBLECharacteristicCallbacks {
   pNus->start();
   NimBLEAdvertising* pAdv = NimBLEDevice::getAdvertising();
   pAdv->addServiceUUID(NUS_SERVICE_UUID);
+  pAdv->setName("${name}");
   pAdv->start();
 `;
 };
@@ -474,10 +479,15 @@ generator.forBlock['ble_init'] = function(block: Blockly.Block) {
   generator.definitions_['ble_globals'] = BLE_GLOBALS;
   generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
   generator.definitions_['ble_server_callbacks'] = SERVER_CALLBACKS;
+  // NimBLE v2: advertising name は default 非自動 (migration guide § Advertising)。
+  // ble_init で getAdvertising()->setName() を pre-set しておけば、後の
+  // ble_start_advertising (= NimBLEDevice::startAdvertising() 静的呼出) や
+  // onDisconnect の re-advertise も config 保持で名前付き advertising される。(BUG-069)
   return `
   NimBLEDevice::init("${name}");
   pBleServer = NimBLEDevice::createServer();
   pBleServer->setCallbacks(new BleServerCallbacks());
+  NimBLEDevice::getAdvertising()->setName("${name}");
 `;
 };
 

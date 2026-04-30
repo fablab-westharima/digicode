@@ -309,6 +309,46 @@ describe('xmlToCpp — NimBLE v2 callback signatures + scan ms (BUG-065)', () =>
     expect(out.fullCode).not.toMatch(/pScan->start\(5, false\)/);
   });
 
+  it('ble_uart_setup emits pAdv->setName() before pAdv->start() — NimBLE v2 advertising name (BUG-069)', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="ble_uart_setup">' +
+      '<field name="NAME">DigiCodeTest</field>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    // NimBLE v2 で advertising name は default 非自動、setName() 明示呼出が必要
+    expect(out.fullCode).toContain('pAdv->setName("DigiCodeTest")');
+    // setName() は start() の前で呼ばれる
+    const setNameIdx = out.fullCode.indexOf('pAdv->setName(');
+    const startIdx = out.fullCode.indexOf('pAdv->start()');
+    expect(setNameIdx).toBeGreaterThan(0);
+    expect(setNameIdx).toBeLessThan(startIdx);
+  });
+
+  it('ble_init emits getAdvertising()->setName() — NimBLE v2 advertising name (BUG-069)', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="ble_init">' +
+      '<field name="NAME">GattDevice</field>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    // NimBLE v2 で ble_init は getAdvertising()->setName() を pre-set しておく
+    // (後続 startAdvertising() / onDisconnect 再 advertise が config 保持で名前付き)
+    expect(out.fullCode).toContain('NimBLEDevice::getAdvertising()->setName("GattDevice")');
+  });
+
   it('ble_add_characteristic (write) emits GattWriteCallbacks with NimBLEConnInfo& onWrite signature', () => {
     const xml =
       '<xml xmlns="https://developers.google.com/blockly/xml">' +
