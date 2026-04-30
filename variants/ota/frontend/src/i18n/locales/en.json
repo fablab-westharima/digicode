@@ -2739,7 +2739,6 @@
       "tftDraw": "Draw",
       "tftText": "Text",
       "rfidM5": "✅ M5Stack RFID 2 (Certified)",
-      "rfidGeneric": "⚠️ Generic MFRC522 (Check Regs)",
       "rfidOps": "Operations",
       "ntpSync": "Sync",
       "ntpGet": "Get Time",

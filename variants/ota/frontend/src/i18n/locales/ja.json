@@ -2729,7 +2729,6 @@
       "tftDraw": "描画",
       "tftText": "テキスト",
       "rfidM5": "✅ M5Stack RFID 2（技適対応）",
-      "rfidGeneric": "⚠️ 汎用 MFRC522（技適確認要）",
       "rfidOps": "操作",
       "ntpSync": "同期",
       "ntpGet": "時刻取得",

@@ -2699,7 +2699,6 @@
       "tftDraw": "Desenhar",
       "tftText": "Texto",
       "rfidM5": "✅ M5Stack RFID 2 (Certificado)",
-      "rfidGeneric": "⚠️ MFRC522 Genérico (Verificar)",
       "rfidOps": "Operações",
       "ntpSync": "Sincronizar",
       "ntpGet": "Obter Hora",

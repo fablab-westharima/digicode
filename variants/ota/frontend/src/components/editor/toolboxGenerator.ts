@@ -419,9 +419,6 @@ const getToolboxCategories = (): Record<string, string> => ({
     <label text="${label('rfidM5') || '✅ M5Stack RFID 2 (技適対応)'}"></label>
     <block type="rfid_init_m5stack"></block>
     <sep></sep>
-    <label text="${label('rfidGeneric') || '⚠️ Generic MFRC522 (要確認)'}"></label>
-    <block type="rfid_init_generic"></block>
-    <sep></sep>
     <label text="${label('rfidOps') || 'Operations'}"></label>
     <block type="rfid_is_card_present"></block>
     <block type="rfid_read_uid"></block>

@@ -2699,7 +2699,6 @@
       "tftDraw": "繪圖",
       "tftText": "文字",
       "rfidM5": "✅ M5Stack RFID 2（已認證）",
-      "rfidGeneric": "⚠️ 通用 MFRC522（請確認）",
       "rfidOps": "操作",
       "ntpSync": "同步",
       "ntpGet": "取得時間",

@@ -1,12 +1,11 @@
 /**
- * RFID ブロック (BP6-5, 2026-04-20)
+ * RFID ブロック (BP6-5, 2026-04-20 / BUG-059 closure 2026-04-30)
  *
- * MFRC522-spi-i2c-uart-async ライブラリ使用（SPI/I2C 両対応）
+ * arozcan/MFRC522-I2C-Library 使用（I2C 専用）
  *
  * rfid_init_m5stack: M5Stack RFID 2 Unit (WS1850S, I2C 0x28)
  *   → 日本の電波法: 技適取得済みデバイス（合法）
- * rfid_init_generic: 汎用 MFRC522 (SPI)
- *   → ⚠️ 日本国内では技適認証済みモジュールのみ使用可（電波法準拠）
+ *   → DigiCode 公式採用: 技適制約により SPI 版 MFRC522 は永久にサポートしない
  *
  * i18n: Blockly.Msg.* パターン（ルール33）
  */
@@ -44,33 +43,6 @@ generator.forBlock['rfid_init_m5stack'] = function() {
 MFRC522 mfrc522(0x28, -1);`;
   generator.definitions_['rfid_default_key'] = RFID_DEFAULT_KEY;
   return [`([&](){ Wire.begin(); mfrc522.PCD_Init(); return mfrc522.PCD_PerformSelfTest(); })()`, 0];
-};
-
-/**
- * rfid_init_generic - 汎用 MFRC522 初期化（SPI、⚠️ 技適確認要）
- */
-Blockly.Blocks['rfid_init_generic'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField('⚠️🪪 ' + (Blockly.Msg.BLOCKS_RFID_INITGENERIC || 'RFID Init (Generic)'));
-    this.appendDummyInput()
-        .appendField('CS pin').appendField(new Blockly.FieldNumber(5, 0, 39), 'CS')
-        .appendField('RST pin').appendField(new Blockly.FieldNumber(22, 0, 39), 'RST');
-    this.setOutput(true, 'Boolean');
-    this.setColour(RFID_WARN_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_RFID_INITGENERICTOOLTIP || '⚠️ Initialize generic MFRC522 via SPI. IMPORTANT: In Japan, only devices with 技適 certification may legally transmit radio waves. Non-certified MFRC522 modules may violate the Radio Act. For Japan, use rfid_init_m5stack instead.\n\nFor use outside Japan: check your local radio regulations for 13.56 MHz RFID modules.');
-  }
-};
-
-generator.forBlock['rfid_init_generic'] = function(block: Blockly.Block) {
-  const cs = block.getFieldValue('CS');
-  const rst = block.getFieldValue('RST');
-  generator.definitions_['include_rfid'] = `
-#include <SPI.h>
-#include <MFRC522.h>
-MFRC522 mfrc522(${cs}, ${rst});`;
-  generator.definitions_['rfid_default_key'] = RFID_DEFAULT_KEY;
-  return [`([&](){ SPI.begin(); mfrc522.PCD_Init(); return mfrc522.PCD_PerformSelfTest(); })()`, 0];
 };
 
 /**

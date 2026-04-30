@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-04-30T01:51:36.110Z",
+  "generatedAt": "2026-04-30T01:53:13.210Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -10378,39 +10378,6 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "rfid_init_generic",
-      "category": "rfid",
-      "tooltip": "⚠️ Initialize generic MFRC522 via SPI. IMPORTANT: In Japan, only devices with 技適 certification may legally transmit radio waves. Non-certified MFRC522 modules may violate the Radio Act. For Japan, use rfid_init_m5stack instead.\\n\\nFor use outside Japan: check your local radio regulations for 13.56 MHz RFID modules.",
-      "colour": "#FF9800",
-      "isStatement": false,
-      "hasOutput": true,
-      "modes": [
-        "homeassistant",
-        "generic",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "CS",
-          "fieldType": "number",
-          "default": 5,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "RST",
-          "fieldType": "number",
-          "default": 22,
-          "min": 0,
-          "max": 39
-        }
-      ],
       "valueInputs": [],
       "statementInputs": []
     },
