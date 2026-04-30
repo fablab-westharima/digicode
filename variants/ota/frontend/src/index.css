@@ -46,19 +46,18 @@
 
 /* ===== Custom scrollbars (rules/digicode/08-ui-theme.md § Scrollable areas) ===== */
 /*
-  以下 2 class はダーク UI の「常時可視 scrollbar」のための明示 CSS。Tailwind
-  arbitrary syntax `[&::-webkit-scrollbar]:w-3` は条件によって CSS 生成が
-  unreliable な場合があるため、guaranteed CSS generation のため layer
-  components で global class として定義。
+  ダーク UI の「常時可視 scrollbar」のための明示 CSS class。
   - .scrollbar-dialog: dialog / modal context 向け、wider (12px、明確 visible)
   - .scrollbar-panel: sidebar / panel context 向け、thin (6px、minimal UX)
-  両者とも track + thumb を常時 visible で macOS overlay scrollbar mode を
-  override、Firefox `scrollbar-width` も明示。
+
+  ⚠️ Chrome 121+ scrollbar-width/scrollbar-color の罠 (2026-04-30 BUG-070
+  diagnostic で発見): standard CSS properties `scrollbar-width` / `scrollbar-color`
+  は Chrome 121+ で `::-webkit-scrollbar` pseudo-elements を **override** する。
+  `scrollbar-width: auto` を書くと Chrome は「system 既定 (macOS overlay = hidden)」
+  と解釈、`::-webkit-scrollbar` のカスタムスタイルを完全無視する。
+  → 解決: standard properties は削除、WebKit 専用 pseudo-elements のみで
+     style 統一。Firefox は default scrollbar (visible) で許容。
 */
-.scrollbar-dialog {
-  scrollbar-width: auto;
-  scrollbar-color: #4A5160 #161B22;
-}
 .scrollbar-dialog::-webkit-scrollbar {
   width: 12px;
   height: 12px;
@@ -75,10 +74,6 @@
   background: #6E7681;
 }
 
-.scrollbar-panel {
-  scrollbar-width: thin;
-  scrollbar-color: #3E4451 transparent;
-}
 .scrollbar-panel::-webkit-scrollbar {
   width: 6px;
   height: 6px;
