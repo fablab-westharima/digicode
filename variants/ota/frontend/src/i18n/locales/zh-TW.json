@@ -3347,11 +3347,11 @@
       },
       "m5stackBasic": {
         "name": "M5Stack Basic/Gray/Fire",
-        "description": "2.0吋螢幕、3按鈕，支援OTA"
+        "description": "2.0吋螢幕、3按鈕，支援OTA（Gray 已停產）"
       },
       "m5stickCPlus": {
         "name": "M5StickC Plus",
-        "description": "1.14吋螢幕、IMU，支援OTA"
+        "description": "1.14吋螢幕、IMU，支援OTA（庫存限定，後繼: M5StickC Plus2）"
       },
       "atomLite": {
         "name": "ATOM Lite",
@@ -3363,7 +3363,7 @@
       },
       "m5stampPico": {
         "name": "M5Stamp Pico",
-        "description": "超小型郵票模組，支援OTA"
+        "description": "超小型郵票模組，支援OTA（初代，已停產。後繼: M5Stamp Pico Mate）"
       },
       "m5stampC3": {
         "name": "M5Stamp C3/C3U",
@@ -3372,6 +3372,14 @@
       "m5stampS3a": {
         "name": "M5StampS3A",
         "description": "1.27mm 間距、搭載 ESP32-S3、支援 OTA"
+      },
+      "m5stampS3Bat": {
+        "name": "M5StampS3 BAT",
+        "description": "IoT/支援電池、ESP32-S3FN8 (8MB Flash)、1.27mm 間距、支援 OTA"
+      },
+      "atomS3Lite": {
+        "name": "ATOMS3 Lite",
+        "description": "24x24mm、ESP32-S3FN8 (8MB Flash)、RGB LED、支援 OTA"
       },
       "xiaoEsp32C3": {
         "name": "XIAO ESP32C3",

@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-04-30T01:53:13.210Z",
+  "generatedAt": "2026-04-30T08:59:52.413Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -11947,36 +11947,29 @@
   },
   "boards": [
     {
-      "id": "esp32-generic",
-      "name": "ESP32（無印）",
+      "id": "m5stamp-s3-bat",
+      "name": "M5StampS3 BAT",
       "supportsWifi": true,
       "supportsOta": true,
       "supportsBle": true
     },
     {
-      "id": "esp32-s3-generic",
-      "name": "ESP32-S3",
+      "id": "m5stack-atoms3-lite",
+      "name": "ATOMS3 Lite",
       "supportsWifi": true,
       "supportsOta": true,
       "supportsBle": true
     },
     {
-      "id": "esp32-c3-generic",
-      "name": "ESP32-C3",
+      "id": "m5stamp-s3a",
+      "name": "M5StampS3A",
       "supportsWifi": true,
       "supportsOta": true,
       "supportsBle": true
     },
     {
-      "id": "esp32-c6-generic",
-      "name": "ESP32-C6",
-      "supportsWifi": true,
-      "supportsOta": true,
-      "supportsBle": true
-    },
-    {
-      "id": "m5stack-basic",
-      "name": "M5Stack Basic/Gray/Fire",
+      "id": "m5stamp-c3",
+      "name": "M5Stamp C3/C3U",
       "supportsWifi": true,
       "supportsOta": true,
       "supportsBle": true
@@ -12010,36 +12003,8 @@
       "supportsBle": true
     },
     {
-      "id": "m5stamp-c3",
-      "name": "M5Stamp C3/C3U",
-      "supportsWifi": true,
-      "supportsOta": true,
-      "supportsBle": true
-    },
-    {
-      "id": "m5stamp-s3a",
-      "name": "M5StampS3A",
-      "supportsWifi": true,
-      "supportsOta": true,
-      "supportsBle": true
-    },
-    {
-      "id": "m5stack-atoms3-lite",
-      "name": "ATOMS3 Lite",
-      "supportsWifi": true,
-      "supportsOta": true,
-      "supportsBle": true
-    },
-    {
-      "id": "xiao-esp32c3",
-      "name": "XIAO ESP32C3",
-      "supportsWifi": true,
-      "supportsOta": true,
-      "supportsBle": true
-    },
-    {
-      "id": "xiao-esp32s3",
-      "name": "XIAO ESP32S3",
+      "id": "m5stack-basic",
+      "name": "M5Stack Basic/Gray/Fire",
       "supportsWifi": true,
       "supportsOta": true,
       "supportsBle": true
@@ -12052,8 +12017,22 @@
       "supportsBle": true
     },
     {
-      "id": "rp2040-pico",
-      "name": "Raspberry Pi Pico",
+      "id": "xiao-esp32s3",
+      "name": "XIAO ESP32S3",
+      "supportsWifi": true,
+      "supportsOta": true,
+      "supportsBle": true
+    },
+    {
+      "id": "xiao-esp32c3",
+      "name": "XIAO ESP32C3",
+      "supportsWifi": true,
+      "supportsOta": true,
+      "supportsBle": true
+    },
+    {
+      "id": "rp2040-xiao",
+      "name": "XIAO RP2040",
       "supportsWifi": false,
       "supportsOta": false,
       "supportsBle": false
@@ -12066,18 +12045,46 @@
       "supportsBle": false
     },
     {
-      "id": "rp2040-xiao",
-      "name": "XIAO RP2040",
-      "supportsWifi": false,
-      "supportsOta": false,
-      "supportsBle": false
-    },
-    {
       "id": "rp2040-nano-connect",
       "name": "Arduino Nano RP2040 Connect",
       "supportsWifi": true,
       "supportsOta": false,
       "supportsBle": false
+    },
+    {
+      "id": "rp2040-pico",
+      "name": "Raspberry Pi Pico",
+      "supportsWifi": false,
+      "supportsOta": false,
+      "supportsBle": false
+    },
+    {
+      "id": "esp32-c6-generic",
+      "name": "ESP32-C6",
+      "supportsWifi": true,
+      "supportsOta": true,
+      "supportsBle": true
+    },
+    {
+      "id": "esp32-s3-generic",
+      "name": "ESP32-S3",
+      "supportsWifi": true,
+      "supportsOta": true,
+      "supportsBle": true
+    },
+    {
+      "id": "esp32-c3-generic",
+      "name": "ESP32-C3",
+      "supportsWifi": true,
+      "supportsOta": true,
+      "supportsBle": true
+    },
+    {
+      "id": "esp32-generic",
+      "name": "ESP32（無印）",
+      "supportsWifi": true,
+      "supportsOta": true,
+      "supportsBle": true
     }
   ]
 }

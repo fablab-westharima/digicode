@@ -3347,11 +3347,11 @@
       },
       "m5stackBasic": {
         "name": "M5Stack Basic/Gray/Fire",
-        "description": "Pantalla 2.0\", 3 botones, OTA compatible"
+        "description": "Pantalla 2.0\", 3 botones, OTA compatible (Gray descontinuado)"
       },
       "m5stickCPlus": {
         "name": "M5StickC Plus",
-        "description": "Pantalla 1.14\", IMU, OTA compatible"
+        "description": "Pantalla 1.14\", IMU, OTA compatible (existencias limitadas, sucesor: M5StickC Plus2)"
       },
       "atomLite": {
         "name": "ATOM Lite",
@@ -3363,7 +3363,7 @@
       },
       "m5stampPico": {
         "name": "M5Stamp Pico",
-        "description": "Formato sello ultra compacto, OTA compatible"
+        "description": "Formato sello ultra compacto, OTA compatible (primera generación, descontinuada. Sucesor: M5Stamp Pico Mate)"
       },
       "m5stampC3": {
         "name": "M5Stamp C3/C3U",
@@ -3372,6 +3372,14 @@
       "m5stampS3a": {
         "name": "M5StampS3A",
         "description": "Paso 1,27 mm, ESP32-S3, OTA compatible"
+      },
+      "m5stampS3Bat": {
+        "name": "M5StampS3 BAT",
+        "description": "IoT/con batería, ESP32-S3FN8 (8MB Flash), paso 1,27 mm, OTA compatible"
+      },
+      "atomS3Lite": {
+        "name": "ATOMS3 Lite",
+        "description": "24x24mm, ESP32-S3FN8 (8MB Flash), LED RGB, OTA compatible"
       },
       "xiaoEsp32C3": {
         "name": "XIAO ESP32C3",

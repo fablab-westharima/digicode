@@ -48,60 +48,65 @@ export const CATEGORY_LABELS: Record<BoardDefinition['category'], string> = {
 
 /**
  * 対応ボード一覧 (OTA版)
- * ESP32 系 14 ボード + RP2040 系 4 ボード = 18 ボード (2026-04-20 BP1 時点)。
+ *
+ * カテゴリ表示順序 (UI、`memory:factory_scientist_course` 講座受講者は M5Stack
+ * 系を主に使うため最上位):
+ *   1. M5Stack 系 (上)
+ *   2. XIAO 系 (Seeed)
+ *   3. Raspberry Pi 系 (Pico / Nano RP2040 Connect)
+ *   4. ESP32 Devkit 系 (汎用 ESP32、下)
+ *
+ * 各カテゴリ内は **発売日が新しい順** に並べる (受講者が最新製品を見つけやすく)。
+ * BoardSelector.tsx の SelectGroup 順序もこの並びに合わせる。
+ *
+ * M5StackS3 BAT は 2024 投入の IoT/バッテリー対応 ESP32-S3 board。
+ * 2026-04-30 ボード UI 整理タスクで追加 (改定log 第62回)、20 boards に拡張。
+ *
+ * 販売終了 / 在庫限り表記:
+ *   - M5Stack Gray (生産終了、後継 = M5Stack Basic v2.7 / Fire / Core2)
+ *   - M5StickC Plus (在庫限り、後継 = M5StickC Plus2)
+ *   - M5Stamp Pico 初代 (生産終了、後継 = M5Stamp Pico Mate)
  */
 export const SUPPORTED_BOARDS: BoardDefinition[] = [
-  // 汎用 ESP32（メーカー不問）
+  // ===== 1. M5Stack 系 (発売日新しい順、9 boards) =====
   {
-    id: 'esp32-generic',
-    name: 'ESP32（無印）',
-    fqbn: 'esp32:esp32:esp32',
-    description: 'ESP32-WROOM等、OTA可',
-    category: 'generic',
-    supportsWifi: true,
-    supportsOta: true,
-    supportsBle: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
-  },
-  {
-    id: 'esp32-s3-generic',
-    name: 'ESP32-S3',
+    id: 'm5stamp-s3-bat',
+    name: 'M5StampS3 BAT',
     fqbn: 'esp32:esp32:esp32s3',
-    description: 'USB OTG、カメラ対応、OTA可',
-    category: 'generic',
+    description: 'IoT/バッテリー対応、ESP32-S3FN8 (8MB Flash)、1.27mmピッチ、OTA可',
+    category: 'm5stack',
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
-    id: 'esp32-c3-generic',
-    name: 'ESP32-C3',
+    id: 'm5stack-atoms3-lite',
+    name: 'ATOMS3 Lite',
+    fqbn: 'm5stack:esp32:m5stack_atoms3',
+    description: '24x24mm、ESP32-S3FN8 (8MB Flash)、RGB LED、OTA可',
+    category: 'm5stack',
+    supportsWifi: true,
+    supportsOta: true,
+    supportsBle: true,
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+  },
+  {
+    id: 'm5stamp-s3a',
+    name: 'M5StampS3A',
+    fqbn: 'esp32:esp32:esp32s3',
+    description: '1.27mmピッチ、ESP32-S3搭載、OTA可',
+    category: 'm5stack',
+    supportsWifi: true,
+    supportsOta: true,
+    supportsBle: true,
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+  },
+  {
+    id: 'm5stamp-c3',
+    name: 'M5Stamp C3/C3U',
     fqbn: 'esp32:esp32:esp32c3',
-    description: 'RISC-V、省電力、OTA可',
-    category: 'generic',
-    supportsWifi: true,
-    supportsOta: true,
-    supportsBle: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
-  },
-  {
-    id: 'esp32-c6-generic',
-    name: 'ESP32-C6',
-    fqbn: 'esp32:esp32:esp32c6',
-    description: 'WiFi 6、Thread/Zigbee、OTA可',
-    category: 'generic',
-    supportsWifi: true,
-    supportsOta: true,
-    supportsBle: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
-  },
-  // M5Stackシリーズ
-  {
-    id: 'm5stack-basic',
-    name: 'M5Stack Basic/Gray/Fire',
-    fqbn: 'm5stack:esp32:m5stack_core',
-    description: '2.0インチ画面、ボタン3個、OTA可',
+    description: 'C3搭載スタンプ型、OTA可',
     category: 'm5stack',
     supportsWifi: true,
     supportsOta: true,
@@ -112,7 +117,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     id: 'm5stickc-plus',
     name: 'M5StickC Plus',
     fqbn: 'm5stack:esp32:m5stick_c_plus',
-    description: '1.14インチ画面、IMU搭載、OTA可',
+    description: '1.14インチ画面、IMU搭載、OTA可（在庫限り、後継: M5StickC Plus2）',
     category: 'm5stack',
     supportsWifi: true,
     supportsOta: true,
@@ -145,7 +150,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     id: 'm5stamp-pico',
     name: 'M5Stamp Pico',
     fqbn: 'm5stack:esp32:stamp_pico',
-    description: '超小型スタンプ型、OTA可',
+    description: '超小型スタンプ型、OTA可（初代、生産終了。後継: M5Stamp Pico Mate）',
     category: 'm5stack',
     supportsWifi: true,
     supportsOta: true,
@@ -153,44 +158,22 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
-    id: 'm5stamp-c3',
-    name: 'M5Stamp C3/C3U',
-    fqbn: 'esp32:esp32:esp32c3',
-    description: 'C3搭載スタンプ型、OTA可',
+    id: 'm5stack-basic',
+    name: 'M5Stack Basic/Gray/Fire',
+    fqbn: 'm5stack:esp32:m5stack_core',
+    description: '2.0インチ画面、ボタン3個、OTA可（Gray は生産終了）',
     category: 'm5stack',
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
+  // ===== 2. XIAO 系 (発売日新しい順、4 boards) =====
   {
-    id: 'm5stamp-s3a',
-    name: 'M5StampS3A',
-    fqbn: 'esp32:esp32:esp32s3',
-    description: '1.27mmピッチ、ESP32-S3搭載、OTA可',
-    category: 'm5stack',
-    supportsWifi: true,
-    supportsOta: true,
-    supportsBle: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
-  },
-  {
-    id: 'm5stack-atoms3-lite',
-    name: 'ATOMS3 Lite',
-    fqbn: 'm5stack:esp32:m5stack_atoms3',
-    description: '24x24mm、ESP32-S3FN8 (8MB Flash)、RGB LED、OTA可',
-    category: 'm5stack',
-    supportsWifi: true,
-    supportsOta: true,
-    supportsBle: true,
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
-  },
-  // Seeed Xiaoシリーズ
-  {
-    id: 'xiao-esp32c3',
-    name: 'XIAO ESP32C3',
-    fqbn: 'esp32:esp32:esp32c3',
-    description: '21x17.5mm、RISC-V、OTA可',
+    id: 'xiao-esp32c6',
+    name: 'XIAO ESP32C6',
+    fqbn: 'esp32:esp32:esp32c6',
+    description: '21x17.5mm、WiFi 6、OTA可',
     category: 'xiao',
     supportsWifi: true,
     supportsOta: true,
@@ -209,39 +192,15 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
-    id: 'xiao-esp32c6',
-    name: 'XIAO ESP32C6',
-    fqbn: 'esp32:esp32:esp32c6',
-    description: '21x17.5mm、WiFi 6、OTA可',
+    id: 'xiao-esp32c3',
+    name: 'XIAO ESP32C3',
+    fqbn: 'esp32:esp32:esp32c3',
+    description: '21x17.5mm、RISC-V、OTA可',
     category: 'xiao',
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
-  },
-  // Raspberry Pi / RP2040 系 (BP1-2a, 2026-04-20 追加)
-  // 全ボード WiFi OTA 非対応 (DigiCodeOTA ファームウェアが ESP32 専用)、USB 書き込みのみ対応
-  {
-    id: 'rp2040-pico',
-    name: 'Raspberry Pi Pico',
-    fqbn: 'rp2040:rp2040:rpipico',
-    description: 'RP2040、USB書き込みのみ',
-    category: 'rp2040',
-    supportsWifi: false,
-    supportsOta: false,
-    supportsBle: false,
-    supportedFlashMethods: ['usb'],
-  },
-  {
-    id: 'rp2040-pico-w',
-    name: 'Raspberry Pi Pico W',
-    fqbn: 'rp2040:rp2040:rpipicow',
-    description: 'RP2040 + CYW43439、WiFi対応、USB書き込みのみ',
-    category: 'rp2040',
-    supportsWifi: true,
-    supportsOta: false,
-    supportsBle: false,
-    supportedFlashMethods: ['usb'],
   },
   {
     id: 'rp2040-xiao',
@@ -250,6 +209,19 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     description: '21x17.5mm、RP2040、USB書き込みのみ',
     category: 'xiao',
     supportsWifi: false,
+    supportsOta: false,
+    supportsBle: false,
+    supportedFlashMethods: ['usb'],
+  },
+  // ===== 3. Raspberry Pi 系 (発売日新しい順、3 boards) =====
+  // DigiCodeOTA ファームウェアが ESP32 専用のため OTA 非対応、USB 書き込みのみ。
+  {
+    id: 'rp2040-pico-w',
+    name: 'Raspberry Pi Pico W',
+    fqbn: 'rp2040:rp2040:rpipicow',
+    description: 'RP2040 + CYW43439、WiFi対応、USB書き込みのみ',
+    category: 'rp2040',
+    supportsWifi: true,
     supportsOta: false,
     supportsBle: false,
     supportedFlashMethods: ['usb'],
@@ -264,6 +236,62 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: false,
     supportsBle: false,
     supportedFlashMethods: ['usb'],
+  },
+  {
+    id: 'rp2040-pico',
+    name: 'Raspberry Pi Pico',
+    fqbn: 'rp2040:rp2040:rpipico',
+    description: 'RP2040、USB書き込みのみ',
+    category: 'rp2040',
+    supportsWifi: false,
+    supportsOta: false,
+    supportsBle: false,
+    supportedFlashMethods: ['usb'],
+  },
+  // ===== 4. ESP32 Devkit 系 (汎用、発売日新しい順、4 boards) =====
+  {
+    id: 'esp32-c6-generic',
+    name: 'ESP32-C6',
+    fqbn: 'esp32:esp32:esp32c6',
+    description: 'WiFi 6、Thread/Zigbee、OTA可',
+    category: 'generic',
+    supportsWifi: true,
+    supportsOta: true,
+    supportsBle: true,
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+  },
+  {
+    id: 'esp32-s3-generic',
+    name: 'ESP32-S3',
+    fqbn: 'esp32:esp32:esp32s3',
+    description: 'USB OTG、カメラ対応、OTA可',
+    category: 'generic',
+    supportsWifi: true,
+    supportsOta: true,
+    supportsBle: true,
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+  },
+  {
+    id: 'esp32-c3-generic',
+    name: 'ESP32-C3',
+    fqbn: 'esp32:esp32:esp32c3',
+    description: 'RISC-V、省電力、OTA可',
+    category: 'generic',
+    supportsWifi: true,
+    supportsOta: true,
+    supportsBle: true,
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+  },
+  {
+    id: 'esp32-generic',
+    name: 'ESP32（無印）',
+    fqbn: 'esp32:esp32:esp32',
+    description: 'ESP32-WROOM等、OTA可',
+    category: 'generic',
+    supportsWifi: true,
+    supportsOta: true,
+    supportsBle: true,
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
 ];
 

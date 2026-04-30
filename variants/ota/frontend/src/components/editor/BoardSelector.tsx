@@ -30,6 +30,8 @@ const BOARD_I18N_KEYS: Record<string, string> = {
   'm5stamp-pico': 'm5stampPico',
   'm5stamp-c3': 'm5stampC3',
   'm5stamp-s3a': 'm5stampS3a',
+  'm5stamp-s3-bat': 'm5stampS3Bat', // 2026-04-30 板 UI 整理タスクで追加
+  'm5stack-atoms3-lite': 'atomS3Lite', // 2026-04-30 BoardSelector mapping 漏れ補完
   'xiao-esp32c3': 'xiaoEsp32C3',
   'xiao-esp32s3': 'xiaoEsp32S3',
   'xiao-esp32c6': 'xiaoEsp32C6',
@@ -91,10 +93,11 @@ export function BoardSelector() {
           <SelectValue placeholder={t('editor.board.selectBoard')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectGroup>
-            <SelectLabel className="text-blue-600 font-semibold">{getCategoryLabel('generic')}</SelectLabel>
-            {genericBoards.map(renderBoardItem)}
-          </SelectGroup>
+          {/*
+            Category display order: M5Stack → XIAO → Raspberry Pi → ESP32 Devkit
+            (memory:factory_scientist_course、講座受講者は M5Stack 系を主に使う)。
+            2026-04-30 ボード UI 整理タスクで M5Stack を最上位に移動 (改定log 第62回)。
+          */}
           <SelectGroup>
             <SelectLabel className="text-orange-600 font-semibold">{getCategoryLabel('m5stack')}</SelectLabel>
             {m5stackBoards.map(renderBoardItem)}
@@ -109,6 +112,10 @@ export function BoardSelector() {
               {rp2040Boards.map(renderBoardItem)}
             </SelectGroup>
           )}
+          <SelectGroup>
+            <SelectLabel className="text-blue-600 font-semibold">{getCategoryLabel('generic')}</SelectLabel>
+            {genericBoards.map(renderBoardItem)}
+          </SelectGroup>
         </SelectContent>
       </Select>
     </div>

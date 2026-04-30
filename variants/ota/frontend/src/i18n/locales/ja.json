@@ -3152,11 +3152,11 @@
       },
       "m5stackBasic": {
         "name": "M5Stack Basic/Gray/Fire",
-        "description": "2.0インチ画面、ボタン3個、OTA可"
+        "description": "2.0インチ画面、ボタン3個、OTA可（Gray は生産終了）"
       },
       "m5stickCPlus": {
         "name": "M5StickC Plus",
-        "description": "1.14インチ画面、IMU搭載、OTA可"
+        "description": "1.14インチ画面、IMU搭載、OTA可（在庫限り、後継: M5StickC Plus2）"
       },
       "atomLite": {
         "name": "ATOM Lite",
@@ -3168,7 +3168,7 @@
       },
       "m5stampPico": {
         "name": "M5Stamp Pico",
-        "description": "超小型スタンプ型、OTA可"
+        "description": "超小型スタンプ型、OTA可（初代、生産終了。後継: M5Stamp Pico Mate）"
       },
       "m5stampC3": {
         "name": "M5Stamp C3/C3U",
@@ -3177,6 +3177,14 @@
       "m5stampS3a": {
         "name": "M5StampS3A",
         "description": "1.27mmピッチ、ESP32-S3搭載、OTA可"
+      },
+      "m5stampS3Bat": {
+        "name": "M5StampS3 BAT",
+        "description": "IoT/バッテリー対応、ESP32-S3FN8 (8MB Flash)、1.27mmピッチ、OTA可"
+      },
+      "atomS3Lite": {
+        "name": "ATOMS3 Lite",
+        "description": "24x24mm、ESP32-S3FN8 (8MB Flash)、RGB LED、OTA可"
       },
       "xiaoEsp32C3": {
         "name": "XIAO ESP32C3",
