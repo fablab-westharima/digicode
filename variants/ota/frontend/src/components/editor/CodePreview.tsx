@@ -52,8 +52,11 @@ export function CodePreview({ code, language = 'cpp', className }: CodePreviewPr
         </div>
       </div>
 
-      {/* コード表示 */}
-      <div className="flex-1 overflow-auto p-4 bg-[#0D1117] min-h-0">
+      {/* コード表示 — スクロールバー可視化 (rules/digicode/08-ui-theme.md scrollbar visibility section、AIAssistantPanel/Sidebar と同パターン) */}
+      <div
+        className="flex-1 overflow-auto p-4 bg-[#0D1117] min-h-0 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#3E4451] [&::-webkit-scrollbar-thumb:hover]:bg-[#5C6370]"
+        style={{ scrollbarWidth: 'thin', scrollbarColor: '#3E4451 transparent' }}
+      >
         <pre className="text-sm text-[#E6EDF3] font-mono whitespace-pre-wrap">
           {code || t('editor.codePreview.placeholder')}
         </pre>
