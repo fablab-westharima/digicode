@@ -26,7 +26,6 @@ import type { Catalog, CatalogBlock } from '../catalog-types';
 import { indexByType } from '../catalog';
 import { synthesizeBlock } from '../synthesize-block';
 import { emitXml } from '../xml-builder';
-import type { BlockNode } from '../xml-builder';
 import { validateRoots } from '../case-validator';
 import type { GeneratedCase } from '../case-types';
 import {
@@ -36,35 +35,11 @@ import {
   generateCaseId,
   wrapForCompilability,
 } from '../case-helpers';
-import { OPERATION_TO_INIT_MAP } from './combo';
+import { prependInitForOp } from './combo';
 
 export interface SingletonOptions {
   /** First case sequence number (default: 1). */
   startIndex?: number;
-}
-
-/**
- * Init-aware wrapper: 操作 block の singleton case 生成時に、対応 init を
- * arduino_setup.SETUP に prepend する。既存の SETUP 内容 (== 操作 block 自身が
- * statement で SETUP に置かれていた場合) は init.next で chain して保持。
- */
-function prependInitToSetup(
-  roots: BlockNode[],
-  initSynth: BlockNode,
-): BlockNode[] {
-  return roots.map((root) => {
-    if (root.type !== 'arduino_setup') return root;
-    const existingSetup = root.statements?.SETUP;
-    return {
-      ...root,
-      statements: {
-        ...root.statements,
-        SETUP: existingSetup
-          ? { ...initSynth, next: existingSetup }
-          : initSynth,
-      },
-    };
-  });
 }
 
 export function generateSingletonCases(
@@ -83,18 +58,7 @@ export function generateSingletonCases(
 
     // Init-aware: 操作 block (e.g., humanoid_dance) なら対応 init (humanoid_init)
     // を SETUP に prepend → singleton case でも未宣言 error 解消。
-    // init block 自身を生成する case (block.type が init) はスキップ (重複回避)。
-    const requiredInit = OPERATION_TO_INIT_MAP.get(block.type);
-    if (requiredInit && requiredInit !== block.type) {
-      const initBlock = idx.get(requiredInit);
-      if (initBlock) {
-        const initSynth = synthesizeBlock(initBlock, {
-          mode,
-          blockIndex: idx,
-        });
-        roots = prependInitToSetup(roots, initSynth);
-      }
-    }
+    roots = prependInitForOp(roots, block.type, idx, mode);
 
     const issues = validateRoots(roots, {
       mode,

@@ -44,7 +44,8 @@ describe('INIT_DEPENDENCIES (manual map)', () => {
   });
 
   it('covers cluster top of the 1000-case run', () => {
-    // 7 prefix that cover ~101 fail (35%) of the 286 fail in the 71.4% run.
+    // 9 prefix (第64回 mqtt expand + json split): ~101 fail (35%) cluster top
+    // を解消、json は read (_jsonDoc) と write (_jsonOutDoc) の 2 系統。
     const labels = INIT_DEPENDENCIES.map((d) => d.label).filter(Boolean);
     expect(labels).toEqual(
       expect.arrayContaining([
@@ -54,7 +55,8 @@ describe('INIT_DEPENDENCIES (manual map)', () => {
         'qtr-8a',
         'mqtt',
         'neopixel',
-        'json',
+        'json-read',
+        'json-write',
       ]),
     );
   });
@@ -69,8 +71,27 @@ describe('OPERATION_TO_INIT_MAP (derived)', () => {
     expect(OPERATION_TO_INIT_MAP.get('mqtt_publish')).toBe('mqtt_setup');
   });
 
-  it('maps json_parse → json_create_object', () => {
-    expect(OPERATION_TO_INIT_MAP.get('json_parse')).toBe('json_create_object');
+  it('maps mqtt_connect / mqtt_publish_qos / mqtt_set_buffer_size → mqtt_setup (第64回 expand)', () => {
+    expect(OPERATION_TO_INIT_MAP.get('mqtt_connect')).toBe('mqtt_setup');
+    expect(OPERATION_TO_INIT_MAP.get('mqtt_publish_qos')).toBe('mqtt_setup');
+    expect(OPERATION_TO_INIT_MAP.get('mqtt_set_buffer_size')).toBe(
+      'mqtt_setup',
+    );
+  });
+
+  it('maps json read ops → json_parse (_jsonDoc, 第64回 split)', () => {
+    expect(OPERATION_TO_INIT_MAP.get('json_get_string')).toBe('json_parse');
+    expect(OPERATION_TO_INIT_MAP.get('json_array_get')).toBe('json_parse');
+    expect(OPERATION_TO_INIT_MAP.get('json_has_key')).toBe('json_parse');
+  });
+
+  it('maps json write ops → json_create_object (_jsonOutDoc)', () => {
+    expect(OPERATION_TO_INIT_MAP.get('json_set_bool')).toBe(
+      'json_create_object',
+    );
+    expect(OPERATION_TO_INIT_MAP.get('json_to_string')).toBe(
+      'json_create_object',
+    );
   });
 
   it('does not map a non-listed block', () => {
@@ -89,7 +110,9 @@ describe('generateComboCases', () => {
   const cases = generateComboCases(cat);
 
   it('emits at least one case per init prefix (when catalog has the init)', () => {
-    expect(cases.length).toBeGreaterThanOrEqual(7);
+    // 9 init prefixes (第64回): humanoid + transform + wheel + qtr-8a + qtr-8rc
+    // + mqtt + neopixel + json-read + json-write
+    expect(cases.length).toBeGreaterThanOrEqual(9);
   });
 
   it('every case is tagged with strategy="combo"', () => {

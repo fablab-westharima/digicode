@@ -30,6 +30,7 @@ import type { BlockNode } from '../xml-builder';
 import { validateRoots } from '../case-validator';
 import type { GeneratedCase } from '../case-types';
 import { collectBlockTypes, generateCaseId } from '../case-helpers';
+import { prependInitForOp } from './combo';
 
 export interface PairOptions {
   startIndex?: number;
@@ -218,7 +219,7 @@ function buildPairCase(
     extraRoots.push({ ...peerSynth, x: 50, y: 850 });
   }
 
-  const roots: BlockNode[] = [
+  let roots: BlockNode[] = [
     {
       type: 'arduino_setup',
       x: 50,
@@ -233,6 +234,13 @@ function buildPairCase(
     },
     ...extraRoots,
   ];
+
+  // Init-aware: setup peer / loop peer 両方に対して、対応 init が roots に
+  // 不在なら prepend (rootsContainBlock チェックで重複は自動回避)。
+  // 例: pair(controls_if, humanoid_dance) → humanoid_init prepend、
+  //     pair(humanoid_init, humanoid_dance) → 既に存在するので skip。
+  roots = prependInitForOp(roots, setupBlock.type, idx, mode);
+  roots = prependInitForOp(roots, peerBlock.type, idx, mode);
 
   const issues = validateRoots(roots, { mode, board, blockIndex: idx });
   if (issues.length > 0) {

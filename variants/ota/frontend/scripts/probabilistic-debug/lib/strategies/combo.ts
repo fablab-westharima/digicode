@@ -49,17 +49,15 @@ export interface InitDependency {
 }
 
 /**
- * 依存関係マップ — 7 prefix が 1000-case fail の cluster top (~101 件、35%) を占める。
- * 各 init prefix に対する操作 block を block-catalog.json grep で確認済 (2026-04-30)。
+ * 依存関係マップ — 1000-case fail の cluster top (~101 件、35% on 71.4% baseline)
+ * + 第64回 fine-tuning (mqtt 全 ops + json 2 系統 split) を反映。
  *
- * Cluster top 対応 (HA は scope 外、cluster top に未登場のため、必要なら別途追加):
- *   1. humanoid (42 件) — humanoid_init + 10 ops
- *   2. mqtt (18 件)     — mqtt_setup + 9 ops (mqtt_setup が global を宣言する init 役)
- *   3. transform (10 件) — transform_init + 10 ops
- *   4. qtr (9 件)       — qtr_8a_init + 10 ops (qtr_8rc_init は variation で別 combo)
- *   5. _jsonDoc (8 件)  — json_create_object + 15 ops
- *   6. NUM_PIXELS (7 件) — neopixel_init + 5 ops
- *   7. wheel (7 件)     — wheel_init + 7 ops
+ * 各 init prefix に対する操作 block を block-catalog.json grep + jsonBlocks.ts 実装
+ * 精読 (2026-04-30) で確認:
+ *   - mqtt: `mqtt_setup` のみが `PubSubClient mqttClient(espClient);` 宣言、
+ *     全 mqtt_* ops が `mqttClient` 参照 (mqtt_connect も含む)
+ *   - json: `json_parse` / `json_parse_size` が `_jsonDoc` (input) 宣言、
+ *     `json_create_object` が `_jsonOutDoc` (output) 宣言、両者は別系統
  */
 export const INIT_DEPENDENCIES: readonly InitDependency[] = [
   {
@@ -107,12 +105,17 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     ],
   },
   {
+    // mqtt_setup が `PubSubClient mqttClient(espClient);` を declares、
+    // 全 mqtt_* ops が mqttClient 参照 (第64回で全 ops 追加)。
     init: 'mqtt_setup',
     label: 'mqtt',
     operations: [
-      'mqtt_publish', 'mqtt_subscribe', 'mqtt_unsubscribe', 'mqtt_disconnect',
+      'mqtt_connect', 'mqtt_connect_with_lwt', 'mqtt_is_connected',
+      'mqtt_publish', 'mqtt_publish_qos',
+      'mqtt_subscribe', 'mqtt_unsubscribe', 'mqtt_disconnect',
       'mqtt_loop', 'mqtt_get_state', 'mqtt_on_message',
       'mqtt_topic_value', 'mqtt_message_value',
+      'mqtt_set_buffer_size', 'mqtt_set_keepalive', 'mqtt_last_will',
     ],
   },
   {
@@ -124,13 +127,23 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     ],
   },
   {
-    init: 'json_create_object',
-    label: 'json',
+    // json_parse / json_parse_size が `StaticJsonDocument _jsonDoc;` を declares、
+    // 全 json read ops (get_*/has_key/array_*) が _jsonDoc 参照 (第64回 split)。
+    init: 'json_parse',
+    label: 'json-read',
     operations: [
-      'json_parse', 'json_parse_size', 'json_get_string', 'json_get_number',
-      'json_get_int', 'json_get_bool', 'json_get_nested', 'json_has_key',
-      'json_array_size', 'json_array_get', 'json_set_bool', 'json_set_number',
-      'json_set_string', 'json_to_string', 'json_to_string_pretty',
+      'json_get_string', 'json_get_number', 'json_get_int', 'json_get_bool',
+      'json_get_nested', 'json_has_key', 'json_array_size', 'json_array_get',
+    ],
+  },
+  {
+    // json_create_object が `StaticJsonDocument _jsonOutDoc;` を declares、
+    // 全 json write ops (set_*/to_string/to_string_pretty) が _jsonOutDoc 参照。
+    init: 'json_create_object',
+    label: 'json-write',
+    operations: [
+      'json_set_bool', 'json_set_number', 'json_set_string',
+      'json_to_string', 'json_to_string_pretty',
     ],
   },
 ];
@@ -155,6 +168,71 @@ export const OPERATION_TO_INIT_MAP: Map<string, string> = (() => {
   }
   return map;
 })();
+
+/**
+ * 既存 roots ツリー内に target 型の block が存在するか深さ優先で検出。
+ * Init duplication 回避用 (例えば pair が humanoid_init+humanoid_dance を生成
+ * する場合、prependInitForOp は重複 prepend を避けるため早期 return する)。
+ */
+function rootsContainBlock(
+  roots: BlockNode[],
+  targetType: string,
+): boolean {
+  function walk(node: BlockNode | null | undefined): boolean {
+    if (!node) return false;
+    if (node.type === targetType) return true;
+    if (node.values) {
+      for (const v of Object.values(node.values)) {
+        if (walk(v)) return true;
+      }
+    }
+    if (node.statements) {
+      for (const s of Object.values(node.statements)) {
+        if (walk(s)) return true;
+      }
+    }
+    if (node.next && walk(node.next)) return true;
+    return false;
+  }
+  return roots.some((r) => walk(r));
+}
+
+/**
+ * Init-aware 共通 helper — 操作 block (e.g., humanoid_dance) を含む roots に
+ * 対応 init (humanoid_init) を arduino_setup.SETUP の先頭に prepend する。
+ * 既に init が roots 内のどこかにある場合は no-op (重複回避)。
+ *
+ * singleton.ts / edge.ts (numberBoundary + dropdownEnum) / pair.ts (loop peer)
+ * から共通利用、init-dependent 操作 block の "未宣言 error" cluster を解消。
+ */
+export function prependInitForOp(
+  roots: BlockNode[],
+  opType: string,
+  idx: Map<string, CatalogBlock>,
+  mode: Mode,
+): BlockNode[] {
+  const requiredInit = OPERATION_TO_INIT_MAP.get(opType);
+  if (!requiredInit || requiredInit === opType) return roots;
+  if (rootsContainBlock(roots, requiredInit)) return roots;
+
+  const initBlock = idx.get(requiredInit);
+  if (!initBlock) return roots;
+
+  const initSynth = synthesizeBlock(initBlock, { mode, blockIndex: idx });
+  return roots.map((root) => {
+    if (root.type !== 'arduino_setup') return root;
+    const existingSetup = root.statements?.SETUP;
+    return {
+      ...root,
+      statements: {
+        ...root.statements,
+        SETUP: existingSetup
+          ? { ...initSynth, next: existingSetup }
+          : initSynth,
+      },
+    };
+  });
+}
 
 /**
  * Operation block を arduino_loop.LOOP に next chain として束ねる helper。

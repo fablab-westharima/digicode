@@ -28,6 +28,7 @@ import {
   generateCaseId,
   wrapForCompilability,
 } from '../case-helpers';
+import { prependInitForOp } from './combo';
 
 export interface EdgeOptions {
   startIndex?: number;
@@ -114,7 +115,8 @@ function generateNumberBoundaryCases(
       const value = variant === 'min' ? numField.min : numField.max;
       const synth = synthesizeBlock(block, { mode, blockIndex: idx });
       synth.fields = { ...(synth.fields ?? {}), [numField.name]: value };
-      const roots = wrapForCompilability(synth, block);
+      let roots = wrapForCompilability(synth, block);
+      roots = prependInitForOp(roots, block.type, idx, mode);
 
       const issues = validateRoots(roots, { mode, board, blockIndex: idx });
       if (issues.length > 0) {
@@ -186,7 +188,8 @@ function generateDropdownEnumCases(
         ...(synth.fields ?? {}),
         [t.fieldName]: optionValue,
       };
-      const roots = wrapForCompilability(synth, t.block);
+      let roots = wrapForCompilability(synth, t.block);
+      roots = prependInitForOp(roots, t.block.type, idx, mode);
 
       const issues = validateRoots(roots, { mode, board, blockIndex: idx });
       if (issues.length > 0) {
