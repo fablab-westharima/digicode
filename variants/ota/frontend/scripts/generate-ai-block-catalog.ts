@@ -58,6 +58,9 @@ interface BoardInfo {
   supportsWifi: boolean;
   supportsOta: boolean;
   supportsBle: boolean;
+  /** BUG-073: omitted (or false) for the supported set; true for boards
+   *  excluded from probabilistic-debug case generation. */
+  experimental?: boolean;
 }
 
 interface BlockCatalog {
@@ -321,18 +324,30 @@ function parseBoardFilters(
 
 function parseBoards(content: string): BoardInfo[] {
   const boards: BoardInfo[] = [];
-  // Match each board object; [^}] also matches newlines (char class negation)
+  // Match each board object; [^}] also matches newlines (char class negation).
+  // BUG-073: also capture the optional `experimental: true` flag if present
+  // anywhere in the same board literal (it lives after supportedFlashMethods
+  // for the RP2040 entries).
   const re =
-    /\{\s*id:\s*'([^']+)'[^}]*name:\s*'([^']+)'[^}]*supportsWifi:\s*(true|false)[^}]*supportsOta:\s*(true|false)[^}]*supportsBle:\s*(true|false)/g;
+    /\{\s*id:\s*'([^']+)'([^}]*)\}/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(content)) !== null) {
-    boards.push({
+    const body = m[2];
+    const nameMatch = /name:\s*'([^']+)'/.exec(body);
+    const wifiMatch = /supportsWifi:\s*(true|false)/.exec(body);
+    const otaMatch = /supportsOta:\s*(true|false)/.exec(body);
+    const bleMatch = /supportsBle:\s*(true|false)/.exec(body);
+    if (!nameMatch || !wifiMatch || !otaMatch || !bleMatch) continue;
+    const expMatch = /experimental:\s*(true|false)/.exec(body);
+    const board: BoardInfo = {
       id: m[1],
-      name: m[2],
-      supportsWifi: m[3] === 'true',
-      supportsOta: m[4] === 'true',
-      supportsBle: m[5] === 'true',
-    });
+      name: nameMatch[1],
+      supportsWifi: wifiMatch[1] === 'true',
+      supportsOta: otaMatch[1] === 'true',
+      supportsBle: bleMatch[1] === 'true',
+    };
+    if (expMatch && expMatch[1] === 'true') board.experimental = true;
+    boards.push(board);
   }
   return boards;
 }

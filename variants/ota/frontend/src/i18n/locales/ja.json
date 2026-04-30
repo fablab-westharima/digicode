@@ -3130,6 +3130,8 @@
     }
   },
   "boardSelector": {
+    "experimental": "実験的",
+    "experimentalDescription": "実験的サポート: 動作未保証、商用品質の対象外。次回以降のリリースで正式対応予定。",
     "categories": {
       "generic": "汎用 ESP32",
       "m5stack": "M5Stack シリーズ",

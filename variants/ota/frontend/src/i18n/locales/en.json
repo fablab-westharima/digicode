@@ -3140,6 +3140,8 @@
     }
   },
   "boardSelector": {
+    "experimental": "Experimental",
+    "experimentalDescription": "Experimental support: behaviour not guaranteed, outside the production-quality scope. Official support planned in a future release.",
     "categories": {
       "generic": "Generic ESP32",
       "m5stack": "M5Stack Series",

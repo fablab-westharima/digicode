@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-04-30T17:24:37.902Z",
+  "generatedAt": "2026-04-30T18:13:06.848Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -12035,28 +12035,32 @@
       "name": "XIAO RP2040",
       "supportsWifi": false,
       "supportsOta": false,
-      "supportsBle": false
+      "supportsBle": false,
+      "experimental": true
     },
     {
       "id": "rp2040-pico-w",
       "name": "Raspberry Pi Pico W",
       "supportsWifi": true,
       "supportsOta": false,
-      "supportsBle": false
+      "supportsBle": false,
+      "experimental": true
     },
     {
       "id": "rp2040-nano-connect",
       "name": "Arduino Nano RP2040 Connect",
       "supportsWifi": true,
       "supportsOta": false,
-      "supportsBle": false
+      "supportsBle": false,
+      "experimental": true
     },
     {
       "id": "rp2040-pico",
       "name": "Raspberry Pi Pico",
       "supportsWifi": false,
       "supportsOta": false,
-      "supportsBle": false
+      "supportsBle": false,
+      "experimental": true
     },
     {
       "id": "esp32-c6-generic",

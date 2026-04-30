@@ -3325,6 +3325,8 @@
     }
   },
   "boardSelector": {
+    "experimental": "Experimental",
+    "experimentalDescription": "Soporte experimental: comportamiento no garantizado, fuera del alcance de calidad de producción. Soporte oficial previsto en una versión futura.",
     "categories": {
       "generic": "ESP32 Genérico",
       "m5stack": "Serie M5Stack",

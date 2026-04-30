@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { loadCatalog } from '../catalog';
+import { loadCatalog, nonExperimentalBoards } from '../catalog';
 import { ALL_MODES } from '../catalog-types';
 import { generateMatrixCases } from './matrix';
 
 const cat = loadCatalog();
+const supportedBoards = nonExperimentalBoards(cat);
 
 describe('generateMatrixCases (defaults)', () => {
   const cases = generateMatrixCases(cat);
@@ -25,19 +26,31 @@ describe('generateMatrixCases (defaults)', () => {
     }
   });
 
-  it('hits a meaningful slice of the boards (≥15 distinct under 100-case cap)', () => {
-    // Round-robin with mode-fastest visits 15 distinct boards for cap=100
-    // (7 modes × 14-15 boards). Boards 15-17 (RP2040 tail) are exercised
-    // when the cap is raised; here we just guard the 15-board floor.
+  it('hits a meaningful slice of the supported boards (≥12 distinct under 100-case cap)', () => {
+    // BUG-073: experimental (RP2040) boards are excluded from the matrix;
+    // round-robin with mode-fastest visits ≥12 distinct boards for cap=100
+    // (7 modes × 13-16 supported boards).
     const boards = new Set(cases.map((c) => c.boardId));
-    expect(boards.size).toBeGreaterThanOrEqual(15);
+    expect(boards.size).toBeGreaterThanOrEqual(12);
   });
 
-  it('hits all 20 boards when the cap is large enough (mode×board = 140)', () => {
-    const fullCases = generateMatrixCases(cat, { maxCount: 140 });
+  it('hits every supported board when the cap is large enough (mode × board = 7 × 16 = 112)', () => {
+    const fullCases = generateMatrixCases(cat, {
+      maxCount: ALL_MODES.length * supportedBoards.length,
+    });
     const boards = new Set(fullCases.map((c) => c.boardId));
-    for (const b of cat.boards) {
+    for (const b of supportedBoards) {
       expect(boards.has(b.id)).toBe(true);
+    }
+  });
+
+  it('never emits a case for an experimental board (BUG-073)', () => {
+    const experimentalIds = new Set(
+      cat.boards.filter((b) => b.experimental).map((b) => b.id),
+    );
+    expect(experimentalIds.size).toBeGreaterThan(0); // sanity: catalog has some
+    for (const c of cases) {
+      expect(experimentalIds.has(c.boardId)).toBe(false);
     }
   });
 

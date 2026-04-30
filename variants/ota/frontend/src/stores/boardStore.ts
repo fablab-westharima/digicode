@@ -32,6 +32,14 @@ export interface BoardDefinition {
   supportsOta: boolean;
   supportsBle: boolean;
   supportedFlashMethods: FlashMethod[];
+  /**
+   * BUG-073: True for boards we ship UI access to but cannot guarantee
+   * compile/runtime quality on. Excluded from probabilistic-debug case
+   * generation (and therefore from the release passRate denominator) and
+   * surfaced in BoardSelector with an "実験的サポート" badge so users know
+   * they are off the supported path.
+   */
+  experimental?: boolean;
 }
 
 /**
@@ -212,6 +220,8 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: false,
     supportsBle: false,
     supportedFlashMethods: ['usb'],
+    // BUG-073: PIO raspberrypi platform missing 'seeed_xiao_rp2040' board.json.
+    experimental: true,
   },
   // ===== 3. Raspberry Pi 系 (発売日新しい順、3 boards) =====
   // DigiCodeOTA ファームウェアが ESP32 専用のため OTA 非対応、USB 書き込みのみ。
@@ -225,6 +235,9 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: false,
     supportsBle: false,
     supportedFlashMethods: ['usb'],
+    // BUG-073: framework-arduino-mbed WiFi.cpp upstream bug (`ap_list`
+    // not declared) leaks into the resolved framework path.
+    experimental: true,
   },
   {
     id: 'rp2040-nano-connect',
@@ -236,6 +249,9 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: false,
     supportsBle: false,
     supportedFlashMethods: ['usb'],
+    // BUG-073: arduino-mbed core has no PIO equivalent; falling back through
+    // raspberrypi/pico still pulls in framework-arduino-mbed WiFi.cpp.
+    experimental: true,
   },
   {
     id: 'rp2040-pico',
@@ -247,6 +263,9 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: false,
     supportsBle: false,
     supportedFlashMethods: ['usb'],
+    // BUG-073: shares the framework resolution problem with the pico-w
+    // variant; kept experimental until the RP2040 framework story is fixed.
+    experimental: true,
   },
   // ===== 4. ESP32 Devkit 系 (汎用、発売日新しい順、4 boards) =====
   {

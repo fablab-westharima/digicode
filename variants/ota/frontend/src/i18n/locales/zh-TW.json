@@ -3325,6 +3325,8 @@
     }
   },
   "boardSelector": {
+    "experimental": "實驗性",
+    "experimentalDescription": "實驗性支援：運作不保證，不在商用品質範圍內。預計於未來版本正式支援。",
     "categories": {
       "generic": "通用 ESP32",
       "m5stack": "M5Stack 系列",

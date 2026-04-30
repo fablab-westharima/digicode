@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Cpu, Cable } from 'lucide-react';
+import { Cpu, Cable, FlaskConical } from 'lucide-react';
 
 // Board ID to i18n key mapping
 const BOARD_I18N_KEYS: Record<string, string> = {
@@ -74,6 +74,21 @@ export function BoardSelector() {
     <SelectItem key={board.id} value={board.id}>
       <div className="flex items-center gap-2">
         <span>{getBoardName(board)}</span>
+        {/* BUG-073: experimental-mark badge for boards excluded from the
+            release passRate denominator (currently RP2040 family). */}
+        {board.experimental && (
+          <Badge
+            variant="outline"
+            className="text-xs px-1.5 py-0 h-5 border-amber-500 text-amber-700 dark:text-amber-400"
+            title={t('boardSelector.experimentalDescription', {
+              defaultValue:
+                '実験的サポート: 動作未保証、商用品質の対象外。次回以降のリリースで正式対応予定。',
+            })}
+          >
+            <FlaskConical className="h-3 w-3 mr-1" />
+            {t('boardSelector.experimental', { defaultValue: '実験的' })}
+          </Badge>
+        )}
         {!board.supportsOta && (
           <Badge variant="secondary" className="text-xs px-1.5 py-0 h-5">
             <Cable className="h-3 w-3 mr-1" />

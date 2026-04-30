@@ -21,7 +21,11 @@ import {
   type CatalogBoard,
   type Mode,
 } from '../catalog-types';
-import { indexByType, isBlockAllowedOnBoard } from '../catalog';
+import {
+  indexByType,
+  isBlockAllowedOnBoard,
+  nonExperimentalBoards,
+} from '../catalog';
 import { synthesizeBlock } from '../synthesize-block';
 import { emitXml } from '../xml-builder';
 import { validateRoots } from '../case-validator';
@@ -75,14 +79,17 @@ export function generateMatrixCases(
   let seq = options.startIndex ?? 1;
   const cases: GeneratedCase[] = [];
 
-  const totalCombos = ALL_MODES.length * catalog.boards.length;
+  // BUG-073: drop experimental boards from the matrix; release passRate
+  // denominator is the supported ESP32 set.
+  const supportedBoards = nonExperimentalBoards(catalog);
+  const totalCombos = ALL_MODES.length * supportedBoards.length;
   const visitMax = Math.min(cap * 2, totalCombos); // walk extra to absorb skips
 
   for (let c = 0; c < visitMax; c++) {
     if (cases.length >= cap) break;
     const mode = ALL_MODES[c % ALL_MODES.length];
     const board =
-      catalog.boards[Math.floor(c / ALL_MODES.length) % catalog.boards.length];
+      supportedBoards[Math.floor(c / ALL_MODES.length) % supportedBoards.length];
 
     const rep = pickRepresentative(mode, board, catalog);
     if (!rep) continue;

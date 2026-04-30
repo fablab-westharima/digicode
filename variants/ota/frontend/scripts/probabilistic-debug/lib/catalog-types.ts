@@ -83,6 +83,12 @@ export interface CatalogBoard {
   supportsWifi: boolean;
   supportsOta: boolean;
   supportsBle: boolean;
+  /**
+   * BUG-073: True for boards we ship in the UI but exclude from the
+   * probabilistic-debug case generator (and thus from the release passRate
+   * denominator). Mirrors `BoardDefinition.experimental` in boardStore.ts.
+   */
+  experimental?: boolean;
 }
 
 export interface CatalogBoardFilters {

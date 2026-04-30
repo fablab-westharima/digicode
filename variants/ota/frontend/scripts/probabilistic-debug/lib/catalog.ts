@@ -86,6 +86,17 @@ export function indexByType(catalog: Catalog): Map<string, CatalogBlock> {
   return map;
 }
 
+/**
+ * BUG-073: Boards that count toward the release passRate denominator.
+ * `experimental: true` boards (currently the RP2040 family) ship in the UI
+ * but are excluded here so a 1000-case run reflects the supported ESP32
+ * universe instead of being dragged down by upstream PIO/framework bugs we
+ * do not yet have a fix for.
+ */
+export function nonExperimentalBoards(catalog: Catalog): CatalogBoard[] {
+  return catalog.boards.filter((b) => !b.experimental);
+}
+
 /** SHA-256 over the catalog's blocks list — for run-to-run regression tagging. */
 export function catalogHash(catalog: Catalog): string {
   return createHash('sha256').update(JSON.stringify(catalog.blocks)).digest('hex');

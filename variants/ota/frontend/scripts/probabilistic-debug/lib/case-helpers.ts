@@ -24,6 +24,11 @@ export const DEFAULT_MODE: Mode = 'all_blocks';
 /**
  * Boards are ordered most-capable first; pickBoard walks this list and
  * returns the first one that satisfies the block's boardRequires.
+ *
+ * BUG-073: experimental boards (currently RP2040 family) intentionally
+ * dropped from the preferred order — pickBoard now refuses to return any
+ * experimental board, even via fallback, so the release passRate denominator
+ * stays inside the supported ESP32 universe.
  */
 export const PREFERRED_BOARD_ORDER: readonly string[] = [
   'esp32-generic',
@@ -31,8 +36,6 @@ export const PREFERRED_BOARD_ORDER: readonly string[] = [
   'esp32-c3-generic',
   'esp32-c6-generic',
   'm5stack-basic',
-  'rp2040-pico-w',
-  'rp2040-pico',
 ];
 
 export function pickMode(block: CatalogBlock): Mode {
@@ -44,15 +47,17 @@ export function pickBoard(
   block: CatalogBlock,
   catalog: Catalog,
 ): CatalogBoard {
+  // BUG-073: pickBoard only returns supported (non-experimental) boards.
+  const supported = catalog.boards.filter((b) => !b.experimental);
   for (const id of PREFERRED_BOARD_ORDER) {
-    const board = catalog.boards.find((b) => b.id === id);
+    const board = supported.find((b) => b.id === id);
     if (board && isBlockAllowedOnBoard(block, board)) return board;
   }
-  for (const board of catalog.boards) {
+  for (const board of supported) {
     if (isBlockAllowedOnBoard(block, board)) return board;
   }
   throw new Error(
-    `No board satisfies boardRequires=${block.boardRequires} for "${block.type}"`,
+    `No supported board satisfies boardRequires=${block.boardRequires} for "${block.type}"`,
   );
 }
 
