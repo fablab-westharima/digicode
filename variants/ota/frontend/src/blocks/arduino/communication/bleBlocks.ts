@@ -81,10 +81,15 @@ class BleRxCallbacks : public NimBLECharacteristicCallbacks {
     bleMessage = String(v.c_str());
   }
 };`;
-  // NimBLE v2: advertising name は default 非自動 (migration guide § Advertising)。
-  // pAdv->setName() を start() 前に明示呼出 → onDisconnect 内の
-  // NimBLEDevice::startAdvertising() 再 advertise 時も同 config で名前付き
-  // advertising が継続。(BUG-069)
+  // NimBLE v2: advertising name は default 非自動 + scan response も default
+  // OFF (migration guide § Advertising line 192/195)。Primary advertising
+  // packet は 31 byte 上限 (Flags 3 + 128-bit NUS Service UUID 18 = 21 byte
+  // 占有、残 10 byte で name overhead 2 byte 引くと name は 8 byte 上限 →
+  // "DigiCodeTest" 12 byte は entry できず silently drop)。
+  // scan response を enableScanResponse(true) で有効化 → setName() が
+  // m_scanResp フラグを参照して scan response data に name を配置 → 12+ byte
+  // name も収容可能。onDisconnect 内の NimBLEDevice::startAdvertising() 再
+  // advertise 時も同 config 継続。(BUG-069 round 2)
   return `
   NimBLEDevice::init("${name}");
   pBleServer = NimBLEDevice::createServer();
@@ -96,6 +101,7 @@ class BleRxCallbacks : public NimBLECharacteristicCallbacks {
   pNus->start();
   NimBLEAdvertising* pAdv = NimBLEDevice::getAdvertising();
   pAdv->addServiceUUID(NUS_SERVICE_UUID);
+  pAdv->enableScanResponse(true);
   pAdv->setName("${name}");
   pAdv->start();
 `;
@@ -479,14 +485,19 @@ generator.forBlock['ble_init'] = function(block: Blockly.Block) {
   generator.definitions_['ble_globals'] = BLE_GLOBALS;
   generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
   generator.definitions_['ble_server_callbacks'] = SERVER_CALLBACKS;
-  // NimBLE v2: advertising name は default 非自動 (migration guide § Advertising)。
-  // ble_init で getAdvertising()->setName() を pre-set しておけば、後の
-  // ble_start_advertising (= NimBLEDevice::startAdvertising() 静的呼出) や
-  // onDisconnect の re-advertise も config 保持で名前付き advertising される。(BUG-069)
+  // NimBLE v2: advertising name は default 非自動 + scan response も default
+  // OFF (migration guide § Advertising line 192/195)。GATT custom service
+  // が長い 128-bit UUID を addServiceUUID() で primary adv に積む可能性が
+  // 高く、12+ byte name は scan response 経由でなければ収容不能。ble_init
+  // で enableScanResponse(true) + setName() を pre-set しておけば、後の
+  // ble_start_advertising (= NimBLEDevice::startAdvertising() 静的呼出) +
+  // onDisconnect の re-advertise も config 保持で名前付き advertising 継続。
+  // (BUG-069 round 2)
   return `
   NimBLEDevice::init("${name}");
   pBleServer = NimBLEDevice::createServer();
   pBleServer->setCallbacks(new BleServerCallbacks());
+  NimBLEDevice::getAdvertising()->enableScanResponse(true);
   NimBLEDevice::getAdvertising()->setName("${name}");
 `;
 };

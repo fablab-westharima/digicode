@@ -309,7 +309,7 @@ describe('xmlToCpp — NimBLE v2 callback signatures + scan ms (BUG-065)', () =>
     expect(out.fullCode).not.toMatch(/pScan->start\(5, false\)/);
   });
 
-  it('ble_uart_setup emits pAdv->setName() before pAdv->start() — NimBLE v2 advertising name (BUG-069)', () => {
+  it('ble_uart_setup emits enableScanResponse + setName before start — NimBLE v2 (BUG-069 round 2)', () => {
     const xml =
       '<xml xmlns="https://developers.google.com/blockly/xml">' +
       '<block type="arduino_setup" x="50" y="50">' +
@@ -322,16 +322,21 @@ describe('xmlToCpp — NimBLE v2 callback signatures + scan ms (BUG-065)', () =>
       '<block type="arduino_loop" x="50" y="350"></block>' +
       '</xml>';
     const out = xmlToCpp(xml);
-    // NimBLE v2 で advertising name は default 非自動、setName() 明示呼出が必要
+    // NimBLE v2: scan response default OFF + advertising name default 非自動
+    // → 両方 enable しないと name が advertising に乗らない (round 1 = setName のみは
+    // 12+ byte name で primary adv 31-byte 制限超過 → silently drop)
+    expect(out.fullCode).toContain('pAdv->enableScanResponse(true)');
     expect(out.fullCode).toContain('pAdv->setName("DigiCodeTest")');
-    // setName() は start() の前で呼ばれる
+    // 順序: enableScanResponse → setName → start (setName 内で m_scanResp 参照)
+    const enableIdx = out.fullCode.indexOf('pAdv->enableScanResponse(true)');
     const setNameIdx = out.fullCode.indexOf('pAdv->setName(');
     const startIdx = out.fullCode.indexOf('pAdv->start()');
-    expect(setNameIdx).toBeGreaterThan(0);
+    expect(enableIdx).toBeGreaterThan(0);
+    expect(enableIdx).toBeLessThan(setNameIdx);
     expect(setNameIdx).toBeLessThan(startIdx);
   });
 
-  it('ble_init emits getAdvertising()->setName() — NimBLE v2 advertising name (BUG-069)', () => {
+  it('ble_init emits enableScanResponse + setName via getAdvertising() — NimBLE v2 (BUG-069 round 2)', () => {
     const xml =
       '<xml xmlns="https://developers.google.com/blockly/xml">' +
       '<block type="arduino_setup" x="50" y="50">' +
@@ -344,9 +349,14 @@ describe('xmlToCpp — NimBLE v2 callback signatures + scan ms (BUG-065)', () =>
       '<block type="arduino_loop" x="50" y="350"></block>' +
       '</xml>';
     const out = xmlToCpp(xml);
-    // NimBLE v2 で ble_init は getAdvertising()->setName() を pre-set しておく
-    // (後続 startAdvertising() / onDisconnect 再 advertise が config 保持で名前付き)
+    // GATT custom path も同様に enableScanResponse(true) + setName(name) を pre-set
+    expect(out.fullCode).toContain('NimBLEDevice::getAdvertising()->enableScanResponse(true)');
     expect(out.fullCode).toContain('NimBLEDevice::getAdvertising()->setName("GattDevice")');
+    // 順序: enableScanResponse → setName (setName 内で m_scanResp 参照のため)
+    const enableIdx = out.fullCode.indexOf('NimBLEDevice::getAdvertising()->enableScanResponse(true)');
+    const setNameIdx = out.fullCode.indexOf('NimBLEDevice::getAdvertising()->setName(');
+    expect(enableIdx).toBeGreaterThan(0);
+    expect(enableIdx).toBeLessThan(setNameIdx);
   });
 
   it('ble_add_characteristic (write) emits GattWriteCallbacks with NimBLEConnInfo& onWrite signature', () => {
