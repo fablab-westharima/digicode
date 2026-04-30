@@ -629,6 +629,9 @@
     "serial": {
       "autoScroll": "Auto Scroll",
       "clear": "Clear",
+      "connectUsb": "USB Connect",
+      "disconnectUsb": "USB Disconnect",
+      "connecting": "Connecting...",
       "waiting": "Waiting for data from ESP32...",
       "connectPrompt": "Please connect to ESP32",
       "sendPlaceholder": "Message to send...",

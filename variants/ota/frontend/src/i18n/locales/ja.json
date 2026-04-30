@@ -629,6 +629,9 @@
     "serial": {
       "autoScroll": "自動スクロール",
       "clear": "クリア",
+      "connectUsb": "USB 接続",
+      "disconnectUsb": "USB 切断",
+      "connecting": "接続中...",
       "waiting": "ESP32からのデータを待機中...",
       "connectPrompt": "ESP32に接続してください",
       "sendPlaceholder": "送信するメッセージ...",

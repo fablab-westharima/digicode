@@ -629,6 +629,9 @@
     "serial": {
       "autoScroll": "自動捲動",
       "clear": "清除",
+      "connectUsb": "USB 連接",
+      "disconnectUsb": "USB 中斷連線",
+      "connecting": "連接中...",
       "waiting": "等待 ESP32 的資料...",
       "connectPrompt": "請連接 ESP32",
       "sendPlaceholder": "要傳送的訊息...",

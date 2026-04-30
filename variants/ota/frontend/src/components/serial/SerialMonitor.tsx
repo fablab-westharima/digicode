@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
 import { useTranslation } from 'react-i18next';
+import { Plug, Unplug } from 'lucide-react';
 
 interface SerialMonitorProps {
   className?: string;
@@ -11,7 +12,14 @@ interface SerialMonitorProps {
 
 export function SerialMonitor({ className }: SerialMonitorProps) {
   const { t } = useTranslation();
-  const { output: serialOutput, send: serialSend, clearOutput: serialClear, status: serialStatus } = useSerialStore();
+  const {
+    output: serialOutput,
+    send: serialSend,
+    clearOutput: serialClear,
+    status: serialStatus,
+    connect: serialConnect,
+    disconnect: serialDisconnect,
+  } = useSerialStore();
   const { status: wifiStatus } = useWifiStore();
 
   const [inputValue, setInputValue] = useState('');
@@ -63,6 +71,34 @@ export function SerialMonitor({ className }: SerialMonitorProps) {
           {t('editor.menu.serialMonitor', { defaultValue: 'シリアルモニター' })}
         </span>
         <div className="flex items-center gap-2">
+          {/* USB connect/disconnect toggle (BLE UAT 後の reconnect 用、2026-04-30 追加) */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => (serialStatus === 'connected' ? serialDisconnect() : serialConnect())}
+            disabled={serialStatus === 'connecting'}
+            className={`text-xs h-6 px-2 ${
+              serialStatus === 'connected'
+                ? 'text-green-500 hover:text-green-400'
+                : serialStatus === 'connecting'
+                  ? 'text-yellow-400'
+                  : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {serialStatus === 'connected' ? (
+              <>
+                <Unplug className="w-3 h-3 mr-1" />
+                {t('editor.serial.disconnectUsb', { defaultValue: 'USB 切断' })}
+              </>
+            ) : serialStatus === 'connecting' ? (
+              t('editor.serial.connecting', { defaultValue: '接続中...' })
+            ) : (
+              <>
+                <Plug className="w-3 h-3 mr-1" />
+                {t('editor.serial.connectUsb', { defaultValue: 'USB 接続' })}
+              </>
+            )}
+          </Button>
           <label className="flex items-center gap-1 text-xs text-muted-foreground">
             <input
               type="checkbox"
