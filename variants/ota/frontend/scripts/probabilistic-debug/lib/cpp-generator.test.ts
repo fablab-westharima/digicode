@@ -483,3 +483,48 @@ describe('xmlToCpp — ArduinoHA defensive include (BUG-057)', () => {
     expect(out.fullCode).toContain('HASensorNumber haSensor_temperature');
   });
 });
+
+describe('xmlToCpp — esp32_digital_read accepts Boolean sockets (BUG-070)', () => {
+  // Before BUG-070, esp32_digital_read declared setOutput(true, 'Number'), so
+  // Blockly's type checker silently rejected its connection to Boolean sockets
+  // such as ha_binary_sensor_update.VALUE. The block then survived as an orphan
+  // top block whose scrubNakedValue rendered `digitalRead(N);` at file scope —
+  // which the C++ compiler rejects with "expected constructor before '(' token".
+  // The fix widens the output to ['Number', 'Boolean'] so the connection holds.
+  it('esp32_digital_read connects to ha_binary_sensor_update.VALUE without orphan emit', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="ha_binary_sensor_create">' +
+      '<field name="SENSOR_ID">motion</field>' +
+      '<field name="NAME">人感センサー</field>' +
+      '<field name="DEVICE_CLASS">motion</field>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350">' +
+      '<statement name="LOOP">' +
+      '<block type="ha_binary_sensor_update">' +
+      '<field name="SENSOR_ID">motion</field>' +
+      '<value name="VALUE">' +
+      '<block type="esp32_digital_read"><field name="PIN">13</field></block>' +
+      '</value>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    // The digital read must be embedded as the value argument of setState.
+    // Blockly wraps the value with parens when valueToCode requests Order.ATOMIC
+    // and the source Order is FUNCTION_CALL, so the literal output is
+    // `setState((digitalRead(13)))`.
+    expect(out.fullCode).toMatch(/haBinarySensor_motion\.setState\(\(?digitalRead\(13\)\)?\)/);
+    // The hardcoded `false` fallback (signal of valueToCode failure) must not
+    // appear — that's the silently-wrong behaviour BUG-070 fixes.
+    expect(out.fullCode).not.toContain('setState(false)');
+    // The bare `digitalRead(13);` form at file scope (the compile error trigger)
+    // must not appear anywhere.
+    expect(out.fullCode).not.toMatch(/^\s*digitalRead\(13\)\s*;\s*$/m);
+  });
+});

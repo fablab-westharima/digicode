@@ -95,7 +95,12 @@ Blockly.Blocks['esp32_digital_read'] = {
         .appendField(Blockly.Msg.BLOCKS_ESP32_DIGITALREAD_PIN || 'Pin')
         .appendField(new Blockly.FieldNumber(2, 0, 39), 'PIN')
         .appendField(Blockly.Msg.BLOCKS_ESP32_DIGITALREAD_INPUT || 'read');
-    this.setOutput(true, 'Number');
+    // BUG-070: digitalRead returns int 0/1 — accept both Number and Boolean
+    // sockets so connections like ha_binary_sensor_update.VALUE (Boolean)
+    // don't get silently rejected by the Blockly type checker, leaving the
+    // block as an orphan top block whose scrubNakedValue emits
+    // `digitalRead(N);` at file scope.
+    this.setOutput(true, ['Number', 'Boolean']);
     this.setColour('#2196F3');
     this.setTooltip(Blockly.Msg.BLOCKS_ESP32_DIGITALREAD_TOOLTIP || 'Read digital pin state');
   }
