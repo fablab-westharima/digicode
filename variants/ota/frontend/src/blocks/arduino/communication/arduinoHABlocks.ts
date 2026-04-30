@@ -263,7 +263,13 @@ javascriptGenerator.forBlock['ha_sensor_update'] = function(block: Blockly.Block
   const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.ATOMIC) || '0';
   const varName = `haSensor_${sensorId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
-  return `  ${varName}.setValue(${value});\n`;
+  // ArduinoHA v2.1 HASensorNumber::setValue has 3 overloads (uint16_t / uint32_t /
+  // float) via _SET_VALUE_OVERLOAD macro; passing an int from math_number is
+  // ambiguous. ha_sensor_create initializes with PrecisionP1 (1 decimal) so
+  // float is the design intent; static_cast resolves the overload set
+  // unambiguously and is loss-less for any int that fits the underlying types.
+  // (BUG-066)
+  return `  ${varName}.setValue(static_cast<float>(${value}));\n`;
 };
 
 // ===== バイナリセンサー =====

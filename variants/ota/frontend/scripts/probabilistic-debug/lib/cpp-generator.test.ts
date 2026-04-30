@@ -342,6 +342,70 @@ describe('xmlToCpp — NimBLE v2 callback signatures + scan ms (BUG-065)', () =>
   });
 });
 
+describe('xmlToCpp — HASensorNumber setValue overload disambiguation (BUG-066)', () => {
+  // ArduinoHA v2.1 HASensorNumber::setValue is generated via _SET_VALUE_OVERLOAD
+  // macro for uint16_t / uint32_t / float; passing an int from math_number is
+  // ambiguous and fails compile. ha_sensor_create initializes with PrecisionP1
+  // so float is the design intent — emit static_cast<float> to disambiguate.
+  it('ha_sensor_update emits static_cast<float> wrapping the value', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="ha_sensor_create">' +
+      '<field name="DEVICE_CLASS">temperature</field>' +
+      '<field name="SENSOR_ID">temperature</field>' +
+      '<field name="NAME">温度</field>' +
+      '<field name="UNIT">°C</field>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350">' +
+      '<statement name="LOOP">' +
+      '<block type="ha_sensor_update">' +
+      '<field name="SENSOR_ID">temperature</field>' +
+      '<value name="VALUE">' +
+      '<block type="math_number"><field name="NUM">25</field></block>' +
+      '</value>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    expect(out.fullCode).toContain('haSensor_temperature.setValue(static_cast<float>(25))');
+    // The bare `setValue(25)` form (without cast) must not appear — that's the
+    // exact pattern that triggers the ambiguous-overload error.
+    expect(out.fullCode).not.toMatch(/setValue\(25\)(?!\s*\)|;)/);
+  });
+});
+
+describe('xmlToCpp — Serial2 redundant declaration removed (BUG-067)', () => {
+  // arduino-esp32 v3.x ships Serial2 as a definition in
+  // cores/esp32/HardwareSerial.cpp:49. Re-declaring it in user globals causes
+  // a linker `multiple definition of 'Serial2'` error. Generator must use the
+  // framework-provided Serial2 directly without emitting `HardwareSerial Serial2(2);`.
+  it('serial2_begin does not emit a redundant HardwareSerial Serial2(2) declaration', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="serial2_begin">' +
+      '<field name="BAUD">9600</field>' +
+      '<field name="RX">16</field>' +
+      '<field name="TX">17</field>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    // Generator must still emit the begin call against the framework Serial2
+    expect(out.fullCode).toContain('Serial2.begin(9600, SERIAL_8N1, 16, 17)');
+    // But must NOT redeclare Serial2 — the framework already does this.
+    expect(out.fullCode).not.toMatch(/HardwareSerial\s+Serial2\s*\(\s*2\s*\)\s*;/);
+  });
+});
+
 describe('xmlToCpp — ArduinoHA defensive include (BUG-057)', () => {
   // ha_xxx_create generators declare globals with HA classes (HASensorNumber,
   // HALight, ...). Before BUG-057, only ha_device_init emitted
