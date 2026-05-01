@@ -1,65 +1,118 @@
 # Getting Started
 
-**Last updated:** 2026-04-21
+**Last updated:** 2026-05-02
 
-DigiCode is a visual programming environment that makes it easy to program ESP32-based robots and IoT devices using blocks.
-
-This guide explains the **basic USB workflow**. For WiFi OTA / BLE setup, see the [OTA Setup Guide](./05-ota-guide.md).
+DigiCode is a visual programming environment for ESP32-based robots and IoT devices using blocks. This guide walks you through **blinking an LED via USB** in the shortest possible path.
 
 ---
 
-## What You Need
+## 🚀 Run It in 5 Minutes — Shortest Path
 
-### Hardware
+1. **Install the USB driver** (CP2102 or CH340 — only if not installed yet, see below)
+2. **Open DigiCode** → top-left **"Samples"** → select **"LED Blink"**
+3. **Connect ESP32 to your PC via USB cable**
+4. Top-right **"Upload"** button → choose **"USB"** → pick the ESP32 port in the browser dialog
+5. **After upload completes, the ESP32 built-in LED (GPIO2) blinks at 1-second intervals** ✅
 
-- **ESP32 development board** — see [Recommended Hardware](./recommended-hardware.md)
-- **USB cable** (Type-C or Micro-USB, data-capable)
-- Sensors and motors (depending on what you're making)
+That's it. You now have a working DigiCode environment.
 
-### Software
-
-- **Web browser** (Chrome or Edge recommended)
-- **USB driver** (CP2102 or CH340 — see below)
-
----
-
-## Create an Account (Optional)
-
-**You can create and upload programs as a guest.** Create an account if you want to save programs to the cloud.
-
-1. Go to DigiCode
-2. Click "Login" → "Register"
-3. Enter your email and password
-
-> **About plans:** Start with Guest (Free) to try it out. → [Plan Overview](./index.md#plans)
+> 💡 **Guest access works**: account creation is optional. Register only if you want to save programs to the cloud ([details](#guest-access-and-accounts)).
 
 ---
 
-## Step 1: Install USB Driver
+## 🟡 Before You Start
 
-You need a USB driver before connecting your ESP32 to your PC.
+| Item | Details |
+|---|---|
+| **Hardware** | ESP32 development board ([recommended list](./recommended-hardware.md)) + USB cable (Type-C or Micro-USB, **data-capable** — charge-only cables won't work) |
+| **Software** | Web browser (Chrome / Edge recommended — Web Serial API required) |
+| **Driver** | CP2102 or CH340 depending on the USB-serial chip on your board (see table below) |
+
+---
+
+## 5 Steps to Done
+
+### Step 1: Install the USB Driver
+
+Install a USB-serial driver before connecting the ESP32 to your PC.
 
 | Chip | Example boards | Download |
-|------|---------------|---------|
+|---|---|---|
 | **CP2102** | ESP32-DevKitC, M5StampS3A, etc. | https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers |
 | **CH340** | Many generic ESP32 boards | http://www.wch.cn/downloads/CH341SER_ZIP.html |
 
-> Check your board's product description to find the chip type. Restart your PC after installing.
+Check your board's product description for the chip type. Restart your PC after installation so the OS picks up the new driver.
+
+> 💡 **Most M5Stack boards use CP2102**. Generic low-cost ESP32 boards usually use CH340.
+
+### Step 2: Open DigiCode
+
+Visit [DigiCode](https://digital-fab.jp) and open the editor. **You can use it as a guest** — no signup required.
+
+### Step 3: Load the "LED Blink" Sample
+
+1. Click **"Samples"** at the top-left
+2. Choose the **"Basic"** category → **"LED Blink"**
+3. Blocks are auto-placed into the workspace
+
+> ✨ **Success-first approach**: confirming "it works" with a sample before learning the block mechanics has higher retention. If you want to place blocks yourself, see [below](#placing-blocks-yourself-reference).
+
+### Step 4: Connect ESP32 via USB and Upload
+
+1. Connect the ESP32 to your PC via USB cable
+2. Click the **"Upload"** button at the top-right of the editor
+3. Choose **"USB"**
+4. Pick the ESP32 port in the browser's serial port dialog (e.g., `COM3`, `/dev/ttyUSB0`, `/dev/cu.usbserial-XXXX`)
+5. Upload starts → the ESP32 auto-restarts when complete
+
+### Step 5: Verify
+
+Success: the ESP32 built-in LED (GPIO2) blinks at **1-second intervals**.
 
 ---
 
-## Step 2: Create a Program (LED Blink)
+## Trouble: Port Doesn't Appear
 
-1. Open the DigiCode editor
-2. Place the following blocks from the toolbox:
+### No device shows up in the browser's port dialog
 
-**Setup block:**
+Most common cause is missing USB driver:
+
+1. **Step 1 driver** not installed / no reboot after install → install + reboot
+2. Verify the **USB cable supports data** (charge-only cables won't make the ESP32 visible to the PC)
+3. Unplug + replug the ESP32 → click "Upload" again
+
+Still stuck? See [Troubleshooting](./troubleshooting.md).
+
+---
+
+## Details and Concepts
+
+### Program Upload vs Firmware Upload
+
+| Operation | Content | When |
+|---|---|---|
+| **Program Upload** | Upload the program built with blocks to the ESP32 | Every time (USB / WiFi OTA / BLE) |
+| **Firmware Upload** | Upload base software for WiFi OTA / BLE | **First time only, only if using WiFi OTA / BLE** |
+
+**If you only use USB, firmware upload is not needed.**
+
+### Guest Access and Accounts
+
+- **Guest**: program creation, upload, and samples all work. Saving is file download only.
+- **Account (Free)**: cloud-save programs, plus access to AI block generation, feedback submission, and other extras → [plan overview](./index.md#plans)
+
+To register, click **"Login" → "Register"** and enter your email and password.
+
+### Placing Blocks Yourself (reference)
+
+For those who prefer to assemble blocks instead of using a sample. Minimal LED-blink code:
+
+**Setup:**
 ```
-Setup:
-  Set Pin Mode [2] to [OUTPUT]
+Set Pin Mode [2] to [OUTPUT]
 ```
 
-**Loop block:**
+**Loop:**
 ```
 Repeat forever:
   Digital Write [2] HIGH
@@ -68,85 +121,60 @@ Repeat forever:
   Wait [1000] ms
 ```
 
-> GPIO2 is the ESP32 built-in LED.
+GPIO2 is the ESP32 built-in LED. For block details, see the [Block Reference](./block-reference.md).
+
+### Sample Categories
+
+| Category | Contents |
+|---|---|
+| **Basic** | LED blink, serial communication, button input |
+| **Sensors** | Ultrasonic, temperature/humidity, light, accelerometer |
+| **Motors** | Servo, DC motor, stepper |
+| **Robots** | Humanoid, wheeled, transform |
+| **IoT** | WiFi, MQTT, Home Assistant |
+| **Competition** | Line tracing, micromouse |
 
 ---
 
-## Step 3: Upload via USB
+## What's Next
 
-1. **Connect ESP32 to PC via USB cable**
-2. Click the **"Upload"** button in the editor
-3. Select **"USB"**
-4. Choose the ESP32 port in the browser's serial port dialog (e.g., COM3, /dev/ttyUSB0)
-5. Upload starts → ESP32 auto-restarts after completion
+### Upload Without a Cable (intermediate+)
 
-**Verify:** The ESP32 built-in LED (GPIO2) blinks at 1-second intervals.
+If plugging in USB every time is inconvenient, you can set up wireless upload:
 
-### If the port doesn't appear
-
-The USB driver may not be installed correctly. Go back to Step 1 and install the driver.
-
----
-
-## Step 4: Try Sample Projects
-
-1. Click the **"Samples"** button in the editor
-2. Choose from categories:
-   - **Basic** — LED blink, serial communication
-   - **Sensors** — ultrasonic sensor, temperature/humidity
-   - **Competition** — line tracing, micromouse
-3. Load the sample
-4. Adjust pin numbers as needed
-5. Upload via USB and verify
-
----
-
-## Difference Between Program Upload and Firmware Upload
-
-| Operation | Content | When |
-|-----------|---------|------|
-| **Program Upload** | Upload the program made with blocks | Every time (USB / WiFi OTA / BLE) |
-| **Firmware Upload** | Upload base software for WiFi OTA / BLE | **First time only, only if using WiFi OTA / BLE** |
-
-**If you only use USB, firmware upload is not required.**
-
----
-
-## Optional: Upload Without a Cable
-
-If connecting a USB cable every time is inconvenient, you can set up WiFi OTA / BLE.
-
-- **WiFi OTA** — fastest wireless upload (supports bulk updates)
+- **WiFi OTA** — fastest wireless upload (supports bulk updates of multiple devices)
 - **BLE** — Bluetooth-based (no WiFi needed, great for cased devices)
 
 A one-time USB setup is required: **Firmware Upload** + WiFi configuration (~5 min).
 
-> **Intermediate+ recommended:** WiFi OTA requires network configuration and troubleshooting can be complex. We recommend getting comfortable with USB first before switching.
+> 📘 **Details**: [OTA Setup Guide](./05-ota-guide.md)
 
-→ Details: [OTA Setup Guide](./05-ota-guide.md)
+### Class Feature (Enterprise plan)
 
----
-
-## Using Classes (Enterprise Plan)
-
-- **Teachers:** Create a class and share the invitation URL with students
-- **Students:** Join the class via the invitation URL and complete assignments
+- **Teachers**: create a class and share the invite URL with students
+- **Students**: join via the invite URL and complete assignments
 
 → Details: [FAQ (Class Feature)](./faq.md)
+
+### High-Frequency Compilation (advanced)
+
+If you exceed the cloud compile quota, you can run a local compile server on your own PC.
+
+→ Details: [Local Compile Server](./local-compile-server.md)
 
 ---
 
 ## Next Steps
 
-- [Recommended Hardware](./recommended-hardware.md) — Verified device list
-- [Block Reference](./block-reference.md) — How to use all blocks
-- [Hardware Setup Guide](./hardware-setup.md) — Sensor and motor wiring
-- [Troubleshooting](./troubleshooting.md) — Common issues and solutions
+- [Recommended Hardware](./recommended-hardware.md) — verified device list
+- [Block Reference](./block-reference.md) — how to use every block
+- [Hardware Setup Guide](./hardware-setup.md) — sensor and motor wiring
+- [Troubleshooting](./troubleshooting.md) — common issues and fixes
 - [OTA Setup Guide](./05-ota-guide.md) — WiFi OTA / BLE configuration
-- [Local Compile Server](./local-compile-server.md) — Compile on your own PC (advanced)
+- [Local Compile Server](./local-compile-server.md) — compile on your own PC (advanced)
 
 ---
 
 ## Support
 
-If you encounter issues, check [Troubleshooting](./troubleshooting.md) or file a GitHub Issue.
+If you run into issues, check [Troubleshooting](./troubleshooting.md) or file a GitHub Issue.
