@@ -3,9 +3,10 @@
 One-command installer for the DigiCode local compile-server
 (`ghcr.io/fablab-westharima/digicode-compile-api:latest`).
 
-> **Where to find it after publication:**
+> **Public mirror:**
 > [`fablab-westharima/digicode-installer`](https://github.com/fablab-westharima/digicode-installer)
-> (Public repo, mirrored from this directory.)
+> — this directory is the upstream; the public repo is updated by hand
+> when something here changes (license: MIT).
 
 ---
 
