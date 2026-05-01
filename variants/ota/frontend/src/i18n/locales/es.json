@@ -4136,7 +4136,7 @@
     "uninstallDescription": "Elimina el contenedor y los volúmenes persistentes (incluida la caché de compilación). Ejecuta el siguiente comando en tu Terminal o PowerShell.",
     "macHint": "Ejecuta en Terminal.app.",
     "linuxHint": "Ejecuta en cualquier terminal (bash/zsh).",
-    "windowsHint": "Ejecuta en PowerShell (sin permisos de administrador).",
+    "windowsHint": "Abre \"Windows PowerShell\" (64 bits estándar; no las variantes \"x86\" o \"ISE\"). En Windows 11 con PowerShell 7 instalado, también vale \"PowerShell\". No se requieren permisos de administrador.",
     "copy": "Copiar",
     "copied": "Copiado",
     "installNoteDocker": "Se requiere Docker. Si no está instalado, el script muestra las URL de descarga específicas del sistema operativo.",

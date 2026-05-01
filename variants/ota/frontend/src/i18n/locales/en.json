@@ -3951,7 +3951,7 @@
     "uninstallDescription": "Removes the container and persistent volumes (including the compile cache). Run the command below in your Terminal or PowerShell.",
     "macHint": "Run in Terminal.app.",
     "linuxHint": "Run in any terminal (bash/zsh).",
-    "windowsHint": "Run in PowerShell (no admin privileges required).",
+    "windowsHint": "Open \"Windows PowerShell\" (64-bit; not the \"x86\" or \"ISE\" variants). On Windows 11 with PowerShell 7 installed, plain \"PowerShell\" also works. No admin privileges required.",
     "copy": "Copy",
     "copied": "Copied",
     "installNoteDocker": "Docker is required. If not installed, the script prints OS-specific download URLs.",

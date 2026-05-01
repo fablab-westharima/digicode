@@ -4136,7 +4136,7 @@
     "uninstallDescription": "刪除容器與永續性磁碟區 (包含編譯快取)。請在終端機或 PowerShell 中執行下列指令。",
     "macHint": "在「終端機」應用程式中執行。",
     "linuxHint": "在任何終端機 (bash/zsh) 中執行。",
-    "windowsHint": "在 PowerShell 中執行 (不需系統管理員權限)。",
+    "windowsHint": "啟動「Windows PowerShell」(64 位元標準版,不是「x86」或「ISE」版本) 後執行。在 Windows 11 上已安裝 PowerShell 7 時,使用「PowerShell」亦可。不需系統管理員權限。",
     "copy": "複製",
     "copied": "已複製",
     "installNoteDocker": "需要 Docker。若尚未安裝,腳本會顯示對應作業系統的下載網址。",

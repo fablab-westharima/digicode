@@ -179,7 +179,7 @@ export function LocalServerSetupDialog({
             <p className="text-xs text-muted-foreground">
               {t('localServerSetup.windowsHint', {
                 defaultValue:
-                  'PowerShell (管理者権限不要) で実行してください。',
+                  '「Windows PowerShell」 (64-bit 標準版、x86 / ISE ではない方) を起動して実行してください。Windows 11 で PowerShell 7 を入れている場合は 「PowerShell」 でも OK。管理者権限は不要です。',
               })}
             </p>
             <CommandBlock command={windowsCmd} />

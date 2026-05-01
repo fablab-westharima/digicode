@@ -16,6 +16,11 @@ bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-i
 
 ### Windows (PowerShell)
 
+Open **"Windows PowerShell"** from the Start menu — the 64-bit standard
+build, *not* the "x86" or "ISE" variants Windows search also lists. On
+Windows 11 with PowerShell 7 installed, plain **"PowerShell"** works too.
+No admin privileges required.
+
 ```powershell
 irm https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.ps1 | iex
 ```

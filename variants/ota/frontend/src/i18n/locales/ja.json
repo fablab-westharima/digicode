@@ -3941,7 +3941,7 @@
     "uninstallDescription": "コンテナと永続ボリューム (コンパイルキャッシュ含む) を削除します。下のコマンドをターミナル / PowerShell で実行してください。",
     "macHint": "ターミナル.app で実行してください。",
     "linuxHint": "任意のターミナル (bash/zsh) で実行してください。",
-    "windowsHint": "PowerShell (管理者権限不要) で実行してください。",
+    "windowsHint": "「Windows PowerShell」 (64-bit 標準版、x86 / ISE ではない方) を起動して実行してください。Windows 11 で PowerShell 7 を入れている場合は 「PowerShell」 でも OK。管理者権限は不要です。",
     "copy": "コピー",
     "copied": "コピー済",
     "installNoteDocker": "Docker が必要です (未インストールの場合はスクリプトが OS 別 DL URL を案内します)。",

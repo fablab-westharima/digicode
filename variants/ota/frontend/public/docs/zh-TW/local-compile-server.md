@@ -16,6 +16,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-i
 
 ### Windows (PowerShell)
 
+從開始選單啟動 **「Windows PowerShell」** (64 位元標準版,而非搜尋結果中也會出現的「x86」或「ISE」版本)。在 Windows 11 上若已安裝 PowerShell 7,使用 **「PowerShell」** 亦可。不需系統管理員權限。
+
 ```powershell
 irm https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.ps1 | iex
 ```

@@ -16,6 +16,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-i
 
 ### Windows (PowerShell)
 
+スタートメニューから **「Windows PowerShell」** (64-bit 標準版、検索結果に出る `x86` や `ISE` ではない方) を起動してください。Windows 11 で PowerShell 7 を入れている場合は **「PowerShell」** でも OK。管理者権限は不要です。
+
 ```powershell
 irm https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.ps1 | iex
 ```
