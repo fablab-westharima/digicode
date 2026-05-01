@@ -87,8 +87,19 @@ bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-i
 
 ### Windows
 
-- **Docker Desktop for Windows** (WSL2 必須、インストーラが案内): https://www.docker.com/products/docker-desktop/
-- 軽量・OSS 代替: [Rancher Desktop](https://rancherdesktop.io/) / [Podman Desktop](https://podman-desktop.io/)
+**🥇 推奨: Microsoft Store**
+
+Microsoft Store で「Docker Desktop」を検索 → 発行元が **Docker Inc** であることを確認 → 「インストール」をクリック。MSIX で OS が install を一元管理するため、install 中に追加 window が出ず、ストア経由で自動更新される。一般 user / 老若男女向けの第一候補。
+
+**直接 install (.exe)**
+
+- [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/) (WSL2 必須、インストーラが案内)
+
+> ⚠️ **重要**: Installer が起動するすべての window (cmd / PowerShell の subprocess を含む) は **install 完了まで絶対に閉じないでください**。途中で window を閉じると `C:\ProgramData\DockerDesktop` が壊れた状態で残り、以降の install で「ProgramData\DockerDesktop must be owned by an elevated account」エラーが連発します (下記 [トラブルシュート](#docker-install-が-programdatadockerdesktop-must-be-owned-by-an-elevated-account-で失敗する) 参照)。
+
+**軽量・OSS 代替**
+
+[Rancher Desktop](https://rancherdesktop.io/) / [Podman Desktop](https://podman-desktop.io/)
 
 ### Linux
 
@@ -182,6 +193,23 @@ panic / エラーが出ている場合は <https://github.com/fablab-westharima/
 ### Apple Silicon でコンパイルが遅い
 
 Docker Desktop (Apple Silicon ビルド) または OrbStack を使っているか確認してください。両方とも arm64 ネイティブで動作します (compile-api イメージは multi-arch、x86 エミュレーション不要)。
+
+### Docker install が「ProgramData\DockerDesktop must be owned by an elevated account」で失敗する
+
+**原因**: 過去の Docker Desktop install が途中で失敗 (例: installer が spawn した cmd / PowerShell window をユーザーが意図せず閉じた) して、`C:\ProgramData\DockerDesktop` が誤った所有者で残ったまま。以降の install attempt は同じ場所をチェックして reject し続ける。
+
+**対処**: **管理者 PowerShell** (スタートメニュー → PowerShell 右クリック → 「管理者として実行」) で以下 4 行を実行 → installer を再実行。
+
+```powershell
+Remove-Item "C:\ProgramData\DockerDesktop" -Recurse -Force
+New-Item -ItemType Directory -Path "C:\ProgramData\DockerDesktop" -Force | Out-Null
+icacls "C:\ProgramData\DockerDesktop" /setowner "*S-1-5-32-544" /T
+icacls "C:\ProgramData\DockerDesktop" /grant "*S-1-5-32-544:(OI)(CI)F" /T
+```
+
+`*S-1-5-32-544` は Administrators グループの SID (英語/日本語 Windows どちらでも有効)。Microsoft Store 版 install でも同じ所有権チェックを行うため、Store 版で hit した場合も同じ手順で対処できる。
+
+> 💡 **再発防止**: 直接 install (.exe) は途中で installer の subprocess window を閉じないこと。心配なら Microsoft Store 版が安全 (subprocess window を出さない)。
 
 ---
 

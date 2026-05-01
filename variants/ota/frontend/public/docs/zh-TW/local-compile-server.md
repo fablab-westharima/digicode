@@ -87,8 +87,19 @@ bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-i
 
 ### Windows
 
-- **Docker Desktop for Windows** (需 WSL2,安裝程式會引導): https://www.docker.com/products/docker-desktop/
-- 輕量 / OSS 替代方案: [Rancher Desktop](https://rancherdesktop.io/)、[Podman Desktop](https://podman-desktop.io/)
+**🥇 推薦: Microsoft Store**
+
+在 Microsoft Store 搜尋「Docker Desktop」→ 確認發行者為 **Docker Inc** → 點擊「安裝」。MSIX 由 OS 統一管理,安裝過程中不會跳出額外 window,並可自動更新。一般使用者首選。
+
+**直接安裝 (.exe)**
+
+- [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/) (需 WSL2,安裝程式會引導)
+
+> ⚠️ **重要**: 安裝程式啟動的所有 window (包含 cmd / PowerShell 子處理程序) 在安裝完成前 **絕對不要關閉**。中途關閉會導致 `C:\ProgramData\DockerDesktop` 處於損壞狀態,之後每次安裝都會出現「ProgramData\DockerDesktop must be owned by an elevated account」錯誤 (詳見下方[疑難排解](#docker-安裝出現-cprogramdatadockerdesktop-must-be-owned-by-an-elevated-account-錯誤))。
+
+**輕量 / OSS 替代方案**
+
+[Rancher Desktop](https://rancherdesktop.io/)、[Podman Desktop](https://podman-desktop.io/)
 
 ### Linux
 
@@ -182,6 +193,23 @@ docker logs digicode-compile-api
 ### Apple Silicon 編譯緩慢
 
 請確認使用 Docker Desktop (Apple Silicon 版) 或 OrbStack。兩者皆原生支援 arm64;compile-api 映像為 multi-arch,不需 x86 模擬。
+
+### Docker 安裝出現「C:\ProgramData\DockerDesktop must be owned by an elevated account」錯誤
+
+**原因**: 先前的 Docker Desktop 安裝在中途失敗 — 通常是安裝程式啟動的 cmd / PowerShell 子視窗被使用者意外關閉。`C:\ProgramData\DockerDesktop` 殘留資料夾擁有者錯誤,之後所有安裝 (含 Microsoft Store 版) 都會被同一個權限檢查擋下。
+
+**解法**: 開啟 **管理員 PowerShell** (開始選單 → PowerShell 右鍵 → 「以系統管理員身分執行」),執行下列 4 行指令後重新執行 Docker Desktop 安裝程式:
+
+```powershell
+Remove-Item "C:\ProgramData\DockerDesktop" -Recurse -Force
+New-Item -ItemType Directory -Path "C:\ProgramData\DockerDesktop" -Force | Out-Null
+icacls "C:\ProgramData\DockerDesktop" /setowner "*S-1-5-32-544" /T
+icacls "C:\ProgramData\DockerDesktop" /grant "*S-1-5-32-544:(OI)(CI)F" /T
+```
+
+`*S-1-5-32-544` 是 Administrators 群組 SID,英文版/日文版 Windows 都適用。Microsoft Store 版安裝若遇到同樣錯誤,套用相同步驟即可。
+
+> 💡 **預防**: 直接安裝 (.exe) 過程中切勿關閉子處理程序視窗。若想避免此風險,改用 Microsoft Store 版 (MSIX 不會啟動額外視窗)。
 
 ---
 

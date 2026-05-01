@@ -90,8 +90,19 @@ The script detects when Docker is missing and prints OS-specific download URLs.
 
 ### Windows
 
-- **Docker Desktop for Windows** (WSL2 backend; the installer guides you): https://www.docker.com/products/docker-desktop/
-- Lightweight / OSS alternatives: [Rancher Desktop](https://rancherdesktop.io/), [Podman Desktop](https://podman-desktop.io/)
+**🥇 Recommended: Microsoft Store**
+
+Search for "Docker Desktop" in the Microsoft Store, verify the publisher is **Docker Inc**, and click Install. The MSIX package is OS-managed, doesn't open extra subprocess windows during install, and updates automatically. Best default for general / non-technical users.
+
+**Direct installer (.exe)**
+
+- [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/) (WSL2 backend; the installer guides you)
+
+> ⚠️ **Important**: Do NOT close any window the installer opens (including spawned cmd / PowerShell subprocesses) until install finishes. Closing one mid-flight leaves `C:\ProgramData\DockerDesktop` in a broken state and every subsequent install attempt fails with "ProgramData\DockerDesktop must be owned by an elevated account" (see [Troubleshooting](#docker-install-fails-with-cprogramdatadockerdesktop-must-be-owned-by-an-elevated-account) below).
+
+**Lightweight / OSS alternatives**
+
+[Rancher Desktop](https://rancherdesktop.io/), [Podman Desktop](https://podman-desktop.io/)
 
 ### Linux
 
@@ -185,6 +196,23 @@ If you see a panic, file an issue at <https://github.com/fablab-westharima/digic
 ### Slow compiles on Apple Silicon
 
 Make sure you're on Docker Desktop (Apple Silicon build) or OrbStack — both run native arm64. The compile-api image is multi-arch; you should not need x86 emulation.
+
+### Docker install fails with "C:\ProgramData\DockerDesktop must be owned by an elevated account"
+
+**Cause**: a previous Docker Desktop install was interrupted — typically the installer spawned a cmd / PowerShell subprocess and the user closed it before install finished. The leftover `C:\ProgramData\DockerDesktop` folder is owned by the wrong account, and every subsequent install (including the Microsoft Store version) hits the same ownership check and refuses to proceed.
+
+**Fix**: open **Administrator PowerShell** (Start menu → right-click PowerShell → "Run as administrator"), run the four commands below, then re-run the Docker Desktop installer:
+
+```powershell
+Remove-Item "C:\ProgramData\DockerDesktop" -Recurse -Force
+New-Item -ItemType Directory -Path "C:\ProgramData\DockerDesktop" -Force | Out-Null
+icacls "C:\ProgramData\DockerDesktop" /setowner "*S-1-5-32-544" /T
+icacls "C:\ProgramData\DockerDesktop" /grant "*S-1-5-32-544:(OI)(CI)F" /T
+```
+
+`*S-1-5-32-544` is the Administrators group SID and works on both English and Japanese Windows. Apply the same fix if the Microsoft Store version hits this — its install path runs Docker's permission check too.
+
+> 💡 **Prevention**: with the direct .exe installer, never close subprocess windows during install. If you'd rather not worry about it, use the Microsoft Store install — MSIX doesn't spawn extra windows.
 
 ---
 
