@@ -4,6 +4,12 @@
 
 > **Este guia é opcional.** DigiCode funciona **apenas com um cabo USB**. Familiariza-te primeiro com o fluxo USB em [Primeiros Passos](./getting-started.md) e consulta este guia quando necessário.
 
+> ⚠️ **Utilizadores de Windows**: WiFi OTA é **avançado** no Windows — requer instalar o Bonjour e configurar rede / Firewall. Para utilizadores principiantes de Windows recomendamos:
+> - **Upload USB** (guiado pela GUI integrada do DigiCode, sem instalação extra)
+> - **Bluetooth (BLE) OTA** (sem cabo USB, sem instalação extra, adequado para principiantes)
+>
+> Utilizadores Mac / Linux podem experimentar o WiFi OTA com mais fluidez.
+
 ---
 
 ## O Que é WiFi OTA?

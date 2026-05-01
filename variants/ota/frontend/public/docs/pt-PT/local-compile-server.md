@@ -6,6 +6,28 @@ Executa o servidor de compilação do DigiCode no teu próprio computador como c
 
 ---
 
+## 🟡 Antes de começar: recomendação por SO
+
+| SO | Servidor local | Notas |
+|---|---|---|
+| **macOS** | 🥇 OK para utilização geral | OrbStack (recomendado em Apple Silicon) um clique + uma linha `bash <(curl ...)` |
+| **Linux** | 🥇 OK para utilização geral | apt / dnf / pacman para instalar o Docker e uma linha sh |
+| **Windows** | 🟡 **Utilizadores avançados** | Vários pré-requisitos específicos do Windows (BIOS / WSL / Docker Desktop) tornam isto difícil para principiantes |
+
+> ⚠️ **Aviso para utilizadores de Windows**
+>
+> Configurar o servidor de compilação local (esta página) e **upload WiFi OTA** são **avançados** no Windows. Dependem de vários pré-requisitos específicos do Windows (activar virtualização na BIOS, actualizar WSL2, instalar e configurar o Docker Desktop) que se acumulam para alguém novo em ambientes de desenvolvimento.
+>
+> **Para utilizadores principiantes de Windows recomendamos:**
+> - 🥇 **Compilação na nuvem** — mesmo o plano Free dá 50 compilações/mês, com mais nos planos pagos
+> - 🥇 **Upload USB** ou **Bluetooth (BLE) OTA** — ambos guiados pela GUI integrada do DigiCode, sem instalação extra
+>
+> Tenta o caminho do servidor local / WiFi OTA quando te sentires confortável com ambientes de desenvolvimento. A secção Resolução de problemas abaixo cobre os obstáculos específicos do Windows, mas a primeira vez tende a exigir paciência.
+>
+> Utilizadores Mac / Linux: saltem directamente para a instalação rápida abaixo.
+
+---
+
 ## 🚀 Instalação rápida
 
 ### macOS / Linux

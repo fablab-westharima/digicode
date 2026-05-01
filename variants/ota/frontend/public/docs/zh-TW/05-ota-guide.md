@@ -4,6 +4,12 @@
 
 > **本指南為選用功能。** DigiCode **只需 USB 線即可開始使用**。先透過 [開始使用](./getting-started.md) 中的 USB 流程熟悉操作，再視需要參閱本指南。
 
+> ⚠️ **Windows 使用者請注意**: WiFi OTA 在 Windows 上屬於 **進階功能** (需安裝 Bonjour + 設定網路 / 防火牆)。Windows 初學者建議:
+> - **USB 燒錄** (DigiCode 內建 GUI 引導,無需額外安裝)
+> - **Bluetooth (BLE) OTA** (不需 USB 線,無需額外安裝,適合初學者)
+>
+> Mac / Linux 使用者可以較順利地嘗試 WiFi OTA。
+
 ---
 
 ## WiFi OTA 是什麼？

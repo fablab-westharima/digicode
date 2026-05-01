@@ -4,6 +4,12 @@
 
 > **このガイドはオプションです。** DigiCodeは**USBケーブルだけで始められます**。まず [はじめかた](./getting-started.md) のUSBフローで使い方に慣れてから、必要と感じたときにこのガイドを参照してください。
 
+> ⚠️ **Windows ユーザーへ**: WiFi OTA は Windows では **上級者向け** です (Bonjour 追加 install + ネットワーク / Firewall 設定が必要)。Windows 初心者の方には:
+> - **USB 書き込み** (DigiCode 標準 GUI で案内、追加 install 不要)
+> - **Bluetooth (BLE) OTA** (USB 不要、追加 install 不要、初学者向け)
+>
+> を推奨します。Mac / Linux ユーザーは比較的スムーズに WiFi OTA を試せます。
+
 ---
 
 ## WiFi OTAとは

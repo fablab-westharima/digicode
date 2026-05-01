@@ -6,6 +6,28 @@ Run the DigiCode compile server locally as a Docker container instead of using t
 
 ---
 
+## 🟡 Before you start: OS recommendation
+
+| OS | Local server setup | Notes |
+|---|---|---|
+| **macOS** | 🥇 OK for general users | OrbStack (recommended on Apple Silicon) is one click + a single `bash <(curl ...)` line |
+| **Linux** | 🥇 OK for general users | apt / dnf / pacman to install Docker, then one sh line |
+| **Windows** | 🟡 **Advanced users** | Multiple Windows-specific prerequisites (BIOS / WSL / Docker Desktop) make this hard for beginners |
+
+> ⚠️ **Heads-up for Windows users**
+>
+> Setting up the local compile server (this page) and **WiFi OTA upload** are **advanced** on Windows. They depend on multiple Windows-specific prerequisites (enable virtualization in BIOS, update WSL2, install + configure Docker Desktop) that pile up for someone new to development environments.
+>
+> **For Windows beginners we recommend:**
+> - 🥇 **Cloud compile** — even the Free plan gives you 50 compiles/month, with more on paid plans
+> - 🥇 **USB upload** or **Bluetooth (BLE) OTA** — both are guided by DigiCode's built-in GUI, no extra install needed
+>
+> Try the local server / WiFi OTA path once you're comfortable with dev environments. The Troubleshooting section below covers the Windows-specific walls, but expect the first run to take some patience.
+>
+> Mac / Linux users: skip ahead to Quick install below.
+
+---
+
 ## 🚀 Quick install
 
 ### macOS / Linux
