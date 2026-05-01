@@ -214,6 +214,42 @@ icacls "C:\ProgramData\DockerDesktop" /grant "*S-1-5-32-544:(OI)(CI)F" /T
 
 > 💡 **Prevention**: with the direct .exe installer, never close subprocess windows during install. If you'd rather not worry about it, use the Microsoft Store install — MSIX doesn't spawn extra windows.
 
+### Docker Desktop fails to start with "Virtualization support not detected"
+
+**Cause**: hardware virtualization (Intel VT-x / AMD-V) is disabled in BIOS / UEFI. The CPU supports it but the OS can't see it.
+
+**Check**: Task Manager (Ctrl + Shift + Esc) → Performance tab → CPU → "Virtualization" field. If it shows "Disabled", you need to fix BIOS.
+
+**Fix**:
+
+1. Reboot → spam the BIOS key during the boot logo (DELL / ASUS = `F2` or `Del`, HP = `F10`, Lenovo = `F1` / `F2`, custom builds depend on the motherboard vendor)
+2. In BIOS / UEFI, enable one of:
+   - Intel CPU: **Virtualization Technology (VTx)** / **Intel VT-x**
+   - AMD CPU: **SVM Mode** / **AMD-V**
+3. Location varies by vendor: usually under `Advanced`, `System Options`, `CPU Configuration`, or `Security`
+4. `F10` (Save & Exit) → Yes → reboot
+5. After Windows boots, recheck Task Manager → CPU → Virtualization shows "Enabled" → start Docker Desktop
+
+> ⚠️ Don't touch `Intel Trusted Execution Technology (TXT)` or `DMA Protection` — those can break Windows boot and aren't required by Docker.
+
+### Docker Desktop fails to start with "WSL needs updating"
+
+WSL2 (Windows Subsystem for Linux) has an outdated kernel, blocking Docker Desktop start.
+
+**Fix**: open PowerShell (admin recommended):
+
+```powershell
+wsl --update
+```
+
+Download + install takes ~30-60 seconds. When done, return to Docker Desktop and click **Try Again**. The status bar should change from `Engine starting` to `Engine running`.
+
+> If `wsl --update` itself fails with "WSL is not installed", run `wsl --install` from **Administrator PowerShell** instead (clean install path; may require a Windows reboot).
+
+### Docker Desktop's "Welcome to Docker" sign-in screen at first launch
+
+Click **Skip** in the top-right. DigiCode's local compile-server works without a Docker Hub account — our image lives on GitHub Container Registry (`ghcr.io`) and is pulled anonymously.
+
 ---
 
 ## Why use it?

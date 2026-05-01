@@ -211,6 +211,42 @@ icacls "C:\ProgramData\DockerDesktop" /grant "*S-1-5-32-544:(OI)(CI)F" /T
 
 > 💡 **Prevenção**: com o instalador .exe nunca feches as janelas secundárias durante a instalação. Se preferires evitar o risco, usa a instalação a partir da Microsoft Store — o MSIX não abre janelas adicionais.
 
+### Docker Desktop falha a iniciar com «Virtualization support not detected»
+
+**Causa**: a virtualização por hardware (Intel VT-x / AMD-V) está desactivada na BIOS / UEFI. O CPU suporta-a mas o sistema operativo não a vê.
+
+**Verificação**: Gestor de tarefas (Ctrl + Shift + Esc) → separador «Desempenho» → CPU → campo «Virtualização». Se aparecer «Desactivado», é preciso mudar a BIOS.
+
+**Solução**:
+
+1. Reinicia → durante o logótipo de arranque carrega a tecla da BIOS (DELL / ASUS = `F2` ou `Del`, HP = `F10`, Lenovo = `F1` / `F2`, computadores feitos à medida dependem do fabricante da motherboard)
+2. Na BIOS / UEFI, activa uma das opções:
+   - CPU Intel: **Virtualization Technology (VTx)** / **Intel VT-x**
+   - CPU AMD: **SVM Mode** / **AMD-V**
+3. A localização varia conforme o fabricante: normalmente em `Advanced`, `System Options`, `CPU Configuration` ou `Security`
+4. `F10` (Save & Exit) → Sim → reinicia
+5. Depois do Windows arrancar, volta ao Gestor de tarefas → CPU → «Virtualização: Activado» → inicia o Docker Desktop
+
+> ⚠️ Não mexas em `Intel Trusted Execution Technology (TXT)` nem `DMA Protection` — podem impedir o arranque do Windows e o Docker não os utiliza.
+
+### Docker Desktop falha a iniciar com «WSL needs updating»
+
+O kernel do WSL2 (Subsistema do Windows para Linux) está desactualizado e o Docker Desktop não consegue arrancar.
+
+**Solução**: abre o PowerShell (administrador recomendado):
+
+```powershell
+wsl --update
+```
+
+A transferência + instalação dura ~30-60 segundos. Quando terminar, volta ao Docker Desktop e clica em **Try Again**. A barra de estado deve passar de `Engine starting` a `Engine running`.
+
+> Se o próprio `wsl --update` falhar com «WSL não está instalado», corre `wsl --install` a partir do **PowerShell como administrador** (caminho de instalação limpa; pode exigir reiniciar o Windows).
+
+### Ecrã de início de sessão «Welcome to Docker» na primeira execução do Docker Desktop
+
+Clica em **Skip** no canto superior direito. O servidor de compilação local do DigiCode funciona sem conta Docker Hub — a nossa imagem está no GitHub Container Registry (`ghcr.io`) e descarrega-se anonimamente.
+
 ---
 
 ## Porquê usar?

@@ -211,6 +211,42 @@ icacls "C:\ProgramData\DockerDesktop" /grant "*S-1-5-32-544:(OI)(CI)F" /T
 
 > 💡 **再発防止**: 直接 install (.exe) は途中で installer の subprocess window を閉じないこと。心配なら Microsoft Store 版が安全 (subprocess window を出さない)。
 
+### Docker Desktop が「Virtualization support not detected」で起動失敗
+
+**原因**: BIOS / UEFI で CPU の仮想化機能 (Intel VT-x / AMD-V) が無効になっている。CPU 自体は対応しているが OS から見えない状態。
+
+**確認**: タスクマネージャー (Ctrl + Shift + Esc) → 「パフォーマンス」タブ → CPU を選択 → 右下の「仮想化」項目。「無効」なら BIOS 修正が必要。
+
+**対処**:
+
+1. PC を再起動 → 起動ロゴで BIOS キーを連打 (機種別: DELL / ASUS = `F2` or `Del`、HP = `F10`、Lenovo = `F1` or `F2`、自作 PC はマザボメーカーによる)
+2. BIOS / UEFI 画面で以下のいずれかを探して **Enabled** に変更:
+   - Intel CPU: **Virtualization Technology (VTx)** / **Intel VT-x**
+   - AMD CPU: **SVM Mode** / **AMD-V**
+3. 設定場所は機種により `Advanced` / `System Options` / `CPU Configuration` / `Security` 配下のどこか
+4. `F10` (Save & Exit) → Yes → 再起動
+5. Windows 起動後、再度タスクマネージャーで「仮想化: 有効」を確認 → Docker Desktop を起動
+
+> ⚠️ `Intel Trusted Execution Technology (TXT)` や `DMA Protection` 等は触らないこと (Windows 起動不能になる場合あり、Docker には不要)。
+
+### Docker Desktop が「WSL needs updating」で起動失敗
+
+WSL2 (Windows Subsystem for Linux) のカーネルバージョンが古いと Docker Desktop は起動できない。
+
+**対処**: PowerShell (admin 推奨) で:
+
+```powershell
+wsl --update
+```
+
+ダウンロード + install ~30-60 秒。完了したら Docker Desktop の画面に戻り **Try Again** をクリック。ステータスバー右下が `Engine starting` → `Engine running` に変われば OK。
+
+> `wsl --update` が「WSL がインストールされていません」エラーで失敗する場合は、**管理者 PowerShell** で `wsl --install` (clean install)。Windows 再起動が必要になることあり。
+
+### Docker Desktop 初回起動時の「Welcome to Docker」サインイン画面
+
+右上の **Skip** をクリックで OK。DigiCode のローカルコンパイルサーバーは Docker Hub のサインイン不要で動作する (image は GitHub Container Registry `ghcr.io` にあり、anonymous pull 可能)。
+
 ---
 
 ## 用途・メリット

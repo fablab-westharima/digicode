@@ -211,6 +211,42 @@ icacls "C:\ProgramData\DockerDesktop" /grant "*S-1-5-32-544:(OI)(CI)F" /T
 
 > 💡 **預防**: 直接安裝 (.exe) 過程中切勿關閉子處理程序視窗。若想避免此風險,改用 Microsoft Store 版 (MSIX 不會啟動額外視窗)。
 
+### Docker Desktop 啟動失敗,顯示「Virtualization support not detected」
+
+**原因**: BIOS / UEFI 中 CPU 的硬體虛擬化 (Intel VT-x / AMD-V) 被關閉。CPU 本身支援,但作業系統看不到。
+
+**確認**: 工作管理員 (Ctrl + Shift + Esc) → 「效能」分頁 → CPU → 右下「虛擬化」欄位。若顯示「停用」則需修改 BIOS。
+
+**解法**:
+
+1. 重新啟動 → 開機 logo 出現時連按 BIOS 鍵 (DELL / ASUS = `F2` 或 `Del`、HP = `F10`、Lenovo = `F1` / `F2`、自組電腦依主機板廠商)
+2. BIOS / UEFI 中將下列其中之一改為 **Enabled**:
+   - Intel CPU: **Virtualization Technology (VTx)** / **Intel VT-x**
+   - AMD CPU: **SVM Mode** / **AMD-V**
+3. 位置依機型: 通常在 `Advanced`、`System Options`、`CPU Configuration` 或 `Security` 之下
+4. `F10` (Save & Exit) → Yes → 重新啟動
+5. Windows 啟動後重新檢查工作管理員 → CPU → 虛擬化顯示「已啟用」→ 啟動 Docker Desktop
+
+> ⚠️ 不要動 `Intel Trusted Execution Technology (TXT)` 與 `DMA Protection` — 可能導致 Windows 無法開機,且 Docker 不需要這些。
+
+### Docker Desktop 啟動失敗,顯示「WSL needs updating」
+
+WSL2 (Windows Subsystem for Linux) 核心版本太舊,Docker Desktop 無法啟動。
+
+**解法**: 開啟 PowerShell (建議系統管理員):
+
+```powershell
+wsl --update
+```
+
+下載 + 安裝約 30-60 秒。完成後回到 Docker Desktop 畫面點 **Try Again**。狀態列右下從 `Engine starting` 變為 `Engine running` 即成功。
+
+> 若 `wsl --update` 出現「WSL 未安裝」錯誤,改用 **管理員 PowerShell** 執行 `wsl --install` (clean install)。Windows 可能需要重新啟動。
+
+### Docker Desktop 首次啟動的「Welcome to Docker」登入畫面
+
+點選右上的 **Skip** 即可。DigiCode 本機編譯伺服器不需要 Docker Hub 帳號 — 我們的映像放在 GitHub Container Registry (`ghcr.io`),可匿名 pull。
+
 ---
 
 ## 為什麼使用本機伺服器?
