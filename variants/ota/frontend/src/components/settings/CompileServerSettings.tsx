@@ -16,9 +16,11 @@ import { useAuthStore } from '@/stores/authStore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
 import { Cloud, Server, CheckCircle2, XCircle, Loader2, BarChart3, Lock, AlertCircle } from 'lucide-react';
+import { DEFAULT_LOCAL_PORT } from '@/config/servers';
 
 type ConnectionStatus = 'checking' | 'connected' | 'disconnected';
 
@@ -31,6 +33,15 @@ interface UsageData {
   isOverLimit: boolean;
 }
 
+// Extract the host port from a saved local URL (`http://host:NNNN`).
+// Falls back to the default port when the URL is malformed.
+function extractLocalPort(url: string): number {
+  const match = url.match(/:(\d+)(?:\/|$)/);
+  if (!match) return DEFAULT_LOCAL_PORT;
+  const n = parseInt(match[1], 10);
+  return Number.isFinite(n) ? n : DEFAULT_LOCAL_PORT;
+}
+
 export const CompileServerSettings = () => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuthStore();
@@ -39,6 +50,16 @@ export const CompileServerSettings = () => {
   const [cloudStatus, setCloudStatus] = useState<ConnectionStatus>('checking');
   const [usage, setUsage] = useState<UsageData | null>(null);
   const [loadingUsage, setLoadingUsage] = useState(false);
+
+  // Local-server port editor state. Initialised from compileService.getLocalUrl()
+  // (which reads the localStorage override or falls back to localhost:3001).
+  const [localPort, setLocalPort] = useState<number>(() =>
+    extractLocalPort(compileService.getLocalUrl()),
+  );
+  const [portInput, setPortInput] = useState<string>(() =>
+    String(extractLocalPort(compileService.getLocalUrl())),
+  );
+  const [portError, setPortError] = useState<string | null>(null);
 
   // 使用量を取得（ログイン時のみ）
   const fetchUsage = useCallback(async () => {
@@ -61,12 +82,57 @@ export const CompileServerSettings = () => {
     }
   }, [isAuthenticated]);
 
-  // ローカルサーバーの接続状態を自動チェック
+  // ローカルサーバーの接続状態を自動チェック (ユーザーが指定した port を反映)
   const checkLocalConnection = useCallback(async () => {
     setLocalStatus('checking');
-    const connected = await compileService.testConnection(compileService.servers.local);
+    const connected = await compileService.testConnection(compileService.getLocalUrl());
     setLocalStatus(connected ? 'connected' : 'disconnected');
   }, []);
+
+  // Apply a typed port: validate, persist via compileService.setLocalUrl,
+  // re-run the connection check so the status badge stays in sync with
+  // the new URL.
+  const applyLocalPort = useCallback(
+    (raw: string) => {
+      const trimmed = raw.trim();
+      if (!trimmed) {
+        // Empty input → revert to default (3001).
+        compileService.setLocalUrl(`http://localhost:${DEFAULT_LOCAL_PORT}`);
+        setLocalPort(DEFAULT_LOCAL_PORT);
+        setPortInput(String(DEFAULT_LOCAL_PORT));
+        setPortError(null);
+        checkLocalConnection();
+        return;
+      }
+      if (!/^\d+$/.test(trimmed)) {
+        setPortError(
+          t('settings.localPortInvalid', {
+            defaultValue: 'ポート番号は 1024〜65535 の整数を指定してください。',
+          }),
+        );
+        return;
+      }
+      const n = parseInt(trimmed, 10);
+      if (n < 1024 || n > 65535) {
+        setPortError(
+          t('settings.localPortInvalid', {
+            defaultValue: 'ポート番号は 1024〜65535 の整数を指定してください。',
+          }),
+        );
+        return;
+      }
+      if (n === localPort) {
+        setPortError(null);
+        return;
+      }
+      compileService.setLocalUrl(`http://localhost:${n}`);
+      setLocalPort(n);
+      setPortInput(String(n));
+      setPortError(null);
+      checkLocalConnection();
+    },
+    [checkLocalConnection, localPort, t],
+  );
 
   // クラウドサーバーの接続状態を自動チェック
   const checkCloudConnection = useCallback(async () => {
@@ -223,6 +289,38 @@ export const CompileServerSettings = () => {
                 >
                   {t('settings.connectionTest')}
                 </Button>
+              </div>
+
+              {/* port 番号入力 (installer の --port と一致させる) */}
+              <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1">
+                <Label htmlFor="local-port" className="text-xs text-muted-foreground">
+                  {t('settings.localPort', { defaultValue: 'ポート番号' })}
+                </Label>
+                <Input
+                  id="local-port"
+                  type="number"
+                  inputMode="numeric"
+                  min={1024}
+                  max={65535}
+                  value={portInput}
+                  onChange={(e) => setPortInput(e.target.value)}
+                  onBlur={() => applyLocalPort(portInput)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      applyLocalPort(portInput);
+                    }
+                  }}
+                  className="h-7 w-24 text-xs"
+                />
+                <span className="text-xs text-muted-foreground">
+                  {t('settings.localPortHint', {
+                    defaultValue: 'デフォルト 3001。installer の --port と一致させてください。',
+                  })}
+                </span>
+                {portError && (
+                  <span className="w-full text-xs text-destructive">{portError}</span>
+                )}
               </div>
 
               {/* ローカルサーバー未起動時の案内 */}

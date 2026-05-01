@@ -11,6 +11,8 @@ import {
   getCompileServerMode,
   setCompileServerMode,
   getCompileServerUrl,
+  getCompileServerLocalUrl,
+  setCompileServerLocalUrl,
   type CompileServerMode
 } from '@/config/servers';
 
@@ -365,5 +367,7 @@ export const compileService = {
   setMode: setCompileServerMode,
   testConnection: testCompileServerConnection,
   getServerUrl: getCompileServerUrl,
+  getLocalUrl: getCompileServerLocalUrl,
+  setLocalUrl: setCompileServerLocalUrl,
   servers: COMPILE_SERVERS,
 };
