@@ -188,22 +188,22 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
   const StatusIcon = ({ status }: { status: ConnectionStatus }) => {
     switch (status) {
       case 'checking':
-        return <Loader2 className="h-4 w-4 animate-spin text-blue-500" />;
+        return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />;
       case 'connected':
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+        return <CheckCircle2 className="h-4 w-4 text-primary" />;
       case 'disconnected':
-        return <XCircle className="h-4 w-4 text-red-500" />;
+        return <XCircle className="h-4 w-4 text-destructive" />;
     }
   };
 
   const StatusText = ({ status }: { status: ConnectionStatus }) => {
     switch (status) {
       case 'checking':
-        return <span className="text-blue-500 text-sm">{t('settings.checking', { defaultValue: '確認中...' })}</span>;
+        return <span className="text-muted-foreground text-sm">{t('settings.checking', { defaultValue: '確認中...' })}</span>;
       case 'connected':
-        return <span className="text-green-600 text-sm">{t('settings.connectionOk')}</span>;
+        return <span className="text-primary text-sm">{t('settings.connectionOk')}</span>;
       case 'disconnected':
-        return <span className="text-red-600 text-sm">{t('settings.notConnected')}</span>;
+        return <span className="text-destructive text-sm">{t('settings.notConnected')}</span>;
     }
   };
 
@@ -225,10 +225,10 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
       <CardContent className={embedded ? 'space-y-4 pt-6' : 'space-y-4'}>
         {/* 未ログイン時の案内 */}
         {!isAuthenticated && (
-          <div className="p-3 rounded-lg bg-blue-50 border border-blue-200 dark:bg-blue-950/30 dark:border-blue-800">
+          <div className="p-3 rounded-lg bg-primary/10 border border-primary/30">
             <div className="flex items-start gap-2">
-              <Lock className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-blue-900 dark:text-blue-200">
+              <Lock className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-foreground">
                 {t('settings.loginRequiredForCloud', {
                   defaultValue: 'クラウドコンパイルを利用するにはログインが必要です。ローカルコンパイルサーバーは引き続き利用できます。'
                 })}
@@ -246,8 +246,8 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
           <div
             className={`flex items-start space-x-3 p-4 rounded-lg border transition-colors ${
               cloudDisabled
-                ? 'opacity-50 cursor-not-allowed bg-gray-500/5'
-                : 'hover:bg-gray-500/10 cursor-pointer'
+                ? 'opacity-50 cursor-not-allowed bg-muted/30'
+                : 'hover:bg-accent/50 cursor-pointer'
             }`}
             title={cloudDisabled ? t('settings.loginRequiredForCloud', { defaultValue: 'クラウドコンパイルを利用するにはログインが必要です。ローカルコンパイルサーバーは引き続き利用できます。' }) : undefined}
           >
@@ -264,11 +264,11 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
                   cloudDisabled ? 'cursor-not-allowed' : 'cursor-pointer'
                 }`}
               >
-                <Cloud className="h-4 w-4 text-blue-500" />
+                <Cloud className="h-4 w-4 text-primary" />
                 {t('settings.cloudRecommended')}
-                {cloudDisabled && <Lock className="h-3 w-3 text-gray-400" />}
+                {cloudDisabled && <Lock className="h-3 w-3 text-muted-foreground" />}
               </Label>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {t('settings.cloudDesc')}
               </p>
               <div className="flex items-center gap-3 mt-2">
@@ -289,14 +289,14 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
           </div>
 
           {/* ローカルサーバー */}
-          <div className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-gray-500/10 transition-colors">
+          <div className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-accent/50 transition-colors">
             <RadioGroupItem value="local" id="local" className="mt-1" />
             <div className="flex-1">
               <Label htmlFor="local" className="flex items-center gap-2 cursor-pointer font-medium">
-                <Server className="h-4 w-4 text-purple-500" />
+                <Server className="h-4 w-4 text-primary" />
                 {t('settings.localServer')}
               </Label>
-              <p className="text-sm text-gray-500 mt-1.5">
+              <p className="text-sm text-muted-foreground mt-1.5">
                 {t('settings.localDesc')}
               </p>
               <div className="flex items-center gap-2 mt-3 flex-wrap">
@@ -366,9 +366,9 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
 
               {/* ローカルサーバー未起動時の案内 (セットアップ動線は上のボタンに集約済) */}
               {localStatus === 'disconnected' && (
-                <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-950/30 rounded text-sm text-yellow-800 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-800">
+                <div className="mt-4 p-3 bg-destructive/10 border border-destructive/30 rounded text-sm text-foreground">
                   <div className="flex items-start gap-2">
-                    <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                    <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5 text-destructive" />
                     <span>
                       {t('settings.localNotRunningHint', {
                         defaultValue:
@@ -391,8 +391,8 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
 
         {/* 現在の設定表示 */}
         <div className="pt-2 border-t">
-          <p className="text-sm text-gray-600">
-            {t('settings.currentServer')}: <code className="bg-gray-500/10 text-gray-300 px-2 py-0.5 rounded text-xs">{compileService.getServerUrl()}</code>
+          <p className="text-sm text-muted-foreground">
+            {t('settings.currentServer')}: <code className="bg-muted text-foreground px-2 py-0.5 rounded text-xs">{compileService.getServerUrl()}</code>
           </p>
         </div>
 
@@ -400,7 +400,7 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
         {mode === 'cloud' && isAuthenticated && usage && (
           <div className="pt-4 border-t">
             <div className="flex items-center gap-2 mb-3">
-              <BarChart3 className="h-4 w-4 text-blue-500" />
+              <BarChart3 className="h-4 w-4 text-primary" />
               <span className="font-medium text-sm">{t('settings.monthlyUsage')}</span>
             </div>
 
@@ -409,23 +409,23 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
               <div className="relative">
                 <Progress
                   value={usage.limit === -1 ? 0 : (usage.count / usage.limit) * 100}
-                  className={`h-3 ${usage.isOverLimit ? '[&>div]:bg-red-500' : ''}`}
+                  className={`h-3 ${usage.isOverLimit ? '[&>div]:bg-destructive' : ''}`}
                 />
               </div>
 
               {/* 数値表示 */}
               <div className="flex justify-between text-sm">
-                <span className={usage.isOverLimit ? 'text-red-600 font-medium' : 'text-gray-600'}>
+                <span className={usage.isOverLimit ? 'text-destructive font-medium' : 'text-muted-foreground'}>
                   {t('settings.usedCount', { count: usage.count })}
                 </span>
-                <span className="text-gray-500">
+                <span className="text-muted-foreground">
                   {usage.limit === -1 ? t('settings.unlimited') : t('settings.limitCount', { limit: usage.limit })}
                 </span>
               </div>
 
               {/* 残り回数 */}
               {usage.limit !== -1 && (
-                <p className={`text-sm ${usage.isOverLimit ? 'text-red-600' : 'text-green-600'}`}>
+                <p className={`text-sm ${usage.isOverLimit ? 'text-destructive' : 'text-primary'}`}>
                   {usage.isOverLimit
                     ? t('settings.overLimit', { count: usage.count - usage.limit })
                     : t('settings.remainingCompiles', { count: usage.remaining })
@@ -434,7 +434,7 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
               )}
 
               {/* プラン表示 */}
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t('settings.currentPlan')}: {usage.planType === 'free' ? t('settings.freePlan') : usage.planType}
                 （{usage.month}）
               </p>
@@ -442,7 +442,7 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
 
             {/* 制限超過時の警告 */}
             {usage.isOverLimit && (
-              <div className="mt-3 p-2 bg-red-50 rounded text-sm text-red-700">
+              <div className="mt-3 p-3 bg-destructive/10 border border-destructive/30 rounded text-sm text-foreground">
                 {t('settings.limitReachedMsg')}
               </div>
             )}
@@ -452,7 +452,7 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
         {/* ローカルサーバー選択時のメッセージ */}
         {mode === 'local' && (
           <div className="pt-4 border-t">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               {t('settings.localNoCount')}
             </p>
           </div>
@@ -460,7 +460,7 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
 
         {/* ロード中 */}
         {loadingUsage && (
-          <div className="pt-4 border-t flex items-center gap-2 text-sm text-gray-500">
+          <div className="pt-4 border-t flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
             {t('settings.loadingUsage')}
           </div>

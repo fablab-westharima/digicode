@@ -64,15 +64,15 @@ function CommandBlock({ command }: CommandBlockProps) {
   };
 
   return (
-    <div className="relative bg-[#161B22] border border-[#2E333D] rounded-md">
-      <pre className="p-3 pr-20 overflow-x-auto text-xs text-[#E6EDF3] font-mono whitespace-pre-wrap break-all leading-relaxed">
+    <div className="relative bg-muted border border-border rounded-md">
+      <pre className="p-3 pr-20 overflow-x-auto text-xs text-foreground font-mono whitespace-pre-wrap break-all leading-relaxed">
         {command}
       </pre>
       <Button
         variant="ghost"
         size="sm"
         onClick={handleCopy}
-        className="absolute top-2 right-2 h-7 px-2 text-xs text-[#8B949E] hover:text-[#E6EDF3]"
+        className="absolute top-2 right-2 h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
       >
         {copied ? (
           <>
@@ -205,8 +205,8 @@ export function LocalServerSetupDialog({
         )}
 
         {mode === 'uninstall' && (
-          <div className="flex items-start gap-2 mt-1 p-2 bg-yellow-50 dark:bg-yellow-950/30 rounded text-xs text-yellow-800 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-800">
-            <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2 mt-1 p-3 bg-destructive/10 border border-destructive/30 rounded text-xs text-foreground">
+            <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5 text-destructive" />
             <span>
               {t('localServerSetup.uninstallWarning', {
                 defaultValue:
