@@ -1,31 +1,62 @@
 # Guia de Configuração de Hardware
 
-Como conectar sensores e atuadores ao ESP32.
+**Última atualização:** 2026-05-02
 
-> **Recomendado:** Consulte a [Lista de Hardware Recomendado](./recommended-hardware.md) para dispositivos verificados. Usar peças testadas ajuda a evitar problemas.
+Como conectar o ESP32 a sensores e atuadores, organizado por componente.
 
-## Distribuição de Pinos ESP32
+> **Recomendado:** Consulta a [Lista de Hardware Recomendado](./recommended-hardware.md) para dispositivos verificados. Usar peças testadas ajuda a evitar problemas.
 
-### GPIO (Entrada/Saída de Propósito Geral)
-- **GPIO 0-39**: Entrada/saída digital
-- **GPIO 32-39**: Apenas entrada analógica (ADC1)
-- **GPIO 0, 2**: LED integrado (varia conforme a placa)
+---
 
-### Pinos Especiais
-- **GPIO 1, 3**: UART (série) - evitar (usado para programação)
-- **GPIO 6-11**: Apenas memória Flash - não usar
-- **GPIO 34-39**: Apenas entrada (sem resistência pull-up)
+## 🚀 Procurar por Componente
 
-### Alimentação
-- **3.3V**: Alimentação para sensores e motores
-- **5V**: 5V via USB (apenas algumas placas)
-- **GND**: Terra (terra comum)
+| Componente | Categoria | Saltar |
+|---|---|---|
+| Distância ultrassónica (HC-SR04) | Sensor (digital) | [→](#sensor-ultrassónico-hc-sr04) |
+| Temperatura/humidade (DHT11 / DHT22) | Sensor (1-wire) | [→](#sensor-de-temperaturahumidade-dht11-dht22) |
+| Seguimento de linha (QTR-8) | Sensor (analógico) | [→](#sensor-de-linha-qtr-8-canais) |
+| Acelerómetro / giroscópio (MPU6050) | Sensor (I2C) | [→](#acelerómetrogiroscópio-mpu6050) |
+| Pressão / T+H (BME280 / BMP280) | Sensor (I2C) | [→](#sensor-de-pressãotemperaturahumidade-bme280-bmp280) |
+| Distância ToF (VL53L0X) | Sensor (I2C) | [→](#sensor-de-distância-tof-vl53l0x) |
+| Encoder magnético (AS5600) | Sensor (I2C) | [→](#encoder-magnético-as5600) |
+| Servo (SG90, etc.) | Atuador | [→](#servomotor-sg90-etc) |
+| Motor DC (via L298N) | Atuador | [→](#motor-dc-via-driver-de-motor) |
+| NeoPixel (WS2812B) | Atuador | [→](#neopixel-led-ws2812b) |
+| LCD (16x2 + PCF8574) | Módulo comm. (I2C) | [→](#ecrã-lcd-i2c) |
+| TFT (ST7789 / ILI9341) | Módulo comm. (SPI) | [→](#ecrã-tft-spi) |
+| RFID (RC522) | Módulo comm. (SPI) | [→](#leitor-rfid-rc522) |
+| Recetor IR (VS1838B) | Módulo comm. | [→](#módulo-recetor-ir-vs1838b) |
+| DFPlayer Mini (MP3) | Módulo comm. (UART) | [→](#dfplayer-mini-mp3) |
+| ESP32-CAM / XIAO Sense | Câmara | [→](#ligações-de-módulo-de-câmara) |
+| CAN Bus (SN65HVD230) | Comm. | [→](#ligação-can-bus-twai) |
+
+---
+
+## Referência Rápida de Pinos ESP32
+
+As placas de desenvolvimento ESP32 variam, mas os aspetos essenciais comuns:
+
+| Pino | Uso | Nota |
+|---|---|---|
+| **GPIO 0-39** | E/S digital | — |
+| **GPIO 32-39** | Apenas entrada analógica (ADC1) | ADC2 entra em conflito quando WiFi está em uso |
+| **GPIO 0, 2** | LED integrado (depende da placa) | — |
+| **GPIO 1, 3** | UART (série) | Usado para programação, evitar |
+| **GPIO 6-11** | Apenas memória Flash | Não usar |
+| **GPIO 34-39** | Apenas entrada | Sem resistência pull-up |
+| **3.3V** | Alimentação de sensores | Máx ~200mA |
+| **5V** | USB 5V (algumas placas) | Usa alimentação externa para motores |
+| **GND** | Terra | Terra comum necessária |
+
+> 💡 **Pinos I2C padrão**: SDA = GPIO 21, SCL = GPIO 22 (padrão ESP32)
+> 💡 **Pinos SPI padrão**: SCK = GPIO 18, MOSI = GPIO 23, MISO = GPIO 19 (SPI por hardware)
+
+---
 
 ## Ligações de Sensores
 
 ### Sensor Ultrassónico (HC-SR04)
 
-**Distribuição de Pinos:**
 ```
 HC-SR04    ESP32
 --------   ------
@@ -35,11 +66,10 @@ Trig   →   GPIO 5
 Echo   →   GPIO 18
 ```
 
-**Nota:** Ao ligar sensores de 5V ao ESP32 (3.3V), adicione divisor de tensão ao pino Echo
+**Nota:** Ao ligar sensores de 5V ao ESP32 (3.3V), adiciona divisor de tensão ao pino Echo.
 
-### Sensor de Temperatura/Humidade (DHT11/DHT22)
+### Sensor de Temperatura/Humidade (DHT11 / DHT22)
 
-**Distribuição de Pinos:**
 ```
 DHT11      ESP32
 --------   ------
@@ -48,11 +78,10 @@ GND    →   GND
 DATA   →   GPIO 4
 ```
 
-**Nota:** Ligue resistência pull-up de 10kΩ entre o pino DATA e VCC
+**Nota:** Liga resistência pull-up de 10kΩ entre o pino DATA e VCC.
 
 ### Sensor de Linha QTR (8 canais)
 
-**Exemplo de Distribuição de Pinos:**
 ```
 QTR-8A     ESP32
 --------   ------
@@ -70,7 +99,6 @@ GND    →   GND
 
 ### Acelerómetro/Giroscópio (MPU6050)
 
-**Distribuição de Pinos (I2C):**
 ```
 MPU6050    ESP32
 --------   ------
@@ -80,11 +108,10 @@ SDA    →   GPIO 21
 SCL    →   GPIO 22
 ```
 
-**Nota:** Endereço 0x68 (AD0=LOW) ou 0x69 (AD0=HIGH). Podem ser ligados vários dispositivos no mesmo barramento I2C
+**Nota:** Endereço 0x68 (AD0=LOW) ou 0x69 (AD0=HIGH). Podem ser ligados vários dispositivos no mesmo barramento I2C.
 
 ### Sensor de Pressão/Temperatura/Humidade (BME280 / BMP280)
 
-**Distribuição de Pinos (I2C):**
 ```
 BME280     ESP32
 --------   ------
@@ -94,11 +121,10 @@ SDA    →   GPIO 21
 SCL    →   GPIO 22
 ```
 
-**Nota:** Endereço padrão 0x76 (SDO=LOW) ou 0x77 (SDO=HIGH). BMP280 mede temperatura e pressão; BME280 também mede humidade
+**Nota:** Endereço padrão 0x76 (SDO=LOW) ou 0x77 (SDO=HIGH). BMP280 mede temperatura e pressão; BME280 também mede humidade.
 
 ### Sensor de Distância ToF (VL53L0X)
 
-**Distribuição de Pinos (I2C):**
 ```
 VL53L0X    ESP32
 --------   ------
@@ -108,11 +134,10 @@ SDA    →   GPIO 21
 SCL    →   GPIO 22
 ```
 
-**Nota:** Endereço 0x29. Com múltiplas unidades, use o pino XSHUT para arrancar individualmente e alterar o endereço
+**Nota:** Endereço 0x29. Com múltiplas unidades, usa o pino XSHUT para arrancar individualmente e alterar o endereço.
 
 ### Encoder Magnético (AS5600)
 
-**Distribuição de Pinos (I2C):**
 ```
 AS5600     ESP32
 --------   ------
@@ -123,13 +148,14 @@ SCL    →   GPIO 22
 DIR    →   GND (sentido horário positivo) ou 3.3V (anti-horário positivo)
 ```
 
-**Nota:** Endereço fixo 0x36. Coloque o íman centrado sobre o eixo; mantenha distância sensor-íman de 0.5–3mm
+**Nota:** Endereço fixo 0x36. Coloca o íman centrado sobre o eixo; mantém distância sensor-íman de 0.5–3mm.
+
+---
 
 ## Ligações de Atuadores
 
 ### Servomotor (SG90, etc.)
 
-**Distribuição de Pinos:**
 ```
 Servo      ESP32
 --------   ------
@@ -139,12 +165,13 @@ Signal →   GPIO 13
 ```
 
 **Notas:**
-- Use alimentação externa 5V ao usar múltiplos servos
-- Ligue GND do ESP32 e alimentação externa juntos
+- Usa alimentação externa 5V ao usar múltiplos servos
+- Liga GND do ESP32 e alimentação externa juntos
 
 ### Motor DC (via Driver de Motor)
 
 **Exemplo com Driver L298N:**
+
 ```
 L298N      ESP32
 --------   ------
@@ -155,12 +182,11 @@ GND    →   GND
 ```
 
 **Alimentação:**
-- Ligue alimentação externa (7-12V) ao VCC do L298N
-- Ligue GND do L298N e do ESP32 juntos
+- Liga alimentação externa (7-12V) ao VCC do L298N
+- Liga GND do L298N e do ESP32 juntos
 
 ### NeoPixel LED (WS2812B)
 
-**Distribuição de Pinos:**
 ```
 NeoPixel   ESP32
 --------   ------
@@ -169,13 +195,16 @@ GND    →   GND
 DIN    →   GPIO 23
 ```
 
-**Nota:** Recomenda-se alimentação externa 5V para muitos LEDs
+**Nota:** Recomenda-se alimentação externa 5V para muitos LEDs.
+
+---
 
 ## Ligações de Módulos de Comunicação
 
-### Ecrã LCD I2C (Adaptador PCF8574 + LCD 16x2)
+### Ecrã LCD I2C
 
-**Distribuição de Pinos (I2C):**
+Adaptador PCF8574 + LCD 16x2.
+
 ```
 I2C LCD    ESP32
 --------   ------
@@ -185,11 +214,12 @@ SDA    →   GPIO 21
 SCL    →   GPIO 22
 ```
 
-**Nota:** Configure o endereço I2C com o jumper do adaptador PCF8574 (padrão 0x27). Recomenda-se 5V (com 3.3V o ecrã pode ficar com brilho reduzido)
+**Nota:** Configura o endereço I2C com o jumper do adaptador PCF8574 (padrão 0x27). Recomenda-se 5V (com 3.3V o ecrã pode ficar com brilho reduzido).
 
-### Ecrã TFT (SPI — ST7789 / ILI9341)
+### Ecrã TFT (SPI)
 
-**Distribuição de Pinos (SPI por Hardware):**
+ST7789 / ILI9341 etc., SPI por hardware.
+
 ```
 TFT        ESP32
 --------   ------
@@ -204,11 +234,12 @@ MISO   →   GPIO 19 (SPI MISO, opcional)
 BL     →   3.3V ou pino de controlo de retroiluminação
 ```
 
-**Nota:** Selecione o CI controlador (ST7789 / ILI9341 / ST7735) no bloco. Altere o pino CS se partilhar o barramento SPI com RFID
+**Nota:** Seleciona o CI controlador (ST7789 / ILI9341 / ST7735) no bloco. Altera o pino CS se partilhar o barramento SPI com RFID.
 
-### Leitor RFID (RC522, SPI)
+### Leitor RFID (RC522)
 
-**Distribuição de Pinos (SPI por Hardware):**
+SPI por hardware.
+
 ```
 RC522      ESP32
 --------   ------
@@ -222,11 +253,10 @@ RST    →   GPIO 22
 IRQ    →   Não ligar (não necessário no modo polling)
 ```
 
-**Nota:** RC522 é apenas 3.3V (não ligar 5V). Altere o pino CS se partilhar o barramento SPI com TFT. Consulte a [Lista de Hardware Recomendado](./recommended-hardware.md) para notas sobre regulamentação de rádio
+**Nota:** RC522 é apenas 3.3V (não ligar 5V). Altera o pino CS se partilhar o barramento SPI com TFT. Consulta a [Lista de Hardware Recomendado](./recommended-hardware.md) para notas sobre regulamentação de rádio.
 
 ### Módulo Recetor IR (VS1838B)
 
-**Distribuição de Pinos:**
 ```
 VS1838B    ESP32
 --------   ------
@@ -235,11 +265,12 @@ GND    →   GND
 OUT    →   GPIO 14
 ```
 
-**Nota:** O pino OUT tem pull-up integrado no módulo. Usa a biblioteca IRremoteESP8266 (também funciona no ESP32)
+**Nota:** O pino OUT tem pull-up integrado no módulo. Usa a biblioteca IRremoteESP8266 (também funciona no ESP32).
 
-### DFPlayer Mini (Reprodução MP3, UART)
+### DFPlayer Mini (MP3)
 
-**Distribuição de Pinos:**
+Ligação UART.
+
 ```
 DFPlayer   ESP32
 --------   ------
@@ -251,32 +282,35 @@ SPK+   →   Altifalante (+)
 SPK−   →   Altifalante (−)
 ```
 
-**Nota:** Adicione sempre uma resistência de 1kΩ em série ao pino RX do DFPlayer. Usa SoftwareSerial (ESP32 RX=14, TX=12). Coloque ficheiros MP3 no microSD como `/01/001.mp3`
+**Nota:** Adiciona sempre uma resistência de 1kΩ em série ao pino RX do DFPlayer. Usa SoftwareSerial (ESP32 RX=14, TX=12). Coloca ficheiros MP3 no microSD como `/01/001.mp3`.
+
+---
 
 ## Ligações de Módulo de Câmara
 
-Os módulos de câmara ESP32 têm configurações de pinos integradas. Basta selecionar o tipo de placa no bloco e a configuração fica completa automaticamente.
+Os módulos de câmara ESP32 têm configurações de pinos integradas. Basta selecionar o tipo de placa no bloco — não é necessária configuração manual de pinos.
 
 ### ESP32-CAM (AI-Thinker)
 
-O conector de câmara está integrado na placa. Ligue o módulo de câmara OV2640 separadamente.
+O conector de câmara está integrado na placa. Liga o módulo de câmara OV2640 separadamente.
 
-**Notas de Programação:**
-- Ligue IO0 ao GND com um jumper antes de gravar com o adaptador USB-UART
-- Retire o jumper e reinicie após gravar
+**Notas de programação:**
+- Liga IO0 ao GND com um jumper antes de gravar com o adaptador USB-UART
+- Retira o jumper e reinicia após gravar
 - ESP32-CAM não tem porta USB — é necessário adaptador USB-UART (3.3V)
 
-**Alimentação:** 5V (via USB) ou 5V externo. A alimentação direta pelo pino 3.3V não é recomendada (pode causar instabilidade pela alta demanda de corrente da câmara)
+**Alimentação:** 5V (via USB) ou 5V externo. A alimentação direta pelo pino 3.3V não é recomendada (a demanda de corrente da câmara pode causar instabilidade).
 
 ### XIAO ESP32S3 Sense
 
-A câmara (OV2640) e o microfone estão integrados na placa. Ligue a câmara com o cabo flexível dedicado. Não é necessária ligação externa adicional.
+A câmara (OV2640) e o microfone estão integrados na placa. Liga a câmara com o cabo flexível dedicado. Não é necessária ligação externa adicional.
+
+---
 
 ## Ligação CAN Bus (TWAI)
 
 Usa o controlador TWAI integrado do ESP32. É necessário um CI transcetor CAN externo (ex.: SN65HVD230).
 
-**Distribuição de Pinos:**
 ```
 SN65HVD230  ESP32
 ----------  ------
@@ -288,39 +322,54 @@ CANH    →   Linha CANH do barramento CAN
 CANL    →   Linha CANL do barramento CAN
 ```
 
-**Nota:** Ligue resistências de terminação de 120Ω em ambas as extremidades do barramento CAN. SN65HVD230 opera a 3.3V. Consulte a [Lista de Hardware Recomendado](./recommended-hardware.md) para notas regulatórias
+**Nota:** Liga resistências de terminação de 120Ω em ambas as extremidades do barramento CAN. SN65HVD230 opera a 3.3V. Consulta a [Lista de Hardware Recomendado](./recommended-hardware.md) para notas regulatórias.
 
-## Melhores Práticas de Cablagem
+---
 
-### 1. Gestão de Alimentação
-- Use 3.3V para sensores, alimentação externa para motores
-- Ligue sempre os GND juntos
-- Verifique a capacidade de corrente (pino 3.3V do ESP32 máx ~200mA)
+## Detalhes e Operações
 
-### 2. Prevenção de Ruído
-- Mantenha distância entre motores e ESP32
-- Adicione condensador à alimentação do motor
-- Mantenha os cabos o mais curtos possível
+### Melhores Práticas de Cablagem
 
-### 3. Segurança
-- Verifique a cablagem antes de ligar para prevenir curto-circuitos
-- Use fusíveis e circuitos de proteção adequados contra sobrecorrente
-- Tenha especial cuidado com alta tensão (12V+)
+#### 1. Gestão de Alimentação
 
-## Resolução de Problemas
+- Usa 3.3V para sensores, alimentação externa para motores
+- Liga sempre os GND juntos
+- Verifica a capacidade de corrente (pino 3.3V do ESP32 máx ~200mA)
 
-### Sensor Não Funciona
-1. Verifique novamente a cablagem (VCC, GND, Sinal)
-2. Verifique o nível de tensão (3.3V/5V)
-3. Verifique se é necessária resistência pull-up/pull-down
+#### 2. Prevenção de Ruído
 
-### Motor Não Funciona
-1. Verifique se a alimentação externa está ligada
-2. Verifique a ligação GND
-3. Verifique a cablagem do driver do motor
+- Mantém distância entre motores e ESP32
+- Adiciona condensador à alimentação do motor
+- Mantém os cabos o mais curtos possível
+
+#### 3. Segurança
+
+- Verifica a cablagem antes de ligar para prevenir curto-circuitos
+- Usa fusíveis e circuitos de proteção adequados contra sobrecorrente
+- Tem especial cuidado com alta tensão (12V+)
+
+### Resolução de Problemas
+
+#### Sensor Não Funciona
+
+1. Verifica novamente a cablagem (VCC, GND, Sinal)
+2. Verifica o nível de tensão (3.3V / 5V)
+3. Verifica se é necessária resistência pull-up / pull-down
+
+#### Motor Não Funciona
+
+1. Verifica se a alimentação externa está ligada
+2. Verifica a ligação GND
+3. Verifica a cablagem do driver do motor
+
+Para mais, consulta [Resolução de Problemas](./troubleshooting.md).
+
+---
 
 ## Referências
 
-- [Lista de Hardware Recomendado](./recommended-hardware.md) - Lista de dispositivos verificados
+- [Lista de Hardware Recomendado](./recommended-hardware.md) — Lista de dispositivos verificados
+- [Primeiros Passos](./getting-started.md) — De USB a LED a piscar
+- [Guia ESP32](./04-program-setup-esp32.md) — Detalhes de métodos de carregamento
+- [Resolução de Problemas](./troubleshooting.md) — Guia de resolução de problemas
 - [Documentação Oficial ESP32](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/)
-- [Fichas Técnicas dos Sensores](Site do fabricante de cada sensor)

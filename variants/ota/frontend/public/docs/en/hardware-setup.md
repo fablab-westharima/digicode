@@ -1,33 +1,62 @@
 # Hardware Setup Guide
 
-How to connect sensors and actuators to ESP32.
+**Last updated:** 2026-05-02
+
+How to connect ESP32 to sensors and actuators, organized by component.
 
 > **Recommended:** Check [Recommended Hardware List](./recommended-hardware.md) for verified devices. Using tested parts helps avoid issues.
 
-## ESP32 Pin Layout
+---
 
-ESP32 development boards come in various types, but common pin layout is as follows:
+## 🚀 Find by Component
 
-### GPIO (General Purpose I/O)
-- **GPIO 0-39**: Digital input/output
-- **GPIO 32-39**: Analog input only (ADC1)
-- **GPIO 0, 2**: Built-in LED (varies by board)
+| Component | Category | Jump |
+|---|---|---|
+| Ultrasonic distance (HC-SR04) | Sensor (digital) | [→](#ultrasonic-distance-sensor-hc-sr04) |
+| Temperature/humidity (DHT11 / DHT22) | Sensor (1-wire) | [→](#temperaturehumidity-sensor-dht11-dht22) |
+| Line tracking (QTR-8) | Sensor (analog) | [→](#qtr-line-sensor-8ch) |
+| Accelerometer / gyro (MPU6050) | Sensor (I2C) | [→](#accelerometer-gyroscope-mpu6050) |
+| Pressure / T+H (BME280 / BMP280) | Sensor (I2C) | [→](#pressure-temperature-humidity-sensor-bme280-bmp280) |
+| ToF distance (VL53L0X) | Sensor (I2C) | [→](#tof-distance-sensor-vl53l0x) |
+| Magnetic encoder (AS5600) | Sensor (I2C) | [→](#magnetic-encoder-as5600) |
+| Servo (SG90, etc.) | Actuator | [→](#servo-motor-sg90-etc) |
+| DC motor (via L298N) | Actuator | [→](#dc-motor-via-motor-driver) |
+| NeoPixel (WS2812B) | Actuator | [→](#neopixel-led-ws2812b) |
+| LCD (16x2 + PCF8574) | Comm module (I2C) | [→](#i2c-lcd-display) |
+| TFT (ST7789 / ILI9341) | Comm module (SPI) | [→](#tft-display-spi) |
+| RFID (RC522) | Comm module (SPI) | [→](#rfid-reader-rc522) |
+| IR receiver (VS1838B) | Comm module | [→](#ir-receiver-module-vs1838b) |
+| DFPlayer Mini (MP3) | Comm module (UART) | [→](#dfplayer-mini-mp3) |
+| ESP32-CAM / XIAO Sense | Camera | [→](#camera-module-connections) |
+| CAN Bus (SN65HVD230) | Comm | [→](#can-bus-connection-twai) |
 
-### Special Pins
-- **GPIO 1, 3**: UART (serial) - avoid (used for programming)
-- **GPIO 6-11**: Flash memory only - cannot use
-- **GPIO 34-39**: Input only (no pull-up resistor)
+---
 
-### Power
-- **3.3V**: Power for sensors and motors
-- **5V**: 5V via USB (some boards only)
-- **GND**: Ground (common ground)
+## ESP32 Pin Quick Reference
+
+ESP32 development boards vary, but the common essentials:
+
+| Pin | Use | Note |
+|---|---|---|
+| **GPIO 0-39** | Digital I/O | — |
+| **GPIO 32-39** | Analog input only (ADC1) | ADC2 conflicts when WiFi is in use |
+| **GPIO 0, 2** | Built-in LED (board-dependent) | — |
+| **GPIO 1, 3** | UART (serial) | Used for programming, avoid |
+| **GPIO 6-11** | Flash memory only | Cannot use |
+| **GPIO 34-39** | Input only | No pull-up resistor |
+| **3.3V** | Sensor power | Max ~200mA |
+| **5V** | USB 5V (some boards) | Use external power for motors |
+| **GND** | Ground | Common ground required |
+
+> 💡 **I2C default pins**: SDA = GPIO 21, SCL = GPIO 22 (ESP32 default)
+> 💡 **SPI default pins**: SCK = GPIO 18, MOSI = GPIO 23, MISO = GPIO 19 (hardware SPI)
+
+---
 
 ## Sensor Connections
 
 ### Ultrasonic Distance Sensor (HC-SR04)
 
-**Pin Layout:**
 ```
 HC-SR04    ESP32
 --------   ------
@@ -37,11 +66,10 @@ Trig   →   GPIO 5
 Echo   →   GPIO 18
 ```
 
-**Note:** When connecting 5V sensors to ESP32 (3.3V), add voltage divider to Echo pin
+**Note:** When connecting 5V sensors to ESP32 (3.3V), add a voltage divider on the Echo pin.
 
-### Temperature/Humidity Sensor (DHT11/DHT22)
+### Temperature/Humidity Sensor (DHT11 / DHT22)
 
-**Pin Layout:**
 ```
 DHT11      ESP32
 --------   ------
@@ -50,11 +78,10 @@ GND    →   GND
 DATA   →   GPIO 4
 ```
 
-**Note:** Connect 10kΩ pull-up resistor between DATA pin and VCC
+**Note:** Connect a 10kΩ pull-up resistor between DATA and VCC.
 
 ### QTR Line Sensor (8ch)
 
-**Pin Layout Example:**
 ```
 QTR-8A     ESP32
 --------   ------
@@ -72,7 +99,6 @@ GND    →   GND
 
 ### Accelerometer / Gyroscope (MPU6050)
 
-**Pin Layout (I2C):**
 ```
 MPU6050    ESP32
 --------   ------
@@ -82,11 +108,10 @@ SDA    →   GPIO 21
 SCL    →   GPIO 22
 ```
 
-**Note:** Address is 0x68 (AD0=LOW) or 0x69 (AD0=HIGH). Multiple units can share the same I2C bus
+**Note:** Address is 0x68 (AD0=LOW) or 0x69 (AD0=HIGH). Multiple units can share the same I2C bus.
 
 ### Pressure / Temperature / Humidity Sensor (BME280 / BMP280)
 
-**Pin Layout (I2C):**
 ```
 BME280     ESP32
 --------   ------
@@ -96,11 +121,10 @@ SDA    →   GPIO 21
 SCL    →   GPIO 22
 ```
 
-**Note:** Default address 0x76 (SDO=LOW) or 0x77 (SDO=HIGH). BMP280 measures temperature and pressure only; BME280 also measures humidity
+**Note:** Default address 0x76 (SDO=LOW) or 0x77 (SDO=HIGH). BMP280 measures temperature and pressure only; BME280 also measures humidity.
 
 ### ToF Distance Sensor (VL53L0X)
 
-**Pin Layout (I2C):**
 ```
 VL53L0X    ESP32
 --------   ------
@@ -110,11 +134,10 @@ SDA    →   GPIO 21
 SCL    →   GPIO 22
 ```
 
-**Note:** Address 0x29. When using multiple units, use XSHUT pin to boot each individually and change its address
+**Note:** Address 0x29. When using multiple units, use the XSHUT pin to boot each individually and change its address.
 
 ### Magnetic Encoder (AS5600)
 
-**Pin Layout (I2C):**
 ```
 AS5600     ESP32
 --------   ------
@@ -125,13 +148,14 @@ SCL    →   GPIO 22
 DIR    →   GND (clockwise positive) or 3.3V (counter-clockwise positive)
 ```
 
-**Note:** Fixed address 0x36. Mount magnet centered above shaft; keep sensor distance 0.5–3mm
+**Note:** Fixed address 0x36. Mount magnet centered above shaft; keep sensor distance 0.5–3mm.
+
+---
 
 ## Actuator Connections
 
 ### Servo Motor (SG90, etc.)
 
-**Pin Layout:**
 ```
 Servo      ESP32
 --------   ------
@@ -146,7 +170,8 @@ Signal →   GPIO 13
 
 ### DC Motor (via Motor Driver)
 
-**L298N Motor Driver Example:**
+**L298N motor driver example:**
+
 ```
 L298N      ESP32
 --------   ------
@@ -162,7 +187,6 @@ GND    →   GND
 
 ### NeoPixel LED (WS2812B)
 
-**Pin Layout:**
 ```
 NeoPixel   ESP32
 --------   ------
@@ -171,13 +195,16 @@ GND    →   GND
 DIN    →   GPIO 23
 ```
 
-**Note:** External 5V power recommended for many LEDs
+**Note:** External 5V power recommended for many LEDs.
+
+---
 
 ## Communication Module Connections
 
-### I2C LCD Display (PCF8574 I2C Adapter + 16x2 LCD)
+### I2C LCD Display
 
-**Pin Layout (I2C):**
+PCF8574 I2C adapter + 16x2 LCD.
+
 ```
 I2C LCD    ESP32
 --------   ------
@@ -187,11 +214,12 @@ SDA    →   GPIO 21
 SCL    →   GPIO 22
 ```
 
-**Note:** Set I2C address via jumper on PCF8574 adapter (default 0x27). 5V power recommended for LCD (3.3V may result in dim display)
+**Note:** Set I2C address via the jumper on the PCF8574 adapter (default 0x27). 5V power recommended for LCD (3.3V may result in dim display).
 
-### TFT Display (SPI — ST7789 / ILI9341)
+### TFT Display (SPI)
 
-**Pin Layout (Hardware SPI):**
+ST7789 / ILI9341 etc., hardware SPI.
+
 ```
 TFT        ESP32
 --------   ------
@@ -206,11 +234,12 @@ MISO   →   GPIO 19 (SPI MISO, optional)
 BL     →   3.3V or backlight control pin
 ```
 
-**Note:** Select driver IC (ST7789 / ILI9341 / ST7735) in the block. Change CS pin if sharing SPI bus with RFID
+**Note:** Select driver IC (ST7789 / ILI9341 / ST7735) in the block. Change CS pin if sharing SPI bus with RFID.
 
-### RFID Reader (RC522, SPI)
+### RFID Reader (RC522)
 
-**Pin Layout (Hardware SPI):**
+Hardware SPI.
+
 ```
 RC522      ESP32
 --------   ------
@@ -224,11 +253,10 @@ RST    →   GPIO 22
 IRQ    →   Not connected (not needed for polling)
 ```
 
-**Note:** RC522 is 3.3V only (do not connect 5V). Change CS pin if sharing SPI bus with TFT. See [Recommended Hardware List](./recommended-hardware.md) for radio law notes
+**Note:** RC522 is 3.3V only (do not connect 5V). Change CS pin if sharing SPI bus with TFT. See [Recommended Hardware List](./recommended-hardware.md) for radio law notes.
 
 ### IR Receiver Module (VS1838B)
 
-**Pin Layout:**
 ```
 VS1838B    ESP32
 --------   ------
@@ -237,11 +265,12 @@ GND    →   GND
 OUT    →   GPIO 14
 ```
 
-**Note:** OUT pin has pull-up built into the module. Uses IRremoteESP8266 library (also works on ESP32)
+**Note:** OUT pin has pull-up built into the module. Uses IRremoteESP8266 library (also works on ESP32).
 
-### DFPlayer Mini (MP3, UART)
+### DFPlayer Mini (MP3)
 
-**Pin Layout:**
+UART connection.
+
 ```
 DFPlayer   ESP32
 --------   ------
@@ -253,32 +282,35 @@ SPK+   →   Speaker (+)
 SPK−   →   Speaker (−)
 ```
 
-**Note:** Always add 1kΩ series resistor to DFPlayer RX pin. Uses SoftwareSerial (ESP32 RX=14, TX=12). Place MP3 files on microSD as `/01/001.mp3`
+**Note:** Always add a 1kΩ series resistor on DFPlayer's RX pin. Uses SoftwareSerial (ESP32 RX=14, TX=12). Place MP3 files on microSD as `/01/001.mp3`.
+
+---
 
 ## Camera Module Connections
 
-ESP32 camera modules have built-in pin configurations. Simply select the board type in the block and no manual pin setup is needed.
+ESP32 camera modules have built-in pin configurations. Simply select the board type in the block — no manual pin setup is needed.
 
 ### ESP32-CAM (AI-Thinker)
 
-Camera connector is built into the board. Connect OV2640 camera module separately.
+The camera connector is built into the board. Connect the OV2640 camera module separately.
 
-**Programming Notes:**
+**Programming notes:**
 - Short IO0 to GND with a jumper before writing via USB-UART adapter
 - Remove jumper and power cycle after writing
 - ESP32-CAM has no USB port — USB-UART adapter (3.3V) is required
 
-**Power:** 5V (via USB) or external 5V. Direct 3.3V pin supply is not recommended as camera current demand may cause instability
+**Power:** 5V (via USB) or external 5V. Direct supply via the 3.3V pin is not recommended (camera current demand can cause instability).
 
 ### XIAO ESP32S3 Sense
 
 Camera (OV2640) and microphone are built into the board. Connect camera via the dedicated flexible cable. No additional external wiring needed.
 
+---
+
 ## CAN Bus Connection (TWAI)
 
 Uses the ESP32 built-in TWAI controller. An external CAN transceiver IC (e.g. SN65HVD230) is required.
 
-**Pin Layout:**
 ```
 SN65HVD230  ESP32
 ----------  ------
@@ -290,39 +322,54 @@ CANH    →   CANH line of CAN bus
 CANL    →   CANL line of CAN bus
 ```
 
-**Note:** Connect 120Ω termination resistors at both ends of the CAN bus. SN65HVD230 operates at 3.3V. See [Recommended Hardware List](./recommended-hardware.md) for regulatory notes
+**Note:** Connect 120Ω termination resistors at both ends of the CAN bus. SN65HVD230 operates at 3.3V. See [Recommended Hardware List](./recommended-hardware.md) for regulatory notes.
 
-## Wiring Best Practices
+---
 
-### 1. Power Management
+## Details and Operations
+
+### Wiring Best Practices
+
+#### 1. Power Management
+
 - Use 3.3V for sensors, external power for motors
 - Always connect GNDs together
 - Check power capacity (ESP32 3.3V pin max ~200mA)
 
-### 2. Noise Prevention
+#### 2. Noise Prevention
+
 - Keep distance between motors and ESP32
-- Add capacitor to motor power
+- Add a capacitor on motor power
 - Keep wiring as short as possible
 
-### 3. Safety
+#### 3. Safety
+
 - Verify wiring before powering on to prevent shorts
 - Use appropriate fuses and protection circuits for overcurrent
 - Take special care with high voltage (12V+)
 
-## Troubleshooting
+### Troubleshooting
 
-### Sensor Not Working
-1. Re-check wiring (VCC, GND, Signal)
-2. Verify voltage level (3.3V/5V)
-3. Check if pull-up/pull-down resistor is needed
+#### Sensor Not Working
 
-### Motor Not Running
+1. Re-check wiring (VCC, GND, signal)
+2. Verify voltage level (3.3V / 5V)
+3. Check if pull-up / pull-down resistor is needed
+
+#### Motor Not Running
+
 1. Verify external power is supplied
-2. Check GND connection
+2. Check GND is commonly grounded
 3. Verify motor driver wiring
+
+For more, see [Troubleshooting](./troubleshooting.md).
+
+---
 
 ## References
 
-- [Recommended Hardware List](./recommended-hardware.md) - Verified device list
+- [Recommended Hardware List](./recommended-hardware.md) — Verified device list
+- [Getting Started](./getting-started.md) — From USB to LED blink
+- [ESP32 Upload Guide](./04-program-setup-esp32.md) — Upload methods detail
+- [Troubleshooting](./troubleshooting.md) — Problem solving guide
 - [ESP32 Official Documentation](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/)
-- [Sensor Datasheets](Each sensor manufacturer's website)
