@@ -65,8 +65,8 @@ The container, persistent volumes and config directory are removed; you're then 
 
 | Item | Size |
 |---|---|
-| Docker image (compressed) | ~1 GB |
-| Disk usage (extracted) | ~3.8 GB |
+| Docker image (compressed) | ~2.1 GB |
+| Disk usage (extracted) | ~8.8 GB |
 
 Use a stable wired connection (about 1–2 minutes on 100 Mbps fibre); a phone hotspot is not recommended.
 

@@ -65,8 +65,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-i
 
 | 項目 | 大小 |
 |---|---|
-| Docker 映像 (壓縮) | 約 1 GB |
-| 磁碟使用量 (展開後) | 約 3.8 GB |
+| Docker 映像 (壓縮) | 約 2.1 GB |
+| 磁碟使用量 (展開後) | 約 8.8 GB |
 
 建議使用 **穩定的有線連線** (100 Mbps 光纖約 1〜2 分鐘);手機熱點不建議。
 

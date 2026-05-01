@@ -65,8 +65,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-i
 
 | 項目 | サイズ |
 |---|---|
-| Docker イメージ (圧縮) | 約 1 GB |
-| ディスク使用量 (展開後) | 約 3.8 GB |
+| Docker イメージ (圧縮) | 約 2.1 GB |
+| ディスク使用量 (展開後) | 約 8.8 GB |
 
 スマートフォンのテザリングではなく、**安定した固定回線**でのダウンロードを推奨します (光回線 100 Mbps で約 1〜2 分)。
 

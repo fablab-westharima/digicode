@@ -65,8 +65,8 @@ Se eliminarán el contenedor, los volúmenes persistentes y la carpeta de config
 
 | Elemento | Tamaño |
 |---|---|
-| Imagen Docker (comprimida) | ~1 GB |
-| Uso de disco (extraída) | ~3.8 GB |
+| Imagen Docker (comprimida) | ~2.1 GB |
+| Uso de disco (extraída) | ~8.8 GB |
 
 Usa una **conexión cableada estable** (aproximadamente 1–2 minutos en fibra de 100 Mbps); el tethering del móvil no es recomendable.
 

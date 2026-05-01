@@ -65,8 +65,8 @@ São removidos o contentor, os volumes persistentes e a pasta de configuração;
 
 | Item | Tamanho |
 |---|---|
-| Imagem Docker (comprimida) | ~1 GB |
-| Espaço em disco (após extração) | ~3.8 GB |
+| Imagem Docker (comprimida) | ~2.1 GB |
+| Espaço em disco (após extração) | ~8.8 GB |
 
 Usa uma **ligação fixa estável** (cerca de 1–2 minutos em fibra de 100 Mbps); o tethering do telemóvel não é recomendado.
 
