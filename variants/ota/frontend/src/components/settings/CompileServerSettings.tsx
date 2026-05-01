@@ -9,7 +9,6 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import { compileService, type CompileServerMode } from '@/services/compileService';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
@@ -19,8 +18,9 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
-import { Cloud, Server, CheckCircle2, XCircle, Loader2, BarChart3, Lock, AlertCircle } from 'lucide-react';
+import { Cloud, Server, CheckCircle2, XCircle, Loader2, BarChart3, Lock, AlertCircle, Download, Trash2 } from 'lucide-react';
 import { DEFAULT_LOCAL_PORT } from '@/config/servers';
+import { LocalServerSetupDialog, type LocalSetupMode } from './LocalServerSetupDialog';
 
 type ConnectionStatus = 'checking' | 'connected' | 'disconnected';
 
@@ -60,6 +60,15 @@ export const CompileServerSettings = () => {
     String(extractLocalPort(compileService.getLocalUrl())),
   );
   const [portError, setPortError] = useState<string | null>(null);
+
+  // Setup / uninstall dialogs (案 2 採択 2026-05-01: in-dialog modal で
+  // OS 別コマンドを直接表示し、docs page 経由の摩擦を 1 クリックに短縮)
+  const [setupDialogOpen, setSetupDialogOpen] = useState(false);
+  const [setupDialogMode, setSetupDialogMode] = useState<LocalSetupMode>('install');
+  const openSetupDialog = (m: LocalSetupMode) => {
+    setSetupDialogMode(m);
+    setSetupDialogOpen(true);
+  };
 
   // 使用量を取得（ログイン時のみ）
   const fetchUsage = useCallback(async () => {
@@ -276,7 +285,7 @@ export const CompileServerSettings = () => {
               <p className="text-sm text-gray-500 mt-1">
                 {t('settings.localDesc')}
               </p>
-              <div className="flex items-center gap-3 mt-2">
+              <div className="flex items-center gap-2 mt-2 flex-wrap">
                 <div className="flex items-center gap-1">
                   <StatusIcon status={localStatus} />
                   <StatusText status={localStatus} />
@@ -288,6 +297,24 @@ export const CompileServerSettings = () => {
                   disabled={localStatus === 'checking'}
                 >
                   {t('settings.connectionTest')}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => openSetupDialog('install')}
+                  className="gap-1"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  {t('settings.setupButton', { defaultValue: 'セットアップ' })}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => openSetupDialog('uninstall')}
+                  className="gap-1"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  {t('settings.uninstallButton', { defaultValue: 'アンインストール' })}
                 </Button>
               </div>
 
@@ -323,27 +350,30 @@ export const CompileServerSettings = () => {
                 )}
               </div>
 
-              {/* ローカルサーバー未起動時の案内 */}
+              {/* ローカルサーバー未起動時の案内 (セットアップ動線は上のボタンに集約済) */}
               {localStatus === 'disconnected' && (
                 <div className="mt-3 p-2 bg-yellow-50 dark:bg-yellow-950/30 rounded text-sm text-yellow-800 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-800">
                   <div className="flex items-start gap-2">
                     <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                    <div>
-                      {t('settings.localNotRunning', {
-                        defaultValue: 'ローカルサーバーが起動していません。Dockerでサーバーを起動してください。'
+                    <span>
+                      {t('settings.localNotRunningHint', {
+                        defaultValue:
+                          'ローカルサーバーが起動していません。上の「セットアップ」ボタンからインストールできます。',
                       })}
-                      <div className="mt-1">
-                        <Link to="/docs?doc=local-compile-server" className="underline">
-                          {t('settings.setupGuide', { defaultValue: 'セットアップガイドはこちら' })}
-                        </Link>
-                      </div>
-                    </div>
+                    </span>
                   </div>
                 </div>
               )}
             </div>
           </div>
         </RadioGroup>
+
+        {/* セットアップ / アンインストール ダイアログ */}
+        <LocalServerSetupDialog
+          open={setupDialogOpen}
+          mode={setupDialogMode}
+          onOpenChange={setSetupDialogOpen}
+        />
 
         {/* 現在の設定表示 */}
         <div className="pt-2 border-t">

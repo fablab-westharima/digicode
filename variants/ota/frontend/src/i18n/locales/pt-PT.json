@@ -873,6 +873,9 @@
     "localPort": "Porta",
     "localPortHint": "Predefinição 3001. Tem de corresponder ao argumento --port do instalador.",
     "localPortInvalid": "A porta deve ser um inteiro entre 1024 e 65535.",
+    "setupButton": "Configurar",
+    "uninstallButton": "Desinstalar",
+    "localNotRunningHint": "O servidor local não está em execução. Clica no botão \"Configurar\" acima para o instalar.",
     "connectionOk": "Ligado",
     "notConnected": "Não ligado",
     "unverified": "Não verificado",
@@ -4125,6 +4128,22 @@
         "exportFailed": "Falha ao exportar CSV"
       }
     }
+  },
+  "localServerSetup": {
+    "installTitle": "Configurar o servidor de compilação local",
+    "installDescription": "Inicia o servidor de compilação localmente com Docker. Executa o comando abaixo no Terminal ou no PowerShell.",
+    "uninstallTitle": "Desinstalar o servidor de compilação local",
+    "uninstallDescription": "Remove o contentor e os volumes persistentes (incluindo a cache de compilação). Executa o comando abaixo no Terminal ou no PowerShell.",
+    "macHint": "Executa no Terminal.app.",
+    "linuxHint": "Executa em qualquer terminal (bash/zsh).",
+    "windowsHint": "Executa no PowerShell (não requer privilégios de administrador).",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "installNoteDocker": "É necessário ter o Docker. Se não estiver instalado, o script apresenta os URL de transferência específicos do SO.",
+    "installNotePort": "Na primeira execução, é perguntado qual a porta a utilizar. Carrega em Enter para aceitar 3001 se estiver livre; se 3001 estiver ocupada, é sugerida uma porta alternativa (por exemplo, 3002).",
+    "uninstallWarning": "Remover o contentor e os volumes também elimina a cache de compilação. A próxima compilação será um arranque a frio (~30–60s). A imagem do Docker pode ser mantida, se preferires.",
+    "fullGuide": "Abrir o guia completo num novo separador",
+    "close": "Fechar"
   },
   "feedback": {
     "button": {

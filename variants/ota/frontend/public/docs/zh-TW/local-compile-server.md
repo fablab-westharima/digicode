@@ -1,292 +1,218 @@
-# 本地編譯伺服器設定
+# 本機編譯伺服器
 
-**最後更新:** 2026-04-29
+**最後更新:** 2026-05-01
 
-您可以在自己的電腦上執行編譯伺服器，而不是使用 DigiCode 的雲端伺服器。雲端與本地都使用 **同一個 Docker 映像**，因此編譯結果完全一致（無 lib drift）。
-
----
-
-## 用途
-
-- **編譯次數無限制** — 不消耗雲端編譯額度
-- **高速編譯** — 無網路延遲，永久快取讓重新建置最少約 1 ms / 約 9.6 秒
-- **離線使用** — 初次取得映像後不需網際網路
-
-### 各方案推薦度
-
-| 方案 | 推薦度 | 理由 |
-|------|:------:|------|
-| Free | — | 雲端額度（每月 50 次）通常足夠 |
-| Lite | ▲ | 每月 250 次不夠時可考慮 |
-| Pro | ◎ | 適合每月超過 500 次的高頻率使用者 |
-| Enterprise | ◎ | 對全班同時編譯加速有效 |
+DigiCode 的雲端編譯伺服器之外,你也可以用 Docker 容器在自己的電腦上跑編譯伺服器。雲端與本機使用 **相同的 Docker 映像**,因此編譯結果完全一致 (無函式庫漂移)。
 
 ---
 
-## ⚠️ 注意事項（請務必閱讀）
+## 🚀 快速安裝
 
-> **重要: Docker 映像大小**
->
-> 本地編譯伺服器的 Docker 映像大小如下（PlatformIO Core 基礎，v0.1.0）：
->
-> - **下載（壓縮）: 約 1 GB**
-> - **磁碟使用量（解壓縮後）: 約 3.8 GB**
->
-> - **請勿透過手機分享網路下載** — 請使用穩定的固定線路（光纖等）
-> - 估計時間：100 Mbps 光纖約 1〜2 分鐘
+### macOS / Linux
 
----
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.sh)
+```
 
-## 必要環境
+### Windows (PowerShell)
 
-需要可執行 Docker 的環境，請從以下選項中選一個。
+```powershell
+irm https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.ps1 | iex
+```
 
-### 選項 A: Docker Desktop（標準）
+腳本會自動下載 Docker 映像、啟動容器,並透過 `http://localhost:3001/health` 確認運作正常。
 
-- 支援 **Windows / Mac / Linux**
-- **個人使用免費**，商業使用需付費方案
-- https://www.docker.com/products/docker-desktop/
-
-### 選項 B: Docker Desktop 替代方案（輕量 / OSS）
-
-如需商業使用或更輕量的環境：
-
-| 工具 | 對應 OS | 特色 |
-|------|--------|------|
-| **OrbStack** | macOS | 輕量、快速、低記憶體用量、Apple Silicon 原生支援 |
-| **Rancher Desktop** | Windows / macOS / Linux | OSS（免費） |
-| **Podman Desktop** | Windows / macOS / Linux | OSS、無 daemon |
-
-### 選項 C: 直接安裝 Docker Engine（Linux）
-
-在 Linux 上可直接安裝 Docker Engine（不需要 Docker Desktop）。
+> 💡 **DigiCode 內也可直接複製**
+> 開啟「編譯設定」→ 本機伺服器 → **「設定」按鈕**即可看到對應作業系統的指令(附複製按鈕),不需要先讀文件。
 
 ---
 
-## 步驟 1: 安裝 Docker 環境
+## 五個步驟完成
+
+1. 確認已安裝 **Docker** (若尚未安裝,參考下方 [Docker 下載連結](#安裝-docker);腳本也會在偵測到時提示)
+2. 在終端機 / PowerShell 執行上方的 **快速安裝指令**
+3. 在提示中確認 **連接埠** (3001 可用就直接 Enter,被佔用則接受建議的替代埠)
+4. 在 DigiCode 中開啟 **「編譯設定 → 本機伺服器」** (若選了 3001 以外的連接埠,請在連接埠欄位填入相同值)
+5. 點擊 **「連線測試」** 看到「OK」即完成
+
+完成。後續編譯會走本機伺服器。
+
+---
+
+## 🗑️ 解除安裝
+
+```bash
+# macOS / Linux
+bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.sh) uninstall
+```
+
+```powershell
+# Windows (PowerShell)
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.ps1))) uninstall
+```
+
+> 💡 **DigiCode 內也可複製**
+> 開啟「編譯設定」→ 本機伺服器 → **「解除安裝」按鈕**即可複製相同指令。
+
+執行後會刪除容器、永續性磁碟區與設定資料夾,最後會詢問是否一併刪除 Docker 映像 (保留可加快重新安裝)。
+
+> ⚠️ **編譯快取也會被清除**
+> 解除安裝後第一次編譯會是冷啟動 (約 30〜60 秒)。
+
+---
+
+## ⚠️ 下載大小
+
+| 項目 | 大小 |
+|---|---|
+| Docker 映像 (壓縮) | 約 1 GB |
+| 磁碟使用量 (展開後) | 約 3.8 GB |
+
+建議使用 **穩定的有線連線** (100 Mbps 光纖約 1〜2 分鐘);手機熱點不建議。
+
+---
+
+## 安裝 Docker
+
+腳本偵測到沒有 Docker 時,會顯示對應作業系統的下載網址。
+
+### macOS
+
+| 推薦對象 | 工具 | 網址 |
+|---|---|---|
+| Apple Silicon | **OrbStack** (輕量、快速) | https://orbstack.dev/ |
+| Intel / Apple Silicon | Docker Desktop for Mac | https://www.docker.com/products/docker-desktop/ |
 
 ### Windows
 
-1. 從 https://www.docker.com/products/docker-desktop/ 下載 Docker Desktop for Windows
-2. 執行安裝程式（需要 WSL2，安裝程式會引導）
-3. 安裝完成後重新啟動電腦
-
-### Mac（Intel）
-
-1. 從 https://www.docker.com/products/docker-desktop/ 下載 Docker Desktop for Mac (Intel)
-2. 開啟 `.dmg` 並拖曳至 Applications
-3. 從 Applications 啟動「Docker」
-
-### Mac（Apple Silicon: M1/M2/M3/M4）
-
-**推薦: OrbStack**
-
-Docker Desktop for Mac (Apple Silicon 版) 也可使用，但 OrbStack 較快且記憶體用量更低。
-
-1. 從 https://orbstack.dev/ 下載 OrbStack
-2. 安裝後即可直接使用 docker 命令
-
-若使用 Docker Desktop，請安裝 Apple Silicon 版（`.dmg`）。
-
-> ESP32 core 已原生支援 arm64，一般用途不需要 x86 模擬。
+- **Docker Desktop for Windows** (需 WSL2,安裝程式會引導): https://www.docker.com/products/docker-desktop/
+- 輕量 / OSS 替代方案: [Rancher Desktop](https://rancherdesktop.io/)、[Podman Desktop](https://podman-desktop.io/)
 
 ### Linux
 
 ```bash
 # Ubuntu / Debian
-sudo apt update && sudo apt install -y docker.io
+sudo apt update && sudo apt install -y docker.io docker-compose-plugin
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER     # 登出後重新登入才會生效
+
+# Fedora / RHEL / CentOS
+sudo dnf install -y docker docker-compose-plugin
 sudo systemctl enable --now docker
 sudo usermod -aG docker $USER
-# 登出並重新登入以套用群組變更
-```
 
-### 驗證安裝
-
-```bash
-docker --version
-```
-
-若顯示 `Docker version 20.x.x` 即代表 OK。
-
----
-
-## 步驟 2: 下載並啟動編譯伺服器
-
-### 方法 A: 一行命令啟動
-
-```bash
-docker run -d -p 3001:3001 --name digicode-compile-api \
-  ghcr.io/fablab-westharima/digicode-compile-api:latest
-```
-
-初次執行會下載約 1 GB 的映像（解壓後 3.8 GB）。**請使用固定線路。**
-
-### 方法 B: 使用 docker-compose.yml（推薦，含永久快取）
-
-在任何資料夾中建立 `docker-compose.yml`：
-
-```yaml
-services:
-  digicode-compile-api:
-    image: ghcr.io/fablab-westharima/digicode-compile-api:latest
-    container_name: digicode-compile-api
-    ports:
-      - "3001:3001"
-    restart: unless-stopped
-    volumes:
-      - digicode-projects:/opt/digicode-compile/projects
-      - digicode-cache:/opt/digicode-compile/cache
-
-volumes:
-  digicode-projects:
-  digicode-cache:
-```
-
-在該資料夾開啟終端機：
-
-```bash
-docker compose up -d
-```
-
-> `digicode-projects` 與 `digicode-cache` 是命名磁碟區，會保留編譯狀態。**第二次以相同程式碼編譯約 1 ms（cache HIT）**，更動 1 byte 的 warm rebuild 約 9.6 秒。若使用暫時磁碟區（`docker run` 未指定 `-v`），刪除容器時快取會遺失。
-
----
-
-## 步驟 3: 驗證
-
-```bash
-curl http://localhost:3001/health
-```
-
-若顯示以下訊息即為成功（請確認 `service` 與 `version`）：
-
-```json
-{
-  "status": "ok",
-  "service": "digicode-compile-api",
-  "version": "0.1.0",
-  "timestamp": "..."
-}
-```
-
-也可從瀏覽器開啟 `http://localhost:3001/health` 確認。
-
----
-
-## 步驟 4: 在 DigiCode 中設定
-
-1. 開啟 DigiCode
-2. 點選「**上傳**」按鈕旁的 ▼
-3. 選擇「**本地伺服器**」
-4. 執行編譯以驗證
-
-第一次編譯（cold）約 30〜60 秒 — PlatformIO + framework + 函式庫已包含在映像內，輸出結果與雲端 (ML30) 在 byte 等級一致。
-
----
-
-## 伺服器操作
-
-```bash
-# 停止
-docker stop digicode-compile-api
-
-# 重新啟動
-docker start digicode-compile-api
-
-# 查看日誌
-docker logs digicode-compile-api
-
-# 完全移除
-docker rm -f digicode-compile-api
-docker rmi ghcr.io/fablab-westharima/digicode-compile-api:latest
+# Arch / Manjaro
+sudo pacman -S --needed docker docker-compose
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
 ```
 
 ---
 
-## 更新
-
-新版本發布時：
+## 子指令一覽
 
 ```bash
-# docker-compose 方式
-docker compose pull
-docker compose up -d
+bash install.sh [子指令] [--port N]
+# Windows
+.\install.ps1 [子指令] [-Port N]
 ```
 
+| 子指令 | 動作 |
+|---|---|
+| `install` (預設) | 詢問連接埠 → 拉取映像 → 啟動容器 → 用 `/health` 驗證 |
+| `update` | 拉取最新映像並重建容器 (沿用先前的連接埠) |
+| `uninstall` | 停止並移除容器、刪除磁碟區與設定資料夾 (映像會詢問) |
+| `status` | 顯示容器狀態、映像、主機連接埠與 health check 結果 |
+| `start` | 啟動已存在的 (停止中) 容器 |
+| `stop` | 停止容器但不移除 (保留磁碟區、可快速重啟) |
+| `help` | 內建說明 |
+
+`update` / `status` / `start` / `stop` 會自動從生成的 `docker-compose.yml` 讀取目前的主機連接埠。
+
+---
+
+## 關於連接埠
+
+`install` 一定會問你要用哪個主機連接埠。
+
+- 3001 **未被佔用** → 預設 3001 (直接按 Enter 即可)
+- 3001 **已被佔用** → 腳本會顯示佔用者 (pid + 程式名) 並建議下一個空閒連接埠 (例如 3002)
+
+當 `curl ... | bash` 之類的 pipe 模式無法互動時,可預先設定環境變數:
+
 ```bash
-# docker run 方式
-docker stop digicode-compile-api
-docker rm digicode-compile-api
-docker pull ghcr.io/fablab-westharima/digicode-compile-api:latest
-docker run -d -p 3001:3001 --name digicode-compile-api \
-  ghcr.io/fablab-westharima/digicode-compile-api:latest
+PORT=3001 bash -c "$(curl -fsSL .../install.sh)"
 ```
+
+```powershell
+$env:PORT = 3001
+irm .../install.ps1 | iex
+```
+
+**選擇 3001 以外的連接埠時**,請在 DigiCode 的「編譯設定 → 本機伺服器 → 連接埠」欄位填入相同數值。值會儲存在 `localStorage`,只需設定一次。
 
 ---
 
 ## 疑難排解
 
-### 連接埠 3001 已被使用
+### 「Docker not found」
 
-若其他應用程式佔用了 3001：
+腳本已顯示對應作業系統的下載網址。安裝後重新執行即可。
 
-```bash
-# 改用 3002
-docker run -d -p 3002:3001 --name digicode-compile-api \
-  ghcr.io/fablab-westharima/digicode-compile-api:latest
-```
+### 「Docker is installed but not running」
 
-請在 DigiCode 設定中將伺服器 URL 改為 `http://localhost:3002`。
+啟動 Docker Desktop / OrbStack,等到圖示穩定後再重新執行。
 
-### Docker 無法啟動（Windows）
+### 連接埠 3001 已被佔用
 
-- 確認已安裝 WSL2
-- 確認 BIOS/UEFI 中已啟用虛擬化
-- 重新啟動電腦
+腳本會自動偵測並建議替代連接埠。直接接受預設值或自行輸入即可,**不需要手動編輯 `docker-compose.yml`**。在 DigiCode UI 的連接埠欄位填入相同值即可。
 
-### Docker 無法啟動（Mac）
+### Health check 逾時
 
-- 在系統設定 > 隱私權與安全性 中允許 Docker
-- 重新啟動 Mac
-
-### 在 Apple Silicon 上發生編譯錯誤
-
-- 確認使用 OrbStack 或 Docker Desktop for Apple Silicon
-- 確認不需要 x86 模擬（ESP32 core 已支援 arm64）
-
-### 發生編譯錯誤
+低規格機器的冷啟動較慢。檢查容器日誌:
 
 ```bash
-# 重新啟動容器
-docker restart digicode-compile-api
-
-# 仍無法解決時請重新建立
-docker rm -f digicode-compile-api
-docker run -d -p 3001:3001 --name digicode-compile-api \
-  ghcr.io/fablab-westharima/digicode-compile-api:latest
+docker logs digicode-compile-api
 ```
 
-### 快取沒有命中（相同程式碼觸發 warm rebuild）
+若看到 panic,請到 <https://github.com/fablab-westharima/digicode-installer/issues> 提交 issue 並附上日誌片段。
 
-請檢查 `docker-compose.yml` 的 `volumes` 區段。命名磁碟區 `digicode-projects` 與 `digicode-cache` 必須保留。
+### Apple Silicon 編譯緩慢
+
+請確認使用 Docker Desktop (Apple Silicon 版) 或 OrbStack。兩者皆原生支援 arm64;compile-api 映像為 multi-arch,不需 x86 模擬。
 
 ---
 
-## 優缺點
+## 為什麼使用本機伺服器?
 
-| 項目 | 內容 |
-|------|------|
-| ✅ 編譯次數 | **無限制**（不消耗雲端額度） |
-| ✅ 速度 | cache HIT 約 1 ms / warm rebuild 約 9.6 秒 / cold 約 30〜60 秒 |
-| ✅ 離線 | 初次下載後不需網際網路（framework + 函式庫已包含於映像中） |
-| ✅ 與雲端一致 | 與雲端 (ML30) 使用相同映像，輸出 binary 物理上一致（無 lib drift） |
-| ⚠️ 初次下載 | 約 1 GB 壓縮、3.8 GB 解壓 |
-| ⚠️ 安裝 | 需要設定 Docker |
-| ⚠️ 資源 | 使用 PC 的記憶體與 CPU（建議至少 4 GB RAM） |
+- ✅ **編譯次數無限**: 不消耗雲端編譯額度
+- ✅ **低延遲**: 無網路往返;暖編譯只需數秒
+- ✅ **可離線**: 第一次拉取映像後就不需網路
+- ✅ **結果一致**: 與雲端使用相同 Docker 映像
+
+### 各方案推薦度
+
+| 方案 | 推薦度 | 原因 |
+|---|---|---|
+| Free | — | 雲端 50 次/月通常已足夠 |
+| Lite | ▲ | 月 250 次不夠時可考慮 |
+| Pro | ◎ | 月 500 次仍不足的重度使用者 |
+| Enterprise | ◎ | 全班同時編譯加速、可離線教學 |
+
+### 編譯耗時參考
+
+| 情境 | 耗時 |
+|---|---|
+| 第一次編譯 (冷啟動 + 下載) | 30〜60 秒 |
+| 變更一個位元組 (warm rebuild) | 約 9.6 秒 |
+| 相同程式碼重新編譯 (cache HIT) | 約 1 ms |
+
+本機伺服器與雲端 (ML30) 使用相同 Docker 映像,二進位輸出實體完全一致 (無函式庫漂移)。
 
 ---
 
 ## 相關文件
 
-- [快速入門](./getting-started.md) — 基本用法
-- [疑難排解](./troubleshooting.md) — 常見問題與解法
+- [快速上手](./getting-started.md)
+- [疑難排解](./troubleshooting.md)
+- 安裝程式原始碼: [`fablab-westharima/digicode-installer`](https://github.com/fablab-westharima/digicode-installer) (Public、MIT)

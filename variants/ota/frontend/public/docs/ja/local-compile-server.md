@@ -1,292 +1,218 @@
-# ローカルコンパイルサーバーのセットアップ
+# ローカルコンパイルサーバー
 
-**最終更新:** 2026-04-29
+**最終更新:** 2026-05-01
 
-DigiCode のクラウドコンパイルサーバーの代わりに、自分のパソコンでコンパイルサーバーを動かすことができます。クラウドとローカルは **同じ Docker イメージ** で動作するため、コンパイル結果は完全に一致します（lib drift なし）。
-
----
-
-## 用途
-
-- **コンパイル回数無制限** — クラウドコンパイル枠を消費しない
-- **高速コンパイル** — ネットワーク遅延なし、永続キャッシュで再ビルド最小 1 ms / 約 9.6 秒
-- **オフライン利用** — インターネット不要（初回イメージ取得後）
-
-### プラン別推奨
-
-| プラン | 推奨度 | 理由 |
-|--------|:------:|------|
-| Free | — | クラウドコンパイル枠（月 50 回）で通常は十分 |
-| Lite | ▲ | 月 250 回で不足する場合に検討 |
-| Pro | ◎ | 月 500 回でも不足する高頻度利用向け |
-| Enterprise | ◎ | クラス全体でのコンパイル高速化に有効 |
+DigiCode のクラウドコンパイルサーバーの代わりに、自分のパソコンで Docker コンテナとしてコンパイルサーバーを動かせます。クラウドとローカルは **同じ Docker イメージ** で動作するため、コンパイル結果は完全に一致します（lib drift なし）。
 
 ---
 
-## ⚠️ 注意事項（必ずお読みください）
+## 🚀 クイックインストール
 
-> **重要: Docker イメージのサイズについて**
->
-> ローカルコンパイルサーバーの Docker イメージは以下の容量です（PlatformIO Core ベース、v0.1.0）:
->
-> - **ダウンロード（圧縮）: 約 1 GB**
-> - **ディスク使用量（展開後）: 約 3.8 GB**
->
-> - スマートフォンのテザリングではなく、**安定した固定回線（光回線等）** でのダウンロードを推奨します
-> - ダウンロード時間の目安：光回線（100 Mbps）で約 1〜2 分
+### macOS / Linux
 
----
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.sh)
+```
 
-## 必要環境
+### Windows (PowerShell)
 
-Docker が動作する環境が必要です。以下のいずれかをお選びください。
+```powershell
+irm https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.ps1 | iex
+```
 
-### オプション A: Docker Desktop（標準）
+実行すると Docker イメージを取得してコンテナを起動し、`http://localhost:3001/health` で動作確認まで自動で行います。
 
-- **Windows / Mac / Linux** に対応
-- **個人利用は無料**、商用利用は有料プランが必要
-- https://www.docker.com/products/docker-desktop/
-
-### オプション B: Docker Desktop 代替（軽量・OSS）
-
-商用利用や、Docker Desktop より軽量な環境を求める場合:
-
-| ツール | 対応 OS | 特徴 |
-|--------|--------|------|
-| **OrbStack** | macOS | 軽量・高速・省メモリ、Apple Silicon ネイティブ対応 |
-| **Rancher Desktop** | Windows / macOS / Linux | OSS（無償） |
-| **Podman Desktop** | Windows / macOS / Linux | OSS、デーモンレス |
-
-### オプション C: Docker Engine 直接（Linux）
-
-Linux では Docker Engine を直接インストール可能（Docker Desktop は不要）。
+> 💡 **DigiCode UI からもコピー可能**
+> 「コンパイル設定」ダイアログ → ローカルサーバー → **「セットアップ」ボタン**で、OS 別コマンドが直接表示されます (コピー機能付き)。docs を読む必要はありません。
 
 ---
 
-## ステップ 1: Docker 環境をインストール
+## 5 ステップで完了
+
+1. **Docker** がインストールされていることを確認 (未インストールの場合は[後述の OS 別 DL URL](#docker-環境のインストール)を参照、スクリプトも自動で案内します)
+2. 上の **クイックインストールコマンド** をターミナル / PowerShell で実行
+3. プロンプトで **ポート番号** を確認 (3001 が空いていれば Enter、使用中なら別ポートを提示)
+4. DigiCode で **「コンパイル設定」 → ローカルサーバー** を選択 (ポート 3001 以外を選んだ場合はポート番号入力欄に同じ値を入力)
+5. **「接続テスト」** ボタンで「接続OK」表示を確認
+
+完了です。以後コンパイルはローカル経由で実行されます。
+
+---
+
+## 🗑️ アンインストール
+
+```bash
+# macOS / Linux
+bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.sh) uninstall
+```
+
+```powershell
+# Windows (PowerShell)
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.ps1))) uninstall
+```
+
+> 💡 **DigiCode UI からもコピー可能**
+> 「コンパイル設定」ダイアログ → ローカルサーバー → **「アンインストール」ボタン**で同じコマンドが表示されます。
+
+実行するとコンテナ + 永続ボリューム + 設定フォルダが削除され、最後に Docker イメージを削除するか確認されます (拒否すると再インストールが速くなります)。
+
+> ⚠️ **コンパイルキャッシュも消えます**
+> アンインストール後の最初のコンパイルは ~30〜60 秒の cold start になります。
+
+---
+
+## ⚠️ ダウンロードサイズ
+
+| 項目 | サイズ |
+|---|---|
+| Docker イメージ (圧縮) | 約 1 GB |
+| ディスク使用量 (展開後) | 約 3.8 GB |
+
+スマートフォンのテザリングではなく、**安定した固定回線**でのダウンロードを推奨します (光回線 100 Mbps で約 1〜2 分)。
+
+---
+
+## Docker 環境のインストール
+
+スクリプトが Docker 未インストールを検出すると、OS に応じて以下の URL を案内します。
+
+### macOS
+
+| 推奨度 | ツール | URL |
+|---|---|---|
+| ◎ Apple Silicon | **OrbStack** (軽量・高速) | https://orbstack.dev/ |
+| ◎ | Docker Desktop for Mac | https://www.docker.com/products/docker-desktop/ |
 
 ### Windows
 
-1. https://www.docker.com/products/docker-desktop/ から Docker Desktop for Windows をダウンロード
-2. インストーラを実行（WSL2 が必要、インストーラが案内）
-3. インストール完了後、PC を再起動
-
-### Mac（Intel）
-
-1. https://www.docker.com/products/docker-desktop/ から Docker Desktop for Mac (Intel) をダウンロード
-2. `.dmg` ファイルを開いて Applications にドラッグ
-3. Applications から「Docker」を起動
-
-### Mac（Apple Silicon: M1/M2/M3/M4）
-
-**推奨: OrbStack**
-
-Docker Desktop for Mac (Apple Silicon 版) でも動作しますが、OrbStack の方が高速・省メモリです。
-
-1. https://orbstack.dev/ から OrbStack をダウンロード
-2. インストール後、そのまま docker コマンドが使用可能
-
-Docker Desktop を使う場合は、Apple Silicon 版（`.dmg`）をインストールしてください。
-
-> ESP32 コアは arm64 ネイティブ対応済みのため、一般的な使用では x86 エミュレーションは不要です。
+- **Docker Desktop for Windows** (WSL2 必須、インストーラが案内): https://www.docker.com/products/docker-desktop/
+- 軽量・OSS 代替: [Rancher Desktop](https://rancherdesktop.io/) / [Podman Desktop](https://podman-desktop.io/)
 
 ### Linux
 
 ```bash
 # Ubuntu / Debian
-sudo apt update && sudo apt install -y docker.io
+sudo apt update && sudo apt install -y docker.io docker-compose-plugin
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER     # ログアウト/再ログインで反映
+
+# Fedora / RHEL / CentOS
+sudo dnf install -y docker docker-compose-plugin
 sudo systemctl enable --now docker
 sudo usermod -aG docker $USER
-# ログアウト/再ログインしてグループ変更を反映
-```
 
-### インストール確認
-
-```bash
-docker --version
-```
-
-`Docker version 20.x.x` のように表示されれば OK です。
-
----
-
-## ステップ 2: コンパイルサーバーをダウンロード・起動
-
-### 方法 A: コマンド 1 行で起動
-
-```bash
-docker run -d -p 3001:3001 --name digicode-compile-api \
-  ghcr.io/fablab-westharima/digicode-compile-api:latest
-```
-
-初回実行時は約 1 GB のイメージをダウンロードします（展開後 3.8 GB）。**固定回線での実行を推奨します。**
-
-### 方法 B: docker-compose.yml を使用（推奨、永続キャッシュ付き）
-
-任意のフォルダに `docker-compose.yml` ファイルを作成：
-
-```yaml
-services:
-  digicode-compile-api:
-    image: ghcr.io/fablab-westharima/digicode-compile-api:latest
-    container_name: digicode-compile-api
-    ports:
-      - "3001:3001"
-    restart: unless-stopped
-    volumes:
-      - digicode-projects:/opt/digicode-compile/projects
-      - digicode-cache:/opt/digicode-compile/cache
-
-volumes:
-  digicode-projects:
-  digicode-cache:
-```
-
-そのフォルダでターミナルを開き：
-
-```bash
-docker compose up -d
-```
-
-> `digicode-projects` と `digicode-cache` は永続ボリュームです。コンパイル結果と project 状態が保持され、**2 回目以降の同一コードは約 1 ms（cache HIT）**、1 バイト変更時の warm rebuild は約 9.6 秒で完了します。一時ボリューム（`docker run` で `-v` 指定なし）の場合、container 削除でキャッシュが消失します。
-
----
-
-## ステップ 3: 動作確認
-
-```bash
-curl http://localhost:3001/health
-```
-
-以下のように表示されれば成功です（`service` と `version` を確認してください）：
-
-```json
-{
-  "status": "ok",
-  "service": "digicode-compile-api",
-  "version": "0.1.0",
-  "timestamp": "..."
-}
-```
-
-ブラウザで `http://localhost:3001/health` にアクセスしても確認できます。
-
----
-
-## ステップ 4: DigiCode で設定
-
-1. DigiCode を開く
-2. 「**書き込み**」ボタン横の▼をクリック
-3. 「**ローカルサーバー**」を選択
-4. コンパイルを実行して動作確認
-
-初回コンパイル（cold）は約 30〜60 秒です（PlatformIO + framework + lib はイメージに同梱済み、cloud (ML30) と同じバイナリが出力されます）。
-
----
-
-## サーバーの操作
-
-```bash
-# 停止
-docker stop digicode-compile-api
-
-# 再起動
-docker start digicode-compile-api
-
-# ログ確認
-docker logs digicode-compile-api
-
-# 完全削除
-docker rm -f digicode-compile-api
-docker rmi ghcr.io/fablab-westharima/digicode-compile-api:latest
+# Arch / Manjaro
+sudo pacman -S --needed docker docker-compose
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
 ```
 
 ---
 
-## アップデート
-
-新しいバージョンがリリースされた場合：
+## サブコマンド一覧
 
 ```bash
-# docker-compose 方式
-docker compose pull
-docker compose up -d
+bash install.sh [サブコマンド] [--port N]
+# Windows
+.\install.ps1 [サブコマンド] [-Port N]
 ```
 
+| サブコマンド | 動作 |
+|---|---|
+| `install` (デフォルト) | ポートを確認 → イメージ pull → コンテナ起動 → /health で動作確認 |
+| `update` | 最新イメージを pull してコンテナ再作成 (ポートは前回値を保持) |
+| `uninstall` | コンテナ + ボリューム + 設定フォルダを削除 (イメージ削除は確認あり) |
+| `status` | コンテナの状態 / イメージ / ホストポート / health check 結果を表示 |
+| `start` | 停止中のコンテナを起動 |
+| `stop` | コンテナを停止 (ボリュームは保持、再 start で素早く復帰) |
+| `help` | 内蔵ヘルプ表示 |
+
+`update` / `status` / `start` / `stop` は生成済みの `docker-compose.yml` から実際のホストポートを自動読み取りします。
+
+---
+
+## ポート番号について
+
+`install` は常にどのホストポートを使うか確認します。
+
+- 3001 が **空いていれば** デフォルト 3001 (そのまま Enter で OK)
+- 3001 が **使用中なら** スクリプトが占有元 (pid + プロセス名) を表示し、次の空きポート (3002 等) を提示
+
+`curl ... | bash` (パイプ実行) で対話プロンプトを使えない場合は、環境変数で事前指定:
+
 ```bash
-# docker run 方式
-docker stop digicode-compile-api
-docker rm digicode-compile-api
-docker pull ghcr.io/fablab-westharima/digicode-compile-api:latest
-docker run -d -p 3001:3001 --name digicode-compile-api \
-  ghcr.io/fablab-westharima/digicode-compile-api:latest
+PORT=3001 bash -c "$(curl -fsSL .../install.sh)"
 ```
+
+```powershell
+$env:PORT = 3001
+irm .../install.ps1 | iex
+```
+
+**3001 以外のポートを選んだ場合**は、DigiCode の「コンパイル設定 → ローカルサーバー → ポート番号」欄に同じ値を入力してください。`localStorage` に保存されるので一度入力すれば次回以降は不要です。
 
 ---
 
 ## トラブルシューティング
 
-### ポート 3001 が使用中
+### 「Docker not found」
 
-別のアプリがポート 3001 を使用している場合：
+スクリプトが OS 別の DL URL を表示します。インストールしてから再実行してください。
 
-```bash
-# ポート 3002 で起動
-docker run -d -p 3002:3001 --name digicode-compile-api \
-  ghcr.io/fablab-westharima/digicode-compile-api:latest
-```
+### 「Docker is installed but not running」
 
-DigiCode の設定でサーバー URL を `http://localhost:3002` に変更してください。
+Docker Desktop / OrbStack を起動して、アイコンが落ち着くまで待ってから再実行してください。
 
-### Docker が起動しない（Windows）
+### Port 3001 already in use
 
-- WSL2 がインストールされているか確認
-- Hyper-V が有効になっているか確認（BIOS で仮想化を有効にする）
-- PC を再起動
+スクリプトが自動検出して別ポートを提示します。Enter で受け入れるか、独自ポートを入力してください。`docker-compose.yml` を手動編集する必要はありません。DigiCode UI のポート番号入力欄に同じ値を入れれば動作します。
 
-### Docker が起動しない（Mac）
+### Health check timed out
 
-- システム設定 > プライバシーとセキュリティ で Docker を許可
-- Mac を再起動
-
-### Apple Silicon でコンパイルエラー
-
-- OrbStack または Docker Desktop for Apple Silicon を使用しているか確認
-- x86 エミュレーションが不要なことを確認（ESP32 コアは arm64 対応済み）
-
-### コンパイルエラーが発生する
+低スペックマシンでは初回 cold start が長くなることがあります。コンテナログを確認:
 
 ```bash
-# コンテナを再起動
-docker restart digicode-compile-api
-
-# それでも解決しない場合は再作成
-docker rm -f digicode-compile-api
-docker run -d -p 3001:3001 --name digicode-compile-api \
-  ghcr.io/fablab-westharima/digicode-compile-api:latest
+docker logs digicode-compile-api
 ```
 
-### cache HIT しない（同じコードでも warm rebuild になる）
+panic / エラーが出ている場合は <https://github.com/fablab-westharima/digicode-installer/issues> に log 抜粋を添えて報告してください。
 
-`docker-compose.yml` の `volumes` 指定を確認してください。`digicode-projects` と `digicode-cache` の名前付きボリュームが保持されている必要があります。
+### Apple Silicon でコンパイルが遅い
+
+Docker Desktop (Apple Silicon ビルド) または OrbStack を使っているか確認してください。両方とも arm64 ネイティブで動作します (compile-api イメージは multi-arch、x86 エミュレーション不要)。
 
 ---
 
-## メリット・デメリット
+## 用途・メリット
 
-| 項目 | 内容 |
-|------|------|
-| ✅ コンパイル回数 | **無制限**（クラウド枠を消費しない） |
-| ✅ 速度 | cache HIT 約 1 ms / warm rebuild 約 9.6 秒 / cold 約 30〜60 秒 |
-| ✅ オフライン | 初回ダウンロード後はインターネット不要（framework + lib はイメージ同梱） |
-| ✅ クラウドと同じ結果 | クラウド (ML30) と同じイメージを使用、バイナリ出力が物理的に一致（lib drift なし） |
-| ⚠️ 初回ダウンロード | 約 1 GB（圧縮）、展開後 3.8 GB |
-| ⚠️ インストール | Docker のセットアップが必要 |
-| ⚠️ リソース | PC のメモリ・CPU を使用（最低 4 GB RAM 推奨） |
+- ✅ **コンパイル回数無制限**: クラウドコンパイル枠を消費しない
+- ✅ **高速コンパイル**: ネットワーク遅延なし、永続キャッシュで再ビルド最小 1 ms / 約 9.6 秒
+- ✅ **オフライン利用**: 初回イメージ取得後はインターネット不要
+- ✅ **クラウドと同じ結果**: 同じ Docker イメージ → バイナリ完全一致
+
+### プラン別推奨
+
+| プラン | 推奨度 | 理由 |
+|---|---|---|
+| Free | — | クラウドコンパイル枠 (月 50 回) で通常は十分 |
+| Lite | ▲ | 月 250 回で不足する場合に検討 |
+| Pro | ◎ | 月 500 回でも不足する高頻度利用向け |
+| Enterprise | ◎ | クラス全体でのコンパイル高速化に有効 |
+
+### コンパイル所要時間
+
+| シナリオ | 所要時間 |
+|---|---|
+| 初回 (cold start + DL) | 30〜60 秒 |
+| 1 バイトの変更 (warm rebuild) | 約 9.6 秒 |
+| 同じコードの再コンパイル (cache HIT) | 約 1 ms |
+
+クラウド (ML30) と同じイメージで動作するため、バイナリ出力は物理的に完全一致します (lib drift なし)。
 
 ---
 
 ## 関連ドキュメント
 
-- [はじめかた](./getting-started.md) — 基本的な使い方
-- [トラブルシューティング](./troubleshooting.md) — よくある問題と解決方法
+- [はじめかた](./getting-started.md)
+- [トラブルシューティング](./troubleshooting.md)
+- インストーラのソース: [`fablab-westharima/digicode-installer`](https://github.com/fablab-westharima/digicode-installer) (Public、MIT)

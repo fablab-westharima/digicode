@@ -873,6 +873,9 @@
     "localPort": "連接埠",
     "localPortHint": "預設 3001。需與安裝程式的 --port 參數一致。",
     "localPortInvalid": "連接埠必須是 1024〜65535 之間的整數。",
+    "setupButton": "設定",
+    "uninstallButton": "解除安裝",
+    "localNotRunningHint": "本機伺服器尚未啟動。請點擊上方的「設定」按鈕進行安裝。",
     "connectionOk": "已連線",
     "notConnected": "未連線",
     "unverified": "未驗證",
@@ -4125,6 +4128,22 @@
         "exportFailed": "匯出 CSV 失敗"
       }
     }
+  },
+  "localServerSetup": {
+    "installTitle": "設定本機編譯伺服器",
+    "installDescription": "使用 Docker 在本機啟動編譯伺服器。請在終端機或 PowerShell 中執行下列指令。",
+    "uninstallTitle": "解除安裝本機編譯伺服器",
+    "uninstallDescription": "刪除容器與永續性磁碟區 (包含編譯快取)。請在終端機或 PowerShell 中執行下列指令。",
+    "macHint": "在「終端機」應用程式中執行。",
+    "linuxHint": "在任何終端機 (bash/zsh) 中執行。",
+    "windowsHint": "在 PowerShell 中執行 (不需系統管理員權限)。",
+    "copy": "複製",
+    "copied": "已複製",
+    "installNoteDocker": "需要 Docker。若尚未安裝,腳本會顯示對應作業系統的下載網址。",
+    "installNotePort": "首次啟動時會詢問使用的連接埠。若 3001 可用則直接按 Enter,若已被佔用會建議其他連接埠 (例如 3002)。",
+    "uninstallWarning": "刪除容器與磁碟區會同時清除編譯快取,下次編譯將為冷啟動 (約 30〜60 秒)。可選擇保留 Docker 映像。",
+    "fullGuide": "在新分頁開啟完整指南",
+    "close": "關閉"
   },
   "feedback": {
     "button": {

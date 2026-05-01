@@ -873,6 +873,9 @@
     "localPort": "Port",
     "localPortHint": "Default 3001. Must match the installer's --port flag.",
     "localPortInvalid": "Port must be an integer between 1024 and 65535.",
+    "setupButton": "Set up",
+    "uninstallButton": "Uninstall",
+    "localNotRunningHint": "Local server is not running. Click the \"Set up\" button above to install it.",
     "connectionOk": "Connected",
     "notConnected": "Not Connected",
     "unverified": "Unverified",
@@ -3940,6 +3943,22 @@
         "exportFailed": "Failed to export CSV"
       }
     }
+  },
+  "localServerSetup": {
+    "installTitle": "Set up local compile server",
+    "installDescription": "Starts the compile server locally with Docker. Run the command below in your Terminal or PowerShell.",
+    "uninstallTitle": "Uninstall local compile server",
+    "uninstallDescription": "Removes the container and persistent volumes (including the compile cache). Run the command below in your Terminal or PowerShell.",
+    "macHint": "Run in Terminal.app.",
+    "linuxHint": "Run in any terminal (bash/zsh).",
+    "windowsHint": "Run in PowerShell (no admin privileges required).",
+    "copy": "Copy",
+    "copied": "Copied",
+    "installNoteDocker": "Docker is required. If not installed, the script prints OS-specific download URLs.",
+    "installNotePort": "The script asks which host port to use on first run. Press Enter to accept 3001 if it's free; if 3001 is in use, an alternate port (e.g., 3002) is suggested.",
+    "uninstallWarning": "Removing the container and volumes also deletes the compile cache. The next compile will be a cold start (~30–60s). The Docker image can be kept on request.",
+    "fullGuide": "Open the full guide in a new tab",
+    "close": "Close"
   },
   "feedback": {
     "button": {

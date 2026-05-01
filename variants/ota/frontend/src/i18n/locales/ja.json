@@ -873,6 +873,9 @@
     "localPort": "ポート番号",
     "localPortHint": "デフォルト 3001。installer の --port と一致させてください。",
     "localPortInvalid": "ポート番号は 1024〜65535 の整数を指定してください。",
+    "setupButton": "セットアップ",
+    "uninstallButton": "アンインストール",
+    "localNotRunningHint": "ローカルサーバーが起動していません。上の「セットアップ」ボタンからインストールできます。",
     "connectionOk": "接続OK",
     "notConnected": "未接続",
     "unverified": "未確認",
@@ -3930,6 +3933,22 @@
         "exportFailed": "CSV エクスポートに失敗しました"
       }
     }
+  },
+  "localServerSetup": {
+    "installTitle": "ローカルコンパイルサーバーをセットアップ",
+    "installDescription": "Docker でローカルにコンパイルサーバーを起動します。下のコマンドをターミナル / PowerShell で実行してください。",
+    "uninstallTitle": "ローカルコンパイルサーバーをアンインストール",
+    "uninstallDescription": "コンテナと永続ボリューム (コンパイルキャッシュ含む) を削除します。下のコマンドをターミナル / PowerShell で実行してください。",
+    "macHint": "ターミナル.app で実行してください。",
+    "linuxHint": "任意のターミナル (bash/zsh) で実行してください。",
+    "windowsHint": "PowerShell (管理者権限不要) で実行してください。",
+    "copy": "コピー",
+    "copied": "コピー済",
+    "installNoteDocker": "Docker が必要です (未インストールの場合はスクリプトが OS 別 DL URL を案内します)。",
+    "installNotePort": "初回起動時に使用ポートを聞かれます。3001 が空いていればそのまま Enter で OK、3001 が使用中なら別ポート (例: 3002) が提示されます。",
+    "uninstallWarning": "コンテナと永続ボリュームを削除すると、コンパイルキャッシュも消えます。次回コンパイルは ~30-60 秒の cold start になります (Docker イメージは保持を選択可能)。",
+    "fullGuide": "詳細ガイドを別タブで開く",
+    "close": "閉じる"
   },
   "feedback": {
     "button": {
