@@ -42,7 +42,15 @@ function extractLocalPort(url: string): number {
   return Number.isFinite(n) ? n : DEFAULT_LOCAL_PORT;
 }
 
-export const CompileServerSettings = () => {
+interface CompileServerSettingsProps {
+  /** When true, omit the duplicated card header — used by
+   *  CompileServerSettingsDialog where the Dialog header already shows
+   *  the same title and description (avoids ~60 px of wasted vertical
+   *  space inside the modal). */
+  embedded?: boolean;
+}
+
+export const CompileServerSettings = ({ embedded = false }: CompileServerSettingsProps = {}) => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuthStore();
   const [mode, setMode] = useState<CompileServerMode>('cloud');
@@ -203,16 +211,18 @@ export const CompileServerSettings = () => {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Server className="h-5 w-5" />
-          {t('settings.compileSettings', { defaultValue: 'コンパイル設定' })}
-        </CardTitle>
-        <CardDescription>
-          {t('settings.compileServerDesc')}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      {!embedded && (
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Server className="h-5 w-5" />
+            {t('settings.compileSettings', { defaultValue: 'コンパイル設定' })}
+          </CardTitle>
+          <CardDescription>
+            {t('settings.compileServerDesc')}
+          </CardDescription>
+        </CardHeader>
+      )}
+      <CardContent className={embedded ? 'space-y-4 pt-6' : 'space-y-4'}>
         {/* 未ログイン時の案内 */}
         {!isAuthenticated && (
           <div className="p-3 rounded-lg bg-blue-50 border border-blue-200 dark:bg-blue-950/30 dark:border-blue-800">
@@ -227,10 +237,14 @@ export const CompileServerSettings = () => {
           </div>
         )}
 
-        <RadioGroup value={mode} onValueChange={(v) => handleModeChange(v as CompileServerMode)}>
+        <RadioGroup
+          value={mode}
+          onValueChange={(v) => handleModeChange(v as CompileServerMode)}
+          className="gap-3"
+        >
           {/* クラウドサーバー */}
           <div
-            className={`flex items-start space-x-3 p-3 rounded-lg border transition-colors ${
+            className={`flex items-start space-x-3 p-4 rounded-lg border transition-colors ${
               cloudDisabled
                 ? 'opacity-50 cursor-not-allowed bg-gray-500/5'
                 : 'hover:bg-gray-500/10 cursor-pointer'
@@ -275,17 +289,17 @@ export const CompileServerSettings = () => {
           </div>
 
           {/* ローカルサーバー */}
-          <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-gray-500/10 transition-colors">
+          <div className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-gray-500/10 transition-colors">
             <RadioGroupItem value="local" id="local" className="mt-1" />
             <div className="flex-1">
               <Label htmlFor="local" className="flex items-center gap-2 cursor-pointer font-medium">
                 <Server className="h-4 w-4 text-purple-500" />
                 {t('settings.localServer')}
               </Label>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 mt-1.5">
                 {t('settings.localDesc')}
               </p>
-              <div className="flex items-center gap-2 mt-2 flex-wrap">
+              <div className="flex items-center gap-2 mt-3 flex-wrap">
                 <div className="flex items-center gap-1">
                   <StatusIcon status={localStatus} />
                   <StatusText status={localStatus} />
@@ -319,7 +333,7 @@ export const CompileServerSettings = () => {
               </div>
 
               {/* port 番号入力 (installer の --port と一致させる) */}
-              <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1">
+              <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1">
                 <Label htmlFor="local-port" className="text-xs text-muted-foreground">
                   {t('settings.localPort', { defaultValue: 'ポート番号' })}
                 </Label>
@@ -352,7 +366,7 @@ export const CompileServerSettings = () => {
 
               {/* ローカルサーバー未起動時の案内 (セットアップ動線は上のボタンに集約済) */}
               {localStatus === 'disconnected' && (
-                <div className="mt-3 p-2 bg-yellow-50 dark:bg-yellow-950/30 rounded text-sm text-yellow-800 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-800">
+                <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-950/30 rounded text-sm text-yellow-800 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-800">
                   <div className="flex items-start gap-2">
                     <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
                     <span>

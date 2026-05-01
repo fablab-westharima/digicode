@@ -25,7 +25,7 @@ export function CompileServerSettingsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {t('settings.compileSettings', { defaultValue: 'コンパイル設定' })}
@@ -34,8 +34,8 @@ export function CompileServerSettingsDialog({
             {t('settings.compileServerDesc', { defaultValue: 'プログラムのコンパイルに使用するサーバーを選択します' })}
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
-          <CompileServerSettings />
+        <div className="py-2">
+          <CompileServerSettings embedded />
         </div>
       </DialogContent>
     </Dialog>
