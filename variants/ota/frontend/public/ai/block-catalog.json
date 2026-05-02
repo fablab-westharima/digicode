@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-02T17:18:37.162Z",
+  "generatedAt": "2026-05-02T17:36:59.595Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -1716,40 +1716,6 @@
         {
           "name": "ANGLE",
           "check": null
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "servo_write_value",
-      "category": "servo",
-      "tooltip": "Move servo to angle from variable",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robots_humanoid",
-        "robots_wheel",
-        "robots_transform",
-        "homeassistant",
-        "generic",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "PIN",
-          "fieldType": "number",
-          "default": null,
-          "min": 0,
-          "max": 39
-        }
-      ],
-      "valueInputs": [
-        {
-          "name": "ANGLE",
-          "check": "Number"
         }
       ],
       "statementInputs": []

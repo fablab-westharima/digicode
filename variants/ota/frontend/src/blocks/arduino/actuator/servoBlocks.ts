@@ -100,36 +100,26 @@ pythonGenerator.forBlock['servo_write'] = function(block: Blockly.Block) {
   return `servo${pin}.duty(int(40 + (${angle} / 180) * 115))\n`;
 };
 
-// ===== Servo Write with Value Input =====
-Blockly.Blocks['servo_write_value'] = {
-  init: function() {
-    const pins = getServoPins();
-    this.appendValueInput('ANGLE')
-        .setCheck('Number')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_WRITEVALUE || 'Servo Angle')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
-        .appendField(new Blockly.FieldNumber(pins.servo1, 0, 39), 'PIN')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_ANGLE || 'angle');
-    this.appendDummyInput()
-        .appendField('°');
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(SERVO_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_WRITEVALUETOOLTIP || 'Move servo to angle from variable');
-  }
-};
-
-javascriptGenerator.forBlock['servo_write_value'] = function(block: Blockly.Block) {
-  const pin = block.getFieldValue('PIN');
-  const angle = generator.valueToCode(block, 'ANGLE', generator.ORDER_ATOMIC) || '90';
-  return `  servo${pin}.write(${angle});\n`;
-};
-
-pythonGenerator.forBlock['servo_write_value'] = function(block: Blockly.Block) {
-  const pin = block.getFieldValue('PIN');
-  const angle = pyGen.valueToCode(block, 'ANGLE', pyGen.ORDER_ATOMIC) || '90';
-  return `servo${pin}.duty(int(40 + (${angle} / 180) * 115))\n`;
-};
+// Legacy alias: servo_write_value → servo_write (sunset: 2027-05-03)
+//
+// servo_write was upgraded to a permissive value input in commits b0b004f
+// (FieldAngle → value input + shadow) and c531097 (setCheck removal),
+// making servo_write_value functionally identical and a confusing duplicate
+// in the toolbox (ja.json had `write` and `writeValue` both rendering as
+// "サーボ角度" — visually indistinguishable).
+//
+// Aliasing preserves backward compat for any saved XML that still references
+// `<block type="servo_write_value">` — Blockly.Blocks lookup resolves to the
+// same definition + generator, so old projects load and compile unchanged.
+//
+// The catalog generator only scans `Blockly.Blocks['xxx'] = { init: ... }`
+// patterns, so this alias is not exposed in block-catalog.json. The toolbox
+// entry was also removed in this commit. i18n keys `servo.writeValue` /
+// `writeValueTooltip` are now orphaned across 5 langs — leaving them in place
+// for now; sunset cleanup removes them on 2027-05-03.
+Blockly.Blocks['servo_write_value'] = Blockly.Blocks['servo_write'];
+javascriptGenerator.forBlock['servo_write_value'] = javascriptGenerator.forBlock['servo_write'];
+pythonGenerator.forBlock['servo_write_value'] = pythonGenerator.forBlock['servo_write'];
 
 // ===== Servo Detach =====
 Blockly.Blocks['servo_detach'] = {

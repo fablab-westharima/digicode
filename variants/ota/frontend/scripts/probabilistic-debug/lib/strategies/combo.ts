@@ -248,7 +248,10 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     // servo_* op が同 instance を参照。
     init: 'servo_attach',
     label: 'servo',
-    operations: ['servo_detach', 'servo_sweep', 'servo_write', 'servo_write_value'],
+    // servo_write_value was aliased to servo_write (sunset: 2027-05-03);
+    // alias is not exposed in the catalog, so probabilistic-debug only
+    // emits the canonical servo_write.
+    operations: ['servo_detach', 'servo_sweep', 'servo_write'],
   },
   {
     init: 'ticker_attach',
