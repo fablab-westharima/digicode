@@ -159,6 +159,107 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
       'diff_drive_line_trace', 'diff_drive_get_speed',
     ],
   },
+  // ────────────────────────────────────────────────────────────────────
+  // 第66回 expansion (2026-05-02) — 1000-case `2026-05-01_03-15-26` (passRate
+  // 85.7%) cluster top の "X was not declared in this scope" 群を 14 prefix
+  // 追加で消化。各 init は generator.definitions_ で C++ global 変数 (lcd /
+  // tft / display / pid / encoder 等) を declare、ops は同変数を参照する。
+  // singleton/edge/pair 戦略の prependInitForOp が各 op の type を見て
+  // 対応 init を arduino_setup.SETUP に auto-prepend するため、cluster top
+  // の compile error が解消される見込み。
+  // ────────────────────────────────────────────────────────────────────
+  {
+    init: 'lcd_init',
+    label: 'lcd',
+    operations: ['lcd_clear', 'lcd_print', 'lcd_print_at', 'lcd_backlight'],
+  },
+  {
+    init: 'tft_init',
+    label: 'tft',
+    operations: [
+      'tft_draw_line', 'tft_draw_pixel', 'tft_fill_screen',
+      'tft_draw_circle', 'tft_draw_rect', 'tft_print',
+      'tft_set_cursor', 'tft_color_rgb',
+    ],
+  },
+  {
+    init: 'display_init',
+    label: 'display',
+    operations: ['display_clear', 'display_show', 'display_text'],
+  },
+  {
+    init: 'pid_init',
+    label: 'pid',
+    operations: [
+      'pid_calculate', 'pid_motor_speeds', 'pid_reset',
+      'pid_get_speed', 'pid_set_gains',
+    ],
+  },
+  {
+    init: 'encoder_init',
+    label: 'encoder',
+    operations: [
+      'encoder_count', 'encoder_reset', 'encoder_distance',
+      'encoder_speed', 'encoder_wait_distance',
+    ],
+  },
+  {
+    init: 'line_sensor_init',
+    label: 'line-sensor',
+    operations: [
+      'line_sensor_calibrate', 'line_sensor_detected', 'line_sensor_raw',
+      'line_sensor_value', 'line_sensor_position',
+    ],
+  },
+  {
+    init: 'wall_sensor_init',
+    label: 'wall-sensor',
+    operations: [
+      'wall_sensor_read', 'wall_sensor_value', 'wall_sensor_error',
+      'wall_sensor_has_wall', 'wall_sensor_info', 'wall_sensor_set_threshold',
+    ],
+  },
+  {
+    init: 'motor_init',
+    label: 'motor',
+    operations: ['motor_move', 'motor_stop', 'motor_speed'],
+  },
+  {
+    init: 'ir_sender_init',
+    label: 'ir-sender',
+    operations: ['ir_sender_send'],
+  },
+  {
+    init: 'ir_receiver_init',
+    label: 'ir-receiver',
+    operations: ['ir_receiver_decode'],
+  },
+  {
+    // ha_device_init が HAMqtt インスタンス (haMqtt) を declares、
+    // ha_is_connected / ha_loop / ha_report_interval が直接参照。
+    // ha_*_create 系 (light/fan/switch/...) は別 cluster の問題で、
+    // create→op の name field link 不整合に起因するため別途対処。
+    init: 'ha_device_init',
+    label: 'ha-device',
+    operations: ['ha_is_connected', 'ha_loop', 'ha_report_interval'],
+  },
+  {
+    // servo_attach は init 役で `Servo servo<N>` を declares、
+    // servo_* op が同 instance を参照。
+    init: 'servo_attach',
+    label: 'servo',
+    operations: ['servo_detach', 'servo_sweep', 'servo_write', 'servo_write_value'],
+  },
+  {
+    init: 'ticker_attach',
+    label: 'ticker',
+    operations: ['ticker_detach', 'check_ticker'],
+  },
+  {
+    init: 'attach_interrupt',
+    label: 'interrupt',
+    operations: ['check_interrupt', 'detach_interrupt'],
+  },
 ];
 
 /**
