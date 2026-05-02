@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-02T01:42:19.815Z",
+  "generatedAt": "2026-05-02T16:55:50.208Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -1710,14 +1710,14 @@
           "default": null,
           "min": 0,
           "max": 39
-        },
-        {
-          "name": "ANGLE",
-          "fieldType": "angle",
-          "default": 90
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "ANGLE",
+          "check": "Number"
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -1778,30 +1778,22 @@
           "default": null,
           "min": 0,
           "max": 39
-        },
+        }
+      ],
+      "valueInputs": [
         {
           "name": "START",
-          "fieldType": "number",
-          "default": 0,
-          "min": 0,
-          "max": 180
+          "check": "Number"
         },
         {
           "name": "END",
-          "fieldType": "number",
-          "default": 180,
-          "min": 0,
-          "max": 180
+          "check": "Number"
         },
         {
           "name": "SPEED",
-          "fieldType": "number",
-          "default": 15,
-          "min": 1,
-          "max": 100
+          "check": "Number"
         }
       ],
-      "valueInputs": [],
       "statementInputs": []
     },
     {

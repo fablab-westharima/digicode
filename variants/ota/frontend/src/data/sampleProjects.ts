@@ -210,15 +210,15 @@ export const sampleProjects: SampleProject[] = [
         <statement name="LOOP">
           <block type="servo_sweep">
             <field name="PIN">13</field>
-            <field name="START">0</field>
-            <field name="END">180</field>
-            <field name="SPEED">15</field>
+            <value name="START"><block type="math_number"><field name="NUM">0</field></block></value>
+            <value name="END"><block type="math_number"><field name="NUM">180</field></block></value>
+            <value name="SPEED"><block type="math_number"><field name="NUM">15</field></block></value>
             <next>
               <block type="servo_sweep">
                 <field name="PIN">13</field>
-                <field name="START">180</field>
-                <field name="END">0</field>
-                <field name="SPEED">15</field>
+                <value name="START"><block type="math_number"><field name="NUM">180</field></block></value>
+                <value name="END"><block type="math_number"><field name="NUM">0</field></block></value>
+                <value name="SPEED"><block type="math_number"><field name="NUM">15</field></block></value>
               </block>
             </next>
           </block>
@@ -1009,7 +1009,7 @@ export const sampleProjects: SampleProject[] = [
     description: '温度に応じてサーボ角度とLEDを制御する複合動作',
     category: 'sensor',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="dht_init"><field name="PIN">4</field><field name="TYPE">DHT22</field><next><block type="servo_attach"><field name="PIN">13</field><next><block type="esp32_pin_mode"><field name="PIN">2</field><field name="MODE">OUTPUT</field></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="controls_ifelse"><value name="IF0"><block type="logic_compare"><field name="OP">GT</field><value name="A"><block type="dht_temperature"></block></value><value name="B"><block type="math_number"><field name="NUM">25</field></block></value></block></value><statement name="DO0"><block type="servo_write"><field name="PIN">13</field><field name="ANGLE">180</field><next><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">HIGH</field></block></next></block></statement><statement name="ELSE"><block type="servo_write"><field name="PIN">13</field><field name="ANGLE">0</field><next><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">LOW</field></block></next></block></statement><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">3000</field></block></value></block></next></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="dht_init"><field name="PIN">4</field><field name="TYPE">DHT22</field><next><block type="servo_attach"><field name="PIN">13</field><next><block type="esp32_pin_mode"><field name="PIN">2</field><field name="MODE">OUTPUT</field></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="controls_ifelse"><value name="IF0"><block type="logic_compare"><field name="OP">GT</field><value name="A"><block type="dht_temperature"></block></value><value name="B"><block type="math_number"><field name="NUM">25</field></block></value></block></value><statement name="DO0"><block type="servo_write"><field name="PIN">13</field><value name="ANGLE"><block type="math_number"><field name="NUM">180</field></block></value><next><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">HIGH</field></block></next></block></statement><statement name="ELSE"><block type="servo_write"><field name="PIN">13</field><value name="ANGLE"><block type="math_number"><field name="NUM">0</field></block></value><next><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">LOW</field></block></next></block></statement><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">3000</field></block></value></block></next></block></statement></block></xml>`
   },
   // ===== Phase 2 C 拡充 (2026-04-26): AI Few-shot 用 残 8 sample =====
   {

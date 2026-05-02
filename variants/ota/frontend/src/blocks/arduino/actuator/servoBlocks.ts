@@ -65,16 +65,23 @@ pythonGenerator.forBlock['servo_attach'] = function(block: Blockly.Block) {
 };
 
 // ===== Servo Write Angle =====
+// ANGLE is a value input (with default shadow math_number 90) so users can
+// drive the servo from variables, BLE-received values, math expressions, etc.
+// Legacy XML using `<field name="ANGLE">N</field>` loads with empty input;
+// generator falls back to '90' to preserve compile success (sunset: 2027-05-03).
 Blockly.Blocks['servo_write'] = {
   init: function() {
     const pins = getServoPins();
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_WRITE || 'Servo Angle')
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
-        .appendField(new Blockly.FieldNumber(pins.servo1, 0, 39), 'PIN')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_ANGLE || 'angle')
-        .appendField(new Blockly.FieldAngle(90), 'ANGLE')
+        .appendField(new Blockly.FieldNumber(pins.servo1, 0, 39), 'PIN');
+    this.appendValueInput('ANGLE')
+        .setCheck('Number')
+        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_ANGLE || 'angle');
+    this.appendDummyInput()
         .appendField('°');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SERVO_COLOR);
@@ -84,13 +91,13 @@ Blockly.Blocks['servo_write'] = {
 
 javascriptGenerator.forBlock['servo_write'] = function(block: Blockly.Block) {
   const pin = block.getFieldValue('PIN');
-  const angle = block.getFieldValue('ANGLE');
+  const angle = generator.valueToCode(block, 'ANGLE', generator.ORDER_ATOMIC) || '90';
   return `  servo${pin}.write(${angle});\n`;
 };
 
 pythonGenerator.forBlock['servo_write'] = function(block: Blockly.Block) {
   const pin = block.getFieldValue('PIN');
-  const angle = block.getFieldValue('ANGLE');
+  const angle = pyGen.valueToCode(block, 'ANGLE', pyGen.ORDER_ATOMIC) || '90';
   return `servo${pin}.duty(int(40 + (${angle} / 180) * 115))\n`;
 };
 
@@ -151,22 +158,31 @@ pythonGenerator.forBlock['servo_detach'] = function(block: Blockly.Block) {
 };
 
 // ===== Servo Sweep =====
+// START/END/SPEED are value inputs (default shadows math_number 0/180/15) so
+// users can drive the sweep with variables, sensor reads, etc. The cpp
+// generator computes direction at runtime (s/e may be variables) — previous
+// codegen-time `start < end ? '<=' : '>='` would not work for dynamic values.
+// Legacy XML field-style loads with empty inputs; fallback defaults preserve
+// compile success (sunset: 2027-05-03).
 Blockly.Blocks['servo_sweep'] = {
   init: function() {
     const pins = getServoPins();
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_SWEEP || 'Servo Sweep')
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
-        .appendField(new Blockly.FieldNumber(pins.servo1, 0, 39), 'PIN')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_START || 'start')
-        .appendField(new Blockly.FieldNumber(0, 0, 180), 'START')
-        .appendField('°');
+        .appendField(new Blockly.FieldNumber(pins.servo1, 0, 39), 'PIN');
+    this.appendValueInput('START')
+        .setCheck('Number')
+        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_START || 'start');
+    this.appendValueInput('END')
+        .setCheck('Number')
+        .appendField('° ' + (Blockly.Msg.BLOCKS_ACTUATOR_SERVO_END || 'end'));
+    this.appendValueInput('SPEED')
+        .setCheck('Number')
+        .appendField('° ' + (Blockly.Msg.BLOCKS_ACTUATOR_SERVO_SPEED || 'speed'));
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_END || 'end')
-        .appendField(new Blockly.FieldNumber(180, 0, 180), 'END')
-        .appendField('° ' + (Blockly.Msg.BLOCKS_ACTUATOR_SERVO_SPEED || 'speed'))
-        .appendField(new Blockly.FieldNumber(15, 1, 100), 'SPEED')
         .appendField('ms');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SERVO_COLOR);
@@ -176,14 +192,18 @@ Blockly.Blocks['servo_sweep'] = {
 
 javascriptGenerator.forBlock['servo_sweep'] = function(block: Blockly.Block) {
   const pin = block.getFieldValue('PIN');
-  const start = block.getFieldValue('START');
-  const end = block.getFieldValue('END');
-  const speed = block.getFieldValue('SPEED');
+  const start = generator.valueToCode(block, 'START', generator.ORDER_ATOMIC) || '0';
+  const end = generator.valueToCode(block, 'END', generator.ORDER_ATOMIC) || '180';
+  const speed = generator.valueToCode(block, 'SPEED', generator.ORDER_ATOMIC) || '15';
 
-  const code = `
-  for (int angle = ${start}; angle ${start < end ? '<=' : '>='} ${end}; angle ${start < end ? '++' : '--'}) {
-    servo${pin}.write(angle);
-    delay(${speed});
+  const code = `  {
+    int _sweepStart = ${start};
+    int _sweepEnd = ${end};
+    int _sweepStep = (_sweepStart <= _sweepEnd) ? 1 : -1;
+    for (int angle = _sweepStart; (_sweepStep > 0) ? angle <= _sweepEnd : angle >= _sweepEnd; angle += _sweepStep) {
+      servo${pin}.write(angle);
+      delay(${speed});
+    }
   }
 `;
   return code;
@@ -191,14 +211,17 @@ javascriptGenerator.forBlock['servo_sweep'] = function(block: Blockly.Block) {
 
 pythonGenerator.forBlock['servo_sweep'] = function(block: Blockly.Block) {
   const pin = block.getFieldValue('PIN');
-  const start = block.getFieldValue('START');
-  const end = block.getFieldValue('END');
-  const speed = block.getFieldValue('SPEED');
+  const start = pyGen.valueToCode(block, 'START', pyGen.ORDER_ATOMIC) || '0';
+  const end = pyGen.valueToCode(block, 'END', pyGen.ORDER_ATOMIC) || '180';
+  const speed = pyGen.valueToCode(block, 'SPEED', pyGen.ORDER_ATOMIC) || '15';
 
   pyGen.definitions_['import_time'] = 'import time';
 
-  const step = start < end ? 1 : -1;
-  return `for angle in range(${start}, ${end} + ${step}, ${step}):
+  // Direction (start vs end) is computed at runtime so variables/expressions work.
+  return `_sweepStart = ${start}
+_sweepEnd = ${end}
+_sweepStep = 1 if _sweepStart <= _sweepEnd else -1
+for angle in range(_sweepStart, _sweepEnd + _sweepStep, _sweepStep):
     servo${pin}.duty(int(40 + (angle / 180) * 115))
     time.sleep_ms(${speed})
 `;

@@ -139,7 +139,11 @@ export const tutorials: Tutorial[] = [
     <statement name="LOOP">
       <block type="servo_write">
         <field name="PIN">13</field>
-        <field name="ANGLE">0</field>
+        <value name="ANGLE">
+          <block type="math_number">
+            <field name="NUM">0</field>
+          </block>
+        </value>
         <next>
           <block type="esp32_delay">
             <value name="TIME">
@@ -150,7 +154,11 @@ export const tutorials: Tutorial[] = [
             <next>
               <block type="servo_write">
                 <field name="PIN">13</field>
-                <field name="ANGLE">180</field>
+                <value name="ANGLE">
+                  <block type="math_number">
+                    <field name="NUM">180</field>
+                  </block>
+                </value>
                 <next>
                   <block type="esp32_delay">
                     <value name="TIME">

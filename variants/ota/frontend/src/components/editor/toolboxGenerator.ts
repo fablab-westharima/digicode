@@ -611,9 +611,15 @@ const getToolboxCategories = (): Record<string, string> => ({
   servo: `
   <category id="servo" name="${cat('servo')}" colour="#FF5722">
     <block type="servo_attach"></block>
-    <block type="servo_write"></block>
+    <block type="servo_write">
+      <value name="ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value>
+    </block>
     <block type="servo_write_value"></block>
-    <block type="servo_sweep"></block>
+    <block type="servo_sweep">
+      <value name="START"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="END"><shadow type="math_number"><field name="NUM">180</field></shadow></value>
+      <value name="SPEED"><shadow type="math_number"><field name="NUM">15</field></shadow></value>
+    </block>
     <block type="servo_detach"></block>
   </category>`,
 
