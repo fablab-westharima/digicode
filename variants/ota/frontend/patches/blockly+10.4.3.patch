@@ -1,0 +1,192 @@
+diff --git a/node_modules/blockly/index.js b/node_modules/blockly/index.js
+index 82879fc..dce9d25 100644
+--- a/node_modules/blockly/index.js
++++ b/node_modules/blockly/index.js
+@@ -22,3 +22,159 @@
+ 
+ return Blockly;
+ }));
++
++// DigiCode patch: explicit named exports for Node ESM cjs-module-lexer detection.
++// 153 keys exposed.
++module.exports.ALIGN_CENTRE = module.exports.ALIGN_CENTRE;
++module.exports.ALIGN_LEFT = module.exports.ALIGN_LEFT;
++module.exports.ALIGN_RIGHT = module.exports.ALIGN_RIGHT;
++module.exports.ASTNode = module.exports.ASTNode;
++module.exports.BasicCursor = module.exports.BasicCursor;
++module.exports.Block = module.exports.Block;
++module.exports.BlockDragger = module.exports.BlockDragger;
++module.exports.BlockSvg = module.exports.BlockSvg;
++module.exports.Blocks = module.exports.Blocks;
++module.exports.Bubble = module.exports.Bubble;
++module.exports.BubbleDragger = module.exports.BubbleDragger;
++module.exports.COLLAPSED_FIELD_NAME = module.exports.COLLAPSED_FIELD_NAME;
++module.exports.COLLAPSED_INPUT_NAME = module.exports.COLLAPSED_INPUT_NAME;
++module.exports.COLLAPSE_CHARS = module.exports.COLLAPSE_CHARS;
++module.exports.CodeGenerator = module.exports.CodeGenerator;
++module.exports.CollapsibleToolboxCategory = module.exports.CollapsibleToolboxCategory;
++module.exports.ComponentManager = module.exports.ComponentManager;
++module.exports.Connection = module.exports.Connection;
++module.exports.ConnectionChecker = module.exports.ConnectionChecker;
++module.exports.ConnectionDB = module.exports.ConnectionDB;
++module.exports.ConnectionType = module.exports.ConnectionType;
++module.exports.ContextMenu = module.exports.ContextMenu;
++module.exports.ContextMenuItems = module.exports.ContextMenuItems;
++module.exports.ContextMenuRegistry = module.exports.ContextMenuRegistry;
++module.exports.Css = module.exports.Css;
++module.exports.Cursor = module.exports.Cursor;
++module.exports.DELETE_VARIABLE_ID = module.exports.DELETE_VARIABLE_ID;
++module.exports.DRAG_STACK = module.exports.DRAG_STACK;
++module.exports.DUMMY_INPUT = module.exports.DUMMY_INPUT;
++module.exports.DeleteArea = module.exports.DeleteArea;
++module.exports.DragTarget = module.exports.DragTarget;
++module.exports.DropDownDiv = module.exports.DropDownDiv;
++module.exports.Events = module.exports.Events;
++module.exports.Extensions = module.exports.Extensions;
++module.exports.Field = module.exports.Field;
++module.exports.FieldAngle = module.exports.FieldAngle;
++module.exports.FieldCheckbox = module.exports.FieldCheckbox;
++module.exports.FieldColour = module.exports.FieldColour;
++module.exports.FieldDropdown = module.exports.FieldDropdown;
++module.exports.FieldImage = module.exports.FieldImage;
++module.exports.FieldLabel = module.exports.FieldLabel;
++module.exports.FieldLabelSerializable = module.exports.FieldLabelSerializable;
++module.exports.FieldMultilineInput = module.exports.FieldMultilineInput;
++module.exports.FieldNumber = module.exports.FieldNumber;
++module.exports.FieldTextInput = module.exports.FieldTextInput;
++module.exports.FieldVariable = module.exports.FieldVariable;
++module.exports.Flyout = module.exports.Flyout;
++module.exports.FlyoutButton = module.exports.FlyoutButton;
++module.exports.FlyoutMetricsManager = module.exports.FlyoutMetricsManager;
++module.exports.Generator = module.exports.Generator;
++module.exports.Gesture = module.exports.Gesture;
++module.exports.Grid = module.exports.Grid;
++module.exports.HorizontalFlyout = module.exports.HorizontalFlyout;
++module.exports.INPUT_VALUE = module.exports.INPUT_VALUE;
++module.exports.Input = module.exports.Input;
++module.exports.InsertionMarkerManager = module.exports.InsertionMarkerManager;
++module.exports.InsertionMarkerPreviewer = module.exports.InsertionMarkerPreviewer;
++module.exports.Marker = module.exports.Marker;
++module.exports.MarkerManager = module.exports.MarkerManager;
++module.exports.Menu = module.exports.Menu;
++module.exports.MenuItem = module.exports.MenuItem;
++module.exports.MetricsManager = module.exports.MetricsManager;
++module.exports.Msg = module.exports.Msg;
++module.exports.NEXT_STATEMENT = module.exports.NEXT_STATEMENT;
++module.exports.Names = module.exports.Names;
++module.exports.OPPOSITE_TYPE = module.exports.OPPOSITE_TYPE;
++module.exports.OUTPUT_VALUE = module.exports.OUTPUT_VALUE;
++module.exports.Options = module.exports.Options;
++module.exports.PREVIOUS_STATEMENT = module.exports.PREVIOUS_STATEMENT;
++module.exports.PROCEDURE_CATEGORY_NAME = module.exports.PROCEDURE_CATEGORY_NAME;
++module.exports.Procedures = module.exports.Procedures;
++module.exports.RENAME_VARIABLE_ID = module.exports.RENAME_VARIABLE_ID;
++module.exports.RenderedConnection = module.exports.RenderedConnection;
++module.exports.Scrollbar = module.exports.Scrollbar;
++module.exports.ScrollbarPair = module.exports.ScrollbarPair;
++module.exports.ShortcutItems = module.exports.ShortcutItems;
++module.exports.ShortcutRegistry = module.exports.ShortcutRegistry;
++module.exports.TOOLBOX_AT_BOTTOM = module.exports.TOOLBOX_AT_BOTTOM;
++module.exports.TOOLBOX_AT_LEFT = module.exports.TOOLBOX_AT_LEFT;
++module.exports.TOOLBOX_AT_RIGHT = module.exports.TOOLBOX_AT_RIGHT;
++module.exports.TOOLBOX_AT_TOP = module.exports.TOOLBOX_AT_TOP;
++module.exports.TabNavigateCursor = module.exports.TabNavigateCursor;
++module.exports.Theme = module.exports.Theme;
++module.exports.ThemeManager = module.exports.ThemeManager;
++module.exports.Themes = module.exports.Themes;
++module.exports.Toolbox = module.exports.Toolbox;
++module.exports.ToolboxCategory = module.exports.ToolboxCategory;
++module.exports.ToolboxItem = module.exports.ToolboxItem;
++module.exports.ToolboxSeparator = module.exports.ToolboxSeparator;
++module.exports.Tooltip = module.exports.Tooltip;
++module.exports.Touch = module.exports.Touch;
++module.exports.Trashcan = module.exports.Trashcan;
++module.exports.UnattachedFieldError = module.exports.UnattachedFieldError;
++module.exports.VARIABLE_CATEGORY_NAME = module.exports.VARIABLE_CATEGORY_NAME;
++module.exports.VARIABLE_DYNAMIC_CATEGORY_NAME = module.exports.VARIABLE_DYNAMIC_CATEGORY_NAME;
++module.exports.VERSION = module.exports.VERSION;
++module.exports.VariableMap = module.exports.VariableMap;
++module.exports.VariableModel = module.exports.VariableModel;
++module.exports.Variables = module.exports.Variables;
++module.exports.VariablesDynamic = module.exports.VariablesDynamic;
++module.exports.VerticalFlyout = module.exports.VerticalFlyout;
++module.exports.WidgetDiv = module.exports.WidgetDiv;
++module.exports.Workspace = module.exports.Workspace;
++module.exports.WorkspaceAudio = module.exports.WorkspaceAudio;
++module.exports.WorkspaceComment = module.exports.WorkspaceComment;
++module.exports.WorkspaceCommentSvg = module.exports.WorkspaceCommentSvg;
++module.exports.WorkspaceDragger = module.exports.WorkspaceDragger;
++module.exports.WorkspaceSvg = module.exports.WorkspaceSvg;
++module.exports.Xml = module.exports.Xml;
++module.exports.ZoomControls = module.exports.ZoomControls;
++module.exports.blockAnimations = module.exports.blockAnimations;
++module.exports.blockRendering = module.exports.blockRendering;
++module.exports.browserEvents = module.exports.browserEvents;
++module.exports.bubbles = module.exports.bubbles;
++module.exports.bumpObjects = module.exports.bumpObjects;
++module.exports.clipboard = module.exports.clipboard;
++module.exports.common = module.exports.common;
++module.exports.config = module.exports.config;
++module.exports.connectionTypes = module.exports.connectionTypes;
++module.exports.constants = module.exports.constants;
++module.exports.defineBlocksWithJsonArray = module.exports.defineBlocksWithJsonArray;
++module.exports.dialog = module.exports.dialog;
++module.exports.fieldRegistry = module.exports.fieldRegistry;
++module.exports.geras = module.exports.geras;
++module.exports.getMainWorkspace = module.exports.getMainWorkspace;
++module.exports.getSelected = module.exports.getSelected;
++module.exports.hasBubble = module.exports.hasBubble;
++module.exports.hideChaff = module.exports.hideChaff;
++module.exports.icons = module.exports.icons;
++module.exports.inject = module.exports.inject;
++module.exports.inputTypes = module.exports.inputTypes;
++module.exports.inputs = module.exports.inputs;
++module.exports.isCopyable = module.exports.isCopyable;
++module.exports.isIcon = module.exports.isIcon;
++module.exports.isObservable = module.exports.isObservable;
++module.exports.isPaster = module.exports.isPaster;
++module.exports.isSerializable = module.exports.isSerializable;
++module.exports.isVariableBackedParameterModel = module.exports.isVariableBackedParameterModel;
++module.exports.minimalist = module.exports.minimalist;
++module.exports.procedures = module.exports.procedures;
++module.exports.registry = module.exports.registry;
++module.exports.renderManagement = module.exports.renderManagement;
++module.exports.serialization = module.exports.serialization;
++module.exports.setLocale = module.exports.setLocale;
++module.exports.setParentContainer = module.exports.setParentContainer;
++module.exports.svgResize = module.exports.svgResize;
++module.exports.thrasos = module.exports.thrasos;
++module.exports.uiPosition = module.exports.uiPosition;
++module.exports.utils = module.exports.utils;
++module.exports.zelos = module.exports.zelos;
++module.exports.HSV_SATURATION = module.exports.HSV_SATURATION;
++module.exports.HSV_VALUE = module.exports.HSV_VALUE;
++module.exports.__namespace__ = module.exports.__namespace__;
+diff --git a/node_modules/blockly/javascript.js b/node_modules/blockly/javascript.js
+index 7feb6ac..4b187c6 100644
+--- a/node_modules/blockly/javascript.js
++++ b/node_modules/blockly/javascript.js
+@@ -21,3 +21,10 @@
+ 
+ return BlocklyJavaScript;
+ }));
++
++// DigiCode patch: explicit named exports for Node ESM cjs-module-lexer detection.
++// Required because UMD wrapper above assigns `module.exports = factory(...)` opaquely.
++// These no-op self-assignments are detected statically and exposed as ESM named bindings.
++module.exports.javascriptGenerator = module.exports.javascriptGenerator;
++module.exports.Order = module.exports.Order;
++module.exports.JavascriptGenerator = module.exports.JavascriptGenerator;
+diff --git a/node_modules/blockly/python.js b/node_modules/blockly/python.js
+index 4ac8723..2989310 100644
+--- a/node_modules/blockly/python.js
++++ b/node_modules/blockly/python.js
+@@ -21,3 +21,8 @@
+ 
+ return BlocklyPython;
+ }));
++
++// DigiCode patch: explicit named exports for Node ESM cjs-module-lexer detection.
++module.exports.pythonGenerator = module.exports.pythonGenerator;
++module.exports.Order = module.exports.Order;
++module.exports.PythonGenerator = module.exports.PythonGenerator;
