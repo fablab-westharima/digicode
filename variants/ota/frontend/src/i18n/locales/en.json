@@ -857,7 +857,20 @@
     "widgetSummary": "{{count}} widgets",
     "noBlocks": "Add BLE blocks to your workspace",
     "noBlocksLong": "Add BLE blocks to your workspace to see widgets here.",
-    "noWebBluetooth": "Your browser does not support Web Bluetooth. Use Chrome / Edge / Opera on desktop or Android."
+    "emptyHint": "Drag \"ble_init\", \"ble_uart_setup\" and \"ble_add_characteristic\" from the BLE category in the toolbox.",
+    "noWebBluetooth": "Your browser does not support Web Bluetooth. Use Chrome / Edge / Opera on desktop or Android.",
+    "iosNotSupported": "iOS does not support Web Bluetooth. Use Android Chrome / Edge, or third-party apps such as Bluefy.",
+    "errors": {
+      "unknown": "An unknown error occurred.",
+      "notFound": "Target device or service not found. Check power and that the program is flashed.",
+      "network": "Disconnected during transfer. Bring the device closer and reconnect.",
+      "notSupported": "This browser does not support that Web Bluetooth operation.",
+      "security": "Pairing was rejected. Please try again.",
+      "invalidState": "The device is not in a responsive state. Reconnect to retry.",
+      "aborted": "The operation was aborted.",
+      "notConnected": "The device is not connected.",
+      "generic": "Communication error: {{detail}}"
+    }
   },
   "bluetooth": {
     "notSupported": "Web Bluetooth API is not supported",

@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { GattDisplayWidget as GattDisplayWidgetDef } from '../types';
 import type { WebBluetoothClient } from '../webBluetoothClient';
+import { describeBleError } from '../errorMessages';
 
 export interface GattDisplayWidgetProps {
   definition: GattDisplayWidgetDef;
@@ -61,7 +62,10 @@ export function GattDisplayWidget({ definition, client, isConnected, serviceUuid
           }
         })
         .catch((err) => {
-          if (!cancelled) setError(err instanceof Error ? err.message : String(err));
+          if (!cancelled) {
+            const friendly = describeBleError(err, t);
+            setError(friendly?.message ?? null);
+          }
         });
       cleanup = () => {
         cancelled = true;
@@ -75,7 +79,10 @@ export function GattDisplayWidget({ definition, client, isConnected, serviceUuid
           const bytes = await client.readCharacteristic(serviceUuid, definition.characteristicUuid);
           onValue(bytes);
         } catch (err) {
-          if (!cancelled) setError(err instanceof Error ? err.message : String(err));
+          if (!cancelled) {
+            const friendly = describeBleError(err, t);
+            setError(friendly?.message ?? null);
+          }
         }
       };
       void tick();
@@ -92,6 +99,7 @@ export function GattDisplayWidget({ definition, client, isConnected, serviceUuid
     serviceUuid,
     definition.characteristicUuid,
     definition.notifyEnabled,
+    t,
   ]);
 
   const formattedValue = formatValue(value, definition.dataType);

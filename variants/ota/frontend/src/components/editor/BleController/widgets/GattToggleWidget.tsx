@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import type { GattToggleWidget as GattToggleWidgetDef } from '../types';
 import type { WebBluetoothClient } from '../webBluetoothClient';
+import { describeBleError } from '../errorMessages';
 
 export interface GattToggleWidgetProps {
   definition: GattToggleWidgetDef;
@@ -37,12 +38,13 @@ export function GattToggleWidget({ definition, client, isConnected, serviceUuid 
         setError(null);
       } catch (err) {
         setValue(previous);
-        setError(err instanceof Error ? err.message : String(err));
+        const friendly = describeBleError(err, t);
+        setError(friendly?.message ?? null);
       } finally {
         setPending(false);
       }
     },
-    [client, definition.characteristicUuid, serviceUuid, isConnected, value]
+    [client, definition.characteristicUuid, serviceUuid, isConnected, value, t]
   );
 
   return (

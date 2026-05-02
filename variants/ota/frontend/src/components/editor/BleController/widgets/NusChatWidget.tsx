@@ -14,6 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import type { NusUartWidget } from '../types';
 import type { WebBluetoothClient } from '../webBluetoothClient';
+import { describeBleError } from '../errorMessages';
 
 export interface NusChatWidgetProps {
   definition: NusUartWidget;
@@ -62,13 +63,14 @@ export function NusChatWidget({ definition, client, isConnected }: NusChatWidget
         }
       })
       .catch((err) => {
-        setError(err instanceof Error ? err.message : String(err));
+        const friendly = describeBleError(err, t);
+        setError(friendly?.message ?? null);
       });
     return () => {
       cancelled = true;
       unsubscribe?.();
     };
-  }, [isConnected, client, appendEntry]);
+  }, [isConnected, client, appendEntry, t]);
 
   // Auto-scroll to bottom on new entry
   useEffect(() => {
@@ -87,9 +89,10 @@ export function NusChatWidget({ definition, client, isConnected }: NusChatWidget
       appendEntry('sent', text);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      const friendly = describeBleError(err, t);
+      setError(friendly?.message ?? null);
     }
-  }, [draft, isConnected, client, appendEntry]);
+  }, [draft, isConnected, client, appendEntry, t]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {

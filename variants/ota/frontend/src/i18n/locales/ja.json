@@ -857,7 +857,20 @@
     "widgetSummary": "ウィジェット {{count}} 個",
     "noBlocks": "ワークスペースに BLE ブロックを追加してください",
     "noBlocksLong": "ワークスペースに BLE ブロックを追加すると、ここにウィジェットが表示されます。",
-    "noWebBluetooth": "お使いのブラウザは Web Bluetooth に非対応です。Chrome / Edge / Opera (デスクトップまたは Android) をご利用ください。"
+    "emptyHint": "ツールボックスの「BLE」カテゴリから「ble_init」「ble_uart_setup」「ble_add_characteristic」を配置してください。",
+    "noWebBluetooth": "お使いのブラウザは Web Bluetooth に非対応です。Chrome / Edge / Opera (デスクトップまたは Android) をご利用ください。",
+    "iosNotSupported": "iOS は Web Bluetooth に非対応です。Android Chrome / Edge、または Bluefy 等のサードパーティアプリをご利用ください。",
+    "errors": {
+      "unknown": "不明なエラーが発生しました。",
+      "notFound": "対象のデバイスまたはサービスが見つかりませんでした。電源と書き込み済みプログラムをご確認ください。",
+      "network": "通信中に切断されました。デバイスを近づけて再接続してください。",
+      "notSupported": "このブラウザでは Web Bluetooth のこの操作がサポートされていません。",
+      "security": "ペアリングが拒否されました。再度お試しください。",
+      "invalidState": "デバイスが応答可能な状態ではありません。再接続してください。",
+      "aborted": "操作が中断されました。",
+      "notConnected": "デバイスが接続されていません。",
+      "generic": "通信エラー: {{detail}}"
+    }
   },
   "bluetooth": {
     "notSupported": "Web Bluetooth APIがサポートされていません",

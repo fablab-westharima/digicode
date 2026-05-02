@@ -857,7 +857,20 @@
     "widgetSummary": "Widget {{count}} 個",
     "noBlocks": "請在工作區新增 BLE 積木",
     "noBlocksLong": "請在工作區新增 BLE 積木，Widget 會顯示在這裡。",
-    "noWebBluetooth": "您的瀏覽器不支援 Web Bluetooth。請使用桌面或 Android 上的 Chrome / Edge / Opera。"
+    "emptyHint": "請從工具箱的「BLE」類別將「ble_init」「ble_uart_setup」「ble_add_characteristic」拖入工作區。",
+    "noWebBluetooth": "您的瀏覽器不支援 Web Bluetooth。請使用桌面或 Android 上的 Chrome / Edge / Opera。",
+    "iosNotSupported": "iOS 不支援 Web Bluetooth。請使用 Android 的 Chrome / Edge，或 Bluefy 等第三方應用程式。",
+    "errors": {
+      "unknown": "發生未知錯誤。",
+      "notFound": "找不到目標裝置或服務。請確認電源並檢查韌體是否已寫入。",
+      "network": "傳輸中已中斷連線。請將裝置靠近後再次連線。",
+      "notSupported": "此瀏覽器不支援該 Web Bluetooth 操作。",
+      "security": "配對被拒絕，請重試。",
+      "invalidState": "裝置目前無法回應。請重新連線後再試。",
+      "aborted": "操作已中斷。",
+      "notConnected": "裝置尚未連線。",
+      "generic": "通訊錯誤：{{detail}}"
+    }
   },
   "bluetooth": {
     "notSupported": "不支持藍牙",

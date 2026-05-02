@@ -6,11 +6,13 @@
  * trailing-edge timer so dragging doesn't flood the BLE link.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import type { GattSliderWidget as GattSliderWidgetDef } from '../types';
 import type { WebBluetoothClient } from '../webBluetoothClient';
+import { describeBleError } from '../errorMessages';
 
 export interface GattSliderWidgetProps {
   definition: GattSliderWidgetDef;
@@ -22,6 +24,7 @@ export interface GattSliderWidgetProps {
 const WRITE_THROTTLE_MS = 50;
 
 export function GattSliderWidget({ definition, client, isConnected, serviceUuid }: GattSliderWidgetProps) {
+  const { t } = useTranslation();
   const [value, setValue] = useState<number>(definition.min);
   const [error, setError] = useState<string | null>(null);
   const writeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -41,9 +44,10 @@ export function GattSliderWidget({ definition, client, isConnected, serviceUuid 
       );
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      const friendly = describeBleError(err, t);
+      setError(friendly?.message ?? null);
     }
-  }, [client, definition.characteristicUuid, serviceUuid]);
+  }, [client, definition.characteristicUuid, serviceUuid, t]);
 
   const handleChange = useCallback(
     (next: number[]) => {

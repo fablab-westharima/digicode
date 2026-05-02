@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { BleControllerSchema } from './types';
 import { WebBluetoothClient } from './webBluetoothClient';
+import { describeBleError, isIosBrowser } from './errorMessages';
 
 export interface BleConnectionBarProps {
   client: WebBluetoothClient;
@@ -35,16 +36,13 @@ export function BleConnectionBar({ client, schema, isConnected, compact = false 
         customServiceUuids: schema.device.serviceUuid ? [schema.device.serviceUuid] : [],
       });
     } catch (err) {
-      // User-cancelled chooser appears as NotFoundError; suppress as silent.
-      if (err instanceof Error && err.name === 'NotFoundError') {
-        setError(null);
-      } else {
-        setError(err instanceof Error ? err.message : String(err));
-      }
+      const friendly = describeBleError(err, t);
+      // null = user cancelled chooser → silent; otherwise show the localized message.
+      setError(friendly?.message ?? null);
     } finally {
       setBusy(false);
     }
-  }, [client, schema.device.serviceUuid]);
+  }, [client, schema.device.serviceUuid, t]);
 
   const handleDisconnect = useCallback(async () => {
     setBusy(true);
@@ -111,10 +109,15 @@ export function BleConnectionBar({ client, schema, isConnected, compact = false 
 
       {!supported && (
         <div className="basis-full text-xs text-destructive">
-          {t('bleController.noWebBluetooth', {
-            defaultValue:
-              'お使いのブラウザは Web Bluetooth に非対応です。Chrome / Edge / Opera (デスクトップまたは Android) をご利用ください。',
-          })}
+          {isIosBrowser()
+            ? t('bleController.iosNotSupported', {
+                defaultValue:
+                  'iOS は Web Bluetooth に非対応です。Android Chrome / Edge、または Bluefy 等のサードパーティアプリをご利用ください。',
+              })
+            : t('bleController.noWebBluetooth', {
+                defaultValue:
+                  'お使いのブラウザは Web Bluetooth に非対応です。Chrome / Edge / Opera (デスクトップまたは Android) をご利用ください。',
+              })}
         </div>
       )}
       {error && (

@@ -129,12 +129,20 @@ function EmptyState() {
   const { t } = useTranslation();
   return (
     <div
-      className="flex-1 flex items-center justify-center min-h-[160px] text-sm text-muted-foreground text-center px-4"
+      className="flex-1 flex flex-col items-center justify-center min-h-[160px] text-sm text-muted-foreground text-center px-4 gap-2"
       data-testid="ble-controller-empty-state"
     >
-      {t('bleController.noBlocksLong', {
-        defaultValue: 'ワークスペースに BLE ブロックを追加すると、ここにウィジェットが表示されます。',
-      })}
+      <div className="text-3xl" aria-hidden>📶</div>
+      <div>
+        {t('bleController.noBlocksLong', {
+          defaultValue: 'ワークスペースに BLE ブロックを追加すると、ここにウィジェットが表示されます。',
+        })}
+      </div>
+      <div className="text-xs">
+        {t('bleController.emptyHint', {
+          defaultValue: 'ツールボックスの「BLE」カテゴリから「ble_init」「ble_uart_setup」「ble_add_characteristic」を配置してください。',
+        })}
+      </div>
     </div>
   );
 }
