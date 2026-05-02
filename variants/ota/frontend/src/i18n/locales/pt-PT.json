@@ -516,6 +516,7 @@
       "wifiRouterConnect": "Conectar ao Roteador WiFi",
       "serialMonitor": "Monitor Serial",
       "plotter": "Traçador",
+      "bleController": "BLE",
       "displayLanguage": "Idioma de Exibição",
       "mode": "Modo",
       "compileTargetBoard": "Placa de Destino da Compilação",
@@ -835,6 +836,28 @@
         "error": "Ocorreu um erro."
       }
     }
+  },
+  "bleController": {
+    "dialogTitle": "Controlador BLE",
+    "openFullscreen": "Abrir em ecrã inteiro",
+    "connect": "Ligar",
+    "connecting": "A ligar…",
+    "disconnect": "Desligar",
+    "scanAgain": "Procurar de novo",
+    "notConnected": "Não ligado",
+    "send": "Enviar",
+    "messageInput": "Escreve uma mensagem…",
+    "chatEmpty": "Ainda sem mensagens. Envia algo para começar.",
+    "toggleOn": "ON",
+    "toggleOff": "OFF",
+    "noData": "Sem dados ainda",
+    "lastUpdate": "Última atualização",
+    "warningsHeader": "Notas",
+    "warningCount": "{{count}} nota(s)",
+    "widgetSummary": "{{count}} widgets",
+    "noBlocks": "Adiciona blocos BLE ao teu espaço de trabalho",
+    "noBlocksLong": "Adiciona blocos BLE ao teu espaço de trabalho para ver widgets aqui.",
+    "noWebBluetooth": "O teu navegador não suporta Web Bluetooth. Usa Chrome / Edge / Opera em desktop ou Android."
   },
   "bluetooth": {
     "notSupported": "Bluetooth não é suportado",

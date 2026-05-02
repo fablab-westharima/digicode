@@ -112,8 +112,8 @@ export function GattDisplayWidget({ definition, client, isConnected, serviceUuid
           {value === null ? (
             <span className="text-sm text-muted-foreground">
               {isConnected
-                ? t('bleController.noData', { defaultValue: 'No data yet' })
-                : t('bleController.notConnected', { defaultValue: 'Not connected' })}
+                ? t('bleController.noData', { defaultValue: 'データ未受信' })
+                : t('bleController.notConnected', { defaultValue: '未接続' })}
             </span>
           ) : (
             formattedValue
@@ -121,7 +121,7 @@ export function GattDisplayWidget({ definition, client, isConnected, serviceUuid
         </div>
         {ageSec !== null && (
           <div className="text-xs text-muted-foreground text-center">
-            {t('bleController.lastUpdate', { defaultValue: 'Last update' })}: {ageSec}s
+            {t('bleController.lastUpdate', { defaultValue: '最終更新' })}: {ageSec}s
           </div>
         )}
         {error && <div className="text-xs text-destructive text-center">{error}</div>}

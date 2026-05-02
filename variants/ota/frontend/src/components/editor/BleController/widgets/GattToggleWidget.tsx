@@ -66,6 +66,7 @@ export function GattToggleWidget({ definition, client, isConnected, serviceUuid 
           {value
             ? t('bleController.toggleOn', { defaultValue: 'ON' })
             : t('bleController.toggleOff', { defaultValue: 'OFF' })}
+          {/* ON/OFF intentionally untranslated — Latin abbreviations are the universal UX convention. */}
         </div>
         {error && <div className="text-xs text-destructive">{error}</div>}
       </CardContent>

@@ -83,7 +83,7 @@ export function BleControllerLayout({
       {schema.warnings.length > 0 && (
         <div className="border border-amber-500/40 bg-amber-50 dark:bg-amber-950/30 rounded-md p-2">
           <div className="text-xs font-medium text-amber-800 dark:text-amber-200 mb-1">
-            {t('bleController.warningsHeader', { defaultValue: 'Notes' })}
+            {t('bleController.warningsHeader', { defaultValue: '注意事項' })}
           </div>
           <ul className="text-xs text-amber-900 dark:text-amber-300 list-disc list-inside space-y-0.5">
             {schema.warnings.map((w, i) => (
@@ -128,8 +128,13 @@ export function BleControllerLayout({
 function EmptyState() {
   const { t } = useTranslation();
   return (
-    <div className="flex-1 flex items-center justify-center min-h-[160px] text-sm text-muted-foreground text-center px-4">
-      {t('bleController.noBlocks', { defaultValue: 'Add BLE blocks to your workspace to see widgets here.' })}
+    <div
+      className="flex-1 flex items-center justify-center min-h-[160px] text-sm text-muted-foreground text-center px-4"
+      data-testid="ble-controller-empty-state"
+    >
+      {t('bleController.noBlocksLong', {
+        defaultValue: 'ワークスペースに BLE ブロックを追加すると、ここにウィジェットが表示されます。',
+      })}
     </div>
   );
 }

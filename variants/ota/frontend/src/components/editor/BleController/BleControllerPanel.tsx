@@ -52,7 +52,7 @@ export function BleControllerPanel({ workspaceXml, className }: BleControllerPan
     <div className={`flex flex-col gap-2 p-2 bg-background ${className ?? ''}`}>
       <BleConnectionBar client={client} schema={schema} isConnected={isConnected} compact />
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-xs text-muted-foreground">{summary || t('bleController.noBlocks', { defaultValue: 'Add BLE blocks to your workspace' })}</span>
+        <span className="text-xs text-muted-foreground">{summary || t('bleController.noBlocks', { defaultValue: 'ワークスペースに BLE ブロックを追加してください' })}</span>
         {schema.warnings.length > 0 && (
           <span
             className="text-xs text-amber-600 dark:text-amber-400 cursor-pointer"
@@ -60,7 +60,7 @@ export function BleControllerPanel({ workspaceXml, className }: BleControllerPan
             title={schema.warnings.join('\n')}
           >
             ⚠ {t('bleController.warningCount', {
-              defaultValue: '{{count}} note(s)',
+              defaultValue: '{{count}} 件の注意',
               count: schema.warnings.length,
             })}
           </span>
@@ -73,7 +73,7 @@ export function BleControllerPanel({ workspaceXml, className }: BleControllerPan
           className="ml-auto"
         >
           <Maximize2 className="w-3.5 h-3.5 mr-1" />
-          {t('bleController.openFullscreen', { defaultValue: 'Open fullscreen' })}
+          {t('bleController.openFullscreen', { defaultValue: '全画面で開く' })}
         </Button>
       </div>
       <BleControllerDialog open={dialogOpen} onOpenChange={setDialogOpen} schema={schema} client={client} />

@@ -31,7 +31,7 @@ export function BleControllerDialog({ open, onOpenChange, schema, client }: BleC
         <DialogHeader className="p-4 pb-2 border-b shrink-0">
           <DialogTitle className="text-base font-medium flex items-center gap-2">
             <span>📶</span>
-            <span>{t('bleController.dialogTitle', { defaultValue: 'BLE Controller' })}</span>
+            <span>{t('bleController.dialogTitle', { defaultValue: 'BLE コントローラ' })}</span>
           </DialogTitle>
         </DialogHeader>
         <div className="flex-1 overflow-auto">

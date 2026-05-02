@@ -516,6 +516,7 @@
       "wifiRouterConnect": "連接到 WiFi 路由器",
       "serialMonitor": "序列監視器",
       "plotter": "繪圖機",
+      "bleController": "BLE",
       "displayLanguage": "顯示語言",
       "mode": "模式",
       "compileTargetBoard": "編譯目標開發板",
@@ -835,6 +836,28 @@
         "error": "發生錯誤。"
       }
     }
+  },
+  "bleController": {
+    "dialogTitle": "BLE 控制器",
+    "openFullscreen": "全螢幕開啟",
+    "connect": "連接",
+    "connecting": "連接中…",
+    "disconnect": "斷開連接",
+    "scanAgain": "重新掃描",
+    "notConnected": "未連接",
+    "send": "傳送",
+    "messageInput": "輸入訊息…",
+    "chatEmpty": "尚無訊息。傳送任何內容以開始。",
+    "toggleOn": "ON",
+    "toggleOff": "OFF",
+    "noData": "尚未接收資料",
+    "lastUpdate": "最後更新",
+    "warningsHeader": "注意事項",
+    "warningCount": "{{count}} 則注意",
+    "widgetSummary": "Widget {{count}} 個",
+    "noBlocks": "請在工作區新增 BLE 積木",
+    "noBlocksLong": "請在工作區新增 BLE 積木，Widget 會顯示在這裡。",
+    "noWebBluetooth": "您的瀏覽器不支援 Web Bluetooth。請使用桌面或 Android 上的 Chrome / Edge / Opera。"
   },
   "bluetooth": {
     "notSupported": "不支持藍牙",

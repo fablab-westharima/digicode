@@ -71,8 +71,8 @@ export function BleConnectionBar({ client, schema, isConnected, compact = false 
           disabled={busy || !supported}
         >
           {busy
-            ? t('bleController.connecting', { defaultValue: 'Connecting…' })
-            : t('bleController.connect', { defaultValue: 'Connect' })}
+            ? t('bleController.connecting', { defaultValue: '接続中…' })
+            : t('bleController.connect', { defaultValue: '接続' })}
         </Button>
       ) : (
         <>
@@ -81,7 +81,7 @@ export function BleConnectionBar({ client, schema, isConnected, compact = false 
             variant="outline"
             onClick={() => void handleConnect()}
             disabled={busy}
-            title={t('bleController.scanAgain', { defaultValue: 'Scan again' })}
+            title={t('bleController.scanAgain', { defaultValue: '再スキャン' })}
           >
             ↻
           </Button>
@@ -91,7 +91,7 @@ export function BleConnectionBar({ client, schema, isConnected, compact = false 
             onClick={() => void handleDisconnect()}
             disabled={busy}
           >
-            {t('bleController.disconnect', { defaultValue: 'Disconnect' })}
+            {t('bleController.disconnect', { defaultValue: '切断' })}
           </Button>
         </>
       )}
@@ -100,11 +100,11 @@ export function BleConnectionBar({ client, schema, isConnected, compact = false 
         <span className="text-xs text-muted-foreground ml-auto">
           {schema.widgets.length > 0
             ? t('bleController.widgetSummary', {
-                defaultValue: '{{count}} widgets',
+                defaultValue: 'ウィジェット {{count}} 個',
                 count: schema.widgets.length,
               })
             : t('bleController.noBlocks', {
-                defaultValue: 'Add BLE blocks to your workspace',
+                defaultValue: 'ワークスペースに BLE ブロックを追加してください',
               })}
         </span>
       )}
@@ -113,7 +113,7 @@ export function BleConnectionBar({ client, schema, isConnected, compact = false 
         <div className="basis-full text-xs text-destructive">
           {t('bleController.noWebBluetooth', {
             defaultValue:
-              'Your browser does not support Web Bluetooth. Use Chrome / Edge / Opera on desktop or Android.',
+              'お使いのブラウザは Web Bluetooth に非対応です。Chrome / Edge / Opera (デスクトップまたは Android) をご利用ください。',
           })}
         </div>
       )}
@@ -142,7 +142,7 @@ function ConnectionBadge({
   }
   return (
     <Badge variant="secondary">
-      {t('bleController.notConnected', { defaultValue: 'Not connected' })}
+      {t('bleController.notConnected', { defaultValue: '未接続' })}
     </Badge>
   );
 }

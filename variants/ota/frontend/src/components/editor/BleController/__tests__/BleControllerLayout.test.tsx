@@ -37,11 +37,10 @@ describe('BleControllerLayout', () => {
       warnings: [],
     };
     renderWithI18n(<BleControllerLayout schema={schema} client={makeClient()} />);
-    // Empty state message uses the longer copy "...to see widgets here"; the
-    // connection bar's "Add BLE blocks to your workspace" is a separate node
-    // (intentional: bar shows summary, body shows the user prompt). Match the
-    // distinguishing suffix.
-    expect(screen.getByText(/to see widgets here/i)).toBeTruthy();
+    // Use the dedicated empty-state testid rather than text matching, since
+    // the connection bar uses a similar (but distinct) "noBlocks" copy and
+    // canonical JA defaults can change without invalidating this assertion.
+    expect(screen.getByTestId('ble-controller-empty-state')).toBeTruthy();
   });
 
   it('renders connection bar regardless of widget presence', () => {

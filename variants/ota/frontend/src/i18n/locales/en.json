@@ -516,6 +516,7 @@
       "wifiRouterConnect": "Connect to WiFi Router",
       "serialMonitor": "Serial Monitor",
       "plotter": "Plotter",
+      "bleController": "BLE",
       "displayLanguage": "Display Language",
       "mode": "Mode",
       "compileTargetBoard": "Compile Target Board",
@@ -835,6 +836,28 @@
         "error": "An error occurred."
       }
     }
+  },
+  "bleController": {
+    "dialogTitle": "BLE Controller",
+    "openFullscreen": "Open fullscreen",
+    "connect": "Connect",
+    "connecting": "Connecting…",
+    "disconnect": "Disconnect",
+    "scanAgain": "Scan again",
+    "notConnected": "Not connected",
+    "send": "Send",
+    "messageInput": "Type a message…",
+    "chatEmpty": "No messages yet. Send something to start.",
+    "toggleOn": "ON",
+    "toggleOff": "OFF",
+    "noData": "No data yet",
+    "lastUpdate": "Last update",
+    "warningsHeader": "Notes",
+    "warningCount": "{{count}} note(s)",
+    "widgetSummary": "{{count}} widgets",
+    "noBlocks": "Add BLE blocks to your workspace",
+    "noBlocksLong": "Add BLE blocks to your workspace to see widgets here.",
+    "noWebBluetooth": "Your browser does not support Web Bluetooth. Use Chrome / Edge / Opera on desktop or Android."
   },
   "bluetooth": {
     "notSupported": "Web Bluetooth API is not supported",

@@ -196,6 +196,7 @@ export function LinearToolbar({
           >
             <Bluetooth className="w-3.5 h-3.5 mr-1" />
             <span className="text-xs">{t('editor.menu.bleController', { defaultValue: 'BLE' })}</span>
+            {/* "BLE" intentionally untranslated — universal abbreviation. */}
           </Button>
         )}
 

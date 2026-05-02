@@ -117,8 +117,8 @@ export function NusChatWidget({ definition, client, isConnected }: NusChatWidget
           {entries.length === 0 ? (
             <div className="text-xs text-muted-foreground py-4 text-center">
               {isConnected
-                ? t('bleController.chatEmpty', { defaultValue: 'No messages yet. Send something to start.' })
-                : t('bleController.notConnected', { defaultValue: 'Not connected.' })}
+                ? t('bleController.chatEmpty', { defaultValue: 'メッセージはまだありません。送信して開始してください。' })
+                : t('bleController.notConnected', { defaultValue: '未接続' })}
             </div>
           ) : (
             <div className="flex flex-col gap-1 py-1">
@@ -147,7 +147,7 @@ export function NusChatWidget({ definition, client, isConnected }: NusChatWidget
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={!isConnected}
-            placeholder={t('bleController.messageInput', { defaultValue: 'Message…' })}
+            placeholder={t('bleController.messageInput', { defaultValue: 'メッセージを入力…' })}
             className="text-xs"
           />
           <Button
@@ -155,7 +155,7 @@ export function NusChatWidget({ definition, client, isConnected }: NusChatWidget
             disabled={!isConnected || !draft.trim()}
             size="sm"
           >
-            {t('bleController.send', { defaultValue: 'Send' })}
+            {t('bleController.send', { defaultValue: '送信' })}
           </Button>
         </div>
       </CardContent>

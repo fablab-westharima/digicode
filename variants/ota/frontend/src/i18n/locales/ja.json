@@ -519,6 +519,7 @@
       "wifiRouterConnect": "Wifiルータに接続",
       "serialMonitor": "シリアルモニター",
       "plotter": "プロッター",
+      "bleController": "BLE",
       "displayLanguage": "表示言語",
       "mode": "モード",
       "compileTargetBoard": "コンパイル対象ボード",
@@ -835,6 +836,28 @@
         "error": "エラーが発生しました。"
       }
     }
+  },
+  "bleController": {
+    "dialogTitle": "BLE コントローラ",
+    "openFullscreen": "全画面で開く",
+    "connect": "接続",
+    "connecting": "接続中…",
+    "disconnect": "切断",
+    "scanAgain": "再スキャン",
+    "notConnected": "未接続",
+    "send": "送信",
+    "messageInput": "メッセージを入力…",
+    "chatEmpty": "メッセージはまだありません。送信して開始してください。",
+    "toggleOn": "ON",
+    "toggleOff": "OFF",
+    "noData": "データ未受信",
+    "lastUpdate": "最終更新",
+    "warningsHeader": "注意事項",
+    "warningCount": "{{count}} 件の注意",
+    "widgetSummary": "ウィジェット {{count}} 個",
+    "noBlocks": "ワークスペースに BLE ブロックを追加してください",
+    "noBlocksLong": "ワークスペースに BLE ブロックを追加すると、ここにウィジェットが表示されます。",
+    "noWebBluetooth": "お使いのブラウザは Web Bluetooth に非対応です。Chrome / Edge / Opera (デスクトップまたは Android) をご利用ください。"
   },
   "bluetooth": {
     "notSupported": "Web Bluetooth APIがサポートされていません",
