@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-02T17:53:23.301Z",
+  "generatedAt": "2026-05-02T18:05:38.150Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -1628,16 +1628,13 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [
+      "fields": [],
+      "valueInputs": [
         {
           "name": "SAMPLES",
-          "fieldType": "number",
-          "default": 200,
-          "min": 10,
-          "max": 1000
+          "check": null
         }
       ],
-      "valueInputs": [],
       "statementInputs": []
     },
     {
@@ -2879,26 +2876,21 @@
       "boardRequires": "supportsBle",
       "fields": [
         {
-          "name": "MAJOR",
-          "fieldType": "number",
-          "default": 1,
-          "min": 0,
-          "max": 65535
-        },
-        {
-          "name": "MINOR",
-          "fieldType": "number",
-          "default": 1,
-          "min": 0,
-          "max": 65535
-        },
-        {
           "name": "UUID",
           "fieldType": "text",
           "default": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825"
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "MAJOR",
+          "check": null
+        },
+        {
+          "name": "MINOR",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -2917,16 +2909,13 @@
         "custom"
       ],
       "boardRequires": "supportsBle",
-      "fields": [
+      "fields": [],
+      "valueInputs": [
         {
           "name": "DURATION",
-          "fieldType": "number",
-          "default": 5,
-          "min": 1,
-          "max": 60
+          "check": null
         }
       ],
-      "valueInputs": [],
       "statementInputs": []
     },
     {
@@ -5135,7 +5124,7 @@
       "valueInputs": [
         {
           "name": "DURATION",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -5174,7 +5163,7 @@
       "valueInputs": [
         {
           "name": "THRESHOLD",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -5420,7 +5409,7 @@
       "valueInputs": [
         {
           "name": "SAMPLES",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -5442,7 +5431,7 @@
       "valueInputs": [
         {
           "name": "DURATION",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -5533,7 +5522,7 @@
       "valueInputs": [
         {
           "name": "THRESHOLD",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -6531,13 +6520,6 @@
       "boardRequires": "supportsWifi",
       "fields": [
         {
-          "name": "PORT",
-          "fieldType": "number",
-          "default": 1883,
-          "min": 1,
-          "max": 65535
-        },
-        {
           "name": "SSID",
           "fieldType": "text",
           "default": "your_ssid",
@@ -6561,7 +6543,12 @@
           "default": "esp32_client"
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "PORT",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -6578,16 +6565,13 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": [
+      "fields": [],
+      "valueInputs": [
         {
           "name": "SIZE",
-          "fieldType": "number",
-          "default": 256,
-          "min": 128,
-          "max": 16384
+          "check": null
         }
       ],
-      "valueInputs": [],
       "statementInputs": []
     },
     {
@@ -6604,16 +6588,13 @@
         "custom"
       ],
       "boardRequires": "supportsWifi",
-      "fields": [
+      "fields": [],
+      "valueInputs": [
         {
           "name": "SECONDS",
-          "fieldType": "number",
-          "default": 15,
-          "min": 5,
-          "max": 300
+          "check": null
         }
       ],
-      "valueInputs": [],
       "statementInputs": []
     },
     {
@@ -7719,21 +7700,6 @@
       "boardRequires": "supportsWifi",
       "fields": [
         {
-          "name": "MIN",
-          "fieldType": "number",
-          "default": 0
-        },
-        {
-          "name": "MAX",
-          "fieldType": "number",
-          "default": 180
-        },
-        {
-          "name": "STEP",
-          "fieldType": "number",
-          "default": 1
-        },
-        {
           "name": "MODE",
           "fieldType": "dropdown",
           "options": [
@@ -7758,7 +7724,20 @@
           "default": "°"
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "MIN",
+          "check": null
+        },
+        {
+          "name": "MAX",
+          "check": null
+        },
+        {
+          "name": "STEP",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -10740,11 +10719,11 @@
       "valueInputs": [
         {
           "name": "ADDR",
-          "check": "Number"
+          "check": null
         },
         {
           "name": "DATA",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -10794,15 +10773,15 @@
       "valueInputs": [
         {
           "name": "ADDR",
-          "check": "Number"
+          "check": null
         },
         {
           "name": "REG",
-          "check": "Number"
+          "check": null
         },
         {
           "name": "VALUE",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -10886,7 +10865,7 @@
       "valueInputs": [
         {
           "name": "DATA",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []

@@ -205,9 +205,10 @@ generator.forBlock['mpu6050_get_angle'] = function(block: Blockly.Block) {
 Blockly.Blocks['mpu6050_calibrate'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎯 ' + (Blockly.Msg.BLOCKS_MPU6050_CALIBRATE || 'MPU6050 Calibrate'))
-        .appendField(Blockly.Msg.BLOCKS_MPU6050_SAMPLES || 'samples')
-        .appendField(new Blockly.FieldNumber(200, 10, 1000), 'SAMPLES');
+        .appendField('🎯 ' + (Blockly.Msg.BLOCKS_MPU6050_CALIBRATE || 'MPU6050 Calibrate'));
+    this.appendValueInput('SAMPLES')
+        .appendField(Blockly.Msg.BLOCKS_MPU6050_SAMPLES || 'samples');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(MOTION_COLOR);
@@ -216,7 +217,7 @@ Blockly.Blocks['mpu6050_calibrate'] = {
 };
 
 generator.forBlock['mpu6050_calibrate'] = function(block: Blockly.Block) {
-  const samples = block.getFieldValue('SAMPLES');
+  const samples = generator.valueToCode(block, 'SAMPLES', generator.ORDER_ATOMIC) || '200';
   generator.definitions_['include_mpu6050'] = MPU6050_INCLUDE;
   generator.definitions_['mpu6050_globals'] = MPU6050_GLOBALS;
   generator.definitions_['mpu6050_calibrate_func'] = `
@@ -231,7 +232,7 @@ void mpuCalibrate(int n) {
   mpu_offset_ax=sax/n; mpu_offset_ay=say/n; mpu_offset_az=(saz/n)-9.81;
   mpu_offset_gx=sgx/n; mpu_offset_gy=sgy/n; mpu_offset_gz=sgz/n;
 }`;
-  return `  mpuCalibrate(${samples});\n`;
+  return `  mpuCalibrate(String(${samples}).toInt());\n`;
 };
 
 console.log('Motion sensor (MPU6050) blocks loaded');

@@ -67,11 +67,9 @@ void i2cScan() {
 Blockly.Blocks['i2c_write'] = {
   init: function() {
     this.appendValueInput('ADDR')
-        .setCheck('Number')
         .appendField('📡 ' + (Blockly.Msg.BLOCKS_I2C_WRITE || 'I2C Write'))
         .appendField(Blockly.Msg.BLOCKS_I2C_ADDRESS || 'addr');
     this.appendValueInput('DATA')
-        .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_I2C_DATA || 'data');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -128,14 +126,11 @@ int i2cRead(int addr, int count) {
 Blockly.Blocks['i2c_write_register'] = {
   init: function() {
     this.appendValueInput('ADDR')
-        .setCheck('Number')
         .appendField('📡 ' + (Blockly.Msg.BLOCKS_I2C_WRITEREG || 'I2C Write Register'))
         .appendField(Blockly.Msg.BLOCKS_I2C_ADDRESS || 'addr');
     this.appendValueInput('REG')
-        .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_I2C_REGISTER || 'reg');
     this.appendValueInput('VALUE')
-        .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_I2C_VALUE || 'value');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -222,7 +217,6 @@ javascriptGenerator.forBlock['spi_begin'] = function(block: Blockly.Block) {
 Blockly.Blocks['spi_transfer'] = {
   init: function() {
     this.appendValueInput('DATA')
-        .setCheck('Number')
         .appendField('🔌 ' + (Blockly.Msg.BLOCKS_SPI_TRANSFER || 'SPI Transfer'));
     this.appendDummyInput()
         .appendField('CS')

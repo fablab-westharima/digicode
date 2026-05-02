@@ -290,12 +290,16 @@ describe('xmlToCpp — NimBLE v2 callback signatures + scan ms (BUG-065)', () =>
   });
 
   it('ble_scan_start emits const NimBLEAdvertisedDevice* in onResult and ms-converted start()', () => {
+    // Priority D (2026-05-03): DURATION migrated FieldNumber → value input
+    // with default shadow math_number. XML uses the new schema; cpp emits
+    // String(${expr}).toInt() coercion wrap to support BLE-driven dynamic
+    // durations.
     const xml =
       '<xml xmlns="https://developers.google.com/blockly/xml">' +
       '<block type="arduino_setup" x="50" y="50">' +
       '<statement name="SETUP">' +
       '<block type="ble_scan_start">' +
-      '<field name="DURATION">5</field>' +
+      '<value name="DURATION"><block type="math_number"><field name="NUM">5</field></block></value>' +
       '</block>' +
       '</statement>' +
       '</block>' +
@@ -304,8 +308,8 @@ describe('xmlToCpp — NimBLE v2 callback signatures + scan ms (BUG-065)', () =>
     const out = xmlToCpp(xml);
     expect(out.fullCode).toContain('void onResult(const NimBLEAdvertisedDevice* d)');
     expect(out.fullCode).not.toMatch(/void onResult\(NimBLEAdvertisedDevice\* d\)/);
-    // duration sec → ms conversion at emit
-    expect(out.fullCode).toContain('pScan->start(5 * 1000, false)');
+    // duration sec → ms conversion at emit, with String().toInt() wrap.
+    expect(out.fullCode).toContain('pScan->start(String(5).toInt() * 1000, false)');
     expect(out.fullCode).not.toMatch(/pScan->start\(5, false\)/);
   });
 

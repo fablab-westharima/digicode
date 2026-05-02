@@ -174,7 +174,6 @@ Blockly.Blocks['qtr_calibrate'] = {
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_CALIBRATE || 'QTR Calibration');
     this.appendValueInput('SAMPLES')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_SAMPLES || 'Samples');
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_CALIBRATEHINT || '(Move over line during calibration)');
@@ -204,7 +203,6 @@ Blockly.Blocks['qtr_auto_calibrate'] = {
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_AUTOCALIBRATE || 'QTR Auto Calibrate');
     this.appendValueInput('DURATION')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_DURATION || 'Duration (ms)');
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_AUTOCALIBRATEHINT || '(Rotate robot during calibration)');
@@ -388,7 +386,6 @@ Blockly.Blocks['qtr_line_detected'] = {
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_LINEDETECTED || 'QTR Line Detected');
     this.appendValueInput('THRESHOLD')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_SENSOR_QTR_THRESHOLD || 'Threshold');
     this.setOutput(true, 'Boolean');
     this.setColour('#9C27B0');

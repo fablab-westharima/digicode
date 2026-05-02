@@ -744,16 +744,13 @@ Blockly.Blocks['ha_number_create'] = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
         .appendField(new Blockly.FieldTextInput('サーボ角度'), 'NAME');
-    this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_MIN || 'Min')
-        .appendField(new Blockly.FieldNumber(0), 'MIN')
-        .appendField(Blockly.Msg.BLOCKS_MAX || 'Max')
-        .appendField(new Blockly.FieldNumber(180), 'MAX')
-        .appendField(Blockly.Msg.BLOCKS_STEP || 'Step')
-        .appendField(new Blockly.FieldNumber(1), 'STEP');
+    this.appendValueInput('MIN').appendField(Blockly.Msg.BLOCKS_MIN || 'Min');
+    this.appendValueInput('MAX').appendField(Blockly.Msg.BLOCKS_MAX || 'Max');
+    this.appendValueInput('STEP').appendField(Blockly.Msg.BLOCKS_STEP || 'Step');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_UNIT || 'Unit')
         .appendField(new Blockly.FieldTextInput('°'), 'UNIT');
+    this.setInputsInline(true);
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_MODE || 'Mode')
         .appendField(new Blockly.FieldDropdown([
@@ -772,9 +769,9 @@ javascriptGenerator.forBlock['ha_number_create'] = function(block: Blockly.Block
   ensureArduinoHAInclude();
   const numberId = block.getFieldValue('NUMBER_ID');
   const name = block.getFieldValue('NAME');
-  const min = block.getFieldValue('MIN');
-  const max = block.getFieldValue('MAX');
-  const step = block.getFieldValue('STEP');
+  const min = generator.valueToCode(block, 'MIN', generator.ORDER_ATOMIC) || '0';
+  const max = generator.valueToCode(block, 'MAX', generator.ORDER_ATOMIC) || '180';
+  const step = generator.valueToCode(block, 'STEP', generator.ORDER_ATOMIC) || '1';
   const unit = block.getFieldValue('UNIT');
   const mode = block.getFieldValue('MODE');
 
@@ -784,9 +781,9 @@ javascriptGenerator.forBlock['ha_number_create'] = function(block: Blockly.Block
 
   let code = `  // HA Number: ${name}\n`;
   code += `  ${varName}.setName("${name}");\n`;
-  code += `  ${varName}.setMin(${min});\n`;
-  code += `  ${varName}.setMax(${max});\n`;
-  code += `  ${varName}.setStep(${step});\n`;
+  code += `  ${varName}.setMin(String(${min}).toInt());\n`;
+  code += `  ${varName}.setMax(String(${max}).toInt());\n`;
+  code += `  ${varName}.setStep(String(${step}).toInt());\n`;
   if (unit) {
     code += `  ${varName}.setUnitOfMeasurement("${unit}");\n`;
   }

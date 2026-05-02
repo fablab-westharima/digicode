@@ -214,14 +214,12 @@ Blockly.Blocks['ble_beacon_broadcast'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('📡 ' + (Blockly.Msg.BLOCKS_BLE_BEACON || 'iBeacon Broadcast'));
-    this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_BLE_MAJOR || 'major')
-        .appendField(new Blockly.FieldNumber(1, 0, 65535), 'MAJOR')
-        .appendField(Blockly.Msg.BLOCKS_BLE_MINOR || 'minor')
-        .appendField(new Blockly.FieldNumber(1, 0, 65535), 'MINOR');
+    this.appendValueInput('MAJOR').appendField(Blockly.Msg.BLOCKS_BLE_MAJOR || 'major');
+    this.appendValueInput('MINOR').appendField(Blockly.Msg.BLOCKS_BLE_MINOR || 'minor');
     this.appendDummyInput()
         .appendField('UUID')
         .appendField(new Blockly.FieldTextInput('FDA50693-A4E2-4FB1-AFCF-C6EB07647825'), 'UUID');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(BLE_SCAN_COLOR);
@@ -230,8 +228,8 @@ Blockly.Blocks['ble_beacon_broadcast'] = {
 };
 
 generator.forBlock['ble_beacon_broadcast'] = function(block: Blockly.Block) {
-  const major = block.getFieldValue('MAJOR');
-  const minor = block.getFieldValue('MINOR');
+  const major = generator.valueToCode(block, 'MAJOR', generator.ORDER_ATOMIC) || '1';
+  const minor = generator.valueToCode(block, 'MINOR', generator.ORDER_ATOMIC) || '1';
   const uuid = block.getFieldValue('UUID');
   generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
   generator.definitions_['include_nimble_beacon'] = '#include <NimBLEBeacon.h>';
@@ -241,8 +239,8 @@ generator.forBlock['ble_beacon_broadcast'] = function(block: Blockly.Block) {
   NimBLEBeacon oBeacon;
   oBeacon.setManufacturerId(0x4C00);
   oBeacon.setProximityUUID(NimBLEUUID("${uuid}"));
-  oBeacon.setMajor(${major});
-  oBeacon.setMinor(${minor});
+  oBeacon.setMajor(String(${major}).toInt());
+  oBeacon.setMinor(String(${minor}).toInt());
   NimBLEAdvertisementData advData;
   advData.setFlags(0x04);
   std::string beaconData = "";
@@ -261,9 +259,10 @@ generator.forBlock['ble_beacon_broadcast'] = function(block: Blockly.Block) {
 Blockly.Blocks['ble_scan_start'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📡 ' + (Blockly.Msg.BLOCKS_BLE_SCANSTART || 'BLE Scan Start'))
-        .appendField(Blockly.Msg.BLOCKS_BLE_DURATION || 'duration (sec)')
-        .appendField(new Blockly.FieldNumber(5, 1, 60), 'DURATION');
+        .appendField('📡 ' + (Blockly.Msg.BLOCKS_BLE_SCANSTART || 'BLE Scan Start'));
+    this.appendValueInput('DURATION')
+        .appendField(Blockly.Msg.BLOCKS_BLE_DURATION || 'duration (sec)');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(BLE_SCAN_COLOR);
@@ -272,7 +271,7 @@ Blockly.Blocks['ble_scan_start'] = {
 };
 
 generator.forBlock['ble_scan_start'] = function(block: Blockly.Block) {
-  const duration = block.getFieldValue('DURATION');
+  const duration = generator.valueToCode(block, 'DURATION', generator.ORDER_ATOMIC) || '5';
   generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
   generator.definitions_['ble_scan_globals'] = `
 bool bleDeviceFound = false;
@@ -297,7 +296,7 @@ class BleScanCallbacks : public NimBLEScanCallbacks {
   NimBLEScan* pScan = NimBLEDevice::getScan();
   pScan->setScanCallbacks(new BleScanCallbacks(), false);
   pScan->setActiveScan(true);
-  pScan->start(${duration} * 1000, false);
+  pScan->start(String(${duration}).toInt() * 1000, false);
 `;
 };
 

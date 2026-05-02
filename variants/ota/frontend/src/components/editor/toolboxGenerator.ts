@@ -530,10 +530,15 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="ble_start_advertising"></block>
     <sep></sep>
     <label text="${label('bleBeacon') || 'iBeacon'}"></label>
-    <block type="ble_beacon_broadcast"></block>
+    <block type="ble_beacon_broadcast">
+      <value name="MAJOR"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
+      <value name="MINOR"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
+    </block>
     <sep></sep>
     <label text="${label('bleScan') || 'Scan'}"></label>
-    <block type="ble_scan_start"></block>
+    <block type="ble_scan_start">
+      <value name="DURATION"><shadow type="math_number"><field name="NUM">5</field></shadow></value>
+    </block>
     <block type="ble_on_device_found"></block>
     <block type="ble_scan_found_name"></block>
     <block type="ble_scan_found_address"></block>
@@ -751,9 +756,15 @@ const getToolboxCategories = (): Record<string, string> => ({
   mqtt: `
   <category id="mqttHa" name="${cat('mqttHa')}" colour="#00BCD4">
     <label text="${label('mqttSettings')}"></label>
-    <block type="mqtt_setup"></block>
-    <block type="mqtt_set_buffer_size"></block>
-    <block type="mqtt_set_keepalive"></block>
+    <block type="mqtt_setup">
+      <value name="PORT"><shadow type="math_number"><field name="NUM">1883</field></shadow></value>
+    </block>
+    <block type="mqtt_set_buffer_size">
+      <value name="SIZE"><shadow type="math_number"><field name="NUM">256</field></shadow></value>
+    </block>
+    <block type="mqtt_set_keepalive">
+      <value name="SECONDS"><shadow type="math_number"><field name="NUM">15</field></shadow></value>
+    </block>
     <sep></sep>
     <label text="${label('connection')}"></label>
     <block type="mqtt_connect"></block>
@@ -822,7 +833,11 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="ha_light_set_rgb"></block>
     <sep></sep>
     <label text="${label('numberController')}"></label>
-    <block type="ha_number_create"></block>
+    <block type="ha_number_create">
+      <value name="MIN"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="MAX"><shadow type="math_number"><field name="NUM">180</field></shadow></value>
+      <value name="STEP"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
+    </block>
     <block type="ha_number_on_command"></block>
     <block type="ha_number_value"></block>
     <block type="ha_number_set_state"></block>
@@ -969,7 +984,9 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="mpu6050_read_gyro"></block>
     <block type="mpu6050_read_temperature"></block>
     <block type="mpu6050_get_angle"></block>
-    <block type="mpu6050_calibrate"></block>
+    <block type="mpu6050_calibrate">
+      <value name="SAMPLES"><shadow type="math_number"><field name="NUM">200</field></shadow></value>
+    </block>
   </category>`,
 
   // 環境センサー BME280/BMP280 (BP5-2, 2026-04-20 追加)

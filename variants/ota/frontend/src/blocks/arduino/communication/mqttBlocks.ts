@@ -30,9 +30,8 @@ Blockly.Blocks['mqtt_setup'] = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_MQTT_BROKER || 'MQTT Broker')
         .appendField(new Blockly.FieldTextInput('192.168.1.100'), 'BROKER');
-    this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_MQTT_PORT || 'Port')
-        .appendField(new Blockly.FieldNumber(1883, 1, 65535), 'PORT');
+    this.appendValueInput('PORT')
+        .appendField(Blockly.Msg.BLOCKS_MQTT_PORT || 'Port');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_MQTT_CLIENTID || 'Client ID')
         .appendField(new Blockly.FieldTextInput('esp32_client'), 'CLIENT_ID');
@@ -47,7 +46,7 @@ javascriptGenerator.forBlock['mqtt_setup'] = function(block: Blockly.Block) {
   const ssid = block.getFieldValue('SSID');
   const wifiPass = block.getFieldValue('WIFI_PASS');
   const broker = block.getFieldValue('BROKER');
-  const port = block.getFieldValue('PORT');
+  const port = generator.valueToCode(block, 'PORT', generator.ORDER_ATOMIC) || '1883';
   const clientId = block.getFieldValue('CLIENT_ID');
 
   // インクルードとグローバル変数
@@ -58,7 +57,9 @@ javascriptGenerator.forBlock['mqtt_setup'] = function(block: Blockly.Block) {
   generator.definitions_['mqtt_ssid'] = `const char* mqtt_ssid = "${ssid}";`;
   generator.definitions_['mqtt_wifi_pass'] = `const char* mqtt_wifi_pass = "${wifiPass}";`;
   generator.definitions_['mqtt_broker'] = `const char* mqtt_broker = "${broker}";`;
-  generator.definitions_['mqtt_port'] = `const int mqtt_port = ${port};`;
+  // Port is now emitted inside setup() so dynamic values (variables / BLE
+  // strings) work; file-scope `const int` would break when ${port} is a
+  // non-literal expression that has no static initializer.
   generator.definitions_['mqtt_client_id'] = `const char* mqtt_client_id = "${clientId}";`;
 
   // WiFi接続関数
@@ -84,7 +85,7 @@ void mqttWifiConnect() {
 }`;
 
   return `  // MQTT Setup
-  mqttClient.setServer(mqtt_broker, mqtt_port);
+  mqttClient.setServer(mqtt_broker, String(${port}).toInt());
   mqttWifiConnect();
 `;
 };
@@ -401,9 +402,11 @@ javascriptGenerator.forBlock['mqtt_unsubscribe'] = function(block: Blockly.Block
 Blockly.Blocks['mqtt_set_buffer_size'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📦 ' + (Blockly.Msg.BLOCKS_MQTT_BUFFERSIZE || 'MQTT Buffer Size'))
-        .appendField(new Blockly.FieldNumber(256, 128, 16384), 'SIZE')
+        .appendField('📦 ' + (Blockly.Msg.BLOCKS_MQTT_BUFFERSIZE || 'MQTT Buffer Size'));
+    this.appendValueInput('SIZE');
+    this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_MQTT_BYTES || 'bytes');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#00BCD4');
@@ -412,8 +415,8 @@ Blockly.Blocks['mqtt_set_buffer_size'] = {
 };
 
 javascriptGenerator.forBlock['mqtt_set_buffer_size'] = function(block: Blockly.Block) {
-  const size = block.getFieldValue('SIZE');
-  return `  mqttClient.setBufferSize(${size});
+  const size = generator.valueToCode(block, 'SIZE', generator.ORDER_ATOMIC) || '256';
+  return `  mqttClient.setBufferSize(String(${size}).toInt());
 `;
 };
 
@@ -423,9 +426,11 @@ javascriptGenerator.forBlock['mqtt_set_buffer_size'] = function(block: Blockly.B
 Blockly.Blocks['mqtt_set_keepalive'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⏱️ ' + (Blockly.Msg.BLOCKS_MQTT_KEEPALIVE || 'MQTT Keep Alive'))
-        .appendField(new Blockly.FieldNumber(15, 5, 300), 'SECONDS')
+        .appendField('⏱️ ' + (Blockly.Msg.BLOCKS_MQTT_KEEPALIVE || 'MQTT Keep Alive'));
+    this.appendValueInput('SECONDS');
+    this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_MQTT_SECONDS || 'seconds');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#00BCD4');
@@ -434,8 +439,8 @@ Blockly.Blocks['mqtt_set_keepalive'] = {
 };
 
 javascriptGenerator.forBlock['mqtt_set_keepalive'] = function(block: Blockly.Block) {
-  const seconds = block.getFieldValue('SECONDS');
-  return `  mqttClient.setKeepAlive(${seconds});
+  const seconds = generator.valueToCode(block, 'SECONDS', generator.ORDER_ATOMIC) || '15';
+  return `  mqttClient.setKeepAlive(String(${seconds}).toInt());
 `;
 };
 
