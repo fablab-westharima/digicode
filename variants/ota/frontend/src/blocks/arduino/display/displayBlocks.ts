@@ -90,20 +90,18 @@ oled.show()
 Blockly.Blocks['display_text'] = {
   init: function() {
     this.appendValueInput('TEXT')
-        .setCheck('String')
         .appendField('📝 ' + (Blockly.Msg.BLOCKS_DISPLAY_OLEDTEXT || 'OLED Text'))
         .appendField(Blockly.Msg.BLOCKS_DISPLAY_TEXT || 'Text');
+    this.appendValueInput('X').appendField('X:');
+    this.appendValueInput('Y').appendField('Y:');
     this.appendDummyInput()
-        .appendField('X:')
-        .appendField(new Blockly.FieldNumber(0, 0, 128), 'X')
-        .appendField('Y:')
-        .appendField(new Blockly.FieldNumber(0, 0, 64), 'Y')
         .appendField(Blockly.Msg.BLOCKS_DISPLAY_SIZE || 'Size')
         .appendField(new Blockly.FieldDropdown([
           [Blockly.Msg.BLOCKS_DISPLAY_SIZESMALL || 'Small', '1'],
           [Blockly.Msg.BLOCKS_DISPLAY_SIZEMEDIUM || 'Medium', '2'],
           [Blockly.Msg.BLOCKS_DISPLAY_SIZELARGE || 'Large', '3']
         ]), 'SIZE');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DISPLAY_COLOR);
@@ -113,26 +111,26 @@ Blockly.Blocks['display_text'] = {
 
 javascriptGenerator.forBlock['display_text'] = function(block: Blockly.Block) {
   const text = generator.valueToCode(block, 'TEXT', generator.ORDER_ATOMIC) || '""';
-  const x = block.getFieldValue('X');
-  const y = block.getFieldValue('Y');
+  const x = generator.valueToCode(block, 'X', generator.ORDER_ATOMIC) || '0';
+  const y = generator.valueToCode(block, 'Y', generator.ORDER_ATOMIC) || '0';
   const size = block.getFieldValue('SIZE');
 
   return `  display.setTextSize(${size});
   display.setTextColor(SSD1306_WHITE);
-  display.setCursor(${x}, ${y});
+  display.setCursor(String(${x}).toInt(), String(${y}).toInt());
   display.println(${text});
 `;
 };
 
 pythonGenerator.forBlock['display_text'] = function(block: Blockly.Block) {
   const text = pyGen.valueToCode(block, 'TEXT', pyGen.ORDER_ATOMIC) || '""';
-  const x = block.getFieldValue('X');
-  const y = block.getFieldValue('Y');
+  const x = pyGen.valueToCode(block, 'X', pyGen.ORDER_ATOMIC) || '0';
+  const y = pyGen.valueToCode(block, 'Y', pyGen.ORDER_ATOMIC) || '0';
   // Size is retrieved but MicroPython ssd1306 doesn't support text scaling
   const _size = block.getFieldValue('SIZE');
 
   // MicroPython ssd1306 doesn't have built-in text size, use default 8x8
-  return `oled.text(str(${text}), ${x}, ${y})
+  return `oled.text(str(${text}), int(${x}), int(${y}))
 `;
 };
 

@@ -121,15 +121,29 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="humanoid_home"></block>
     <sep></sep>
     <label text="${label('movement')}"></label>
-    <block type="humanoid_walk"></block>
-    <block type="humanoid_turn"></block>
-    <block type="humanoid_jump"></block>
-    <block type="humanoid_moonwalk"></block>
+    <block type="humanoid_walk">
+      <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
+    </block>
+    <block type="humanoid_turn">
+      <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
+    </block>
+    <block type="humanoid_jump">
+      <value name="STEPS"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
+    </block>
+    <block type="humanoid_moonwalk">
+      <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
+    </block>
     <sep></sep>
     <label text="${label('gesture')}"></label>
-    <block type="humanoid_dance"></block>
-    <block type="humanoid_swing"></block>
-    <block type="humanoid_bend"></block>
+    <block type="humanoid_dance">
+      <value name="STEPS"><shadow type="math_number"><field name="NUM">4</field></shadow></value>
+    </block>
+    <block type="humanoid_swing">
+      <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
+    </block>
+    <block type="humanoid_bend">
+      <value name="STEPS"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
+    </block>
     <block type="humanoid_gesture"></block>
     <block type="humanoid_sound"></block>
   </category>`,
@@ -158,12 +172,16 @@ const getToolboxCategories = (): Record<string, string> => ({
     <sep></sep>
     <label text="${label('walk')}"></label>
     <block type="transform_walk"></block>
-    <block type="transform_turn"></block>
+    <block type="transform_turn">
+      <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
+    </block>
     <block type="transform_stop"></block>
     <sep></sep>
     <label text="${label('roll')}"></label>
     <block type="transform_roll"></block>
-    <block type="transform_roll_rotate"></block>
+    <block type="transform_roll_rotate">
+      <value name="POWER"><shadow type="math_number"><field name="NUM">50</field></shadow></value>
+    </block>
     <sep></sep>
     <label text="${label('gesture')}"></label>
     <block type="transform_pushup"></block>
@@ -406,15 +424,40 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="tft_fill_screen"></block>
     <sep></sep>
     <label text="${label('tftDraw') || 'Draw'}"></label>
-    <block type="tft_draw_pixel"></block>
-    <block type="tft_draw_line"></block>
-    <block type="tft_draw_rect"></block>
-    <block type="tft_draw_circle"></block>
+    <block type="tft_draw_pixel">
+      <value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+    </block>
+    <block type="tft_draw_line">
+      <value name="X1"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="Y1"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="X2"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
+      <value name="Y2"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
+    </block>
+    <block type="tft_draw_rect">
+      <value name="X"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
+      <value name="W"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
+      <value name="H"><shadow type="math_number"><field name="NUM">50</field></shadow></value>
+    </block>
+    <block type="tft_draw_circle">
+      <value name="X"><shadow type="math_number"><field name="NUM">60</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">60</field></shadow></value>
+      <value name="R"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
+    </block>
     <sep></sep>
     <label text="${label('tftText') || 'Text'}"></label>
-    <block type="tft_set_cursor"></block>
+    <block type="tft_set_cursor">
+      <value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="SIZE"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
+    </block>
     <block type="tft_print"></block>
-    <block type="tft_color_rgb"></block>
+    <block type="tft_color_rgb">
+      <value name="R"><shadow type="math_number"><field name="NUM">255</field></shadow></value>
+      <value name="G"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="B"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+    </block>
   </category>`,
 
   // RFID (BP6-5, 2026-04-20 追加)
@@ -663,14 +706,20 @@ const getToolboxCategories = (): Record<string, string> => ({
   <category id="display" name="${cat('display')}" colour="#3F51B5">
     <label text="OLED"></label>
     <block type="display_init"></block>
-    <block type="display_text"></block>
+    <block type="display_text">
+      <value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+    </block>
     <block type="display_show"></block>
     <block type="display_clear"></block>
     <sep></sep>
     <label text="${label('lcdI2c') || 'LCD I2C'}"></label>
     <block type="lcd_init"></block>
     <block type="lcd_print"></block>
-    <block type="lcd_print_at"></block>
+    <block type="lcd_print_at">
+      <value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+    </block>
     <block type="lcd_clear"></block>
     <block type="lcd_backlight"></block>
   </category>`,
@@ -959,8 +1008,12 @@ const getToolboxCategories = (): Record<string, string> => ({
   stepper: `
   <category id="stepper" name="${cat('stepper')}" colour="#795548">
     <block type="stepper_init"></block>
-    <block type="stepper_move"></block>
-    <block type="stepper_rotate"></block>
+    <block type="stepper_move">
+      <value name="STEPS"><shadow type="math_number"><field name="NUM">512</field></shadow></value>
+    </block>
+    <block type="stepper_rotate">
+      <value name="ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value>
+    </block>
     <block type="stepper_stop"></block>
   </category>`,
 

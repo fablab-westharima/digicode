@@ -144,9 +144,10 @@ def stepper_move(steps, step_delay):
 Blockly.Blocks['stepper_move'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_MOVE)
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_STEPS)
-        .appendField(new Blockly.FieldNumber(512, -4096, 4096), 'STEPS')
+        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_MOVE);
+    this.appendValueInput('STEPS')
+        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_STEPS);
+    this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_SPEED)
         .appendField(new Blockly.FieldDropdown([
           [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_SLOW, '5'],
@@ -154,6 +155,7 @@ Blockly.Blocks['stepper_move'] = {
           [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_FAST, '2']
         ]), 'SPEED')
         .appendField('ms');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(STEPPER_COLOR);
@@ -162,24 +164,25 @@ Blockly.Blocks['stepper_move'] = {
 };
 
 javascriptGenerator.forBlock['stepper_move'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
+  const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '512';
   const speed = block.getFieldValue('SPEED');
-  return `  stepperMove(${steps}, ${speed});\n`;
+  return `  stepperMove(String(${steps}).toInt(), ${speed});\n`;
 };
 
 pythonGenerator.forBlock['stepper_move'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
+  const steps = pyGen.valueToCode(block, 'STEPS', pyGen.ORDER_ATOMIC) || '512';
   const speed = block.getFieldValue('SPEED');
-  return `stepper_move(${steps}, ${speed})\n`;
+  return `stepper_move(int(${steps}), ${speed})\n`;
 };
 
 // ===== Stepper Rotate Degrees =====
 Blockly.Blocks['stepper_rotate'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_ROTATE)
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_ANGLE)
-        .appendField(new Blockly.FieldAngle(90), 'ANGLE')
+        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_ROTATE);
+    this.appendValueInput('ANGLE')
+        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_ANGLE);
+    this.appendDummyInput()
         .appendField('°')
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_SPEED)
         .appendField(new Blockly.FieldDropdown([
@@ -188,6 +191,7 @@ Blockly.Blocks['stepper_rotate'] = {
           [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_FAST, '2']
         ]), 'SPEED')
         .appendField('ms');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(STEPPER_COLOR);
@@ -196,17 +200,16 @@ Blockly.Blocks['stepper_rotate'] = {
 };
 
 javascriptGenerator.forBlock['stepper_rotate'] = function(block: Blockly.Block) {
-  const angle = block.getFieldValue('ANGLE');
+  const angle = generator.valueToCode(block, 'ANGLE', generator.ORDER_ATOMIC) || '90';
   const speed = block.getFieldValue('SPEED');
-  const steps = Math.round((parseInt(angle) / 360) * 512);
-  return `  stepperMove(${steps}, ${speed});\n`;
+  // Steps computation moved to runtime so dynamic angle works.
+  return `  stepperMove((String(${angle}).toInt() * 512) / 360, ${speed});\n`;
 };
 
 pythonGenerator.forBlock['stepper_rotate'] = function(block: Blockly.Block) {
-  const angle = block.getFieldValue('ANGLE');
+  const angle = pyGen.valueToCode(block, 'ANGLE', pyGen.ORDER_ATOMIC) || '90';
   const speed = block.getFieldValue('SPEED');
-  const steps = Math.round((parseInt(angle) / 360) * 512);
-  return `stepper_move(${steps}, ${speed})\n`;
+  return `stepper_move(int((int(${angle}) * 512) / 360), ${speed})\n`;
 };
 
 // ===== Stepper Stop =====

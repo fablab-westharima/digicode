@@ -170,9 +170,11 @@ Blockly.Blocks['transform_roll_rotate'] = {
         .appendField(new Blockly.FieldDropdown([
           [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', 'left'],
           [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', 'right']
-        ]), 'DIRECTION')
-        .appendField(new Blockly.FieldNumber(50, 0, 100), 'POWER')
+        ]), 'DIRECTION');
+    this.appendValueInput('POWER');
+    this.appendDummyInput()
         .appendField('%');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
@@ -182,9 +184,9 @@ Blockly.Blocks['transform_roll_rotate'] = {
 
 javascriptGenerator.forBlock['transform_roll_rotate'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
-  const power = block.getFieldValue('POWER');
+  const power = javascriptGenerator.valueToCode(block, 'POWER', javascriptGenerator.ORDER_ATOMIC) || '50';
   const dir = direction === 'left' ? 1 : -1;
-  return `  transform.rollRotate(${dir}, ${power});\n`;
+  return `  transform.rollRotate(${dir}, String(${power}).toInt());\n`;
 };
 
 // ===== Turn (Walk mode) =====
@@ -195,9 +197,11 @@ Blockly.Blocks['transform_turn'] = {
         .appendField(new Blockly.FieldDropdown([
           [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', 'left'],
           [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', 'right']
-        ]), 'DIRECTION')
-        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        ]), 'DIRECTION');
+    this.appendValueInput('STEPS');
+    this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NINJA_COLOR);
@@ -207,9 +211,9 @@ Blockly.Blocks['transform_turn'] = {
 
 javascriptGenerator.forBlock['transform_turn'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
-  const steps = block.getFieldValue('STEPS');
+  const steps = javascriptGenerator.valueToCode(block, 'STEPS', javascriptGenerator.ORDER_ATOMIC) || '2';
   const dir = direction === 'left' ? 1 : -1;
-  return `  transform.turn(${steps}, 1000, ${dir});\n`;
+  return `  transform.turn(String(${steps}).toInt(), 1000, ${dir});\n`;
 };
 
 // ===== Stop (HP Robot style with mode selection) =====

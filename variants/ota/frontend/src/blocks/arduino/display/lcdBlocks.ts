@@ -79,14 +79,12 @@ generator.forBlock['lcd_print'] = function(block: Blockly.Block) {
 Blockly.Blocks['lcd_print_at'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📟 ' + (Blockly.Msg.BLOCKS_LCD_PRINTAT || 'LCD Print At'))
-        .appendField(Blockly.Msg.BLOCKS_LCD_COL || 'col')
-        .appendField(new Blockly.FieldNumber(0, 0, 39), 'X')
-        .appendField(Blockly.Msg.BLOCKS_LCD_ROW || 'row')
-        .appendField(new Blockly.FieldNumber(0, 0, 3), 'Y');
+        .appendField('📟 ' + (Blockly.Msg.BLOCKS_LCD_PRINTAT || 'LCD Print At'));
+    this.appendValueInput('X').appendField(Blockly.Msg.BLOCKS_LCD_COL || 'col');
+    this.appendValueInput('Y').appendField(Blockly.Msg.BLOCKS_LCD_ROW || 'row');
     this.appendValueInput('TEXT')
-        .setCheck(null)
         .appendField(Blockly.Msg.BLOCKS_LCD_TEXT || 'text');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(LCD_COLOR);
@@ -95,11 +93,11 @@ Blockly.Blocks['lcd_print_at'] = {
 };
 
 generator.forBlock['lcd_print_at'] = function(block: Blockly.Block) {
-  const x = block.getFieldValue('X');
-  const y = block.getFieldValue('Y');
+  const x = javascriptGenerator.valueToCode(block, 'X', 0) || '0';
+  const y = javascriptGenerator.valueToCode(block, 'Y', 0) || '0';
   const text = javascriptGenerator.valueToCode(block, 'TEXT', 0) || '""';
   generator.definitions_['include_lcd'] = LCD_INCLUDE;
-  return `  lcd.setCursor(${x}, ${y});\n  lcd.print(${text});\n`;
+  return `  lcd.setCursor(String(${x}).toInt(), String(${y}).toInt());\n  lcd.print(${text});\n`;
 };
 
 /**

@@ -212,12 +212,12 @@ export const tutorials: Tutorial[] = [
   <block type="arduino_loop" x="50" y="180">
     <statement name="LOOP">
       <block type="humanoid_walk">
-        <field name="STEPS">2</field>
+        <value name="STEPS"><block type="math_number"><field name="NUM">2</field></block></value>
         <field name="DIRECTION">1</field>
         <field name="SPEED">1000</field>
         <next>
           <block type="humanoid_turn">
-            <field name="STEPS">2</field>
+            <value name="STEPS"><block type="math_number"><field name="NUM">2</field></block></value>
             <field name="DIRECTION">1</field>
             <field name="SPEED">1000</field>
           </block>
@@ -340,17 +340,17 @@ export const tutorials: Tutorial[] = [
   <block type="arduino_loop" x="50" y="180">
     <statement name="LOOP">
       <block type="humanoid_swing">
-        <field name="STEPS">2</field>
+        <value name="STEPS"><block type="math_number"><field name="NUM">2</field></block></value>
         <next>
           <block type="humanoid_dance">
-            <field name="STEPS">4</field>
+            <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
             <next>
               <block type="humanoid_moonwalk">
-                <field name="STEPS">2</field>
+                <value name="STEPS"><block type="math_number"><field name="NUM">2</field></block></value>
                 <field name="DIRECTION">1</field>
                 <next>
                   <block type="humanoid_jump">
-                    <field name="STEPS">2</field>
+                    <value name="STEPS"><block type="math_number"><field name="NUM">2</field></block></value>
                   </block>
                 </next>
               </block>
@@ -400,7 +400,7 @@ export const tutorials: Tutorial[] = [
         <field name="SOUND">S_superHappy</field>
         <next>
           <block type="humanoid_dance">
-            <field name="STEPS">4</field>
+            <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
             <next>
               <block type="esp32_delay">
                 <value name="TIME">
@@ -477,7 +477,7 @@ export const tutorials: Tutorial[] = [
             <field name="GESTURE">Confused</field>
             <next>
               <block type="humanoid_turn">
-                <field name="STEPS">3</field>
+                <value name="STEPS"><block type="math_number"><field name="NUM">3</field></block></value>
                 <field name="DIRECTION">1</field>
                 <field name="SPEED">800</field>
               </block>
@@ -486,7 +486,7 @@ export const tutorials: Tutorial[] = [
         </statement>
         <statement name="ELSE">
           <block type="humanoid_walk">
-            <field name="STEPS">1</field>
+            <value name="STEPS"><block type="math_number"><field name="NUM">1</field></block></value>
             <field name="DIRECTION">1</field>
             <field name="SPEED">1000</field>
           </block>

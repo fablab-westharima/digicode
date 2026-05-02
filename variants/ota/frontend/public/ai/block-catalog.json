@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-02T17:43:57.136Z",
+  "generatedAt": "2026-05-02T17:53:23.301Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -130,13 +130,6 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "STEPS",
-          "fieldType": "number",
-          "default": 2,
-          "min": 1,
-          "max": 10
-        },
-        {
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
@@ -154,7 +147,12 @@
           ]
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -172,13 +170,6 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "STEPS",
-          "fieldType": "number",
-          "default": 2,
-          "min": 1,
-          "max": 10
-        },
-        {
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
@@ -196,7 +187,12 @@
           ]
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -212,16 +208,13 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [
+      "fields": [],
+      "valueInputs": [
         {
           "name": "STEPS",
-          "fieldType": "number",
-          "default": 1,
-          "min": 1,
-          "max": 5
+          "check": null
         }
       ],
-      "valueInputs": [],
       "statementInputs": []
     },
     {
@@ -239,13 +232,6 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "STEPS",
-          "fieldType": "number",
-          "default": 2,
-          "min": 1,
-          "max": 10
-        },
-        {
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
@@ -254,7 +240,12 @@
           ]
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -270,16 +261,13 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [
+      "fields": [],
+      "valueInputs": [
         {
           "name": "STEPS",
-          "fieldType": "number",
-          "default": 4,
-          "min": 1,
-          "max": 10
+          "check": null
         }
       ],
-      "valueInputs": [],
       "statementInputs": []
     },
     {
@@ -295,16 +283,13 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [
+      "fields": [],
+      "valueInputs": [
         {
           "name": "STEPS",
-          "fieldType": "number",
-          "default": 2,
-          "min": 1,
-          "max": 10
+          "check": null
         }
       ],
-      "valueInputs": [],
       "statementInputs": []
     },
     {
@@ -322,13 +307,6 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "STEPS",
-          "fieldType": "number",
-          "default": 1,
-          "min": 1,
-          "max": 5
-        },
-        {
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
@@ -337,7 +315,12 @@
           ]
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -2172,20 +2155,6 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "X",
-          "fieldType": "number",
-          "default": 0,
-          "min": 0,
-          "max": 128
-        },
-        {
-          "name": "Y",
-          "fieldType": "number",
-          "default": 0,
-          "min": 0,
-          "max": 64
-        },
-        {
           "name": "SIZE",
           "fieldType": "dropdown",
           "options": [
@@ -2198,7 +2167,15 @@
       "valueInputs": [
         {
           "name": "TEXT",
-          "check": "String"
+          "check": null
+        },
+        {
+          "name": "X",
+          "check": null
+        },
+        {
+          "name": "Y",
+          "check": null
         }
       ],
       "statementInputs": []
@@ -2332,23 +2309,16 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [
+      "fields": [],
+      "valueInputs": [
         {
           "name": "X",
-          "fieldType": "number",
-          "default": 0,
-          "min": 0,
-          "max": 39
+          "check": null
         },
         {
           "name": "Y",
-          "fieldType": "number",
-          "default": 0,
-          "min": 0,
-          "max": 3
-        }
-      ],
-      "valueInputs": [
+          "check": null
+        },
         {
           "name": "TEXT",
           "check": null
@@ -5914,13 +5884,6 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "STEPS",
-          "fieldType": "number",
-          "default": 512,
-          "min": -4096,
-          "max": 4096
-        },
-        {
           "name": "SPEED",
           "fieldType": "dropdown",
           "options": [
@@ -5930,7 +5893,12 @@
           ]
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -5957,14 +5925,14 @@
             "3",
             "2"
           ]
-        },
-        {
-          "name": "ANGLE",
-          "fieldType": "angle",
-          "default": 90
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "ANGLE",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -6374,13 +6342,6 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "STEPS",
-          "fieldType": "number",
-          "default": 2,
-          "min": 1,
-          "max": 10
-        },
-        {
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
@@ -6389,7 +6350,12 @@
           ]
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -6468,13 +6434,6 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "POWER",
-          "fieldType": "number",
-          "default": 50,
-          "min": 0,
-          "max": 100
-        },
-        {
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
@@ -6483,7 +6442,12 @@
           ]
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "POWER",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -9818,27 +9782,22 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "X",
-          "fieldType": "number",
-          "default": 0,
-          "min": 0,
-          "max": 319
-        },
-        {
-          "name": "Y",
-          "fieldType": "number",
-          "default": 0,
-          "min": 0,
-          "max": 239
-        },
-        {
           "name": "COLOR",
           "fieldType": "dropdown",
           "options": [],
           "isDynamic": true
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "X",
+          "check": null
+        },
+        {
+          "name": "Y",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -9857,41 +9816,30 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "X1",
-          "fieldType": "number",
-          "default": 0,
-          "min": 0,
-          "max": 319
-        },
-        {
-          "name": "Y1",
-          "fieldType": "number",
-          "default": 0,
-          "min": 0,
-          "max": 239
-        },
-        {
-          "name": "X2",
-          "fieldType": "number",
-          "default": 100,
-          "min": 0,
-          "max": 319
-        },
-        {
-          "name": "Y2",
-          "fieldType": "number",
-          "default": 100,
-          "min": 0,
-          "max": 239
-        },
-        {
           "name": "COLOR",
           "fieldType": "dropdown",
           "options": [],
           "isDynamic": true
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "X1",
+          "check": null
+        },
+        {
+          "name": "Y1",
+          "check": null
+        },
+        {
+          "name": "X2",
+          "check": null
+        },
+        {
+          "name": "Y2",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -9910,34 +9858,6 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "X",
-          "fieldType": "number",
-          "default": 10,
-          "min": 0,
-          "max": 319
-        },
-        {
-          "name": "Y",
-          "fieldType": "number",
-          "default": 10,
-          "min": 0,
-          "max": 239
-        },
-        {
-          "name": "W",
-          "fieldType": "number",
-          "default": 100,
-          "min": 1,
-          "max": 320
-        },
-        {
-          "name": "H",
-          "fieldType": "number",
-          "default": 50,
-          "min": 1,
-          "max": 240
-        },
-        {
           "name": "COLOR",
           "fieldType": "dropdown",
           "options": [],
@@ -9949,7 +9869,24 @@
           "default": false
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "X",
+          "check": null
+        },
+        {
+          "name": "Y",
+          "check": null
+        },
+        {
+          "name": "W",
+          "check": null
+        },
+        {
+          "name": "H",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -9968,27 +9905,6 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "X",
-          "fieldType": "number",
-          "default": 60,
-          "min": 0,
-          "max": 319
-        },
-        {
-          "name": "Y",
-          "fieldType": "number",
-          "default": 60,
-          "min": 0,
-          "max": 239
-        },
-        {
-          "name": "R",
-          "fieldType": "number",
-          "default": 30,
-          "min": 1,
-          "max": 160
-        },
-        {
           "name": "COLOR",
           "fieldType": "dropdown",
           "options": [],
@@ -10000,7 +9916,20 @@
           "default": false
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "X",
+          "check": null
+        },
+        {
+          "name": "Y",
+          "check": null
+        },
+        {
+          "name": "R",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -10019,34 +9948,26 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "X",
-          "fieldType": "number",
-          "default": 0,
-          "min": 0,
-          "max": 319
-        },
-        {
-          "name": "Y",
-          "fieldType": "number",
-          "default": 0,
-          "min": 0,
-          "max": 239
-        },
-        {
-          "name": "SIZE",
-          "fieldType": "number",
-          "default": 2,
-          "min": 1,
-          "max": 10
-        },
-        {
           "name": "COLOR",
           "fieldType": "dropdown",
           "options": [],
           "isDynamic": true
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "X",
+          "check": null
+        },
+        {
+          "name": "Y",
+          "check": null
+        },
+        {
+          "name": "SIZE",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -10086,30 +10007,21 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [
+      "fields": [],
+      "valueInputs": [
         {
           "name": "R",
-          "fieldType": "number",
-          "default": 255,
-          "min": 0,
-          "max": 255
+          "check": null
         },
         {
           "name": "G",
-          "fieldType": "number",
-          "default": 0,
-          "min": 0,
-          "max": 255
+          "check": null
         },
         {
           "name": "B",
-          "fieldType": "number",
-          "default": 0,
-          "min": 0,
-          "max": 255
+          "check": null
         }
       ],
-      "valueInputs": [],
       "statementInputs": []
     },
     {

@@ -108,10 +108,12 @@ generator.forBlock['tft_fill_screen'] = function(block: Blockly.Block) {
 Blockly.Blocks['tft_draw_pixel'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_PIXEL || 'TFT Pixel'))
-        .appendField('X').appendField(new Blockly.FieldNumber(0, 0, 319), 'X')
-        .appendField('Y').appendField(new Blockly.FieldNumber(0, 0, 239), 'Y')
+        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_PIXEL || 'TFT Pixel'));
+    this.appendValueInput('X').appendField('X');
+    this.appendValueInput('Y').appendField('Y');
+    this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TFT_COLOR);
@@ -120,11 +122,11 @@ Blockly.Blocks['tft_draw_pixel'] = {
 };
 
 generator.forBlock['tft_draw_pixel'] = function(block: Blockly.Block) {
-  const x = block.getFieldValue('X');
-  const y = block.getFieldValue('Y');
+  const x = generator.valueToCode(block, 'X', generator.ORDER_ATOMIC) || '0';
+  const y = generator.valueToCode(block, 'Y', generator.ORDER_ATOMIC) || '0';
   const color = block.getFieldValue('COLOR');
   generator.definitions_['include_tft'] = TFT_INCLUDES;
-  return `  if (tft) tft->drawPixel(${x}, ${y}, ${color});\n`;
+  return `  if (tft) tft->drawPixel(String(${x}).toInt(), String(${y}).toInt(), ${color});\n`;
 };
 
 /**
@@ -133,12 +135,14 @@ generator.forBlock['tft_draw_pixel'] = function(block: Blockly.Block) {
 Blockly.Blocks['tft_draw_line'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_LINE || 'TFT Line'))
-        .appendField('X1').appendField(new Blockly.FieldNumber(0, 0, 319), 'X1')
-        .appendField('Y1').appendField(new Blockly.FieldNumber(0, 0, 239), 'Y1')
-        .appendField('X2').appendField(new Blockly.FieldNumber(100, 0, 319), 'X2')
-        .appendField('Y2').appendField(new Blockly.FieldNumber(100, 0, 239), 'Y2')
+        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_LINE || 'TFT Line'));
+    this.appendValueInput('X1').appendField('X1');
+    this.appendValueInput('Y1').appendField('Y1');
+    this.appendValueInput('X2').appendField('X2');
+    this.appendValueInput('Y2').appendField('Y2');
+    this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TFT_COLOR);
@@ -147,13 +151,13 @@ Blockly.Blocks['tft_draw_line'] = {
 };
 
 generator.forBlock['tft_draw_line'] = function(block: Blockly.Block) {
-  const x1 = block.getFieldValue('X1');
-  const y1 = block.getFieldValue('Y1');
-  const x2 = block.getFieldValue('X2');
-  const y2 = block.getFieldValue('Y2');
+  const x1 = generator.valueToCode(block, 'X1', generator.ORDER_ATOMIC) || '0';
+  const y1 = generator.valueToCode(block, 'Y1', generator.ORDER_ATOMIC) || '0';
+  const x2 = generator.valueToCode(block, 'X2', generator.ORDER_ATOMIC) || '100';
+  const y2 = generator.valueToCode(block, 'Y2', generator.ORDER_ATOMIC) || '100';
   const color = block.getFieldValue('COLOR');
   generator.definitions_['include_tft'] = TFT_INCLUDES;
-  return `  if (tft) tft->drawLine(${x1}, ${y1}, ${x2}, ${y2}, ${color});\n`;
+  return `  if (tft) tft->drawLine(String(${x1}).toInt(), String(${y1}).toInt(), String(${x2}).toInt(), String(${y2}).toInt(), ${color});\n`;
 };
 
 /**
@@ -162,15 +166,16 @@ generator.forBlock['tft_draw_line'] = function(block: Blockly.Block) {
 Blockly.Blocks['tft_draw_rect'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_RECT || 'TFT Rect'))
-        .appendField('X').appendField(new Blockly.FieldNumber(10, 0, 319), 'X')
-        .appendField('Y').appendField(new Blockly.FieldNumber(10, 0, 239), 'Y')
-        .appendField('W').appendField(new Blockly.FieldNumber(100, 1, 320), 'W')
-        .appendField('H').appendField(new Blockly.FieldNumber(50, 1, 240), 'H');
+        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_RECT || 'TFT Rect'));
+    this.appendValueInput('X').appendField('X');
+    this.appendValueInput('Y').appendField('Y');
+    this.appendValueInput('W').appendField('W');
+    this.appendValueInput('H').appendField('H');
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR')
         .appendField(Blockly.Msg.BLOCKS_TFT_FILL || 'fill')
         .appendField(new Blockly.FieldCheckbox('FALSE'), 'FILL');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TFT_COLOR);
@@ -179,15 +184,15 @@ Blockly.Blocks['tft_draw_rect'] = {
 };
 
 generator.forBlock['tft_draw_rect'] = function(block: Blockly.Block) {
-  const x = block.getFieldValue('X');
-  const y = block.getFieldValue('Y');
-  const w = block.getFieldValue('W');
-  const h = block.getFieldValue('H');
+  const x = generator.valueToCode(block, 'X', generator.ORDER_ATOMIC) || '10';
+  const y = generator.valueToCode(block, 'Y', generator.ORDER_ATOMIC) || '10';
+  const w = generator.valueToCode(block, 'W', generator.ORDER_ATOMIC) || '100';
+  const h = generator.valueToCode(block, 'H', generator.ORDER_ATOMIC) || '50';
   const color = block.getFieldValue('COLOR');
   const fill = block.getFieldValue('FILL') === 'TRUE';
   generator.definitions_['include_tft'] = TFT_INCLUDES;
   const method = fill ? 'fillRect' : 'drawRect';
-  return `  if (tft) tft->${method}(${x}, ${y}, ${w}, ${h}, ${color});\n`;
+  return `  if (tft) tft->${method}(String(${x}).toInt(), String(${y}).toInt(), String(${w}).toInt(), String(${h}).toInt(), ${color});\n`;
 };
 
 /**
@@ -196,14 +201,15 @@ generator.forBlock['tft_draw_rect'] = function(block: Blockly.Block) {
 Blockly.Blocks['tft_draw_circle'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_CIRCLE || 'TFT Circle'))
-        .appendField('X').appendField(new Blockly.FieldNumber(60, 0, 319), 'X')
-        .appendField('Y').appendField(new Blockly.FieldNumber(60, 0, 239), 'Y')
-        .appendField('R').appendField(new Blockly.FieldNumber(30, 1, 160), 'R');
+        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_CIRCLE || 'TFT Circle'));
+    this.appendValueInput('X').appendField('X');
+    this.appendValueInput('Y').appendField('Y');
+    this.appendValueInput('R').appendField('R');
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR')
         .appendField(Blockly.Msg.BLOCKS_TFT_FILL || 'fill')
         .appendField(new Blockly.FieldCheckbox('FALSE'), 'FILL');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TFT_COLOR);
@@ -212,14 +218,14 @@ Blockly.Blocks['tft_draw_circle'] = {
 };
 
 generator.forBlock['tft_draw_circle'] = function(block: Blockly.Block) {
-  const x = block.getFieldValue('X');
-  const y = block.getFieldValue('Y');
-  const r = block.getFieldValue('R');
+  const x = generator.valueToCode(block, 'X', generator.ORDER_ATOMIC) || '60';
+  const y = generator.valueToCode(block, 'Y', generator.ORDER_ATOMIC) || '60';
+  const r = generator.valueToCode(block, 'R', generator.ORDER_ATOMIC) || '30';
   const color = block.getFieldValue('COLOR');
   const fill = block.getFieldValue('FILL') === 'TRUE';
   generator.definitions_['include_tft'] = TFT_INCLUDES;
   const method = fill ? 'fillCircle' : 'drawCircle';
-  return `  if (tft) tft->${method}(${x}, ${y}, ${r}, ${color});\n`;
+  return `  if (tft) tft->${method}(String(${x}).toInt(), String(${y}).toInt(), String(${r}).toInt(), ${color});\n`;
 };
 
 /**
@@ -228,13 +234,13 @@ generator.forBlock['tft_draw_circle'] = function(block: Blockly.Block) {
 Blockly.Blocks['tft_set_cursor'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_SETCURSOR || 'TFT Set Cursor'))
-        .appendField('X').appendField(new Blockly.FieldNumber(0, 0, 319), 'X')
-        .appendField('Y').appendField(new Blockly.FieldNumber(0, 0, 239), 'Y');
+        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_SETCURSOR || 'TFT Set Cursor'));
+    this.appendValueInput('X').appendField('X');
+    this.appendValueInput('Y').appendField('Y');
+    this.appendValueInput('SIZE').appendField(Blockly.Msg.BLOCKS_TFT_SIZE || 'size');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_TFT_SIZE || 'size')
-        .appendField(new Blockly.FieldNumber(2, 1, 10), 'SIZE')
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TFT_COLOR);
@@ -243,12 +249,12 @@ Blockly.Blocks['tft_set_cursor'] = {
 };
 
 generator.forBlock['tft_set_cursor'] = function(block: Blockly.Block) {
-  const x = block.getFieldValue('X');
-  const y = block.getFieldValue('Y');
-  const size = block.getFieldValue('SIZE');
+  const x = generator.valueToCode(block, 'X', generator.ORDER_ATOMIC) || '0';
+  const y = generator.valueToCode(block, 'Y', generator.ORDER_ATOMIC) || '0';
+  const size = generator.valueToCode(block, 'SIZE', generator.ORDER_ATOMIC) || '2';
   const color = block.getFieldValue('COLOR');
   generator.definitions_['include_tft'] = TFT_INCLUDES;
-  return `  if (tft) { tft->setCursor(${x}, ${y}); tft->setTextSize(${size}); tft->setTextColor(${color}); }\n`;
+  return `  if (tft) { tft->setCursor(String(${x}).toInt(), String(${y}).toInt()); tft->setTextSize(String(${size}).toInt()); tft->setTextColor(${color}); }\n`;
 };
 
 /**
@@ -278,10 +284,11 @@ generator.forBlock['tft_print'] = function(block: Blockly.Block) {
 Blockly.Blocks['tft_color_rgb'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_COLORRGB || 'TFT Color RGB'))
-        .appendField('R').appendField(new Blockly.FieldNumber(255, 0, 255), 'R')
-        .appendField('G').appendField(new Blockly.FieldNumber(0, 0, 255), 'G')
-        .appendField('B').appendField(new Blockly.FieldNumber(0, 0, 255), 'B');
+        .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_COLORRGB || 'TFT Color RGB'));
+    this.appendValueInput('R').appendField('R');
+    this.appendValueInput('G').appendField('G');
+    this.appendValueInput('B').appendField('B');
+    this.setInputsInline(true);
     this.setOutput(true, 'Number');
     this.setColour(TFT_COLOR);
     this.setTooltip(Blockly.Msg.BLOCKS_TFT_COLORRGBTOOLTIP || 'Convert RGB values (0-255 each) to a 16-bit RGB565 color code for use with TFT drawing blocks.');
@@ -289,10 +296,10 @@ Blockly.Blocks['tft_color_rgb'] = {
 };
 
 generator.forBlock['tft_color_rgb'] = function(block: Blockly.Block) {
-  const r = block.getFieldValue('R');
-  const g = block.getFieldValue('G');
-  const b = block.getFieldValue('B');
-  return [`(uint16_t)(((${r} & 0xF8) << 8) | ((${g} & 0xFC) << 3) | ((${b} & 0xF8) >> 3))`, 0];
+  const r = generator.valueToCode(block, 'R', generator.ORDER_ATOMIC) || '255';
+  const g = generator.valueToCode(block, 'G', generator.ORDER_ATOMIC) || '0';
+  const b = generator.valueToCode(block, 'B', generator.ORDER_ATOMIC) || '0';
+  return [`(uint16_t)(((String(${r}).toInt() & 0xF8) << 8) | ((String(${g}).toInt() & 0xFC) << 3) | ((String(${b}).toInt() & 0xF8) >> 3))`, 0];
 };
 
 console.log('TFT display blocks loaded');

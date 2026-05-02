@@ -83,7 +83,15 @@ describe('generateSingletonCases', () => {
   });
 
   it('uses esp32_serial_println as the value wrapper for hasOutput blocks', () => {
-    const numeric = cases.find((c) => c.blocksUsed.includes('math_number'));
+    // Priority C value-input refactor (2026-05-03) introduced math_number
+    // shadows inside value-input slots of statement blocks (e.g.
+    // humanoid_walk STEPS), so math_number now appears in many cases as a
+    // sub-component. Filter for the case where math_number is the *target*
+    // singleton — that case wraps it with esp32_serial_println so the
+    // hasOutput value reaches a printable consumer.
+    const numeric = cases.find(
+      (c) => c.blocksUsed.includes('math_number') && c.blocksUsed.includes('esp32_serial_println'),
+    );
     expect(numeric).toBeDefined();
     if (!numeric) return;
     expect(numeric.xml).toContain('esp32_serial_println');

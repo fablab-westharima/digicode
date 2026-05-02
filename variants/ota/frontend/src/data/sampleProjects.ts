@@ -457,17 +457,17 @@ export const sampleProjects: SampleProject[] = [
                 </value>
                 <next>
                   <block type="humanoid_dance">
-                    <field name="STEPS">4</field>
+                    <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
                     <next>
                       <block type="humanoid_swing">
-                        <field name="STEPS">4</field>
+                        <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
                         <next>
                           <block type="humanoid_moonwalk">
-                            <field name="STEPS">4</field>
+                            <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
                             <field name="DIRECTION">1</field>
                             <next>
                               <block type="humanoid_jump">
-                                <field name="STEPS">2</field>
+                                <value name="STEPS"><block type="math_number"><field name="NUM">2</field></block></value>
                                 <next>
                                   <block type="esp32_delay">
                                     <value name="TIME">
@@ -961,7 +961,7 @@ export const sampleProjects: SampleProject[] = [
     description: 'Humanoidが前後に歩行する基本動作',
     category: 'robots',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="humanoid_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="humanoid_home"><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">500</field></block></value><next><block type="humanoid_walk"><field name="STEPS">4</field><field name="DIRECTION">1</field><field name="SPEED">1000</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value><next><block type="humanoid_walk"><field name="STEPS">4</field><field name="DIRECTION">-1</field><field name="SPEED">1000</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="humanoid_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="humanoid_home"><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">500</field></block></value><next><block type="humanoid_walk"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">1</field><field name="SPEED">1000</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value><next><block type="humanoid_walk"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">-1</field><field name="SPEED">1000</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
   },
   {
     id: 'wheel-line-follow',
@@ -1066,7 +1066,7 @@ export const sampleProjects: SampleProject[] = [
     description: '16x2 I2C LCD に2行のメッセージを表示',
     category: 'motor',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="lcd_init"><field name="COLS">16</field><field name="ROWS">2</field><field name="ADDR">0x27</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="lcd_clear"><next><block type="lcd_print_at"><field name="X">0</field><field name="Y">0</field><value name="TEXT"><block type="text"><field name="TEXT">Hello</field></block></value><next><block type="lcd_print_at"><field name="X">0</field><field name="Y">1</field><value name="TEXT"><block type="text"><field name="TEXT">DigiCode!</field></block></value><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value></block></next></block></next></block></next></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="lcd_init"><field name="COLS">16</field><field name="ROWS">2</field><field name="ADDR">0x27</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="lcd_clear"><next><block type="lcd_print_at"><value name="X"><block type="math_number"><field name="NUM">0</field></block></value><value name="Y"><block type="math_number"><field name="NUM">0</field></block></value><value name="TEXT"><block type="text"><field name="TEXT">Hello</field></block></value><next><block type="lcd_print_at"><value name="X"><block type="math_number"><field name="NUM">0</field></block></value><value name="Y"><block type="math_number"><field name="NUM">1</field></block></value><value name="TEXT"><block type="text"><field name="TEXT">DigiCode!</field></block></value><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value></block></next></block></next></block></next></block></statement></block></xml>`
   },
   {
     id: 'dfplayer-music',

@@ -70,8 +70,9 @@ javascriptGenerator.forBlock['humanoid_home'] = function() {
 Blockly.Blocks['humanoid_walk'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🚶 ' + (Blockly.Msg.BLOCKS_HUMANOID_WALK_LABEL || 'Humanoid Walk'))
-        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('🚶 ' + (Blockly.Msg.BLOCKS_HUMANOID_WALK_LABEL || 'Humanoid Walk'));
+    this.appendValueInput('STEPS');
+    this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_STEPS || 'steps')
         .appendField(new Blockly.FieldDropdown([
           [Blockly.Msg.BLOCKS_COMMON_FORWARD || 'forward', '1'],
@@ -83,6 +84,7 @@ Blockly.Blocks['humanoid_walk'] = {
           [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', '600'],
           [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', '1500']
         ]), 'SPEED');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
@@ -91,11 +93,11 @@ Blockly.Blocks['humanoid_walk'] = {
 };
 
 javascriptGenerator.forBlock['humanoid_walk'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
+  const steps = javascriptGenerator.valueToCode(block, 'STEPS', javascriptGenerator.ORDER_ATOMIC) || '2';
   const direction = block.getFieldValue('DIRECTION');
   const speed = block.getFieldValue('SPEED');
 
-  return `  humanoid.walk(${steps}, ${speed}, ${direction});\n`;
+  return `  humanoid.walk(String(${steps}).toInt(), ${speed}, ${direction});\n`;
 };
 
 // ===== Humanoid Turn =====
@@ -103,8 +105,9 @@ javascriptGenerator.forBlock['humanoid_walk'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_turn'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('↻ ' + (Blockly.Msg.BLOCKS_HUMANOID_TURN_LABEL || 'Humanoid Turn'))
-        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('↻ ' + (Blockly.Msg.BLOCKS_HUMANOID_TURN_LABEL || 'Humanoid Turn'));
+    this.appendValueInput('STEPS');
+    this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
           [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', '1'],
@@ -116,6 +119,7 @@ Blockly.Blocks['humanoid_turn'] = {
           [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', '600'],
           [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', '1500']
         ]), 'SPEED');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
@@ -124,11 +128,11 @@ Blockly.Blocks['humanoid_turn'] = {
 };
 
 javascriptGenerator.forBlock['humanoid_turn'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
+  const steps = javascriptGenerator.valueToCode(block, 'STEPS', javascriptGenerator.ORDER_ATOMIC) || '2';
   const direction = block.getFieldValue('DIRECTION');
   const speed = block.getFieldValue('SPEED');
 
-  return `  humanoid.turn(${steps}, ${speed}, ${direction});\n`;
+  return `  humanoid.turn(String(${steps}).toInt(), ${speed}, ${direction});\n`;
 };
 
 // ===== Humanoid Jump =====
@@ -136,9 +140,11 @@ javascriptGenerator.forBlock['humanoid_turn'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_jump'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⬆️ ' + (Blockly.Msg.BLOCKS_HUMANOID_JUMP_LABEL || 'Humanoid Jump'))
-        .appendField(new Blockly.FieldNumber(1, 1, 5), 'STEPS')
+        .appendField('⬆️ ' + (Blockly.Msg.BLOCKS_HUMANOID_JUMP_LABEL || 'Humanoid Jump'));
+    this.appendValueInput('STEPS');
+    this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
@@ -147,8 +153,8 @@ Blockly.Blocks['humanoid_jump'] = {
 };
 
 javascriptGenerator.forBlock['humanoid_jump'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  return `  humanoid.jump(${steps}, 500);\n`;
+  const steps = javascriptGenerator.valueToCode(block, 'STEPS', javascriptGenerator.ORDER_ATOMIC) || '1';
+  return `  humanoid.jump(String(${steps}).toInt(), 500);\n`;
 };
 
 // ===== Humanoid Dance =====
@@ -156,9 +162,11 @@ javascriptGenerator.forBlock['humanoid_jump'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_dance'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💃 ' + (Blockly.Msg.BLOCKS_HUMANOID_DANCE_LABEL || 'Humanoid Dance'))
-        .appendField(new Blockly.FieldNumber(4, 1, 10), 'STEPS')
+        .appendField('💃 ' + (Blockly.Msg.BLOCKS_HUMANOID_DANCE_LABEL || 'Humanoid Dance'));
+    this.appendValueInput('STEPS');
+    this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
@@ -167,8 +175,8 @@ Blockly.Blocks['humanoid_dance'] = {
 };
 
 javascriptGenerator.forBlock['humanoid_dance'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  return `  humanoid.dance(${steps}, 600);\n`;
+  const steps = javascriptGenerator.valueToCode(block, 'STEPS', javascriptGenerator.ORDER_ATOMIC) || '4';
+  return `  humanoid.dance(String(${steps}).toInt(), 600);\n`;
 };
 
 // ===== Humanoid Swing =====
@@ -176,9 +184,11 @@ javascriptGenerator.forBlock['humanoid_dance'] = function(block: Blockly.Block) 
 Blockly.Blocks['humanoid_swing'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('〜 ' + (Blockly.Msg.BLOCKS_HUMANOID_SWING_LABEL || 'Humanoid Swing'))
-        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('〜 ' + (Blockly.Msg.BLOCKS_HUMANOID_SWING_LABEL || 'Humanoid Swing'));
+    this.appendValueInput('STEPS');
+    this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
@@ -187,8 +197,8 @@ Blockly.Blocks['humanoid_swing'] = {
 };
 
 javascriptGenerator.forBlock['humanoid_swing'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
-  return `  humanoid.swing(${steps}, 1000);\n`;
+  const steps = javascriptGenerator.valueToCode(block, 'STEPS', javascriptGenerator.ORDER_ATOMIC) || '2';
+  return `  humanoid.swing(String(${steps}).toInt(), 1000);\n`;
 };
 
 // ===== Humanoid Bend =====
@@ -200,9 +210,11 @@ Blockly.Blocks['humanoid_bend'] = {
         .appendField(new Blockly.FieldDropdown([
           [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', 'left'],
           [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', 'right']
-        ]), 'DIRECTION')
-        .appendField(new Blockly.FieldNumber(1, 1, 5), 'STEPS')
+        ]), 'DIRECTION');
+    this.appendValueInput('STEPS');
+    this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
@@ -212,12 +224,12 @@ Blockly.Blocks['humanoid_bend'] = {
 
 javascriptGenerator.forBlock['humanoid_bend'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
-  const steps = block.getFieldValue('STEPS');
+  const steps = javascriptGenerator.valueToCode(block, 'STEPS', javascriptGenerator.ORDER_ATOMIC) || '1';
 
   if (direction === 'left') {
-    return `  humanoid.bendLeft(${steps}, 1000);\n`;
+    return `  humanoid.bendLeft(String(${steps}).toInt(), 1000);\n`;
   } else {
-    return `  humanoid.bendRight(${steps}, 1000);\n`;
+    return `  humanoid.bendRight(String(${steps}).toInt(), 1000);\n`;
   }
 };
 
@@ -226,13 +238,15 @@ javascriptGenerator.forBlock['humanoid_bend'] = function(block: Blockly.Block) {
 Blockly.Blocks['humanoid_moonwalk'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🕺 ' + (Blockly.Msg.BLOCKS_HUMANOID_MOONWALK_LABEL || 'Humanoid Moonwalk'))
-        .appendField(new Blockly.FieldNumber(2, 1, 10), 'STEPS')
+        .appendField('🕺 ' + (Blockly.Msg.BLOCKS_HUMANOID_MOONWALK_LABEL || 'Humanoid Moonwalk'));
+    this.appendValueInput('STEPS');
+    this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_STEPS || 'steps')
         .appendField(new Blockly.FieldDropdown([
           [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', '1'],
           [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', '-1']
         ]), 'DIRECTION');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(HUMANOID_COLOR);
@@ -241,10 +255,10 @@ Blockly.Blocks['humanoid_moonwalk'] = {
 };
 
 javascriptGenerator.forBlock['humanoid_moonwalk'] = function(block: Blockly.Block) {
-  const steps = block.getFieldValue('STEPS');
+  const steps = javascriptGenerator.valueToCode(block, 'STEPS', javascriptGenerator.ORDER_ATOMIC) || '2';
   const direction = block.getFieldValue('DIRECTION');
 
-  return `  humanoid.moonwalk(${steps}, 1000, ${direction});\n`;
+  return `  humanoid.moonwalk(String(${steps}).toInt(), 1000, ${direction});\n`;
 };
 
 // ===== Humanoid Gesture (感情表現) =====
