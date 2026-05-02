@@ -23,23 +23,8 @@ import { authMiddleware } from '../middleware/auth';
 import { requirePlan } from '../middleware/plan';
 import { hashPassword } from '../utils/password';
 import { proxyClassApi, type ClassApiEnv } from '../utils/classApi';
-import type { PlanType } from '../utils/plan';
 import { errorJson } from '../utils/errorJson';
-
-type Bindings = {
-  DB: D1Database;
-  JWT_SECRET: string;
-  CLASS_API_URL: string;
-  CLASS_API_SECRET: string;
-};
-
-type Variables = {
-  user: {
-    userId: number;
-    email: string;
-  };
-  userPlan: PlanType;
-};
+import type { Bindings, Variables } from '../types/env';
 
 const classes = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 

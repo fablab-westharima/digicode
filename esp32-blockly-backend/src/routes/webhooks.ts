@@ -11,12 +11,7 @@
  */
 import { Hono } from 'hono';
 import Stripe from 'stripe';
-
-type Bindings = {
-  DB: D1Database;
-  STRIPE_SECRET_KEY: string;
-  STRIPE_WEBHOOK_SECRET: string;
-};
+import type { Bindings } from '../types/env';
 
 // Stripe API version を明示固定する。SDK v22 のデフォルトと一致。
 // 2026-04-23 に Stripe アカウント + webhook endpoint を 2018-02-28 → dahlia へ migration。

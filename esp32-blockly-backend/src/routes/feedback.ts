@@ -12,7 +12,7 @@ import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import { errorJson } from '../utils/errorJson';
 import { getUserPlan } from '../utils/plan';
-import type { Bindings } from '../index';
+import type { Bindings } from '../types/env';
 
 const feedback = new Hono<{ Bindings: Bindings }>();
 

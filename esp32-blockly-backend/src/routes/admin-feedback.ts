@@ -16,7 +16,7 @@ import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import { adminMiddleware } from '../middleware/admin';
 import { errorJson } from '../utils/errorJson';
-import type { Bindings } from '../index';
+import type { Bindings } from '../types/env';
 
 const adminFeedback = new Hono<{ Bindings: Bindings }>();
 

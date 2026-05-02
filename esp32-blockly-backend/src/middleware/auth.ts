@@ -1,17 +1,7 @@
 import type { MiddlewareHandler } from 'hono';
 import { verifyToken } from '../utils/jwt';
 import { errorJson } from '../utils/errorJson';
-
-type Bindings = {
-  JWT_SECRET: string;
-};
-
-type Variables = {
-  user: {
-    userId: number;
-    email: string;
-  };
-};
+import type { Bindings, Variables } from '../types/env';
 
 // 認証ミドルウェア
 export const authMiddleware: MiddlewareHandler<{

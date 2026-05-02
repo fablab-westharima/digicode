@@ -1,16 +1,6 @@
 import type { MiddlewareHandler } from 'hono';
 import { errorJson } from '../utils/errorJson';
-
-type Bindings = {
-  DB: D1Database;
-};
-
-type Variables = {
-  user: {
-    userId: number;
-    email: string;
-  };
-};
+import type { Bindings, Variables } from '../types/env';
 
 // 管理者権限ミドルウェア（authMiddlewareの後に使用すること）
 export const adminMiddleware: MiddlewareHandler<{

@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
-import type { Bindings } from '../index';
+import type { Bindings } from '../types/env';
 import { hashPassword, verifyPassword, RECOVERY_CODE_ITERATIONS } from '../utils/password';
 import { generateTokenPair } from '../utils/jwt';
 import { errorJson } from '../utils/errorJson';

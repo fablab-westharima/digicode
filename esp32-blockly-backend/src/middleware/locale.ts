@@ -1,9 +1,6 @@
 import type { MiddlewareHandler } from 'hono';
-import { resolveLocale, type Locale } from '../i18n/messages';
-
-type Variables = {
-  locale: Locale;
-};
+import { resolveLocale } from '../i18n/messages';
+import type { Variables } from '../types/env';
 
 /**
  * Locale middleware: parse Accept-Language header → c.set('locale', ...)

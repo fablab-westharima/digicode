@@ -19,18 +19,7 @@ async function hashRefreshToken(token: string): Promise<string> {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-type Bindings = {
-  DB: D1Database;
-  JWT_SECRET: string;
-  RESEND_API_KEY?: string;
-};
-
-type Variables = {
-  user: {
-    userId: number;
-    email: string;
-  };
-};
+import type { Bindings, Variables } from '../types/env';
 
 const auth = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 

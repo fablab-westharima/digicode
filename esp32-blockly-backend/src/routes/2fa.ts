@@ -11,18 +11,7 @@ import { generateTokenPair } from '../utils/jwt';
 import { sendLoginOtpEmail } from '../services/emailService';
 import { errorJson } from '../utils/errorJson';
 
-type Bindings = {
-  DB: D1Database;
-  JWT_SECRET: string;
-  RESEND_API_KEY?: string;
-};
-
-type Variables = {
-  user: {
-    userId: number;
-    email: string;
-  };
-};
+import type { Bindings, Variables } from '../types/env';
 
 const twoFactor = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 

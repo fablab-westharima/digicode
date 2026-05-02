@@ -11,19 +11,7 @@ import type {
   AuthenticationResponseJSON,
 } from '@simplewebauthn/server';
 import { authMiddleware } from '../middleware/auth';
-
-type Bindings = {
-  DB: D1Database;
-  WEBAUTHN_CHALLENGES: KVNamespace;
-  JWT_SECRET: string;
-};
-
-type Variables = {
-  user: {
-    userId: number;
-    email: string;
-  };
-};
+import type { Bindings, Variables } from '../types/env';
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 

@@ -16,18 +16,7 @@
 import type { MiddlewareHandler } from 'hono';
 import { getUserPlan, type PlanType } from '../utils/plan';
 import { errorJson } from '../utils/errorJson';
-
-type Bindings = {
-  DB: D1Database;
-};
-
-type Variables = {
-  user: {
-    userId: number;
-    email: string;
-  };
-  userPlan: PlanType;
-};
+import type { Bindings, Variables } from '../types/env';
 
 export function requirePlan(
   ...allowedPlans: PlanType[]

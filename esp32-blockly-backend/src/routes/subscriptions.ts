@@ -10,19 +10,7 @@ import Stripe from 'stripe';
 import { authMiddleware } from '../middleware/auth';
 import { getUserPlan } from '../utils/plan';
 import { errorJson } from '../utils/errorJson';
-
-type Bindings = {
-  DB: D1Database;
-  JWT_SECRET: string;
-  STRIPE_SECRET_KEY: string;
-};
-
-type Variables = {
-  user: {
-    userId: number;
-    email: string;
-  };
-};
+import type { Bindings, Variables } from '../types/env';
 
 const subscriptions = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 

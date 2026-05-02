@@ -1,19 +1,7 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import { errorJson } from '../utils/errorJson';
-
-type Bindings = {
-  DB: D1Database;
-  R2: R2Bucket;
-  JWT_SECRET: string;
-};
-
-type Variables = {
-  user: {
-    userId: number;
-    email: string;
-  };
-};
+import type { Bindings, Variables } from '../types/env';
 
 const projects = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 

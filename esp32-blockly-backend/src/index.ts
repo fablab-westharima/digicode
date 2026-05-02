@@ -15,23 +15,11 @@ import classes, { deleteClassCascade } from './routes/classes';
 import submissionsRoute from './routes/submissions';
 import { rateLimitPresets } from './middleware/rateLimit';
 import { localeMiddleware } from './middleware/locale';
+import type { Bindings } from './types/env';
 
-export type Bindings = {
-  DB: D1Database;
-  R2: R2Bucket;
-  WEBAUTHN_CHALLENGES: KVNamespace;
-  RATE_LIMIT_KV: KVNamespace;
-  JWT_SECRET: string;
-  CORS_ORIGINS?: string; // Optional: comma-separated list of additional origins
-  // Phase D-1: Stripe 決済連携
-  STRIPE_SECRET_KEY: string;          // Workers Secret
-  STRIPE_WEBHOOK_SECRET: string;      // Workers Secret
-  // Phase C: class feature proxy (digicode-class-server on ML30)
-  CLASS_API_URL: string;      // vars: e.g. "https://class.digital-fab.jp"
-  CLASS_API_SECRET: string;   // Workers Secret (wrangler secret put)
-  // Step 8: Scheduled handler dry-run flag (Cloudflare env var)
-  SCHEDULED_DRY_RUN?: string; // 'true' で実削除せずログのみ
-};
+// Re-exported for backwards-compatibility with any pre-consolidation
+// import sites; new code should import from './types/env' directly.
+export type { Bindings } from './types/env';
 
 const app = new Hono<{ Bindings: Bindings }>();
 
