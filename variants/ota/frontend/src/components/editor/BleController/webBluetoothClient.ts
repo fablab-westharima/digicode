@@ -165,11 +165,14 @@ export class WebBluetoothClient {
 
   async writeCharacteristic(serviceUuid: string, charUuid: string, value: Uint8Array): Promise<void> {
     const characteristic = await this.resolveCharacteristic(serviceUuid, charUuid);
+    // TS 5.7+ tightened the BufferSource overload to `Uint8Array<ArrayBuffer>`.
+    // Web Bluetooth always supplies ArrayBuffer-backed buffers, so cast safely.
+    const buf = value as unknown as BufferSource;
     // writeValueWithoutResponse is faster but not always available; fall back to with-response.
     if (typeof characteristic.writeValueWithResponse === 'function') {
-      await characteristic.writeValueWithResponse(value);
+      await characteristic.writeValueWithResponse(buf);
     } else {
-      await characteristic.writeValue(value);
+      await characteristic.writeValue(buf);
     }
   }
 

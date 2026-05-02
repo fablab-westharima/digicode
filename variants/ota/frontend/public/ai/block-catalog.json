@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-02T18:05:38.150Z",
+  "generatedAt": "2026-05-02T18:25:52.827Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -4392,7 +4392,7 @@
       "valueInputs": [
         {
           "name": "SPEED",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -4415,7 +4415,7 @@
       "valueInputs": [
         {
           "name": "SPEED",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -4447,7 +4447,7 @@
       "valueInputs": [
         {
           "name": "SPEED",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -4479,11 +4479,11 @@
       "valueInputs": [
         {
           "name": "SPEED",
-          "check": "Number"
+          "check": null
         },
         {
           "name": "RATIO",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -4533,11 +4533,11 @@
       "valueInputs": [
         {
           "name": "DISTANCE",
-          "check": "Number"
+          "check": null
         },
         {
           "name": "SPEED",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -4569,11 +4569,11 @@
       "valueInputs": [
         {
           "name": "ANGLE",
-          "check": "Number"
+          "check": null
         },
         {
           "name": "SPEED",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -4596,11 +4596,11 @@
       "valueInputs": [
         {
           "name": "LEFT",
-          "check": "Number"
+          "check": null
         },
         {
           "name": "RIGHT",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -4623,15 +4623,15 @@
       "valueInputs": [
         {
           "name": "BASE_SPEED",
-          "check": "Number"
+          "check": null
         },
         {
           "name": "ERROR",
-          "check": "Number"
+          "check": null
         },
         {
           "name": "CORRECTION",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []

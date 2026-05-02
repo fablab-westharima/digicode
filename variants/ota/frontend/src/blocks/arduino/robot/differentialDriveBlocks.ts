@@ -126,10 +126,8 @@ Blockly.Blocks['diff_drive_set_speed'] = {
     this.appendDummyInput()
       .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_SETSPEED || 'Set Speed'));
     this.appendValueInput('LEFT')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_LEFT || 'Left');
     this.appendValueInput('RIGHT')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_RIGHT || 'Right');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -142,7 +140,9 @@ Blockly.Blocks['diff_drive_set_speed'] = {
 javascriptGenerator.forBlock['diff_drive_set_speed'] = function(block: Blockly.Block) {
   const left = javascriptGenerator.valueToCode(block, 'LEFT', Order.ATOMIC) || '0';
   const right = javascriptGenerator.valueToCode(block, 'RIGHT', Order.ATOMIC) || '0';
-  return `diffSetMotors(${left}, ${right});\n`;
+  // String().toInt() wrap: see U3 fix dad01c7. Required after setCheck removal
+  // so any output type (BLE String / variable / expression) compiles.
+  return `diffSetMotors(String(${left}).toInt(), String(${right}).toInt());\n`;
 };
 
 // ========================================
@@ -153,7 +153,6 @@ Blockly.Blocks['diff_drive_forward'] = {
     this.appendDummyInput()
       .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_FORWARD || 'Forward'));
     this.appendValueInput('SPEED')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -165,7 +164,8 @@ Blockly.Blocks['diff_drive_forward'] = {
 
 javascriptGenerator.forBlock['diff_drive_forward'] = function(block: Blockly.Block) {
   const speed = javascriptGenerator.valueToCode(block, 'SPEED', Order.ATOMIC) || '150';
-  return `diffSetMotors(${speed}, ${speed});\n`;
+  // String().toInt() wrap (BLE-safe).
+  return `{ int _s = String(${speed}).toInt(); diffSetMotors(_s, _s); }\n`;
 };
 
 // ========================================
@@ -176,7 +176,6 @@ Blockly.Blocks['diff_drive_backward'] = {
     this.appendDummyInput()
       .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_BACKWARD || 'Backward'));
     this.appendValueInput('SPEED')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -188,7 +187,8 @@ Blockly.Blocks['diff_drive_backward'] = {
 
 javascriptGenerator.forBlock['diff_drive_backward'] = function(block: Blockly.Block) {
   const speed = javascriptGenerator.valueToCode(block, 'SPEED', Order.ATOMIC) || '150';
-  return `diffSetMotors(-${speed}, -${speed});\n`;
+  // String().toInt() wrap, then negate (BLE-safe).
+  return `{ int _s = String(${speed}).toInt(); diffSetMotors(-_s, -_s); }\n`;
 };
 
 // ========================================
@@ -226,7 +226,6 @@ Blockly.Blocks['diff_drive_spin'] = {
         [Blockly.Msg.BLOCKS_DIFFDRIVE_LEFT || 'Left', 'LEFT']
       ]), 'DIRECTION');
     this.appendValueInput('SPEED')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -239,10 +238,11 @@ Blockly.Blocks['diff_drive_spin'] = {
 javascriptGenerator.forBlock['diff_drive_spin'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const speed = javascriptGenerator.valueToCode(block, 'SPEED', Order.ATOMIC) || '150';
+  // String().toInt() wrap (BLE-safe).
   if (direction === 'RIGHT') {
-    return `diffSetMotors(${speed}, -${speed});\n`;
+    return `{ int _s = String(${speed}).toInt(); diffSetMotors(_s, -_s); }\n`;
   } else {
-    return `diffSetMotors(-${speed}, ${speed});\n`;
+    return `{ int _s = String(${speed}).toInt(); diffSetMotors(-_s, _s); }\n`;
   }
 };
 
@@ -258,10 +258,8 @@ Blockly.Blocks['diff_drive_curve'] = {
         [Blockly.Msg.BLOCKS_DIFFDRIVE_LEFT || 'Left', 'LEFT']
       ]), 'DIRECTION');
     this.appendValueInput('SPEED')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.appendValueInput('RATIO')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_CURVATURE || 'Curvature(0-100%)');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -288,7 +286,8 @@ javascriptGenerator.forBlock['diff_drive_curve'] = function(block: Blockly.Block
     `  }\n` +
     `}\n`;
 
-  return `diffCurve(${speed}, ${ratio}, ${direction === 'RIGHT' ? 'true' : 'false'});\n`;
+  // String().toInt() wrap (BLE-safe).
+  return `diffCurve(String(${speed}).toInt(), String(${ratio}).toInt(), ${direction === 'RIGHT' ? 'true' : 'false'});\n`;
 };
 
 // ========================================
@@ -299,10 +298,8 @@ Blockly.Blocks['diff_drive_forward_distance'] = {
     this.appendDummyInput()
       .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_FORWARDDISTANCE || 'Forward Distance'));
     this.appendValueInput('DISTANCE')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_DISTANCE || 'Distance(mm)');
     this.appendValueInput('SPEED')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -328,7 +325,8 @@ javascriptGenerator.forBlock['diff_drive_forward_distance'] = function(block: Bl
     `  diffStop(true);\n` +
     `}\n`;
 
-  return `diffForwardDistance(${distance}, ${speed});\n`;
+  // String().toFloat() for distance (float param), String().toInt() for speed.
+  return `diffForwardDistance(String(${distance}).toFloat(), String(${speed}).toInt());\n`;
 };
 
 // ========================================
@@ -339,10 +337,8 @@ Blockly.Blocks['diff_drive_rotate_angle'] = {
     this.appendDummyInput()
       .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_ROTATEANGLE || 'Rotate'));
     this.appendValueInput('ANGLE')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_ANGLE || 'Angle(degrees)');
     this.appendValueInput('SPEED')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_DIRECTION || 'Direction')
@@ -381,7 +377,8 @@ javascriptGenerator.forBlock['diff_drive_rotate_angle'] = function(block: Blockl
     `  diffStop(true);\n` +
     `}\n`;
 
-  return `diffRotateAngle(${angle}, ${speed}, ${direction === 'RIGHT' ? 'true' : 'false'});\n`;
+  // String().toFloat() for angle (float param), String().toInt() for speed.
+  return `diffRotateAngle(String(${angle}).toFloat(), String(${speed}).toInt(), ${direction === 'RIGHT' ? 'true' : 'false'});\n`;
 };
 
 // ========================================
@@ -392,13 +389,10 @@ Blockly.Blocks['diff_drive_line_trace'] = {
     this.appendDummyInput()
       .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_LINETRACE || 'Line Trace'));
     this.appendValueInput('BASE_SPEED')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_BASESPEED || 'Base Speed');
     this.appendValueInput('ERROR')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_ERROR || 'Error');
     this.appendValueInput('CORRECTION')
-      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_PIDCORRECTION || 'PID Correction');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -412,10 +406,14 @@ javascriptGenerator.forBlock['diff_drive_line_trace'] = function(block: Blockly.
   const baseSpeed = javascriptGenerator.valueToCode(block, 'BASE_SPEED', Order.ATOMIC) || '150';
   const correction = javascriptGenerator.valueToCode(block, 'CORRECTION', Order.ATOMIC) || '0';
 
+  // String().toInt() wrap (BLE-safe). Hoisted to locals so each operand is
+  // coerced once even if used in two `constrain` calls.
   return `// ライントレース\n` +
     `{\n` +
-    `  int leftSpeed = constrain(${baseSpeed} - ${correction}, -255, 255);\n` +
-    `  int rightSpeed = constrain(${baseSpeed} + ${correction}, -255, 255);\n` +
+    `  int _b = String(${baseSpeed}).toInt();\n` +
+    `  int _c = String(${correction}).toInt();\n` +
+    `  int leftSpeed = constrain(_b - _c, -255, 255);\n` +
+    `  int rightSpeed = constrain(_b + _c, -255, 255);\n` +
     `  diffSetMotors(leftSpeed, rightSpeed);\n` +
     `}\n`;
 };

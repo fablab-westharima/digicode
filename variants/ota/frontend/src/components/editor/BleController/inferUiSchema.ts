@@ -19,11 +19,11 @@
  *   none enabled              → warning + skipped
  */
 
-import {
+import { SCHEMA_VERSION } from './types';
+import type {
   BleControllerSchema,
   GattDataType,
   NumericDataType,
-  SCHEMA_VERSION,
   WidgetDefinition,
 } from './types';
 

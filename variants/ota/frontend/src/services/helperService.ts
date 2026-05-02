@@ -1,6 +1,8 @@
 // helperService.ts
 // DigiCode-Helper との通信を担当するサービス
 
+import i18n from '../i18n';
+
 const HELPER_BASE_URL = 'http://localhost:31415';
 const HELPER_TIMEOUT = 3000; // 3秒
 const HELPER_LAUNCH_WAIT = 1000; // 1秒
