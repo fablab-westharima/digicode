@@ -189,8 +189,12 @@ const getToolboxCategories = (): Record<string, string> => ({
   motor: `
   <category id="motor" name="${cat('motor')}" colour="#607D8B">
     <block type="motor_init"></block>
-    <block type="motor_move"></block>
-    <block type="motor_speed"></block>
+    <block type="motor_move">
+      <value name="SPEED"><shadow type="math_number"><field name="NUM">255</field></shadow></value>
+    </block>
+    <block type="motor_speed">
+      <value name="SPEED"><shadow type="math_number"><field name="NUM">255</field></shadow></value>
+    </block>
     <block type="motor_stop"></block>
   </category>`,
 
@@ -451,11 +455,15 @@ const getToolboxCategories = (): Record<string, string> => ({
   audio_dfplayer: `
   <category id="audioDfplayer" name="${cat('audioDfplayer')}" colour="#FF5722">
     <block type="dfplayer_init"></block>
-    <block type="dfplayer_play"></block>
+    <block type="dfplayer_play">
+      <value name="TRACK"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
+    </block>
     <block type="dfplayer_pause"></block>
     <block type="dfplayer_resume"></block>
     <block type="dfplayer_stop"></block>
-    <block type="dfplayer_volume"></block>
+    <block type="dfplayer_volume">
+      <value name="VOL"><shadow type="math_number"><field name="NUM">15</field></shadow></value>
+    </block>
   </category>`,
 
   // BLE (BP4, 2026-04-20 追加) — supportsBle フィルタ対象、ESP32 専用
@@ -558,7 +566,9 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="check_interrupt"></block>
     <sep></sep>
     <label text="${label('ticker') || 'Ticker (ESP32)'}"></label>
-    <block type="ticker_attach"></block>
+    <block type="ticker_attach">
+      <value name="INTERVAL_MS"><shadow type="math_number"><field name="NUM">1000</field></shadow></value>
+    </block>
     <block type="ticker_detach"></block>
     <block type="check_ticker"></block>
   </category>`,

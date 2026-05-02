@@ -76,6 +76,9 @@ motor_${motor}_ena = PWM(Pin(${ena}), freq=1000)`;
 };
 
 // ===== Motor Move =====
+// SPEED is a value input (default shadow math_number 255) so users can drive
+// motor speed from variables, sensor reads, BLE, etc. Legacy XML field-style
+// loads with empty input; generator falls back to '255' (sunset: 2027-05-03).
 Blockly.Blocks['motor_move'] = {
   init: function() {
     this.appendDummyInput()
@@ -88,9 +91,11 @@ Blockly.Blocks['motor_move'] = {
           [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_FORWARD || 'Forward', 'forward'],
           [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_BACKWARD || 'Backward', 'backward'],
           [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_STOP || 'Stop', 'stop']
-        ]), 'DIRECTION')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_SPEED || 'speed')
-        .appendField(new Blockly.FieldNumber(255, 0, 255), 'SPEED');
+        ]), 'DIRECTION');
+    this.appendValueInput('SPEED')
+        .setCheck('Number')
+        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_SPEED || 'speed');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(MOTOR_COLOR);
@@ -101,7 +106,7 @@ Blockly.Blocks['motor_move'] = {
 javascriptGenerator.forBlock['motor_move'] = function(block: Blockly.Block) {
   const motor = block.getFieldValue('MOTOR');
   const direction = block.getFieldValue('DIRECTION');
-  const speed = block.getFieldValue('SPEED');
+  const speed = generator.valueToCode(block, 'SPEED', generator.ORDER_ATOMIC) || '255';
 
   let code = '';
   if (direction === 'forward') {
@@ -126,20 +131,21 @@ javascriptGenerator.forBlock['motor_move'] = function(block: Blockly.Block) {
 pythonGenerator.forBlock['motor_move'] = function(block: Blockly.Block) {
   const motor = block.getFieldValue('MOTOR');
   const direction = block.getFieldValue('DIRECTION');
-  const speed = block.getFieldValue('SPEED');
+  const speed = pyGen.valueToCode(block, 'SPEED', pyGen.ORDER_ATOMIC) || '255';
 
-  const duty = Math.floor((parseInt(speed) / 255) * 1023);
+  // Duty conversion now happens at runtime so dynamic SPEED works correctly.
+  const dutyExpr = `int(${speed} * 1023 / 255)`;
 
   let code = '';
   if (direction === 'forward') {
     code = `motor_${motor}_in1.value(1)
 motor_${motor}_in2.value(0)
-motor_${motor}_ena.duty(${duty})
+motor_${motor}_ena.duty(${dutyExpr})
 `;
   } else if (direction === 'backward') {
     code = `motor_${motor}_in1.value(0)
 motor_${motor}_in2.value(1)
-motor_${motor}_ena.duty(${duty})
+motor_${motor}_ena.duty(${dutyExpr})
 `;
   } else {  // stop
     code = `motor_${motor}_in1.value(0)
@@ -151,6 +157,8 @@ motor_${motor}_ena.duty(0)
 };
 
 // ===== Motor Speed =====
+// SPEED is a value input (default shadow math_number 255). Legacy XML field-style
+// loads with empty input; generator falls back to '255' (sunset: 2027-05-03).
 Blockly.Blocks['motor_speed'] = {
   init: function() {
     this.appendDummyInput()
@@ -158,9 +166,11 @@ Blockly.Blocks['motor_speed'] = {
         .appendField(new Blockly.FieldDropdown([
           [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOTORA || 'Motor A', 'A'],
           [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOTORB || 'Motor B', 'B']
-        ]), 'MOTOR')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_SPEED || 'speed')
-        .appendField(new Blockly.FieldNumber(255, 0, 255), 'SPEED');
+        ]), 'MOTOR');
+    this.appendValueInput('SPEED')
+        .setCheck('Number')
+        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_SPEED || 'speed');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(MOTOR_COLOR);
@@ -170,15 +180,14 @@ Blockly.Blocks['motor_speed'] = {
 
 javascriptGenerator.forBlock['motor_speed'] = function(block: Blockly.Block) {
   const motor = block.getFieldValue('MOTOR');
-  const speed = block.getFieldValue('SPEED');
+  const speed = generator.valueToCode(block, 'SPEED', generator.ORDER_ATOMIC) || '255';
   return `  analogWrite(MOTOR_${motor}_ENA, ${speed});\n`;
 };
 
 pythonGenerator.forBlock['motor_speed'] = function(block: Blockly.Block) {
   const motor = block.getFieldValue('MOTOR');
-  const speed = block.getFieldValue('SPEED');
-  const duty = Math.floor((parseInt(speed) / 255) * 1023);
-  return `motor_${motor}_ena.duty(${duty})\n`;
+  const speed = pyGen.valueToCode(block, 'SPEED', pyGen.ORDER_ATOMIC) || '255';
+  return `motor_${motor}_ena.duty(int(${speed} * 1023 / 255))\n`;
 };
 
 // ===== Motor Stop =====

@@ -118,17 +118,25 @@ javascriptGenerator.forBlock['check_interrupt'] = function(block: Blockly.Block)
 
 /**
  * ticker_attach - Ticker 定期実行（ESP32 専用）
+ *
+ * INTERVAL_MS is a value input (default shadow math_number 1000). Conversion
+ * to seconds (Ticker.attach() expects float seconds) now happens at runtime
+ * so dynamic intervals work correctly. Legacy XML field-style loads with
+ * empty input; generator falls back to '1000' ms (sunset: 2027-05-03).
  */
 Blockly.Blocks['ticker_attach'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⏱️ ' + (Blockly.Msg.BLOCKS_TICKER_ATTACH || 'Ticker Start'))
-        .appendField(Blockly.Msg.BLOCKS_TICKER_INTERVAL || 'interval')
-        .appendField(new Blockly.FieldNumber(1000, 1, 60000), 'INTERVAL_MS')
+        .appendField('⏱️ ' + (Blockly.Msg.BLOCKS_TICKER_ATTACH || 'Ticker Start'));
+    this.appendValueInput('INTERVAL_MS')
+        .setCheck('Number')
+        .appendField(Blockly.Msg.BLOCKS_TICKER_INTERVAL || 'interval');
+    this.appendDummyInput()
         .appendField('ms');
     this.appendStatementInput('CALLBACK')
         .setCheck(null)
         .appendField(Blockly.Msg.BLOCKS_TICKER_HANDLER || 'handler');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TICKER_COLOR);
@@ -137,7 +145,7 @@ Blockly.Blocks['ticker_attach'] = {
 };
 
 javascriptGenerator.forBlock['ticker_attach'] = function(block: Blockly.Block) {
-  const interval = block.getFieldValue('INTERVAL_MS');
+  const intervalMs = generator.valueToCode(block, 'INTERVAL_MS', generator.ORDER_ATOMIC) || '1000';
   const callback = javascriptGenerator.statementToCode(block, 'CALLBACK');
 
   generator.definitions_['include_ticker'] = '#include <Ticker.h>';
@@ -154,8 +162,9 @@ void tickerHandler() {
 ${callback}  }
 }`;
 
-  const seconds = (parseInt(interval) / 1000).toFixed(3);
-  return `  digicodeTicker.attach(${seconds}, tickerISR);\n`;
+  // Ticker.attach() expects seconds (float). Convert at runtime so variable
+  // intervals work; parens guard against expressions like `(varA + varB)`.
+  return `  digicodeTicker.attach((${intervalMs}) / 1000.0, tickerISR);\n`;
 };
 
 /**

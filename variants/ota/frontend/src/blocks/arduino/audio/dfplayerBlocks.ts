@@ -52,13 +52,19 @@ generator.forBlock['dfplayer_init'] = function(block: Blockly.Block) {
 
 /**
  * dfplayer_play - 指定トラック番号を再生
+ *
+ * TRACK is a value input (default shadow math_number 1) so users can drive
+ * track numbers from variables, sensor values, BLE, etc. Legacy XML field-style
+ * loads with empty input; generator falls back to '1' (sunset: 2027-05-03).
  */
 Blockly.Blocks['dfplayer_play'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔊 ' + (Blockly.Msg.BLOCKS_DFP_PLAY || 'DFPlayer Play'))
-        .appendField(Blockly.Msg.BLOCKS_DFP_TRACK || 'track')
-        .appendField(new Blockly.FieldNumber(1, 1, 999), 'TRACK');
+        .appendField('🔊 ' + (Blockly.Msg.BLOCKS_DFP_PLAY || 'DFPlayer Play'));
+    this.appendValueInput('TRACK')
+        .setCheck('Number')
+        .appendField(Blockly.Msg.BLOCKS_DFP_TRACK || 'track');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DFP_COLOR);
@@ -67,7 +73,7 @@ Blockly.Blocks['dfplayer_play'] = {
 };
 
 generator.forBlock['dfplayer_play'] = function(block: Blockly.Block) {
-  const track = block.getFieldValue('TRACK');
+  const track = generator.valueToCode(block, 'TRACK', generator.ORDER_ATOMIC) || '1';
   generator.definitions_['include_dfplayer'] = DFP_INCLUDE;
   return `  dfPlayer.play(${track});\n`;
 };
@@ -131,12 +137,17 @@ generator.forBlock['dfplayer_stop'] = function() {
 
 /**
  * dfplayer_volume - 音量設定（0-30）
+ *
+ * VOL is a value input (default shadow math_number 15). Legacy XML field-style
+ * loads with empty input; generator falls back to '15' (sunset: 2027-05-03).
  */
 Blockly.Blocks['dfplayer_volume'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔊 ' + (Blockly.Msg.BLOCKS_DFP_VOLUME || 'DFPlayer Volume'))
-        .appendField(new Blockly.FieldNumber(15, 0, 30), 'VOL');
+        .appendField('🔊 ' + (Blockly.Msg.BLOCKS_DFP_VOLUME || 'DFPlayer Volume'));
+    this.appendValueInput('VOL')
+        .setCheck('Number');
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(DFP_COLOR);
@@ -145,7 +156,7 @@ Blockly.Blocks['dfplayer_volume'] = {
 };
 
 generator.forBlock['dfplayer_volume'] = function(block: Blockly.Block) {
-  const vol = block.getFieldValue('VOL');
+  const vol = generator.valueToCode(block, 'VOL', generator.ORDER_ATOMIC) || '15';
   generator.definitions_['include_dfplayer'] = DFP_INCLUDE;
   return `  dfPlayer.volume(${vol});\n`;
 };

@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-02T16:55:50.208Z",
+  "generatedAt": "2026-05-02T17:09:10.252Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -2489,16 +2489,13 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [
+      "fields": [],
+      "valueInputs": [
         {
           "name": "TRACK",
-          "fieldType": "number",
-          "default": 1,
-          "min": 1,
-          "max": 999
+          "check": "Number"
         }
       ],
-      "valueInputs": [],
       "statementInputs": []
     },
     {
@@ -2577,16 +2574,13 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [
+      "fields": [],
+      "valueInputs": [
         {
           "name": "VOL",
-          "fieldType": "number",
-          "default": 15,
-          "min": 0,
-          "max": 30
+          "check": "Number"
         }
       ],
-      "valueInputs": [],
       "statementInputs": []
     },
     {
@@ -4302,13 +4296,6 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "SPEED",
-          "fieldType": "number",
-          "default": 255,
-          "min": 0,
-          "max": 255
-        },
-        {
           "name": "MOTOR",
           "fieldType": "dropdown",
           "options": [
@@ -4326,7 +4313,12 @@
           ]
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "SPEED",
+          "check": "Number"
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -4345,13 +4337,6 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "SPEED",
-          "fieldType": "number",
-          "default": 255,
-          "min": 0,
-          "max": 255
-        },
-        {
           "name": "MOTOR",
           "fieldType": "dropdown",
           "options": [
@@ -4360,7 +4345,12 @@
           ]
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "SPEED",
+          "check": "Number"
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -10787,16 +10777,13 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [
+      "fields": [],
+      "valueInputs": [
         {
           "name": "INTERVAL_MS",
-          "fieldType": "number",
-          "default": 1000,
-          "min": 1,
-          "max": 60000
+          "check": "Number"
         }
       ],
-      "valueInputs": [],
       "statementInputs": [
         {
           "name": "CALLBACK"
