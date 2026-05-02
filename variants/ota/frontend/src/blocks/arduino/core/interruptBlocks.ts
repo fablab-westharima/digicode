@@ -161,9 +161,10 @@ void tickerHandler() {
 ${callback}  }
 }`;
 
-  // Ticker.attach() expects seconds (float). Convert at runtime so variable
-  // intervals work; parens guard against expressions like `(varA + varB)`.
-  return `  digicodeTicker.attach((${intervalMs}) / 1000.0, tickerISR);\n`;
+  // String().toInt() wrap so any input type compiles (BLE String, variable,
+  // numeric literal). Ticker.attach() expects seconds (float) — divide by
+  // 1000.0 at runtime; minor truncation OK for typical ms-int intervals.
+  return `  digicodeTicker.attach(String(${intervalMs}).toInt() / 1000.0, tickerISR);\n`;
 };
 
 /**

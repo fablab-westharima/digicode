@@ -74,7 +74,8 @@ Blockly.Blocks['dfplayer_play'] = {
 generator.forBlock['dfplayer_play'] = function(block: Blockly.Block) {
   const track = generator.valueToCode(block, 'TRACK', generator.ORDER_ATOMIC) || '1';
   generator.definitions_['include_dfplayer'] = DFP_INCLUDE;
-  return `  dfPlayer.play(${track});\n`;
+  // String(${track}).toInt() wrap: see servo_write generator note.
+  return `  dfPlayer.play(String(${track}).toInt());\n`;
 };
 
 /**
@@ -156,7 +157,8 @@ Blockly.Blocks['dfplayer_volume'] = {
 generator.forBlock['dfplayer_volume'] = function(block: Blockly.Block) {
   const vol = generator.valueToCode(block, 'VOL', generator.ORDER_ATOMIC) || '15';
   generator.definitions_['include_dfplayer'] = DFP_INCLUDE;
-  return `  dfPlayer.volume(${vol});\n`;
+  // String(${vol}).toInt() wrap: see servo_write generator note.
+  return `  dfPlayer.volume(String(${vol}).toInt());\n`;
 };
 
 console.log('DFPlayer blocks loaded');

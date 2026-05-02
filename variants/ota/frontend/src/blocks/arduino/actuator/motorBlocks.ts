@@ -107,16 +107,18 @@ javascriptGenerator.forBlock['motor_move'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const speed = generator.valueToCode(block, 'SPEED', generator.ORDER_ATOMIC) || '255';
 
+  // String(${speed}).toInt() wrap so any input type compiles (BLE String,
+  // variable, numeric literal). analogWrite expects int 0-255.
   let code = '';
   if (direction === 'forward') {
     code = `  digitalWrite(MOTOR_${motor}_IN1, HIGH);
   digitalWrite(MOTOR_${motor}_IN2, LOW);
-  analogWrite(MOTOR_${motor}_ENA, ${speed});
+  analogWrite(MOTOR_${motor}_ENA, String(${speed}).toInt());
 `;
   } else if (direction === 'backward') {
     code = `  digitalWrite(MOTOR_${motor}_IN1, LOW);
   digitalWrite(MOTOR_${motor}_IN2, HIGH);
-  analogWrite(MOTOR_${motor}_ENA, ${speed});
+  analogWrite(MOTOR_${motor}_ENA, String(${speed}).toInt());
 `;
   } else {  // stop
     code = `  digitalWrite(MOTOR_${motor}_IN1, LOW);
@@ -179,7 +181,8 @@ Blockly.Blocks['motor_speed'] = {
 javascriptGenerator.forBlock['motor_speed'] = function(block: Blockly.Block) {
   const motor = block.getFieldValue('MOTOR');
   const speed = generator.valueToCode(block, 'SPEED', generator.ORDER_ATOMIC) || '255';
-  return `  analogWrite(MOTOR_${motor}_ENA, ${speed});\n`;
+  // String(${speed}).toInt() wrap: see motor_move generator note.
+  return `  analogWrite(MOTOR_${motor}_ENA, String(${speed}).toInt());\n`;
 };
 
 pythonGenerator.forBlock['motor_speed'] = function(block: Blockly.Block) {

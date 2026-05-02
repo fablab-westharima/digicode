@@ -91,7 +91,13 @@ Blockly.Blocks['servo_write'] = {
 javascriptGenerator.forBlock['servo_write'] = function(block: Blockly.Block) {
   const pin = block.getFieldValue('PIN');
   const angle = generator.valueToCode(block, 'ANGLE', generator.ORDER_ATOMIC) || '90';
-  return `  servo${pin}.write(${angle});\n`;
+  // Wrap in `String(${expr}).toInt()` so any input type compiles in Arduino:
+  //   - numeric literal `90`         → `String(90).toInt()` → 90
+  //   - String (e.g. ble_received_value) → `String(bleMessage).toInt()` → parsed int
+  //   - boolean / variable           → coerced through String() constructor
+  // Necessary because servo.write() takes an int, but value-input slots accept
+  // any block (setCheck removed in c531097 to support BLE-driven angles).
+  return `  servo${pin}.write(String(${angle}).toInt());\n`;
 };
 
 pythonGenerator.forBlock['servo_write'] = function(block: Blockly.Block) {
@@ -182,13 +188,16 @@ javascriptGenerator.forBlock['servo_sweep'] = function(block: Blockly.Block) {
   const end = generator.valueToCode(block, 'END', generator.ORDER_ATOMIC) || '180';
   const speed = generator.valueToCode(block, 'SPEED', generator.ORDER_ATOMIC) || '15';
 
+  // String(${expr}).toInt() wrap: see servo_write generator note (handles
+  // numeric, String, boolean, variable inputs uniformly so BLE-driven values
+  // compile cleanly).
   const code = `  {
-    int _sweepStart = ${start};
-    int _sweepEnd = ${end};
+    int _sweepStart = String(${start}).toInt();
+    int _sweepEnd = String(${end}).toInt();
     int _sweepStep = (_sweepStart <= _sweepEnd) ? 1 : -1;
     for (int angle = _sweepStart; (_sweepStep > 0) ? angle <= _sweepEnd : angle >= _sweepEnd; angle += _sweepStep) {
       servo${pin}.write(angle);
-      delay(${speed});
+      delay(String(${speed}).toInt());
     }
   }
 `;
