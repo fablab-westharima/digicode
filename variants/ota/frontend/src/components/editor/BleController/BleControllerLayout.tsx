@@ -13,7 +13,7 @@
  *  - Stack vertically below 768px width
  *  - Empty state when widgets[] is empty
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BleControllerSchema, WidgetDefinition } from './types';
 import { WebBluetoothClient } from './webBluetoothClient';
@@ -40,12 +40,12 @@ export function BleControllerLayout({
   onConnectionChange,
 }: BleControllerLayoutProps) {
   const { t } = useTranslation();
-  const internalClientRef = useRef<WebBluetoothClient | null>(null);
-  if (!internalClientRef.current && !injectedClient) {
-    internalClientRef.current = new WebBluetoothClient();
-  }
-  const client = injectedClient ?? internalClientRef.current!;
-  const [isConnected, setIsConnected] = useState<boolean>(client.isConnected());
+  // Lazy useState init keeps the client construction out of render-time refs.
+  // When a parent injects a client, the lazy init still runs once but the value
+  // is then ignored — small allocation cost, simpler types.
+  const [internalClient] = useState<WebBluetoothClient>(() => new WebBluetoothClient());
+  const client = injectedClient ?? internalClient;
+  const [isConnected, setIsConnected] = useState<boolean>(false);
 
   useEffect(() => {
     const offConnect = client.on('connected', () => {

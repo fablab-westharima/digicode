@@ -12,6 +12,7 @@ import { ProjectListDialog } from '@/components/editor/ProjectListDialog';
 import { SampleProjectsDialog } from '@/components/editor/SampleProjectsDialog';
 import { SerialMonitor } from '@/components/serial/SerialMonitor';
 import { SerialPlotter } from '@/components/serial/SerialPlotter';
+import { BleControllerPanel } from '@/components/editor/BleController/BleControllerPanel';
 import { PIDTuningPanel } from '@/components/tuning/PIDTuningPanel';
 import type { SampleProject } from '@/data/sampleProjects';
 import { DeviceSelectDialog } from '@/components/device/DeviceSelectDialog';
@@ -90,6 +91,7 @@ export function EditorPage() {
   const [sampleDialogOpen, setSampleDialogOpen] = useState(false);
   const [showSerialMonitor, setShowSerialMonitor] = useState(false);
   const [showSerialPlotter, setShowSerialPlotter] = useState(false);
+  const [showBleController, setShowBleController] = useState(false);
   const [isCompiling, setIsCompiling] = useState(false);
   const [compileLog, setCompileLog] = useState<string[]>([]);
   const [compileLogMeta, setCompileLogMeta] = useState({
@@ -1191,6 +1193,8 @@ export function EditorPage() {
         showSerialPlotter={showSerialPlotter}
         onToggleSerialMonitor={() => setShowSerialMonitor(prev => !prev)}
         onToggleSerialPlotter={() => setShowSerialPlotter(prev => !prev)}
+        showBleController={showBleController}
+        onToggleBleController={() => setShowBleController(prev => !prev)}
       />
 
       {/* メインコンテンツ */}
@@ -1239,7 +1243,7 @@ export function EditorPage() {
             />
           </div>
 
-          {/* 下部パネル（シリアルモニター/プロッター） */}
+          {/* 下部パネル（シリアルモニター/プロッター/BLE Controller） */}
           {showSerialMonitor && (
             <div className="h-64 border-t border-[#2E333D]">
               <SerialMonitor className="h-full" />
@@ -1248,6 +1252,11 @@ export function EditorPage() {
           {showSerialPlotter && (
             <div className="h-64 border-t border-[#2E333D]">
               <SerialPlotter className="h-full" />
+            </div>
+          )}
+          {showBleController && (
+            <div className="border-t border-[#2E333D]">
+              <BleControllerPanel workspaceXml={workspaceXml} />
             </div>
           )}
         </div>

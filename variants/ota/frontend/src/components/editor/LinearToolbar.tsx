@@ -17,6 +17,7 @@ import {
   Loader2,
   Terminal,
   LineChart,
+  Bluetooth,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LocaleSelector } from '@/components/common/LocaleSelector';
@@ -47,6 +48,10 @@ interface LinearToolbarProps {
   showSerialPlotter?: boolean;
   onToggleSerialMonitor?: () => void;
   onToggleSerialPlotter?: () => void;
+
+  // BLE Controller (47.md commit #5)
+  showBleController?: boolean;
+  onToggleBleController?: () => void;
 }
 
 export function LinearToolbar({
@@ -66,6 +71,8 @@ export function LinearToolbar({
   showSerialPlotter = false,
   onToggleSerialMonitor,
   onToggleSerialPlotter,
+  showBleController = false,
+  onToggleBleController,
 }: LinearToolbarProps) {
   const { t } = useTranslation();
 
@@ -176,6 +183,19 @@ export function LinearToolbar({
           >
             <LineChart className="w-3.5 h-3.5 mr-1" />
             <span className="text-xs">{t('editor.menu.plotter', { defaultValue: 'プロッター' })}</span>
+          </Button>
+        )}
+
+        {/* BLE Controller (47.md commit #5) */}
+        {onToggleBleController && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`px-2 ${showBleController ? 'text-green-400 bg-[#2E333D]' : 'text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D]'}`}
+            onClick={onToggleBleController}
+          >
+            <Bluetooth className="w-3.5 h-3.5 mr-1" />
+            <span className="text-xs">{t('editor.menu.bleController', { defaultValue: 'BLE' })}</span>
           </Button>
         )}
 
