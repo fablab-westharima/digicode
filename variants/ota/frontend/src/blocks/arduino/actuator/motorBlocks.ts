@@ -93,7 +93,6 @@ Blockly.Blocks['motor_move'] = {
           [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_STOP || 'Stop', 'stop']
         ]), 'DIRECTION');
     this.appendValueInput('SPEED')
-        .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_SPEED || 'speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -168,7 +167,6 @@ Blockly.Blocks['motor_speed'] = {
           [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOTORB || 'Motor B', 'B']
         ]), 'MOTOR');
     this.appendValueInput('SPEED')
-        .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_SPEED || 'speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);

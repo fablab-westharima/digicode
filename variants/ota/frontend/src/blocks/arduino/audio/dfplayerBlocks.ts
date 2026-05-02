@@ -62,7 +62,6 @@ Blockly.Blocks['dfplayer_play'] = {
     this.appendDummyInput()
         .appendField('🔊 ' + (Blockly.Msg.BLOCKS_DFP_PLAY || 'DFPlayer Play'));
     this.appendValueInput('TRACK')
-        .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_DFP_TRACK || 'track');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -145,8 +144,7 @@ Blockly.Blocks['dfplayer_volume'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🔊 ' + (Blockly.Msg.BLOCKS_DFP_VOLUME || 'DFPlayer Volume'));
-    this.appendValueInput('VOL')
-        .setCheck('Number');
+    this.appendValueInput('VOL');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

@@ -129,7 +129,6 @@ Blockly.Blocks['ticker_attach'] = {
     this.appendDummyInput()
         .appendField('⏱️ ' + (Blockly.Msg.BLOCKS_TICKER_ATTACH || 'Ticker Start'));
     this.appendValueInput('INTERVAL_MS')
-        .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_TICKER_INTERVAL || 'interval');
     this.appendDummyInput()
         .appendField('ms');

@@ -77,7 +77,6 @@ Blockly.Blocks['servo_write'] = {
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
         .appendField(new Blockly.FieldNumber(pins.servo1, 0, 39), 'PIN');
     this.appendValueInput('ANGLE')
-        .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_ANGLE || 'angle');
     this.appendDummyInput()
         .appendField('°');
@@ -172,13 +171,10 @@ Blockly.Blocks['servo_sweep'] = {
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
         .appendField(new Blockly.FieldNumber(pins.servo1, 0, 39), 'PIN');
     this.appendValueInput('START')
-        .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_START || 'start');
     this.appendValueInput('END')
-        .setCheck('Number')
         .appendField('° ' + (Blockly.Msg.BLOCKS_ACTUATOR_SERVO_END || 'end'));
     this.appendValueInput('SPEED')
-        .setCheck('Number')
         .appendField('° ' + (Blockly.Msg.BLOCKS_ACTUATOR_SERVO_SPEED || 'speed'));
     this.appendDummyInput()
         .appendField('ms');
