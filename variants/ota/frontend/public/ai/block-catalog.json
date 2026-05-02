@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-02T17:09:10.252Z",
+  "generatedAt": "2026-05-02T17:18:37.162Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -1715,7 +1715,7 @@
       "valueInputs": [
         {
           "name": "ANGLE",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -1783,15 +1783,15 @@
       "valueInputs": [
         {
           "name": "START",
-          "check": "Number"
+          "check": null
         },
         {
           "name": "END",
-          "check": "Number"
+          "check": null
         },
         {
           "name": "SPEED",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -2493,7 +2493,7 @@
       "valueInputs": [
         {
           "name": "TRACK",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -2578,7 +2578,7 @@
       "valueInputs": [
         {
           "name": "VOL",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -4316,7 +4316,7 @@
       "valueInputs": [
         {
           "name": "SPEED",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -4348,7 +4348,7 @@
       "valueInputs": [
         {
           "name": "SPEED",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": []
@@ -10781,7 +10781,7 @@
       "valueInputs": [
         {
           "name": "INTERVAL_MS",
-          "check": "Number"
+          "check": null
         }
       ],
       "statementInputs": [
