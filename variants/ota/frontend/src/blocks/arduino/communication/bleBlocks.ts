@@ -532,17 +532,40 @@ generator.forBlock['ble_add_service'] = function(block: Blockly.Block) {
 
 /**
  * ble_add_characteristic - Characteristic 追加（read/write/notify チェックボックス）
+ *
+ * 47.md commit #0 (2026-05-02): LABEL / DATA_TYPE / MIN / MAX の 4 field 追加。
+ * 既存 XML には新 field がないため、init で default 値が auto-fill される
+ * (Blockly 標準動作、後方互換 OK)。新 field は controller schema 推論用 metadata
+ * 専用、forBlock の C++ 生成には影響しない (firmware wire format = ASCII string で統一)。
+ * sunset (新 field 周りの comment cleanup): 2027-05-02
  */
 Blockly.Blocks['ble_add_characteristic'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_ADDCHAR || 'BLE Add Characteristic'));
+        .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_ADDCHAR || 'BLE Add Characteristic'))
+        .appendField(Blockly.Msg.BLOCKS_BLE_LABEL || 'label')
+        .appendField(new Blockly.FieldTextInput('Characteristic'), 'LABEL');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_BLE_SERVICEUUID || 'service UUID')
         .appendField(new Blockly.FieldTextInput('12345678-1234-1234-1234-123456789ABC'), 'SERVICE_UUID');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_BLE_CHARUUID || 'char UUID')
         .appendField(new Blockly.FieldTextInput('00001111-1234-1234-1234-123456789ABC'), 'CHAR_UUID');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_BLE_DATATYPE || 'type')
+        .appendField(new Blockly.FieldDropdown([
+          [Blockly.Msg.BLOCKS_BLE_DATATYPESTRING || 'string (text)', 'string'],
+          [Blockly.Msg.BLOCKS_BLE_DATATYPEBOOL || 'bool (true/false)', 'bool'],
+          [Blockly.Msg.BLOCKS_BLE_DATATYPEUINT8 || 'uint8 (0-255)', 'uint8'],
+          [Blockly.Msg.BLOCKS_BLE_DATATYPEUINT16 || 'uint16 (0-65535)', 'uint16'],
+          [Blockly.Msg.BLOCKS_BLE_DATATYPEINT8 || 'int8 (-128 to 127)', 'int8'],
+          [Blockly.Msg.BLOCKS_BLE_DATATYPEINT16 || 'int16 (-32768 to 32767)', 'int16'],
+          [Blockly.Msg.BLOCKS_BLE_DATATYPEFLOAT || 'float', 'float']
+        ]), 'DATA_TYPE')
+        .appendField(Blockly.Msg.BLOCKS_BLE_MIN || 'min')
+        .appendField(new Blockly.FieldNumber(0), 'MIN')
+        .appendField(Blockly.Msg.BLOCKS_BLE_MAX || 'max')
+        .appendField(new Blockly.FieldNumber(100), 'MAX');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_BLE_PROPREAD || 'read')
         .appendField(new Blockly.FieldCheckbox('TRUE'), 'READ')
@@ -553,7 +576,7 @@ Blockly.Blocks['ble_add_characteristic'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(GATT_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_BLE_ADDCHARTOOLTIP || 'Add a characteristic to a GATT service. Check read/write/notify as needed. The service must be created with ble_add_service first.');
+    this.setTooltip(Blockly.Msg.BLOCKS_BLE_ADDCHARTOOLTIP || 'Add a characteristic to a GATT service. Set label/data type for the auto-generated WebBLE controller UI. MIN/MAX apply to numeric types (slider widget). Check read/write/notify as needed. The service must be created with ble_add_service first.');
   }
 };
 

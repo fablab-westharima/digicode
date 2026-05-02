@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-01T13:59:34.775Z",
+  "generatedAt": "2026-05-02T01:42:19.815Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -2787,7 +2787,7 @@
     {
       "type": "ble_add_characteristic",
       "category": "ble",
-      "tooltip": "Add a characteristic to a GATT service. Check read/write/notify as needed. The service must be created with ble_add_service first.",
+      "tooltip": "Add a characteristic to a GATT service. Set label/data type for the auto-generated WebBLE controller UI. MIN/MAX apply to numeric types (slider widget). Check read/write/notify as needed. The service must be created with ble_add_service first.",
       "colour": "#1565C0",
       "isStatement": true,
       "hasOutput": false,
@@ -2801,6 +2801,34 @@
       ],
       "boardRequires": "supportsBle",
       "fields": [
+        {
+          "name": "MIN",
+          "fieldType": "number",
+          "default": 0
+        },
+        {
+          "name": "MAX",
+          "fieldType": "number",
+          "default": 100
+        },
+        {
+          "name": "DATA_TYPE",
+          "fieldType": "dropdown",
+          "options": [
+            "string",
+            "bool",
+            "uint8",
+            "uint16",
+            "int8",
+            "int16",
+            "float"
+          ]
+        },
+        {
+          "name": "LABEL",
+          "fieldType": "text",
+          "default": "Characteristic"
+        },
         {
           "name": "SERVICE_UUID",
           "fieldType": "text",
