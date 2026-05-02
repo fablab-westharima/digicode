@@ -67,3 +67,52 @@ javascriptGenerator.forBlock['text'] = function (block: Blockly.Block) {
   const escaped = String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
   return [`"${escaped}"`, Order.ATOMIC];
 };
+
+// ===== Math overrides (Round 1 cluster #7 RCA) =====
+// Stock JS generator emits `Math.min/max/round/floor/ceil/...` which Arduino
+// C++ does not have (C++ uses bare `min`/`max` macros + math.h functions).
+// Override the affected blocks to emit Arduino-friendly equivalents.
+
+javascriptGenerator.forBlock['math_constrain'] = function (block: Blockly.Block) {
+  const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.NONE) || '0';
+  const low = javascriptGenerator.valueToCode(block, 'LOW', Order.NONE) || '0';
+  const high = javascriptGenerator.valueToCode(block, 'HIGH', Order.NONE) || 'INFINITY';
+  // Arduino macro: constrain(x, low, high) clamps x to [low, high].
+  return [`constrain(${value}, ${low}, ${high})`, Order.FUNCTION_CALL];
+};
+
+javascriptGenerator.forBlock['math_round'] = function (block: Blockly.Block) {
+  const op = block.getFieldValue('OP'); // ROUND / ROUNDUP / ROUNDDOWN
+  const num = javascriptGenerator.valueToCode(block, 'NUM', Order.NONE) || '0';
+  const fn = op === 'ROUNDUP' ? 'ceil' : op === 'ROUNDDOWN' ? 'floor' : 'round';
+  return [`${fn}(${num})`, Order.FUNCTION_CALL];
+};
+
+javascriptGenerator.forBlock['math_single'] = function (block: Blockly.Block) {
+  const op = block.getFieldValue('OP');
+  const num = javascriptGenerator.valueToCode(block, 'NUM', Order.NONE) || '0';
+  const map: Record<string, string> = {
+    ROOT: 'sqrt', ABS: 'abs', LN: 'log', LOG10: 'log10', EXP: 'exp',
+    POW10: 'pow(10, %)', SIN: 'sin', COS: 'cos', TAN: 'tan',
+    ASIN: 'asin', ACOS: 'acos', ATAN: 'atan',
+  };
+  if (op === 'NEG') return [`-(${num})`, Order.UNARY_NEGATION];
+  const tpl = map[op];
+  if (!tpl) return [`(${num})`, Order.NONE]; // unknown op → passthrough
+  if (tpl.includes('%')) return [tpl.replace('%', num), Order.FUNCTION_CALL];
+  return [`${tpl}(${num})`, Order.FUNCTION_CALL];
+};
+
+javascriptGenerator.forBlock['math_modulo'] = function (block: Blockly.Block) {
+  const dividend = javascriptGenerator.valueToCode(block, 'DIVIDEND', Order.MODULUS) || '0';
+  const divisor = javascriptGenerator.valueToCode(block, 'DIVISOR', Order.MODULUS) || '1';
+  return [`(${dividend} % ${divisor})`, Order.MODULUS];
+};
+
+javascriptGenerator.forBlock['math_random_int'] = function (block: Blockly.Block) {
+  const from = javascriptGenerator.valueToCode(block, 'FROM', Order.NONE) || '0';
+  const to = javascriptGenerator.valueToCode(block, 'TO', Order.NONE) || '100';
+  // Arduino random(min, max) returns [min, max-1]; add 1 to upper to be inclusive
+  // matching Blockly's "random integer from a to b" semantics.
+  return [`random(${from}, (${to}) + 1)`, Order.FUNCTION_CALL];
+};

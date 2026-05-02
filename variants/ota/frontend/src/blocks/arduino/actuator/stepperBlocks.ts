@@ -144,15 +144,18 @@ def stepper_move(steps, step_delay):
 Blockly.Blocks['stepper_move'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_MOVE);
+        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_MOVE || 'Stepper Move');
     this.appendValueInput('STEPS')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_STEPS);
+        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_STEPS || 'Steps');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_SPEED)
+        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_SPEED || 'Speed')
+        // Fallback strings required for headless tsx orchestrator: Blockly.Msg
+        // is empty before browser init, FieldDropdown.trimOptions crashes on
+        // `[undefined, value]` tuples (Round 1 cluster #3 RCA, 4 failures).
         .appendField(new Blockly.FieldDropdown([
-          [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_SLOW, '5'],
-          [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_NORMAL, '3'],
-          [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_FAST, '2']
+          [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_SLOW || 'Slow', '5'],
+          [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_NORMAL || 'Normal', '3'],
+          [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_FAST || 'Fast', '2']
         ]), 'SPEED')
         .appendField('ms');
     this.setInputsInline(true);
@@ -179,16 +182,17 @@ pythonGenerator.forBlock['stepper_move'] = function(block: Blockly.Block) {
 Blockly.Blocks['stepper_rotate'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_ROTATE);
+        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_ROTATE || 'Stepper Rotate');
     this.appendValueInput('ANGLE')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_ANGLE);
+        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_ANGLE || 'Angle');
     this.appendDummyInput()
         .appendField('°')
-        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_SPEED)
+        .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_SPEED || 'Speed')
+        // Fallback strings: see stepper_move note (cluster #3 RCA).
         .appendField(new Blockly.FieldDropdown([
-          [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_SLOW, '5'],
-          [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_NORMAL, '3'],
-          [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_FAST, '2']
+          [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_SLOW || 'Slow', '5'],
+          [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_NORMAL || 'Normal', '3'],
+          [Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_FAST || 'Fast', '2']
         ]), 'SPEED')
         .appendField('ms');
     this.setInputsInline(true);

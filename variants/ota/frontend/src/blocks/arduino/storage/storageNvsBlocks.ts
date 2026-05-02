@@ -40,8 +40,13 @@ Blockly.Blocks['preferences_begin'] = {
 generator.forBlock['preferences_begin'] = function(block: Blockly.Block) {
   const namespace = block.getFieldValue('NAMESPACE');
   const readonly = block.getFieldValue('READONLY') === 'TRUE';
+  // The OTA template (compile-api/templates/DigiCodeOTA.ino:56) already
+  // declares `Preferences preferences;` for its own NVS persistence layer.
+  // Emitting a second declaration here causes "redefinition" (Round 1
+  // cluster #5 RCA, 4 failures). Just include the header — RP2040 fallback
+  // pulls EEPROM.h via the same `#if defined(ESP32)` switch.
   generator.definitions_['include_preferences'] =
-    '#if defined(ESP32)\n#include <Preferences.h>\nPreferences preferences;\n#else\n#include <EEPROM.h>\n#endif';
+    '#if defined(ESP32)\n#include <Preferences.h>\n#else\n#include <EEPROM.h>\n#endif';
   return `  preferences.begin("${namespace}", ${readonly});\n`;
 };
 
@@ -188,9 +193,11 @@ Blockly.Blocks['eeprom_write'] = {
 generator.forBlock['eeprom_write'] = function(block: Blockly.Block) {
   const address = javascriptGenerator.valueToCode(block, 'ADDRESS', 0) || '0';
   const value = javascriptGenerator.valueToCode(block, 'VALUE', 0) || '0';
-  generator.definitions_['include_eeprom'] =
-    '#include <EEPROM.h>\n#if defined(ESP32)\n// ESP32: EEPROM.begin() required\n#endif';
-  generator.definitions_['eeprom_begin'] = 'EEPROM.begin(512);';
+  generator.definitions_['include_eeprom'] = '#include <EEPROM.h>';
+  // EEPROM.begin(512) is a statement and must run inside setup(), not at
+  // file scope — file-scope `EEPROM.begin(...);` triggers
+  // "'EEPROM' does not name a type" (Round 1 cluster #12 RCA, 2 failures).
+  generator.setups_['eeprom_begin'] = '  EEPROM.begin(512);';
   return `  EEPROM.write(${address}, ${value});\n  EEPROM.commit();\n`;
 };
 
@@ -211,9 +218,9 @@ Blockly.Blocks['eeprom_read'] = {
 
 generator.forBlock['eeprom_read'] = function(block: Blockly.Block) {
   const address = javascriptGenerator.valueToCode(block, 'ADDRESS', 0) || '0';
-  generator.definitions_['include_eeprom'] =
-    '#include <EEPROM.h>\n#if defined(ESP32)\n// ESP32: EEPROM.begin() required\n#endif';
-  generator.definitions_['eeprom_begin'] = 'EEPROM.begin(512);';
+  generator.definitions_['include_eeprom'] = '#include <EEPROM.h>';
+  // See eeprom_write note — begin() must live in setup().
+  generator.setups_['eeprom_begin'] = '  EEPROM.begin(512);';
   return [`EEPROM.read(${address})`, 0];
 };
 

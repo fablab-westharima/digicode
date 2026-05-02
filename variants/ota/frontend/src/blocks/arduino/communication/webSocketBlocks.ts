@@ -60,7 +60,12 @@ generator.forBlock['websocket_connect'] = function(block: Blockly.Block) {
   const path = block.getFieldValue('PATH');
   generator.definitions_['include_ws'] = WS_INCLUDE;
   generator.definitions_['ws_callbacks'] = WS_CALLBACKS;
-  generator.definitions_['ws_setup_call'] = 'wsSetupCallbacks();';
+  // wsSetupCallbacks() is a function call statement; previously placed in
+  // `definitions_` (file scope) caused "expected constructor, destructor, or
+  // type conversion before ';' token" (Round 1 cluster #4 RCA, 4 failures).
+  // Move to `setups_` so it runs inside setup().
+  if (!generator.setups_) generator.setups_ = {};
+  generator.setups_['ws_setup_call'] = '  wsSetupCallbacks();';
   return [`wsClient.connect("${host}", ${port}, "${path}")`, 0];
 };
 
