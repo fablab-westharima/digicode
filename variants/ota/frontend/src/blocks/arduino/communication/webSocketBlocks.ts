@@ -8,6 +8,7 @@
  */
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
+import { BUNDLE_GZ_BASE64, BUNDLE_GZ_LEN } from '@/data/wifiControllerBundle';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -206,10 +207,11 @@ generator.forBlock['websocket_disconnect'] = function() {
 // `wsServer` + `wsClients` vector + `WebServer http(80)`) so client and server
 // can co-exist in the same program.
 //
-// Commit #0 emits a placeholder `controller_bundle_gz[] = {0}` and a minimal
-// `schema_json` (devices=[]). Commit #2 will replace these with the gzipped
-// vanilla HTML/JS controller bundle and the per-project schema generated from
-// websocket_server_register blocks (47.md §5.5 / §5.6).
+// Commit #2 (current) injects the real gzipped vanilla HTML/JS controller
+// bundle (decoded from `src/data/wifiControllerBundle.ts` BUNDLE_GZ_BASE64,
+// emitted as a PROGMEM byte array). schema_json remains a `devices=[]`
+// placeholder — commit #3 will build inferWifiUiSchema and generate the
+// project-specific JSON from websocket_server_register block walks.
 //
 // i18n: shares BLE dataType / read / write / notify / label / min / max /
 // value / handler keys (`BLOCKS_BLE_*`) — identical canonical JA strings, no
@@ -287,11 +289,45 @@ void wsServerBroadcast(const String& msg) {
   for (auto& c : wsClients) if (c.available()) c.send(msg);
 }`;
 
-const WS_SERVER_BUNDLE_PLACEHOLDER = `
-// Phase 2 commit #0 placeholder. The real gzipped controller HTML+JS bundle
-// + project-specific schema JSON will be injected by commit #2 (47.md §5.5).
-const uint8_t controller_bundle_gz[] PROGMEM = {0};
-const size_t controller_bundle_gz_len = 0;
+/**
+ * 47.md Phase 2 commit #2: decode the canonical controller bundle (gzipped
+ * vanilla HTML/JS, source `public/wifi-controller-bundle/index.html`) from its
+ * base64 representation and emit it as a C-array literal suitable for cpp
+ * `PROGMEM`. Computed once at module load (microseconds, ~3 KB → ~16 KB cpp
+ * source). The result is interpolated into WS_SERVER_BUNDLE below.
+ *
+ * 16 bytes per line keeps the generated cpp readable and reasonably compact.
+ */
+function buildBundleCppLiteral(): string {
+  const binary = atob(BUNDLE_GZ_BASE64);
+  const bytes: string[] = new Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = '0x' + binary.charCodeAt(i).toString(16).padStart(2, '0');
+  }
+  const PER_LINE = 16;
+  const lines: string[] = [];
+  for (let i = 0; i < bytes.length; i += PER_LINE) {
+    lines.push(bytes.slice(i, i + PER_LINE).join(','));
+  }
+  return lines.join(',\n');
+}
+
+const WS_SERVER_BUNDLE_BYTES = buildBundleCppLiteral();
+
+const WS_SERVER_BUNDLE = `
+// 47.md Phase 2 commit #2: real gzipped vanilla HTML/JS controller bundle
+// (source: public/wifi-controller-bundle/index.html, ${BUNDLE_GZ_LEN} bytes
+// gzipped). The bundle is served at HTTP "/" with Content-Encoding: gzip; the
+// browser decompresses it transparently. ESP32 SRAM is preserved by holding
+// the bundle in PROGMEM (flash) and streaming via send_P.
+//
+// schema_json is still a placeholder (devices=[]) — commit #3 builds
+// inferWifiUiSchema and replaces this string with project-derived JSON
+// generated from websocket_server_register block walks.
+const uint8_t controller_bundle_gz[] PROGMEM = {
+${WS_SERVER_BUNDLE_BYTES}
+};
+const size_t controller_bundle_gz_len = ${BUNDLE_GZ_LEN};
 const char schema_json[] PROGMEM = R"DIGI({"connection":"wifi","version":"1.0","devices":[]})DIGI";
 
 void serveBundle() {
@@ -323,12 +359,15 @@ Blockly.Blocks['websocket_server_start'] = {
 
 generator.forBlock['websocket_server_start'] = function(block: Blockly.Block) {
   const port = block.getFieldValue('PORT');
-  // PATH currently captured for future WS path routing (commit #2). Default
-  // HTTP routes are "/" (bundle) and "/schema.json" (schema), the WS endpoint
-  // listens at the given port with default path.
+  // PATH currently captured for future WS path routing (Phase 3 multi-device
+  // unified controller). Default HTTP routes are "/" (bundle) and
+  // "/schema.json" (schema), the WS endpoint listens at the given port.
   generator.definitions_['ws_server_include'] = WS_SERVER_INCLUDE;
   generator.definitions_['ws_server_globals'] = WS_SERVER_GLOBALS;
-  generator.definitions_['ws_server_bundle_placeholder'] = WS_SERVER_BUNDLE_PLACEHOLDER;
+  // Real gzipped bundle bytes injected (commit #2). schema_json still a
+  // placeholder (devices=[]) until commit #3 populates it from
+  // websocket_server_register block walks via inferWifiUiSchema.
+  generator.definitions_['ws_server_bundle'] = WS_SERVER_BUNDLE;
   // wsServerLoopTick() injected once via loopPre_ (post-U5 cleanup pattern,
   // rules/digicode/03-block-workflow.md Loop-side dedupe). Placement of
   // ws_server_start (must be in setup) is independent of the tick injection.
