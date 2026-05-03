@@ -625,7 +625,25 @@ generator.forBlock['ble_add_service'] = function(block: Blockly.Block) {
   const uuid = block.getFieldValue('UUID');
   generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
   generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
+  // U5 first-connect bug fix (2026-05-03 follow-up to c03e98a):
+  //   Symptom = first connect after boot exposes only services that existed
+  //   when advertising started. Custom GATT service (added in ble_add_service
+  //   AFTER ble_uart_setup's pAdv->start()) became invisible to clients until
+  //   the user manually disconnect+reconnect, at which point the next GATT
+  //   discovery saw the now-fully-built table. NimBLE-Arduino requires the
+  //   GATT structure to be FROZEN while advertising is active — service
+  //   start()-ed after pAdv->start() updates the in-RAM service object but
+  //   does NOT commit the new handle range to the active GATT table the
+  //   server hands to clients during discovery.
+  //
+  //   Fix = pause advertising the moment a custom service is being declared.
+  //   ble_start_advertising at end of setup() restarts it, by which time
+  //   every service.start() and every characteristic registration has
+  //   committed cleanly. NimBLEDevice::stopAdvertising() is idempotent /
+  //   safe to call when advertising was never started (e.g. ble_init-only
+  //   flow without preceding ble_uart_setup).
   return `
+  NimBLEDevice::stopAdvertising();
   {
     NimBLEService* svc = pBleServer->createService("${uuid}");
     bleServiceMap["${uuid}"] = svc;
