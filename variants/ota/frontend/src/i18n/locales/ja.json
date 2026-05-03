@@ -886,7 +886,10 @@
     "previewLabel": "ウィジェット プレビュー (説明用、操作不可)",
     "previewNote": "実際の操作は ESP32 配信ページで行います。",
     "noServerBlocks": "WebSocket サーバーブロックを workspace に追加してください。",
-    "requireWifi": "ESP32 がこの IP に接続済みかつ電源 ON が必要です。"
+    "requireWifi": "ESP32 がこの IP に接続済みかつ電源 ON が必要です。",
+    "ipAutoDetected": "シリアル出力から自動取得: {{ip}}",
+    "ipNotDetected": "デバイスがネットワークに接続されていません。ESP32 をリセットして WiFi 接続を確認してください。",
+    "ipDetectInstructions": "シリアルモニターを接続すると WiFi 接続後の IP を自動取得します。"
   },
   "bluetooth": {
     "notSupported": "Web Bluetooth APIがサポートされていません",

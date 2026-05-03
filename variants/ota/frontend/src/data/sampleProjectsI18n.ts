@@ -182,6 +182,10 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'DFPlayer Music Playback',
         description: 'Play two tracks in sequence on DFPlayer Mini (10 s each)',
       },
+      'wifi-controller-mix': {
+        title: 'WiFi Controller Combo (LED + Servo + Temperature)',
+        description: 'Bundle LED toggle / servo slider / temperature display on one ESP32 and control them from any browser via the WebSocket controller',
+      },
     },
   },
   es: {
@@ -340,6 +344,10 @@ const overrides: Record<string, LocaleOverride> = {
       'dfplayer-music': {
         title: 'Reproducción musical DFPlayer',
         description: 'Reproduce dos pistas en orden con DFPlayer Mini (10 s cada una)',
+      },
+      'wifi-controller-mix': {
+        title: 'Combo controlador WiFi (LED + Servo + Temperatura)',
+        description: 'Agrupa toggle LED / slider de servo / display de temperatura en un ESP32 y contrólalos desde cualquier navegador vía el controlador WebSocket',
       },
     },
   },
@@ -500,6 +508,10 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Reprodução musical DFPlayer',
         description: 'Reproduz duas faixas em sequência no DFPlayer Mini (10 s cada)',
       },
+      'wifi-controller-mix': {
+        title: 'Combo controlador WiFi (LED + Servo + Temperatura)',
+        description: 'Agrupa toggle LED / slider de servo / display de temperatura num ESP32 e controla-os a partir de qualquer browser via o controlador WebSocket',
+      },
     },
   },
   'zh-TW': {
@@ -658,6 +670,10 @@ const overrides: Record<string, LocaleOverride> = {
       'dfplayer-music': {
         title: 'DFPlayer 音樂播放',
         description: '使用 DFPlayer Mini 依序播放兩首曲目 (各 10 秒)',
+      },
+      'wifi-controller-mix': {
+        title: 'WiFi 控制器整合 (LED + Servo + 溫度)',
+        description: '透過 WebSocket 伺服器在 1 個 ESP32 上整合 LED toggle / Servo slider / 溫度顯示，從任何瀏覽器控制',
       },
     },
   },

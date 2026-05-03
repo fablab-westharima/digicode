@@ -886,7 +886,10 @@
     "previewLabel": "Pré-visualização de widgets (só leitura)",
     "previewNote": "O controlo real acontece na página servida pelo seu ESP32.",
     "noServerBlocks": "Adicione um bloco de servidor WebSocket à sua workspace.",
-    "requireWifi": "O ESP32 deve estar ligado à mesma WiFi e ligado."
+    "requireWifi": "O ESP32 deve estar ligado à mesma WiFi e ligado.",
+    "ipAutoDetected": "Detetado a partir da saída série: {{ip}}",
+    "ipNotDetected": "O dispositivo não está ligado à rede. Reinicie o ESP32 e verifique a ligação WiFi.",
+    "ipDetectInstructions": "Ligue o monitor série e o IP será detetado automaticamente após a ligação WiFi."
   },
   "bluetooth": {
     "notSupported": "Bluetooth não é suportado",

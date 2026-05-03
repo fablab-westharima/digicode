@@ -16,8 +16,13 @@ const MODE_SPECIFIC_SAMPLES: Record<RobotMode, readonly [string, string]> = {
 };
 
 // 優先度順（上から match 試行、最初に hit したものを採用）
-// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 20 / Phase 3 (BUG-052): +1 → 21 / BUG-053+054: +2 → 23 entries
+// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 20 / Phase 3 (BUG-052): +1 → 21 / BUG-053+054: +2 → 23 / 47.md Phase 2 commit #7 (第73回 wifi-controller-mix): +1 → 24 entries
 const KEYWORD_TO_SAMPLE: ReadonlyArray<readonly [RegExp, string]> = [
+  // 47.md Phase 2 WiFi controller (commit #7): WebSocket server / WiFi
+  // controller / browser-based control patterns. Listed near the top so
+  // controller-flavored prompts hit this canonical Few-shot before the
+  // generic IoT heuristics (mqtt / http / json) below.
+  [/websocket|wi.?fi.?controller|wi.?fi.*コントロー|LAN.*control|ブラウザ.*制御|browser.*control/i, 'wifi-controller-mix'],
   // 条件分岐パターン
   [/温度|湿度|temperature|humidity|alert|°C/i, 'temp-alert'],
   [/距離|障害物|obstacle|proximity|超音波.*停/i, 'proximity-stop'],

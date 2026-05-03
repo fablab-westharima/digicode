@@ -188,6 +188,39 @@ main {
     ws.send(JSON.stringify({ id: id, value: String(value) }));
   }
 
+  // commit #7 polish (47.md Phase 2、第73回): slider 'input' fires up to
+  // ~120Hz on touch drag — flooding the WS pipe overwhelms ESP32-side
+  // dispatch (StaticJsonDocument<256> deserialize + handler call + echo
+  // broadcast at ~5-10ms each). Leading-edge + trailing-edge throttle with
+  // 100ms window keeps interactive feel (10Hz feedback) while bounding
+  // ESP32 load. Toggle (1 send per click) and display (no input) need no
+  // throttle. Trailing-edge fire guarantees the final slider value lands
+  // even if the drag stops between throttle windows.
+  function throttle(fn, ms) {
+    var lastCall = 0;
+    var pending = null;
+    var pendingArgs = null;
+    return function () {
+      pendingArgs = arguments;
+      var now = Date.now();
+      var elapsed = now - lastCall;
+      if (elapsed >= ms) {
+        lastCall = now;
+        fn.apply(null, pendingArgs);
+        pendingArgs = null;
+      } else if (!pending) {
+        pending = setTimeout(function () {
+          pending = null;
+          if (pendingArgs) {
+            lastCall = Date.now();
+            fn.apply(null, pendingArgs);
+            pendingArgs = null;
+          }
+        }, ms - elapsed);
+      }
+    };
+  }
+
   function makeToggle(w) {
     var el = document.createElement('div');
     el.className = 'widget';
@@ -234,9 +267,10 @@ main {
     slider.max = String(max);
     slider.step = String(step);
     slider.value = String(min);
+    var throttledSend = throttle(send, 100);
     slider.addEventListener('input', function () {
-      valueEl.textContent = slider.value;
-      send(w.id, slider.value);
+      valueEl.textContent = slider.value;  // immediate UI feedback
+      throttledSend(w.id, slider.value);   // throttled WS send (100ms)
     });
     var range = document.createElement('div');
     range.className = 'range-row';

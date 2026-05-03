@@ -25,10 +25,10 @@
  *     the phone/PC that scanned the QR; DigiCode just provisions the URL).
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { QRCodeSVG } from 'qrcode.react';
-import { Copy, ExternalLink, History } from 'lucide-react';
+import { Copy, ExternalLink, History, Search } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -44,12 +44,36 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useSerialStore } from '@/stores/serialStore';
 import { inferWifiUiSchemaFromXml } from './inferWifiUiSchema';
 import type { WifiWidgetDefinition } from './types';
 
 const HISTORY_KEY = 'wifi-controller:lastIps';
 const HISTORY_MAX = 5;
 const DEFAULT_IP_PLACEHOLDER = '192.168.1.42';
+
+// commit #7 polish (47.md Phase 2、第73回): wifiConnect() emits
+// `WiFi connected. IP: x.x.x.x` to Serial after WL_CONNECTED. Match against
+// the buffered serial-monitor output so the user doesn't have to copy the IP
+// from the serial monitor by hand. The pattern is anchored to the literal
+// prefix to avoid matching incidental IP-shaped strings (e.g. broker URLs).
+//
+// Source of the literal: src/blocks/arduino/communication/wifiBlocks.ts —
+// `Serial.print("WiFi connected. IP: "); Serial.println(WiFi.localIP());`
+const IP_DETECT_REGEX = /WiFi connected\. IP:\s*(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/;
+
+/**
+ * Scan recent serial-monitor lines (newest first) for the WiFi-connected IP
+ * literal. Returns the first match or null. Walks back-to-front so the
+ * latest connection wins after multi-boot sessions.
+ */
+function detectIpFromSerial(output: readonly string[]): string | null {
+  for (let i = output.length - 1; i >= 0; i--) {
+    const m = output[i].match(IP_DETECT_REGEX);
+    if (m) return m[1];
+  }
+  return null;
+}
 
 export interface WifiControllerDialogProps {
   open: boolean;
@@ -74,6 +98,19 @@ export function WifiControllerDialog({
   const [history, setHistory] = useState<string[]>([]);
   const [copied, setCopied] = useState<boolean>(false);
 
+  // commit #7 polish: serial-monitor → IP auto-detect state. We track
+  //   - `userEditedIp`: once the user manually types in the input, we stop
+  //     overwriting their value (auto-detect only fills an empty field).
+  //   - `detectStatus`: 'idle' before any scan, 'detected' on success,
+  //     'not-found' when serial is connected but no IP literal seen.
+  //   - `detectedIp`: the literal value caught from serial (for status row).
+  const userEditedIpRef = useRef<boolean>(false);
+  const [detectStatus, setDetectStatus] = useState<'idle' | 'detected' | 'not-found'>('idle');
+  const [detectedIp, setDetectedIp] = useState<string>('');
+
+  const serialOutput = useSerialStore((s) => s.output);
+  const serialStatus = useSerialStore((s) => s.status);
+
   // Hydrate IP / history from localStorage on first open. Doing this in
   // useEffect (not lazy useState init) avoids touching localStorage during
   // SSR / vitest renders that may not have a window.
@@ -83,6 +120,30 @@ export function WifiControllerDialog({
     if (loaded.length > 0 && !ip) setIp(loaded[0]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // commit #7 polish: auto-detect IP from serial output. Re-runs whenever
+  // serial output grows (new lines arrive). The match is best-effort:
+  //   - if the user already typed an IP, we don't overwrite their value
+  //     (manual input wins, only the status row reflects the detection)
+  //   - if no IP literal is present yet, status flips to 'not-found' when
+  //     serial is connected (so the UI can render the "device not on
+  //     network" hint), 'idle' when serial is disconnected.
+  useEffect(() => {
+    if (!open) return;
+    const detected = detectIpFromSerial(serialOutput);
+    if (detected) {
+      setDetectedIp(detected);
+      setDetectStatus('detected');
+      if (!userEditedIpRef.current && ip !== detected) {
+        setIp(detected);
+      }
+    } else if (serialStatus === 'connected') {
+      setDetectStatus('not-found');
+    } else {
+      setDetectStatus('idle');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serialOutput, serialStatus, open]);
 
   const trimmedIp = ip.trim();
   const url = trimmedIp ? `http://${trimmedIp}/` : '';
@@ -123,7 +184,7 @@ export function WifiControllerDialog({
         </DialogHeader>
 
         <div className="flex-1 overflow-auto p-4 space-y-4">
-          {/* IP input + history */}
+          {/* IP input + history + serial-detect status */}
           <div className="space-y-2">
             <Label htmlFor="wifi-ctrl-ip" className="text-sm">
               {t('wifiController.ipAddress', { defaultValue: 'ESP32 IP アドレス' })}
@@ -134,7 +195,10 @@ export function WifiControllerDialog({
                 type="text"
                 inputMode="numeric"
                 value={ip}
-                onChange={(e) => setIp(e.target.value)}
+                onChange={(e) => {
+                  userEditedIpRef.current = true;
+                  setIp(e.target.value);
+                }}
                 onBlur={commitIpToHistory}
                 placeholder={DEFAULT_IP_PLACEHOLDER}
                 className="font-mono"
@@ -161,6 +225,38 @@ export function WifiControllerDialog({
                 </DropdownMenu>
               )}
             </div>
+            {/* commit #7 polish: serial-monitor IP auto-detect status row.
+                Three states reflected as one-line status messages:
+                  - detected → "シリアルから自動取得 192.168.1.42"
+                  - not-found (serial connected) → "デバイスがネットワークに接続されていません"
+                  - idle (serial disconnected) → instruction line */}
+            {detectStatus === 'detected' && (
+              <p className="text-xs text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
+                <Search className="w-3 h-3" />
+                {t('wifiController.ipAutoDetected', {
+                  defaultValue: 'シリアル出力から自動取得: {{ip}}',
+                  ip: detectedIp,
+                })}
+              </p>
+            )}
+            {detectStatus === 'not-found' && (
+              <p className="text-xs text-amber-700 dark:text-amber-400 flex items-center gap-1">
+                <Search className="w-3 h-3" />
+                {t('wifiController.ipNotDetected', {
+                  defaultValue:
+                    'デバイスがネットワークに接続されていません。ESP32 をリセットして WiFi 接続を確認してください。',
+                })}
+              </p>
+            )}
+            {detectStatus === 'idle' && (
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <Search className="w-3 h-3" />
+                {t('wifiController.ipDetectInstructions', {
+                  defaultValue:
+                    'シリアルモニターを接続すると WiFi 接続後の IP を自動取得します。',
+                })}
+              </p>
+            )}
           </div>
 
           {/* QR + URL block */}

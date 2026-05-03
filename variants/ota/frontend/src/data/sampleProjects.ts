@@ -1075,6 +1075,31 @@ export const sampleProjects: SampleProject[] = [
     category: 'motor',
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_serial_begin"><field name="BAUD">115200</field><next><block type="controls_if"><value name="IF0"><block type="dfplayer_init"><field name="RX">14</field><field name="TX">12</field></block></value><statement name="DO0"><block type="dfplayer_volume"><value name="VOL"><block type="math_number"><field name="NUM">20</field></block></value></block></statement></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="dfplayer_play"><value name="TRACK"><block type="math_number"><field name="NUM">1</field></block></value><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">10000</field></block></value><next><block type="dfplayer_play"><value name="TRACK"><block type="math_number"><field name="NUM">2</field></block></value><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">10000</field></block></value></block></next></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    // 47.md Phase 2 commit #7 (第73回): canonical FEW_SHOT for the WiFi
+    // controller story. Mirrors the W4 UAT scenario (LED toggle + servo
+    // slider + temperature display in one project). Drives AI generation
+    // toward the correct ws_server block usage when prompts mention
+    // "websocket / wifi controller / LAN control / ブラウザ制御" etc.
+    //
+    // Setup chain: wifi_connect → websocket_server_start (port 81) →
+    //   register("led", bool W) → register("servo", uint8 0-180 W) →
+    //   register("temp", float R+N) → mpu6050_init wrapped in controls_if
+    //   (init only when sensor present) → on_message("led") {if==="1"
+    //   digitalWrite HIGH else LOW} → on_message("servo") {servo_write
+    //   ANGLE=received_value} (servo_write generator wraps the String
+    //   value via String().toInt(), so passing the String-typed
+    //   websocket_server_received_value compiles cleanly).
+    //
+    // Loop chain: mpu6050_update → websocket_server_send("temp",
+    //   mpu6050_read_temperature) → delay 1000ms (1 Hz broadcast).
+    id: 'wifi-controller-mix',
+    title: 'WiFi コントローラ統合 (LED + Servo + 温度)',
+    description: 'WebSocket サーバーで LED toggle / Servo slider / 温度 display を 1 ESP32 にまとめてブラウザから制御・表示',
+    category: 'iot',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="wifi_connect"><field name="SSID">your_ssid</field><field name="PASSWORD">your_password</field><next><block type="websocket_server_start"><field name="PORT">81</field><field name="PATH">/</field><next><block type="websocket_server_register"><field name="CHANNEL_ID">led</field><field name="LABEL">LED</field><field name="DATA_TYPE">bool</field><field name="MIN">0</field><field name="MAX">1</field><field name="READ">TRUE</field><field name="WRITE">TRUE</field><field name="NOTIFY">FALSE</field><next><block type="websocket_server_register"><field name="CHANNEL_ID">servo</field><field name="LABEL">Servo</field><field name="DATA_TYPE">uint8</field><field name="MIN">0</field><field name="MAX">180</field><field name="READ">TRUE</field><field name="WRITE">TRUE</field><field name="NOTIFY">FALSE</field><next><block type="websocket_server_register"><field name="CHANNEL_ID">temp</field><field name="LABEL">Temperature</field><field name="DATA_TYPE">float</field><field name="MIN">0</field><field name="MAX">100</field><field name="READ">TRUE</field><field name="WRITE">FALSE</field><field name="NOTIFY">TRUE</field><next><block type="esp32_pin_mode"><field name="PIN">2</field><field name="MODE">OUTPUT</field><next><block type="controls_if"><value name="IF0"><block type="mpu6050_init"><field name="ACCEL_RANGE">MPU6050_RANGE_8_G</field><field name="GYRO_RANGE">MPU6050_RANGE_500_DEG</field></block></value><next><block type="websocket_server_on_message"><field name="CHANNEL_ID">led</field><statement name="HANDLER"><block type="controls_if"><value name="IF0"><block type="logic_compare"><field name="OP">EQ</field><value name="A"><block type="websocket_server_received_value"></block></value><value name="B"><block type="text"><field name="TEXT">1</field></block></value></block></value><statement name="DO0"><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">HIGH</field></block></statement><next><block type="controls_if"><value name="IF0"><block type="logic_compare"><field name="OP">EQ</field><value name="A"><block type="websocket_server_received_value"></block></value><value name="B"><block type="text"><field name="TEXT">0</field></block></value></block></value><statement name="DO0"><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">LOW</field></block></statement></block></next></block></statement><next><block type="websocket_server_on_message"><field name="CHANNEL_ID">servo</field><statement name="HANDLER"><block type="servo_write"><field name="PIN">18</field><value name="ANGLE"><block type="websocket_server_received_value"></block></value></block></statement></block></next></block></next></block></next></block></next></block></next></block></next></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="450"><statement name="LOOP"><block type="mpu6050_update"><next><block type="websocket_server_send"><field name="CHANNEL_ID">temp</field><value name="VALUE"><block type="mpu6050_read_temperature"></block></value><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value></block></next></block></next></block></statement></block></xml>`
   }
 ];
 

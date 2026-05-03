@@ -886,7 +886,10 @@
     "previewLabel": "Widget 預覽（僅供顯示，無法操作）",
     "previewNote": "實際操作在 ESP32 提供的頁面上進行。",
     "noServerBlocks": "請將 WebSocket 伺服器區塊加入工作區。",
-    "requireWifi": "ESP32 必須連線到同一 WiFi 並通電。"
+    "requireWifi": "ESP32 必須連線到同一 WiFi 並通電。",
+    "ipAutoDetected": "從序列輸出自動取得：{{ip}}",
+    "ipNotDetected": "裝置未連線到網路。請重置 ESP32 並確認 WiFi 連線。",
+    "ipDetectInstructions": "連接序列監控器後，將在 WiFi 連線後自動取得 IP。"
   },
   "bluetooth": {
     "notSupported": "不支持藍牙",

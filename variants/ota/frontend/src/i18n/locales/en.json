@@ -886,7 +886,10 @@
     "previewLabel": "Widget preview (read-only)",
     "previewNote": "Actual control happens on the page served by your ESP32.",
     "noServerBlocks": "Add a WebSocket server block to your workspace.",
-    "requireWifi": "Your ESP32 must be connected to the same WiFi and powered on."
+    "requireWifi": "Your ESP32 must be connected to the same WiFi and powered on.",
+    "ipAutoDetected": "Detected from serial output: {{ip}}",
+    "ipNotDetected": "Device is not connected to the network. Reset the ESP32 and verify the WiFi connection.",
+    "ipDetectInstructions": "Connect the serial monitor and the IP will be auto-detected after WiFi connects."
   },
   "bluetooth": {
     "notSupported": "Web Bluetooth API is not supported",

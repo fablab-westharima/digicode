@@ -502,6 +502,13 @@ generator.forBlock['websocket_server_on_message'] = function(block: Blockly.Bloc
   const handler = javascriptGenerator.statementToCode(block, 'HANDLER');
   generator.definitions_['ws_server_include'] = WS_SERVER_INCLUDE;
   generator.definitions_['ws_server_globals'] = WS_SERVER_GLOBALS;
+  // commit #7 polish (47.md Phase 2、第73回 user 指示): every on_message
+  // handler echoes the received value back to ALL connected clients via the
+  // shared broadcast helper. With N browsers controlling 1 ESP32, a write
+  // from any one client now propagates to the other N-1 browsers' widget UI
+  // immediately, achieving authoritative-state sync. The helper definition
+  // is deduped via definitions_ key sharing with websocket_server_send.
+  generator.definitions_['ws_server_broadcast_helper'] = WS_SERVER_BROADCAST_HELPER;
   // Static-init self-register (mirror of ble_on_write `_BleLoopRegister`
   // pattern, post-U5 cleanup). Each on_message block emits its own
   // wsServerHandle_<safeId>() and registers it into _wsServerHandlers; the
@@ -512,7 +519,17 @@ generator.forBlock['websocket_server_on_message'] = function(block: Blockly.Bloc
   generator.definitions_[funcKey] = `
 void wsServerHandle_${safeChannelId}() {
   if (wsServerCurrentChannel != "${channelId}") return;
-${handler}}
+${handler}  // Echo: broadcast received value to all connected clients for
+  // multi-browser state sync (commit #7 polish, 第73回).
+  {
+    StaticJsonDocument<128> _wsEchoDoc;
+    _wsEchoDoc["id"] = "${channelId}";
+    _wsEchoDoc["value"] = wsServerMessage;
+    String _wsEchoMsg;
+    serializeJson(_wsEchoDoc, _wsEchoMsg);
+    wsServerBroadcast(_wsEchoMsg);
+  }
+}
 static _WsServerHandlerRegister _reg_wsServerHandle_${safeChannelId}("${channelId}", wsServerHandle_${safeChannelId});`;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const gen = generator as any;

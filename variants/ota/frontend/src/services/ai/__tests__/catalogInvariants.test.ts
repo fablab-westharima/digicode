@@ -263,6 +263,23 @@ describe('selectFewShot (動的 Few-shot 選択)', () => {
     expect(result[4]).toBe('ble-beacon-scanner');
   });
 
+  // 47.md Phase 2 commit #7 (第73回): WiFi controller / WebSocket server
+  // patterns route to wifi-controller-mix (LED + Servo + Temperature combo).
+  it('websocket keyword maps to wifi-controller-mix (commit #7)', () => {
+    const result = selectFewShot('generic', 'WebSocket サーバーで LED を制御したい');
+    expect(result[4]).toBe('wifi-controller-mix');
+  });
+
+  it('WiFi controller keyword maps to wifi-controller-mix (commit #7)', () => {
+    const result = selectFewShot('generic', 'WiFi コントローラを作って ESP32 を遠隔操作');
+    expect(result[4]).toBe('wifi-controller-mix');
+  });
+
+  it('browser control keyword maps to wifi-controller-mix (commit #7)', () => {
+    const result = selectFewShot('generic', 'ブラウザから ESP32 を制御するページが欲しい');
+    expect(result[4]).toBe('wifi-controller-mix');
+  });
+
   it('all referenced sample ids exist in sampleProjects', () => {
     const allIds = new Set<string>([
       ...Object.values(__testing__.MODE_SPECIFIC_SAMPLES).flat(),
