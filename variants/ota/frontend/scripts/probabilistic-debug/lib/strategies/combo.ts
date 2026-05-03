@@ -263,6 +263,102 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     label: 'interrupt',
     operations: ['check_interrupt', 'detach_interrupt'],
   },
+  // ────────────────────────────────────────────────────────────────────
+  // 第72回 expansion (2026-05-03) — 1000-case `2026-05-03_04-40-54` (passRate
+  // 90.4%) cluster top の "X was not declared in this scope" 群を 13 prefix
+  // 追加で消化。Tier 1 (cluster top で実証、+1.4pp 期待):
+  //   rtc_init / rus04_init / dht_init / stepper_init / mpu6050_init
+  // Tier 2 (将来予防、potential cluster guard):
+  //   as5600 / bme280 / bmp280 / ultrasonic / vl53l0x / camera / can / dfplayer
+  // BLE / WebSocket は ordering 制約 (init → add_service → add_characteristic →
+  // start_advertising 等) が強く、flat ops chain で combo case 化すると
+  // structural compile fail の risk あり、別 task で nuanced 対応。
+  // ────────────────────────────────────────────────────────────────────
+  {
+    // rtc_init が `RTC_DS3231 rtc;` を declares、rtc_* ops が rtc 参照。
+    init: 'rtc_init',
+    label: 'rtc',
+    operations: ['rtc_set_time', 'rtc_get_formatted', 'rtc_get_component'],
+  },
+  {
+    // rus04_init が `RUS04 rus04Eyes;` を declares、rus04_* ops が参照
+    // (cluster #6 = rus04Eyes undeclared 3 件)。
+    init: 'rus04_init',
+    label: 'rus04',
+    operations: ['rus04_distance', 'rus04_both_simple', 'rus04_rgb', 'rus04_off'],
+  },
+  {
+    // dht_init が `DHT dht(...)` を declares (cluster #7 = dht undeclared 2 件)。
+    init: 'dht_init',
+    label: 'dht',
+    operations: ['dht_temperature', 'dht_humidity'],
+  },
+  {
+    // stepper_init が `AccelStepper stepperMove(...)` を declares
+    // (cluster #23 = stepperMove undeclared 2 件)。
+    init: 'stepper_init',
+    label: 'stepper',
+    operations: ['stepper_move', 'stepper_rotate', 'stepper_stop'],
+  },
+  {
+    // mpu6050_init が `Adafruit_MPU6050 mpu;` を declares
+    // (cluster #2 = Adafruit_MPU6050 type ref 4 件、init で type include + var 同時)。
+    init: 'mpu6050_init',
+    label: 'mpu6050',
+    operations: [
+      'mpu6050_update', 'mpu6050_read_accel', 'mpu6050_read_gyro',
+      'mpu6050_read_temperature', 'mpu6050_get_angle', 'mpu6050_calibrate',
+    ],
+  },
+  {
+    init: 'as5600_init',
+    label: 'as5600',
+    operations: ['as5600_read_angle', 'as5600_read_raw'],
+  },
+  {
+    init: 'bme280_init',
+    label: 'bme280',
+    operations: ['bme280_read'],
+  },
+  {
+    init: 'bmp280_init',
+    label: 'bmp280',
+    operations: ['bmp280_read', 'bmp280_read_altitude'],
+  },
+  {
+    init: 'ultrasonic_init',
+    label: 'ultrasonic',
+    operations: ['ultrasonic_distance'],
+  },
+  {
+    init: 'vl53l0x_init',
+    label: 'vl53l0x',
+    operations: ['vl53l0x_read_distance_mm'],
+  },
+  {
+    init: 'camera_init',
+    label: 'camera',
+    operations: [
+      'camera_capture', 'camera_save_sd', 'camera_send_http',
+      'camera_stream_start',
+    ],
+  },
+  {
+    init: 'can_init',
+    label: 'can',
+    operations: [
+      'can_send', 'can_receive_available', 'can_get_received_id',
+      'can_get_received_data',
+    ],
+  },
+  {
+    init: 'dfplayer_init',
+    label: 'dfplayer',
+    operations: [
+      'dfplayer_play', 'dfplayer_pause', 'dfplayer_resume',
+      'dfplayer_stop', 'dfplayer_volume',
+    ],
+  },
 ];
 
 /**
@@ -285,6 +381,34 @@ export const OPERATION_TO_INIT_MAP: Map<string, string> = (() => {
   }
   return map;
 })();
+
+/**
+ * Init block を arduino_setup.SETUP に挿入可能な statement BlockNode に変換する。
+ *
+ * - isStatement init (humanoid_init / mqtt_setup 等) はそのまま synthesize して return。
+ * - value-typed init (mpu6050_init / rtc_init 等、hasOutput=true で bool/status 返り値)
+ *   は `controls_if IF0=initSynth` で wrap (cpp 出力 = `if (mpu6050_init()) { }`、
+ *   side effect で MPU6050 hardware 初期化 + 成功時 if body 空 = no-op、value 評価で
+ *   compile pass + Adafruit_MPU6050 type / `mpu` 変数の declaration が definitions_
+ *   経由で global emit される)。
+ *
+ * 第72回 expansion で導入、value-typed init 9 件 (rtc/mpu6050/as5600/bme280/bmp280/
+ * vl53l0x/camera/can/dfplayer) を SETUP context で扱うため。
+ */
+function synthesizeInitForSetup(
+  initBlock: CatalogBlock,
+  idx: Map<string, CatalogBlock>,
+  mode: Mode,
+): BlockNode {
+  const initSynth = synthesizeBlock(initBlock, { mode, blockIndex: idx });
+  if (initBlock.isStatement) return initSynth;
+  if (initBlock.hasOutput) {
+    return { type: 'controls_if', values: { IF0: initSynth } };
+  }
+  // Edge case: neither isStatement nor hasOutput (rootOnly 等) — fallback as-is、
+  // validateRoots で reject される可能性あるが現状 INIT_DEPENDENCIES に該当 nil。
+  return initSynth;
+}
 
 /**
  * 既存 roots ツリー内に target 型の block が存在するか深さ優先で検出。
@@ -335,7 +459,9 @@ export function prependInitForOp(
   const initBlock = idx.get(requiredInit);
   if (!initBlock) return roots;
 
-  const initSynth = synthesizeBlock(initBlock, { mode, blockIndex: idx });
+  // 第72回 expansion: value-typed init (mpu6050_init 等) は controls_if で wrap
+  // して statement context に embed (synthesizeInitForSetup 経由)。
+  const initSynth = synthesizeInitForSetup(initBlock, idx, mode);
   return roots.map((root) => {
     if (root.type !== 'arduino_setup') return root;
     const existingSetup = root.statements?.SETUP;
@@ -467,8 +593,9 @@ function buildComboCase(
     );
   if (!board) return null;
 
-  // Init synthesize (must be statement、catalog で確認済の init は全て isStatement=true)
-  const initSynth = synthesizeBlock(initBlock, { mode, blockIndex: idx });
+  // Init synthesize — isStatement init はそのまま、value-typed init (hasOutput) は
+  // controls_if IF0=initSynth で wrap (第72回 expansion、synthesizeInitForSetup 経由)
+  const initSynth = synthesizeInitForSetup(initBlock, idx, mode);
 
   // Operations を loop chain にまとめる
   const { loopChain, extraRoots } = buildOpsChain(ops, mode, idx);

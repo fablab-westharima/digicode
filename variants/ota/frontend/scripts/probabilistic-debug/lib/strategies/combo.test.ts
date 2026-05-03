@@ -31,14 +31,19 @@ describe('INIT_DEPENDENCIES (manual map)', () => {
     }
   });
 
-  it('every init block is statement-typed (init must live in arduino_setup.SETUP)', () => {
+  it('every init block is statement-typed OR value-typed (combo wraps value with controls_if)', () => {
+    // 第72回 expansion で value-typed init (mpu6050_init 等、hasOutput=true) を
+    // controls_if IF0=initSynth で wrap する synthesizeInitForSetup helper 導入後、
+    // SETUP context に挿入可能な init 形式は 2 種 (isStatement / hasOutput) の OR。
+    // どちらでもない (rootOnly のみ等) init は INIT_DEPENDENCIES から除外する想定。
     const idx = new Map(cat.blocks.map((b) => [b.type, b]));
     for (const dep of INIT_DEPENDENCIES) {
       const block = idx.get(dep.init);
       expect(block, `init "${dep.init}" missing`).toBeDefined();
+      const placeable = block?.isStatement === true || block?.hasOutput === true;
       expect(
-        block?.isStatement,
-        `init "${dep.init}" is not a statement block`,
+        placeable,
+        `init "${dep.init}" is neither statement nor value (cannot be placed in SETUP)`,
       ).toBe(true);
     }
   });
@@ -126,6 +131,30 @@ describe('OPERATION_TO_INIT_MAP (derived)', () => {
     expect(OPERATION_TO_INIT_MAP.get('diff_drive_line_trace')).toBe(
       'diff_drive_init',
     );
+  });
+
+  it('maps Tier 1 第72回 expansion ops → expected init (cluster top guard)', () => {
+    // Tier 1 = cluster top で実証 (1000-case `2026-05-03_04-40-54`, 90.4%)
+    expect(OPERATION_TO_INIT_MAP.get('rtc_set_time')).toBe('rtc_init');
+    expect(OPERATION_TO_INIT_MAP.get('rus04_distance')).toBe('rus04_init');
+    expect(OPERATION_TO_INIT_MAP.get('dht_temperature')).toBe('dht_init');
+    expect(OPERATION_TO_INIT_MAP.get('stepper_move')).toBe('stepper_init');
+    expect(OPERATION_TO_INIT_MAP.get('mpu6050_read_accel')).toBe('mpu6050_init');
+  });
+
+  it('maps Tier 2 第72回 expansion ops → expected init (future-proof)', () => {
+    expect(OPERATION_TO_INIT_MAP.get('as5600_read_angle')).toBe('as5600_init');
+    expect(OPERATION_TO_INIT_MAP.get('bme280_read')).toBe('bme280_init');
+    expect(OPERATION_TO_INIT_MAP.get('bmp280_read_altitude')).toBe('bmp280_init');
+    expect(OPERATION_TO_INIT_MAP.get('ultrasonic_distance')).toBe(
+      'ultrasonic_init',
+    );
+    expect(OPERATION_TO_INIT_MAP.get('vl53l0x_read_distance_mm')).toBe(
+      'vl53l0x_init',
+    );
+    expect(OPERATION_TO_INIT_MAP.get('camera_capture')).toBe('camera_init');
+    expect(OPERATION_TO_INIT_MAP.get('can_send')).toBe('can_init');
+    expect(OPERATION_TO_INIT_MAP.get('dfplayer_play')).toBe('dfplayer_init');
   });
 });
 
