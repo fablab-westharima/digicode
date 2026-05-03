@@ -118,6 +118,17 @@ export class WebBluetoothClient {
    * Show the browser's BLE chooser, then connect to the selected device's GATT
    * server. Throws WebBluetoothNotSupportedError on unsupported browsers and
    * propagates the user's cancellation as a NotFoundError (per spec).
+   *
+   * After `gatt.connect()` resolves, eagerly discover every known service
+   * (NUS + custom) so the browser's GATT cache is pre-populated before the
+   * widgets attempt their first read/write/notify. This fixes the U5 UAT
+   * "first connect partial-fail / reconnect all-pass" symptom — without
+   * eager discovery the first widget interaction races with ESP32 firmware
+   * setup() (NimBLE service registration may still be in flight when the
+   * device first advertises) AND with the browser's lazy GATT discovery,
+   * causing `getPrimaryService(customUuid)` to throw NotFoundError. After
+   * eager discovery + retry the cache is warm and subsequent
+   * `resolveCharacteristic` calls hit it instantly.
    */
   async connect(options: ConnectOptions = {}): Promise<void> {
     if (!this.bluetooth) {
@@ -138,6 +149,28 @@ export class WebBluetoothClient {
       }
       device.addEventListener('gattserverdisconnected', this.boundHandleDisconnected);
       const server = await gatt.connect();
+
+      // Eager service discovery — pre-populate browser GATT cache before
+      // widgets call resolveCharacteristic. Each service gets one retry with
+      // a 500 ms gap (ESP32-side NimBLE service registration typically settles
+      // within a few hundred ms after pBleServer->createService()).
+      // NotFoundError after retry is logged but non-fatal: the user may have
+      // defined the service in the schema but forgotten the matching
+      // ble_add_service block in the firmware sketch. Letting connect()
+      // succeed allows NUS / other services to still work.
+      for (const uuid of optionalServices) {
+        try {
+          await server.getPrimaryService(uuid);
+        } catch {
+          await new Promise((r) => setTimeout(r, 500));
+          try {
+            await server.getPrimaryService(uuid);
+          } catch (retryErr) {
+            // eslint-disable-next-line no-console
+            console.warn(`[WebBluetoothClient] service ${uuid} not found after retry`, retryErr);
+          }
+        }
+      }
 
       this.device = device;
       this.server = server;
