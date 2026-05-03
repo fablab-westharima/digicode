@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Upload } from 'lucide-react';
 import type { Project } from '@/stores/projectStore';
+import { parseDigicodeFileContent } from '@/services/projectFileReader';
 
 interface ProjectListDialogProps {
   open: boolean;
@@ -32,27 +33,33 @@ export function ProjectListDialog({
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      try {
-        const data = JSON.parse(event.target?.result as string);
-        if (!data.blocklyXml) {
-          alert(t('project.invalidFile'));
-          return;
-        }
-        const project: Project = {
-          id: Date.now(),
-          title: data.title || file.name.replace('.digicode.json', ''),
-          description: data.description,
-          blocklyXml: data.blocklyXml,
-          generatedCode: data.generatedCode || '',
-          language: data.language || 'arduino',
-          createdAt: data.savedAt,
-          updatedAt: data.savedAt,
-        };
-        onSelect(project);
-        onOpenChange(false);
-      } catch {
-        alert(t('project.fileLoadError'));
+      const text = event.target?.result as string;
+      const result = parseDigicodeFileContent(text);
+      if (!result.ok) {
+        alert(
+          result.error === 'invalid-json'
+            ? t('project.fileLoadError')
+            : t('project.invalidFile'),
+        );
+        return;
       }
+      const data = result.data;
+      // Project.language is the literal type 'arduino' (the only CodeLanguage
+      // value shipping today). The on-disk format leaves the field free-form
+      // string for forward-compat, so we coerce to 'arduino' here — matching
+      // the previous `data.language || 'arduino'` fallback semantics.
+      const project: Project = {
+        id: Date.now(),
+        title: data.title || file.name.replace('.digicode.json', ''),
+        description: data.description,
+        blocklyXml: data.blocklyXml,
+        generatedCode: data.generatedCode,
+        language: 'arduino',
+        createdAt: data.savedAt,
+        updatedAt: data.savedAt,
+      };
+      onSelect(project);
+      onOpenChange(false);
     };
     reader.readAsText(file);
     // 同じファイルを再選択できるようにリセット

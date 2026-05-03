@@ -208,8 +208,13 @@ function inferWidgetForChannel(
  * Strip the projectName down to a stable id usable as a JSON key / DOM key.
  * Returns empty string when no usable chars remain — caller substitutes
  * a default like `'device-1'`.
+ *
+ * Exported so the Phase 3 unified-controller path
+ * (`UnifiedControllerSection.tsx` and `unifiedControllerBuilder.ts`) can
+ * derive the same per-device id from a project title without duplicating
+ * the regex.
  */
-function sanitizeDeviceId(name: string): string {
+export function sanitizeDeviceId(name: string): string {
   if (!name) return '';
   return name
     .trim()

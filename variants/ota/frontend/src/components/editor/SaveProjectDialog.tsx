@@ -11,6 +11,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  serializeDigicodeProjectFile,
+  defaultDigicodeFileName,
+  type DigicodeProjectFile,
+} from '@/services/projectFileReader';
 
 interface SaveProjectDialogProps {
   open: boolean;
@@ -63,7 +68,7 @@ export function SaveProjectDialog({
     // ファイルとしてダウンロード保存（全ユーザー共通）
     let success = false;
     try {
-      const projectData = {
+      const projectData: DigicodeProjectFile = {
         title: title.trim(),
         description: description.trim() || undefined,
         blocklyXml,
@@ -71,11 +76,13 @@ export function SaveProjectDialog({
         language: 'arduino',
         savedAt: new Date().toISOString(),
       };
-      const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
+      const blob = new Blob([serializeDigicodeProjectFile(projectData)], {
+        type: 'application/json',
+      });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${title.trim()}.digicode.json`;
+      a.download = defaultDigicodeFileName(title);
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
