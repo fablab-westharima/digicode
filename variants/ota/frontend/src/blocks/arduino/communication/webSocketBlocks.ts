@@ -230,7 +230,8 @@ const WS_SERVER_INCLUDE = `
 #include <WebServer.h>
 #include <ArduinoWebsockets.h>
 #include <ArduinoJson.h>
-#include <vector>`;
+#include <vector>
+using namespace websockets;`;
 
 const WS_SERVER_GLOBALS = `
 WebServer http(80);
