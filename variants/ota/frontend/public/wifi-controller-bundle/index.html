@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>DigiCode WiFi Controller</title>
+<!--
+  47.md Phase 2 commit #1 — Vanilla HTML+CSS+JS controller bundle.
+  Served from ESP32 firmware (PROGMEM) at http://<device-ip>/. The page fetches
+  /schema.json from the same origin to discover widget configuration, then opens
+  a WebSocket to ws://<device-ip>:<port>/ for live channel I/O.
+
+  Wire format: { "id": "<channelId>", "value": "<asString>" } JSON envelope.
+
+  This file is the single source of truth. The build step
+  scripts/build-wifi-controller-bundle.ts gzips this file and base64-encodes
+  it into src/data/wifiControllerBundle.ts. Commit #2 will inject the byte
+  array as PROGMEM into the cpp generator output.
+
+  Phase 2 MVP: English labels only (47.md §5.11). Multi-locale bundle build
+  deferred to Phase 3+.
+-->
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #0f172a;
+  --muted: #64748b;
+  --card: #f8fafc;
+  --card-border: #e2e8f0;
+  --accent: #00bcd4;
+  --accent-fg: #ffffff;
+  --danger: #ef4444;
+  --success: #10b981;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --fg: #f1f5f9;
+    --muted: #94a3b8;
+    --card: #1e293b;
+    --card-border: #334155;
+    --accent: #00bcd4;
+    --accent-fg: #0f172a;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 16px;
+  line-height: 1.4;
+  min-height: 100vh;
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--card-border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+}
+h1 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+.status {
+  font-size: 0.875rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.status::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.status.connected::before { background: var(--success); }
+.status.error::before { background: var(--danger); }
+main {
+  padding: 16px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.notice {
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.9rem;
+}
+.widget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.widget {
+  padding: 14px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+}
+.widget-label {
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.widget-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 4px 0;
+  font-variant-numeric: tabular-nums;
+  word-break: break-all;
+}
+.widget button.toggle {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--fg);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.widget button.toggle.on {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+.widget input[type=range] {
+  width: 100%;
+  margin: 8px 0 0;
+  accent-color: var(--accent);
+}
+.widget .range-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>DigiCode WiFi Controller</h1>
+  <div id="status" class="status">Connecting...</div>
+</header>
+<main id="main">
+  <div class="notice">Loading schema...</div>
+</main>
+<script>
+(function () {
+  var $main = document.getElementById('main');
+  var $status = document.getElementById('status');
+  var widgetEls = new Map();
+  var ws = null;
+
+  function setStatus(text, cls) {
+    $status.textContent = text;
+    $status.className = 'status' + (cls ? ' ' + cls : '');
+  }
+
+  function notice(text) {
+    $main.innerHTML = '';
+    var div = document.createElement('div');
+    div.className = 'notice';
+    div.textContent = text;
+    $main.appendChild(div);
+  }
+
+  function send(id, value) {
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    ws.send(JSON.stringify({ id: id, value: String(value) }));
+  }
+
+  function makeToggle(w) {
+    var el = document.createElement('div');
+    el.className = 'widget';
+    var label = document.createElement('div');
+    label.className = 'widget-label';
+    label.textContent = w.label || w.id;
+    var btn = document.createElement('button');
+    btn.className = 'toggle';
+    btn.textContent = 'OFF';
+    var on = false;
+    btn.addEventListener('click', function () {
+      on = !on;
+      btn.textContent = on ? 'ON' : 'OFF';
+      btn.classList.toggle('on', on);
+      send(w.id, on ? '1' : '0');
+    });
+    el.appendChild(label);
+    el.appendChild(btn);
+    return {
+      el: el,
+      setValue: function (v) {
+        on = v === '1' || v === 1 || v === 'true' || v === true;
+        btn.textContent = on ? 'ON' : 'OFF';
+        btn.classList.toggle('on', on);
+      },
+    };
+  }
+
+  function makeSlider(w) {
+    var min = w.min != null ? Number(w.min) : 0;
+    var max = w.max != null ? Number(w.max) : 100;
+    var step = w.step != null ? Number(w.step) : 1;
+    var el = document.createElement('div');
+    el.className = 'widget';
+    var label = document.createElement('div');
+    label.className = 'widget-label';
+    label.textContent = w.label || w.id;
+    var valueEl = document.createElement('div');
+    valueEl.className = 'widget-value';
+    valueEl.textContent = String(min);
+    var slider = document.createElement('input');
+    slider.type = 'range';
+    slider.min = String(min);
+    slider.max = String(max);
+    slider.step = String(step);
+    slider.value = String(min);
+    slider.addEventListener('input', function () {
+      valueEl.textContent = slider.value;
+      send(w.id, slider.value);
+    });
+    var range = document.createElement('div');
+    range.className = 'range-row';
+    var lo = document.createElement('span'); lo.textContent = String(min);
+    var hi = document.createElement('span'); hi.textContent = String(max);
+    range.appendChild(lo);
+    range.appendChild(hi);
+    el.appendChild(label);
+    el.appendChild(valueEl);
+    el.appendChild(slider);
+    el.appendChild(range);
+    return {
+      el: el,
+      setValue: function (v) {
+        slider.value = String(v);
+        valueEl.textContent = String(v);
+      },
+    };
+  }
+
+  function makeDisplay(w) {
+    var el = document.createElement('div');
+    el.className = 'widget';
+    var label = document.createElement('div');
+    label.className = 'widget-label';
+    label.textContent = w.label || w.id;
+    var valueEl = document.createElement('div');
+    valueEl.className = 'widget-value';
+    valueEl.textContent = '--';
+    el.appendChild(label);
+    el.appendChild(valueEl);
+    return {
+      el: el,
+      setValue: function (v) {
+        valueEl.textContent = String(v);
+      },
+    };
+  }
+
+  function createWidget(w) {
+    switch (w.type) {
+      case 'gatt-toggle':  return makeToggle(w);
+      case 'gatt-slider':  return makeSlider(w);
+      case 'gatt-display': return makeDisplay(w);
+      default: return null;
+    }
+  }
+
+  function renderDevice(device) {
+    $main.innerHTML = '';
+    var widgets = (device && device.widgets) || [];
+    if (widgets.length === 0) {
+      notice('No widgets configured. Add WebSocket Register Channel blocks in DigiCode and re-flash.');
+      return;
+    }
+    var grid = document.createElement('div');
+    grid.className = 'widget-grid';
+    for (var i = 0; i < widgets.length; i++) {
+      var w = widgets[i];
+      var widget = createWidget(w);
+      if (!widget) continue;
+      widgetEls.set(w.id, widget);
+      grid.appendChild(widget.el);
+    }
+    $main.appendChild(grid);
+  }
+
+  function connectWs(port) {
+    var wsUrl = 'ws://' + location.hostname + ':' + port + '/';
+    try {
+      ws = new WebSocket(wsUrl);
+    } catch (e) {
+      setStatus('Connection failed', 'error');
+      return;
+    }
+    ws.addEventListener('open', function () {
+      setStatus('Connected', 'connected');
+    });
+    ws.addEventListener('close', function () {
+      setStatus('Disconnected');
+    });
+    ws.addEventListener('error', function () {
+      setStatus('Connection error', 'error');
+    });
+    ws.addEventListener('message', function (ev) {
+      var msg;
+      try { msg = JSON.parse(ev.data); } catch (e) { return; }
+      if (!msg || msg.id == null) return;
+      var w = widgetEls.get(msg.id);
+      if (w && w.setValue) w.setValue(msg.value);
+    });
+  }
+
+  fetch('/schema.json')
+    .then(function (r) {
+      if (!r.ok) throw new Error('schema fetch failed: HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (schema) {
+      if (!schema || !schema.devices || schema.devices.length === 0) {
+        notice('No devices configured.');
+        setStatus('No schema');
+        return;
+      }
+      var device = schema.devices[0];
+      renderDevice(device);
+      var port = (device.endpoint && device.endpoint.port) || 81;
+      connectWs(port);
+    })
+    .catch(function (e) {
+      notice(
+        'Could not load schema: ' + e.message +
+        '. This page is meant to be served from your ESP32 device.'
+      );
+      setStatus('Schema unavailable', 'error');
+    });
+})();
+</script>
+</body>
+</html>
