@@ -29,11 +29,25 @@ const NUS_UUIDS = `
 #define NUS_RX_UUID      "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
 #define NUS_TX_UUID      "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"`;
 
+// `bleWriteCharUuid` (Bug U5 race fix, 2026-05-03):
+// Promoted from GATT_GLOBALS to BLE_GLOBALS so it is ALWAYS declared, even
+// in NUS-only programs. The NUS receive callback (`BleRxCallbacks::onWrite`)
+// now explicitly clears this flag to mark "this message is NUS, not GATT",
+// and `bleCheckReceive()` guards on its emptiness so a GATT-originated
+// message is not consumed by the NUS handler before its GATT handler runs.
+//
+// Original bug: NUS and GATT writes both target the SAME `bleMessage`
+// buffer. Static-init order made `bleCheckReceive` the first handler in
+// `bleLoopTick()`, so for any GATT write it ran first (no uuid check),
+// printed/echoed/cleared the message, leaving subsequent
+// `bleCheckWrite_<uuid>()` to find an empty buffer and silently skip
+// the user's `digitalWrite` / `servo.write` / etc. handler.
 const BLE_GLOBALS = `
 NimBLEServer* pBleServer = nullptr;
 NimBLECharacteristic* pBleTxChar = nullptr;
 bool bleConnected = false;
-String bleMessage = "";`;
+String bleMessage = "";
+String bleWriteCharUuid = "";`;
 
 // Unified loop-tick mechanism (Bug 3 defensive fix, 2026-05-03):
 // ble_uart_on_receive / ble_on_write previously each emitted a separate
@@ -97,9 +111,17 @@ generator.forBlock['ble_uart_setup'] = function(block: Blockly.Block) {
   generator.definitions_['ble_globals'] = BLE_GLOBALS;
   generator.definitions_['ble_server_callbacks'] = SERVER_CALLBACKS;
   // NimBLE v2: onWrite takes NimBLEConnInfo& (BUG-065). Arg unused, body unchanged.
+  // U5 race fix (2026-05-03): explicitly clear `bleWriteCharUuid` so
+  // bleCheckReceive (the NUS handler) sees "this message is NUS" and
+  // processes it. Without this clear, a stale uuid from a prior unprocessed
+  // GATT write would cause bleCheckReceive to skip the NUS message.
+  // Set order is uuid-first / message-second so a torn read by
+  // bleCheckReceive between the two assignments still skips safely
+  // (bleMessage check fails when only uuid was reset).
   generator.definitions_['ble_rx_callbacks'] = `
 class BleRxCallbacks : public NimBLECharacteristicCallbacks {
   void onWrite(NimBLECharacteristic* c, NimBLEConnInfo& connInfo) {
+    bleWriteCharUuid = "";
     std::string v = c->getValue();
     bleMessage = String(v.c_str());
   }
@@ -198,9 +220,18 @@ generator.forBlock['ble_uart_on_receive'] = function(block: Blockly.Block) {
   // (runs before main()), and the block emits a single unified
   // `bleLoopTick();` call that walks all registered handlers idempotently.
   generator.definitions_['ble_loop_tick_globals'] = BLE_LOOP_TICK_GLOBALS;
+  // U5 race fix (2026-05-03): guard on `bleWriteCharUuid.length() == 0`
+  // so a GATT-originated message (which sets bleWriteCharUuid to its
+  // characteristic UUID) is NOT consumed by the NUS handler before its
+  // matching `bleCheckWrite_<uuid>()` runs. Static-init order made this
+  // function the first handler in bleLoopTick(), so without the guard it
+  // ate every message regardless of source — the U5 LED toggle / Servo
+  // slider symptom (writes accepted, handlers never fired). The NUS
+  // BleRxCallbacks now explicitly sets bleWriteCharUuid="" to mark its
+  // own messages as NUS-origin.
   generator.definitions_['ble_receive_func'] = `
 void bleCheckReceive() {
-  if (bleMessage.length() > 0) {
+  if (bleMessage.length() > 0 && bleWriteCharUuid.length() == 0) {
 ${handler}    bleMessage = "";
   }
 }
@@ -502,13 +533,17 @@ const GATT_COLOR = '#1565C0';
 // Previously ble_add_characteristic called start() per characteristic — for
 // 3 characteristics on the same service, start() ran 3 times which corrupts
 // the service's GATT table state in NimBLE.
+//
+// `bleWriteCharUuid` was MOVED to BLE_GLOBALS (U5 race fix, 2026-05-03)
+// so the NUS callback can clear it. It must always be declared whenever
+// either NUS or GATT is in use — placing it in BLE_GLOBALS satisfies this
+// since every block here also emits BLE_GLOBALS.
 const GATT_GLOBALS = `
 #include <map>
 #include <set>
 std::map<std::string, NimBLECharacteristic*> bleCharMap;
 std::map<std::string, NimBLEService*> bleServiceMap;
-std::set<std::string> bleStartedServices;
-String bleWriteCharUuid = "";`;
+std::set<std::string> bleStartedServices;`;
 
 // NimBLE v2: onWrite takes NimBLEConnInfo& (BUG-065). Arg unused, body unchanged.
 const GATT_WRITE_CALLBACKS = `
