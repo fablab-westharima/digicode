@@ -374,13 +374,18 @@ bool bleDeviceFound = false;
 String bleFoundName = "";
 String bleFoundAddress = "";
 int bleFoundRssi = 0;`;
+  // Audit 2 follow-up (2026-05-03): same defensive pattern as bug 3 fix.
+  // Auto-register the check via _BleLoopRegister so misplacement (top-level)
+  // does not strand the call. Block return is unified `bleLoopTick();`.
+  generator.definitions_['ble_loop_tick_globals'] = BLE_LOOP_TICK_GLOBALS;
   generator.definitions_['ble_device_found_func'] = `
 void bleCheckDeviceFound() {
   if (bleDeviceFound) {
     bleDeviceFound = false;
 ${handler}  }
-}`;
-  return `  bleCheckDeviceFound();\n`;
+}
+static _BleLoopRegister _reg_bleCheckDeviceFound(bleCheckDeviceFound);`;
+  return `  bleLoopTick();\n`;
 };
 
 // 共通 globals 参照用（scan_found 系 value block で再利用）

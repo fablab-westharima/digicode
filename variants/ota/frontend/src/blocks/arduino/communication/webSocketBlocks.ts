@@ -108,9 +108,28 @@ Blockly.Blocks['websocket_on_message'] = {
   }
 };
 
+// Audit 2 follow-up (2026-05-03): bleLoopTick mirror for WebSocket. Auto-
+// register the message-check via static initializer, return a unified
+// `wsLoopTick();` so misplacement (top-level / setup-only) does not strand
+// the call. Same defensive design as ble_uart_on_receive / ble_on_write.
+const WS_LOOP_TICK_GLOBALS = `
+#include <vector>
+typedef void (*WsLoopHandler)();
+std::vector<WsLoopHandler>& _wsLoopHandlers() {
+  static std::vector<WsLoopHandler> v;
+  return v;
+}
+struct _WsLoopRegister {
+  _WsLoopRegister(WsLoopHandler h) { _wsLoopHandlers().push_back(h); }
+};
+void wsLoopTick() {
+  for (auto h : _wsLoopHandlers()) h();
+}`;
+
 generator.forBlock['websocket_on_message'] = function(block: Blockly.Block) {
   const handler = javascriptGenerator.statementToCode(block, 'HANDLER');
   generator.definitions_['include_ws'] = WS_INCLUDE;
+  generator.definitions_['ws_loop_tick_globals'] = WS_LOOP_TICK_GLOBALS;
   generator.definitions_['ws_msg_check_func'] = `
 void wsCheckMessage() {
   wsClient.poll();
@@ -118,8 +137,9 @@ void wsCheckMessage() {
     String _msg = wsMessage;
     wsMessage = "";
 ${handler}  }
-}`;
-  return `  wsCheckMessage();\n`;
+}
+static _WsLoopRegister _reg_wsCheckMessage(wsCheckMessage);`;
+  return `  wsLoopTick();\n`;
 };
 
 /**
