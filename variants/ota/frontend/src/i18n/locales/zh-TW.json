@@ -1086,7 +1086,24 @@
       "isConnected": "WebSocket 已連線?",
       "isConnectedTooltip": "若目前已連線到WebSocket伺服器則回傳true。",
       "disconnect": "WebSocket 中斷連線",
-      "disconnectTooltip": "關閉WebSocket連線。"
+      "disconnectTooltip": "關閉WebSocket連線。",
+      "server": {
+        "start": "WebSocket 伺服器啟動",
+        "startTooltip": "將 ESP32 啟動為 WebSocket 伺服器。HTTP 提供控制器 HTML、WS 處理頻道通訊。請在 WiFi 連線後放到 setup 中。",
+        "register": "WebSocket 頻道註冊",
+        "registerTooltip": "為控制器 UI 宣告一個頻道。Widget 類型會由 ID／標籤／型別／最小最大／讀寫通知自動推斷。請放到 setup 中。",
+        "channelId": "頻道",
+        "onMessage": "WebSocket 頻道接收時",
+        "onMessageTooltip": "當指定頻道收到寫入時執行處理程式。在 HANDLER 內可用「WebSocket 接收值」取得值。放到 loop 或 setup 都可。",
+        "send": "WebSocket 頻道傳送",
+        "sendTooltip": "將指定頻道的值以 JSON 信封廣播給所有連線中的控制器。",
+        "onConnect": "WebSocket 客戶端連線時",
+        "onConnectTooltip": "當新的控制器連線時執行處理程式。例：連線後立即廣播目前狀態。",
+        "clientCount": "WebSocket 連線客戶端數",
+        "clientCountTooltip": "回傳目前連線中的控制器數量。",
+        "receivedValue": "WebSocket 接收值",
+        "receivedValueTooltip": "在 WebSocket 接收處理程式內，回傳最後一次收到的值（字串）。處理程式外回傳空字串。"
+      }
     },
     "uart2": {
       "begin": "Serial2 初始化",

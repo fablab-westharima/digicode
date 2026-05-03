@@ -1086,7 +1086,24 @@
       "isConnected": "WebSocket Ligado?",
       "isConnectedTooltip": "Devolve true se estiver ligado a um servidor WebSocket.",
       "disconnect": "Desligar WebSocket",
-      "disconnectTooltip": "Fecha a ligação WebSocket."
+      "disconnectTooltip": "Fecha a ligação WebSocket.",
+      "server": {
+        "start": "Iniciar servidor WebSocket",
+        "startTooltip": "Inicia o ESP32 como servidor WebSocket. HTTP serve o HTML do controlador, WS gere o tráfego de canais. Coloque em setup após WiFi ligado.",
+        "register": "Registar canal WebSocket",
+        "registerTooltip": "Declara um canal para a UI do controlador. O tipo de widget é inferido de id / etiqueta / tipo / mín-máx / ler-escrever-notificar. Coloque em setup.",
+        "channelId": "canal",
+        "onMessage": "Ao receber mensagem do canal WebSocket",
+        "onMessageTooltip": "Executa o manipulador ao receber uma escrita no canal indicado. Dentro do manipulador use «Recebido WebSocket» para ler o valor. Independente do local.",
+        "send": "Enviar canal WebSocket",
+        "sendTooltip": "Difunde o valor do canal indicado a todos os controladores ligados como envelope JSON.",
+        "onConnect": "Ao ligar cliente WebSocket",
+        "onConnectTooltip": "Executa o manipulador quando um novo controlador se liga. Ex.: difundir o estado actual logo após a ligação.",
+        "clientCount": "Nº clientes WebSocket",
+        "clientCountTooltip": "Devolve o número de controladores actualmente ligados.",
+        "receivedValue": "Recebido WebSocket",
+        "receivedValueTooltip": "Dentro de um manipulador de mensagem WebSocket, devolve o último valor recebido como string. Fora do manipulador devolve string vazia."
+      }
     },
     "uart2": {
       "begin": "Iniciar Serial2",

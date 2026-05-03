@@ -473,7 +473,7 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="rfid_write_data"></block>
   </category>`,
 
-  // WebSocket (BP6-1, 2026-04-20 追加) — supportsWifi フィルタ対象
+  // WebSocket (BP6-1, 2026-04-20 追加 + 47.md Phase 2 commit #0, 2026-05-XX 追加 server 系 7) — supportsWifi フィルタ対象
   websocket: `
   <category id="websocket" name="${cat('websocket')}" colour="#00BCD4">
     <block type="websocket_connect"></block>
@@ -481,6 +481,14 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="websocket_on_message"></block>
     <block type="websocket_is_connected"></block>
     <block type="websocket_disconnect"></block>
+    <sep></sep>
+    <block type="websocket_server_start"></block>
+    <block type="websocket_server_register"></block>
+    <block type="websocket_server_on_message"></block>
+    <block type="websocket_server_received_value"></block>
+    <block type="websocket_server_send"></block>
+    <block type="websocket_server_on_connect"></block>
+    <block type="websocket_server_client_count"></block>
   </category>`,
 
   // UART 2 / Serial2 (BP6-3, 2026-04-20 追加)

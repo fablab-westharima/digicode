@@ -2,7 +2,9 @@
  * generate-cases.ts — Phase 1 use-case generator (CLI entry).
  *
  * Walks the catalog and emits 1000 deterministic Blockly XML cases across
- * five strategies (Singleton 414 + Edge 86 + Matrix 100 + Pair 200 + Template 200).
+ * six strategies (Singleton 421 + Edge 86 + Matrix 100 + Pair 178 + Template 200 + Combo 15).
+ * singleton bucket is sized as catalog.size + small buffer to keep the
+ * "every catalog block is hit by singleton" invariant as the catalog grows.
  * Output is a directory of `case_NNNN.xml` files plus `manifest.json`.
  *
  * Usage:
@@ -85,7 +87,7 @@ function printHelp(): void {
   --seed <N>      Reserved for future randomized strategies (default: 42)
   --help          Show this message
 
-Strategy allocation (count=1000): singleton=414 edge=86 matrix=100 pair=185 template=200 combo=15.
+Strategy allocation (count=1000): singleton=421 edge=86 matrix=100 pair=178 template=200 combo=15.
 For non-1000 counts the allocation is scaled proportionally.
 `,
   );
@@ -114,11 +116,17 @@ interface StrategyAllocation {
   combo: number;
 }
 
+// 47.md Phase 2 commit #0 (2026-05-XX): catalog grew 412 → 419 with 7 new
+// websocket_server_* blocks. singleton bucket bumped from 414 → 421 (catalog
+// size + 2 buffer) so the "singleton hits every catalog block" test invariant
+// stays satisfied. Compensated by reducing pair (185 → 178), keeping the total
+// at 1000 cases. Pair is the next-largest bucket and the marginal contribution
+// of the dropped 7 cases is negligible (Round 2 passRate 90.4% baseline).
 const FULL_ALLOCATION: StrategyAllocation = {
-  singleton: 414,
+  singleton: 421,
   edge: 86,
   matrix: 100,
-  pair: 185,
+  pair: 178,
   template: 200,
   combo: 15,
 };

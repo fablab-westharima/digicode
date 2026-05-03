@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-03T06:53:14.621Z",
+  "generatedAt": "2026-05-03T10:39:59.490Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -9438,6 +9438,219 @@
       "colour": "#00BCD4",
       "isStatement": true,
       "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "websocket_server_start",
+      "category": "websocket",
+      "tooltip": "Start ESP32 as a WebSocket server. HTTP serves the controller HTML, WS handles channel traffic. Place in setup after WiFi is connected.",
+      "colour": "#00BCD4",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [
+        {
+          "name": "PORT",
+          "fieldType": "number",
+          "default": 81,
+          "min": 1,
+          "max": 65535
+        },
+        {
+          "name": "PATH",
+          "fieldType": "text",
+          "default": "/"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "websocket_server_register",
+      "category": "websocket",
+      "tooltip": "Declare a channel for the controller UI. The widget type is inferred from id/label/data type/min-max/read-write-notify. Place in setup.",
+      "colour": "#00BCD4",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [
+        {
+          "name": "MIN",
+          "fieldType": "number",
+          "default": 0
+        },
+        {
+          "name": "MAX",
+          "fieldType": "number",
+          "default": 100
+        },
+        {
+          "name": "DATA_TYPE",
+          "fieldType": "dropdown",
+          "options": [
+            "string",
+            "bool",
+            "uint8",
+            "uint16",
+            "int8",
+            "int16",
+            "float"
+          ]
+        },
+        {
+          "name": "CHANNEL_ID",
+          "fieldType": "text",
+          "default": "channel1"
+        },
+        {
+          "name": "LABEL",
+          "fieldType": "text",
+          "default": "Channel"
+        },
+        {
+          "name": "READ",
+          "fieldType": "checkbox",
+          "default": true
+        },
+        {
+          "name": "WRITE",
+          "fieldType": "checkbox",
+          "default": true
+        },
+        {
+          "name": "NOTIFY",
+          "fieldType": "checkbox",
+          "default": false
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "websocket_server_on_message",
+      "category": "websocket",
+      "tooltip": "Run the handler when a write to the given channel is received. Use \"WebSocket Received\" inside HANDLER to read the value. Placement-independent.",
+      "colour": "#00BCD4",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [
+        {
+          "name": "CHANNEL_ID",
+          "fieldType": "text",
+          "default": "channel1"
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "HANDLER"
+        }
+      ]
+    },
+    {
+      "type": "websocket_server_received_value",
+      "category": "websocket",
+      "tooltip": "Inside a WebSocket on-message handler, returns the last received value as a string. Returns empty string outside the handler.",
+      "colour": "#00BCD4",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "websocket_server_send",
+      "category": "websocket",
+      "tooltip": "Broadcast the value on the given channel to every connected controller as a JSON envelope.",
+      "colour": "#00BCD4",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [
+        {
+          "name": "CHANNEL_ID",
+          "fieldType": "text",
+          "default": "channel1"
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "websocket_server_on_connect",
+      "category": "websocket",
+      "tooltip": "Run the handler when a new controller connects. E.g. broadcast the current state right after connection.",
+      "colour": "#00BCD4",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "HANDLER"
+        }
+      ]
+    },
+    {
+      "type": "websocket_server_client_count",
+      "category": "websocket",
+      "tooltip": "Returns the number of currently-connected controllers.",
+      "colour": "#00BCD4",
+      "isStatement": false,
+      "hasOutput": true,
       "modes": [
         "homeassistant",
         "generic",

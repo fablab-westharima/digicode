@@ -1294,7 +1294,24 @@
       "isConnected": "WebSocket 接続中?",
       "isConnectedTooltip": "WebSocketサーバーに接続中であればtrueを返します。",
       "disconnect": "WebSocket 切断",
-      "disconnectTooltip": "WebSocket接続を閉じます。"
+      "disconnectTooltip": "WebSocket接続を閉じます。",
+      "server": {
+        "start": "WebSocket サーバー起動",
+        "startTooltip": "ESP32 を WebSocket サーバーとして起動し、HTTP でコントローラ HTML を配信、WS でチャンネル通信を行います。WiFi 接続後に setup 内へ置いてください。",
+        "register": "WebSocket チャンネル登録",
+        "registerTooltip": "コントローラ UI に表示するチャンネルを定義します。ID / ラベル / 型 / 最小最大 / 読み書き通知の各設定からウィジェット種類が自動推論されます。setup 内に置いてください。",
+        "channelId": "チャンネル",
+        "onMessage": "WebSocket チャンネル受信時",
+        "onMessageTooltip": "指定チャンネルへの書き込み受信時にハンドラを実行します。HANDLER 内では「WebSocket 受信値」で値を取得できます。loop 内 / setup 内どこでも配置可能です。",
+        "send": "WebSocket チャンネル送信",
+        "sendTooltip": "接続中の全コントローラに、指定チャンネルの値を JSON エンベロープでブロードキャストします。",
+        "onConnect": "WebSocket クライアント接続時",
+        "onConnectTooltip": "新しいコントローラが接続した時にハンドラを実行します。例: 接続直後に現在の状態を broadcast。",
+        "clientCount": "WebSocket 接続クライアント数",
+        "clientCountTooltip": "現在接続中のコントローラの台数を返します。",
+        "receivedValue": "WebSocket 受信値",
+        "receivedValueTooltip": "WebSocket チャンネル受信時ハンドラ内で、最後に受信した値（文字列）を返します。ハンドラ外では空文字を返します。"
+      }
     },
     "uart2": {
       "begin": "Serial2 初期化",
