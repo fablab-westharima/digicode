@@ -151,24 +151,49 @@ export class WebBluetoothClient {
       const server = await gatt.connect();
 
       // Eager service discovery — pre-populate browser GATT cache before
-      // widgets call resolveCharacteristic. Each service gets one retry with
-      // a 500 ms gap (ESP32-side NimBLE service registration typically settles
-      // within a few hundred ms after pBleServer->createService()).
-      // NotFoundError after retry is logged but non-fatal: the user may have
-      // defined the service in the schema but forgotten the matching
+      // widgets call resolveCharacteristic. Without this, the first widget
+      // interaction races with ESP32 firmware setup() (NimBLE custom-service
+      // registration may still be in flight when the device first advertises
+      // — especially in U5-style mixed flows where ble_uart_setup starts
+      // advertising immediately while ble_add_service / start_advertising
+      // for the custom GATT service runs after).
+      //
+      // Initial 200 ms settle wait + 3 retries with 500/1000/2000 ms backoff
+      // (cumulative max ~3.7 s per service). U5 UAT field test confirmed the
+      // single-500 ms-retry from commit 7a05374 was insufficient — disconnect/
+      // reconnect after ~5-10 s succeeded, indicating the ESP32 sometimes needs
+      // longer to finish setup() than the original retry budget.
+      //
+      // NotFoundError after all retries is logged but non-fatal: the user may
+      // have defined the service in the schema but forgotten the matching
       // ble_add_service block in the firmware sketch. Letting connect()
       // succeed allows NUS / other services to still work.
+      const DISCOVERY_RETRY_DELAYS_MS = [500, 1000, 2000];
+      // Initial settle wait — covers the immediate post-connect window where
+      // the ESP32 may still be in the middle of NimBLEService::start() calls.
+      await new Promise((r) => setTimeout(r, 200));
       for (const uuid of optionalServices) {
+        let found = false;
         try {
           await server.getPrimaryService(uuid);
+          found = true;
         } catch {
-          await new Promise((r) => setTimeout(r, 500));
-          try {
-            await server.getPrimaryService(uuid);
-          } catch (retryErr) {
-            // eslint-disable-next-line no-console
-            console.warn(`[WebBluetoothClient] service ${uuid} not found after retry`, retryErr);
+          for (const delay of DISCOVERY_RETRY_DELAYS_MS) {
+            await new Promise((r) => setTimeout(r, delay));
+            try {
+              await server.getPrimaryService(uuid);
+              found = true;
+              break;
+            } catch {
+              // try next delay
+            }
           }
+        }
+        if (!found) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `[WebBluetoothClient] service ${uuid} not found after eager-discovery retries (200 ms + 500 + 1000 + 2000 ms)`,
+          );
         }
       }
 
