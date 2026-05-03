@@ -18,6 +18,7 @@ import {
   Terminal,
   LineChart,
   Bluetooth,
+  Wifi,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LocaleSelector } from '@/components/common/LocaleSelector';
@@ -52,6 +53,10 @@ interface LinearToolbarProps {
   // BLE Controller (47.md commit #5)
   showBleController?: boolean;
   onToggleBleController?: () => void;
+
+  // WiFi Controller (47.md Phase 2 commit #4)
+  showWifiController?: boolean;
+  onToggleWifiController?: () => void;
 }
 
 export function LinearToolbar({
@@ -73,6 +78,8 @@ export function LinearToolbar({
   onToggleSerialPlotter,
   showBleController = false,
   onToggleBleController,
+  showWifiController = false,
+  onToggleWifiController,
 }: LinearToolbarProps) {
   const { t } = useTranslation();
 
@@ -197,6 +204,20 @@ export function LinearToolbar({
             <Bluetooth className="w-3.5 h-3.5 mr-1" />
             <span className="text-xs">{t('editor.menu.bleController', { defaultValue: 'BLE' })}</span>
             {/* "BLE" intentionally untranslated — universal abbreviation. */}
+          </Button>
+        )}
+
+        {/* WiFi Controller (47.md Phase 2 commit #4) */}
+        {onToggleWifiController && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`px-2 ${showWifiController ? 'text-green-400 bg-[#2E333D]' : 'text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D]'}`}
+            onClick={onToggleWifiController}
+          >
+            <Wifi className="w-3.5 h-3.5 mr-1" />
+            <span className="text-xs">{t('editor.menu.wifiController', { defaultValue: 'WiFi' })}</span>
+            {/* "WiFi" intentionally untranslated — universal abbreviation. */}
           </Button>
         )}
 

@@ -517,6 +517,7 @@
       "serialMonitor": "序列監視器",
       "plotter": "繪圖機",
       "bleController": "BLE",
+      "wifiController": "WiFi",
       "displayLanguage": "顯示語言",
       "mode": "模式",
       "compileTargetBoard": "編譯目標開發板",
@@ -871,6 +872,21 @@
       "notConnected": "裝置尚未連線。",
       "generic": "通訊錯誤：{{detail}}"
     }
+  },
+  "wifiController": {
+    "dialogTitle": "WiFi 控制器",
+    "ipAddress": "ESP32 IP 位址",
+    "lastIpHistory": "最近的 IP",
+    "noUrlYet": "輸入 IP 後會顯示 QR 碼",
+    "openInBrowser": "在瀏覽器開啟",
+    "copyUrl": "複製網址",
+    "urlCopied": "已複製",
+    "qrInstructions": "用手機掃描 QR 碼，或複製網址後在任何瀏覽器中開啟。",
+    "wsPortNote": "WebSocket 連接埠 = {{port}}",
+    "previewLabel": "Widget 預覽（僅供顯示，無法操作）",
+    "previewNote": "實際操作在 ESP32 提供的頁面上進行。",
+    "noServerBlocks": "請將 WebSocket 伺服器區塊加入工作區。",
+    "requireWifi": "ESP32 必須連線到同一 WiFi 並通電。"
   },
   "bluetooth": {
     "notSupported": "不支持藍牙",

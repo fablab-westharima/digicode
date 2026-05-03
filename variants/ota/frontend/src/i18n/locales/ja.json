@@ -520,6 +520,7 @@
       "serialMonitor": "シリアルモニター",
       "plotter": "プロッター",
       "bleController": "BLE",
+      "wifiController": "WiFi",
       "displayLanguage": "表示言語",
       "mode": "モード",
       "compileTargetBoard": "コンパイル対象ボード",
@@ -871,6 +872,21 @@
       "notConnected": "デバイスが接続されていません。",
       "generic": "通信エラー: {{detail}}"
     }
+  },
+  "wifiController": {
+    "dialogTitle": "WiFi コントローラ",
+    "ipAddress": "ESP32 IP アドレス",
+    "lastIpHistory": "履歴",
+    "noUrlYet": "IP を入力すると QR コードが表示されます",
+    "openInBrowser": "ブラウザで開く",
+    "copyUrl": "URL をコピー",
+    "urlCopied": "コピーしました",
+    "qrInstructions": "スマホで QR コードをスキャン、または URL をコピーしてブラウザで開いてください。",
+    "wsPortNote": "WebSocket ポート = {{port}}",
+    "previewLabel": "ウィジェット プレビュー (説明用、操作不可)",
+    "previewNote": "実際の操作は ESP32 配信ページで行います。",
+    "noServerBlocks": "WebSocket サーバーブロックを workspace に追加してください。",
+    "requireWifi": "ESP32 がこの IP に接続済みかつ電源 ON が必要です。"
   },
   "bluetooth": {
     "notSupported": "Web Bluetooth APIがサポートされていません",

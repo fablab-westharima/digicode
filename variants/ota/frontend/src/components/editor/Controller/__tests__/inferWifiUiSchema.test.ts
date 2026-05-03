@@ -7,7 +7,12 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { inferWifiUiSchema, type WsServerRegistration } from '../inferWifiUiSchema';
+import {
+  inferWifiUiSchema,
+  inferWifiUiSchemaFromXml,
+  extractWsServerDataFromXml,
+  type WsServerRegistration,
+} from '../inferWifiUiSchema';
 import { DEFAULT_WS_SERVER_PORT, DEFAULT_WS_SERVER_PATH } from '../types';
 
 function reg(overrides: Partial<WsServerRegistration> = {}): WsServerRegistration {
@@ -278,5 +283,111 @@ describe('inferWifiUiSchema — N channels + warnings', () => {
       registrations: [reg({ channelId: 'anon', label: '', canWrite: true, dataType: 'bool' })],
     });
     expect(schema.devices[0].widgets[0].label).toBe('anon');
+  });
+});
+
+describe('extractWsServerDataFromXml + inferWifiUiSchemaFromXml', () => {
+  it('returns empty data on empty / blank input', () => {
+    expect(extractWsServerDataFromXml('').registrations).toEqual([]);
+    expect(extractWsServerDataFromXml('  ').registrations).toEqual([]);
+  });
+
+  it('returns empty data on parse error and does not throw', () => {
+    expect(extractWsServerDataFromXml('<<<not-xml').registrations).toEqual([]);
+  });
+
+  it('parses websocket_server_start fields', () => {
+    const xml = `<xml xmlns="https://developers.google.com/blockly/xml">
+      <block type="websocket_server_start">
+        <field name="PORT">8080</field>
+        <field name="PATH">/socket</field>
+      </block>
+    </xml>`;
+    const data = extractWsServerDataFromXml(xml);
+    expect(data.serverStart).toEqual({ port: 8080, path: '/socket' });
+  });
+
+  it('parses websocket_server_register fields and produces a complete schema via the wrapper', () => {
+    const xml = `<xml xmlns="https://developers.google.com/blockly/xml">
+      <block type="websocket_server_start">
+        <field name="PORT">81</field>
+        <field name="PATH">/</field>
+      </block>
+      <block type="websocket_server_register">
+        <field name="CHANNEL_ID">led</field>
+        <field name="LABEL">Built-in LED</field>
+        <field name="DATA_TYPE">bool</field>
+        <field name="MIN">0</field>
+        <field name="MAX">1</field>
+        <field name="READ">FALSE</field>
+        <field name="WRITE">TRUE</field>
+        <field name="NOTIFY">FALSE</field>
+      </block>
+      <block type="websocket_server_register">
+        <field name="CHANNEL_ID">servo</field>
+        <field name="LABEL">Servo angle</field>
+        <field name="DATA_TYPE">uint8</field>
+        <field name="MIN">0</field>
+        <field name="MAX">180</field>
+        <field name="READ">FALSE</field>
+        <field name="WRITE">TRUE</field>
+        <field name="NOTIFY">FALSE</field>
+      </block>
+    </xml>`;
+    const schema = inferWifiUiSchemaFromXml(xml, 'My Project');
+    expect(schema.devices[0].deviceLabel).toBe('My Project');
+    expect(schema.devices[0].endpoint).toEqual({ port: 81, path: '/' });
+    expect(schema.devices[0].widgets).toHaveLength(2);
+    expect(schema.devices[0].widgets[0]).toMatchObject({ type: 'gatt-toggle', id: 'led' });
+    expect(schema.devices[0].widgets[1]).toMatchObject({
+      type: 'gatt-slider',
+      id: 'servo',
+      min: 0,
+      max: 180,
+    });
+    expect(schema.warnings).toEqual([]);
+  });
+
+  it('does not descend into nested statement/value blocks for fields', () => {
+    // The inner block's PORT field belongs to a different block type — we
+    // must not pluck it as the outer block's field. (Mirror of BLE inferUiSchema
+    // getFieldValue behavior.)
+    const xml = `<xml>
+      <block type="websocket_server_start">
+        <field name="PORT">81</field>
+        <field name="PATH">/</field>
+        <next>
+          <block type="websocket_server_register">
+            <field name="CHANNEL_ID">x</field>
+            <field name="LABEL">x</field>
+            <field name="DATA_TYPE">bool</field>
+            <field name="MIN">0</field>
+            <field name="MAX">1</field>
+            <field name="READ">FALSE</field>
+            <field name="WRITE">TRUE</field>
+            <field name="NOTIFY">FALSE</field>
+          </block>
+        </next>
+      </block>
+    </xml>`;
+    const data = extractWsServerDataFromXml(xml);
+    expect(data.serverStart).toEqual({ port: 81, path: '/' });
+    expect(data.registrations).toHaveLength(1);
+    expect(data.registrations[0].channelId).toBe('x');
+  });
+
+  it('first websocket_server_start wins; subsequent ones ignored', () => {
+    const xml = `<xml>
+      <block type="websocket_server_start">
+        <field name="PORT">81</field>
+        <field name="PATH">/</field>
+      </block>
+      <block type="websocket_server_start">
+        <field name="PORT">9999</field>
+        <field name="PATH">/other</field>
+      </block>
+    </xml>`;
+    const data = extractWsServerDataFromXml(xml);
+    expect(data.serverStart).toEqual({ port: 81, path: '/' });
   });
 });

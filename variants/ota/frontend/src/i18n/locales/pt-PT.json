@@ -517,6 +517,7 @@
       "serialMonitor": "Monitor Serial",
       "plotter": "Traçador",
       "bleController": "BLE",
+      "wifiController": "WiFi",
       "displayLanguage": "Idioma de Exibição",
       "mode": "Modo",
       "compileTargetBoard": "Placa de Destino da Compilação",
@@ -871,6 +872,21 @@
       "notConnected": "O dispositivo não está ligado.",
       "generic": "Erro de comunicação: {{detail}}"
     }
+  },
+  "wifiController": {
+    "dialogTitle": "Controlador WiFi",
+    "ipAddress": "Endereço IP do ESP32",
+    "lastIpHistory": "IPs recentes",
+    "noUrlYet": "Introduza um IP para ver o código QR",
+    "openInBrowser": "Abrir no browser",
+    "copyUrl": "Copiar URL",
+    "urlCopied": "Copiado",
+    "qrInstructions": "Faça scan do QR com o telemóvel, ou copie o URL e abra-o em qualquer browser.",
+    "wsPortNote": "Porta WebSocket = {{port}}",
+    "previewLabel": "Pré-visualização de widgets (só leitura)",
+    "previewNote": "O controlo real acontece na página servida pelo seu ESP32.",
+    "noServerBlocks": "Adicione um bloco de servidor WebSocket à sua workspace.",
+    "requireWifi": "O ESP32 deve estar ligado à mesma WiFi e ligado."
   },
   "bluetooth": {
     "notSupported": "Bluetooth não é suportado",

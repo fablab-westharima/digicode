@@ -13,6 +13,7 @@ import { SampleProjectsDialog } from '@/components/editor/SampleProjectsDialog';
 import { SerialMonitor } from '@/components/serial/SerialMonitor';
 import { SerialPlotter } from '@/components/serial/SerialPlotter';
 import { BleControllerPanel } from '@/components/editor/BleController/BleControllerPanel';
+import { WifiControllerDialog } from '@/components/editor/Controller/WifiControllerDialog';
 import { PIDTuningPanel } from '@/components/tuning/PIDTuningPanel';
 import type { SampleProject } from '@/data/sampleProjects';
 import { DeviceSelectDialog } from '@/components/device/DeviceSelectDialog';
@@ -92,6 +93,7 @@ export function EditorPage() {
   const [showSerialMonitor, setShowSerialMonitor] = useState(false);
   const [showSerialPlotter, setShowSerialPlotter] = useState(false);
   const [showBleController, setShowBleController] = useState(false);
+  const [showWifiController, setShowWifiController] = useState(false);
   const [isCompiling, setIsCompiling] = useState(false);
   const [compileLog, setCompileLog] = useState<string[]>([]);
   const [compileLogMeta, setCompileLogMeta] = useState({
@@ -1195,6 +1197,8 @@ export function EditorPage() {
         onToggleSerialPlotter={() => setShowSerialPlotter(prev => !prev)}
         showBleController={showBleController}
         onToggleBleController={() => setShowBleController(prev => !prev)}
+        showWifiController={showWifiController}
+        onToggleWifiController={() => setShowWifiController(prev => !prev)}
       />
 
       {/* メインコンテンツ */}
@@ -1261,6 +1265,13 @@ export function EditorPage() {
           )}
         </div>
       </div>
+
+      {/* WiFi コントローラ Dialog (47.md Phase 2 commit #4) */}
+      <WifiControllerDialog
+        open={showWifiController}
+        onOpenChange={setShowWifiController}
+        workspaceXml={workspaceXml}
+      />
 
       {/* 保存ダイアログ */}
       <SaveProjectDialog

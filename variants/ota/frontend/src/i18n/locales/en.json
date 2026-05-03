@@ -517,6 +517,7 @@
       "serialMonitor": "Serial Monitor",
       "plotter": "Plotter",
       "bleController": "BLE",
+      "wifiController": "WiFi",
       "displayLanguage": "Display Language",
       "mode": "Mode",
       "compileTargetBoard": "Compile Target Board",
@@ -871,6 +872,21 @@
       "notConnected": "The device is not connected.",
       "generic": "Communication error: {{detail}}"
     }
+  },
+  "wifiController": {
+    "dialogTitle": "WiFi Controller",
+    "ipAddress": "ESP32 IP address",
+    "lastIpHistory": "Recent IPs",
+    "noUrlYet": "Enter an IP to see the QR code",
+    "openInBrowser": "Open in browser",
+    "copyUrl": "Copy URL",
+    "urlCopied": "Copied",
+    "qrInstructions": "Scan the QR with your phone, or copy the URL and open it in any browser.",
+    "wsPortNote": "WebSocket port = {{port}}",
+    "previewLabel": "Widget preview (read-only)",
+    "previewNote": "Actual control happens on the page served by your ESP32.",
+    "noServerBlocks": "Add a WebSocket server block to your workspace.",
+    "requireWifi": "Your ESP32 must be connected to the same WiFi and powered on."
   },
   "bluetooth": {
     "notSupported": "Web Bluetooth API is not supported",

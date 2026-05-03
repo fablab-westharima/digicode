@@ -273,3 +273,97 @@ function parseFloatOr(value: string | null | undefined, fallback: number): numbe
   const n = Number(value);
   return Number.isFinite(n) ? n : fallback;
 }
+
+// ---------------------------------------------------------------------------
+// XML extractor (used by the Dialog UI in commit #4)
+// ---------------------------------------------------------------------------
+
+/**
+ * Parse a Blockly workspace XML serialization into the same
+ * `{ serverStart, registrations }` shape the Blockly extractor produces.
+ *
+ * Why an XML path *as well* as a Blockly-Workspace path:
+ *   - The cpp generator (commit #3) runs inside Blockly and has a live
+ *     `block.workspace` — the Blockly extractor is a 1-line per field map.
+ *   - The Dialog UI (commit #4) is downstream of `EditorPage`, which
+ *     already tracks `workspaceXml` as React state. Plumbing the live
+ *     workspace ref through component props would be invasive; parsing
+ *     the serialized XML here mirrors the BLE inferUiSchema(xml) approach
+ *     and keeps the Dialog API simple.
+ *   - Both paths feed the same pure inferWifiUiSchema(opts), so widget
+ *     inference rules cannot drift between cpp emit and UI preview.
+ */
+export function extractWsServerDataFromXml(workspaceXml: string): ExtractedWsServerData {
+  if (!workspaceXml || !workspaceXml.trim()) {
+    return { registrations: [] };
+  }
+
+  let doc: Document;
+  try {
+    doc = new DOMParser().parseFromString(workspaceXml, 'text/xml');
+  } catch {
+    return { registrations: [] };
+  }
+  if (doc.querySelector('parsererror')) {
+    return { registrations: [] };
+  }
+
+  let serverStart: WsServerStartFields | undefined;
+  const registrations: WsServerRegistration[] = [];
+
+  for (const block of Array.from(doc.querySelectorAll('block'))) {
+    const type = block.getAttribute('type');
+    if (!type) continue;
+
+    if (type === 'websocket_server_start') {
+      if (serverStart) continue; // first wins
+      const port = parseFloatOr(getXmlFieldValue(block, 'PORT'), DEFAULT_WS_SERVER_PORT);
+      const path = getXmlFieldValue(block, 'PATH') || DEFAULT_WS_SERVER_PATH;
+      serverStart = { port, path };
+    } else if (type === 'websocket_server_register') {
+      registrations.push({
+        channelId: getXmlFieldValue(block, 'CHANNEL_ID') || '',
+        label: getXmlFieldValue(block, 'LABEL') || '',
+        dataType: getXmlFieldValue(block, 'DATA_TYPE') || 'string',
+        min: parseFloatOr(getXmlFieldValue(block, 'MIN'), 0),
+        max: parseFloatOr(getXmlFieldValue(block, 'MAX'), 100),
+        canRead: getXmlFieldValue(block, 'READ') === 'TRUE',
+        canWrite: getXmlFieldValue(block, 'WRITE') === 'TRUE',
+        canNotify: getXmlFieldValue(block, 'NOTIFY') === 'TRUE',
+      });
+    }
+  }
+
+  return { serverStart, registrations };
+}
+
+/**
+ * Convenience wrapper used by the Dialog: extract from XML + infer schema in
+ * one call. Equivalent to
+ *   inferWifiUiSchema({ projectName, ...extractWsServerDataFromXml(xml) })
+ */
+export function inferWifiUiSchemaFromXml(
+  workspaceXml: string,
+  projectName = '',
+): WifiControllerSchema {
+  const data = extractWsServerDataFromXml(workspaceXml);
+  return inferWifiUiSchema({ projectName, ...data });
+}
+
+/**
+ * Read a Blockly field value scoped to the immediate <block> element.
+ * Mirror of inferUiSchema's getFieldValue (BleController/inferUiSchema.ts).
+ * We must not descend into nested statement/value blocks — each block's
+ * <field> entries are direct children.
+ */
+function getXmlFieldValue(blockEl: Element, fieldName: string): string {
+  for (const child of Array.from(blockEl.children)) {
+    if (
+      child.tagName.toLowerCase() === 'field' &&
+      child.getAttribute('name') === fieldName
+    ) {
+      return child.textContent ?? '';
+    }
+  }
+  return '';
+}
