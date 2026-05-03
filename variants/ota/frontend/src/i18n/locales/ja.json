@@ -889,7 +889,30 @@
     "requireWifi": "ESP32 がこの IP に接続済みかつ電源 ON が必要です。",
     "ipAutoDetected": "シリアル出力から自動取得: {{ip}}",
     "ipNotDetected": "デバイスがネットワークに接続されていません。ESP32 をリセットして WiFi 接続を確認してください。",
-    "ipDetectInstructions": "シリアルモニターを接続すると WiFi 接続後の IP を自動取得します。"
+    "ipDetectInstructions": "シリアルモニターを接続すると WiFi 接続後の IP を自動取得します。",
+    "unified": {
+      "title": "複数機統合コントローラ",
+      "hint": "N 機の ESP32 を 1 画面で操作する HTML を生成",
+      "dropZoneInstruction": ".digicode.json ファイルをここにドラッグ&ドロップ、または「+ ファイル追加」で選択",
+      "addFile": "+ ファイル追加",
+      "colProjectTitle": "プロジェクト名",
+      "colDeviceLabel": "デバイス表示名",
+      "colDeviceId": "デバイス ID (自動)",
+      "colHost": "IP アドレス",
+      "colPort": "ポート",
+      "colRemove": "削除",
+      "invalidFile": "このファイルは .digicode.json として読み込めません",
+      "lanWarning": "全 ESP32 が同じ LAN に接続済み + 電源 ON が必要です。異 LAN / WAN 経由は動作しません",
+      "fileNameLabel": "ダウンロードファイル名",
+      "download": "HTML をダウンロード",
+      "noDevices": "プロジェクトファイルを追加してください",
+      "hostRequired": "全 device の IP アドレス入力が必要です",
+      "restoreFromLocalStorage": "前回の編集を復元しました ({{count}} 機)",
+      "clearLocalStorage": "履歴をクリア",
+      "openHowTo": "保存した HTML をダブルクリック、またはブラウザにドラッグ&ドロップで開けます",
+      "warningsTitle": "警告 ({{count}} 件)",
+      "reattachNeeded": "{{count}} 機の .digicode.json を再ドロップしてください"
+    }
   },
   "bluetooth": {
     "notSupported": "Web Bluetooth APIがサポートされていません",

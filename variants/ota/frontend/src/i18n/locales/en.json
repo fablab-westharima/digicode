@@ -889,7 +889,30 @@
     "requireWifi": "Your ESP32 must be connected to the same WiFi and powered on.",
     "ipAutoDetected": "Detected from serial output: {{ip}}",
     "ipNotDetected": "Device is not connected to the network. Reset the ESP32 and verify the WiFi connection.",
-    "ipDetectInstructions": "Connect the serial monitor and the IP will be auto-detected after WiFi connects."
+    "ipDetectInstructions": "Connect the serial monitor and the IP will be auto-detected after WiFi connects.",
+    "unified": {
+      "title": "Multi-Device Unified Controller",
+      "hint": "Generate one HTML page that controls N ESP32 devices",
+      "dropZoneInstruction": "Drop .digicode.json files here, or click \"+ Add file\"",
+      "addFile": "+ Add file",
+      "colProjectTitle": "Project name",
+      "colDeviceLabel": "Device label",
+      "colDeviceId": "Device ID (auto)",
+      "colHost": "IP address",
+      "colPort": "Port",
+      "colRemove": "Remove",
+      "invalidFile": "This file is not a valid .digicode.json",
+      "lanWarning": "All ESP32 devices must be on the same LAN with power on. Different LAN / WAN routing will not work.",
+      "fileNameLabel": "Download filename",
+      "download": "Download HTML",
+      "noDevices": "Add project files to get started",
+      "hostRequired": "All devices need an IP address",
+      "restoreFromLocalStorage": "Restored {{count}} entries from your last session",
+      "clearLocalStorage": "Clear history",
+      "openHowTo": "Double-click the saved HTML, or drag-drop it into your browser",
+      "warningsTitle": "Warnings ({{count}})",
+      "reattachNeeded": "Re-drop the .digicode.json for {{count}} entries"
+    }
   },
   "bluetooth": {
     "notSupported": "Web Bluetooth API is not supported",

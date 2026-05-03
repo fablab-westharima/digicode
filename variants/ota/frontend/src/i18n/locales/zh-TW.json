@@ -889,7 +889,30 @@
     "requireWifi": "ESP32 必須連線到同一 WiFi 並通電。",
     "ipAutoDetected": "從序列輸出自動取得：{{ip}}",
     "ipNotDetected": "裝置未連線到網路。請重置 ESP32 並確認 WiFi 連線。",
-    "ipDetectInstructions": "連接序列監控器後，將在 WiFi 連線後自動取得 IP。"
+    "ipDetectInstructions": "連接序列監控器後，將在 WiFi 連線後自動取得 IP。",
+    "unified": {
+      "title": "多裝置統合控制器",
+      "hint": "產生一個 HTML 頁面控制 N 個 ESP32 裝置",
+      "dropZoneInstruction": "將 .digicode.json 檔案拖曳至此，或點擊「+ 新增檔案」",
+      "addFile": "+ 新增檔案",
+      "colProjectTitle": "專案名稱",
+      "colDeviceLabel": "裝置顯示名稱",
+      "colDeviceId": "裝置 ID (自動)",
+      "colHost": "IP 位址",
+      "colPort": "連接埠",
+      "colRemove": "刪除",
+      "invalidFile": "此檔案不是有效的 .digicode.json",
+      "lanWarning": "所有 ESP32 必須在同一 LAN 並已通電。不同 LAN / WAN 路由將無法運作。",
+      "fileNameLabel": "下載檔案名稱",
+      "download": "下載 HTML",
+      "noDevices": "請新增專案檔案以開始",
+      "hostRequired": "所有裝置都需要 IP 位址",
+      "restoreFromLocalStorage": "已從上次工作階段還原 {{count}} 筆紀錄",
+      "clearLocalStorage": "清除歷史",
+      "openHowTo": "雙擊已儲存的 HTML，或將其拖入瀏覽器",
+      "warningsTitle": "警告 ({{count}})",
+      "reattachNeeded": "請重新拖入 {{count}} 筆 .digicode.json"
+    }
   },
   "bluetooth": {
     "notSupported": "不支持藍牙",

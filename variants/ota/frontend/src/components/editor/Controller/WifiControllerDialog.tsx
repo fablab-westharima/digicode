@@ -28,7 +28,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { QRCodeSVG } from 'qrcode.react';
-import { Copy, ExternalLink, History, Search } from 'lucide-react';
+import { ChevronRight, Copy, ExternalLink, History, Search } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -47,6 +47,7 @@ import {
 import { useSerialStore } from '@/stores/serialStore';
 import { inferWifiUiSchemaFromXml } from './inferWifiUiSchema';
 import type { WifiWidgetDefinition } from './types';
+import { UnifiedControllerSection } from './UnifiedControllerSection';
 
 const HISTORY_KEY = 'wifi-controller:lastIps';
 const HISTORY_MAX = 5;
@@ -344,6 +345,27 @@ export function WifiControllerDialog({
               </div>
             )}
           </div>
+
+          {/* 47.md Phase 3 / 48.md commit #3, §8.2 — folded by default. The
+              single-device flow (above) remains the primary use case. The
+              unified flow lives below for power users who want to bundle
+              multiple ESP32 projects into one downloadable HTML. */}
+          <details className="border rounded-md mt-2 group">
+            <summary className="cursor-pointer px-4 py-3 hover:bg-muted/50 flex items-center gap-2 text-sm">
+              <ChevronRight className="w-4 h-4 group-open:rotate-90 transition-transform shrink-0" />
+              <span className="font-medium">
+                {t('wifiController.unified.title', {
+                  defaultValue: '複数機統合コントローラ',
+                })}
+              </span>
+              <span className="ml-auto text-xs text-muted-foreground hidden sm:inline">
+                {t('wifiController.unified.hint', {
+                  defaultValue: 'N 機の ESP32 を 1 画面で操作する HTML を生成',
+                })}
+              </span>
+            </summary>
+            <UnifiedControllerSection />
+          </details>
         </div>
 
         <div className="border-t p-3 text-xs text-muted-foreground shrink-0">

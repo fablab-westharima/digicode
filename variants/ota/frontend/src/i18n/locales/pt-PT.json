@@ -889,7 +889,30 @@
     "requireWifi": "O ESP32 deve estar ligado à mesma WiFi e ligado.",
     "ipAutoDetected": "Detetado a partir da saída série: {{ip}}",
     "ipNotDetected": "O dispositivo não está ligado à rede. Reinicie o ESP32 e verifique a ligação WiFi.",
-    "ipDetectInstructions": "Ligue o monitor série e o IP será detetado automaticamente após a ligação WiFi."
+    "ipDetectInstructions": "Ligue o monitor série e o IP será detetado automaticamente após a ligação WiFi.",
+    "unified": {
+      "title": "Controlador unificado multi-dispositivo",
+      "hint": "Gera uma página HTML que controla N dispositivos ESP32",
+      "dropZoneInstruction": "Largue ficheiros .digicode.json aqui, ou clique em \"+ Adicionar ficheiro\"",
+      "addFile": "+ Adicionar ficheiro",
+      "colProjectTitle": "Nome do projeto",
+      "colDeviceLabel": "Rótulo do dispositivo",
+      "colDeviceId": "ID do dispositivo (auto)",
+      "colHost": "Endereço IP",
+      "colPort": "Porta",
+      "colRemove": "Remover",
+      "invalidFile": "Este ficheiro não é um .digicode.json válido",
+      "lanWarning": "Todos os ESP32 devem estar na mesma LAN com energia. LAN diferente / encaminhamento WAN não funcionará.",
+      "fileNameLabel": "Nome do ficheiro de descarga",
+      "download": "Descarregar HTML",
+      "noDevices": "Adicione ficheiros de projeto para começar",
+      "hostRequired": "Todos os dispositivos precisam de um endereço IP",
+      "restoreFromLocalStorage": "Foram restaurados {{count}} registos da última sessão",
+      "clearLocalStorage": "Limpar histórico",
+      "openHowTo": "Faça duplo clique no HTML guardado ou arraste-o para o navegador",
+      "warningsTitle": "Avisos ({{count}})",
+      "reattachNeeded": "Volte a largar .digicode.json para {{count}} registos"
+    }
   },
   "bluetooth": {
     "notSupported": "Bluetooth não é suportado",
