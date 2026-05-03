@@ -3163,6 +3163,8 @@
     "usbDriver": "Driver USB",
     "usbDriverAll": "Todos os drivers",
     "document": "Documentação",
+    "bleController": "Controlador BLE",
+    "wifiController": "Controlador WiFi",
     "bleOta": "BLE OTA",
     "bleFirmwareWrite": "Gravar firmware via BLE",
     "bleDeviceName": "Definir nome BLE",

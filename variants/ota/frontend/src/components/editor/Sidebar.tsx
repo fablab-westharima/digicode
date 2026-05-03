@@ -24,6 +24,7 @@ import {
   ExternalLink,
   Pencil,
   Bluetooth,
+  Wifi,
   Download,
   LogIn,
   Settings,
@@ -70,6 +71,8 @@ interface SidebarProps {
   onAiClearWorkspace?: () => void;
   workspaceXml?: string;
   onOpenAiSettings?: () => void;
+  onShowBleController?: () => void;
+  onShowWifiController?: () => void;
 }
 
 interface NavSubItem {
@@ -120,6 +123,8 @@ export function Sidebar({
   onAiClearWorkspace,
   workspaceXml,
   onOpenAiSettings,
+  onShowBleController,
+  onShowWifiController,
 }: SidebarProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -298,6 +303,21 @@ export function Sidebar({
       action: onPinAssignment || (() => {}),
       category: 'advanced',
       premium: true,
+    },
+    // BLE / WiFi コントローラ (47.md Phase 2 commit #5、LinearToolbar peer pair の Sidebar 展開)
+    {
+      id: 'ble-controller',
+      label: t('sidebar.bleController', { defaultValue: 'BLE コントローラ' }),
+      icon: <Bluetooth className="w-4 h-4" />,
+      action: onShowBleController || (() => {}),
+      category: 'advanced',
+    },
+    {
+      id: 'wifi-controller',
+      label: t('sidebar.wifiController', { defaultValue: 'WiFi コントローラ' }),
+      icon: <Wifi className="w-4 h-4" />,
+      action: onShowWifiController || (() => {}),
+      category: 'advanced',
     },
     // 課題（生徒のみ）
     ...(user?.accountType === 'student' ? [
