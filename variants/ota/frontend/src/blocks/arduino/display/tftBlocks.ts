@@ -73,12 +73,19 @@ generator.forBlock['tft_init'] = function(block: Blockly.Block) {
   const dc = block.getFieldValue('DC');
   const rst = block.getFieldValue('RST');
   generator.definitions_['include_tft'] = TFT_INCLUDES;
+  // Init method differs per driver and is *not* virtual on Adafruit_GFX:
+  //   ILI9341 uses begin() with no args
+  //   ST7789  uses init(w, h)        (e.g., 240x240 default)
+  //   ST7735  uses initR(INITR_BLACKTAB)
+  // We construct the concrete subclass, call its specific init, then store
+  // through the Adafruit_GFX* pointer for shared draw operations (fillScreen,
+  // drawLine, ... are virtual on the base).
   const driverCode: Record<string, string> = {
-    ILI9341: `tft = new Adafruit_ILI9341(${cs}, ${dc}, ${rst});`,
-    ST7789: `tft = new Adafruit_ST7789(${cs}, ${dc}, ${rst});`,
-    ST7735: `tft = new Adafruit_ST7735(${cs}, ${dc}, ${rst});`,
+    ILI9341: `{ Adafruit_ILI9341* _drv = new Adafruit_ILI9341(${cs}, ${dc}, ${rst}); _drv->begin(); tft = _drv; }`,
+    ST7789:  `{ Adafruit_ST7789* _drv = new Adafruit_ST7789(${cs}, ${dc}, ${rst}); _drv->init(240, 240); tft = _drv; }`,
+    ST7735:  `{ Adafruit_ST7735* _drv = new Adafruit_ST7735(${cs}, ${dc}, ${rst}); _drv->initR(INITR_BLACKTAB); tft = _drv; }`,
   };
-  return `  ${driverCode[driver] || driverCode['ILI9341']}\n  tft->begin();\n`;
+  return `  ${driverCode[driver] || driverCode['ILI9341']}\n`;
 };
 
 /**
