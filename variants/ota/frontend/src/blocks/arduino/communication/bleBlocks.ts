@@ -35,6 +35,29 @@ NimBLECharacteristic* pBleTxChar = nullptr;
 bool bleConnected = false;
 String bleMessage = "";`;
 
+// Unified loop-tick mechanism (Bug 3 defensive fix, 2026-05-03):
+// ble_uart_on_receive / ble_on_write previously each emitted a separate
+// `bleCheckXxx();` call from the block return value. If the user misplaced
+// the block (top-level, setup-only, etc.) the call landed at file scope
+// (compile error) or in the wrong scope. Now every BLE handler registers
+// itself into `bleLoopHandlers` via static initializer, and a single
+// `bleLoopTick()` walks them. Block return value emits `bleLoopTick();` —
+// one identical call regardless of how many handlers, idempotent across
+// duplicate placements.
+const BLE_LOOP_TICK_GLOBALS = `
+#include <vector>
+typedef void (*BleLoopHandler)();
+std::vector<BleLoopHandler>& _bleLoopHandlers() {
+  static std::vector<BleLoopHandler> v;
+  return v;
+}
+struct _BleLoopRegister {
+  _BleLoopRegister(BleLoopHandler h) { _bleLoopHandlers().push_back(h); }
+};
+void bleLoopTick() {
+  for (auto h : _bleLoopHandlers()) h();
+}`;
+
 // NimBLE-Arduino v2.4.0 (vendored) signatures: onConnect / onDisconnect now
 // take NimBLEConnInfo&, and onDisconnect adds an int reason. The library no
 // longer auto-restarts advertising on disconnect (migration guide § Server),
@@ -90,20 +113,35 @@ class BleRxCallbacks : public NimBLECharacteristicCallbacks {
   // m_scanResp フラグを参照して scan response data に name を配置 → 12+ byte
   // name も収容可能。onDisconnect 内の NimBLEDevice::startAdvertising() 再
   // advertise 時も同 config 継続。(BUG-069 round 2)
+  //
+  // Bug 1 fix (2026-05-03): make NimBLEDevice::init / createServer idempotent.
+  // U5 mix (NUS + GATT custom) chained ble_uart_setup → ble_init both calling
+  // createServer() overwrote pBleServer and lost the NUS service. Guard with
+  // `if (!pBleServer)` so the second caller skips re-init. NUS service start
+  // remains self-contained inline (NOT in bleServiceMap) so that NUS-only
+  // programs (U1) without ble_start_advertising still work — preserves
+  // backwards compat. NimBLEService::start() / NimBLEAdvertising::start()
+  // duplicate calls in mixed flows (NUS + GATT custom) are safe — NimBLE v2
+  // handles re-start as a no-op for the advertising layer; pNus->start() runs
+  // exactly once because pNus is local and never observed by ble_start_adv.
   return `
-  NimBLEDevice::init("${name}");
-  pBleServer = NimBLEDevice::createServer();
-  pBleServer->setCallbacks(new BleServerCallbacks());
-  NimBLEService* pNus = pBleServer->createService(NUS_SERVICE_UUID);
-  pBleTxChar = pNus->createCharacteristic(NUS_TX_UUID, NIMBLE_PROPERTY::NOTIFY);
-  NimBLECharacteristic* pRxChar = pNus->createCharacteristic(NUS_RX_UUID, NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_NR);
-  pRxChar->setCallbacks(new BleRxCallbacks());
-  pNus->start();
-  NimBLEAdvertising* pAdv = NimBLEDevice::getAdvertising();
-  pAdv->addServiceUUID(NUS_SERVICE_UUID);
-  pAdv->enableScanResponse(true);
-  pAdv->setName("${name}");
-  pAdv->start();
+  if (!pBleServer) {
+    NimBLEDevice::init("${name}");
+    pBleServer = NimBLEDevice::createServer();
+    pBleServer->setCallbacks(new BleServerCallbacks());
+  }
+  {
+    NimBLEService* pNus = pBleServer->createService(NUS_SERVICE_UUID);
+    pBleTxChar = pNus->createCharacteristic(NUS_TX_UUID, NIMBLE_PROPERTY::NOTIFY);
+    NimBLECharacteristic* pRxChar = pNus->createCharacteristic(NUS_RX_UUID, NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_NR);
+    pRxChar->setCallbacks(new BleRxCallbacks());
+    pNus->start();
+    NimBLEAdvertising* pAdv = NimBLEDevice::getAdvertising();
+    pAdv->addServiceUUID(NUS_SERVICE_UUID);
+    pAdv->enableScanResponse(true);
+    pAdv->setName("${name}");
+    pAdv->start();
+  }
 `;
 };
 
@@ -151,13 +189,23 @@ generator.forBlock['ble_uart_on_receive'] = function(block: Blockly.Block) {
   const handler = javascriptGenerator.statementToCode(block, 'HANDLER');
   generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
   generator.definitions_['ble_globals'] = BLE_GLOBALS;
+  // Bug 3 fix (2026-05-03): register the check via static initializer so the
+  // call always lands inside the right scope. Previously the block returned
+  // `  bleCheckReceive();\n` which the user had to manually place inside
+  // arduino_loop — misplacement (top-level / setup-only) caused file-scope
+  // statements (compile error) or one-shot execution. Now we register
+  // bleCheckReceive into _bleLoopHandlers via a global static initializer
+  // (runs before main()), and the block emits a single unified
+  // `bleLoopTick();` call that walks all registered handlers idempotently.
+  generator.definitions_['ble_loop_tick_globals'] = BLE_LOOP_TICK_GLOBALS;
   generator.definitions_['ble_receive_func'] = `
 void bleCheckReceive() {
   if (bleMessage.length() > 0) {
 ${handler}    bleMessage = "";
   }
-}`;
-  return `  bleCheckReceive();\n`;
+}
+static _BleLoopRegister _reg_bleCheckReceive(bleCheckReceive);`;
+  return `  bleLoopTick();\n`;
 };
 
 /**
@@ -443,10 +491,18 @@ generator.forBlock['ble_disconnect'] = function() {
 
 const GATT_COLOR = '#1565C0';
 
+// `bleStartedServices` (Bug 2 fix, 2026-05-03): tracks which services have
+// already been start()-ed so ble_start_advertising can call start() exactly
+// once per service even if invoked multiple times (or after dynamic add).
+// Previously ble_add_characteristic called start() per characteristic — for
+// 3 characteristics on the same service, start() ran 3 times which corrupts
+// the service's GATT table state in NimBLE.
 const GATT_GLOBALS = `
 #include <map>
+#include <set>
 std::map<std::string, NimBLECharacteristic*> bleCharMap;
 std::map<std::string, NimBLEService*> bleServiceMap;
+std::set<std::string> bleStartedServices;
 String bleWriteCharUuid = "";`;
 
 // NimBLE v2: onWrite takes NimBLEConnInfo& (BUG-065). Arg unused, body unchanged.
@@ -492,10 +548,18 @@ generator.forBlock['ble_init'] = function(block: Blockly.Block) {
   // ble_start_advertising (= NimBLEDevice::startAdvertising() 静的呼出) +
   // onDisconnect の re-advertise も config 保持で名前付き advertising 継続。
   // (BUG-069 round 2)
+  //
+  // Bug 1 fix (2026-05-03): make NimBLEDevice::init / createServer idempotent.
+  // U5 mix (NUS + GATT custom) chained ble_uart_setup → ble_init both calling
+  // createServer() overwrote pBleServer and lost the NUS service. Guard with
+  // `if (!pBleServer)`. setName / enableScanResponse always run (cheap, safe
+  // to re-set; later GATT 128-bit Service UUID requires scan response anyway).
   return `
-  NimBLEDevice::init("${name}");
-  pBleServer = NimBLEDevice::createServer();
-  pBleServer->setCallbacks(new BleServerCallbacks());
+  if (!pBleServer) {
+    NimBLEDevice::init("${name}");
+    pBleServer = NimBLEDevice::createServer();
+    pBleServer->setCallbacks(new BleServerCallbacks());
+  }
   NimBLEDevice::getAdvertising()->enableScanResponse(true);
   NimBLEDevice::getAdvertising()->setName("${name}");
 `;
@@ -601,12 +665,16 @@ generator.forBlock['ble_add_characteristic'] = function(block: Blockly.Block) {
     ? `    bleCharMap["${charUuid}"]->setCallbacks(new GattWriteCallbacks("${charUuid}"));`
     : '';
 
+  // Bug 2 fix (2026-05-03): drop the per-characteristic `service->start()`
+  // call. The service is now started exactly once by ble_start_advertising
+  // (which iterates bleServiceMap and uses bleStartedServices to dedupe).
+  // Calling start() per characteristic corrupts the GATT table when 2+ chars
+  // share a service (U5 = 3 chars on one service surfaced this).
   return `
   if (bleServiceMap.count("${serviceUuid}")) {
     NimBLECharacteristic* c = bleServiceMap["${serviceUuid}"]->createCharacteristic("${charUuid}", ${propsStr});
     bleCharMap["${charUuid}"] = c;
 ${writeCallback}
-    bleServiceMap["${serviceUuid}"]->start();
   }
 `;
 };
@@ -664,17 +732,24 @@ generator.forBlock['ble_on_write'] = function(block: Blockly.Block) {
   generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
   generator.definitions_['ble_globals'] = BLE_GLOBALS;
   generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
-  const funcKey = `ble_on_write_${charUuid.replace(/-/g, '_')}`;
+  // Bug 3 fix (2026-05-03): static-initializer self-register into
+  // _bleLoopHandlers. See ble_uart_on_receive note for rationale. Each
+  // ble_on_write block registers its own bleCheckWrite_<uuid>() — the
+  // unified `bleLoopTick();` call walks all of them in registration order.
+  generator.definitions_['ble_loop_tick_globals'] = BLE_LOOP_TICK_GLOBALS;
+  const safeUuid = charUuid.replace(/-/g, '_');
+  const funcKey = `ble_on_write_${safeUuid}`;
   // BUG-053 fix: bleMessage / bleWriteCharUuid のリセットを HANDLER 後に移動。
   // NUS UART (bleCheckReceive) と対称、ble_received_value が HANDLER 内で受信値を取得可能になる。
   generator.definitions_[funcKey] = `
-void bleCheckWrite_${charUuid.replace(/-/g, '_')}() {
+void bleCheckWrite_${safeUuid}() {
   if (bleWriteCharUuid == "${charUuid}" && bleMessage.length() > 0) {
 ${handler}    bleMessage = "";
     bleWriteCharUuid = "";
   }
-}`;
-  return `  bleCheckWrite_${charUuid.replace(/-/g, '_')}();\n`;
+}
+static _BleLoopRegister _reg_bleCheckWrite_${safeUuid}(bleCheckWrite_${safeUuid});`;
+  return `  bleLoopTick();\n`;
 };
 
 /**
@@ -694,7 +769,19 @@ Blockly.Blocks['ble_start_advertising'] = {
 generator.forBlock['ble_start_advertising'] = function() {
   generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
   generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
-  return `  NimBLEDevice::startAdvertising();\n`;
+  // Bug 2 fix (2026-05-03): start every service that has not yet been started.
+  // bleStartedServices guards against re-start (NimBLEService::start() is not
+  // idempotent in v2 — second call corrupts the GATT table).
+  // ble_add_characteristic no longer calls start(); ble_start_advertising is
+  // now the single point that does it, immediately before the advertise.
+  return `  for (auto& kv : bleServiceMap) {
+    if (!bleStartedServices.count(kv.first)) {
+      kv.second->start();
+      bleStartedServices.insert(kv.first);
+    }
+  }
+  NimBLEDevice::startAdvertising();
+`;
 };
 
 console.log('BLE blocks loaded');
