@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>DigiCode Unified Controller</title>
+<!--
+  47.md Phase 3 / 48.md commit #1 — Vanilla HTML+CSS+JS unified controller bundle.
+
+  Self-contained file:// distributable: the schema is embedded inline via
+  `<script id="schema" type="application/json">`. unifiedControllerBuilder.ts
+  (commit #2) string-replaces the empty placeholder `{}` with the real
+  WifiControllerSchema (length=N, per-device host/port) when generating the
+  download blob.
+
+  Why inline schema (not fetch /schema.json):
+    file:// origin can't fetch sibling files in any major browser. Embedding
+    bypasses the constraint and keeps the page self-contained.
+
+  Wire format (Phase 2-compatible, see 48.md §3.4):
+    { "id": "<channelId>", "value": "<asString>" }
+    Per-device dispatch: each ESP32 owns its own WS connection. The same
+    `channelId` may repeat across devices and is scoped by the connection
+    that received it. DOM keys are device-prefixed (48.md §7.5 / F12) for
+    debugging convenience, but the wire format never carries deviceId.
+
+  Browser compatibility (48.md §I4):
+    file:// → ws://<lan-ip>:<port>/ works on Chrome / Firefox / Safari
+    desktop. Mixed-content rules apply only to HTTPS origins; file:// is
+    out of scope. UAT P3-3 verifies on real hardware.
+
+  English fixed (47.md F13). Multi-locale bundle deferred to Phase 3+.
+-->
+<script id="schema" type="application/json">{}</script>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #0f172a;
+  --muted: #64748b;
+  --card: #f8fafc;
+  --card-border: #e2e8f0;
+  --accent: #00bcd4;
+  --accent-fg: #ffffff;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --success: #10b981;
+  --idle: #94a3b8;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --fg: #f1f5f9;
+    --muted: #94a3b8;
+    --card: #1e293b;
+    --card-border: #334155;
+    --accent: #00bcd4;
+    --accent-fg: #0f172a;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 16px;
+  line-height: 1.4;
+  min-height: 100vh;
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--card-border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+}
+h1 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+#overall-status {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.lan-warning {
+  margin: 12px 16px 0;
+  padding: 10px 14px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid var(--warning);
+  border-radius: 6px;
+  color: var(--fg);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+main {
+  padding: 16px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.notice {
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.9rem;
+}
+.device-card {
+  margin-bottom: 12px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.device-card > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  background: var(--card);
+}
+.device-card > summary::-webkit-details-marker { display: none; }
+.device-card > summary::before {
+  content: '▸';
+  display: inline-block;
+  width: 12px;
+  color: var(--muted);
+  transition: transform 0.15s;
+}
+.device-card[open] > summary::before { transform: rotate(90deg); }
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--idle);
+  flex-shrink: 0;
+}
+.status-dot.connected { background: var(--success); }
+.status-dot.error { background: var(--danger); }
+.status-dot.reconnecting {
+  background: var(--warning);
+  animation: pulse 1s ease-in-out infinite;
+}
+.status-dot.idle { background: var(--idle); }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.device-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.device-host {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.conn-state {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-left: auto;
+}
+.reconnect-toggle {
+  padding: 4px 10px;
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.reconnect-toggle:hover { background: var(--card-border); }
+.device-body {
+  padding: 12px 14px;
+  border-top: 1px solid var(--card-border);
+}
+.device-warnings {
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  background: rgba(245, 158, 11, 0.08);
+  border-left: 3px solid var(--warning);
+  font-size: 0.8rem;
+  color: var(--fg);
+  border-radius: 0 4px 4px 0;
+}
+.device-warnings p { margin: 2px 0; }
+.widget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.widget {
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+}
+.widget-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.widget-value {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 4px 0;
+  font-variant-numeric: tabular-nums;
+  word-break: break-all;
+}
+.widget button.toggle {
+  width: 100%;
+  padding: 9px 14px;
+  border: 1px solid var(--card-border);
+  border-radius: 5px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.widget button.toggle.on {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+.widget input[type=range] {
+  width: 100%;
+  margin: 6px 0 0;
+  accent-color: var(--accent);
+}
+.widget .range-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.global-warnings {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid var(--warning);
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+.global-warnings p { margin: 2px 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>DigiCode Unified Controller</h1>
+  <div id="overall-status">Connecting...</div>
+</header>
+<div class="lan-warning">
+  ⚠ All ESP32 devices must be on the same LAN as this PC. If a device is on a different network, the connection will fail silently.
+</div>
+<main id="device-list">
+  <div class="notice">Loading schema...</div>
+</main>
+<script>
+(function () {
+  var $main = document.getElementById('device-list');
+  var $overall = document.getElementById('overall-status');
+
+  // ---------------------------------------------------------------------
+  // Schema parse — read embedded JSON. file:// can't fetch /schema.json.
+  // ---------------------------------------------------------------------
+  function parseSchema() {
+    var el = document.getElementById('schema');
+    if (!el) return null;
+    try {
+      var s = JSON.parse(el.textContent || '{}');
+      if (!s || !Array.isArray(s.devices)) return null;
+      return s;
+    } catch (e) { return null; }
+  }
+
+  function notice(text) {
+    $main.innerHTML = '';
+    var div = document.createElement('div');
+    div.className = 'notice';
+    div.textContent = text;
+    $main.appendChild(div);
+  }
+
+  // ---------------------------------------------------------------------
+  // Throttle helper (carry-over from Phase 2 commit #7). Slider 'input'
+  // fires up to ~120Hz on touch drag — bounding to 10Hz keeps interactive
+  // feel while protecting the ESP32-side dispatch path. Trailing-edge fire
+  // guarantees the final slider value lands when the drag stops between
+  // throttle windows.
+  // ---------------------------------------------------------------------
+  function throttle(fn, ms) {
+    var lastCall = 0;
+    var pending = null;
+    var pendingArgs = null;
+    return function () {
+      pendingArgs = arguments;
+      var now = Date.now();
+      var elapsed = now - lastCall;
+      if (elapsed >= ms) {
+        lastCall = now;
+        fn.apply(null, pendingArgs);
+        pendingArgs = null;
+      } else if (!pending) {
+        pending = setTimeout(function () {
+          pending = null;
+          if (pendingArgs) {
+            lastCall = Date.now();
+            fn.apply(null, pendingArgs);
+            pendingArgs = null;
+          }
+        }, ms - elapsed);
+      }
+    };
+  }
+
+  // ---------------------------------------------------------------------
+  // Widget factories — each takes `send(channelId, value)` so multiple
+  // device connections can share the factory code. Returns an object
+  // exposing `.el` (the DOM node) and `.setValue(v)` (server→client sync).
+  // ---------------------------------------------------------------------
+  function makeToggle(w, send) {
+    var el = document.createElement('div');
+    el.className = 'widget';
+    var label = document.createElement('div');
+    label.className = 'widget-label';
+    label.textContent = w.label || w.id;
+    var btn = document.createElement('button');
+    btn.className = 'toggle';
+    btn.textContent = 'OFF';
+    var on = false;
+    btn.addEventListener('click', function () {
+      on = !on;
+      btn.textContent = on ? 'ON' : 'OFF';
+      btn.classList.toggle('on', on);
+      send(w.id, on ? '1' : '0');
+    });
+    el.appendChild(label);
+    el.appendChild(btn);
+    return {
+      el: el,
+      setValue: function (v) {
+        on = v === '1' || v === 1 || v === 'true' || v === true;
+        btn.textContent = on ? 'ON' : 'OFF';
+        btn.classList.toggle('on', on);
+      },
+    };
+  }
+
+  function makeSlider(w, send) {
+    var min = w.min != null ? Number(w.min) : 0;
+    var max = w.max != null ? Number(w.max) : 100;
+    var step = w.step != null ? Number(w.step) : 1;
+    var el = document.createElement('div');
+    el.className = 'widget';
+    var label = document.createElement('div');
+    label.className = 'widget-label';
+    label.textContent = w.label || w.id;
+    var valueEl = document.createElement('div');
+    valueEl.className = 'widget-value';
+    valueEl.textContent = String(min);
+    var slider = document.createElement('input');
+    slider.type = 'range';
+    slider.min = String(min);
+    slider.max = String(max);
+    slider.step = String(step);
+    slider.value = String(min);
+    var throttledSend = throttle(send, 100);
+    slider.addEventListener('input', function () {
+      valueEl.textContent = slider.value;
+      throttledSend(w.id, slider.value);
+    });
+    var range = document.createElement('div');
+    range.className = 'range-row';
+    var lo = document.createElement('span'); lo.textContent = String(min);
+    var hi = document.createElement('span'); hi.textContent = String(max);
+    range.appendChild(lo);
+    range.appendChild(hi);
+    el.appendChild(label);
+    el.appendChild(valueEl);
+    el.appendChild(slider);
+    el.appendChild(range);
+    return {
+      el: el,
+      setValue: function (v) {
+        slider.value = String(v);
+        valueEl.textContent = String(v);
+      },
+    };
+  }
+
+  function makeDisplay(w) {
+    var el = document.createElement('div');
+    el.className = 'widget';
+    var label = document.createElement('div');
+    label.className = 'widget-label';
+    label.textContent = w.label || w.id;
+    var valueEl = document.createElement('div');
+    valueEl.className = 'widget-value';
+    valueEl.textContent = '--';
+    el.appendChild(label);
+    el.appendChild(valueEl);
+    return {
+      el: el,
+      setValue: function (v) {
+        valueEl.textContent = String(v);
+      },
+    };
+  }
+
+  function createWidget(w, send) {
+    switch (w.type) {
+      case 'gatt-toggle':  return makeToggle(w, send);
+      case 'gatt-slider':  return makeSlider(w, send);
+      case 'gatt-display': return makeDisplay(w);
+      default: return null;
+    }
+  }
+
+  // ---------------------------------------------------------------------
+  // Per-device connection state machine (48.md §7.4 / F11).
+  //
+  // Lifecycle:
+  //   idle (initial / paused)
+  //     ↓ connect()
+  //   connecting → connected (open) → … → close → reconnecting (backoff)
+  //                ↓ error                      ↓ paused via pause()
+  //   error                                     idle
+  //
+  // Backoff doubles 1s → 2s → 4s → 8s → 16s → 30s (cap), resets on success.
+  // user can pause/resume per-device via the summary's "Stop"/"Resume" btn.
+  // ---------------------------------------------------------------------
+  function createDeviceConnection(device, statusUI) {
+    var ep = device.endpoint || {};
+    var host = ep.host || (typeof location !== 'undefined' ? location.hostname : '');
+    var port = ep.port || 81;
+    var path = ep.path || '/';
+    var state = {
+      ws: null,
+      backoffMs: 1000,
+      maxBackoffMs: 30000,
+      paused: false,
+      reconnectTimer: null,
+      widgetEls: new Map(),
+    };
+
+    function setStatus(name, hintMs) {
+      statusUI.set(name, hintMs);
+    }
+
+    function connect() {
+      if (state.paused) return;
+      var url = 'ws://' + host + ':' + port + path;
+      try {
+        state.ws = new WebSocket(url);
+      } catch (e) {
+        setStatus('error');
+        scheduleReconnect();
+        return;
+      }
+      setStatus('connecting');
+      state.ws.addEventListener('open', function () {
+        setStatus('connected');
+        state.backoffMs = 1000;
+      });
+      state.ws.addEventListener('close', function () {
+        if (!state.paused) {
+          setStatus('reconnecting', state.backoffMs);
+          scheduleReconnect();
+        }
+      });
+      state.ws.addEventListener('error', function () {
+        setStatus('error');
+        // 'close' will fire after 'error' and drive reconnect.
+      });
+      state.ws.addEventListener('message', function (ev) {
+        var msg;
+        try { msg = JSON.parse(ev.data); } catch (e) { return; }
+        if (!msg || msg.id == null) return;
+        var w = state.widgetEls.get(String(msg.id));
+        if (w && w.setValue) w.setValue(msg.value);
+      });
+    }
+
+    function scheduleReconnect() {
+      if (state.paused) return;
+      if (state.reconnectTimer) clearTimeout(state.reconnectTimer);
+      state.reconnectTimer = setTimeout(function () {
+        state.backoffMs = Math.min(state.backoffMs * 2, state.maxBackoffMs);
+        connect();
+      }, state.backoffMs);
+    }
+
+    function pause() {
+      state.paused = true;
+      if (state.reconnectTimer) {
+        clearTimeout(state.reconnectTimer);
+        state.reconnectTimer = null;
+      }
+      if (state.ws) {
+        try { state.ws.close(); } catch (e) {}
+      }
+      setStatus('idle');
+    }
+
+    function resume() {
+      state.paused = false;
+      state.backoffMs = 1000;
+      connect();
+    }
+
+    function send(id, value) {
+      if (!state.ws || state.ws.readyState !== WebSocket.OPEN) return;
+      try {
+        state.ws.send(JSON.stringify({ id: String(id), value: String(value) }));
+      } catch (e) {}
+    }
+
+    return {
+      state: state,
+      connect: connect,
+      pause: pause,
+      resume: resume,
+      send: send,
+      get isPaused() { return state.paused; },
+    };
+  }
+
+  // ---------------------------------------------------------------------
+  // Per-device card render. Returns the statusUI handle that the
+  // connection wires up to (so connection state flows back to the dot +
+  // text label on the summary row).
+  // ---------------------------------------------------------------------
+  function renderDeviceCard(device, schemaWarnings) {
+    var card = document.createElement('details');
+    card.className = 'device-card';
+    card.setAttribute('data-device-id', device.deviceId);
+    card.open = true; // 48.md F2: default expanded
+
+    var summary = document.createElement('summary');
+    var dot = document.createElement('span');
+    dot.className = 'status-dot idle';
+    var labelEl = document.createElement('span');
+    labelEl.className = 'device-label';
+    labelEl.textContent = device.deviceLabel || device.deviceId;
+    var hostEl = document.createElement('span');
+    hostEl.className = 'device-host';
+    var ep = device.endpoint || {};
+    hostEl.textContent = (ep.host || '?') + ':' + (ep.port || 81);
+    var connState = document.createElement('span');
+    connState.className = 'conn-state';
+    connState.textContent = 'Connecting...';
+    var btn = document.createElement('button');
+    btn.className = 'reconnect-toggle';
+    btn.type = 'button';
+    btn.textContent = 'Stop';
+    // Stop summary's default toggle behavior so clicking the button doesn't
+    // also open/close the card.
+    btn.addEventListener('click', function (e) { e.stopPropagation(); e.preventDefault(); });
+
+    summary.appendChild(dot);
+    summary.appendChild(labelEl);
+    summary.appendChild(hostEl);
+    summary.appendChild(connState);
+    summary.appendChild(btn);
+    card.appendChild(summary);
+
+    var body = document.createElement('div');
+    body.className = 'device-body';
+
+    // device-scoped warnings (48.md §10 C4: prefix `[deviceLabel]`).
+    var deviceWarnings = (schemaWarnings || []).filter(function (w) {
+      return typeof w === 'string' && w.indexOf('[' + (device.deviceLabel || device.deviceId) + ']') === 0;
+    });
+    if (deviceWarnings.length > 0) {
+      var dw = document.createElement('div');
+      dw.className = 'device-warnings';
+      deviceWarnings.forEach(function (w) {
+        var p = document.createElement('p');
+        p.textContent = '⚠ ' + w;
+        dw.appendChild(p);
+      });
+      body.appendChild(dw);
+    }
+
+    var grid = document.createElement('div');
+    grid.className = 'widget-grid';
+    if (!device.widgets || device.widgets.length === 0) {
+      var empty = document.createElement('div');
+      empty.className = 'notice';
+      empty.textContent = 'No widgets on this device.';
+      body.appendChild(empty);
+    } else {
+      body.appendChild(grid);
+    }
+    card.appendChild(body);
+
+    return {
+      card: card,
+      grid: grid,
+      btn: btn,
+      statusUI: {
+        set: function (name, hintMs) {
+          dot.className = 'status-dot ' + name;
+          var label;
+          switch (name) {
+            case 'connected':    label = 'Connected'; break;
+            case 'connecting':   label = 'Connecting...'; break;
+            case 'reconnecting': label = 'Reconnecting in ' + Math.round((hintMs || 1000) / 1000) + 's'; break;
+            case 'error':        label = 'Error'; break;
+            case 'idle':         label = 'Stopped'; break;
+            default:             label = name;
+          }
+          connState.textContent = label;
+        },
+      },
+    };
+  }
+
+  // ---------------------------------------------------------------------
+  // Bootstrap.
+  // ---------------------------------------------------------------------
+  function boot() {
+    var schema = parseSchema();
+    if (!schema) {
+      notice('Schema not loaded. This page is a template — generate a real one from DigiCode.');
+      $overall.textContent = 'No schema';
+      return;
+    }
+    if (!schema.devices || schema.devices.length === 0) {
+      notice('No devices configured. Add at least one project in DigiCode and re-download.');
+      $overall.textContent = 'No devices';
+      return;
+    }
+
+    $main.innerHTML = '';
+
+    // Global (cross-device) warnings — entries that don't have a [label]
+    // prefix go here. unifiedControllerBuilder prefixes per-device warnings
+    // with `[deviceLabel]` (48.md C4); anything else is treated as global.
+    var globalWarnings = (schema.warnings || []).filter(function (w) {
+      return typeof w === 'string' && !w.match(/^\[[^\]]+\]/);
+    });
+    if (globalWarnings.length > 0) {
+      var gw = document.createElement('div');
+      gw.className = 'global-warnings';
+      globalWarnings.forEach(function (w) {
+        var p = document.createElement('p');
+        p.textContent = '⚠ ' + w;
+        gw.appendChild(p);
+      });
+      $main.appendChild(gw);
+    }
+
+    var connections = [];
+    schema.devices.forEach(function (device) {
+      var rendered = renderDeviceCard(device, schema.warnings);
+      $main.appendChild(rendered.card);
+
+      var conn = createDeviceConnection(device, rendered.statusUI);
+
+      // Build widgets, key by deviceId-prefixed channelId for debug clarity
+      // (48.md F12). The runtime widgetEls map is keyed by raw channelId
+      // because the wire format only carries channelId — the WS connection
+      // itself scopes the device.
+      (device.widgets || []).forEach(function (w) {
+        var wi = createWidget(w, conn.send);
+        if (!wi) return;
+        wi.el.setAttribute('data-device-id', device.deviceId);
+        wi.el.setAttribute('data-channel-id', w.id);
+        conn.state.widgetEls.set(String(w.id), wi);
+        rendered.grid.appendChild(wi.el);
+      });
+
+      // Wire the per-device pause/resume button.
+      rendered.btn.addEventListener('click', function () {
+        if (conn.isPaused) {
+          conn.resume();
+          rendered.btn.textContent = 'Stop';
+        } else {
+          conn.pause();
+          rendered.btn.textContent = 'Resume';
+        }
+      });
+
+      connections.push(conn);
+      conn.connect();
+    });
+
+    // Overall status: count connected devices on a 1Hz tick.
+    function refreshOverall() {
+      var connected = 0;
+      var total = connections.length;
+      connections.forEach(function (c) {
+        if (c.state.ws && c.state.ws.readyState === WebSocket.OPEN) connected++;
+      });
+      $overall.textContent = connected + ' / ' + total + ' connected';
+    }
+    refreshOverall();
+    setInterval(refreshOverall, 1000);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+</body>
+</html>

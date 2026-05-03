@@ -110,16 +110,26 @@ export type WifiWidgetDefinition =
 // ---------------------------------------------------------------------------
 
 /**
- * Per-device endpoint metadata. Phase 2 single-device case fills these from
- * the `websocket_server_start` block fields. Phase 3 multi-device variant
- * will fill them from per-device `host` overrides supplied by the user in
- * the unified-controller dialog.
+ * Per-device endpoint metadata. Phase 2 single-device case fills `port` /
+ * `path` from the `websocket_server_start` block fields and leaves `host`
+ * undefined (the bundle falls back to `location.hostname` of the page that
+ * served it — i.e. the ESP32 itself). Phase 3 unified-controller fills
+ * `host` from the per-device IP entered by the user in the unified dialog
+ * (48.md §5.1).
  */
 export interface WifiEndpoint {
   /** WS port (default 81 from websocket_server_start). */
   port: number;
   /** WS path (currently always `/`, reserved for Phase 3 multi-device). */
   path: string;
+  /**
+   * Phase 3 unified bundle: explicit host (IP or hostname). When set, the
+   * unified bundle connects to `ws://${host}:${port}${path}`. When
+   * undefined (Phase 2 single bundle), the bundle uses `location.hostname`
+   * as the fallback. Adding this field as optional preserves
+   * backward-compatibility — schema version stays `'1.0'`.
+   */
+  host?: string;
 }
 
 export interface WifiDeviceSchema {
