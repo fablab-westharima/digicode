@@ -217,8 +217,9 @@ generator.forBlock['ble_uart_on_receive'] = function(block: Blockly.Block) {
   // arduino_loop — misplacement (top-level / setup-only) caused file-scope
   // statements (compile error) or one-shot execution. Now we register
   // bleCheckReceive into _bleLoopHandlers via a global static initializer
-  // (runs before main()), and the block emits a single unified
-  // `bleLoopTick();` call that walks all registered handlers idempotently.
+  // (runs before main()), and a single unified `bleLoopTick();` call (now
+  // injected into loop() via loopPre_, see post-U5 cleanup) walks all
+  // registered handlers idempotently.
   generator.definitions_['ble_loop_tick_globals'] = BLE_LOOP_TICK_GLOBALS;
   // U5 race fix (2026-05-03): guard on `bleWriteCharUuid.length() == 0`
   // so a GATT-originated message (which sets bleWriteCharUuid to its
@@ -236,7 +237,15 @@ ${handler}    bleMessage = "";
   }
 }
 static _BleLoopRegister _reg_bleCheckReceive(bleCheckReceive);`;
-  return `  bleLoopTick();\n`;
+  // Post-U5 cleanup (2026-05-03): emit `bleLoopTick();` exactly once via
+  // loopPre_ (dedupe by key), regardless of how many BLE handler blocks the
+  // user has. Previous behavior (each handler returning its own inline
+  // `bleLoopTick();`) functionally worked but produced N redundant calls in
+  // loop(). Block now returns empty — handler is registered via the static
+  // _BleLoopRegister above, and BlocklyEditor.tsx injects the tick call.
+  if (!generator.loopPre_) generator.loopPre_ = {};
+  generator.loopPre_['ble_loop_tick'] = '  bleLoopTick();';
+  return '';
 };
 
 /**
@@ -407,7 +416,8 @@ String bleFoundAddress = "";
 int bleFoundRssi = 0;`;
   // Audit 2 follow-up (2026-05-03): same defensive pattern as bug 3 fix.
   // Auto-register the check via _BleLoopRegister so misplacement (top-level)
-  // does not strand the call. Block return is unified `bleLoopTick();`.
+  // does not strand the call. Tick call is injected into loop() once via
+  // loopPre_ (post-U5 cleanup), no matter how many BLE handler blocks exist.
   generator.definitions_['ble_loop_tick_globals'] = BLE_LOOP_TICK_GLOBALS;
   generator.definitions_['ble_device_found_func'] = `
 void bleCheckDeviceFound() {
@@ -416,7 +426,9 @@ void bleCheckDeviceFound() {
 ${handler}  }
 }
 static _BleLoopRegister _reg_bleCheckDeviceFound(bleCheckDeviceFound);`;
-  return `  bleLoopTick();\n`;
+  if (!generator.loopPre_) generator.loopPre_ = {};
+  generator.loopPre_['ble_loop_tick'] = '  bleLoopTick();';
+  return '';
 };
 
 // 共通 globals 参照用（scan_found 系 value block で再利用）
@@ -592,16 +604,25 @@ generator.forBlock['ble_init'] = function(block: Blockly.Block) {
   // Bug 1 fix (2026-05-03): make NimBLEDevice::init / createServer idempotent.
   // U5 mix (NUS + GATT custom) chained ble_uart_setup → ble_init both calling
   // createServer() overwrote pBleServer and lost the NUS service. Guard with
-  // `if (!pBleServer)`. setName / enableScanResponse always run (cheap, safe
-  // to re-set; later GATT 128-bit Service UUID requires scan response anyway).
+  // `if (!pBleServer)`.
+  //
+  // Post-U5 cleanup (2026-05-03): enableScanResponse + setName moved INSIDE
+  // the guard. Previously they ran unconditionally to handle the case where
+  // ble_init runs standalone (no preceding ble_uart_setup) — but in that
+  // case we're inside the !pBleServer branch anyway. In the mixed flow
+  // (ble_uart_setup → ble_init), ble_uart_setup already calls both
+  // enableScanResponse(true) and setName("..."), so re-running them after
+  // pAdv->start() was just visual noise (no functional difference, both
+  // setters are idempotent). Inside-guard placement keeps standalone
+  // ble_init working AND eliminates the dup lines in mixed flows.
   return `
   if (!pBleServer) {
     NimBLEDevice::init("${name}");
     pBleServer = NimBLEDevice::createServer();
     pBleServer->setCallbacks(new BleServerCallbacks());
+    NimBLEDevice::getAdvertising()->enableScanResponse(true);
+    NimBLEDevice::getAdvertising()->setName("${name}");
   }
-  NimBLEDevice::getAdvertising()->enableScanResponse(true);
-  NimBLEDevice::getAdvertising()->setName("${name}");
 `;
 };
 
@@ -807,7 +828,11 @@ ${handler}    bleMessage = "";
   }
 }
 static _BleLoopRegister _reg_bleCheckWrite_${safeUuid}(bleCheckWrite_${safeUuid});`;
-  return `  bleLoopTick();\n`;
+  // Post-U5 cleanup (2026-05-03): tick injected via loopPre_ once, see
+  // ble_uart_on_receive note. Block returns empty.
+  if (!generator.loopPre_) generator.loopPre_ = {};
+  generator.loopPre_['ble_loop_tick'] = '  bleLoopTick();';
+  return '';
 };
 
 /**

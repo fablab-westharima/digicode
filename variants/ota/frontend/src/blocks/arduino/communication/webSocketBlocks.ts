@@ -139,7 +139,14 @@ void wsCheckMessage() {
 ${handler}  }
 }
 static _WsLoopRegister _reg_wsCheckMessage(wsCheckMessage);`;
-  return `  wsLoopTick();\n`;
+  // Post-U5 cleanup (2026-05-03): tick injected into loop() once via
+  // loopPre_ (mirror of bleLoopTick approach). Multiple websocket_on_message
+  // blocks no longer emit redundant `wsLoopTick();` lines in loop body.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const gen = generator as any;
+  if (!gen.loopPre_) gen.loopPre_ = {};
+  gen.loopPre_['ws_loop_tick'] = '  wsLoopTick();';
+  return '';
 };
 
 /**

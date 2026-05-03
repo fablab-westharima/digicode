@@ -166,6 +166,16 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         const gen = currentGenerator as any;
         gen.definitions_ = {};
         gen.setups_ = {};
+        // loopPre_: counterpart to setups_, but for void loop() { ... }.
+        // Block generators register dedupable lines (e.g. `bleLoopTick();`) by
+        // key, and we inject all values immediately after `void loop() {`.
+        // Handler-style blocks (ble_uart_on_receive, ble_on_write,
+        // ble_on_device_found, websocket_on_message) used to each emit their
+        // own tick call inline at their placement site; with N handlers in a
+        // single program that resulted in N redundant `bleLoopTick();` lines
+        // and made the loop body's order sensitive to handler block placement.
+        // loopPre_ centralizes the call and dedupes by key.
+        gen.loopPre_ = {};
 
         let code = currentGenerator.workspaceToCode(workspaceRef.current);
 
@@ -176,6 +186,15 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
           code = code.replace(
             /void setup\(\) \{\n/,
             `void setup() {\n${setupsCode}\n`
+          );
+        }
+
+        // loopPre_ の内容を void loop() に挿入
+        if (gen.loopPre_ && Object.keys(gen.loopPre_).length > 0) {
+          const loopPreCode = Object.values(gen.loopPre_).join('\n');
+          code = code.replace(
+            /void loop\(\) \{\n/,
+            `void loop() {\n${loopPreCode}\n`
           );
         }
 
