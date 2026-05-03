@@ -1357,7 +1357,12 @@ javascriptGenerator.forBlock['ha_device_trigger_create'] = function(block: Block
 
   const varName = `haTrigger_${triggerId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
-  generator.definitions_[`ha_trigger_${triggerId}`] = `HADeviceTrigger ${varName}(HADeviceTrigger::${type.charAt(0).toUpperCase() + type.slice(1)}Type, "${subtype}");`;
+  // ArduinoHA v2.1+ `HADeviceTrigger(const char* type, const char* subtype)`
+  // accepts a free-form type string, not nested enums (`HADeviceTrigger::
+  // ButtonType` etc. don't exist in the public header). The dropdown value
+  // ('button' / 'remote' / 'sensor') is forwarded as-is; HA-canonical types
+  // (e.g. 'button_short_press') are a future UX refinement.
+  generator.definitions_[`ha_trigger_${triggerId}`] = `HADeviceTrigger ${varName}("${type}", "${subtype}");`;
 
   return `  // HA Device Trigger: ${triggerId}\n`;
 };
