@@ -1134,6 +1134,25 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // E-paper ディスプレイ (52.md commit #6, 2026-05-04 第80回) — Phase D、Waveshare/M5Paper 対応
+  epaper: `
+  <category id="epaper" name="${cat('epaper')}" colour="#607D8B">
+    <block type="epaper_init"></block>
+    <block type="epaper_print">
+      <value name="TEXT"><shadow type="text"><field name="TEXT">Hello</field></shadow></value>
+      <value name="X"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
+    </block>
+    <block type="epaper_partial_update"></block>
+    <block type="epaper_full_refresh"></block>
+    <block type="epaper_clear"></block>
+    <block type="epaper_draw_image">
+      <value name="IMG_NAME"><shadow type="text"><field name="TEXT">myBitmap</field></shadow></value>
+      <value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+    </block>
+  </category>`,
+
   // ESP32 静電容量タッチ (52.md commit #5, 2026-05-04 第80回) — ESP32 系のみ
   esp32_touch: `
   <category id="esp32_touch" name="${cat('esp32Touch')}" colour="#00BCD4">
@@ -1475,6 +1494,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'oled_ssd1306',
     'tm1637',
     'max7219',
+    'epaper',
     'tft_display',
     'camera',
     'audio_dfplayer',
@@ -1540,6 +1560,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'oled_ssd1306',
     'tm1637',
     'max7219',
+    'epaper',
     'tft_display',
     'camera',
     'audio_dfplayer',
@@ -1627,6 +1648,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'oled_ssd1306',
     'tm1637',
     'max7219',
+    'epaper',
     'tft_display',
     'camera',
     'audio_dfplayer',
@@ -1716,6 +1738,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'oled_ssd1306',
     'tm1637',
     'max7219',
+    'epaper',
     'tft_display',
     'camera',
     'audio_dfplayer',

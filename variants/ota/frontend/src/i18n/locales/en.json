@@ -2797,6 +2797,7 @@
       "tm1637": "💡 TM1637 7-Seg",
       "max7219": "🔲 MAX7219 LED Matrix",
       "esp32Touch": "✋ ESP32 Touch",
+      "epaper": "📃 E-paper",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
