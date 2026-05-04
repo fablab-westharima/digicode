@@ -1134,6 +1134,19 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // NeoMatrix (NeoPixel 2D) (52.md commit #16, 2026-05-04 第80回) — 中推奨、Adafruit_GFX 互換
+  neomatrix: `
+  <category id="neomatrix" name="${cat('neomatrix')}" colour="#9C27B0">
+    <block type="neomatrix_init"></block>
+    <block type="neomatrix_set_pixel">
+      <value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="COLOR"><shadow type="text"><field name="TEXT">#FF0000</field></shadow></value>
+    </block>
+    <block type="neomatrix_clear"></block>
+    <block type="neomatrix_show"></block>
+  </category>`,
+
   // 空気質センサ SCD30 + PMS5003 (52.md commit #15, 2026-05-04 第80回) — 中推奨、Factory IoT
   sensor_air_quality: `
   <category id="sensor_air_quality" name="${cat('sensorAirQuality')}" colour="#00897B">
@@ -1605,6 +1618,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'relay',
     'buzzer',
     'neopixel',
+    'neomatrix',
     'display',
     'oled_ssd1306',
     'tm1637',
@@ -1676,6 +1690,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'relay',
     'buzzer',
     'neopixel',
+    'neomatrix',
     'display',
     'oled_ssd1306',
     'tm1637',
@@ -1771,6 +1786,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'servo',
     'buzzer',
     'neopixel',
+    'neomatrix',
     'display',
     'oled_ssd1306',
     'tm1637',
@@ -1868,6 +1884,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'servo',
     'buzzer',
     'neopixel',
+    'neomatrix',
     'display',
     'oled_ssd1306',
     'tm1637',

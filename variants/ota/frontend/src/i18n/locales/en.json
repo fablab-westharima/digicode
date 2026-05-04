@@ -2805,6 +2805,7 @@
       "relay": "⚡ Relay",
       "modbus": "🏭 Modbus RTU",
       "sensorAirQuality": "🌫️ Air Quality (CO2/PM)",
+      "neomatrix": "🌈 NeoMatrix",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
