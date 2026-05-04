@@ -2793,6 +2793,7 @@
       "lora": "📡 LoRa",
       "gps": "🛰️ GPS",
       "relay": "⚡ リレー",
+      "modbus": "🏭 Modbus RTU",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",

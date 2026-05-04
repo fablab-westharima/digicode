@@ -6,12 +6,12 @@ const cat = loadCatalog();
 const idx = indexByType(cat);
 
 describe('allocate', () => {
-  it('returns the canonical 542/86/100/57/200/15 split for count=1000', () => {
+  it('returns the canonical 546/86/100/53/200/15 split for count=1000', () => {
     expect(allocate(1000)).toEqual({
-      singleton: 542,
+      singleton: 546,
       edge: 86,
       matrix: 100,
-      pair: 57,
+      pair: 53,
       template: 200,
       combo: 15,
     });

@@ -1134,6 +1134,22 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // Modbus RTU master (52.md commit #14, 2026-05-04 第80回) — 強推奨、Industrial IoT
+  modbus: `
+  <category id="modbus" name="${cat('modbus')}" colour="#37474F">
+    <block type="modbus_init"></block>
+    <block type="modbus_set_slave_id">
+      <value name="ID"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
+    </block>
+    <block type="modbus_read_holding_register">
+      <value name="ADDR"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+    </block>
+    <block type="modbus_write_register">
+      <value name="ADDR"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="VALUE"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+    </block>
+  </category>`,
+
   // Relay (リレー) 制御 (52.md commit #13, 2026-05-04 第80回) — 強推奨、Factory IoT 制御
   relay: `
   <category id="relay" name="${cat('relay')}" colour="#FFB300">
@@ -1546,6 +1562,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'google_services',
     'espnow',
     'lora',
+    'modbus',
     'http',
     'json',
     'ota',
@@ -1661,6 +1678,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'google_services',
     'espnow',
     'lora',
+    'modbus',
     'http',
     'json',
     'ota',
@@ -1754,6 +1772,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'google_services',
     'espnow',
     'lora',
+    'modbus',
     'http',
     'json',
     'ota',
@@ -1849,6 +1868,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'google_services',
     'espnow',
     'lora',
+    'modbus',
     'http',
     'json',
     'ota',
