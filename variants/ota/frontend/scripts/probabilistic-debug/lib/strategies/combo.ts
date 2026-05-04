@@ -331,6 +331,12 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     label: 'sht30',
     operations: ['sht30_read_temperature', 'sht30_read_humidity'],
   },
+  // 51.md commit #6-B (2026-05-04 第79回): SHT40 stand-alone (Adafruit lib)
+  {
+    init: 'sht40_init',
+    label: 'sht40',
+    operations: ['sht40_read_temperature', 'sht40_read_humidity'],
+  },
   {
     init: 'ultrasonic_init',
     label: 'ultrasonic',
