@@ -61,6 +61,7 @@ import '../../blocks/arduino/communication/espnowBlocks';
 import '../../blocks/arduino/sensor/hx711Blocks';
 import '../../blocks/arduino/display/oledSsd1306Blocks';
 import '../../blocks/arduino/display/tm1637Blocks';
+import '../../blocks/arduino/display/max7219Blocks';
 import '../../blocks/arduino/m5stack/m5stackBlocks';
 // IoT通信（Arduino）
 import '../../blocks/arduino/communication/httpBlocks';

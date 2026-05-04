@@ -1134,6 +1134,25 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // MAX7219 8x8 LED マトリクス (52.md commit #4, 2026-05-04 第80回) — Fab Academy 頻出、daisy-chain 最大 8
+  max7219: `
+  <category id="max7219" name="${cat('max7219')}" colour="#E91E63">
+    <block type="max7219_init"></block>
+    <block type="max7219_set_pixel">
+      <value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+    </block>
+    <block type="max7219_clear"></block>
+    <block type="max7219_scroll_text">
+      <value name="TEXT"><shadow type="text"><field name="TEXT">HELLO</field></shadow></value>
+      <value name="SPEED"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
+    </block>
+    <block type="max7219_set_brightness">
+      <value name="LEVEL"><shadow type="math_number"><field name="NUM">8</field></shadow></value>
+    </block>
+    <block type="max7219_show"></block>
+  </category>`,
+
   // TM1637 4桁7セグメント (52.md commit #3, 2026-05-04 第80回) — Fab Academy 頻出
   tm1637: `
   <category id="tm1637" name="${cat('tm1637')}" colour="#9C27B0">
@@ -1446,6 +1465,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'display',
     'oled_ssd1306',
     'tm1637',
+    'max7219',
     'tft_display',
     'camera',
     'audio_dfplayer',
@@ -1509,6 +1529,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'display',
     'oled_ssd1306',
     'tm1637',
+    'max7219',
     'tft_display',
     'camera',
     'audio_dfplayer',
@@ -1594,6 +1615,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'display',
     'oled_ssd1306',
     'tm1637',
+    'max7219',
     'tft_display',
     'camera',
     'audio_dfplayer',
@@ -1681,6 +1703,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'display',
     'oled_ssd1306',
     'tm1637',
+    'max7219',
     'tft_display',
     'camera',
     'audio_dfplayer',

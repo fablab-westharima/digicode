@@ -2785,6 +2785,7 @@
       "hx711": "⚖️ HX711 ロードセル",
       "oledSsd1306": "🖥️ OLED (SSD1306)",
       "tm1637": "💡 TM1637 7セグメント",
+      "max7219": "🔲 MAX7219 LED マトリクス",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
