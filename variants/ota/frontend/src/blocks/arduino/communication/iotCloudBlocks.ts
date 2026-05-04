@@ -1,5 +1,6 @@
 /**
  * IoT クラウド抽象化ブロック (51.md Phase A+B、第78回 commit #5 / 2026-05-04)
+ * + AWS/GCP stub 公式化 (52.md Phase D、第80回 commit #10 / 2026-05-04)
  *
  * 6 ブロック構成 (iot_cloud_*):
  *   - iot_cloud_connect          (Boolean output, PROVIDER dropdown 5 値)
@@ -9,13 +10,14 @@
  *   - iot_cloud_disconnect       (statement)
  *   - iot_cloud_is_connected     (Boolean)
  *
- * 設計方針 (51.md §3 + D-21 user 確定):
- *   - PROVIDER dropdown 5 値: azure_iot_hub / azure_iot_central / aws_iot_core (Phase D stub) /
- *     gcp_iot (Phase D stub) / mqtt_generic
+ * 設計方針 (51.md §3 + D-21 user 確定 + 52.md Q-F 確定):
+ *   - PROVIDER dropdown 5 値: azure_iot_hub / azure_iot_central / aws_iot_core (stub) /
+ *     gcp_iot (stub) / mqtt_generic
  *   - CREDENTIALS = JSON 文字列、ArduinoJson v6 で parse → provider 別 dispatch
  *   - Azure 系は既存 azureIot* helpers (azureIotBlocks.ts) を内部 call
  *   - mqtt_generic は既存 mqtt 系 (mqttBlocks.ts) の global mqttClient を reuse
- *   - aws_iot_core / gcp_iot は warn log のみ (Phase D 実装まで stub)
+ *   - aws_iot_core / gcp_iot は **stub 実装** (Serial.println warn log + return false)
+ *     FS 協会方針確定後に本実装、現状は azure_iot_hub を優先するよう AI prompt prohibitions に明記 (52.md commit #21)
  *
  * Cred JSON 例 (51.md §3.3):
  *   - azure_iot_hub:    {"connection_string":"HostName=...;DeviceId=...;SharedAccessKey=..."}
@@ -94,8 +96,16 @@ bool iotCloudConnect(const String& provider, const String& credentialsJson) {
       Serial.printf("[iot_cloud] mqtt connect failed rc=%d\\n", mqttClient.state());
     }
     return ok;
-  } else if (provider == "aws_iot_core" || provider == "gcp_iot") {
-    Serial.printf("[iot_cloud] %s not yet implemented (Phase D)\\n", provider.c_str());
+  } else if (provider == "aws_iot_core") {
+    // 52.md Phase D commit #10: AWS IoT Core stub。X.509 証明書 + WiFiClientSecure + MQTT が
+    // 本実装の構成だが、FS 協会方針 (Azure→AWS 移行) 確定後に着手。
+    // 現状は azure_iot_hub を優先 (AI prompt prohibitions、commit #21 で明記)。
+    Serial.println("[iot_cloud] aws_iot_core: stub only — use azure_iot_hub instead.");
+    return false;
+  } else if (provider == "gcp_iot") {
+    // 52.md Phase D commit #10: Google Cloud IoT stub。GCP IoT Core は 2023-08 に公式廃止
+    // (deprecated)、後継 = Pub/Sub direct via JWT。本実装の必要性は低い。
+    Serial.println("[iot_cloud] gcp_iot: stub only (GCP IoT Core deprecated 2023) — use azure_iot_hub.");
     return false;
   }
   Serial.printf("[iot_cloud] unknown provider: %s\\n", provider.c_str());
@@ -180,8 +190,8 @@ function emitIotCloudCommonDefs() {
 const PROVIDER_OPTIONS: [string, string][] = [
   ['Azure IoT Hub', 'azure_iot_hub'],
   ['Azure IoT Central', 'azure_iot_central'],
-  ['AWS IoT Core (Phase D)', 'aws_iot_core'],
-  ['Google Cloud IoT (Phase D)', 'gcp_iot'],
+  ['AWS IoT Core (stub)', 'aws_iot_core'],
+  ['Google Cloud IoT (stub)', 'gcp_iot'],
   ['Generic MQTT', 'mqtt_generic'],
 ];
 
