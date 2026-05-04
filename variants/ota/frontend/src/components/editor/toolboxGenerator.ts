@@ -1030,7 +1030,7 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
-  // 環境センサー BME280/BMP280 (BP5-2, 2026-04-20 追加)
+  // 環境センサー BME280/BMP280/SHT30 (BP5-2, 2026-04-20 追加 + 51.md commit #6-A SHT30, 2026-05-04)
   sensor_environment: `
   <category id="sensorEnvironment" name="${cat('sensorEnvironment')}" colour="#4CAF50">
     <label text="BME280 (温湿度・気圧)"></label>
@@ -1041,6 +1041,11 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="bmp280_init"></block>
     <block type="bmp280_read"></block>
     <block type="bmp280_read_altitude"></block>
+    <sep></sep>
+    <label text="SHT30 (温湿度)"></label>
+    <block type="sht30_init"></block>
+    <block type="sht30_read_temperature"></block>
+    <block type="sht30_read_humidity"></block>
   </category>`,
 
   sensor_analog: `

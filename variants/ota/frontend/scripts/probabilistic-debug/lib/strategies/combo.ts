@@ -325,6 +325,12 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     label: 'bmp280',
     operations: ['bmp280_read', 'bmp280_read_altitude'],
   },
+  // 51.md commit #6-A (2026-05-04 第79回): SHT30 stand-alone (Sensirion lib)
+  {
+    init: 'sht30_init',
+    label: 'sht30',
+    operations: ['sht30_read_temperature', 'sht30_read_humidity'],
+  },
   {
     init: 'ultrasonic_init',
     label: 'ultrasonic',

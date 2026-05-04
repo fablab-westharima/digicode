@@ -152,4 +152,83 @@ Adafruit_BMP280 bmp280;`;
   return [`bmp280.readAltitude(${seaLevel})`, 0];
 };
 
-console.log('Environment sensor (BME280/BMP280) blocks loaded');
+// ============================================================================
+// 51.md Phase A+B commit #6-A (2026-05-04 第79回): SHT30 3 ブロック
+// — Sensirion I2C SHT3x lib (`sensirion/Sensirion I2C SHT3x@^1.0.1`、commit #2 で追加済)
+// 既存 BME280/BMP280 と独立、stand-alone SHT30 デバイス対応 (Fab Academy 自作回路向け)
+// ============================================================================
+
+const SHT30_INCLUDE = `
+#include <SensirionI2cSht3x.h>
+SensirionI2cSht3x sht30;`;
+
+const SHT30_READ_HELPER = `
+// 51.md commit #6-A: SHT30 共有測定バッファ (temp/humidity 両 read で 1 回の I2C 通信)
+static float _sht30LastTemp = 0.0f;
+static float _sht30LastHumidity = 0.0f;
+static bool _sht30Measure() {
+  int16_t err = sht30.measureSingleShot(REPEATABILITY_MEDIUM, false, _sht30LastTemp, _sht30LastHumidity);
+  return err == 0;
+}`;
+
+/**
+ * sht30_init — SHT30 初期化 (I2C 0x44、Wire bus 前提)
+ */
+Blockly.Blocks['sht30_init'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_SHT30_INIT || 'SHT30 を初期化'));
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(ENV_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_SHT30_INIT_TOOLTIP || 'SHT30 温湿度センサ (Sensirion) を I2C アドレス 0x44 で初期化します。Wire (SDA/SCL pin はボード既定) で通信します。');
+  }
+};
+
+generator.forBlock['sht30_init'] = function() {
+  generator.definitions_['include_sht30'] = SHT30_INCLUDE;
+  generator.definitions_['sht30_helper'] = SHT30_READ_HELPER;
+  if (!generator.setups_) generator.setups_ = {};
+  generator.setups_['sht30_begin'] = 'Wire.begin();\n  sht30.begin(Wire, SHT30_I2C_ADDR_44);';
+  return '';
+};
+
+/**
+ * sht30_read_temperature — SHT30 温度 (°C、Number output)
+ */
+Blockly.Blocks['sht30_read_temperature'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_SHT30_READ_TEMPERATURE || 'SHT30 温度 (°C)'));
+    this.setOutput(true, 'Number');
+    this.setColour(ENV_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_SHT30_READ_TEMPERATURE_TOOLTIP || 'SHT30 から温度を読み取ります (°C)。事前に sht30_init が必要です。エラー時は 0 を返します。');
+  }
+};
+
+generator.forBlock['sht30_read_temperature'] = function() {
+  generator.definitions_['include_sht30'] = SHT30_INCLUDE;
+  generator.definitions_['sht30_helper'] = SHT30_READ_HELPER;
+  return ['(_sht30Measure() ? _sht30LastTemp : 0.0f)', 0];
+};
+
+/**
+ * sht30_read_humidity — SHT30 湿度 (%、Number output)
+ */
+Blockly.Blocks['sht30_read_humidity'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_SHT30_READ_HUMIDITY || 'SHT30 湿度 (%)'));
+    this.setOutput(true, 'Number');
+    this.setColour(ENV_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_SHT30_READ_HUMIDITY_TOOLTIP || 'SHT30 から湿度を読み取ります (%)。事前に sht30_init が必要です。エラー時は 0 を返します。');
+  }
+};
+
+generator.forBlock['sht30_read_humidity'] = function() {
+  generator.definitions_['include_sht30'] = SHT30_INCLUDE;
+  generator.definitions_['sht30_helper'] = SHT30_READ_HELPER;
+  return ['(_sht30Measure() ? _sht30LastHumidity : 0.0f)', 0];
+};
+
+console.log('Environment sensor (BME280/BMP280/SHT30) blocks loaded');
