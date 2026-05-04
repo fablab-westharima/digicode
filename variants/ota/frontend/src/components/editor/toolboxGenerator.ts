@@ -517,6 +517,20 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // M5Stack 本体 (51.md commit #12, 2026-05-04 第79回) — `category=m5stack` フィルタ activate
+  // 独立トップレベル「📱 M5Stack」(D-20、Q-4 user 確定)。M5Stack 系 9 boards 選択時のみ表示。
+  m5stack: `
+  <category id="m5stack" name="${cat('m5stack')}" colour="#FF0000">
+    <label text="${label('m5stackInit') || '初期化 + 状態更新'}"></label>
+    <block type="m5stack_begin"></block>
+    <block type="m5stack_update"></block>
+    <sep></sep>
+    <label text="${label('m5stackButton') || 'ボタン (押下)'}"></label>
+    <block type="m5stack_button_a_pressed"></block>
+    <block type="m5stack_button_b_pressed"></block>
+    <block type="m5stack_button_c_pressed"></block>
+  </category>`,
+
   // ESP-NOW (51.md commit #9, 2026-05-04 第79回) — supportsEspNow フィルタ対象 (commit #3 で軸新設)
   espnow: `
   <category id="espnow" name="${cat('espnow')}" colour="#FF6F00">
@@ -1355,6 +1369,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
   // micromouse と line_trace は robots_wheel に統合済み
   homeassistant: [
     'arduino_core',
+    'm5stack',
     'separator1',
     // ネットワーク通信（IoT特化モードのため最優先）
     'wifi',
@@ -1430,6 +1445,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
   ],
   generic: [
     'arduino_core',
+    'm5stack',
     'separator1',
     // センサー（基礎 → 応用）
     'sensor_digital',
@@ -1499,6 +1515,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
   ],
   all_blocks: [
     'arduino_core',
+    'm5stack',
     // ロボットキット
     'robot_humanoid',
     'robot_wheel',
@@ -1582,6 +1599,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
   ],
   custom: [
     'arduino_core',
+    'm5stack',
     'favorite_settings',
     'separator1',
     // ロボットキット

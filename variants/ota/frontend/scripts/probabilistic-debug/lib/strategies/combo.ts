@@ -377,6 +377,15 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
       'oled_ssd1306_draw_circle', 'oled_ssd1306_set_text_size', 'oled_ssd1306_invert',
     ],
   },
+  // 51.md commit #12 (2026-05-04 第79回): M5Stack 本体 (M5Unified、`category=m5stack` 限定)
+  {
+    init: 'm5stack_begin',
+    label: 'm5stack',
+    operations: [
+      'm5stack_update',
+      'm5stack_button_a_pressed', 'm5stack_button_b_pressed', 'm5stack_button_c_pressed',
+    ],
+  },
   {
     init: 'ultrasonic_init',
     label: 'ultrasonic',

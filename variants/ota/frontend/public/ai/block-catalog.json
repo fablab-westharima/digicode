@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-04T09:32:49.090Z",
+  "generatedAt": "2026-05-04T09:38:20.545Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -6469,6 +6469,96 @@
         "custom"
       ],
       "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "m5stack_begin",
+      "category": "m5stack",
+      "tooltip": "M5Stack 系ボード本体 (LCD/ボタン/スピーカー/バッテリー) を初期化します。M5Unified lib 使用、9 機種共通 API。arduino_setup の中に配置してください。",
+      "colour": "#FF0000",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "category=m5stack",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "m5stack_update",
+      "category": "m5stack",
+      "tooltip": "M5Stack のボタン/タッチ状態を更新します。loop の冒頭で呼出必須 (押下検出が機能しなくなります)。",
+      "colour": "#FF0000",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "category=m5stack",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "m5stack_button_a_pressed",
+      "category": "m5stack",
+      "tooltip": "ボタン A がこの loop 周期内で押された場合 true を返します (wasPressed)。事前に m5stack_begin + loop 冒頭で m5stack_update が必要。",
+      "colour": "#FF0000",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "category=m5stack",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "m5stack_button_b_pressed",
+      "category": "m5stack",
+      "tooltip": "ボタン B がこの loop 周期内で押された場合 true を返します。",
+      "colour": "#FF0000",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "category=m5stack",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "m5stack_button_c_pressed",
+      "category": "m5stack",
+      "tooltip": "ボタン C がこの loop 周期内で押された場合 true を返します。",
+      "colour": "#FF0000",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "category=m5stack",
       "fields": [],
       "valueInputs": [],
       "statementInputs": []
