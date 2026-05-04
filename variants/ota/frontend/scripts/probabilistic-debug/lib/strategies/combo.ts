@@ -367,6 +367,16 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     label: 'hx711',
     operations: ['hx711_read_raw', 'hx711_read_weight', 'hx711_tare', 'hx711_calibrate', 'hx711_set_scale'],
   },
+  // 51.md commit #11 (2026-05-04 第79回): OLED SSD1306 (Adafruit lib 既存)
+  {
+    init: 'oled_ssd1306_init',
+    label: 'oled_ssd1306',
+    operations: [
+      'oled_ssd1306_clear', 'oled_ssd1306_display', 'oled_ssd1306_print',
+      'oled_ssd1306_draw_pixel', 'oled_ssd1306_draw_line', 'oled_ssd1306_draw_rect',
+      'oled_ssd1306_draw_circle', 'oled_ssd1306_set_text_size', 'oled_ssd1306_invert',
+    ],
+  },
   {
     init: 'ultrasonic_init',
     label: 'ultrasonic',

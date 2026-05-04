@@ -1055,6 +1055,47 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // OLED SSD1306 (51.md commit #11, 2026-05-04 第79回) — Fab Academy + FS 講座 メーター表示
+  oled_ssd1306: `
+  <category id="oledSsd1306" name="${cat('oledSsd1306')}" colour="#37474F">
+    <block type="oled_ssd1306_init"></block>
+    <sep></sep>
+    <label text="基本"></label>
+    <block type="oled_ssd1306_clear"></block>
+    <block type="oled_ssd1306_display"></block>
+    <block type="oled_ssd1306_print">
+      <value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+    </block>
+    <block type="oled_ssd1306_set_text_size">
+      <value name="SIZE"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
+    </block>
+    <block type="oled_ssd1306_invert"></block>
+    <sep></sep>
+    <label text="図形描画"></label>
+    <block type="oled_ssd1306_draw_pixel">
+      <value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+    </block>
+    <block type="oled_ssd1306_draw_line">
+      <value name="X1"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="Y1"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="X2"><shadow type="math_number"><field name="NUM">127</field></shadow></value>
+      <value name="Y2"><shadow type="math_number"><field name="NUM">63</field></shadow></value>
+    </block>
+    <block type="oled_ssd1306_draw_rect">
+      <value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="W"><shadow type="math_number"><field name="NUM">32</field></shadow></value>
+      <value name="H"><shadow type="math_number"><field name="NUM">16</field></shadow></value>
+    </block>
+    <block type="oled_ssd1306_draw_circle">
+      <value name="X"><shadow type="math_number"><field name="NUM">64</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">32</field></shadow></value>
+      <value name="R"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
+    </block>
+  </category>`,
+
   // HX711 ロードセル (51.md commit #10, 2026-05-04 第79回) — Fab Academy Final Project 装備
   hx711: `
   <category id="hx711" name="${cat('hx711')}" colour="#795548">
@@ -1347,6 +1388,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'buzzer',
     'neopixel',
     'display',
+    'oled_ssd1306',
     'tft_display',
     'camera',
     'audio_dfplayer',
@@ -1407,6 +1449,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'buzzer',
     'neopixel',
     'display',
+    'oled_ssd1306',
     'tft_display',
     'camera',
     'audio_dfplayer',
@@ -1489,6 +1532,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'buzzer',
     'neopixel',
     'display',
+    'oled_ssd1306',
     'tft_display',
     'camera',
     'audio_dfplayer',
@@ -1573,6 +1617,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'buzzer',
     'neopixel',
     'display',
+    'oled_ssd1306',
     'tft_display',
     'camera',
     'audio_dfplayer',

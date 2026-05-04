@@ -59,6 +59,7 @@ import '../../blocks/arduino/communication/notificationBlocks';
 import '../../blocks/arduino/communication/googleServicesBlocks';
 import '../../blocks/arduino/communication/espnowBlocks';
 import '../../blocks/arduino/sensor/hx711Blocks';
+import '../../blocks/arduino/display/oledSsd1306Blocks';
 // IoT通信（Arduino）
 import '../../blocks/arduino/communication/httpBlocks';
 import '../../blocks/arduino/communication/jsonBlocks';

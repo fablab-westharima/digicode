@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-04T09:29:59.256Z",
+  "generatedAt": "2026-05-04T09:32:49.090Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -10942,6 +10942,292 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "oled_ssd1306_init",
+      "category": "oled_ssd1306",
+      "tooltip": "SSD1306 OLED ディスプレイを I2C で初期化します。一般的な default は 128x64 / 0x3C。Adafruit SSD1306 lib 使用。",
+      "colour": "#37474F",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "WIDTH",
+          "fieldType": "number",
+          "default": 128,
+          "min": 1,
+          "max": 256
+        },
+        {
+          "name": "HEIGHT",
+          "fieldType": "number",
+          "default": 64,
+          "min": 1,
+          "max": 256
+        },
+        {
+          "name": "ADDR",
+          "fieldType": "dropdown",
+          "options": [
+            "0x3C",
+            "0x3D"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "oled_ssd1306_clear",
+      "category": "oled_ssd1306",
+      "tooltip": "OLED フレームバッファをクリアします。oled_ssd1306_display で実画面に反映。",
+      "colour": "#37474F",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "oled_ssd1306_display",
+      "category": "oled_ssd1306",
+      "tooltip": "OLED フレームバッファを実画面に反映します。clear/print/draw_* の後に必ず呼出してください。",
+      "colour": "#37474F",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "oled_ssd1306_print",
+      "category": "oled_ssd1306",
+      "tooltip": "指定座標 (X,Y) からテキストを表示します。フレームバッファに描画、oled_ssd1306_display で反映。",
+      "colour": "#37474F",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "TEXT",
+          "check": "Number"
+        },
+        {
+          "name": "X",
+          "check": "Number"
+        },
+        {
+          "name": "Y",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "oled_ssd1306_set_text_size",
+      "category": "oled_ssd1306",
+      "tooltip": "OLED のテキストサイズを設定します (1 = 6x8 px、2 = 12x16 px、...)",
+      "colour": "#37474F",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "SIZE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "oled_ssd1306_invert",
+      "category": "oled_ssd1306",
+      "tooltip": "OLED 表示の白黒を反転します。",
+      "colour": "#37474F",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "INVERT",
+          "fieldType": "dropdown",
+          "options": [
+            "true",
+            "false"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "oled_ssd1306_draw_pixel",
+      "category": "oled_ssd1306",
+      "tooltip": "OLED の (X,Y) に 1 ピクセル描画します。",
+      "colour": "#37474F",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "X",
+          "check": "Number"
+        },
+        {
+          "name": "Y",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "oled_ssd1306_draw_line",
+      "category": "oled_ssd1306",
+      "tooltip": "OLED の (X1,Y1) から (X2,Y2) まで直線を描画します。",
+      "colour": "#37474F",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "X1",
+          "check": "Number"
+        },
+        {
+          "name": "Y1",
+          "check": "Number"
+        },
+        {
+          "name": "X2",
+          "check": "Number"
+        },
+        {
+          "name": "Y2",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "oled_ssd1306_draw_rect",
+      "category": "oled_ssd1306",
+      "tooltip": "OLED に矩形を描画します (X,Y は左上、W=幅, H=高さ)。",
+      "colour": "#37474F",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "X",
+          "check": "Number"
+        },
+        {
+          "name": "Y",
+          "check": "Number"
+        },
+        {
+          "name": "W",
+          "check": "Number"
+        },
+        {
+          "name": "H",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "oled_ssd1306_draw_circle",
+      "category": "oled_ssd1306",
+      "tooltip": "OLED に円を描画します (X,Y=中心, R=半径)。",
+      "colour": "#37474F",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "X",
+          "check": "Number"
+        },
+        {
+          "name": "Y",
+          "check": "Number"
+        },
+        {
+          "name": "R",
+          "check": "Number"
+        }
+      ],
       "statementInputs": []
     },
     {

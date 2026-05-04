@@ -2793,6 +2793,7 @@
       "googleServices": "📊 Google Services",
       "espnow": "📡 ESP-NOW",
       "hx711": "⚖️ HX711 Load Cell",
+      "oledSsd1306": "🖥️ OLED (SSD1306)",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
       "json": "📋 JSON",
