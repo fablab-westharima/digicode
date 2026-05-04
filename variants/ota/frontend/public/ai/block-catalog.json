@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-04T09:20:58.847Z",
+  "generatedAt": "2026-05-04T09:23:44.567Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -8709,6 +8709,103 @@
       "statementInputs": []
     },
     {
+      "type": "pushover_send",
+      "category": "notification",
+      "tooltip": "Pushover で通知を送信します。App トークン (アプリ作成時) と ユーザーキー (アカウントトップ画面) は pushover.net で取得。WiFi 接続必須。Free tier 10000 msg/月。",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [
+        {
+          "name": "PRIORITY",
+          "fieldType": "dropdown",
+          "options": [
+            "-2",
+            "-1",
+            "0",
+            "1",
+            "2"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "TOKEN",
+          "check": "String"
+        },
+        {
+          "name": "USER",
+          "check": "String"
+        },
+        {
+          "name": "MESSAGE",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "google_sheets_append",
+      "category": "google_services",
+      "tooltip": "Google Apps Script の Webhook URL に JSON を POST してスプレッドシートに 1 行追加します。WiFi 接続必須。Apps Script 側で doPost(e) を実装して Sheet.appendRow() してください。",
+      "colour": "#0F9D58",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "URL",
+          "check": "String"
+        },
+        {
+          "name": "DATA",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "google_sheets_format_row",
+      "category": "google_services",
+      "tooltip": "タイムスタンプと値を JSON 形式 ({\"ts\":\"...\",\"val\":\"...\"}) に整形して返します。google_sheets_append の DATA 入力に渡せます。",
+      "colour": "#0F9D58",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "TS",
+          "check": null
+        },
+        {
+          "name": "VAL",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
       "type": "http_get",
       "category": "http",
       "tooltip": "Send a GET request to the specified URL and get the response",
@@ -12678,7 +12775,9 @@
       "ntp_time",
       "websocket",
       "azure_iot",
-      "iot_cloud"
+      "iot_cloud",
+      "notification",
+      "google_services"
     ],
     "ota": [
       "ota"

@@ -2747,6 +2747,8 @@
       "haAutoDiscovery": "🏡 HA自動發現",
       "iotCloud": "☁️ IoT 雲端",
       "sensorCurrent": "⚡ 電流感測器",
+      "notification": "🔔 通知",
+      "googleServices": "📊 Google Services",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
       "json": "📋 JSON",

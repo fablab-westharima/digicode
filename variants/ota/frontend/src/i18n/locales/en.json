@@ -2789,6 +2789,8 @@
       "haAutoDiscovery": "🏡 HA Auto Discovery",
       "iotCloud": "☁️ IoT Cloud",
       "sensorCurrent": "⚡ Current Sensor",
+      "notification": "🔔 Notification",
+      "googleServices": "📊 Google Services",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
       "json": "📋 JSON",
