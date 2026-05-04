@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-04T08:38:55.495Z",
+  "generatedAt": "2026-05-04T08:42:26.023Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -8554,6 +8554,24 @@
           "check": null
         }
       ],
+      "statementInputs": []
+    },
+    {
+      "type": "azure_iot_is_connected",
+      "category": "azure_iot",
+      "tooltip": "Azure IoT Hub / IoT Central との MQTT 接続が維持されている場合 true を返します。WiFi 切断や TLS タイムアウト時に false になります。",
+      "colour": "#0078D4",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [],
       "statementInputs": []
     },
     {

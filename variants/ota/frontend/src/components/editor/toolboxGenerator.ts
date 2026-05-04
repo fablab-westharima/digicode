@@ -534,6 +534,8 @@ const getToolboxCategories = (): Record<string, string> => ({
     <label text="${label('azureIotAdvanced') || 'Direct Method / Device Twin'}"></label>
     <block type="azure_iot_subscribe_direct_method"></block>
     <block type="azure_iot_update_device_twin"></block>
+    <sep></sep>
+    <block type="azure_iot_is_connected"></block>
   </category>`,
 
   // BLE (BP4, 2026-04-20 追加) — supportsBle フィルタ対象、ESP32 専用

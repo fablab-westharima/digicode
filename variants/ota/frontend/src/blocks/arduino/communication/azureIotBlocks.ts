@@ -645,3 +645,28 @@ generator.forBlock['azure_iot_update_device_twin'] = function(block: Blockly.Blo
   generator.definitions_['azure_iot_helpers'] = AZURE_IOT_HELPERS;
   return `azureIotUpdateDeviceTwin(${key}, String(${value}));\n`;
 };
+
+// ============================================================================
+// commit #4-C: azure_iot_is_connected (Boolean output)
+// ============================================================================
+
+/**
+ * azure_iot_is_connected — Azure IoT 接続状態 (Boolean output)
+ * azureIotMqttClient.connected() を返す。Hub / Central どちらの接続にも有効。
+ */
+Blockly.Blocks['azure_iot_is_connected'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('☁️ ' + (Blockly.Msg.BLOCKS_AZURE_IOT_IS_CONNECTED || 'Azure IoT 接続中'));
+    this.setOutput(true, 'Boolean');
+    this.setColour(AZURE_IOT_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_AZURE_IOT_IS_CONNECTED_TOOLTIP || 'Azure IoT Hub / IoT Central との MQTT 接続が維持されている場合 true を返します。WiFi 切断や TLS タイムアウト時に false になります。');
+  }
+};
+
+generator.forBlock['azure_iot_is_connected'] = function() {
+  generator.definitions_['include_azure_iot'] = AZURE_IOT_INCLUDE;
+  generator.definitions_['azure_iot_globals'] = AZURE_IOT_GLOBALS;
+  generator.definitions_['azure_iot_globals_cb'] = AZURE_IOT_GLOBALS_CB;
+  return ['azureIotMqttClient.connected()', Order.FUNCTION_CALL];
+};
