@@ -517,6 +517,18 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // IoT Cloud (51.md Phase A+B, 2026-05-04 第78回 commit #5) — supportsWifi フィルタ対象
+  // Azure / AWS / GCP / 汎用 MQTT を統一 API で扱う抽象化レイヤー (PROVIDER dropdown で切替)
+  iot_cloud: `
+  <category id="iot_cloud" name="${cat('iotCloud')}" colour="#4CAF50">
+    <block type="iot_cloud_connect"></block>
+    <block type="iot_cloud_publish"></block>
+    <block type="iot_cloud_on_message"></block>
+    <block type="iot_cloud_received_value"></block>
+    <block type="iot_cloud_disconnect"></block>
+    <block type="iot_cloud_is_connected"></block>
+  </category>`,
+
   // Azure IoT (51.md Phase A+B, 2026-05-04 第78回 commit #4 着手) — supportsWifi フィルタ対象
   // 9 blocks total: #4-A Hub (4) + #4-B Central + Direct Method + Twin (4 本コミット) + #4-C is_connected (1)
   azure_iot: `
@@ -1236,6 +1248,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'wifi',
     'mqtt',
     'arduino_ha',
+    'iot_cloud',
     'azure_iot',
     'http',
     'json',
@@ -1324,6 +1337,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'wifi',
     'mqtt',
     'arduino_ha',
+    'iot_cloud',
     'azure_iot',
     'http',
     'json',
@@ -1400,6 +1414,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'wifi',
     'mqtt',
     'arduino_ha',
+    'iot_cloud',
     'azure_iot',
     'http',
     'json',
@@ -1478,6 +1493,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'wifi',
     'mqtt',
     'arduino_ha',
+    'iot_cloud',
     'azure_iot',
     'http',
     'json',
@@ -1539,7 +1555,7 @@ export function generateToolbox(
   // 可視性フィルタ (2026-04-20 BP1-2c, 2026-05-04 51.md commit #3 で espnow + m5stack 追加)
   // ボード対応フラグに基づき、選択中ボードでサポートされないカテゴリを除外する。
   if (board) {
-    const WIFI_CATEGORIES = new Set(['wifi', 'mqtt', 'arduino_ha', 'http', 'ntp_time', 'websocket', 'azure_iot']);
+    const WIFI_CATEGORIES = new Set(['wifi', 'mqtt', 'arduino_ha', 'http', 'ntp_time', 'websocket', 'azure_iot', 'iot_cloud']);
     const OTA_CATEGORIES = new Set(['ota']);
     const BLE_CATEGORIES = new Set(['ble']);
     // 51.md Phase A+B (2026-05-04 第78回): ESP-NOW = ESP32 系のみ、m5stack カテゴリ = `category=='m5stack'` boards のみ。

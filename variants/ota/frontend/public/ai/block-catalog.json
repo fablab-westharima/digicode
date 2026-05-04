@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-04T08:42:26.023Z",
+  "generatedAt": "2026-05-04T08:47:15.483Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -8364,6 +8364,140 @@
       ]
     },
     {
+      "type": "iot_cloud_connect",
+      "category": "iot_cloud",
+      "tooltip": "IoT クラウドに接続します。プロバイダを選択し、JSON 形式の認証情報を渡してください (例: Azure Hub は connection_string、Central は scope_id+device_id+device_key、MQTT は broker+port)。AWS / GCP は Phase D で実装予定 (現状 stub)。",
+      "colour": "#4CAF50",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [
+        {
+          "name": "PROVIDER",
+          "fieldType": "dropdown",
+          "options": [
+            "azure_iot_hub",
+            "azure_iot_central",
+            "aws_iot_core",
+            "gcp_iot",
+            "mqtt_generic"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "CREDENTIALS",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "iot_cloud_publish",
+      "category": "iot_cloud",
+      "tooltip": "IoT クラウドに送信します。事前に iot_cloud_connect が必要です。プロバイダに応じて Azure D2C / 汎用 MQTT 等に dispatch されます。",
+      "colour": "#4CAF50",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "PAYLOAD",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "iot_cloud_on_message",
+      "category": "iot_cloud",
+      "tooltip": "IoT クラウドからメッセージを受信したときの処理を定義します。HANDLER 内で iot_cloud_received_value で値が取得できます。arduino_loop の中に配置してください。",
+      "colour": "#4CAF50",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "HANDLER"
+        }
+      ]
+    },
+    {
+      "type": "iot_cloud_received_value",
+      "category": "iot_cloud",
+      "tooltip": "IoT クラウドのメッセージハンドラ内で受信値を取得します。HANDLER 外で使うと空文字列を返します。",
+      "colour": "#4CAF50",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "iot_cloud_disconnect",
+      "category": "iot_cloud",
+      "tooltip": "IoT クラウドから切断します。プロバイダ状態をリセットします。",
+      "colour": "#4CAF50",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "iot_cloud_is_connected",
+      "category": "iot_cloud",
+      "tooltip": "IoT クラウドとの接続が維持されている場合 true を返します。プロバイダに応じて Azure / MQTT のクライアント状態を返します。",
+      "colour": "#4CAF50",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
       "type": "azure_iot_hub_connect",
       "category": "azure_iot",
       "tooltip": "Azure IoT Hub に接続文字列で接続します。WiFi 接続済が前提です。成功時 true を返します。",
@@ -12225,7 +12359,8 @@
       "http",
       "ntp_time",
       "websocket",
-      "azure_iot"
+      "azure_iot",
+      "iot_cloud"
     ],
     "ota": [
       "ota"

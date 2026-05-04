@@ -41,7 +41,9 @@ const AZURE_IOT_COLOR = '#0078D4'; // Azure brand color
 // C++ ヘルパー (definitions_ に dedupe key で 1 回 emit、N ブロック使用でも 1 回)
 // ============================================================================
 
-const AZURE_IOT_INCLUDE = `#include <WiFi.h>
+// 51.md commit #5 (iot_cloud): 抽象化レイヤーから internal call するため export
+// (key dedupe + 同 key で azureIotBlocks.ts と iotCloudBlocks.ts が同じ定数値を emit)
+export const AZURE_IOT_INCLUDE = `#include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <PubSubClient.h>
@@ -78,7 +80,7 @@ MrY=
 -----END CERTIFICATE-----
 )CERT";`;
 
-const AZURE_IOT_GLOBALS = `${AZURE_IOT_ROOT_CA}
+export const AZURE_IOT_GLOBALS = `${AZURE_IOT_ROOT_CA}
 WiFiClientSecure azureIotSecureClient;
 PubSubClient azureIotMqttClient(azureIotSecureClient);
 az_iot_hub_client azureIotClient;
@@ -95,11 +97,11 @@ typedef void (*_AzureIoTDirectMethodCallback)();
 struct _AzureIoTC2DReg { static _AzureIoTC2DCallback _cb; _AzureIoTC2DReg(_AzureIoTC2DCallback cb) { _cb = cb; } };
 struct _AzureIoTDirectMethodReg { static _AzureIoTDirectMethodCallback _cb; _AzureIoTDirectMethodReg(_AzureIoTDirectMethodCallback cb) { _cb = cb; } };`;
 
-const AZURE_IOT_GLOBALS_CB = `_AzureIoTC2DCallback _AzureIoTC2DReg::_cb = nullptr;
+export const AZURE_IOT_GLOBALS_CB = `_AzureIoTC2DCallback _AzureIoTC2DReg::_cb = nullptr;
 _AzureIoTDirectMethodCallback _AzureIoTDirectMethodReg::_cb = nullptr;`;
 
 // substantive helper: connection string parse + SAS token gen + MQTT connect + publish + C2D dispatch
-const AZURE_IOT_HELPERS = `
+export const AZURE_IOT_HELPERS = `
 // 51.md Phase A+B: Azure IoT Hub helpers (parse connStr / SAS token / MQTT TLS / D2C / C2D)
 
 static String _azureIotUrlEncode(const char* msg) {

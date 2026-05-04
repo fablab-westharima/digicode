@@ -2745,6 +2745,7 @@
       "temperature": "🌡️ Temperatura",
       "mqttHa": "🏠 MQTT/HA",
       "haAutoDiscovery": "🏡 HA Auto Discovery",
+      "iotCloud": "☁️ IoT Cloud",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
       "json": "📋 JSON",

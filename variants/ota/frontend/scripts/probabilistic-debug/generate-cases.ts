@@ -123,16 +123,15 @@ interface StrategyAllocation {
 // at 1000 cases. Pair is the next-largest bucket and the marginal contribution
 // of the dropped 7 cases is negligible (Round 2 passRate 90.4% baseline).
 //
-// 51.md Phase A+B commit #4-A〜#4-C (2026-05-04 第78回): catalog 419 → 423 → 427 → 428
-// で azure_iot 9 ブロック完結 (Hub 4 + Central 2 + Direct Method/Twin 2 + is_connected 1)。
-// singleton 421 → 425 → 429 → 430 (catalog +2 buffer)、pair 178 → 174 → 170 → 169 で
-// 総数 1000 維持。51.md 残コミット (#5 iot_cloud / sessions 2-3) でも同 pattern で
-// singleton bucket を bump、pair で吸収。
+// 51.md Phase A+B commit #4-A〜#5 (2026-05-04 第78回): catalog 419 → 434 で
+// azure_iot 9 + iot_cloud 6 = 15 ブロック追加 (FS 講座 + Fab Academy 必須 IoT 基盤完結)。
+// singleton 421 → 436 (catalog +2 buffer)、pair 178 → 163 で総数 1000 維持。
+// 51.md 残コミット (sessions 2-3 = +57) でも同 pattern で bump。
 const FULL_ALLOCATION: StrategyAllocation = {
-  singleton: 430,
+  singleton: 436,
   edge: 86,
   matrix: 100,
-  pair: 169,
+  pair: 163,
   template: 200,
   combo: 15,
 };
