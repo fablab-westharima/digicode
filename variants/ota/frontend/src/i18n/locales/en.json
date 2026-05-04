@@ -2794,6 +2794,7 @@
       "espnow": "📡 ESP-NOW",
       "hx711": "⚖️ HX711 Load Cell",
       "oledSsd1306": "🖥️ OLED (SSD1306)",
+      "tm1637": "💡 TM1637 7-Seg",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",

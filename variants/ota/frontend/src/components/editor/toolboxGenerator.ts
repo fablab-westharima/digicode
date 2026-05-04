@@ -1134,6 +1134,23 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // TM1637 4桁7セグメント (52.md commit #3, 2026-05-04 第80回) — Fab Academy 頻出
+  tm1637: `
+  <category id="tm1637" name="${cat('tm1637')}" colour="#9C27B0">
+    <block type="tm1637_init"></block>
+    <block type="tm1637_show_number">
+      <value name="VALUE"><shadow type="math_number"><field name="NUM">1234</field></shadow></value>
+    </block>
+    <block type="tm1637_show_with_colon">
+      <value name="HH"><shadow type="math_number"><field name="NUM">12</field></shadow></value>
+      <value name="MM"><shadow type="math_number"><field name="NUM">34</field></shadow></value>
+    </block>
+    <block type="tm1637_set_brightness">
+      <value name="LEVEL"><shadow type="math_number"><field name="NUM">4</field></shadow></value>
+    </block>
+    <block type="tm1637_clear"></block>
+  </category>`,
+
   // HX711 ロードセル (51.md commit #10, 2026-05-04 第79回) — Fab Academy Final Project 装備
   hx711: `
   <category id="hx711" name="${cat('hx711')}" colour="#795548">
@@ -1428,6 +1445,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'neopixel',
     'display',
     'oled_ssd1306',
+    'tm1637',
     'tft_display',
     'camera',
     'audio_dfplayer',
@@ -1490,6 +1508,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'neopixel',
     'display',
     'oled_ssd1306',
+    'tm1637',
     'tft_display',
     'camera',
     'audio_dfplayer',
@@ -1574,6 +1593,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'neopixel',
     'display',
     'oled_ssd1306',
+    'tm1637',
     'tft_display',
     'camera',
     'audio_dfplayer',
@@ -1660,6 +1680,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'neopixel',
     'display',
     'oled_ssd1306',
+    'tm1637',
     'tft_display',
     'camera',
     'audio_dfplayer',
