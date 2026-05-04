@@ -192,3 +192,74 @@ describe('runOrchestrator — stage="code-gen"', () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// Stage 3 (55.md Phase 4-3): `--stage spot` samples a board × strategy
+// spread and forces a cold compile per case via a unique-tag setupCode
+// comment. The integration test below records the request payload that
+// would have hit the compile server and asserts the comment landed in
+// setupCode — it doesn't actually round-trip to ML30.
+// ---------------------------------------------------------------------------
+
+describe('runOrchestrator — stage="spot" injects unique tag into setupCode', () => {
+  it('prepends `// stage3-<runId>-<caseId>` to setupCode of each sampled case', async () => {
+    const fixture = writeFixture([
+      { id: 'case_0001', fileName: 'case_0001.xml', xml: MINIMAL_VALID_XML },
+    ]);
+    const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'orchestrator-out-'));
+    // Capture POST bodies sent to compileCpp via a one-shot HTTP listener.
+    const http = await import('http');
+    const captured: string[] = [];
+    const server = http.createServer((req, res) => {
+      let body = '';
+      req.on('data', (chunk) => (body += chunk));
+      req.on('end', () => {
+        captured.push(body);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(
+          JSON.stringify({
+            success: true,
+            firmware: '',
+            durationMs: 1,
+            template: 'DigiCodeUSB',
+            pioBoard: 'esp32dev',
+          }),
+        );
+      });
+    });
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const address = server.address();
+    if (!address || typeof address === 'string') {
+      throw new Error('server.address() did not return a port');
+    }
+    const serverUrl = `http://127.0.0.1:${address.port}`;
+    try {
+      await runOrchestrator({
+        inDir: fixture.dir,
+        outDir,
+        parallel: 1,
+        verbose: false,
+        serverUrl,
+        connectionType: 'usb',
+        timeoutMs: 5_000,
+        stage: 'spot',
+        sampleSize: 80,
+      });
+      expect(captured).toHaveLength(1);
+      const body = JSON.parse(captured[0]);
+      expect(body.setupCode).toMatch(/^\s*\/\/ stage3-[\w-]+-case_0001\n/);
+      const lines = fs
+        .readFileSync(path.join(outDir, 'results.jsonl'), 'utf-8')
+        .trim()
+        .split('\n');
+      const result = JSON.parse(lines[0]);
+      expect(result.caseId).toBe('case_0001');
+      expect(result.stage).toBe('spot');
+      expect(result.ok).toBe(true);
+    } finally {
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+      fs.rmSync(outDir, { recursive: true, force: true });
+      fixture.cleanup();
+    }
+  });
+});

@@ -38,6 +38,7 @@ import {
 } from './lib/result-store';
 import { fqbnFor } from './lib/board-fqbn';
 import { processWithConcurrency } from './lib/concurrency';
+import { selectSpotCases } from './lib/sampling';
 import type { Manifest, ManifestEntry } from './lib/case-types';
 
 // Re-export so existing imports from `./orchestrator` keep working
@@ -49,12 +50,22 @@ const DEFAULT_PARALLEL = 4;
 const DEFAULT_TIMEOUT_MS = 180_000;
 const DEFAULT_CONNECTION_TYPE: 'ota' | 'usb' | 'ble' = 'ota';
 const DEFAULT_STAGE: CaseStage = 'full';
-const VALID_STAGES: ReadonlyArray<CaseStage> = ['full', 'code-gen'];
+const VALID_STAGES: ReadonlyArray<CaseStage> = ['full', 'code-gen', 'spot'];
+const DEFAULT_SPOT_SAMPLE_SIZE = 80; // 16 ESP32 boards × 5 (post-56.md)
+const VALID_BOARD_COVERAGE: ReadonlyArray<BoardCoverage> = ['all'];
 const NOISE_TEST_PARALLELISMS = [1, 2, 3, 4];
 const NOISE_TEST_CASES_PER_LEVEL = 10;
 // Update cadence in non-verbose mode. 10 = ~100 updates over a 1000-case run,
 // landing roughly one progress line every 90-120 s at 40s/case ÷ parallel 4.
 const PROGRESS_TICK = 10;
+
+/**
+ * Stage 3 board-coverage selector. Currently only `'all'` is supported,
+ * but the flag is reserved as an extensibility point (e.g., a future
+ * `'m5stack-only'` would let a focused FS-course smoke skip the XIAO and
+ * generic boards).
+ */
+export type BoardCoverage = 'all';
 
 interface CliArgs {
   in: string;
@@ -68,6 +79,8 @@ interface CliArgs {
   limit?: number;
   offset: number;
   stage: CaseStage;
+  sampleSize?: number;
+  boardCoverage: BoardCoverage;
 }
 
 export interface OrchestratorOptions {
@@ -87,8 +100,16 @@ export interface OrchestratorOptions {
    * 'code-gen' = 55.md Phase 4-1 generator-only mode; xmlToCpp() runs but
    * compileCpp() is skipped, so the entire 1000-case run can be evaluated
    * for generator throws / silent-empty fragments in ~5-10 min without ML30.
+   * 'spot' = 55.md Phase 4-3 board-coverage sampled compile (default 80
+   * cases = 16 boards × 5). Each case carries a unique tag injected into
+   * `setupCode` to force compile-server cache miss, so every case is a
+   * cold compile and the run actually exercises the lib_deps universe.
    */
   stage?: CaseStage;
+  /** Stage 3 only: how many cases to sample (default 80). */
+  sampleSize?: number;
+  /** Stage 3 only: which boards to include (default 'all'). */
+  boardCoverage?: BoardCoverage;
 }
 
 // --- CLI parsing -------------------------------------------------------
@@ -130,6 +151,17 @@ function parseArgs(argv: string[]): CliArgs {
     process.exit(1);
   }
 
+  // Same defensive treatment for --board-coverage (Stage 3 only).
+  const coverageRaw = args['board-coverage'] as BoardCoverage | undefined;
+  const boardCoverage: BoardCoverage = coverageRaw ?? 'all';
+  if (!VALID_BOARD_COVERAGE.includes(boardCoverage)) {
+    process.stderr.write(
+      `--board-coverage "${coverageRaw}" is not valid. Allowed: ${VALID_BOARD_COVERAGE.join(' | ')}\n`,
+    );
+    printHelp();
+    process.exit(1);
+  }
+
   return {
     in: args.in,
     out: args.out,
@@ -145,6 +177,10 @@ function parseArgs(argv: string[]): CliArgs {
     limit: args.limit ? Number.parseInt(args.limit, 10) : undefined,
     offset: args.offset ? Number.parseInt(args.offset, 10) : 0,
     stage,
+    sampleSize: args['sample-size']
+      ? Number.parseInt(args['sample-size'], 10)
+      : undefined,
+    boardCoverage,
   };
 }
 
@@ -162,10 +198,16 @@ function printHelp(): void {
   --timeout-ms N         Per-case compile timeout (default ${DEFAULT_TIMEOUT_MS})
   --limit N              Process only N cases (combine with --offset to slice a window)
   --offset N             Skip the first N cases of the manifest (default 0)
-  --stage MODE           '${VALID_STAGES.join(' | ')}' (default '${DEFAULT_STAGE}'). 'code-gen' skips
-                         the compile-server roundtrip and judges each case purely
-                         on whether xmlToCpp() returns non-empty fragments
-                         (55.md Phase 4-1 — fast bootstrap-import audit).
+  --stage MODE           '${VALID_STAGES.join(' | ')}' (default '${DEFAULT_STAGE}').
+                         'code-gen' skips the compile-server roundtrip and judges
+                         each case on whether xmlToCpp() returns non-empty
+                         fragments (55.md Phase 4-1 — fast bootstrap-import audit).
+                         'spot' samples a board × strategy spread (default
+                         ${DEFAULT_SPOT_SAMPLE_SIZE} cases, 16 boards × 5) and forces a cold compile
+                         per case via a unique-tag setupCode comment (55.md
+                         Phase 4-3 — board-coverage real-compile sweep).
+  --sample-size N        Stage 3 only: total cases to sample (default ${DEFAULT_SPOT_SAMPLE_SIZE}).
+  --board-coverage MODE  Stage 3 only: '${VALID_BOARD_COVERAGE.join(' | ')}' (default 'all').
   --help                 Show this message
 `,
   );
@@ -180,12 +222,26 @@ async function processCase(
   connectionType: 'ota' | 'usb' | 'ble',
   timeoutMs: number,
   stage: CaseStage,
+  uniqueTag?: string,
 ): Promise<CaseResult> {
   const xmlPath = path.join(inDir, entry.fileName);
   const start = Date.now();
   try {
     const xml = fs.readFileSync(xmlPath, 'utf-8');
-    const fragments = xmlToCpp(xml);
+    let fragments = xmlToCpp(xml);
+
+    // Stage 3 (spot): inject a per-case comment into setupCode so the
+    // compile-server cache key (cache.ts:27 hashes the injectedSource)
+    // changes for every case in this run, forcing a real cold compile.
+    // The comment is stripped at preprocess time, so firmware behaviour
+    // is unchanged. setupCode is always present in `xmlToCpp` output, so
+    // this is the safest fragment to mutate.
+    if (stage === 'spot' && uniqueTag) {
+      fragments = {
+        ...fragments,
+        setupCode: `  // stage3-${uniqueTag}\n${fragments.setupCode}`,
+      };
+    }
 
     if (stage === 'code-gen') {
       // 55.md Phase 4-1: validate that xmlToCpp produced something. A
@@ -258,9 +314,21 @@ export async function runOrchestrator(opts: OrchestratorOptions): Promise<void> 
     fs.readFileSync(manifestPath, 'utf-8'),
   ) as Manifest;
 
-  const offset = opts.offset ?? 0;
-  const end = opts.limit !== undefined ? offset + opts.limit : manifest.cases.length;
-  const cases = manifest.cases.slice(offset, end);
+  const stage: CaseStage = opts.stage ?? DEFAULT_STAGE;
+
+  // Stage 3 sampling pre-empts offset/limit slicing — the spec says to
+  // pick a board × strategy spread out of the whole manifest, not the
+  // first N entries. offset/limit only applies to 'full' / 'code-gen'.
+  let cases: ManifestEntry[];
+  if (stage === 'spot') {
+    const sampleSize = opts.sampleSize ?? DEFAULT_SPOT_SAMPLE_SIZE;
+    cases = selectSpotCases(manifest, { sampleSize });
+  } else {
+    const offset = opts.offset ?? 0;
+    const end =
+      opts.limit !== undefined ? offset + opts.limit : manifest.cases.length;
+    cases = manifest.cases.slice(offset, end);
+  }
 
   const catalog = loadCatalog();
   const metadata: RunMetadata = {
@@ -277,16 +345,22 @@ export async function runOrchestrator(opts: OrchestratorOptions): Promise<void> 
 
   const store = new ResultStore(opts.outDir, metadata);
 
-  const stage: CaseStage = opts.stage ?? DEFAULT_STAGE;
   const startTime = Date.now();
-  const stageBanner = stage === 'code-gen' ? ' (generator-only, no compile)' : '';
+  const stageBanner =
+    stage === 'code-gen'
+      ? ' (generator-only, no compile)'
+      : stage === 'spot'
+        ? ` (spot sample, sample-size=${opts.sampleSize ?? DEFAULT_SPOT_SAMPLE_SIZE}, unique-tag cold compile)`
+        : '';
   process.stdout.write(
     `▶︎ Run ${metadata.runId}: ${cases.length} cases × parallel=${opts.parallel}${stageBanner}\n` +
-      (stage === 'full' ? `  Server: ${opts.serverUrl}\n` : '') +
+      (stage !== 'code-gen' ? `  Server: ${opts.serverUrl}\n` : '') +
       `  Results: ${opts.outDir}\n`,
   );
 
   await processWithConcurrency(cases, opts.parallel, async (entry) => {
+    const uniqueTag =
+      stage === 'spot' ? `${metadata.runId}-${entry.id}` : undefined;
     const result = await processCase(
       entry,
       opts.inDir,
@@ -294,6 +368,7 @@ export async function runOrchestrator(opts: OrchestratorOptions): Promise<void> 
       opts.connectionType,
       opts.timeoutMs,
       stage,
+      uniqueTag,
     );
     store.append(result);
 
@@ -452,6 +527,8 @@ async function main(): Promise<void> {
     limit: args.limit,
     offset: args.offset,
     stage: args.stage,
+    sampleSize: args.sampleSize,
+    boardCoverage: args.boardCoverage,
   });
 }
 
