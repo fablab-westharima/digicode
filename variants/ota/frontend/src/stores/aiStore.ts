@@ -15,6 +15,9 @@ interface AiState {
   currentMode: AiMode;
   conversationBlockGen: Message[];
   conversationHelpBot: Message[];
+  // Phase 4 controllerCustomize 会話履歴 (50.md §4.2 #5、aiStore 拡張)。
+  // memory-only、persist しない (他 2 mode と同方針)。
+  conversationControllerCustomize: Message[];
   lastTokenUsage: number;
 
   // actions
@@ -43,6 +46,7 @@ export const useAiStore = create<AiState>()(
       currentMode: 'blockGen',
       conversationBlockGen: [],
       conversationHelpBot: [],
+      conversationControllerCustomize: [],
       lastTokenUsage: 0,
 
       setProvider: (provider) => set({ provider }),
@@ -60,10 +64,15 @@ export const useAiStore = create<AiState>()(
         conversationHelpBot: mode === 'helpBot'
           ? [...state.conversationHelpBot, message]
           : state.conversationHelpBot,
+        conversationControllerCustomize: mode === 'controllerCustomize'
+          ? [...state.conversationControllerCustomize, message]
+          : state.conversationControllerCustomize,
       })),
       clearConversation: (mode) => set((state) => ({
         conversationBlockGen: mode === 'blockGen' ? [] : state.conversationBlockGen,
         conversationHelpBot:  mode === 'helpBot'  ? [] : state.conversationHelpBot,
+        conversationControllerCustomize:
+          mode === 'controllerCustomize' ? [] : state.conversationControllerCustomize,
       })),
       setLastTokenUsage: (lastTokenUsage) => set({ lastTokenUsage }),
     }),

@@ -5,7 +5,9 @@ import { OpenAICompatibleClient } from './openAICompatibleClient';
 import { AnthropicClient } from './anthropicClient';
 
 export type AiProvider = 'openai' | 'anthropic' | 'gemini' | 'custom';
-export type AiMode = 'blockGen' | 'helpBot';
+// 'controllerCustomize' (Phase 4) — system prompt builder + client switch case 追加は commit #2
+// (50.md §4.2 #3/#4)。本 commit (#1) では型のみ追加、aiStore/featureFlagStore で前準備。
+export type AiMode = 'blockGen' | 'helpBot' | 'controllerCustomize';
 
 // 会話履歴の 1 メッセージ（aiStore に persist しない、メモリのみ、判断 4）
 export interface Message {

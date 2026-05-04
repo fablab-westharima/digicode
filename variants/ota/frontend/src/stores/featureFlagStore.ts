@@ -20,6 +20,7 @@ interface FeatureFlagState {
   canUsePinAssign: (userPlan?: string) => boolean;
   canUseAiBlockGeneration: (userPlan?: string, accountType?: string) => boolean;
   canUseAiHelpBot: (userPlan?: string, accountType?: string) => boolean;
+  canUseAiUiCustomize: (userPlan?: string, accountType?: string) => boolean;
   canSubmitFeedback: (userPlan?: string, accountType?: string) => boolean;
   isFreeOpenNow: (key: string) => boolean;
   getFreeReason: (key: string) => string | null;
@@ -83,6 +84,15 @@ export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
   // AI チャット: blockGen と同じく Lite+ 非 student 限定（判断 10 変更 2026-04-22）
   // BYOK + 有料プランの差別化機能として位置づけ
   canUseAiHelpBot: (userPlan?: string, accountType?: string) => {
+    if (accountType === 'student') return false;
+    if (!userPlan) return false;
+    return ['lite', 'pro', 'enterprise'].includes(userPlan);
+  },
+
+  // AI UI カスタマイズ (Phase 4、50.md §11 D2/D8 + §4.2 #6): Lite+ 非 student 限定。
+  // 第 2 層 = AI チャットで Layer 1 ルールベース UI に customization fields populate、
+  // BYOK + 課金差別化の柱 (47.md §7.1)。Free / student / ゲストは lock + Upgrade CTA。
+  canUseAiUiCustomize: (userPlan?: string, accountType?: string) => {
     if (accountType === 'student') return false;
     if (!userPlan) return false;
     return ['lite', 'pro', 'enterprise'].includes(userPlan);

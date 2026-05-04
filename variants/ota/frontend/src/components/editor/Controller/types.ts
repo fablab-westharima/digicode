@@ -152,6 +152,13 @@ export interface WifiControllerSchema {
    * the WifiControllerDialog (commit #4) as a banner.
    */
   warnings: string[];
+  /**
+   * Phase 4 schema-level customization (Layer 2). Populated by AI chat via
+   * `applyCustomizationDiff` (controllerCustomizer.ts). Layer 1
+   * (`inferWifiUiSchema`) leaves this undefined. Optional; bundles ignore
+   * unknown fields → backward compatibility, schema version stays '1.0'.
+   */
+  customization?: WidgetCustomization;
 }
 
 // ---------------------------------------------------------------------------
