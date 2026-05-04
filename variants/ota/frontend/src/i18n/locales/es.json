@@ -2756,6 +2756,7 @@
       "max7219": "🔲 Matriz LED MAX7219",
       "esp32Touch": "✋ Touch ESP32",
       "epaper": "📃 E-paper",
+      "stepperDriver": "⚙️ Driver Stepper",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",

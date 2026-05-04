@@ -2788,6 +2788,7 @@
       "max7219": "🔲 MAX7219 LED マトリクス",
       "esp32Touch": "✋ ESP32 タッチ",
       "epaper": "📃 E-paper",
+      "stepperDriver": "⚙️ ステッピングドライバ",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",

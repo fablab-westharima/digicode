@@ -1134,6 +1134,24 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // ステッピングドライバ詳細 (52.md commit #7, 2026-05-04 第80回) — Phase D、A4988 + ULN2003
+  stepper_driver: `
+  <category id="stepper_driver" name="${cat('stepperDriver')}" colour="#FF5722">
+    <label text="A4988"></label>
+    <block type="a4988_init"></block>
+    <block type="a4988_set_microstep"></block>
+    <block type="a4988_set_direction"></block>
+    <block type="a4988_step">
+      <value name="STEPS"><shadow type="math_number"><field name="NUM">200</field></shadow></value>
+    </block>
+    <label text="ULN2003 + 28BYJ-48"></label>
+    <block type="uln2003_init"></block>
+    <block type="uln2003_step_28byj48">
+      <value name="STEPS"><shadow type="math_number"><field name="NUM">512</field></shadow></value>
+      <value name="SPEED"><shadow type="math_number"><field name="NUM">500</field></shadow></value>
+    </block>
+  </category>`,
+
   // E-paper ディスプレイ (52.md commit #6, 2026-05-04 第80回) — Phase D、Waveshare/M5Paper 対応
   epaper: `
   <category id="epaper" name="${cat('epaper')}" colour="#607D8B">
@@ -1406,6 +1424,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     // アクチュエータ・表示
     'servo',
     'stepper',
+    'stepper_driver',
     'buzzer',
     'neopixel',
     'display',
@@ -1488,6 +1507,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     // アクチュエータ・表示・音声
     'servo',
     'stepper',
+    'stepper_driver',
     'buzzer',
     'neopixel',
     'display',
@@ -1554,6 +1574,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     // アクチュエータ・表示・音声
     'servo',
     'stepper',
+    'stepper_driver',
     'buzzer',
     'neopixel',
     'display',
@@ -1622,6 +1643,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'diff_drive',
     'encoder',
     'stepper',
+    'stepper_driver',
     'pid',
     'separator2',
     // センサー（競技）
@@ -1712,6 +1734,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'diff_drive',
     'encoder',
     'stepper',
+    'stepper_driver',
     'pid',
     'separator3',
     // センサー（競技）
