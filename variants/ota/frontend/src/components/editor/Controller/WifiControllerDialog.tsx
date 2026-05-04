@@ -28,7 +28,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { QRCodeSVG } from 'qrcode.react';
-import { ChevronRight, Copy, ExternalLink, History, Search } from 'lucide-react';
+import { ChevronRight, Copy, ExternalLink, History, Search, Sparkles } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -46,8 +46,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useSerialStore } from '@/stores/serialStore';
 import { inferWifiUiSchemaFromXml } from './inferWifiUiSchema';
-import type { WifiWidgetDefinition } from './types';
+import type { WifiControllerSchema, WifiWidgetDefinition } from './types';
 import { UnifiedControllerSection } from './UnifiedControllerSection';
+import { ControllerAiChat } from './ControllerAiChat';
+import { applyCustomizationDiff, type CustomizationDiff } from './controllerCustomizer';
 
 const HISTORY_KEY = 'wifi-controller:lastIps';
 const HISTORY_MAX = 5;
@@ -81,16 +83,42 @@ export interface WifiControllerDialogProps {
   onOpenChange: (open: boolean) => void;
   /** Live workspace XML — re-inferred on every change to keep the preview accurate. */
   workspaceXml: string;
+  /** Phase 4 Lite+ gating (50.md §10.1). Hides AI chat panel for Free / student / guest. */
+  isAiUiCustomizeAvailable?: boolean;
+  /** Click handler for the upgrade-plan CTA (typically navigate to /account or /plan). */
+  onUpgradePlan?: () => void;
 }
 
 export function WifiControllerDialog({
   open,
   onOpenChange,
   workspaceXml,
+  isAiUiCustomizeAvailable = false,
+  onUpgradePlan,
 }: WifiControllerDialogProps) {
   const { t } = useTranslation();
 
-  const schema = useMemo(() => inferWifiUiSchemaFromXml(workspaceXml), [workspaceXml]);
+  // Phase 4: customizationDiffStack tracks AI-applied diffs so the inferred
+  // schema (Layer 1) is augmented with Layer 2 customizations and undo can
+  // restore the previous state. The base schema is recomputed from XML each
+  // change; customizations apply on top.
+  const [customizationDiffStack, setCustomizationDiffStack] = useState<CustomizationDiff[]>([]);
+
+  const schema = useMemo<WifiControllerSchema>(() => {
+    const base = inferWifiUiSchemaFromXml(workspaceXml);
+    return customizationDiffStack.reduce(
+      (acc, diff) => applyCustomizationDiff(acc, diff).schema,
+      base,
+    );
+  }, [workspaceXml, customizationDiffStack]);
+
+  const handleApplyDiff = (diff: CustomizationDiff): void => {
+    setCustomizationDiffStack((prev) => [...prev, diff]);
+  };
+  const handleUndoDiff = (): void => {
+    setCustomizationDiffStack((prev) => prev.slice(0, -1));
+  };
+
   const device = schema.devices[0];
   const widgets = device?.widgets ?? [];
   const port = device?.endpoint.port ?? 81;
@@ -364,7 +392,38 @@ export function WifiControllerDialog({
                 })}
               </span>
             </summary>
-            <UnifiedControllerSection />
+            <UnifiedControllerSection
+              isAiUiCustomizeAvailable={isAiUiCustomizeAvailable}
+              onUpgradePlan={onUpgradePlan}
+            />
+          </details>
+
+          {/* 47.md Phase 4 / 50.md §10.1 — AI で UI をカスタマイズ chat panel
+              (Lite+ 限定、課金差別化)。folded by default。Free/student/guest
+              には lock CTA 表示 (ControllerAiChat 内 isAvailable 分岐)。 */}
+          <details className="border rounded-md mt-2 group">
+            <summary className="cursor-pointer px-4 py-3 hover:bg-muted/50 flex items-center gap-2 text-sm">
+              <ChevronRight className="w-4 h-4 group-open:rotate-90 transition-transform shrink-0" />
+              <Sparkles className="w-4 h-4 text-blue-400" />
+              <span className="font-medium">
+                {t('controllerAiChat.title', { defaultValue: 'AI で UI をカスタマイズ' })}
+              </span>
+              {!isAiUiCustomizeAvailable && (
+                <span className="ml-1 text-[10px] text-orange-400">LITE+</span>
+              )}
+              <span className="ml-auto text-xs text-muted-foreground hidden sm:inline">
+                {t('controllerAiChat.summary', {
+                  defaultValue: '自然文で widget の見た目を編集',
+                })}
+              </span>
+            </summary>
+            <ControllerAiChat
+              schema={schema}
+              onApplyDiff={handleApplyDiff}
+              onUndo={customizationDiffStack.length > 0 ? handleUndoDiff : undefined}
+              isAvailable={isAiUiCustomizeAvailable}
+              onUpgradePlan={onUpgradePlan}
+            />
           </details>
         </div>
 

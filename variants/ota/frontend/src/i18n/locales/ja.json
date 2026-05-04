@@ -914,6 +914,33 @@
       "reattachNeeded": "{{count}} 機の .digicode.json を再ドロップしてください"
     }
   },
+  "controllerAiChat": {
+    "title": "AI で UI をカスタマイズ",
+    "titleUnified": "AI で統合 UI をカスタマイズ",
+    "summary": "自然文で widget の見た目を編集",
+    "placeholder": "例: slider を青に、温度を gauge 表示に",
+    "send": "送信",
+    "applying": "適用中…",
+    "undo": "元に戻す",
+    "clear": "クリア",
+    "confirmClear": "チャット履歴をクリアしますか?",
+    "lastApplied": "✓ 適用: {{summary}}",
+    "lockedTitle": "Lite+ プラン限定機能",
+    "lockedDescription": "AI で UI をカスタマイズするには Lite+ プランへのアップグレードが必要です。",
+    "upgradeCta": "プランをアップグレード",
+    "errorParse": "AI 応答が無効な JSON 形式です: {{error}}",
+    "errorNoApiKey": "API キーが未設定です。アカウント設定から登録してください。",
+    "errorGeneric": "AI への問い合わせでエラーが発生しました。",
+    "errorInvalidKey": "API キーが無効です。",
+    "errorRateLimit": "API レート制限を超過しました。",
+    "errorNetwork": "ネットワークエラーが発生しました。",
+    "previewNote": "実機での反映は ESP32 reload 後 (Phase 2) または HTML 再ダウンロード後 (Phase 3) です。",
+    "examples": {
+      "label": "例:",
+      "color": "全体を青系の色に",
+      "layout": "2 列レイアウトに"
+    }
+  },
   "bluetooth": {
     "notSupported": "Web Bluetooth APIがサポートされていません",
     "notSupportedDesc": "このブラウザではBluetooth接続を使用できません。ChromeまたはEdgeの最新版をご使用ください。",

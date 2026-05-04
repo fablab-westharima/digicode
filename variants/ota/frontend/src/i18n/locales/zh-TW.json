@@ -914,6 +914,33 @@
       "reattachNeeded": "請重新拖入 {{count}} 筆 .digicode.json"
     }
   },
+  "controllerAiChat": {
+    "title": "使用 AI 客製化 UI",
+    "titleUnified": "使用 AI 客製化整合 UI",
+    "summary": "用自然語言編輯 widget 的外觀",
+    "placeholder": "例如：將 slider 改成藍色、把溫度改用 gauge 顯示",
+    "send": "送出",
+    "applying": "套用中…",
+    "undo": "復原",
+    "clear": "清除",
+    "confirmClear": "要清除對話歷史嗎？",
+    "lastApplied": "✓ 已套用：{{summary}}",
+    "lockedTitle": "Lite+ 方案專屬功能",
+    "lockedDescription": "使用 AI 客製化 UI 需要升級至 Lite+ 方案。",
+    "upgradeCta": "升級您的方案",
+    "errorParse": "AI 回應不是有效的 JSON 格式：{{error}}",
+    "errorNoApiKey": "尚未設定 API 金鑰。請至帳號設定中註冊。",
+    "errorGeneric": "與 AI 溝通時發生錯誤。",
+    "errorInvalidKey": "API 金鑰無效。",
+    "errorRateLimit": "已超過 API 速率限制。",
+    "errorNetwork": "發生網路錯誤。",
+    "previewNote": "實機反映需重新啟動 ESP32（Phase 2）或重新下載 HTML（Phase 3）。",
+    "examples": {
+      "label": "範例：",
+      "color": "整體改為藍色系",
+      "layout": "切換為 2 欄式排版"
+    }
+  },
   "bluetooth": {
     "notSupported": "不支持藍牙",
     "notSupportedDesc": "您的瀏覽器不支持藍牙Web API",

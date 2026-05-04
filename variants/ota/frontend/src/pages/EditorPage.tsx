@@ -32,6 +32,7 @@ import { WifiDeviceSelectDialog, type Device } from '@/components/device/WifiDev
 import { PasskeyManagementDialog } from '@/components/auth/PasskeyManagementDialog';
 import { TwoFactorSettingsDialog } from '@/components/auth/TwoFactorSettingsDialog';
 import { useAuthStore } from '@/stores/authStore';
+import { useFeatureFlagStore } from '@/stores/featureFlagStore';
 import { AccountDeleteDialog } from '@/components/auth/AccountDeleteDialog';
 import { ChangePasswordDialog } from '@/components/auth/ChangePasswordDialog';
 import { AIProviderSettingsDialog } from '@/components/account/AIProviderSettingsDialog';
@@ -78,7 +79,9 @@ export function EditorPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { logout, isAuthenticated } = useAuthStore();
+  const { logout, isAuthenticated, user } = useAuthStore();
+  const canUseAiUiCustomize = useFeatureFlagStore((s) => s.canUseAiUiCustomize);
+  const isAiUiCustomizeAvailable = canUseAiUiCustomize(user?.plan, user?.accountType);
   const { currentProject, setCurrentProject } = useProjectStore();
   const { status: serialStatus, forceReleaseAllPorts } = useSerialStore();
   const { status: wifiStatus, setHost, setDeviceName, connect: connectWifi } = useWifiStore();
@@ -1268,11 +1271,13 @@ export function EditorPage() {
         </div>
       </div>
 
-      {/* WiFi コントローラ Dialog (47.md Phase 2 commit #4) */}
+      {/* WiFi コントローラ Dialog (47.md Phase 2 commit #4 + Phase 4 commit #2 AI UI customize gating) */}
       <WifiControllerDialog
         open={showWifiController}
         onOpenChange={setShowWifiController}
         workspaceXml={workspaceXml}
+        isAiUiCustomizeAvailable={isAiUiCustomizeAvailable}
+        onUpgradePlan={() => navigate('/account')}
       />
 
       {/* 保存ダイアログ */}

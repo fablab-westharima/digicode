@@ -914,6 +914,33 @@
       "reattachNeeded": "Volte a largar .digicode.json para {{count}} registos"
     }
   },
+  "controllerAiChat": {
+    "title": "Personalizar UI com AI",
+    "titleUnified": "Personalizar UI unificada com AI",
+    "summary": "Edita o aspeto do widget em linguagem natural",
+    "placeholder": "p. ex. coloca o slider em azul, mostra a temperatura como gauge",
+    "send": "Enviar",
+    "applying": "A aplicar…",
+    "undo": "Anular",
+    "clear": "Limpar",
+    "confirmClear": "Limpar o histórico do chat?",
+    "lastApplied": "✓ Aplicado: {{summary}}",
+    "lockedTitle": "Funcionalidade exclusiva do plano Lite+",
+    "lockedDescription": "Para personalizar a UI com AI é necessário fazer upgrade para um plano Lite+.",
+    "upgradeCta": "Fazer upgrade do plano",
+    "errorParse": "A resposta do AI não é um JSON válido: {{error}}",
+    "errorNoApiKey": "A chave API não está definida. Regista-a nas Definições da conta.",
+    "errorGeneric": "Ocorreu um erro ao contactar o AI.",
+    "errorInvalidKey": "A chave API é inválida.",
+    "errorRateLimit": "Limite de utilização do API excedido.",
+    "errorNetwork": "Ocorreu um erro de rede.",
+    "previewNote": "O reflexo no dispositivo real requer reiniciar o ESP32 (Phase 2) ou voltar a transferir o HTML (Phase 3).",
+    "examples": {
+      "label": "Exemplos:",
+      "color": "põe tudo em tons de azul",
+      "layout": "muda para layout de 2 colunas"
+    }
+  },
   "bluetooth": {
     "notSupported": "Bluetooth não é suportado",
     "notSupportedDesc": "Seu navegador não suporta a API Web de Bluetooth",

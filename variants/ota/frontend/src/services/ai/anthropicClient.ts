@@ -2,6 +2,7 @@ import type { AIClient, AiConfig, ChatInput, ChatOutput, GenerateFromConversatio
 import {
   buildHelpBotSystemPrompt,
   buildBlockGenConversationPrompt,
+  buildControllerCustomizePrompt,
   fetchCatalog,
   filterCatalog,
 } from './systemPrompt';
@@ -73,12 +74,20 @@ export class AnthropicClient implements AIClient {
   async chat(input: ChatInput): Promise<ChatOutput> {
     const trimmed = trimConversationForContext(input.messages);
 
-    // helpBot / blockGen 両方で catalog overview を渡し、AI が DigiCode 固有ブロック type 名を把握できるようにする
-    const catalog = await fetchCatalog();
-    const filteredBlocks = filterCatalog(catalog);
-
+    // controllerCustomize は catalog 不要 (schema 自体を context に持つ、Phase 4 §7)。
+    // helpBot / blockGen は catalog overview を渡し、AI が DigiCode 固有ブロック type 名を把握できるようにする。
     let systemPrompt: string;
-    if (input.mode === 'helpBot') {
+    if (input.mode === 'controllerCustomize') {
+      if (!input.controllerSchema) {
+        throw new Error('controllerCustomize mode requires controllerSchema in ChatInput');
+      }
+      systemPrompt = buildControllerCustomizePrompt({
+        language: input.language,
+        schema: input.controllerSchema,
+      });
+    } else if (input.mode === 'helpBot') {
+      const catalog = await fetchCatalog();
+      const filteredBlocks = filterCatalog(catalog);
       systemPrompt = buildHelpBotSystemPrompt({
         language: input.language,
         mode: input.robotMode,
@@ -86,6 +95,8 @@ export class AnthropicClient implements AIClient {
         filteredBlocks,
       });
     } else {
+      const catalog = await fetchCatalog();
+      const filteredBlocks = filterCatalog(catalog);
       systemPrompt = buildBlockGenConversationPrompt({
         language: input.language,
         mode: input.robotMode,

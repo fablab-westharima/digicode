@@ -914,6 +914,33 @@
       "reattachNeeded": "Re-drop the .digicode.json for {{count}} entries"
     }
   },
+  "controllerAiChat": {
+    "title": "Customize UI with AI",
+    "titleUnified": "Customize unified UI with AI",
+    "summary": "Edit widget appearance with natural language",
+    "placeholder": "e.g. make the slider blue, display temperature as a gauge",
+    "send": "Send",
+    "applying": "Applying…",
+    "undo": "Undo",
+    "clear": "Clear",
+    "confirmClear": "Clear chat history?",
+    "lastApplied": "✓ Applied: {{summary}}",
+    "lockedTitle": "Lite+ plan feature",
+    "lockedDescription": "Customizing the UI with AI requires an upgrade to a Lite+ plan.",
+    "upgradeCta": "Upgrade your plan",
+    "errorParse": "AI response is not valid JSON: {{error}}",
+    "errorNoApiKey": "API key is not set. Please register one in Account Settings.",
+    "errorGeneric": "An error occurred while contacting the AI.",
+    "errorInvalidKey": "API key is invalid.",
+    "errorRateLimit": "API rate limit exceeded.",
+    "errorNetwork": "A network error occurred.",
+    "previewNote": "Real-device reflection requires reloading the ESP32 (Phase 2) or re-downloading the HTML (Phase 3).",
+    "examples": {
+      "label": "Examples:",
+      "color": "make everything blue",
+      "layout": "switch to a 2-column layout"
+    }
+  },
   "bluetooth": {
     "notSupported": "Web Bluetooth API is not supported",
     "notSupportedDesc": "Bluetooth connection is not available in this browser. Please use the latest version of Chrome or Edge.",

@@ -1,6 +1,7 @@
 import type { RobotMode } from '@/stores/robotModeStore';
 import type { BoardDefinition } from '@/stores/boardStore';
 import type { AiLanguage } from '@/data/aiSystemPrompts';
+import type { WifiControllerSchema } from '@/components/editor/Controller/types';
 import { OpenAICompatibleClient } from './openAICompatibleClient';
 import { AnthropicClient } from './anthropicClient';
 
@@ -34,10 +35,13 @@ export interface GenerateOutput {
 
 export interface ChatInput {
   messages: Message[];        // 全会話履歴（system-meta 含む）、client 内部で trim
-  mode: AiMode;               // 'blockGen' | 'helpBot'、システムプロンプト選択に使用
+  mode: AiMode;               // 'blockGen' | 'helpBot' | 'controllerCustomize'、システムプロンプト選択
   language: AiLanguage;
-  robotMode?: RobotMode;      // context 情報として AI に渡す
-  board?: BoardDefinition;    // context 情報として AI に渡す
+  robotMode?: RobotMode;      // context 情報として AI に渡す (blockGen/helpBot)
+  board?: BoardDefinition;    // context 情報として AI に渡す (blockGen/helpBot)
+  // Phase 4 controller customize 用 (50.md §4.2 / §7.2)。
+  // 'controllerCustomize' mode で必須、他 mode では無視。
+  controllerSchema?: WifiControllerSchema;
 }
 
 export interface ChatOutput {

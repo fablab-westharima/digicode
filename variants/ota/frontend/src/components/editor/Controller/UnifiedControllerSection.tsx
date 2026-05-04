@@ -36,7 +36,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Upload, X, AlertTriangle } from 'lucide-react';
+import { Upload, X, AlertTriangle, Sparkles, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -51,6 +51,10 @@ import {
   type UnifiedDeviceInput,
 } from './unifiedControllerBuilder';
 import { UNIFIED_BUNDLE_TEMPLATE } from '@/data/unifiedControllerBundle';
+import { inferWifiUiSchemaFromXml } from './inferWifiUiSchema';
+import { applyCustomizationDiff, type CustomizationDiff } from './controllerCustomizer';
+import type { WifiControllerSchema } from './types';
+import { ControllerAiChat } from './ControllerAiChat';
 
 // ---------------------------------------------------------------------------
 // localStorage schema (48.md §8.4). max 20 entries; oldest dropped on overflow.
@@ -152,7 +156,17 @@ function readFileAsText(file: File): Promise<string> {
 // Component
 // ---------------------------------------------------------------------------
 
-export function UnifiedControllerSection() {
+export interface UnifiedControllerSectionProps {
+  /** Phase 4 Lite+ gating (50.md §10.2). Same gating as the parent dialog. */
+  isAiUiCustomizeAvailable?: boolean;
+  /** Click handler for the upgrade-plan CTA shown when isAiUiCustomizeAvailable=false. */
+  onUpgradePlan?: () => void;
+}
+
+export function UnifiedControllerSection({
+  isAiUiCustomizeAvailable = false,
+  onUpgradePlan,
+}: UnifiedControllerSectionProps = {}) {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -161,6 +175,52 @@ export function UnifiedControllerSection() {
   const [fileName, setFileName] = useState<string>(todayFileName());
   const [dragActive, setDragActive] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string>('');
+
+  // Phase 4 unified AI customization (50.md §10.2). UAT for the unified case
+  // is deferred per D7 (requires multiple physical ESP32 devices); the panel
+  // is wired up structurally so single-device UAT (P4.0) verifies the same
+  // code path. Customization stack is unified-scoped (separate from the
+  // Phase 2 single-device dialog's stack).
+  const [customizationDiffStack, setCustomizationDiffStack] = useState<CustomizationDiff[]>([]);
+
+  // Build a merged WifiControllerSchema from the rows for AI context. Each
+  // row's blocklyXml is inferred via inferWifiUiSchemaFromXml; the schemas
+  // are merged into a single multi-device schema with per-row deviceId/host.
+  // Customization diffs are applied on top.
+  const mergedSchema = useMemo<WifiControllerSchema>(() => {
+    const devices = rows
+      .filter((r) => r.blocklyXml)
+      .map((r) => {
+        const inferred = inferWifiUiSchemaFromXml(r.blocklyXml ?? '');
+        const dev = inferred.devices[0];
+        if (!dev) return null;
+        return {
+          ...dev,
+          deviceId: r.deviceId,
+          deviceLabel: r.deviceLabel,
+          endpoint: { ...dev.endpoint, host: r.host || undefined, port: r.port },
+        };
+      })
+      .filter((d): d is NonNullable<typeof d> => d !== null);
+    const base: WifiControllerSchema = {
+      connection: 'wifi',
+      version: '1.0',
+      devices,
+      warnings: [],
+    };
+    return customizationDiffStack.reduce(
+      (acc, diff) => applyCustomizationDiff(acc, diff).schema,
+      base,
+    );
+  }, [rows, customizationDiffStack]);
+
+  const handleApplyDiff = (diff: CustomizationDiff): void => {
+    setCustomizationDiffStack((prev) => [...prev, diff]);
+  };
+  const handleUndoDiff = (): void => {
+    setCustomizationDiffStack((prev) => prev.slice(0, -1));
+  };
+  const hasReadyDevices = mergedSchema.devices.length > 0;
 
   // Hydrate from localStorage on mount. Restored rows are blocklyXml=null
   // until the user re-drops the matching .digicode.json.
@@ -561,6 +621,34 @@ export function UnifiedControllerSection() {
             '保存した HTML をダブルクリック、またはブラウザにドラッグ&ドロップで開けます',
         })}
       </p>
+
+      {/* Phase 4 / 50.md §10.2 — AI で UI をカスタマイズ for the unified case.
+          UAT for the multi-device flow is deferred per D7 (physical multi-
+          device hardware needed); structural wiring uses the same panel as
+          Phase 2 dialog. Lock CTA shown for Free / student / guest. */}
+      {hasReadyDevices && (
+        <details className="border rounded-md mt-4 group">
+          <summary className="cursor-pointer px-3 py-2 hover:bg-muted/50 flex items-center gap-2 text-sm">
+            <ChevronRight className="w-4 h-4 group-open:rotate-90 transition-transform shrink-0" />
+            <Sparkles className="w-4 h-4 text-blue-400" />
+            <span className="font-medium">
+              {t('controllerAiChat.titleUnified', {
+                defaultValue: 'AI で統合 UI をカスタマイズ',
+              })}
+            </span>
+            {!isAiUiCustomizeAvailable && (
+              <span className="ml-1 text-[10px] text-orange-400">LITE+</span>
+            )}
+          </summary>
+          <ControllerAiChat
+            schema={mergedSchema}
+            onApplyDiff={handleApplyDiff}
+            onUndo={customizationDiffStack.length > 0 ? handleUndoDiff : undefined}
+            isAvailable={isAiUiCustomizeAvailable}
+            onUpgradePlan={onUpgradePlan}
+          />
+        </details>
+      )}
     </div>
   );
 }
