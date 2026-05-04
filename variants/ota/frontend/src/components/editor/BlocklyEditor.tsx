@@ -57,6 +57,7 @@ import '../../blocks/arduino/communication/azureIotBlocks';
 import '../../blocks/arduino/communication/iotCloudBlocks';
 import '../../blocks/arduino/communication/notificationBlocks';
 import '../../blocks/arduino/communication/googleServicesBlocks';
+import '../../blocks/arduino/communication/espnowBlocks';
 // IoT通信（Arduino）
 import '../../blocks/arduino/communication/httpBlocks';
 import '../../blocks/arduino/communication/jsonBlocks';

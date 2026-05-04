@@ -517,6 +517,19 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // ESP-NOW (51.md commit #9, 2026-05-04 第79回) — supportsEspNow フィルタ対象 (commit #3 で軸新設)
+  espnow: `
+  <category id="espnow" name="${cat('espnow')}" colour="#FF6F00">
+    <block type="espnow_init"></block>
+    <block type="espnow_register_peer"></block>
+    <block type="espnow_send"></block>
+    <block type="espnow_broadcast"></block>
+    <block type="espnow_on_receive"></block>
+    <block type="espnow_received_data"></block>
+    <block type="espnow_received_mac"></block>
+    <block type="espnow_get_my_mac"></block>
+  </category>`,
+
   // 通知 + Google Services (51.md Phase A+B, 2026-05-04 第79回 commit #8) — supportsWifi フィルタ対象
   notification: `
   <category id="notification" name="${cat('notification')}" colour="#9C27B0">
@@ -1295,6 +1308,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'azure_iot',
     'notification',
     'google_services',
+    'espnow',
     'http',
     'json',
     'ota',
@@ -1388,6 +1402,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'azure_iot',
     'notification',
     'google_services',
+    'espnow',
     'http',
     'json',
     'ota',
@@ -1468,6 +1483,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'azure_iot',
     'notification',
     'google_services',
+    'espnow',
     'http',
     'json',
     'ota',
@@ -1550,6 +1566,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'azure_iot',
     'notification',
     'google_services',
+    'espnow',
     'http',
     'json',
     'ota',

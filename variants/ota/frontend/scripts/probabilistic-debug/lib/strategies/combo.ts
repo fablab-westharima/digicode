@@ -355,6 +355,12 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     label: 'ac_clamp',
     operations: ['ac_current_clamp_read_rms', 'ac_current_clamp_calibrate'],
   },
+  // 51.md commit #9 (2026-05-04 第79回): ESP-NOW (esp_now.h、ESP32 core)
+  {
+    init: 'espnow_init',
+    label: 'espnow',
+    operations: ['espnow_register_peer', 'espnow_send', 'espnow_broadcast'],
+  },
   {
     init: 'ultrasonic_init',
     label: 'ultrasonic',

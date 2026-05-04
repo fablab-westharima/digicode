@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-04T09:23:44.567Z",
+  "generatedAt": "2026-05-04T09:26:12.768Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -8803,6 +8803,173 @@
           "check": null
         }
       ],
+      "statementInputs": []
+    },
+    {
+      "type": "espnow_init",
+      "category": "espnow",
+      "tooltip": "ESP-NOW を初期化します。WiFi STA モード + esp_now_init + 受信コールバック登録。ESP32 系のみ対応。",
+      "colour": "#FF6F00",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsEspNow",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "espnow_register_peer",
+      "category": "espnow",
+      "tooltip": "ESP-NOW ピアを事前登録します。MAC アドレスは \"AA:BB:CC:DD:EE:FF\" 形式。事前に espnow_init が必要。",
+      "colour": "#FF6F00",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsEspNow",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "MAC",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "espnow_send",
+      "category": "espnow",
+      "tooltip": "指定 MAC の ESP-NOW ピアに unicast 送信します。未登録なら自動 add_peer。事前に espnow_init 必須。",
+      "colour": "#FF6F00",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsEspNow",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "MAC",
+          "check": "String"
+        },
+        {
+          "name": "DATA",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "espnow_broadcast",
+      "category": "espnow",
+      "tooltip": "全 ESP-NOW デバイス (FF:FF:FF:FF:FF:FF) に broadcast 送信します。事前に espnow_init 必須。",
+      "colour": "#FF6F00",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsEspNow",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "DATA",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "espnow_on_receive",
+      "category": "espnow",
+      "tooltip": "ESP-NOW メッセージを受信したときの処理を定義します。HANDLER 内で espnow_received_data / espnow_received_mac で値を取得。arduino_loop の中に配置してください。",
+      "colour": "#FF6F00",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsEspNow",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "HANDLER"
+        }
+      ]
+    },
+    {
+      "type": "espnow_received_data",
+      "category": "espnow",
+      "tooltip": "ESP-NOW 受信ハンドラ内で受信データを取得します。HANDLER 外で使うと空文字列を返します。",
+      "colour": "#FF6F00",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsEspNow",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "espnow_received_mac",
+      "category": "espnow",
+      "tooltip": "ESP-NOW 受信ハンドラ内で送信元 MAC を取得します (\"AA:BB:CC:DD:EE:FF\" 形式)。HANDLER 外で使うと空文字列。",
+      "colour": "#FF6F00",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsEspNow",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "espnow_get_my_mac",
+      "category": "espnow",
+      "tooltip": "自機の MAC アドレスを取得します (\"AA:BB:CC:DD:EE:FF\" 形式、WiFi STA mode の MAC)。",
+      "colour": "#FF6F00",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsEspNow",
+      "fields": [],
+      "valueInputs": [],
       "statementInputs": []
     },
     {

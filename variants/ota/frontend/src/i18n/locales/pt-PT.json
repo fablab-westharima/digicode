@@ -2749,6 +2749,7 @@
       "sensorCurrent": "⚡ Sensor de Corrente",
       "notification": "🔔 Notificação",
       "googleServices": "📊 Google Services",
+      "espnow": "📡 ESP-NOW",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
       "json": "📋 JSON",
