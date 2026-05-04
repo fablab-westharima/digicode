@@ -1134,6 +1134,16 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // GPS (NEO-6M/8M) (52.md commit #12, 2026-05-04 第80回) — 強推奨、屋外プロジェクト
+  gps: `
+  <category id="gps" name="${cat('gps')}" colour="#3F51B5">
+    <block type="gps_init"></block>
+    <block type="gps_get_lat"></block>
+    <block type="gps_get_lng"></block>
+    <block type="gps_get_altitude"></block>
+    <block type="gps_get_satellites_count"></block>
+  </category>`,
+
   // LoRa 長距離無線 (52.md commit #11, 2026-05-04 第80回) — 強推奨、Fab Academy Networking
   lora: `
   <category id="lora" name="${cat('lora')}" colour="#4B0082">
@@ -1543,6 +1553,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'hx711',
     'sensor_tof',
     'sensor_encoder_mag',
+    'gps',
     'separator3',
     // アクチュエータ・表示・音声
     'servo',
@@ -1611,6 +1622,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'hx711',
     'sensor_tof',
     'sensor_encoder_mag',
+    'gps',
     'separator2',
     // アクチュエータ・表示・音声
     'servo',
@@ -1704,6 +1716,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'hx711',
     'sensor_tof',
     'sensor_encoder_mag',
+    'gps',
     'separator3',
     // アクチュエータ・表示・音声
     'servo',
@@ -1797,6 +1810,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'hx711',
     'sensor_tof',
     'sensor_encoder_mag',
+    'gps',
     'separator4',
     // アクチュエータ・表示・音声
     'servo',

@@ -2759,6 +2759,7 @@
       "stepperDriver": "⚙️ 步進驅動器",
       "piezo": "🪗 壓電元件",
       "lora": "📡 LoRa",
+      "gps": "🛰️ GPS",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
