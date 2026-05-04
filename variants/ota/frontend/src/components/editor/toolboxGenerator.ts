@@ -1134,6 +1134,15 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // ESP32 静電容量タッチ (52.md commit #5, 2026-05-04 第80回) — ESP32 系のみ
+  esp32_touch: `
+  <category id="esp32_touch" name="${cat('esp32Touch')}" colour="#00BCD4">
+    <block type="esp32_touch_read"></block>
+    <block type="esp32_touch_attach_interrupt">
+      <value name="THRESHOLD"><shadow type="math_number"><field name="NUM">40</field></shadow></value>
+    </block>
+  </category>`,
+
   // MAX7219 8x8 LED マトリクス (52.md commit #4, 2026-05-04 第80回) — Fab Academy 頻出、daisy-chain 最大 8
   max7219: `
   <category id="max7219" name="${cat('max7219')}" colour="#E91E63">
@@ -1477,6 +1486,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'separator5',
     // GPIO・バス・割り込み
     'gpio',
+    'esp32_touch',
     'interrupt',
     'i2c_spi',
     'uart_extra',
@@ -1555,6 +1565,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'separator5',
     // GPIO・バス・割り込み
     'gpio',
+    'esp32_touch',
     'interrupt',
     'i2c_spi',
     'uart_extra',
@@ -1641,6 +1652,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'separator6',
     // GPIO・バス・割り込み
     'gpio',
+    'esp32_touch',
     'interrupt',
     'i2c_spi',
     'uart_extra',
@@ -1729,6 +1741,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'separator7',
     // GPIO・バス・割り込み
     'gpio',
+    'esp32_touch',
     'interrupt',
     'i2c_spi',
     'uart_extra',
