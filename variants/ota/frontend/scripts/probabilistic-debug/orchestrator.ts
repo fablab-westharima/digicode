@@ -37,7 +37,12 @@ import {
   type CaseStage,
 } from './lib/result-store';
 import { fqbnFor } from './lib/board-fqbn';
+import { processWithConcurrency } from './lib/concurrency';
 import type { Manifest, ManifestEntry } from './lib/case-types';
+
+// Re-export so existing imports from `./orchestrator` keep working
+// (notably `orchestrator.test.ts` and any external scripts).
+export { processWithConcurrency };
 
 const DEFAULT_SERVER_URL = 'https://compile.digital-fab.jp';
 const DEFAULT_PARALLEL = 4;
@@ -242,23 +247,6 @@ async function processCase(
       stage,
     };
   }
-}
-
-export async function processWithConcurrency<T>(
-  items: T[],
-  concurrency: number,
-  worker: (item: T, index: number) => Promise<void>,
-): Promise<void> {
-  let nextIndex = 0;
-  async function loop(): Promise<void> {
-    for (;;) {
-      const i = nextIndex++;
-      if (i >= items.length) return;
-      await worker(items[i], i);
-    }
-  }
-  const lanes = Array.from({ length: Math.max(1, concurrency) }, () => loop());
-  await Promise.all(lanes);
 }
 
 export async function runOrchestrator(opts: OrchestratorOptions): Promise<void> {
