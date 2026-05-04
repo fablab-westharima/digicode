@@ -186,6 +186,30 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'WiFi Controller Combo (LED + Servo + Temperature)',
         description: 'Bundle LED toggle / servo slider / temperature display on one ESP32 and control them from any browser via the WebSocket controller',
       },
+      'tm1637-clock': {
+        title: 'TM1637 Digital Clock',
+        description: 'Display HH:MM time on TM1637 4-digit 7-segment',
+      },
+      'max7219-scroll-text': {
+        title: 'MAX7219 Scrolling Text',
+        description: 'Scroll HELLO text on MAX7219 8x8 LED matrix',
+      },
+      'lora-mesh-sender': {
+        title: 'LoRa Long-Range Sender',
+        description: 'Send measurements every 5 s via LoRa SX1276 and print received packets',
+      },
+      'gps-tracker': {
+        title: 'GPS Position Tracker',
+        description: 'Print GPS lat/lng/altitude/satellites every 10 s with NEO-6M',
+      },
+      'modbus-temp-monitor': {
+        title: 'Modbus Industrial Sensor + Cloud',
+        description: 'Read Modbus RTU holding register, publish to iot_cloud (Industrial IoT)',
+      },
+      'air-quality-dashboard': {
+        title: 'Air Quality Dashboard (CO2 + PM2.5 + OLED)',
+        description: 'Show SCD30 (CO2) + PMS5003 (PM2.5) on OLED, publish to iot_cloud (Factory IoT)',
+      },
     },
   },
   es: {
@@ -348,6 +372,30 @@ const overrides: Record<string, LocaleOverride> = {
       'wifi-controller-mix': {
         title: 'Combo controlador WiFi (LED + Servo + Temperatura)',
         description: 'Agrupa toggle LED / slider de servo / display de temperatura en un ESP32 y contrólalos desde cualquier navegador vía el controlador WebSocket',
+      },
+      'tm1637-clock': {
+        title: 'Reloj digital TM1637',
+        description: 'Muestra HH:MM en el display de 4 dígitos TM1637',
+      },
+      'max7219-scroll-text': {
+        title: 'Texto desplazante MAX7219',
+        description: 'Desplaza el texto HELLO en la matriz LED 8x8 MAX7219',
+      },
+      'lora-mesh-sender': {
+        title: 'Emisor LoRa de largo alcance',
+        description: 'Envía mediciones cada 5 s vía LoRa SX1276 e imprime paquetes recibidos',
+      },
+      'gps-tracker': {
+        title: 'Rastreador de posición GPS',
+        description: 'Imprime lat/lng/altitud/satélites cada 10 s con GPS NEO-6M',
+      },
+      'modbus-temp-monitor': {
+        title: 'Sensor industrial Modbus + nube',
+        description: 'Lee registro Modbus RTU, publica a iot_cloud (IoT industrial)',
+      },
+      'air-quality-dashboard': {
+        title: 'Panel de calidad del aire (CO2 + PM2.5 + OLED)',
+        description: 'Muestra SCD30 (CO2) + PMS5003 (PM2.5) en OLED, publica a iot_cloud',
       },
     },
   },
@@ -512,6 +560,30 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Combo controlador WiFi (LED + Servo + Temperatura)',
         description: 'Agrupa toggle LED / slider de servo / display de temperatura num ESP32 e controla-os a partir de qualquer browser via o controlador WebSocket',
       },
+      'tm1637-clock': {
+        title: 'Relógio digital TM1637',
+        description: 'Mostra HH:MM no display de 4 dígitos TM1637',
+      },
+      'max7219-scroll-text': {
+        title: 'Texto deslizante MAX7219',
+        description: 'Desliza o texto HELLO na matriz LED 8x8 MAX7219',
+      },
+      'lora-mesh-sender': {
+        title: 'Emissor LoRa de longo alcance',
+        description: 'Envia medições a cada 5 s via LoRa SX1276 e imprime pacotes recebidos',
+      },
+      'gps-tracker': {
+        title: 'Rastreador de posição GPS',
+        description: 'Imprime lat/lng/altitude/satélites a cada 10 s com GPS NEO-6M',
+      },
+      'modbus-temp-monitor': {
+        title: 'Sensor industrial Modbus + nuvem',
+        description: 'Lê registo Modbus RTU, publica em iot_cloud (IoT industrial)',
+      },
+      'air-quality-dashboard': {
+        title: 'Painel de qualidade do ar (CO2 + PM2.5 + OLED)',
+        description: 'Mostra SCD30 (CO2) + PMS5003 (PM2.5) em OLED, publica em iot_cloud',
+      },
     },
   },
   'zh-TW': {
@@ -674,6 +746,30 @@ const overrides: Record<string, LocaleOverride> = {
       'wifi-controller-mix': {
         title: 'WiFi 控制器整合 (LED + Servo + 溫度)',
         description: '透過 WebSocket 伺服器在 1 個 ESP32 上整合 LED toggle / Servo slider / 溫度顯示，從任何瀏覽器控制',
+      },
+      'tm1637-clock': {
+        title: 'TM1637 數位時鐘',
+        description: '在 TM1637 4 位 7 段顯示器上顯示 HH:MM',
+      },
+      'max7219-scroll-text': {
+        title: 'MAX7219 文字捲動',
+        description: '在 MAX7219 8x8 LED 矩陣上向左捲動 HELLO 文字',
+      },
+      'lora-mesh-sender': {
+        title: 'LoRa 長距離發送器',
+        description: '透過 LoRa SX1276 每 5 秒發送量測值，並印出收到的封包',
+      },
+      'gps-tracker': {
+        title: 'GPS 位置追蹤器',
+        description: '使用 NEO-6M 每 10 秒印出緯度 / 經度 / 高度 / 衛星數',
+      },
+      'modbus-temp-monitor': {
+        title: 'Modbus 工業感測器 + 雲端',
+        description: '讀取 Modbus RTU 暫存器，發布到 iot_cloud (工業 IoT)',
+      },
+      'air-quality-dashboard': {
+        title: '空氣品質儀表板 (CO2 + PM2.5 + OLED)',
+        description: '在 OLED 顯示 SCD30 (CO2) + PMS5003 (PM2.5)，發布到 iot_cloud',
       },
     },
   },

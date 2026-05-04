@@ -297,4 +297,37 @@ describe('selectFewShot (動的 Few-shot 選択)', () => {
       expect(sampleProjects.find((s) => s.id === id)).toBeDefined();
     }
   });
+
+  // 52.md commit #21 (2026-05-04 第80回): Phase C+D + 新規発見対応 6 sample + invariants
+  it('TM1637 keyword maps to tm1637-clock (52.md #21)', () => {
+    const result = selectFewShot('generic', 'TM1637 7セグでデジタル時計を作って');
+    expect(result).toContain('tm1637-clock');
+  });
+
+  it('MAX7219 keyword maps to max7219-scroll-text (52.md #21)', () => {
+    const result = selectFewShot('generic', 'MAX7219 LED マトリクスにスクロール表示');
+    expect(result).toContain('max7219-scroll-text');
+  });
+
+  it('LoRa keyword maps to lora-mesh-sender (52.md #21)', () => {
+    // 注: 「距離」「proximity」が earlier pattern (proximity-stop) で match するため
+    // 「LoRa」 単独 keyword で test
+    const result = selectFewShot('generic', 'LoRa SX1276 で送受信したい');
+    expect(result).toContain('lora-mesh-sender');
+  });
+
+  it('GPS keyword maps to gps-tracker (52.md #21)', () => {
+    const result = selectFewShot('generic', 'GPS 位置追跡 trackerを作って');
+    expect(result).toContain('gps-tracker');
+  });
+
+  it('Modbus keyword maps to modbus-temp-monitor (52.md #21)', () => {
+    const result = selectFewShot('generic', 'Modbus RTU で産業センサ読込');
+    expect(result).toContain('modbus-temp-monitor');
+  });
+
+  it('air quality keyword maps to air-quality-dashboard (52.md #21)', () => {
+    const result = selectFewShot('generic', 'CO2 と PM2.5 の空気質ダッシュボード');
+    expect(result).toContain('air-quality-dashboard');
+  });
 });

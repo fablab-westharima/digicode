@@ -55,6 +55,13 @@ const KEYWORD_TO_SAMPLE: ReadonlyArray<readonly [RegExp, string]> = [
   [/割り?込み|interrupt|debounce|チャタリング/i, 'interrupt-button'],
   [/LCD|液晶|16x2|文字.?表示/i, 'lcd-display'],
   [/DFPlayer|MP3|音楽|音声再生/i, 'dfplayer-music'],
+  // 52.md commit #21 (2026-05-04 第80回): Phase C+D + 新規発見対応 6 sample
+  [/TM1637|7セグ|7-?seg|デジタル時計|時刻表示/i, 'tm1637-clock'],
+  [/MAX7219|LED.?マトリクス|LED.?matrix|スクロール表示|scroll.*text/i, 'max7219-scroll-text'],
+  [/LoRa|長距離無線|長距離通信|low.?power.?wide.?area|LPWAN/i, 'lora-mesh-sender'],
+  [/GPS|位置追跡|tracker|緯度|経度|衛星/i, 'gps-tracker'],
+  [/Modbus|産業.?センサ|Industrial.*IoT|RS485|PLC/i, 'modbus-temp-monitor'],
+  [/空気質|CO2|PM2.?5|PMS5003|SCD30|air.?quality|粉塵/i, 'air-quality-dashboard'],
 ];
 
 function selectThemedSample(promptText: string, exclude: ReadonlySet<string>): string | null {
