@@ -430,6 +430,28 @@ main {
     }
   }
 
+  // Phase 4.0 (50.md §9.1) — widget-level customization. Same logic as
+  // the wifi single-device bundle: merge schema-level + widget-level
+  // colorScheme (widget wins per-channel), apply as inline CSS variables.
+  function applyWidgetCustomization(el, widget, schemaLevel) {
+    var ws = (widget && widget.colorScheme) || {};
+    var ss = (schemaLevel && schemaLevel.colorScheme) || {};
+    var bg = ws.bg || ss.bg;
+    var fg = ws.fg || ss.fg;
+    var accent = ws.accent || ss.accent;
+    var styleStr = '';
+    if (bg) styleStr += '--card:' + bg + ';';
+    if (fg) styleStr += '--fg:' + fg + ';';
+    if (accent) styleStr += '--accent:' + accent + ';';
+    if (styleStr) el.setAttribute('style', styleStr);
+  }
+
+  function applyLayout(grid, layout) {
+    if (layout === 'columns-2') grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    else if (layout === 'columns-3') grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    else if (layout === 'rows') grid.style.gridTemplateColumns = '1fr';
+  }
+
   // ---------------------------------------------------------------------
   // Per-device connection state machine (48.md §7.4 / F11).
   //
@@ -544,7 +566,7 @@ main {
   // connection wires up to (so connection state flows back to the dot +
   // text label on the summary row).
   // ---------------------------------------------------------------------
-  function renderDeviceCard(device, schemaWarnings) {
+  function renderDeviceCard(device, schemaWarnings, schemaLevel) {
     var card = document.createElement('details');
     card.className = 'device-card';
     card.setAttribute('data-device-id', device.deviceId);
@@ -608,6 +630,13 @@ main {
     }
     card.appendChild(body);
 
+    // Phase 4.0 (50.md §9.1): apply schema-level layout to this device's
+    // grid. layout is a global hint applied to every device's grid; per-
+    // device layout overrides could be added in a future Phase 4.x as
+    // device.customization.layout (47.md §7.4 forward-compat slot exists
+    // but unified bundle currently only honors schema-level layout).
+    applyLayout(grid, schemaLevel && schemaLevel.layout);
+
     return {
       card: card,
       grid: grid,
@@ -666,8 +695,9 @@ main {
     }
 
     var connections = [];
+    var schemaLevel = schema.customization;
     schema.devices.forEach(function (device) {
-      var rendered = renderDeviceCard(device, schema.warnings);
+      var rendered = renderDeviceCard(device, schema.warnings, schemaLevel);
       $main.appendChild(rendered.card);
 
       var conn = createDeviceConnection(device, rendered.statusUI);
@@ -682,6 +712,9 @@ main {
         wi.el.setAttribute('data-device-id', device.deviceId);
         wi.el.setAttribute('data-channel-id', w.id);
         conn.state.widgetEls.set(String(w.id), wi);
+        // Phase 4.0 (50.md §9.1): apply schema-level + widget-level
+        // colorScheme overrides as inline CSS variable styles.
+        applyWidgetCustomization(wi.el, w, schemaLevel);
         rendered.grid.appendChild(wi.el);
       });
 

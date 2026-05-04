@@ -319,7 +319,33 @@ main {
     }
   }
 
-  function renderDevice(device) {
+  // Phase 4.0 (50.md §9.1) — widget-level customization. Merge
+  // schema-level + widget-level colorScheme (widget wins per-channel).
+  // Apply as inline `style="--bg:..; --fg:..; --accent:.."` so the
+  // existing CSS variables propagate. No-op when colorScheme absent.
+  function applyWidgetCustomization(el, widget, schemaLevel) {
+    var ws = (widget && widget.colorScheme) || {};
+    var ss = (schemaLevel && schemaLevel.colorScheme) || {};
+    var bg = ws.bg || ss.bg;
+    var fg = ws.fg || ss.fg;
+    var accent = ws.accent || ss.accent;
+    var styleStr = '';
+    if (bg) styleStr += '--card:' + bg + ';';
+    if (fg) styleStr += '--fg:' + fg + ';';
+    if (accent) styleStr += '--accent:' + accent + ';';
+    if (styleStr) el.setAttribute('style', styleStr);
+  }
+
+  // Phase 4.0 (50.md §9.1) — schema-level layout override. Default
+  // 'grid' / undefined keeps the bundle's auto-fill minmax behavior.
+  function applyLayout(grid, layout) {
+    if (layout === 'columns-2') grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    else if (layout === 'columns-3') grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    else if (layout === 'rows') grid.style.gridTemplateColumns = '1fr';
+    // 'grid' (default) or unknown → no-op (existing CSS rule wins)
+  }
+
+  function renderDevice(device, schemaLevel) {
     $main.innerHTML = '';
     var widgets = (device && device.widgets) || [];
     if (widgets.length === 0) {
@@ -328,11 +354,13 @@ main {
     }
     var grid = document.createElement('div');
     grid.className = 'widget-grid';
+    applyLayout(grid, schemaLevel && schemaLevel.layout);
     for (var i = 0; i < widgets.length; i++) {
       var w = widgets[i];
       var widget = createWidget(w);
       if (!widget) continue;
       widgetEls.set(w.id, widget);
+      applyWidgetCustomization(widget.el, w, schemaLevel);
       grid.appendChild(widget.el);
     }
     $main.appendChild(grid);
@@ -376,7 +404,9 @@ main {
         return;
       }
       var device = schema.devices[0];
-      renderDevice(device);
+      // Phase 4.0 (50.md §9.1): pass schema-level customization through to
+      // renderDevice so colorScheme + layout overrides apply consistently.
+      renderDevice(device, schema.customization);
       var port = (device.endpoint && device.endpoint.port) || 81;
       connectWs(port);
     })
