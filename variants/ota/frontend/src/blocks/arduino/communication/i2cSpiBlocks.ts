@@ -1,7 +1,7 @@
 /**
  * I2C / SPI 通信ブロック (BP2-2, 2026-04-20)
  *
- * I2C: Wire.h（ESP32 / RP2040 両コア内蔵、追加ライブラリ不要）
+ * I2C: Wire.h（ESP32 コア内蔵、追加ライブラリ不要）
  * SPI: SPI.h（同上）
  *
  * 既存の esp32_i2c_write（esp32Blocks.ts、プレミアム）とは独立。

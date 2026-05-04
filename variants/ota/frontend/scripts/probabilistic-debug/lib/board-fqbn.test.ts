@@ -10,12 +10,12 @@ describe('BOARD_FQBN', () => {
     }
   });
 
-  it('returns ESP32 FQBN for the primary preferred board', () => {
+  it('returns the canonical ESP32 FQBN for esp32-generic', () => {
     expect(fqbnFor('esp32-generic')).toBe('esp32:esp32:esp32');
   });
 
-  it('returns RP2040 FQBN for the rp2040-pico board', () => {
-    expect(fqbnFor('rp2040-pico')).toBe('rp2040:rp2040:rpipico');
+  it('returns the M5Stack FQBN for m5stack-basic (top-priority board)', () => {
+    expect(fqbnFor('m5stack-basic')).toBe('m5stack:esp32:m5stack_core');
   });
 
   it('throws on unknown boardId', () => {

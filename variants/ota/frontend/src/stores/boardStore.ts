@@ -11,16 +11,18 @@ import { persist } from 'zustand/middleware';
 export type FlashMethod = 'wifi' | 'wifi-batch' | 'usb' | 'ble';
 
 /**
- * 対応ボード定義 (OTA版)
- * ESP32 系を中心に、RP2040 系（Pico/Pico W/XIAO RP2040/Nano RP2040 Connect）にも対応。
+ * 対応ボード定義 (OTA版) — ESP32 系 16 boards 専用 (M5Stack 9 + XIAO 3 + 汎用 4)。
+ *
+ * 56.md (2026-05-05): RP2040 系 4 boards を完全削除。lib_deps universe が
+ * RP2040 で incompatible (ArduinoWebsockets 等が ESP32-only API 依存) で
+ * compile fail し、Phase 3.5 (lib_deps 細分化) より削除を選択。永続的な
+ * 技術的負債解消、保守工数削減。
  *
  * 4 軸フラグ:
  * - supportsWifi:    ユーザープログラムで WiFi.h / wifi_connect / MQTT / Home Assistant / HTTP 系を使えるか (BP1-2a)
  * - supportsOta:     WiFi OTA（無線）でのプログラム書き込みに対応するか（対応 FW が焼けるか）
  * - supportsBle:     ユーザープログラムで BLE を使えるか（BP4 で BLE ブロック実装時に参照）
- * - supportsEspNow:  ESP32 ↔ ESP32 直接通信 (esp_now.h) に対応するか。51.md Phase A+B (2026-05-04 第78回、
- *                    `category=='m5stack'` 系 + XIAO ESP32 系 + Generic ESP32 = 16 boards で true、
- *                    RP2040 系 4 boards で false)。M5Stack 専用 (m5stack_*) ブロックは別軸 = `category=='m5stack'` で判定。
+ * - supportsEspNow:  ESP32 ↔ ESP32 直接通信 (esp_now.h) に対応するか。
  *
  * ツールボックスの可視性フィルタ（toolboxGenerator）とブロックジェネレータの
  * 条件分岐（wifiBlocks / servoBlocks 等）がこのフラグを参照する。
@@ -30,7 +32,7 @@ export interface BoardDefinition {
   name: string;
   fqbn: string;
   description: string;
-  category: 'generic' | 'm5stack' | 'xiao' | 'rp2040';
+  category: 'generic' | 'm5stack' | 'xiao';
   supportsWifi: boolean;
   supportsOta: boolean;
   supportsBle: boolean;
@@ -55,24 +57,19 @@ export const CATEGORY_LABELS: Record<BoardDefinition['category'], string> = {
   generic: '汎用 ESP32',
   m5stack: 'M5Stack シリーズ',
   xiao: 'Seeed Xiao シリーズ',
-  rp2040: 'Raspberry Pi / RP2040',
 };
 
 /**
- * 対応ボード一覧 (OTA版)
+ * 対応ボード一覧 (OTA版) — ESP32 系 16 boards (M5Stack 9 + XIAO 3 + 汎用 4)。
  *
  * カテゴリ表示順序 (UI、`memory:factory_scientist_course` 講座受講者は M5Stack
  * 系を主に使うため最上位):
  *   1. M5Stack 系 (上)
  *   2. XIAO 系 (Seeed)
- *   3. Raspberry Pi 系 (Pico / Nano RP2040 Connect)
- *   4. ESP32 Devkit 系 (汎用 ESP32、下)
+ *   3. ESP32 Devkit 系 (汎用 ESP32、下)
  *
  * 各カテゴリ内は **発売日が新しい順** に並べる (受講者が最新製品を見つけやすく)。
  * BoardSelector.tsx の SelectGroup 順序もこの並びに合わせる。
- *
- * M5StackS3 BAT は 2024 投入の IoT/バッテリー対応 ESP32-S3 board。
- * 2026-04-30 ボード UI 整理タスクで追加 (改定log 第62回)、20 boards に拡張。
  *
  * 販売終了 / 在庫限り表記:
  *   - M5Stack Gray (生産終了、後継 = M5Stack Basic v2.7 / Fire / Core2)
@@ -226,68 +223,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
-  {
-    id: 'rp2040-xiao',
-    name: 'XIAO RP2040',
-    fqbn: 'rp2040:rp2040:seeed_xiao_rp2040',
-    description: '21x17.5mm、RP2040、USB書き込みのみ',
-    category: 'xiao',
-    supportsWifi: false,
-    supportsOta: false,
-    supportsBle: false,
-    supportsEspNow: false,
-    supportedFlashMethods: ['usb'],
-    // BUG-073: PIO raspberrypi platform missing 'seeed_xiao_rp2040' board.json.
-    experimental: true,
-  },
-  // ===== 3. Raspberry Pi 系 (発売日新しい順、3 boards) =====
-  // DigiCodeOTA ファームウェアが ESP32 専用のため OTA 非対応、USB 書き込みのみ。
-  {
-    id: 'rp2040-pico-w',
-    name: 'Raspberry Pi Pico W',
-    fqbn: 'rp2040:rp2040:rpipicow',
-    description: 'RP2040 + CYW43439、WiFi対応、USB書き込みのみ',
-    category: 'rp2040',
-    supportsWifi: true,
-    supportsOta: false,
-    supportsBle: false,
-    supportsEspNow: false,
-    supportedFlashMethods: ['usb'],
-    // BUG-073: framework-arduino-mbed WiFi.cpp upstream bug (`ap_list`
-    // not declared) leaks into the resolved framework path.
-    experimental: true,
-  },
-  {
-    id: 'rp2040-nano-connect',
-    name: 'Arduino Nano RP2040 Connect',
-    fqbn: 'arduino:mbed_nano:nanorp2040connect',
-    description: 'RP2040 + NINA-W102、WiFi対応、USB書き込みのみ',
-    category: 'rp2040',
-    supportsWifi: true,
-    supportsOta: false,
-    supportsBle: false,
-    supportsEspNow: false,
-    supportedFlashMethods: ['usb'],
-    // BUG-073: arduino-mbed core has no PIO equivalent; falling back through
-    // raspberrypi/pico still pulls in framework-arduino-mbed WiFi.cpp.
-    experimental: true,
-  },
-  {
-    id: 'rp2040-pico',
-    name: 'Raspberry Pi Pico',
-    fqbn: 'rp2040:rp2040:rpipico',
-    description: 'RP2040、USB書き込みのみ',
-    category: 'rp2040',
-    supportsWifi: false,
-    supportsOta: false,
-    supportsBle: false,
-    supportsEspNow: false,
-    supportedFlashMethods: ['usb'],
-    // BUG-073: shares the framework resolution problem with the pico-w
-    // variant; kept experimental until the RP2040 framework story is fixed.
-    experimental: true,
-  },
-  // ===== 4. ESP32 Devkit 系 (汎用、発売日新しい順、4 boards) =====
+  // ===== 3. ESP32 Devkit 系 (汎用、発売日新しい順、4 boards) =====
   {
     id: 'esp32-c6-generic',
     name: 'ESP32-C6',

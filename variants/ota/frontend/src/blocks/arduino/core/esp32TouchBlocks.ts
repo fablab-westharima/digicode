@@ -6,7 +6,7 @@
  *   - esp32_touch_attach_interrupt  (PIN/THRESHOLD/HANDLER、loopPre_ pattern)
  *
  * 内部 lib: なし (ESP32 core 組込み touchRead / touchAttachInterrupt API)
- * boardRequires: ESP32 系のみ (`category != 'rp2040'` で D-7 案 A 採用)
+ * boardRequires: null (DigiCode は ESP32 系 16 boards 専用、56.md 2026-05-05)
  *                ⚠️ ESP32-C3 / C6 / H2 はタッチセンサ不搭載 (compile fail) — tooltip で警告
  *                ⚠️ ESP32-S2 / S3 はタッチピン番号異なる (T1-T14 ≈ GPIO 1-14) — 将来 chip 別 dropdown 検討
  * 仕様: ESP32 オリジナル準拠 9 pin (T0=4 / T2=2 / T3=15 / T4=13 / T5=12 / T6=14 / T7=27 / T8=33 / T9=32)

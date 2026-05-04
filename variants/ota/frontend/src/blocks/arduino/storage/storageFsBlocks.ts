@@ -1,8 +1,8 @@
 /**
  * ファイルシステムブロック (BP3-5/BP3-6, 2026-04-20)
  *
- * sd_*: SD.h 標準ライブラリ（ESP32/RP2040 両対応）
- * fs_*: LittleFS（ESP32: LittleFS.h 標準、RP2040: arduino-pico LittleFS）
+ * sd_*: SD.h 標準ライブラリ (ESP32 系 16 boards)
+ * fs_*: LittleFS (ESP32 LittleFS.h 標準)
  *
  * i18n: Blockly.Msg.* パターン（ルール33）
  */
@@ -186,7 +186,7 @@ Blockly.Blocks['fs_mount'] = {
         .appendField('🗂️ ' + (Blockly.Msg.BLOCKS_FS_MOUNT || 'LittleFS Mount'));
     this.setOutput(true, 'Boolean');
     this.setColour(FS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_FS_MOUNTTOOLTIP || 'Mount the LittleFS filesystem. Returns true if successful. ESP32 and RP2040 both supported.');
+    this.setTooltip(Blockly.Msg.BLOCKS_FS_MOUNTTOOLTIP || 'Mount the LittleFS filesystem. Returns true if successful.');
   }
 };
 

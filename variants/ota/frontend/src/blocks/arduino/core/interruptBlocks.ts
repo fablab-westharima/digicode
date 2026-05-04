@@ -1,9 +1,10 @@
 /**
  * 割り込み・タイマーブロック (BP2-1, 2026-04-20)
  *
- * attach_interrupt / detach_interrupt: Arduino 標準 API（ESP32 / RP2040 両対応）
- * ticker_attach / ticker_detach: ESP32 の Ticker.h 専用（RP2040 では Ticker.h 非対応、
- *   コンパイルエラーとなる。RP2040 対応が必要になったら代替実装を追加する）
+ * attach_interrupt / detach_interrupt: Arduino 標準 API
+ * ticker_attach / ticker_detach: ESP32 の Ticker.h
+ *
+ * DigiCode は ESP32 系 16 boards 専用 (56.md 2026-05-05)。
  *
  * ハンドラは appendStatementInput('HANDLER') パターンで定義
  * （mqtt_on_message のコールバックパターンを流用）

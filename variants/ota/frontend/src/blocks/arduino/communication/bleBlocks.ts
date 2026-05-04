@@ -1,8 +1,7 @@
 /**
  * BLE ブロック (BP4-1a / BP4-2, 2026-04-20)
  *
- * ESP32 専用 (NimBLE-Arduino ライブラリ)
- * RP2040 系は supportsBle: false → toolbox 非表示
+ * ESP32 専用 (NimBLE-Arduino ライブラリ、DigiCode は ESP32 系 16 boards 専用)。
  *
  * BP4-1a: Nordic UART Service (NUS) — スマホアプリ連携定番パターン
  * BP4-2:  iBeacon 送信 / BLE スキャン / 状態確認 / 切断

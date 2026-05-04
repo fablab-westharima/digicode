@@ -1394,7 +1394,7 @@
       "begin": "Iniciar Preferências",
       "namespace": "espaço de nomes",
       "readonly": "só leitura",
-      "beginTooltip": "Abre um espaço de nomes de Preferences. ESP32: NVS flash. RP2040: emulação EEPROM.",
+      "beginTooltip": "Abre um espaço de nomes de Preferences (armazenamento flash NVS de ESP32).",
       "end": "Fechar Preferências",
       "endTooltip": "Fecha o espaço de nomes e liberta recursos.",
       "put": "Guardar Preferência",
@@ -1441,7 +1441,7 @@
     },
     "fs": {
       "mount": "Montar LittleFS",
-      "mountTooltip": "Monta o sistema de ficheiros LittleFS. Compatível com ESP32 e RP2040.",
+      "mountTooltip": "Monta o sistema de ficheiros LittleFS. Devolve true se bem-sucedido.",
       "write": "Escrever LittleFS",
       "writeTooltip": "Escreve conteúdo num ficheiro em LittleFS (flash interno).",
       "read": "Ler LittleFS",
@@ -3005,10 +3005,6 @@
       "title": "Gravação de Programa_Comum",
       "description": "Preparação comum e fluxo básico para todos os microcontroladores"
     },
-    "program-setup-rp2040": {
-      "title": "Gravação de Programa_RP2040",
-      "description": "Procedimento de gravação para microcontroladores RP2040"
-    },
     "program-setup-arduino": {
       "title": "Gravação de Programa_Arduino",
       "description": "Procedimento de gravação para Arduino (USB/FTDI)"
@@ -3504,8 +3500,7 @@
     "categories": {
       "generic": "ESP32 Genérico",
       "m5stack": "Série M5Stack",
-      "xiao": "Série Seeed Xiao",
-      "rp2040": "Raspberry Pi / RP2040"
+      "xiao": "Série Seeed Xiao"
     },
     "boards": {
       "esp32Generic": {
@@ -3571,22 +3566,6 @@
       "xiaoEsp32C6": {
         "name": "XIAO ESP32C6",
         "description": "21x17.5mm, WiFi 6, OTA suportado"
-      },
-      "rp2040Pico": {
-        "name": "Raspberry Pi Pico",
-        "description": "RP2040, apenas gravação USB"
-      },
-      "rp2040PicoW": {
-        "name": "Raspberry Pi Pico W",
-        "description": "RP2040 + CYW43439, WiFi/BLE, apenas gravação USB"
-      },
-      "xiaoRp2040": {
-        "name": "XIAO RP2040",
-        "description": "21x17.5mm, RP2040, apenas gravação USB"
-      },
-      "rp2040NanoConnect": {
-        "name": "Arduino Nano RP2040 Connect",
-        "description": "RP2040 + NINA-W102, WiFi/BLE, apenas gravação USB"
       },
       "esp32-generic": {
         "name": "ESP32",

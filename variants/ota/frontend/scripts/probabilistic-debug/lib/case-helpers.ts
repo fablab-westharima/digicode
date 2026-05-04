@@ -22,20 +22,36 @@ import type { BlockNode } from './xml-builder';
 export const DEFAULT_MODE: Mode = 'all_blocks';
 
 /**
- * Boards are ordered most-capable first; pickBoard walks this list and
- * returns the first one that satisfies the block's boardRequires.
+ * Boards are ordered by priority: M5Stack 9 (FS course materials, top
+ * stability priority) → XIAO ESP32 3 (Fab Academy recommended) → generic
+ * ESP32 4. pickBoard walks this list and returns the first one that
+ * satisfies the block's boardRequires.
  *
- * BUG-073: experimental boards (currently RP2040 family) intentionally
- * dropped from the preferred order — pickBoard now refuses to return any
- * experimental board, even via fallback, so the release passRate denominator
- * stays inside the supported ESP32 universe.
+ * 56.md (2026-05-05): RP2040 family completely removed; DigiCode is now
+ * ESP32-only across 16 boards. The `experimental` filter below is preserved
+ * as a hook for any future board that ships in the UI but should stay out
+ * of the release passRate denominator.
  */
 export const PREFERRED_BOARD_ORDER: readonly string[] = [
+  // M5Stack 9 (FS 講座教材、最優先)
+  'm5stack-basic',
+  'atom-lite',
+  'atom-matrix',
+  'm5stickc-plus',
+  'm5stamp-pico',
+  'm5stamp-c3',
+  'm5stamp-s3a',
+  'm5stamp-s3-bat',
+  'm5stack-atoms3-lite',
+  // XIAO ESP32 3 (Fab Academy 推奨)
+  'xiao-esp32c3',
+  'xiao-esp32s3',
+  'xiao-esp32c6',
+  // 汎用 ESP32 4
   'esp32-generic',
   'esp32-s3-generic',
   'esp32-c3-generic',
   'esp32-c6-generic',
-  'm5stack-basic',
 ];
 
 export function pickMode(block: CatalogBlock): Mode {
@@ -47,7 +63,10 @@ export function pickBoard(
   block: CatalogBlock,
   catalog: Catalog,
 ): CatalogBoard {
-  // BUG-073: pickBoard only returns supported (non-experimental) boards.
+  // The `experimental` filter is preserved as a hook for future boards that
+  // ship in the UI but should stay out of the release passRate denominator.
+  // No board currently sets `experimental: true` after the 56.md RP2040
+  // removal (2026-05-05), so this filter is effectively a no-op today.
   const supported = catalog.boards.filter((b) => !b.experimental);
   for (const id of PREFERRED_BOARD_ORDER) {
     const board = supported.find((b) => b.id === id);

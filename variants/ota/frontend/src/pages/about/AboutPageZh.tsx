@@ -10,7 +10,7 @@ export default function AboutPageZh() {
           完全在瀏覽器中執行的微控制器積木程式設計編輯器
         </p>
         <p className="text-sm text-[#8B949E]">
-          無需 Arduino IDE / 透過 USB、BLE、WiFi 燒錄 / 支援 30 種以上開發板
+          無需 Arduino IDE / 透過 USB、BLE、WiFi 燒錄 / 支援 16 種 ESP32 開發板
         </p>
       </section>
 
@@ -52,8 +52,8 @@ export default function AboutPageZh() {
             description="除了 USB 有線燒錄外,還支援透過 BLE(Bluetooth Low Energy)與 WiFi(OTA)的無線燒錄。方便更新已封裝的機器人,或在教室中同時燒錄多台裝置。"
           />
           <FeatureCard
-            title="支援 30 種以上開發板"
-            description="支援 ESP32 系列(標準/S3/C3/C6)、M5Stack 系列(Basic、StickC Plus、ATOM、Stamp 等)、Seeed XIAO 系列(C3/S3/C6/RP2040)、Raspberry Pi Pico/Pico W、Arduino(Uno/Nano/Mega)與 ESP8266。"
+            title="支援 16 種 ESP32 開發板"
+            description="支援 ESP32 系列(標準/S3/C3/C6)、M5Stack 系列(Basic、StickC Plus、ATOM、Stamp 等)與 Seeed XIAO 系列(C3/S3/C6)。M5Stack 與 XIAO ESP32 為 FS 課程教材與 Fab Academy 專案優先支援。"
           />
           <FeatureCard
             title="超過 500 個積木"
@@ -216,11 +216,7 @@ export default function AboutPageZh() {
           />
           <BoardCategory
             title="Seeed XIAO 系列"
-            boards={['XIAO ESP32C3', 'XIAO ESP32S3', 'XIAO ESP32C6', 'XIAO RP2040']}
-          />
-          <BoardCategory
-            title="Raspberry Pi / RP2040"
-            boards={['Raspberry Pi Pico', 'Raspberry Pi Pico W', 'Arduino Nano RP2040 Connect']}
+            boards={['XIAO ESP32C3', 'XIAO ESP32S3', 'XIAO ESP32C6']}
           />
         </div>
       </section>

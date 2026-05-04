@@ -1,9 +1,14 @@
 /**
  * 時刻ブロック (BP3-1/BP3-2, 2026-04-20)
  *
- * ntp_*: ESP32 configTime 標準API / RP2040 NTPClient ライブラリ分岐
+ * ntp_*: ESP32 configTime 標準API
  *        WiFi 非対応ボードでは ntp_time カテゴリ自体を非表示（supportsWifi フィルタ）
  * rtc_*: RTClib（Adafruit）— DS3231 / DS1307 対応
+ *
+ * 56.md (2026-05-05): RP2040 系削除で ESP32 系 16 boards 専用。生成 C++ の
+ * `#if defined(ESP32) ... #else ... #endif` ブロックは ESP32 boards で
+ * preprocessor が `#else` 側を skip するため compile fail 不在、scope discipline
+ * のため実装側の修正は別 Phase に委ねる。
  *
  * i18n: Blockly.Msg.* パターン（ルール33）
  */

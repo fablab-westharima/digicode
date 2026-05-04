@@ -1604,7 +1604,7 @@
       "begin": "Preferences開始",
       "namespace": "名前空間",
       "readonly": "読み取り専用",
-      "beginTooltip": "Preferences名前空間を開きます。ESP32: NVSフラッシュ。RP2040: EEPROMエミュレーション。",
+      "beginTooltip": "Preferences名前空間を開きます (ESP32 NVSフラッシュ)。",
       "end": "Preferences終了",
       "endTooltip": "Preferencesを閉じてリソースを解放します。",
       "put": "Preferences書き込み",
@@ -1651,7 +1651,7 @@
     },
     "fs": {
       "mount": "LittleFS マウント",
-      "mountTooltip": "LittleFSファイルシステムをマウントします。成功するとtrueを返します。ESP32・RP2040両対応。",
+      "mountTooltip": "LittleFSファイルシステムをマウントします。成功するとtrueを返します。",
       "write": "LittleFS書き込み",
       "writeTooltip": "LittleFS（内部フラッシュ）のファイルに書き込みます。",
       "read": "LittleFS読み取り",
@@ -3037,10 +3037,6 @@
       "title": "プログラム書き込み_共通手順",
       "description": "全マイコン共通の準備と基本的な流れ"
     },
-    "program-setup-rp2040": {
-      "title": "プログラム書き込み_RP2040",
-      "description": "RP2040系マイコンの書き込み手順"
-    },
     "program-setup-arduino": {
       "title": "プログラム書き込み_Arduino",
       "description": "Arduino系マイコンの書き込み手順（USB・FTDI）"
@@ -3309,8 +3305,7 @@
     "categories": {
       "generic": "汎用 ESP32",
       "m5stack": "M5Stack シリーズ",
-      "xiao": "Seeed Xiao シリーズ",
-      "rp2040": "Raspberry Pi / RP2040"
+      "xiao": "Seeed Xiao シリーズ"
     },
     "boards": {
       "esp32Generic": {
@@ -3376,22 +3371,6 @@
       "xiaoEsp32C6": {
         "name": "XIAO ESP32C6",
         "description": "21x17.5mm、WiFi 6、OTA可"
-      },
-      "rp2040Pico": {
-        "name": "Raspberry Pi Pico",
-        "description": "RP2040、USB書き込みのみ"
-      },
-      "rp2040PicoW": {
-        "name": "Raspberry Pi Pico W",
-        "description": "RP2040 + CYW43439、WiFi/BLE対応、USB書き込みのみ"
-      },
-      "xiaoRp2040": {
-        "name": "XIAO RP2040",
-        "description": "21x17.5mm、RP2040、USB書き込みのみ"
-      },
-      "rp2040NanoConnect": {
-        "name": "Arduino Nano RP2040 Connect",
-        "description": "RP2040 + NINA-W102、WiFi/BLE対応、USB書き込みのみ"
       },
       "esp32-generic": {
         "name": "ESP32（無印）",

@@ -35,10 +35,6 @@ const BOARD_I18N_KEYS: Record<string, string> = {
   'xiao-esp32c3': 'xiaoEsp32C3',
   'xiao-esp32s3': 'xiaoEsp32S3',
   'xiao-esp32c6': 'xiaoEsp32C6',
-  'rp2040-pico': 'rp2040Pico',
-  'rp2040-pico-w': 'rp2040PicoW',
-  'rp2040-xiao': 'xiaoRp2040',
-  'rp2040-nano-connect': 'rp2040NanoConnect',
 };
 
 export function BoardSelector() {
@@ -68,14 +64,15 @@ export function BoardSelector() {
   const genericBoards = SUPPORTED_BOARDS.filter(b => b.category === 'generic');
   const m5stackBoards = SUPPORTED_BOARDS.filter(b => b.category === 'm5stack');
   const xiaoBoards = SUPPORTED_BOARDS.filter(b => b.category === 'xiao');
-  const rp2040Boards = SUPPORTED_BOARDS.filter(b => b.category === 'rp2040');
 
   const renderBoardItem = (board: BoardDefinition) => (
     <SelectItem key={board.id} value={board.id}>
       <div className="flex items-center gap-2">
         <span>{getBoardName(board)}</span>
-        {/* BUG-073: experimental-mark badge for boards excluded from the
-            release passRate denominator (currently RP2040 family). */}
+        {/* Experimental badge — kept as a reusable hook for future boards
+            that may need to ship in UI but stay outside the release passRate
+            denominator. No board currently sets `experimental: true` after
+            the 56.md RP2040 removal (2026-05-05). */}
         {board.experimental && (
           <Badge
             variant="outline"
@@ -109,9 +106,9 @@ export function BoardSelector() {
         </SelectTrigger>
         <SelectContent>
           {/*
-            Category display order: M5Stack → XIAO → Raspberry Pi → ESP32 Devkit
+            Category display order: M5Stack → XIAO → ESP32 Devkit
             (memory:factory_scientist_course、講座受講者は M5Stack 系を主に使う)。
-            2026-04-30 ボード UI 整理タスクで M5Stack を最上位に移動 (改定log 第62回)。
+            56.md (2026-05-05) で RP2040 系 4 boards 削除 = ESP32 専用化。
           */}
           <SelectGroup>
             <SelectLabel className="text-orange-600 font-semibold">{getCategoryLabel('m5stack')}</SelectLabel>
@@ -121,12 +118,6 @@ export function BoardSelector() {
             <SelectLabel className="text-green-600 font-semibold">{getCategoryLabel('xiao')}</SelectLabel>
             {xiaoBoards.map(renderBoardItem)}
           </SelectGroup>
-          {rp2040Boards.length > 0 && (
-            <SelectGroup>
-              <SelectLabel className="text-pink-600 font-semibold">{getCategoryLabel('rp2040')}</SelectLabel>
-              {rp2040Boards.map(renderBoardItem)}
-            </SelectGroup>
-          )}
           <SelectGroup>
             <SelectLabel className="text-blue-600 font-semibold">{getCategoryLabel('generic')}</SelectLabel>
             {genericBoards.map(renderBoardItem)}

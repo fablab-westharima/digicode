@@ -10,7 +10,7 @@ export default function AboutPageJa() {
           ブラウザだけで完結するマイコン向けブロックプログラミングエディタ
         </p>
         <p className="text-sm text-[#8B949E]">
-          Arduino IDE不要 / USB・BLE・WiFiで書き込み / ESP32 系・RP2040 系に対応
+          Arduino IDE不要 / USB・BLE・WiFiで書き込み / ESP32 系 16 boards に対応
         </p>
       </section>
 
@@ -55,8 +55,8 @@ export default function AboutPageJa() {
             description="USB有線書き込みに加え、BLE（Bluetooth Low Energy）とWiFi経由の無線書き込み（OTA）にも対応。ケーシング済みロボットの更新や、教室での複数台同時書き込みに便利です。"
           />
           <FeatureCard
-            title="主要な ESP32 系と RP2040 系に対応"
-            description="ESP32 シリーズ（無印 / S3 / C3 / C6）、M5Stack シリーズ（Basic, StickC Plus, ATOM, Stamp 等）、Seeed XIAO シリーズ（C3 / S3 / C6）、Raspberry Pi Pico / Pico W、XIAO RP2040、Arduino Nano RP2040 Connect に対応。"
+            title="ESP32 系 16 boards に対応"
+            description="ESP32 シリーズ（無印 / S3 / C3 / C6）、M5Stack シリーズ（Basic, StickC Plus, ATOM, Stamp 等）、Seeed XIAO シリーズ（C3 / S3 / C6）に対応。FS 講座教材（M5Stack 系）+ Fab Academy 推奨 (XIAO ESP32 系) を最優先。"
           />
           <FeatureCard
             title="500以上のブロック"
@@ -220,11 +220,7 @@ export default function AboutPageJa() {
           />
           <BoardCategory
             title="Seeed XIAO シリーズ"
-            boards={['XIAO ESP32C3', 'XIAO ESP32S3', 'XIAO ESP32C6', 'XIAO RP2040']}
-          />
-          <BoardCategory
-            title="Raspberry Pi / RP2040"
-            boards={['Raspberry Pi Pico', 'Raspberry Pi Pico W', 'Arduino Nano RP2040 Connect']}
+            boards={['XIAO ESP32C3', 'XIAO ESP32S3', 'XIAO ESP32C6']}
           />
         </div>
       </section>

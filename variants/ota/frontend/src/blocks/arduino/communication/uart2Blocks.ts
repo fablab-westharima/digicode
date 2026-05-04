@@ -2,8 +2,7 @@
  * UART 2（Serial2）ブロック (BP6-3, 2026-04-20)
  *
  * ESP32 の HardwareSerial UART2（Serial2）を使用
- * GPIO ピン指定で任意のピンに remap 可能
- * RP2040 には Serial2 がないため注意（DigiCode は ESP32 系専用だが、BP 対応外の場合はコンパイルエラー）
+ * GPIO ピン指定で任意のピンに remap 可能 (DigiCode は ESP32 系 16 boards 専用)。
  *
  * i18n: Blockly.Msg.* パターン（ルール33）
  */

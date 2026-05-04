@@ -28,11 +28,6 @@ export const BOARD_FQBN: Record<string, string> = {
   'xiao-esp32c3': 'esp32:esp32:esp32c3',
   'xiao-esp32s3': 'esp32:esp32:esp32s3',
   'xiao-esp32c6': 'esp32:esp32:esp32c6',
-  // RP2040
-  'rp2040-pico': 'rp2040:rp2040:rpipico',
-  'rp2040-pico-w': 'rp2040:rp2040:rpipicow',
-  'rp2040-xiao': 'rp2040:rp2040:seeed_xiao_rp2040',
-  'rp2040-nano-connect': 'arduino:mbed_nano:nanorp2040connect',
 };
 
 export function fqbnFor(boardId: string): string {

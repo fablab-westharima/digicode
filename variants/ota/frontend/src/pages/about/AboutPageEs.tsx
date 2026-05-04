@@ -10,7 +10,7 @@ export default function AboutPageEs() {
           Un editor de programación por bloques para microcontroladores, totalmente en el navegador
         </p>
         <p className="text-sm text-[#8B949E]">
-          Sin necesidad de Arduino IDE / Grabación por USB, BLE y WiFi / Compatible con las familias ESP32 y RP2040
+          Sin necesidad de Arduino IDE / Grabación por USB, BLE y WiFi / 16 placas ESP32 compatibles
         </p>
       </section>
 
@@ -53,8 +53,8 @@ export default function AboutPageEs() {
             description="Además de grabación por cable USB, admite grabación inalámbrica vía BLE (Bluetooth Low Energy) y WiFi (OTA). Útil para actualizar robots ya encapsulados o grabar varios dispositivos a la vez en el aula."
           />
           <FeatureCard
-            title="Principales placas ESP32 y RP2040"
-            description="Compatible con la familia ESP32 (estándar / S3 / C3 / C6), la serie M5Stack (Basic, StickC Plus, ATOM, Stamp, etc.), la serie Seeed XIAO (C3 / S3 / C6), Raspberry Pi Pico / Pico W, XIAO RP2040 y Arduino Nano RP2040 Connect."
+            title="16 placas ESP32"
+            description="Compatible con la familia ESP32 (estándar / S3 / C3 / C6), la serie M5Stack (Basic, StickC Plus, ATOM, Stamp, etc.) y la serie Seeed XIAO (C3 / S3 / C6). M5Stack y XIAO ESP32 tienen prioridad para los materiales del curso FS y los proyectos de Fab Academy."
           />
           <FeatureCard
             title="Más de 500 bloques"
@@ -218,11 +218,7 @@ export default function AboutPageEs() {
           />
           <BoardCategory
             title="Serie Seeed XIAO"
-            boards={['XIAO ESP32C3', 'XIAO ESP32S3', 'XIAO ESP32C6', 'XIAO RP2040']}
-          />
-          <BoardCategory
-            title="Raspberry Pi / RP2040"
-            boards={['Raspberry Pi Pico', 'Raspberry Pi Pico W', 'Arduino Nano RP2040 Connect']}
+            boards={['XIAO ESP32C3', 'XIAO ESP32S3', 'XIAO ESP32C6']}
           />
         </div>
       </section>

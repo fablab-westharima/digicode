@@ -7,8 +7,7 @@
  *   - microphone_read_db        (Number、相対 dB SPL)
  *
  * 内部 lib: なし (ESP32 Arduino core `driver/i2s.h` ESP-IDF I2S API、legacy compat)
- * boardRequires: ESP32 系のみ (`category != 'rp2040'`、D-7 案 A 採用)
- *                ⚠️ RP2040 系は I2S API 異、本ブロック不対応
+ * boardRequires: null (DigiCode は ESP32 系 16 boards 専用、56.md 2026-05-05)
  *
  * INMP441 は 24-bit data on 32-bit I2S frame、左 channel only (MSB)。
  * RMS → dB SPL 変換は相対値 (基準 0 dB SPL = 20μPa は外部校正必要)。
@@ -90,7 +89,7 @@ Blockly.Blocks['microphone_i2s_init'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(MICROPHONE_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_MIC_I2S_INIT_TOOLTIP || 'I2S MEMS microphone (INMP441 等) を初期化します。BCLK / LRCK (WS) / DIN (DOUT) ピン指定。16 kHz / 24-bit / 左 channel only。⚠️ ESP32 系のみ動作 (RP2040 不対応)。');
+    this.setTooltip(Blockly.Msg.BLOCKS_MIC_I2S_INIT_TOOLTIP || 'I2S MEMS microphone (INMP441 等) を初期化します。BCLK / LRCK (WS) / DIN (DOUT) ピン指定。16 kHz / 24-bit / 左 channel only。');
   }
 };
 

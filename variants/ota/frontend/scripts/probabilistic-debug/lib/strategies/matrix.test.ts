@@ -27,9 +27,9 @@ describe('generateMatrixCases (defaults)', () => {
   });
 
   it('hits a meaningful slice of the supported boards (≥12 distinct under 100-case cap)', () => {
-    // BUG-073: experimental (RP2040) boards are excluded from the matrix;
-    // round-robin with mode-fastest visits ≥12 distinct boards for cap=100
-    // (7 modes × 13-16 supported boards).
+    // 56.md (2026-05-05): RP2040 family removed; DigiCode is ESP32-only
+    // across 16 boards. Round-robin with mode-fastest visits ≥12 distinct
+    // boards for cap=100 (7 modes × 16 supported boards).
     const boards = new Set(cases.map((c) => c.boardId));
     expect(boards.size).toBeGreaterThanOrEqual(12);
   });
@@ -44,11 +44,14 @@ describe('generateMatrixCases (defaults)', () => {
     }
   });
 
-  it('never emits a case for an experimental board (BUG-073)', () => {
+  it('never emits a case for an experimental board (filter is preserved as future hook)', () => {
+    // 56.md (2026-05-05): no boards currently set `experimental: true` after
+    // the RP2040 removal, so the filter is effectively a no-op today. The
+    // assertion is kept to guard against any future board setting the flag
+    // ever leaking into matrix output.
     const experimentalIds = new Set(
       cat.boards.filter((b) => b.experimental).map((b) => b.id),
     );
-    expect(experimentalIds.size).toBeGreaterThan(0); // sanity: catalog has some
     for (const c of cases) {
       expect(experimentalIds.has(c.boardId)).toBe(false);
     }

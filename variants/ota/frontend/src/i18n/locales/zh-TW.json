@@ -1394,7 +1394,7 @@
       "begin": "開啟Preferences",
       "namespace": "命名空間",
       "readonly": "唯讀",
-      "beginTooltip": "開啟Preferences命名空間。ESP32：NVS快閃記憶體。RP2040：EEPROM模擬。",
+      "beginTooltip": "開啟 Preferences 命名空間 (ESP32 NVS 快閃記憶體)。",
       "end": "關閉Preferences",
       "endTooltip": "關閉Preferences命名空間並釋放資源。",
       "put": "寫入Preferences",
@@ -1441,7 +1441,7 @@
     },
     "fs": {
       "mount": "掛載LittleFS",
-      "mountTooltip": "掛載LittleFS檔案系統。ESP32和RP2040均支援。",
+      "mountTooltip": "掛載 LittleFS 檔案系統。成功則回傳 true。",
       "write": "LittleFS寫入",
       "writeTooltip": "將內容寫入LittleFS（內部快閃記憶體）檔案。",
       "read": "LittleFS讀取",
@@ -3005,10 +3005,6 @@
       "title": "程式燒錄_通用步驟",
       "description": "所有微控制器通用的準備工作和基本流程"
     },
-    "program-setup-rp2040": {
-      "title": "程式燒錄_RP2040",
-      "description": "RP2040系列微控制器的燒錄步驟"
-    },
     "program-setup-arduino": {
       "title": "程式燒錄_Arduino",
       "description": "Arduino系列微控制器的燒錄步驟（USB・FTDI）"
@@ -3504,8 +3500,7 @@
     "categories": {
       "generic": "通用 ESP32",
       "m5stack": "M5Stack 系列",
-      "xiao": "Seeed Xiao 系列",
-      "rp2040": "Raspberry Pi / RP2040"
+      "xiao": "Seeed Xiao 系列"
     },
     "boards": {
       "esp32Generic": {
@@ -3571,22 +3566,6 @@
       "xiaoEsp32C6": {
         "name": "XIAO ESP32C6",
         "description": "21x17.5mm、WiFi 6，支援OTA"
-      },
-      "rp2040Pico": {
-        "name": "Raspberry Pi Pico",
-        "description": "RP2040，僅支援 USB 燒錄"
-      },
-      "rp2040PicoW": {
-        "name": "Raspberry Pi Pico W",
-        "description": "RP2040 + CYW43439、支援 WiFi/BLE，僅支援 USB 燒錄"
-      },
-      "xiaoRp2040": {
-        "name": "XIAO RP2040",
-        "description": "21x17.5mm、RP2040，僅支援 USB 燒錄"
-      },
-      "rp2040NanoConnect": {
-        "name": "Arduino Nano RP2040 Connect",
-        "description": "RP2040 + NINA-W102、支援 WiFi/BLE，僅支援 USB 燒錄"
       },
       "esp32-generic": {
         "name": "ESP32（標準）",

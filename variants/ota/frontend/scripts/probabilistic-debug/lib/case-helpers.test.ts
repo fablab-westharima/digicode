@@ -38,11 +38,11 @@ describe('pickMode', () => {
 });
 
 describe('pickBoard', () => {
-  it('returns esp32-generic for blocks with no board requirement', () => {
+  it('returns m5stack-basic for blocks with no board requirement (top of PREFERRED_BOARD_ORDER)', () => {
     const noReq = cat.blocks.find((b) => b.boardRequires === null);
     expect(noReq).toBeDefined();
     if (!noReq) return;
-    expect(pickBoard(noReq, cat).id).toBe('esp32-generic');
+    expect(pickBoard(noReq, cat).id).toBe('m5stack-basic');
   });
 
   it('returns a BLE-capable board for BLE-required blocks', () => {
@@ -51,8 +51,8 @@ describe('pickBoard', () => {
     if (!bleBlock) return;
     const board = pickBoard(bleBlock, cat);
     expect(board.supportsBle).toBe(true);
-    // esp32-generic is preferred and has BLE.
-    expect(board.id).toBe('esp32-generic');
+    // m5stack-basic is preferred (top of PREFERRED_BOARD_ORDER) and has BLE.
+    expect(board.id).toBe('m5stack-basic');
   });
 
   it('returns a WiFi-capable board for WiFi-required blocks', () => {

@@ -1,8 +1,10 @@
 /**
  * 設定保存ブロック (BP3-3/BP3-4, 2026-04-20)
  *
- * preferences_*: ESP32 NVS (Preferences.h) / RP2040 EEPROM エミュレーション分岐
- * eeprom_*: AVR 風アドレスベース API (ESP32/RP2040 両対応)
+ * preferences_*: ESP32 NVS (Preferences.h)
+ * eeprom_*: ESP32 EEPROM ライブラリ (Flash 上の named partition、AVR 風 API)
+ *
+ * 56.md (2026-05-05): RP2040 系削除で ESP32 系 16 boards 専用。
  *
  * i18n: Blockly.Msg.* パターン（ルール33）
  */
@@ -33,7 +35,7 @@ Blockly.Blocks['preferences_begin'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(NVS_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_PREFERENCES_BEGINTOOLTIP || 'Open a Preferences namespace for read/write. ESP32: NVS flash storage. RP2040: EEPROM emulation.');
+    this.setTooltip(Blockly.Msg.BLOCKS_PREFERENCES_BEGINTOOLTIP || 'Open a Preferences namespace for read/write (ESP32 NVS flash storage).');
   }
 };
 
@@ -43,10 +45,8 @@ generator.forBlock['preferences_begin'] = function(block: Blockly.Block) {
   // The OTA template (compile-api/templates/DigiCodeOTA.ino:56) already
   // declares `Preferences preferences;` for its own NVS persistence layer.
   // Emitting a second declaration here causes "redefinition" (Round 1
-  // cluster #5 RCA, 4 failures). Just include the header — RP2040 fallback
-  // pulls EEPROM.h via the same `#if defined(ESP32)` switch.
-  generator.definitions_['include_preferences'] =
-    '#if defined(ESP32)\n#include <Preferences.h>\n#else\n#include <EEPROM.h>\n#endif';
+  // cluster #5 RCA, 4 failures). Just include the header.
+  generator.definitions_['include_preferences'] = '#include <Preferences.h>';
   return `  preferences.begin("${namespace}", ${readonly});\n`;
 };
 

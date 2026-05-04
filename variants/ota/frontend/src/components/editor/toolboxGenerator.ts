@@ -1031,7 +1031,7 @@ const getToolboxCategories = (): Record<string, string> => ({
   </category>`,
 
   // WiFi 接続 (BP1-2c, 2026-04-20 追加)
-  // supportsWifi が true のボード（ESP32 系 + Pico W + Nano RP2040 Connect）で表示。
+  // supportsWifi が true のボードで表示 (DigiCode は ESP32 系 16 boards 専用)。
   // wifi_connect ブロック単体のカテゴリ。既存 wifi_is_connected / wifi_reconnect /
   // wifi_get_ip / wifi_get_rssi は mqtt カテゴリ内に存続（リグレッション回避）。
   wifi: `
