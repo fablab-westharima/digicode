@@ -2760,6 +2760,7 @@
       "piezo": "🪗 Piezo",
       "lora": "📡 LoRa",
       "gps": "🛰️ GPS",
+      "relay": "⚡ Relé",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",

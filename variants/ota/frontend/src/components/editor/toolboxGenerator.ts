@@ -1134,6 +1134,15 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // Relay (リレー) 制御 (52.md commit #13, 2026-05-04 第80回) — 強推奨、Factory IoT 制御
+  relay: `
+  <category id="relay" name="${cat('relay')}" colour="#FFB300">
+    <block type="relay_init"></block>
+    <block type="relay_on"></block>
+    <block type="relay_off"></block>
+    <block type="relay_toggle"></block>
+  </category>`,
+
   // GPS (NEO-6M/8M) (52.md commit #12, 2026-05-04 第80回) — 強推奨、屋外プロジェクト
   gps: `
   <category id="gps" name="${cat('gps')}" colour="#3F51B5">
@@ -1473,6 +1482,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'servo',
     'stepper',
     'stepper_driver',
+    'relay',
     'buzzer',
     'neopixel',
     'display',
@@ -1559,6 +1569,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'servo',
     'stepper',
     'stepper_driver',
+    'relay',
     'buzzer',
     'neopixel',
     'display',
@@ -1628,6 +1639,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'servo',
     'stepper',
     'stepper_driver',
+    'relay',
     'buzzer',
     'neopixel',
     'display',
@@ -1698,6 +1710,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'encoder',
     'stepper',
     'stepper_driver',
+    'relay',
     'pid',
     'separator2',
     // センサー（競技）
@@ -1792,6 +1805,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'encoder',
     'stepper',
     'stepper_driver',
+    'relay',
     'pid',
     'separator3',
     // センサー（競技）
