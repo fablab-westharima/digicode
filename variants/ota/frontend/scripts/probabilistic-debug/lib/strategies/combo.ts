@@ -386,6 +386,7 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
       'm5stack_button_a_pressed', 'm5stack_button_b_pressed', 'm5stack_button_c_pressed',
       'm5stack_button_a_held', 'm5stack_button_b_held', 'm5stack_button_c_held',
       'm5stack_lcd_print', 'm5stack_lcd_print_at', 'm5stack_lcd_clear', 'm5stack_lcd_set_text_size',
+      'm5stack_speaker_tone', 'm5stack_battery_level', 'm5stack_battery_voltage',
     ],
   },
   {

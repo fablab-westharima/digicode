@@ -545,6 +545,14 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="m5stack_lcd_set_text_size">
       <value name="SIZE"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
     </block>
+    <sep></sep>
+    <label text="${label('m5stackOther') || 'スピーカー / バッテリー'}"></label>
+    <block type="m5stack_speaker_tone">
+      <value name="HZ"><shadow type="math_number"><field name="NUM">440</field></shadow></value>
+      <value name="DURATION"><shadow type="math_number"><field name="NUM">500</field></shadow></value>
+    </block>
+    <block type="m5stack_battery_level"></block>
+    <block type="m5stack_battery_voltage"></block>
   </category>`,
 
   // ESP-NOW (51.md commit #9, 2026-05-04 第79回) — supportsEspNow フィルタ対象 (commit #3 で軸新設)

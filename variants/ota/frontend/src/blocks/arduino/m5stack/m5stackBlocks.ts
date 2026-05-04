@@ -240,4 +240,62 @@ generator.forBlock['m5stack_lcd_set_text_size'] = function(block: Blockly.Block)
   return `M5.Lcd.setTextSize(${size});\n`;
 };
 
-console.log('M5Stack body blocks loaded (sub-3/4: LCD)');
+// ============================================================================
+// 51.md commit #12-D (2026-05-04 第79回): speaker / battery 3 ブロック (M5 Phase B 完結)
+// ============================================================================
+
+Blockly.Blocks['m5stack_speaker_tone'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📱 ' + (Blockly.Msg.BLOCKS_M5STACK_SPEAKER_TONE || 'M5 スピーカー 音を鳴らす'));
+    this.appendValueInput('HZ')
+        .setCheck('Number')
+        .appendField(Blockly.Msg.BLOCKS_M5STACK_HZ || '周波数 (Hz)');
+    this.appendValueInput('DURATION')
+        .setCheck('Number')
+        .appendField(Blockly.Msg.BLOCKS_M5STACK_DURATION || '時間 (ms)');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(M5STACK_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_M5STACK_SPEAKER_TONE_TOOLTIP || 'M5Stack 内蔵スピーカーで指定周波数の音を指定時間鳴らします (M5.Speaker.tone)。');
+  }
+};
+
+generator.forBlock['m5stack_speaker_tone'] = function(block: Blockly.Block) {
+  const hz = generator.valueToCode(block, 'HZ', Order.ATOMIC) || '440';
+  const dur = generator.valueToCode(block, 'DURATION', Order.ATOMIC) || '500';
+  generator.definitions_['include_m5unified'] = M5STACK_INCLUDE;
+  return `M5.Speaker.tone(${hz}, ${dur});\n`;
+};
+
+Blockly.Blocks['m5stack_battery_level'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📱 ' + (Blockly.Msg.BLOCKS_M5STACK_BATTERY_LEVEL || 'M5 バッテリー残量 (%)'));
+    this.setOutput(true, 'Number');
+    this.setColour(M5STACK_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_M5STACK_BATTERY_LEVEL_TOOLTIP || 'M5Stack 内蔵バッテリー残量を 0-100 % で取得します (M5.Power.getBatteryLevel)。');
+  }
+};
+
+generator.forBlock['m5stack_battery_level'] = function() {
+  generator.definitions_['include_m5unified'] = M5STACK_INCLUDE;
+  return ['M5.Power.getBatteryLevel()', Order.FUNCTION_CALL];
+};
+
+Blockly.Blocks['m5stack_battery_voltage'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📱 ' + (Blockly.Msg.BLOCKS_M5STACK_BATTERY_VOLTAGE || 'M5 バッテリー電圧 (V)'));
+    this.setOutput(true, 'Number');
+    this.setColour(M5STACK_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_M5STACK_BATTERY_VOLTAGE_TOOLTIP || 'M5Stack 内蔵バッテリー電圧を V 単位で取得します (M5.Power.getBatteryVoltage は mV、本ブロックで /1000 変換)。');
+  }
+};
+
+generator.forBlock['m5stack_battery_voltage'] = function() {
+  generator.definitions_['include_m5unified'] = M5STACK_INCLUDE;
+  return ['(M5.Power.getBatteryVoltage() / 1000.0f)', Order.FUNCTION_CALL];
+};
+
+console.log('M5Stack body blocks loaded (sub-4/4: speaker/battery, Phase B 完結)');

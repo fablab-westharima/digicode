@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-04T09:42:40.235Z",
+  "generatedAt": "2026-05-04T09:44:08.607Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -6710,6 +6710,69 @@
           "check": "Number"
         }
       ],
+      "statementInputs": []
+    },
+    {
+      "type": "m5stack_speaker_tone",
+      "category": "m5stack",
+      "tooltip": "M5Stack 内蔵スピーカーで指定周波数の音を指定時間鳴らします (M5.Speaker.tone)。",
+      "colour": "#FF0000",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "category=m5stack",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "HZ",
+          "check": "Number"
+        },
+        {
+          "name": "DURATION",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "m5stack_battery_level",
+      "category": "m5stack",
+      "tooltip": "M5Stack 内蔵バッテリー残量を 0-100 % で取得します (M5.Power.getBatteryLevel)。",
+      "colour": "#FF0000",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "category=m5stack",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "m5stack_battery_voltage",
+      "category": "m5stack",
+      "tooltip": "M5Stack 内蔵バッテリー電圧を V 単位で取得します (M5.Power.getBatteryVoltage は mV、本ブロックで /1000 変換)。",
+      "colour": "#FF0000",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "category=m5stack",
+      "fields": [],
+      "valueInputs": [],
       "statementInputs": []
     },
     {
