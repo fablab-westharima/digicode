@@ -2794,6 +2794,7 @@
       "gps": "🛰️ GPS",
       "relay": "⚡ リレー",
       "modbus": "🏭 Modbus RTU",
+      "sensorAirQuality": "🌫️ 空気質 (CO2/PM)",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",

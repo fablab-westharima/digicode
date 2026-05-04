@@ -1134,6 +1134,21 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // 空気質センサ SCD30 + PMS5003 (52.md commit #15, 2026-05-04 第80回) — 中推奨、Factory IoT
+  sensor_air_quality: `
+  <category id="sensor_air_quality" name="${cat('sensorAirQuality')}" colour="#00897B">
+    <label text="SCD30 (CO2 + 温湿度)"></label>
+    <block type="scd30_init"></block>
+    <block type="scd30_read_co2"></block>
+    <block type="scd30_read_temperature"></block>
+    <block type="scd30_read_humidity"></block>
+    <sep></sep>
+    <label text="PMS5003 (PM2.5/PM10)"></label>
+    <block type="pms5003_init"></block>
+    <block type="pms5003_read_pm25"></block>
+    <block type="pms5003_read_pm10"></block>
+  </category>`,
+
   // Modbus RTU master (52.md commit #14, 2026-05-04 第80回) — 強推奨、Industrial IoT
   modbus: `
   <category id="modbus" name="${cat('modbus')}" colour="#37474F">
@@ -1575,6 +1590,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_dht',
     'sensor_motion',
     'sensor_environment',
+    'sensor_air_quality',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1645,6 +1661,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_dht',
     'sensor_motion',
     'sensor_environment',
+    'sensor_air_quality',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1742,6 +1759,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_dht',
     'sensor_motion',
     'sensor_environment',
+    'sensor_air_quality',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1838,6 +1856,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_dht',
     'sensor_motion',
     'sensor_environment',
+    'sensor_air_quality',
     'sensor_current',
     'piezo',
     'hx711',
