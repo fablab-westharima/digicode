@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-04T08:28:44.301Z",
+  "generatedAt": "2026-05-04T08:38:55.495Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -8447,6 +8447,113 @@
       "boardRequires": "supportsWifi",
       "fields": [],
       "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "azure_iot_central_connect",
+      "category": "azure_iot",
+      "tooltip": "Azure IoT Central に接続します。Scope ID / Device ID / Device Key は IoT Central デバイス画面で取得できます。内部で DPS 経由で IoT Hub に登録されます。WiFi 接続済が前提です。",
+      "colour": "#0078D4",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "SCOPE_ID",
+          "check": "String"
+        },
+        {
+          "name": "DEVICE_ID",
+          "check": "String"
+        },
+        {
+          "name": "DEVICE_KEY",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "azure_iot_central_publish",
+      "category": "azure_iot",
+      "tooltip": "Azure IoT Central にキー/値ペアでテレメトリを送信します (内部 JSON 化)。事前に接続が必要です。",
+      "colour": "#0078D4",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "KEY",
+          "check": "String"
+        },
+        {
+          "name": "VALUE",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "azure_iot_subscribe_direct_method",
+      "category": "azure_iot",
+      "tooltip": "Azure IoT の Direct Method 呼び出しを受信したときの処理を定義します。HANDLER 内で「受信メッセージ」ブロックで payload (JSON) が取得できます。arduino_loop の中に配置してください。",
+      "colour": "#0078D4",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "HANDLER"
+        }
+      ]
+    },
+    {
+      "type": "azure_iot_update_device_twin",
+      "category": "azure_iot",
+      "tooltip": "Azure IoT の Device Twin reported プロパティを更新します。事前に接続が必要です。",
+      "colour": "#0078D4",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "KEY",
+          "check": "String"
+        },
+        {
+          "name": "VALUE",
+          "check": null
+        }
+      ],
       "statementInputs": []
     },
     {

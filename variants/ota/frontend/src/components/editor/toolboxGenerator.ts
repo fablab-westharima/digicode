@@ -518,7 +518,7 @@ const getToolboxCategories = (): Record<string, string> => ({
   </category>`,
 
   // Azure IoT (51.md Phase A+B, 2026-05-04 第78回 commit #4 着手) — supportsWifi フィルタ対象
-  // 9 blocks total: #4-A (4 blocks 本コミット) + #4-B (central 4) + #4-C (is_connected 1) で完成
+  // 9 blocks total: #4-A Hub (4) + #4-B Central + Direct Method + Twin (4 本コミット) + #4-C is_connected (1)
   azure_iot: `
   <category id="azure_iot" name="${cat('azureIot')}" colour="#0078D4">
     <label text="${label('azureIotHub') || 'Azure IoT Hub'}"></label>
@@ -526,6 +526,14 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="azure_iot_hub_publish_d2c"></block>
     <block type="azure_iot_hub_on_c2d"></block>
     <block type="azure_iot_received_value"></block>
+    <sep></sep>
+    <label text="${label('azureIotCentral') || 'Azure IoT Central'}"></label>
+    <block type="azure_iot_central_connect"></block>
+    <block type="azure_iot_central_publish"></block>
+    <sep></sep>
+    <label text="${label('azureIotAdvanced') || 'Direct Method / Device Twin'}"></label>
+    <block type="azure_iot_subscribe_direct_method"></block>
+    <block type="azure_iot_update_device_twin"></block>
   </category>`,
 
   // BLE (BP4, 2026-04-20 追加) — supportsBle フィルタ対象、ESP32 専用

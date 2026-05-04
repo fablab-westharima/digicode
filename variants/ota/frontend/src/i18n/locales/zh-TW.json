@@ -2833,6 +2833,8 @@
       "pinInterrupt": "腳位中斷",
       "ticker": "定時器 (ESP32)",
       "azureIotHub": "Azure IoT Hub",
+      "azureIotCentral": "Azure IoT Central",
+      "azureIotAdvanced": "Direct Method / Device Twin",
       "bleUart": "Nordic UART (NUS)",
       "bleGatt": "GATT 自訂服務",
       "bleBeacon": "iBeacon",
