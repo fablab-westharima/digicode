@@ -349,6 +349,12 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     label: 'env3',
     operations: ['env3_read_temperature', 'env3_read_humidity', 'env3_read_pressure'],
   },
+  // 51.md commit #7 (2026-05-04 第79回): AC current clamp (analogRead RMS)
+  {
+    init: 'ac_current_clamp_init',
+    label: 'ac_clamp',
+    operations: ['ac_current_clamp_read_rms', 'ac_current_clamp_calibrate'],
+  },
   {
     init: 'ultrasonic_init',
     label: 'ultrasonic',

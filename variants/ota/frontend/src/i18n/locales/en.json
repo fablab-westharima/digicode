@@ -2788,6 +2788,7 @@
       "mqttHa": "🏠 MQTT/HA",
       "haAutoDiscovery": "🏡 HA Auto Discovery",
       "iotCloud": "☁️ IoT Cloud",
+      "sensorCurrent": "⚡ Current Sensor",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
       "json": "📋 JSON",

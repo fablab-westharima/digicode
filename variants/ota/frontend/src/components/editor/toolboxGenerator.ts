@@ -1030,6 +1030,14 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // 電流センサー AC clamp (51.md commit #7, 2026-05-04 第79回) — FS 講座 IoT 電流計の核
+  sensor_current: `
+  <category id="sensorCurrent" name="${cat('sensorCurrent')}" colour="#FF9800">
+    <block type="ac_current_clamp_init"></block>
+    <block type="ac_current_clamp_read_rms"></block>
+    <block type="ac_current_clamp_calibrate"></block>
+  </category>`,
+
   // 環境センサー BME280/BMP280/SHT30 (BP5-2, 2026-04-20 追加 + 51.md commit #6-A SHT30, 2026-05-04)
   sensor_environment: `
   <category id="sensorEnvironment" name="${cat('sensorEnvironment')}" colour="#4CAF50">
@@ -1285,6 +1293,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_dht',
     'sensor_motion',
     'sensor_environment',
+    'sensor_current',
     'sensor_tof',
     'sensor_encoder_mag',
     'separator3',
@@ -1343,6 +1352,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_dht',
     'sensor_motion',
     'sensor_environment',
+    'sensor_current',
     'sensor_tof',
     'sensor_encoder_mag',
     'separator2',
@@ -1421,6 +1431,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_dht',
     'sensor_motion',
     'sensor_environment',
+    'sensor_current',
     'sensor_tof',
     'sensor_encoder_mag',
     'separator3',
@@ -1500,6 +1511,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_dht',
     'sensor_motion',
     'sensor_environment',
+    'sensor_current',
     'sensor_tof',
     'sensor_encoder_mag',
     'separator4',

@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-04T09:18:45.785Z",
+  "generatedAt": "2026-05-04T09:20:58.847Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -10360,6 +10360,90 @@
       "category": "sensor_environment",
       "tooltip": "M5Stack ENV IV ユニット (SHT40 温湿度 + BMP280 気圧) を I2C で初期化します。値の読み取りは sht40_read_temperature / sht40_read_humidity / bmp280_read で行ってください。",
       "colour": "#4CAF50",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "ac_current_clamp_init",
+      "category": "sensor_current",
+      "tooltip": "AC クランプ電流センサ (SCT-013 等) を初期化します。ピン (ADC)、巻数比 (Current Transformer ratio)、負荷抵抗 (バーデン抵抗 Ω) を指定。",
+      "colour": "#FF9800",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": 36,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "RATIO",
+          "fieldType": "number",
+          "default": 2000,
+          "min": 1,
+          "max": 5000
+        },
+        {
+          "name": "RESISTOR",
+          "fieldType": "number",
+          "default": 51,
+          "min": 1,
+          "max": 1000
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "ac_current_clamp_read_rms",
+      "category": "sensor_current",
+      "tooltip": "AC クランプ電流の RMS 値を返します (A 単位)。サンプル数 ~100 で 50/60Hz 1 周期以上カバーします。事前に ac_current_clamp_init が必要です。",
+      "colour": "#FF9800",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "SAMPLES",
+          "fieldType": "number",
+          "default": 100,
+          "min": 4,
+          "max": 1000
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "ac_current_clamp_calibrate",
+      "category": "sensor_current",
+      "tooltip": "AC クランプ電流センサのゼロ点を測定 (~100ms)。負荷を切った状態で実行してください。",
+      "colour": "#FF9800",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
