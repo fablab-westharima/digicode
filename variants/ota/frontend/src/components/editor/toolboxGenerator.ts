@@ -1134,6 +1134,13 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // 流量計 YF-S201 (52.md commit #18, 2026-05-04 第80回) — 低推奨採用、配管流量
+  flow_meter: `
+  <category id="flow_meter" name="${cat('flowMeter')}" colour="#0288D1">
+    <block type="flow_meter_init"></block>
+    <block type="flow_meter_get_rate"></block>
+  </category>`,
+
   // I2S microphone (52.md commit #17, 2026-05-04 第80回) — 低推奨採用、Industrial 音響、ESP32 系のみ
   microphone: `
   <category id="microphone" name="${cat('microphone')}" colour="#5D4037">
@@ -1613,6 +1620,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_environment',
     'sensor_air_quality',
     'microphone',
+    'flow_meter',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1686,6 +1694,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_environment',
     'sensor_air_quality',
     'microphone',
+    'flow_meter',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1786,6 +1795,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_environment',
     'sensor_air_quality',
     'microphone',
+    'flow_meter',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1885,6 +1895,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_environment',
     'sensor_air_quality',
     'microphone',
+    'flow_meter',
     'sensor_current',
     'piezo',
     'hx711',

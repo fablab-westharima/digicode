@@ -2765,6 +2765,7 @@
       "sensorAirQuality": "🌫️ 空氣品質 (CO2/PM)",
       "neomatrix": "🌈 NeoMatrix",
       "microphone": "🎤 I2S 麥克風",
+      "flowMeter": "💧 流量計",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
