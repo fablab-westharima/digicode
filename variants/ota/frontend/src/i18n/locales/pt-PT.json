@@ -2757,6 +2757,7 @@
       "esp32Touch": "✋ Touch ESP32",
       "epaper": "📃 E-paper",
       "stepperDriver": "⚙️ Driver Stepper",
+      "piezo": "🪗 Piezo",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",

@@ -1134,6 +1134,18 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // 圧電素子 振動検知 (52.md commit #9, 2026-05-04 第80回) — Phase D
+  piezo: `
+  <category id="piezo" name="${cat('piezo')}" colour="#9E9E9E">
+    <block type="piezo_read_vibration">
+      <value name="PIN"><shadow type="math_number"><field name="NUM">34</field></shadow></value>
+    </block>
+    <block type="piezo_threshold_detect">
+      <value name="PIN"><shadow type="math_number"><field name="NUM">34</field></shadow></value>
+      <value name="THRESHOLD"><shadow type="math_number"><field name="NUM">1000</field></shadow></value>
+    </block>
+  </category>`,
+
   // ステッピングドライバ詳細 (52.md commit #7, 2026-05-04 第80回) — Phase D、A4988 + ULN2003
   stepper_driver: `
   <category id="stepper_driver" name="${cat('stepperDriver')}" colour="#FF5722">
@@ -1511,6 +1523,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_motion',
     'sensor_environment',
     'sensor_current',
+    'piezo',
     'hx711',
     'sensor_tof',
     'sensor_encoder_mag',
@@ -1578,6 +1591,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_motion',
     'sensor_environment',
     'sensor_current',
+    'piezo',
     'hx711',
     'sensor_tof',
     'sensor_encoder_mag',
@@ -1669,6 +1683,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_motion',
     'sensor_environment',
     'sensor_current',
+    'piezo',
     'hx711',
     'sensor_tof',
     'sensor_encoder_mag',
@@ -1760,6 +1775,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_motion',
     'sensor_environment',
     'sensor_current',
+    'piezo',
     'hx711',
     'sensor_tof',
     'sensor_encoder_mag',
