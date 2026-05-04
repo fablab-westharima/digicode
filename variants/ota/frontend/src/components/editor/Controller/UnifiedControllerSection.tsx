@@ -393,17 +393,22 @@ export function UnifiedControllerSection({
     try {
       return buildUnifiedControllerHtml(inputs, {
         bundleHtml: UNIFIED_BUNDLE_TEMPLATE,
+        customizationDiffs: customizationDiffStack,
       }).schema.warnings;
     } catch {
       return [];
     }
-  }, [rows]);
+  }, [rows, customizationDiffStack]);
 
   function handleDownload(): void {
     if (!canDownload) return;
     const inputs = rowsToInputs(rows);
+    // Phase 4 (BUG-076): pass customizationDiffStack so AI-applied
+    // colorScheme/layout/etc populate the embedded schema. Without this,
+    // the downloaded HTML carries Layer 1 only (P4.0-4 UAT failure mode).
     const result = buildUnifiedControllerHtml(inputs, {
       bundleHtml: UNIFIED_BUNDLE_TEMPLATE,
+      customizationDiffs: customizationDiffStack,
     });
     const url = URL.createObjectURL(result.blob);
     const a = document.createElement('a');

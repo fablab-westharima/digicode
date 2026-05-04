@@ -230,3 +230,37 @@ describe('buildUnifiedControllerHtml — host explicit override (48.md §6.4 cas
     ).toThrow(/missing <script id="schema"> placeholder/);
   });
 });
+
+describe('buildUnifiedControllerHtml — Phase 4 customizationDiffs (BUG-076 fix)', () => {
+  it('case 8: customizationDiffs are applied onto the embedded schema', () => {
+    const result = buildUnifiedControllerHtml([makeInput()], {
+      bundleHtml: FIXTURE_BUNDLE,
+      customizationDiffs: [
+        {
+          schemaLevel: { layout: 'columns-2', colorScheme: { accent: '#2563eb' } },
+          widgets: [{ id: 'led', colorScheme: { bg: '#1e293b' } }],
+        },
+      ],
+    });
+    const embedded = readEmbeddedSchema(result.html) as {
+      customization?: { layout?: string; colorScheme?: { accent?: string } };
+      devices: Array<{ widgets: Array<{ id: string; colorScheme?: { bg?: string } }> }>;
+    };
+    // schema-level customization populated
+    expect(embedded.customization?.layout).toBe('columns-2');
+    expect(embedded.customization?.colorScheme?.accent).toBe('#2563eb');
+    // widget-level customization merged onto matching widget id
+    expect(embedded.devices[0].widgets[0].id).toBe('led');
+    expect(embedded.devices[0].widgets[0].colorScheme?.bg).toBe('#1e293b');
+  });
+
+  it('omitting customizationDiffs preserves backward-compat (no customization in schema)', () => {
+    const result = buildUnifiedControllerHtml([makeInput()], {
+      bundleHtml: FIXTURE_BUNDLE,
+    });
+    const embedded = readEmbeddedSchema(result.html) as {
+      customization?: unknown;
+    };
+    expect(embedded.customization).toBeUndefined();
+  });
+});

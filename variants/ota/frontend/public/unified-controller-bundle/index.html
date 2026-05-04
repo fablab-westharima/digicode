@@ -9,24 +9,31 @@
   47.md Phase 3 / 48.md commit #1 — Vanilla HTML+CSS+JS unified controller bundle.
 
   Self-contained file:// distributable: the schema is embedded inline via
-  `<script id="schema" type="application/json">`. unifiedControllerBuilder.ts
-  (commit #2) string-replaces the empty placeholder `{}` with the real
-  WifiControllerSchema (length=N, per-device host/port) when generating the
-  download blob.
+  the placeholder script tag below (id=schema, type=application/json).
+  unifiedControllerBuilder.ts (commit #2) string-replaces the empty
+  placeholder {} with the real WifiControllerSchema (length=N, per-device
+  host/port) when generating the download blob.
+
+  BUG-076 (2026-05-04 P4.0-4 UAT): the literal opening tag for the
+  placeholder MUST NOT appear earlier in this file (e.g. inside this
+  comment). Even though the schema regex backtracks correctly when
+  encountering a stray match attempt, the duplicate text confused user
+  inspection of the downloaded HTML. The wording above is intentionally
+  prose-only — do not put a real script tag literal in this comment.
 
   Why inline schema (not fetch /schema.json):
     file:// origin can't fetch sibling files in any major browser. Embedding
     bypasses the constraint and keeps the page self-contained.
 
   Wire format (Phase 2-compatible, see 48.md §3.4):
-    { "id": "<channelId>", "value": "<asString>" }
-    Per-device dispatch: each ESP32 owns its own WS connection. The same
-    `channelId` may repeat across devices and is scoped by the connection
-    that received it. DOM keys are device-prefixed (48.md §7.5 / F12) for
-    debugging convenience, but the wire format never carries deviceId.
+    JSON envelope id and value are strings. Per-device dispatch: each
+    ESP32 owns its own WS connection. The same channelId may repeat
+    across devices and is scoped by the connection that received it.
+    DOM keys are device-prefixed (48.md §7.5 / F12) for debugging
+    convenience, but the wire format never carries deviceId.
 
   Browser compatibility (48.md §I4):
-    file:// → ws://<lan-ip>:<port>/ works on Chrome / Firefox / Safari
+    file:// to ws://lan-ip:port/ works on Chrome / Firefox / Safari
     desktop. Mixed-content rules apply only to HTTPS origins; file:// is
     out of scope. UAT P3-3 verifies on real hardware.
 

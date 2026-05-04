@@ -44,6 +44,7 @@ import {
   inferWifiUiSchema,
   sanitizeDeviceId,
 } from './inferWifiUiSchema';
+import { applyCustomizationDiff, type CustomizationDiff } from './controllerCustomizer';
 
 /**
  * Single project's contribution to the unified controller. Constructed by
@@ -72,6 +73,14 @@ export interface UnifiedHtmlOptions {
    * vitest can substitute a tiny fixture without importing the auto-
    * generated module. */
   bundleHtml: string;
+  /**
+   * Phase 4 (50.md §10.2 + BUG-076 fix): AI-applied customization diffs
+   * to merge into the embedded schema before download. Diffs are applied
+   * in-order (oldest first) via `applyCustomizationDiff`, mirroring the
+   * stack semantics in UnifiedControllerSection. Optional — backward
+   * compatible with the 14 vitest cases that pre-date Phase 4.
+   */
+  customizationDiffs?: CustomizationDiff[];
 }
 
 export interface UnifiedHtmlResult {
@@ -203,12 +212,22 @@ export function buildUnifiedControllerHtml(
     });
   }
 
-  const schema: WifiControllerSchema = {
+  const baseSchema: WifiControllerSchema = {
     connection: 'wifi',
     version: WIFI_SCHEMA_VERSION,
     devices,
     warnings,
   };
+
+  // Phase 4 (50.md §10.2 + BUG-076): apply AI customization diffs onto
+  // the Layer 1 schema before embed. Each diff merges schemaLevel +
+  // widget-level customization slots; channelId/dataType/min/max/label
+  // remain untouched (jsonValidator + applyCustomizationDiff invariants).
+  // Empty / undefined diffs short-circuit to baseSchema.
+  const schema = (options.customizationDiffs ?? []).reduce(
+    (acc, diff) => applyCustomizationDiff(acc, diff).schema,
+    baseSchema,
+  );
 
   const html = embedSchema(options.bundleHtml, schema);
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
