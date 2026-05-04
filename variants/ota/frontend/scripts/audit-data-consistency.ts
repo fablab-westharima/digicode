@@ -2,17 +2,22 @@
  * audit-data-consistency.ts
  *
  * Verifies structural consistency between canonical JA data sources and their i18n overrides,
- * and ensures XML samples reference only valid catalog blocks.
+ * ensures XML samples reference only valid catalog blocks, and confirms every block file
+ * is wired into the probabilistic-debug bootstrap so the headless code generator sees the
+ * same block universe as the browser editor.
  *
- * Scope (Phase 2, 2026-04-24 — BUG-025):
+ * Scope:
  * - sampleProjects.ts        (canonical JA) ↔ sampleProjectsI18n.ts   (en / es / pt-PT / zh-TW)
  * - tutorials.ts             (canonical JA) ↔ tutorialsI18n.ts        (en / es / pt-PT / zh-TW)
  * - tutorials[].sampleXml    block types    ↔ public/ai/block-catalog.json
+ * - src/blocks/**\/*Blocks.ts                ↔ scripts/probabilistic-debug/lib/blocks-bootstrap.ts
  *
  * Errors (exit 1):
- *   [ORPHAN_*]       override id has no canonical counterpart
- *   [EMPTY_*]        override provides empty title / description / step content
- *   [CATALOG_REF]    tutorial.sampleXml references a block not in the catalog
+ *   [ORPHAN_*]            override id has no canonical counterpart
+ *   [EMPTY_*]             override provides empty title / description / step content
+ *   [CATALOG_REF]         tutorial.sampleXml references a block not in the catalog
+ *   [BOOTSTRAP_MISSING]   src/blocks/**\/*Blocks.ts file exists but is not imported in blocks-bootstrap.ts
+ *   [BOOTSTRAP_ORPHAN]    blocks-bootstrap.ts imports a path with no corresponding source file
  *
  * Warnings (exit 0):
  *   [COVERAGE_*]     canonical id not translated in a given locale (informational)
@@ -34,6 +39,8 @@ const SAMPLES_I18N_PATH  = path.join(FRONTEND_DIR, 'src/data/sampleProjectsI18n.
 const TUTORIALS_PATH     = path.join(FRONTEND_DIR, 'src/data/tutorials.ts');
 const TUTORIALS_I18N_PATH= path.join(FRONTEND_DIR, 'src/data/tutorialsI18n.ts');
 const CATALOG_PATH       = path.join(FRONTEND_DIR, 'public/ai/block-catalog.json');
+const BLOCKS_DIR         = path.join(FRONTEND_DIR, 'src/blocks');
+const BOOTSTRAP_PATH     = path.join(FRONTEND_DIR, 'scripts/probabilistic-debug/lib/blocks-bootstrap.ts');
 
 const LOCALES = ['en', 'es', 'pt-PT', 'zh-TW'] as const;
 type Locale = typeof LOCALES[number];
@@ -44,6 +51,19 @@ type Locale = typeof LOCALES[number];
 // now without blocking builds. Remove each entry the moment its tutorial is reauthored —
 // the audit will then fail on any fresh drift, which is the intended long-term behaviour.
 const KNOWN_BROKEN_TUTORIALS = new Set<string>([]);
+
+// Block-file paths (relative to src/blocks/, no extension) intentionally NOT
+// imported in blocks-bootstrap.ts. Add a path here only after confirming the
+// file is purely declarative data and registers no Blockly.Blocks entries.
+// Currently empty: every *Blocks.ts must be wired up.
+const ALLOWED_NON_BOOTSTRAP_BLOCK_FILES = new Set<string>([]);
+
+// Non-block helper modules legitimately imported by blocks-bootstrap.ts (e.g.,
+// overrides of built-in Blockly blocks). Allowlisted so the [BOOTSTRAP_ORPHAN]
+// check does not flag them as missing block files.
+const BOOTSTRAP_HELPER_MODULES = new Set<string>([
+  'common/builtinBlockOverrides',
+]);
 
 // ---------------------------------------------------------------------------
 // Low-level parsing helpers (regex + balanced-brace scanner)
@@ -429,6 +449,40 @@ function extractBlockTypes(xml: string): string[] {
 }
 
 // ---------------------------------------------------------------------------
+// Bootstrap parity (probabilistic-debug headless registry must mirror the
+// browser editor; missing imports cause silent pre-compile failures in the
+// 1000-case orchestrator).
+// ---------------------------------------------------------------------------
+
+function walkBlockFiles(): string[] {
+  const out: string[] = [];
+  function walk(dir: string): void {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+      } else if (entry.isFile() && /Blocks\.tsx?$/.test(entry.name)) {
+        const rel = path.relative(BLOCKS_DIR, full).replace(/\\/g, '/').replace(/\.tsx?$/, '');
+        out.push(rel);
+      }
+    }
+  }
+  walk(BLOCKS_DIR);
+  return out;
+}
+
+function parseBootstrapImports(): string[] {
+  const content = fs.readFileSync(BOOTSTRAP_PATH, 'utf-8');
+  const re = /^import\s+['"]\.\.\/\.\.\/\.\.\/src\/blocks\/(.+?)['"];?\s*$/gm;
+  const out: string[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(content)) !== null) {
+    out.push(m[1]);
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
 // Main audit
 // ---------------------------------------------------------------------------
 
@@ -446,10 +500,14 @@ function main(): void {
   const tutorialI18n = parseTutorialI18n(tutorialsI18nSrc);
   const catalogTypes = loadCatalogBlockTypes();
 
+  const blockFiles       = walkBlockFiles();
+  const bootstrapImports = parseBootstrapImports();
+
   console.log(`   sampleProjects: ${sampleEntries.length} canonical, ${sampleCategoryKeys.length} categories`);
   console.log(`   tutorials:      ${tutorialEntries.length} canonical, ${tutorialCategoryKeys.length} categories`);
   console.log(`   locales audited: ${LOCALES.join(', ')}`);
   console.log(`   catalog block types loaded: ${catalogTypes.size}`);
+  console.log(`   bootstrap parity: ${blockFiles.length} *Blocks.ts files, ${bootstrapImports.length} bootstrap imports`);
 
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -575,6 +633,23 @@ function main(): void {
           }
         }
       }
+    }
+  }
+
+  // --- bootstrap parity (src/blocks/**\/*Blocks.ts ↔ blocks-bootstrap.ts) ---
+  const blockFileSet       = new Set(blockFiles);
+  const bootstrapImportSet = new Set(bootstrapImports);
+
+  for (const f of blockFiles) {
+    if (!bootstrapImportSet.has(f) && !ALLOWED_NON_BOOTSTRAP_BLOCK_FILES.has(f)) {
+      errors.push(`❌ [BOOTSTRAP_MISSING] src/blocks/${f}.ts is not imported in scripts/probabilistic-debug/lib/blocks-bootstrap.ts`);
+    }
+  }
+
+  for (const f of bootstrapImports) {
+    if (BOOTSTRAP_HELPER_MODULES.has(f)) continue;
+    if (!blockFileSet.has(f)) {
+      errors.push(`❌ [BOOTSTRAP_ORPHAN] scripts/probabilistic-debug/lib/blocks-bootstrap.ts imports 'src/blocks/${f}' but no matching *Blocks.ts file exists`);
     }
   }
 
