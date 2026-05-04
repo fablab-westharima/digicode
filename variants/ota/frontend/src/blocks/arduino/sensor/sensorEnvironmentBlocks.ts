@@ -348,4 +348,111 @@ generator.forBlock['qmp6988_read_pressure'] = function() {
   return ['(qmp6988.calcPressure() / 100.0f)', 0];
 };
 
-console.log('Environment sensor (BME280/BMP280/SHT30/SHT40/QMP6988) blocks loaded');
+// ============================================================================
+// 51.md Phase A+B commit #6-D (2026-05-04 第79回): ENV III/IV 統合 5 ブロック
+// — M5Unit-ENV lib の chip 別 class を統合的に扱う wrapper。
+// D-15 (Q-1 user 確定): env4_init のみ追加、env4_read は既存 sht40_* + bmp280_* で代替。
+// env3 = SHT30 (M5Unit-ENV SHT3X.h) + QMP6988 統合。
+// env4 = SHT40 (Adafruit_SHT4x = sht40_init globals) + BMP280 (Adafruit_BMP280 = bmp280_init globals)。
+// ============================================================================
+
+const ENV3_INCLUDE = `
+#include <SHT3X.h>
+#include <QMP6988.h>
+SHT3X env3Sht3x;
+QMP6988 qmp6988;`;
+
+Blockly.Blocks['env3_init'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_ENV3_INIT || 'ENV III を初期化 (SHT30+QMP6988)'));
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(ENV_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_ENV3_INIT_TOOLTIP || 'M5Stack ENV III ユニット (SHT30 温湿度 + QMP6988 気圧) を I2C で初期化します。FS 講座 IoT 温度計の標準デバイス。');
+  }
+};
+
+generator.forBlock['env3_init'] = function() {
+  generator.definitions_['include_env3'] = ENV3_INCLUDE;
+  // qmp6988 は qmp6988_init 経由でも emit される (同 key で dedupe、global 競合なし)
+  generator.definitions_['include_qmp6988'] = QMP6988_INCLUDE;
+  if (!generator.setups_) generator.setups_ = {};
+  generator.setups_['env3_begin'] = 'Wire.begin();\n  env3Sht3x.begin(&Wire);\n  qmp6988.begin();';
+  return '';
+};
+
+Blockly.Blocks['env3_read_temperature'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_ENV3_READ_TEMPERATURE || 'ENV III 温度 (°C)'));
+    this.setOutput(true, 'Number');
+    this.setColour(ENV_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_ENV3_READ_TEMPERATURE_TOOLTIP || 'ENV III の SHT30 から温度を読み取ります (°C)。事前に env3_init が必要です。');
+  }
+};
+
+generator.forBlock['env3_read_temperature'] = function() {
+  generator.definitions_['include_env3'] = ENV3_INCLUDE;
+  return ['(env3Sht3x.update() ? env3Sht3x.cTemp : 0.0f)', 0];
+};
+
+Blockly.Blocks['env3_read_humidity'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_ENV3_READ_HUMIDITY || 'ENV III 湿度 (%)'));
+    this.setOutput(true, 'Number');
+    this.setColour(ENV_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_ENV3_READ_HUMIDITY_TOOLTIP || 'ENV III の SHT30 から湿度を読み取ります (%)。事前に env3_init が必要です。');
+  }
+};
+
+generator.forBlock['env3_read_humidity'] = function() {
+  generator.definitions_['include_env3'] = ENV3_INCLUDE;
+  return ['(env3Sht3x.update() ? env3Sht3x.humidity : 0.0f)', 0];
+};
+
+Blockly.Blocks['env3_read_pressure'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_ENV3_READ_PRESSURE || 'ENV III 気圧 (hPa)'));
+    this.setOutput(true, 'Number');
+    this.setColour(ENV_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_ENV3_READ_PRESSURE_TOOLTIP || 'ENV III の QMP6988 から気圧を読み取ります (hPa)。事前に env3_init が必要です。');
+  }
+};
+
+generator.forBlock['env3_read_pressure'] = function() {
+  generator.definitions_['include_env3'] = ENV3_INCLUDE;
+  return ['(qmp6988.calcPressure() / 100.0f)', 0];
+};
+
+/**
+ * env4_init — ENV IV 初期化 (SHT40 + BMP280)
+ * D-15 (Q-1 user 確定): env4_read 個別ブロックは追加せず、既存 sht40_read_xxx と bmp280_read で代替。
+ * SHT40 = Adafruit_SHT4x (sht40_init 経由 globals)、BMP280 = Adafruit_BMP280 (bmp280_init 経由 globals) を一括 begin。
+ */
+Blockly.Blocks['env4_init'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_ENV4_INIT || 'ENV IV を初期化 (SHT40+BMP280)'));
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(ENV_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_ENV4_INIT_TOOLTIP || 'M5Stack ENV IV ユニット (SHT40 温湿度 + BMP280 気圧) を I2C で初期化します。値の読み取りは sht40_read_temperature / sht40_read_humidity / bmp280_read で行ってください。');
+  }
+};
+
+generator.forBlock['env4_init'] = function() {
+  // SHT40 (Adafruit_SHT4x) + BMP280 (Adafruit_BMP280) の両 globals を emit (sht40_init / bmp280_init と同 key で dedupe)
+  generator.definitions_['include_sht40'] = SHT40_INCLUDE;
+  generator.definitions_['sht40_helper'] = SHT40_READ_HELPER;
+  generator.definitions_['include_bmp280'] = `
+#include <Adafruit_BMP280.h>
+Adafruit_BMP280 bmp280;`;
+  if (!generator.setups_) generator.setups_ = {};
+  generator.setups_['env4_begin'] = 'Wire.begin();\n  sht40.begin(&Wire);\n  bmp280.begin(0x76);';
+  return '';
+};
+
+console.log('Environment sensor (BME280/BMP280/SHT30/SHT40/QMP6988/ENV-III/ENV-IV) blocks loaded');

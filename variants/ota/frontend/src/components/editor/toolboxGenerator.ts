@@ -1055,6 +1055,15 @@ const getToolboxCategories = (): Record<string, string> => ({
     <label text="QMP6988 (気圧)"></label>
     <block type="qmp6988_init"></block>
     <block type="qmp6988_read_pressure"></block>
+    <sep></sep>
+    <label text="ENV III ユニット (SHT30+QMP6988)"></label>
+    <block type="env3_init"></block>
+    <block type="env3_read_temperature"></block>
+    <block type="env3_read_humidity"></block>
+    <block type="env3_read_pressure"></block>
+    <sep></sep>
+    <label text="ENV IV ユニット (SHT40+BMP280)"></label>
+    <block type="env4_init"></block>
   </category>`,
 
   sensor_analog: `

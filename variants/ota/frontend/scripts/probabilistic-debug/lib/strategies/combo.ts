@@ -343,6 +343,12 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     label: 'qmp6988',
     operations: ['qmp6988_read_pressure'],
   },
+  // 51.md commit #6-D (2026-05-04 第79回): ENV III ユニット統合 (SHT30+QMP6988)
+  {
+    init: 'env3_init',
+    label: 'env3',
+    operations: ['env3_read_temperature', 'env3_read_humidity', 'env3_read_pressure'],
+  },
   {
     init: 'ultrasonic_init',
     label: 'ultrasonic',
