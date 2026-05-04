@@ -20,6 +20,15 @@ import fs from 'fs';
 import path from 'path';
 import type { Strategy } from './case-types';
 
+/**
+ * 'full' = the historical compile-server-roundtrip mode.
+ * 'code-gen' = 55.md Phase 4-1 generator-only mode (no compile-server call):
+ *   xmlToCpp() runs but compileCpp() is skipped, so the case is judged purely
+ *   on whether the headless Blockly→C++ generator returns non-empty fragments.
+ *   Optional for backward-compat with pre-Stage-1 jsonl files.
+ */
+export type CaseStage = 'full' | 'code-gen';
+
 export interface CaseResult {
   caseId: string;
   strategy: Strategy;
@@ -32,6 +41,7 @@ export interface CaseResult {
   error?: string;
   stderr?: string;
   retryUsed?: boolean;
+  stage?: CaseStage;
 }
 
 export interface RunMetadata {

@@ -34,6 +34,7 @@ import {
   generateRunId,
   type RunMetadata,
   type CaseResult,
+  type CaseStage,
 } from './lib/result-store';
 import { fqbnFor } from './lib/board-fqbn';
 import type { Manifest, ManifestEntry } from './lib/case-types';
@@ -42,6 +43,8 @@ const DEFAULT_SERVER_URL = 'https://compile.digital-fab.jp';
 const DEFAULT_PARALLEL = 4;
 const DEFAULT_TIMEOUT_MS = 180_000;
 const DEFAULT_CONNECTION_TYPE: 'ota' | 'usb' | 'ble' = 'ota';
+const DEFAULT_STAGE: CaseStage = 'full';
+const VALID_STAGES: ReadonlyArray<CaseStage> = ['full', 'code-gen'];
 const NOISE_TEST_PARALLELISMS = [1, 2, 3, 4];
 const NOISE_TEST_CASES_PER_LEVEL = 10;
 // Update cadence in non-verbose mode. 10 = ~100 updates over a 1000-case run,
@@ -59,6 +62,7 @@ interface CliArgs {
   timeoutMs: number;
   limit?: number;
   offset: number;
+  stage: CaseStage;
 }
 
 export interface OrchestratorOptions {
@@ -73,6 +77,13 @@ export interface OrchestratorOptions {
   limit?: number;
   /** Skip the first `offset` cases of the manifest (default 0). */
   offset?: number;
+  /**
+   * 'full' (default) = roundtrip to compile-server.
+   * 'code-gen' = 55.md Phase 4-1 generator-only mode; xmlToCpp() runs but
+   * compileCpp() is skipped, so the entire 1000-case run can be evaluated
+   * for generator throws / silent-empty fragments in ~5-10 min without ML30.
+   */
+  stage?: CaseStage;
 }
 
 // --- CLI parsing -------------------------------------------------------
@@ -102,6 +113,18 @@ function parseArgs(argv: string[]): CliArgs {
     process.exit(1);
   }
 
+  // Defensive: reject `--stage` typos so a misspelled value never silently
+  // falls back to 'full' (which would defeat the purpose of code-gen runs).
+  const stageRaw = args.stage as CaseStage | undefined;
+  const stage: CaseStage = stageRaw ?? DEFAULT_STAGE;
+  if (!VALID_STAGES.includes(stage)) {
+    process.stderr.write(
+      `--stage "${stageRaw}" is not valid. Allowed: ${VALID_STAGES.join(' | ')}\n`,
+    );
+    printHelp();
+    process.exit(1);
+  }
+
   return {
     in: args.in,
     out: args.out,
@@ -116,6 +139,7 @@ function parseArgs(argv: string[]): CliArgs {
       : DEFAULT_TIMEOUT_MS,
     limit: args.limit ? Number.parseInt(args.limit, 10) : undefined,
     offset: args.offset ? Number.parseInt(args.offset, 10) : 0,
+    stage,
   };
 }
 
@@ -133,6 +157,10 @@ function printHelp(): void {
   --timeout-ms N         Per-case compile timeout (default ${DEFAULT_TIMEOUT_MS})
   --limit N              Process only N cases (combine with --offset to slice a window)
   --offset N             Skip the first N cases of the manifest (default 0)
+  --stage MODE           '${VALID_STAGES.join(' | ')}' (default '${DEFAULT_STAGE}'). 'code-gen' skips
+                         the compile-server roundtrip and judges each case purely
+                         on whether xmlToCpp() returns non-empty fragments
+                         (55.md Phase 4-1 — fast bootstrap-import audit).
   --help                 Show this message
 `,
   );
@@ -146,11 +174,40 @@ async function processCase(
   serverUrl: string,
   connectionType: 'ota' | 'usb' | 'ble',
   timeoutMs: number,
+  stage: CaseStage,
 ): Promise<CaseResult> {
   const xmlPath = path.join(inDir, entry.fileName);
+  const start = Date.now();
   try {
     const xml = fs.readFileSync(xmlPath, 'utf-8');
     const fragments = xmlToCpp(xml);
+
+    if (stage === 'code-gen') {
+      // 55.md Phase 4-1: validate that xmlToCpp produced something. A
+      // generator with all four fragments empty is a silent failure — usually
+      // a missing block import in `lib/blocks-bootstrap.ts` that prevents
+      // Blockly from building the workspace at all. Treat it as FAIL so the
+      // bootstrap-audit purpose of the code-gen stage isn't bypassed.
+      const allEmpty =
+        !fragments.includes &&
+        !fragments.globals &&
+        !fragments.setupCode &&
+        !fragments.loopCode;
+      return {
+        caseId: entry.id,
+        strategy: entry.strategy,
+        mode: entry.mode,
+        boardId: entry.boardId,
+        blocksUsed: entry.blocksUsed,
+        ok: !allEmpty,
+        durationMs: Date.now() - start,
+        error: allEmpty
+          ? 'code-gen: all 4 fragments empty (generator silent fail)'
+          : undefined,
+        stage,
+      };
+    }
+
     const fqbn = fqbnFor(entry.boardId);
     const compileResult = await compileCpp(fragments, {
       serverUrl,
@@ -170,6 +227,7 @@ async function processCase(
       error: compileResult.error,
       stderr: compileResult.stderr,
       retryUsed: compileResult.retryUsed,
+      stage,
     };
   } catch (e) {
     return {
@@ -179,8 +237,9 @@ async function processCase(
       boardId: entry.boardId,
       blocksUsed: entry.blocksUsed,
       ok: false,
-      durationMs: 0,
+      durationMs: Date.now() - start,
       error: `pre-compile error: ${(e as Error).message}`,
+      stage,
     };
   }
 }
@@ -230,9 +289,12 @@ export async function runOrchestrator(opts: OrchestratorOptions): Promise<void> 
 
   const store = new ResultStore(opts.outDir, metadata);
 
+  const stage: CaseStage = opts.stage ?? DEFAULT_STAGE;
   const startTime = Date.now();
+  const stageBanner = stage === 'code-gen' ? ' (generator-only, no compile)' : '';
   process.stdout.write(
-    `▶︎ Run ${metadata.runId}: ${cases.length} cases × parallel=${opts.parallel} → ${opts.serverUrl}\n` +
+    `▶︎ Run ${metadata.runId}: ${cases.length} cases × parallel=${opts.parallel}${stageBanner}\n` +
+      (stage === 'full' ? `  Server: ${opts.serverUrl}\n` : '') +
       `  Results: ${opts.outDir}\n`,
   );
 
@@ -243,6 +305,7 @@ export async function runOrchestrator(opts: OrchestratorOptions): Promise<void> 
       opts.serverUrl,
       opts.connectionType,
       opts.timeoutMs,
+      stage,
     );
     store.append(result);
 
@@ -400,6 +463,7 @@ async function main(): Promise<void> {
     timeoutMs: args.timeoutMs,
     limit: args.limit,
     offset: args.offset,
+    stage: args.stage,
   });
 }
 
