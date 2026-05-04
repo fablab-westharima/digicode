@@ -1051,6 +1051,10 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="sht40_init"></block>
     <block type="sht40_read_temperature"></block>
     <block type="sht40_read_humidity"></block>
+    <sep></sep>
+    <label text="QMP6988 (気圧)"></label>
+    <block type="qmp6988_init"></block>
+    <block type="qmp6988_read_pressure"></block>
   </category>`,
 
   sensor_analog: `

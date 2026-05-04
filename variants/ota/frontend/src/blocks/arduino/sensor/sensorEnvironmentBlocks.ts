@@ -304,4 +304,48 @@ generator.forBlock['sht40_read_humidity'] = function() {
   return ['(_sht40Measure() ? _sht40LastHumidity : 0.0f)', 0];
 };
 
-console.log('Environment sensor (BME280/BMP280/SHT30/SHT40) blocks loaded');
+// ============================================================================
+// 51.md Phase A+B commit #6-C (2026-05-04 第79回): QMP6988 2 ブロック
+// — M5Unit-ENV lib (`m5stack/M5Unit-ENV@^1.3.2`、commit #2 で追加済) の QMP6988.h class
+// stand-alone QMP6988 気圧センサ対応 (Fab Academy 自作回路 + ENV III ユニット内蔵チップ単独使用)
+// ============================================================================
+
+const QMP6988_INCLUDE = `
+#include <QMP6988.h>
+QMP6988 qmp6988;`;
+
+Blockly.Blocks['qmp6988_init'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_QMP6988_INIT || 'QMP6988 を初期化'));
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(ENV_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_QMP6988_INIT_TOOLTIP || 'QMP6988 気圧センサ (M5 ENV III 内蔵 / stand-alone) を I2C で初期化します。M5Unit-ENV lib 使用。');
+  }
+};
+
+generator.forBlock['qmp6988_init'] = function() {
+  generator.definitions_['include_qmp6988'] = QMP6988_INCLUDE;
+  if (!generator.setups_) generator.setups_ = {};
+  generator.setups_['qmp6988_begin'] = 'Wire.begin();\n  qmp6988.begin();';
+  return '';
+};
+
+Blockly.Blocks['qmp6988_read_pressure'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🌡️ ' + (Blockly.Msg.BLOCKS_QMP6988_READ_PRESSURE || 'QMP6988 気圧 (hPa)'));
+    this.setOutput(true, 'Number');
+    this.setColour(ENV_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_QMP6988_READ_PRESSURE_TOOLTIP || 'QMP6988 から気圧を読み取ります (hPa)。事前に qmp6988_init が必要です。');
+  }
+};
+
+generator.forBlock['qmp6988_read_pressure'] = function() {
+  generator.definitions_['include_qmp6988'] = QMP6988_INCLUDE;
+  // calcPressure() は Pa 単位、hPa に変換
+  return ['(qmp6988.calcPressure() / 100.0f)', 0];
+};
+
+console.log('Environment sensor (BME280/BMP280/SHT30/SHT40/QMP6988) blocks loaded');

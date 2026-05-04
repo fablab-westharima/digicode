@@ -337,6 +337,12 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     label: 'sht40',
     operations: ['sht40_read_temperature', 'sht40_read_humidity'],
   },
+  // 51.md commit #6-C (2026-05-04 第79回): QMP6988 stand-alone (M5Unit-ENV lib)
+  {
+    init: 'qmp6988_init',
+    label: 'qmp6988',
+    operations: ['qmp6988_read_pressure'],
+  },
   {
     init: 'ultrasonic_init',
     label: 'ultrasonic',
