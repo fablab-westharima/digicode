@@ -2758,6 +2758,7 @@
       "epaper": "📃 電子紙",
       "stepperDriver": "⚙️ 步進驅動器",
       "piezo": "🪗 壓電元件",
+      "lora": "📡 LoRa",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",

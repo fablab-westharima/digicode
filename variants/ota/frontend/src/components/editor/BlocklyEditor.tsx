@@ -66,6 +66,7 @@ import '../../blocks/arduino/core/esp32TouchBlocks';
 import '../../blocks/arduino/display/epaperBlocks';
 import '../../blocks/arduino/motor/stepperDriverBlocks';
 import '../../blocks/arduino/sensor/piezoBlocks';
+import '../../blocks/arduino/communication/loraBlocks';
 import '../../blocks/arduino/m5stack/m5stackBlocks';
 // IoT通信（Arduino）
 import '../../blocks/arduino/communication/httpBlocks';

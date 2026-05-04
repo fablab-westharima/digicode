@@ -1134,6 +1134,21 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // LoRa 長距離無線 (52.md commit #11, 2026-05-04 第80回) — 強推奨、Fab Academy Networking
+  lora: `
+  <category id="lora" name="${cat('lora')}" colour="#4B0082">
+    <block type="lora_init"></block>
+    <block type="lora_set_freq"></block>
+    <block type="lora_set_power">
+      <value name="POWER"><shadow type="math_number"><field name="NUM">14</field></shadow></value>
+    </block>
+    <block type="lora_send">
+      <value name="DATA"><shadow type="text"><field name="TEXT">hello</field></shadow></value>
+    </block>
+    <block type="lora_on_receive"></block>
+    <block type="lora_received_value"></block>
+  </category>`,
+
   // 圧電素子 振動検知 (52.md commit #9, 2026-05-04 第80回) — Phase D
   piezo: `
   <category id="piezo" name="${cat('piezo')}" colour="#9E9E9E">
@@ -1510,6 +1525,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'notification',
     'google_services',
     'espnow',
+    'lora',
     'http',
     'json',
     'ota',
@@ -1620,6 +1636,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'notification',
     'google_services',
     'espnow',
+    'lora',
     'http',
     'json',
     'ota',
@@ -1710,6 +1727,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'notification',
     'google_services',
     'espnow',
+    'lora',
     'http',
     'json',
     'ota',
@@ -1802,6 +1820,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'notification',
     'google_services',
     'espnow',
+    'lora',
     'http',
     'json',
     'ota',

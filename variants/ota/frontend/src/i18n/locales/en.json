@@ -2800,6 +2800,7 @@
       "epaper": "📃 E-paper",
       "stepperDriver": "⚙️ Stepper Driver",
       "piezo": "🪗 Piezo",
+      "lora": "📡 LoRa",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
