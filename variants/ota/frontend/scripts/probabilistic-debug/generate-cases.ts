@@ -128,14 +128,14 @@ interface StrategyAllocation {
 // singleton 421 → 439 (catalog +2 buffer)、pair 178 → 160 で総数 1000 維持。
 // 51.md 残コミット (sessions 2 = #6-B〜#12-D / session 3) でも同 pattern で bump。
 //
-// 52.md commit #3-#16 (2026-05-04 第80回): catalog 492 → 555 で
-// Phase C+D 33 + 強推奨 19 + 中推奨 11 (SCD30+PMS5003 7 + neomatrix 4) = 63 ブロック追加。
-// singleton 494 → 557 (+63)、pair 105 → 42 (-63) で総数 1000 維持。
+// 52.md commit #3-#17 (2026-05-04 第80回): catalog 492 → 558 で
+// Phase C+D 33 + 強推奨 19 + 中推奨 11 + 低推奨採用 microphone 3 = 66 ブロック追加。
+// singleton 494 → 560 (+66)、pair 105 → 39 (-66) で総数 1000 維持。
 const FULL_ALLOCATION: StrategyAllocation = {
-  singleton: 557,
+  singleton: 560,
   edge: 86,
   matrix: 100,
-  pair: 42,
+  pair: 39,
   template: 200,
   combo: 15,
 };

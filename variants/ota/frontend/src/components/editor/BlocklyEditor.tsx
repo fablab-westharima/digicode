@@ -72,6 +72,7 @@ import '../../blocks/arduino/actuator/relayBlocks';
 import '../../blocks/arduino/communication/modbusBlocks';
 import '../../blocks/arduino/sensor/sensorAirQualityBlocks';
 import '../../blocks/arduino/display/neomatrixBlocks';
+import '../../blocks/arduino/sensor/microphoneBlocks';
 import '../../blocks/arduino/m5stack/m5stackBlocks';
 // IoT通信（Arduino）
 import '../../blocks/arduino/communication/httpBlocks';

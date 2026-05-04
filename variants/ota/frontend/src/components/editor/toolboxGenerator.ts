@@ -1134,6 +1134,14 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // I2S microphone (52.md commit #17, 2026-05-04 第80回) — 低推奨採用、Industrial 音響、ESP32 系のみ
+  microphone: `
+  <category id="microphone" name="${cat('microphone')}" colour="#5D4037">
+    <block type="microphone_i2s_init"></block>
+    <block type="microphone_read_amplitude"></block>
+    <block type="microphone_read_db"></block>
+  </category>`,
+
   // NeoMatrix (NeoPixel 2D) (52.md commit #16, 2026-05-04 第80回) — 中推奨、Adafruit_GFX 互換
   neomatrix: `
   <category id="neomatrix" name="${cat('neomatrix')}" colour="#9C27B0">
@@ -1604,6 +1612,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_motion',
     'sensor_environment',
     'sensor_air_quality',
+    'microphone',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1676,6 +1685,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_motion',
     'sensor_environment',
     'sensor_air_quality',
+    'microphone',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1775,6 +1785,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_motion',
     'sensor_environment',
     'sensor_air_quality',
+    'microphone',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1873,6 +1884,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_motion',
     'sensor_environment',
     'sensor_air_quality',
+    'microphone',
     'sensor_current',
     'piezo',
     'hx711',
