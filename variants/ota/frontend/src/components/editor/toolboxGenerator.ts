@@ -1134,6 +1134,14 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // MAX30102 心拍/SpO2 (52.md commit #20, 2026-05-04 第80回) — 低推奨採用、ヘルスケア
+  sensor_health: `
+  <category id="sensor_health" name="${cat('sensorHealth')}" colour="#D32F2F">
+    <block type="max30102_init"></block>
+    <block type="max30102_read_heart_rate"></block>
+    <block type="max30102_read_spo2"></block>
+  </category>`,
+
   // APDS9960 ジェスチャー (52.md commit #19, 2026-05-04 第80回) — 低推奨採用、HCI
   apds9960: `
   <category id="apds9960" name="${cat('apds9960')}" colour="#7B1FA2">
@@ -1630,6 +1638,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'microphone',
     'flow_meter',
     'apds9960',
+    'sensor_health',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1705,6 +1714,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'microphone',
     'flow_meter',
     'apds9960',
+    'sensor_health',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1807,6 +1817,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'microphone',
     'flow_meter',
     'apds9960',
+    'sensor_health',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1908,6 +1919,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'microphone',
     'flow_meter',
     'apds9960',
+    'sensor_health',
     'sensor_current',
     'piezo',
     'hx711',

@@ -2809,6 +2809,7 @@
       "microphone": "🎤 I2S Microphone",
       "flowMeter": "💧 Flow Meter",
       "apds9960": "✋ APDS9960 (Gesture)",
+      "sensorHealth": "❤️ Health (Heart/SpO2)",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
