@@ -128,10 +128,10 @@ interface StrategyAllocation {
 // singleton 421 → 439 (catalog +2 buffer)、pair 178 → 160 で総数 1000 維持。
 // 51.md 残コミット (sessions 2 = #6-B〜#12-D / session 3) でも同 pattern で bump。
 const FULL_ALLOCATION: StrategyAllocation = {
-  singleton: 484,
+  singleton: 487,
   edge: 86,
   matrix: 100,
-  pair: 115,
+  pair: 112,
   template: 200,
   combo: 15,
 };

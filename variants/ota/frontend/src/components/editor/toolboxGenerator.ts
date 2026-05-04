@@ -529,6 +529,11 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="m5stack_button_a_pressed"></block>
     <block type="m5stack_button_b_pressed"></block>
     <block type="m5stack_button_c_pressed"></block>
+    <sep></sep>
+    <label text="${label('m5stackButtonHeld') || 'ボタン (長押し)'}"></label>
+    <block type="m5stack_button_a_held"></block>
+    <block type="m5stack_button_b_held"></block>
+    <block type="m5stack_button_c_held"></block>
   </category>`,
 
   // ESP-NOW (51.md commit #9, 2026-05-04 第79回) — supportsEspNow フィルタ対象 (commit #3 で軸新設)

@@ -104,4 +104,54 @@ generator.forBlock['m5stack_button_c_pressed'] = function() {
   return ['M5.BtnC.wasPressed()', Order.FUNCTION_CALL];
 };
 
-console.log('M5Stack body blocks loaded (begin/update/buttons pressed, sub-1/4)');
+// ============================================================================
+// 51.md commit #12-B (2026-05-04 第79回): button_a/b/c_held (3、長押し検出)
+// pressedFor(1000) returns true while held > 1000ms (一定間隔で繰り返し true 返却)
+// ============================================================================
+
+Blockly.Blocks['m5stack_button_a_held'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📱 ' + (Blockly.Msg.BLOCKS_M5STACK_BUTTON_A_HELD || 'ボタン A が長押しされている'));
+    this.setOutput(true, 'Boolean');
+    this.setColour(M5STACK_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_M5STACK_BUTTON_A_HELD_TOOLTIP || 'ボタン A が 1 秒以上長押しされている場合 true を返します (pressedFor(1000))。事前に m5stack_begin + m5stack_update が必要。');
+  }
+};
+
+generator.forBlock['m5stack_button_a_held'] = function() {
+  generator.definitions_['include_m5unified'] = M5STACK_INCLUDE;
+  return ['M5.BtnA.pressedFor(1000)', Order.FUNCTION_CALL];
+};
+
+Blockly.Blocks['m5stack_button_b_held'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📱 ' + (Blockly.Msg.BLOCKS_M5STACK_BUTTON_B_HELD || 'ボタン B が長押しされている'));
+    this.setOutput(true, 'Boolean');
+    this.setColour(M5STACK_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_M5STACK_BUTTON_B_HELD_TOOLTIP || 'ボタン B が 1 秒以上長押しされている場合 true を返します。');
+  }
+};
+
+generator.forBlock['m5stack_button_b_held'] = function() {
+  generator.definitions_['include_m5unified'] = M5STACK_INCLUDE;
+  return ['M5.BtnB.pressedFor(1000)', Order.FUNCTION_CALL];
+};
+
+Blockly.Blocks['m5stack_button_c_held'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📱 ' + (Blockly.Msg.BLOCKS_M5STACK_BUTTON_C_HELD || 'ボタン C が長押しされている'));
+    this.setOutput(true, 'Boolean');
+    this.setColour(M5STACK_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_M5STACK_BUTTON_C_HELD_TOOLTIP || 'ボタン C が 1 秒以上長押しされている場合 true を返します。');
+  }
+};
+
+generator.forBlock['m5stack_button_c_held'] = function() {
+  generator.definitions_['include_m5unified'] = M5STACK_INCLUDE;
+  return ['M5.BtnC.pressedFor(1000)', Order.FUNCTION_CALL];
+};
+
+console.log('M5Stack body blocks loaded (sub-2/4: buttons held)');

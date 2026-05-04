@@ -384,6 +384,7 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     operations: [
       'm5stack_update',
       'm5stack_button_a_pressed', 'm5stack_button_b_pressed', 'm5stack_button_c_pressed',
+      'm5stack_button_a_held', 'm5stack_button_b_held', 'm5stack_button_c_held',
     ],
   },
   {
