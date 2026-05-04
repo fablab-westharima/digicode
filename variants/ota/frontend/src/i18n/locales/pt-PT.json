@@ -2750,6 +2750,7 @@
       "notification": "🔔 Notificação",
       "googleServices": "📊 Google Services",
       "espnow": "📡 ESP-NOW",
+      "hx711": "⚖️ Célula de Carga HX711",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
       "json": "📋 JSON",

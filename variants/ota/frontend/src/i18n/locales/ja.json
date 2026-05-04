@@ -2782,6 +2782,7 @@
       "notification": "🔔 通知",
       "googleServices": "📊 Google Services",
       "espnow": "📡 ESP-NOW",
+      "hx711": "⚖️ HX711 ロードセル",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",
       "json": "📋 JSON",

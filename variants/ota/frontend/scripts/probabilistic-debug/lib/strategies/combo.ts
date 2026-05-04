@@ -361,6 +361,12 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     label: 'espnow',
     operations: ['espnow_register_peer', 'espnow_send', 'espnow_broadcast'],
   },
+  // 51.md commit #10 (2026-05-04 第79回): HX711 ロードセル (robtillaart lib)
+  {
+    init: 'hx711_init',
+    label: 'hx711',
+    operations: ['hx711_read_raw', 'hx711_read_weight', 'hx711_tare', 'hx711_calibrate', 'hx711_set_scale'],
+  },
   {
     init: 'ultrasonic_init',
     label: 'ultrasonic',

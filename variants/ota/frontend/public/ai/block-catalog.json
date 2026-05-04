@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-04T09:26:12.768Z",
+  "generatedAt": "2026-05-04T09:29:59.256Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -10719,6 +10719,139 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "hx711_init",
+      "category": "hx711",
+      "tooltip": "HX711 ロードセル ADC を初期化します。DOUT (data out) と SCK (clock) ピンを指定。robtillaart/HX711 lib 使用。",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "DOUT",
+          "fieldType": "number",
+          "default": 16,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "SCK",
+          "fieldType": "number",
+          "default": 17,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "hx711_read_raw",
+      "category": "hx711",
+      "tooltip": "HX711 から生 ADC 値を読み取ります (offset/scale 未適用)。事前に hx711_init が必要。",
+      "colour": "#795548",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "hx711_read_weight",
+      "category": "hx711",
+      "tooltip": "HX711 から重量を読み取ります (g、平均 10 サンプル)。事前に hx711_init + hx711_calibrate (or set_scale) が必要。",
+      "colour": "#795548",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "hx711_tare",
+      "category": "hx711",
+      "tooltip": "HX711 のゼロ点を現在の値で reset (tare、平均 10 サンプル)。何も載せずに呼び出します。",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "hx711_calibrate",
+      "category": "hx711",
+      "tooltip": "HX711 を既知重量で校正します。事前に tare() でゼロ点合わせ → 既知重量を載せて本ブロック呼出 → calibrate_scale 内蔵関数でスケール係数を自動算出。",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "KNOWN_WEIGHT",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "hx711_set_scale",
+      "category": "hx711",
+      "tooltip": "HX711 のスケール係数を手動設定します。calibrate_scale を使わず既知の係数 (例: 420.5) を直接設定する場合。",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "SCALE",
+          "check": "Number"
+        }
+      ],
       "statementInputs": []
     },
     {
