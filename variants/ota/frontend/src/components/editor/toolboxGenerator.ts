@@ -517,6 +517,17 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // Azure IoT (51.md Phase A+B, 2026-05-04 第78回 commit #4 着手) — supportsWifi フィルタ対象
+  // 9 blocks total: #4-A (4 blocks 本コミット) + #4-B (central 4) + #4-C (is_connected 1) で完成
+  azure_iot: `
+  <category id="azure_iot" name="${cat('azureIot')}" colour="#0078D4">
+    <label text="${label('azureIotHub') || 'Azure IoT Hub'}"></label>
+    <block type="azure_iot_hub_connect"></block>
+    <block type="azure_iot_hub_publish_d2c"></block>
+    <block type="azure_iot_hub_on_c2d"></block>
+    <block type="azure_iot_received_value"></block>
+  </category>`,
+
   // BLE (BP4, 2026-04-20 追加) — supportsBle フィルタ対象、ESP32 専用
   ble: `
   <category id="ble" name="${cat('ble')}" colour="#2196F3">
@@ -1215,6 +1226,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'wifi',
     'mqtt',
     'arduino_ha',
+    'azure_iot',
     'http',
     'json',
     'ota',
@@ -1302,6 +1314,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'wifi',
     'mqtt',
     'arduino_ha',
+    'azure_iot',
     'http',
     'json',
     'ota',
@@ -1377,6 +1390,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'wifi',
     'mqtt',
     'arduino_ha',
+    'azure_iot',
     'http',
     'json',
     'ota',
@@ -1454,6 +1468,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'wifi',
     'mqtt',
     'arduino_ha',
+    'azure_iot',
     'http',
     'json',
     'ota',
@@ -1514,7 +1529,7 @@ export function generateToolbox(
   // 可視性フィルタ (2026-04-20 BP1-2c, 2026-05-04 51.md commit #3 で espnow + m5stack 追加)
   // ボード対応フラグに基づき、選択中ボードでサポートされないカテゴリを除外する。
   if (board) {
-    const WIFI_CATEGORIES = new Set(['wifi', 'mqtt', 'arduino_ha', 'http', 'ntp_time', 'websocket']);
+    const WIFI_CATEGORIES = new Set(['wifi', 'mqtt', 'arduino_ha', 'http', 'ntp_time', 'websocket', 'azure_iot']);
     const OTA_CATEGORIES = new Set(['ota']);
     const BLE_CATEGORIES = new Set(['ble']);
     // 51.md Phase A+B (2026-05-04 第78回): ESP-NOW = ESP32 系のみ、m5stack カテゴリ = `category=='m5stack'` boards のみ。

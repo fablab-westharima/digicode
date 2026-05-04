@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-04T08:19:22.663Z",
+  "generatedAt": "2026-05-04T08:28:44.301Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -8364,6 +8364,92 @@
       ]
     },
     {
+      "type": "azure_iot_hub_connect",
+      "category": "azure_iot",
+      "tooltip": "Azure IoT Hub に接続文字列で接続します。WiFi 接続済が前提です。成功時 true を返します。",
+      "colour": "#0078D4",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "CONNECTION_STRING",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "azure_iot_hub_publish_d2c",
+      "category": "azure_iot",
+      "tooltip": "Azure IoT Hub に Device-to-Cloud (D2C) メッセージを送信します。事前に接続が必要です。JSON 文字列を渡すのが一般的です。",
+      "colour": "#0078D4",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "PAYLOAD",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "azure_iot_hub_on_c2d",
+      "category": "azure_iot",
+      "tooltip": "Azure IoT Hub から Cloud-to-Device (C2D) メッセージを受信したときの処理を定義します。HANDLER 内で「受信メッセージ」ブロックで値が取得できます。arduino_loop の中に配置してください。",
+      "colour": "#0078D4",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "HANDLER"
+        }
+      ]
+    },
+    {
+      "type": "azure_iot_received_value",
+      "category": "azure_iot",
+      "tooltip": "Azure IoT Hub の C2D ハンドラ内で受信メッセージを取得します。HANDLER 外で使うと空文字列を返します。",
+      "colour": "#0078D4",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
       "type": "http_get",
       "category": "http",
       "tooltip": "Send a GET request to the specified URL and get the response",
@@ -12013,7 +12099,8 @@
       "arduino_ha",
       "http",
       "ntp_time",
-      "websocket"
+      "websocket",
+      "azure_iot"
     ],
     "ota": [
       "ota"

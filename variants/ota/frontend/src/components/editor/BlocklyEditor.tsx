@@ -52,6 +52,8 @@ import '../../blocks/arduino/sensor/analogSensorBlocks';
 // MQTT / Home Assistant（Arduino）
 import '../../blocks/arduino/communication/mqttBlocks';
 import '../../blocks/arduino/communication/arduinoHABlocks';
+// Azure IoT / IoT Cloud abstraction (51.md Phase A+B、第78回 commit #4 着手)
+import '../../blocks/arduino/communication/azureIotBlocks';
 // IoT通信（Arduino）
 import '../../blocks/arduino/communication/httpBlocks';
 import '../../blocks/arduino/communication/jsonBlocks';
