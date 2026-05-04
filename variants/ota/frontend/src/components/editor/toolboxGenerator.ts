@@ -1231,12 +1231,23 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
-  // 電流センサー AC clamp (51.md commit #7, 2026-05-04 第79回) — FS 講座 IoT 電流計の核
+  // 電流センサー AC clamp (51.md commit #7) + INA219/ACS712 (52.md commit #8、Phase D)
   sensor_current: `
   <category id="sensorCurrent" name="${cat('sensorCurrent')}" colour="#FF9800">
+    <label text="AC クランプ (SCT-013 等)"></label>
     <block type="ac_current_clamp_init"></block>
     <block type="ac_current_clamp_read_rms"></block>
     <block type="ac_current_clamp_calibrate"></block>
+    <sep></sep>
+    <label text="INA219 (I2C 高精度)"></label>
+    <block type="ina219_init"></block>
+    <block type="ina219_read_voltage"></block>
+    <block type="ina219_read_current"></block>
+    <block type="ina219_read_power"></block>
+    <sep></sep>
+    <label text="ACS712 (ホール、5/20/30A)"></label>
+    <block type="acs712_init"></block>
+    <block type="acs712_read_current"></block>
   </category>`,
 
   // 環境センサー BME280/BMP280/SHT30 (BP5-2, 2026-04-20 追加 + 51.md commit #6-A SHT30, 2026-05-04)

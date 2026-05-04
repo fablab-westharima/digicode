@@ -124,4 +124,138 @@ generator.forBlock['ac_current_clamp_calibrate'] = function() {
   return 'acCurrentClampCalibrate();\n';
 };
 
-console.log('Sensor current (AC clamp) blocks loaded');
+// =============================================================================
+// 52.md commit #8 (2026-05-04 第80回): INA219 + ACS712 拡充 (Phase D)
+// =============================================================================
+
+const INA219_INCLUDE = `
+#include <INA219.h>
+INA219 ina219Sensor(0x40);
+bool _ina219Inited = false;`;
+
+Blockly.Blocks['ina219_init'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⚡ ' + (Blockly.Msg.BLOCKS_INA219_INIT || 'INA219 を初期化'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_INA219_ADDR || 'I2C アドレス')
+        .appendField(new Blockly.FieldNumber(0x40, 0x40, 0x4F, 1), 'ADDR');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(CURRENT_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_INA219_INIT_TOOLTIP || 'INA219 高精度電流/電圧/電力センサを初期化します (I2C)。デフォルトアドレス 0x40。robtillaart/INA219 lib 使用。');
+  }
+};
+
+generator.forBlock['ina219_init'] = function(block: Blockly.Block) {
+  const addr = block.getFieldValue('ADDR');
+  generator.definitions_['include_ina219'] = INA219_INCLUDE;
+  if (!generator.setups_) generator.setups_ = {};
+  generator.setups_['ina219_init'] = `Wire.begin();
+  ina219Sensor = INA219((uint8_t)${addr});
+  if (ina219Sensor.begin()) {
+    ina219Sensor.setMaxCurrentShunt(2.0f, 0.1f);  // 2A range, 0.1Ω shunt (default)
+    _ina219Inited = true;
+  }`;
+  return '';
+};
+
+Blockly.Blocks['ina219_read_voltage'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⚡ ' + (Blockly.Msg.BLOCKS_INA219_READ_VOLTAGE || 'INA219 電圧 (V)'));
+    this.setOutput(true, 'Number');
+    this.setColour(CURRENT_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_INA219_READ_VOLTAGE_TOOLTIP || 'INA219 のバス電圧を V 単位で返します。事前に ina219_init が必要。');
+  }
+};
+
+generator.forBlock['ina219_read_voltage'] = function() {
+  generator.definitions_['include_ina219'] = INA219_INCLUDE;
+  return ['ina219Sensor.getBusVoltage()', Order.FUNCTION_CALL];
+};
+
+Blockly.Blocks['ina219_read_current'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⚡ ' + (Blockly.Msg.BLOCKS_INA219_READ_CURRENT || 'INA219 電流 (mA)'));
+    this.setOutput(true, 'Number');
+    this.setColour(CURRENT_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_INA219_READ_CURRENT_TOOLTIP || 'INA219 の電流を mA 単位で返します。事前に ina219_init が必要。');
+  }
+};
+
+generator.forBlock['ina219_read_current'] = function() {
+  generator.definitions_['include_ina219'] = INA219_INCLUDE;
+  return ['ina219Sensor.getCurrent_mA()', Order.FUNCTION_CALL];
+};
+
+Blockly.Blocks['ina219_read_power'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⚡ ' + (Blockly.Msg.BLOCKS_INA219_READ_POWER || 'INA219 電力 (mW)'));
+    this.setOutput(true, 'Number');
+    this.setColour(CURRENT_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_INA219_READ_POWER_TOOLTIP || 'INA219 の電力を mW 単位で返します。事前に ina219_init が必要。');
+  }
+};
+
+generator.forBlock['ina219_read_power'] = function() {
+  generator.definitions_['include_ina219'] = INA219_INCLUDE;
+  return ['ina219Sensor.getPower_mW()', Order.FUNCTION_CALL];
+};
+
+const ACS712_INCLUDE = `
+#include <ACS712.h>
+ACS712* acs712Sensor = nullptr;`;
+
+Blockly.Blocks['acs712_init'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⚡ ' + (Blockly.Msg.BLOCKS_ACS712_INIT || 'ACS712 を初期化'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_ACS712_PIN || 'ピン')
+        .appendField(new Blockly.FieldNumber(34, 0, 39, 1), 'PIN');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_ACS712_MODEL || 'モデル')
+        .appendField(new Blockly.FieldDropdown([
+          ['5A (185 mV/A)', '185'],
+          ['20A (100 mV/A)', '100'],
+          ['30A (66 mV/A)', '66'],
+        ]), 'MODEL');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(CURRENT_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_ACS712_INIT_TOOLTIP || 'ACS712 ホール電流センサを初期化します。モデル 5A/20A/30A 対応 (mV/A 感度値で識別)。robtillaart/ACS712 lib 使用、RMS 計算内蔵。');
+  }
+};
+
+generator.forBlock['acs712_init'] = function(block: Blockly.Block) {
+  const pin = block.getFieldValue('PIN');
+  const model = block.getFieldValue('MODEL');
+  generator.definitions_['include_acs712'] = ACS712_INCLUDE;
+  if (!generator.setups_) generator.setups_ = {};
+  // ESP32 ADC: 12-bit (4096 counts)、3.3V Vcc 想定。ACS712 自体は 5V センサだが
+  // level shifter or voltage divider 経由 ESP32 ADC に接続する前提。
+  generator.setups_['acs712_init'] = `if (!acs712Sensor) acs712Sensor = new ACS712(${pin}, 3.3f, 4095, ${model});
+  acs712Sensor->autoMidPoint(50);  // 50 サンプルで自動ゼロ点 (無負荷状態で実行推奨)`;
+  return '';
+};
+
+Blockly.Blocks['acs712_read_current'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('⚡ ' + (Blockly.Msg.BLOCKS_ACS712_READ_CURRENT || 'ACS712 電流 (A)'));
+    this.setOutput(true, 'Number');
+    this.setColour(CURRENT_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_ACS712_READ_CURRENT_TOOLTIP || 'ACS712 の電流を A 単位で返します (mA → A 変換、DC 計測)。事前に acs712_init が必要。');
+  }
+};
+
+generator.forBlock['acs712_read_current'] = function() {
+  generator.definitions_['include_acs712'] = ACS712_INCLUDE;
+  // mA_DC() returns mA (signed)、A 単位で返す
+  return ['(acs712Sensor ? acs712Sensor->mA_DC() / 1000.0f : 0.0f)', Order.MULTIPLICATION];
+};
+
+console.log('Sensor current (AC clamp + INA219 + ACS712) blocks loaded');
