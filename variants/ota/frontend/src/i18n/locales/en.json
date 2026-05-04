@@ -2808,6 +2808,7 @@
       "neomatrix": "🌈 NeoMatrix",
       "microphone": "🎤 I2S Microphone",
       "flowMeter": "💧 Flow Meter",
+      "apds9960": "✋ APDS9960 (Gesture)",
       "m5stack": "📱 M5Stack",
       "azureIot": "☁️ Azure IoT",
       "http": "🌐 HTTP",

@@ -1134,6 +1134,14 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
+  // APDS9960 ジェスチャー (52.md commit #19, 2026-05-04 第80回) — 低推奨採用、HCI
+  apds9960: `
+  <category id="apds9960" name="${cat('apds9960')}" colour="#7B1FA2">
+    <block type="apds9960_init"></block>
+    <block type="apds9960_read_gesture"></block>
+    <block type="apds9960_read_proximity"></block>
+  </category>`,
+
   // 流量計 YF-S201 (52.md commit #18, 2026-05-04 第80回) — 低推奨採用、配管流量
   flow_meter: `
   <category id="flow_meter" name="${cat('flowMeter')}" colour="#0288D1">
@@ -1621,6 +1629,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_air_quality',
     'microphone',
     'flow_meter',
+    'apds9960',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1695,6 +1704,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_air_quality',
     'microphone',
     'flow_meter',
+    'apds9960',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1796,6 +1806,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_air_quality',
     'microphone',
     'flow_meter',
+    'apds9960',
     'sensor_current',
     'piezo',
     'hx711',
@@ -1896,6 +1907,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_air_quality',
     'microphone',
     'flow_meter',
+    'apds9960',
     'sensor_current',
     'piezo',
     'hx711',
