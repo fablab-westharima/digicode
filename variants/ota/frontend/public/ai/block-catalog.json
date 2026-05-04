@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-04T09:41:03.810Z",
+  "generatedAt": "2026-05-04T09:42:40.235Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -6615,6 +6615,101 @@
       "boardRequires": "category=m5stack",
       "fields": [],
       "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "m5stack_lcd_print",
+      "category": "m5stack",
+      "tooltip": "M5Stack 本体 LCD に文字を表示します (現在のカーソル位置から、改行付き)。",
+      "colour": "#FF0000",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "category=m5stack",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "TEXT",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "m5stack_lcd_print_at",
+      "category": "m5stack",
+      "tooltip": "M5Stack LCD の指定座標 (X,Y) にテキストを表示します。setCursor 後 print。",
+      "colour": "#FF0000",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "category=m5stack",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "TEXT",
+          "check": "Number"
+        },
+        {
+          "name": "X",
+          "check": "Number"
+        },
+        {
+          "name": "Y",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "m5stack_lcd_clear",
+      "category": "m5stack",
+      "tooltip": "M5Stack LCD を黒で塗りつぶしてカーソルを (0,0) に戻します。",
+      "colour": "#FF0000",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "category=m5stack",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "m5stack_lcd_set_text_size",
+      "category": "m5stack",
+      "tooltip": "M5Stack LCD のテキストサイズ倍率を設定します (1=デフォルト、2=2倍 etc)。",
+      "colour": "#FF0000",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "category=m5stack",
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "SIZE",
+          "check": "Number"
+        }
+      ],
       "statementInputs": []
     },
     {

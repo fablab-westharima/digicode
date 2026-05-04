@@ -154,4 +154,90 @@ generator.forBlock['m5stack_button_c_held'] = function() {
   return ['M5.BtnC.pressedFor(1000)', Order.FUNCTION_CALL];
 };
 
-console.log('M5Stack body blocks loaded (sub-2/4: buttons held)');
+// ============================================================================
+// 51.md commit #12-C (2026-05-04 第79回): LCD 4 ブロック (M5.Lcd.* API)
+// ============================================================================
+
+Blockly.Blocks['m5stack_lcd_print'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📱 ' + (Blockly.Msg.BLOCKS_M5STACK_LCD_PRINT || 'M5 LCD に表示'));
+    this.appendValueInput('TEXT')
+        .appendField(Blockly.Msg.BLOCKS_M5STACK_LCD_TEXT || 'テキスト');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(M5STACK_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_M5STACK_LCD_PRINT_TOOLTIP || 'M5Stack 本体 LCD に文字を表示します (現在のカーソル位置から、改行付き)。');
+  }
+};
+
+generator.forBlock['m5stack_lcd_print'] = function(block: Blockly.Block) {
+  const text = generator.valueToCode(block, 'TEXT', Order.ATOMIC) || '""';
+  generator.definitions_['include_m5unified'] = M5STACK_INCLUDE;
+  return `M5.Lcd.println(String(${text}));\n`;
+};
+
+Blockly.Blocks['m5stack_lcd_print_at'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📱 ' + (Blockly.Msg.BLOCKS_M5STACK_LCD_PRINT_AT || 'M5 LCD 座標指定表示'));
+    this.appendValueInput('TEXT')
+        .appendField(Blockly.Msg.BLOCKS_M5STACK_LCD_TEXT || 'テキスト');
+    this.appendValueInput('X')
+        .setCheck('Number')
+        .appendField('X');
+    this.appendValueInput('Y')
+        .setCheck('Number')
+        .appendField('Y');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(M5STACK_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_M5STACK_LCD_PRINT_AT_TOOLTIP || 'M5Stack LCD の指定座標 (X,Y) にテキストを表示します。setCursor 後 print。');
+  }
+};
+
+generator.forBlock['m5stack_lcd_print_at'] = function(block: Blockly.Block) {
+  const text = generator.valueToCode(block, 'TEXT', Order.ATOMIC) || '""';
+  const x = generator.valueToCode(block, 'X', Order.ATOMIC) || '0';
+  const y = generator.valueToCode(block, 'Y', Order.ATOMIC) || '0';
+  generator.definitions_['include_m5unified'] = M5STACK_INCLUDE;
+  return `M5.Lcd.setCursor(${x}, ${y});\n  M5.Lcd.print(String(${text}));\n`;
+};
+
+Blockly.Blocks['m5stack_lcd_clear'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📱 ' + (Blockly.Msg.BLOCKS_M5STACK_LCD_CLEAR || 'M5 LCD クリア'));
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(M5STACK_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_M5STACK_LCD_CLEAR_TOOLTIP || 'M5Stack LCD を黒で塗りつぶしてカーソルを (0,0) に戻します。');
+  }
+};
+
+generator.forBlock['m5stack_lcd_clear'] = function() {
+  generator.definitions_['include_m5unified'] = M5STACK_INCLUDE;
+  return 'M5.Lcd.clear();\n  M5.Lcd.setCursor(0, 0);\n';
+};
+
+Blockly.Blocks['m5stack_lcd_set_text_size'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('📱 ' + (Blockly.Msg.BLOCKS_M5STACK_LCD_SET_TEXT_SIZE || 'M5 LCD テキストサイズ'));
+    this.appendValueInput('SIZE')
+        .setCheck('Number')
+        .appendField(Blockly.Msg.BLOCKS_M5STACK_LCD_SIZE || 'サイズ');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(M5STACK_COLOR);
+    this.setTooltip(Blockly.Msg.BLOCKS_M5STACK_LCD_SET_TEXT_SIZE_TOOLTIP || 'M5Stack LCD のテキストサイズ倍率を設定します (1=デフォルト、2=2倍 etc)。');
+  }
+};
+
+generator.forBlock['m5stack_lcd_set_text_size'] = function(block: Blockly.Block) {
+  const size = generator.valueToCode(block, 'SIZE', Order.ATOMIC) || '1';
+  generator.definitions_['include_m5unified'] = M5STACK_INCLUDE;
+  return `M5.Lcd.setTextSize(${size});\n`;
+};
+
+console.log('M5Stack body blocks loaded (sub-3/4: LCD)');

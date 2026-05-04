@@ -534,6 +534,17 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="m5stack_button_a_held"></block>
     <block type="m5stack_button_b_held"></block>
     <block type="m5stack_button_c_held"></block>
+    <sep></sep>
+    <label text="${label('m5stackLcd') || 'LCD'}"></label>
+    <block type="m5stack_lcd_print"></block>
+    <block type="m5stack_lcd_print_at">
+      <value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+    </block>
+    <block type="m5stack_lcd_clear"></block>
+    <block type="m5stack_lcd_set_text_size">
+      <value name="SIZE"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
+    </block>
   </category>`,
 
   // ESP-NOW (51.md commit #9, 2026-05-04 第79回) — supportsEspNow フィルタ対象 (commit #3 で軸新設)
