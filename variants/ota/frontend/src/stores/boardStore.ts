@@ -14,10 +14,13 @@ export type FlashMethod = 'wifi' | 'wifi-batch' | 'usb' | 'ble';
  * 対応ボード定義 (OTA版)
  * ESP32 系を中心に、RP2040 系（Pico/Pico W/XIAO RP2040/Nano RP2040 Connect）にも対応。
  *
- * 3 軸フラグ (2026-04-20, BP1-2a で導入):
- * - supportsWifi: ユーザープログラムで WiFi.h / wifi_connect / MQTT / Home Assistant / HTTP 系を使えるか
- * - supportsOta:  WiFi OTA（無線）でのプログラム書き込みに対応するか（対応 FW が焼けるか）
- * - supportsBle:  ユーザープログラムで BLE を使えるか（BP4 で BLE ブロック実装時に参照）
+ * 4 軸フラグ:
+ * - supportsWifi:    ユーザープログラムで WiFi.h / wifi_connect / MQTT / Home Assistant / HTTP 系を使えるか (BP1-2a)
+ * - supportsOta:     WiFi OTA（無線）でのプログラム書き込みに対応するか（対応 FW が焼けるか）
+ * - supportsBle:     ユーザープログラムで BLE を使えるか（BP4 で BLE ブロック実装時に参照）
+ * - supportsEspNow:  ESP32 ↔ ESP32 直接通信 (esp_now.h) に対応するか。51.md Phase A+B (2026-05-04 第78回、
+ *                    `category=='m5stack'` 系 + XIAO ESP32 系 + Generic ESP32 = 16 boards で true、
+ *                    RP2040 系 4 boards で false)。M5Stack 専用 (m5stack_*) ブロックは別軸 = `category=='m5stack'` で判定。
  *
  * ツールボックスの可視性フィルタ（toolboxGenerator）とブロックジェネレータの
  * 条件分岐（wifiBlocks / servoBlocks 等）がこのフラグを参照する。
@@ -31,6 +34,7 @@ export interface BoardDefinition {
   supportsWifi: boolean;
   supportsOta: boolean;
   supportsBle: boolean;
+  supportsEspNow: boolean;
   supportedFlashMethods: FlashMethod[];
   /**
    * BUG-073: True for boards we ship UI access to but cannot guarantee
@@ -86,6 +90,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -97,6 +102,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -108,6 +114,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -119,6 +126,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -130,6 +138,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -141,6 +150,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -152,6 +162,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -163,6 +174,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -174,6 +186,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   // ===== 2. XIAO 系 (発売日新しい順、4 boards) =====
@@ -186,6 +199,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -197,6 +211,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -208,6 +223,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -219,6 +235,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: false,
     supportsOta: false,
     supportsBle: false,
+    supportsEspNow: false,
     supportedFlashMethods: ['usb'],
     // BUG-073: PIO raspberrypi platform missing 'seeed_xiao_rp2040' board.json.
     experimental: true,
@@ -234,6 +251,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: false,
     supportsBle: false,
+    supportsEspNow: false,
     supportedFlashMethods: ['usb'],
     // BUG-073: framework-arduino-mbed WiFi.cpp upstream bug (`ap_list`
     // not declared) leaks into the resolved framework path.
@@ -248,6 +266,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: false,
     supportsBle: false,
+    supportsEspNow: false,
     supportedFlashMethods: ['usb'],
     // BUG-073: arduino-mbed core has no PIO equivalent; falling back through
     // raspberrypi/pico still pulls in framework-arduino-mbed WiFi.cpp.
@@ -262,6 +281,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: false,
     supportsOta: false,
     supportsBle: false,
+    supportsEspNow: false,
     supportedFlashMethods: ['usb'],
     // BUG-073: shares the framework resolution problem with the pico-w
     // variant; kept experimental until the RP2040 framework story is fixed.
@@ -277,6 +297,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -288,6 +309,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -299,6 +321,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -310,6 +333,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
 ];

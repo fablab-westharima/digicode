@@ -10,9 +10,11 @@ const idx = indexByType(cat);
 const fullBoard: CatalogBoard = {
   id: 'esp32-generic',
   name: 'ESP32',
+  category: 'generic',
   supportsWifi: true,
   supportsBle: true,
   supportsOta: true,
+  supportsEspNow: true,
 };
 const noBleBoard: CatalogBoard = { ...fullBoard, id: 'no-ble', supportsBle: false };
 

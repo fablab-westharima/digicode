@@ -33,7 +33,9 @@ export type BoardRequires =
   | null
   | 'supportsBle'
   | 'supportsOta'
-  | 'supportsWifi';
+  | 'supportsWifi'
+  | 'supportsEspNow'
+  | 'category=m5stack';
 
 export type ValueCheck =
   | 'Number'
@@ -80,9 +82,11 @@ export interface CatalogBlock {
 export interface CatalogBoard {
   id: string;
   name: string;
+  category: string;
   supportsWifi: boolean;
   supportsOta: boolean;
   supportsBle: boolean;
+  supportsEspNow: boolean;
   /**
    * BUG-073: True for boards we ship in the UI but exclude from the
    * probabilistic-debug case generator (and thus from the release passRate
@@ -95,6 +99,10 @@ export interface CatalogBoardFilters {
   wifi: string[];
   ota: string[];
   ble: string[];
+  /** 51.md Phase A+B (2026-05-04 第78回): ESP-NOW 専用カテゴリ (espnow blocks) */
+  espnow: string[];
+  /** 51.md Phase A+B (2026-05-04 第78回): M5Stack 系本体専用カテゴリ (m5stack blocks) */
+  m5stackOnly: string[];
 }
 
 export interface Catalog {

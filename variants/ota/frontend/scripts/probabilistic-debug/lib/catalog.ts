@@ -63,6 +63,10 @@ export function isBlockAllowedOnBoard(
       return board.supportsOta;
     case 'supportsWifi':
       return board.supportsWifi;
+    case 'supportsEspNow':
+      return board.supportsEspNow;
+    case 'category=m5stack':
+      return board.category === 'm5stack';
     default:
       return false;
   }

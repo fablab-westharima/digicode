@@ -18,6 +18,7 @@ const mockBoard: BoardDefinition = {
   supportsWifi: true,
   supportsOta: true,
   supportsBle: true,
+  supportsEspNow: true,
   supportedFlashMethods: ['wifi', 'usb'],
 };
 

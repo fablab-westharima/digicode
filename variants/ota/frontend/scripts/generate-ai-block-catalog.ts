@@ -55,9 +55,11 @@ interface BlockEntry {
 interface BoardInfo {
   id: string;
   name: string;
+  category: string;
   supportsWifi: boolean;
   supportsOta: boolean;
   supportsBle: boolean;
+  supportsEspNow: boolean;
   /** BUG-073: omitted (or false) for the supported set; true for boards
    *  excluded from probabilistic-debug case generation. */
   experimental?: boolean;
@@ -67,7 +69,13 @@ interface BlockCatalog {
   version: string;
   generatedAt: string;
   blocks: BlockEntry[];
-  boardFilters: { wifi: string[]; ota: string[]; ble: string[] };
+  boardFilters: {
+    wifi: string[];
+    ota: string[];
+    ble: string[];
+    espnow: string[];
+    m5stackOnly: string[];
+  };
   boards: BoardInfo[];
 }
 
@@ -304,7 +312,13 @@ function parseModeCategories(content: string): Record<string, string[]> {
 
 function parseBoardFilters(
   content: string
-): { wifi: string[]; ota: string[]; ble: string[] } {
+): {
+  wifi: string[];
+  ota: string[];
+  ble: string[];
+  espnow: string[];
+  m5stackOnly: string[];
+} {
   function extractSet(name: string): string[] {
     const re = new RegExp(`const ${name}\\s*=\\s*new Set\\(\\[([^\\]]+)\\]\\)`);
     const m = content.match(re);
@@ -315,6 +329,8 @@ function parseBoardFilters(
     wifi: extractSet('WIFI_CATEGORIES'),
     ota: extractSet('OTA_CATEGORIES'),
     ble: extractSet('BLE_CATEGORIES'),
+    espnow: extractSet('ESPNOW_CATEGORIES'),
+    m5stackOnly: extractSet('M5STACK_CATEGORIES'),
   };
 }
 
@@ -334,17 +350,21 @@ function parseBoards(content: string): BoardInfo[] {
   while ((m = re.exec(content)) !== null) {
     const body = m[2];
     const nameMatch = /name:\s*'([^']+)'/.exec(body);
+    const categoryMatch = /category:\s*'([^']+)'/.exec(body);
     const wifiMatch = /supportsWifi:\s*(true|false)/.exec(body);
     const otaMatch = /supportsOta:\s*(true|false)/.exec(body);
     const bleMatch = /supportsBle:\s*(true|false)/.exec(body);
-    if (!nameMatch || !wifiMatch || !otaMatch || !bleMatch) continue;
+    const espnowMatch = /supportsEspNow:\s*(true|false)/.exec(body);
+    if (!nameMatch || !categoryMatch || !wifiMatch || !otaMatch || !bleMatch || !espnowMatch) continue;
     const expMatch = /experimental:\s*(true|false)/.exec(body);
     const board: BoardInfo = {
       id: m[1],
       name: nameMatch[1],
+      category: categoryMatch[1],
       supportsWifi: wifiMatch[1] === 'true',
       supportsOta: otaMatch[1] === 'true',
       supportsBle: bleMatch[1] === 'true',
+      supportsEspNow: espnowMatch[1] === 'true',
     };
     if (expMatch && expMatch[1] === 'true') board.experimental = true;
     boards.push(board);
@@ -560,6 +580,9 @@ function main(): void {
   for (const cat of boardFilters.wifi) boardRequiresMap[cat] = 'supportsWifi';
   for (const cat of boardFilters.ota) boardRequiresMap[cat] = 'supportsOta';
   for (const cat of boardFilters.ble) boardRequiresMap[cat] = 'supportsBle';
+  // 51.md Phase A+B (2026-05-04 第78回): ESP-NOW = `supportsEspNow` 軸、m5stack カテゴリ = `category=m5stack` 判定
+  for (const cat of boardFilters.espnow) boardRequiresMap[cat] = 'supportsEspNow';
+  for (const cat of boardFilters.m5stackOnly) boardRequiresMap[cat] = 'category=m5stack';
 
   // Accumulate blocks; each block may appear in multiple modes
   const blockMap = new Map<string, BlockEntry>();

@@ -64,9 +64,11 @@ describe('isBlockAllowedOnBoard', () => {
   const board = {
     id: 'esp32-generic',
     name: 'ESP32',
+    category: 'generic',
     supportsWifi: true,
     supportsOta: true,
     supportsBle: true,
+    supportsEspNow: true,
   };
   const noBleBoard = { ...board, id: 'no-ble', supportsBle: false };
 

@@ -1511,17 +1511,21 @@ export function generateToolbox(
     categories = MODE_CATEGORY_ORDER[mode] || MODE_CATEGORY_ORDER.custom;
   }
 
-  // 可視性フィルタ (2026-04-20 BP1-2c)
+  // 可視性フィルタ (2026-04-20 BP1-2c, 2026-05-04 51.md commit #3 で espnow + m5stack 追加)
   // ボード対応フラグに基づき、選択中ボードでサポートされないカテゴリを除外する。
-  // 将来 BLE 専用カテゴリ (BP4) が追加されたら BLE_CATEGORIES を同様に判定する。
   if (board) {
     const WIFI_CATEGORIES = new Set(['wifi', 'mqtt', 'arduino_ha', 'http', 'ntp_time', 'websocket']);
     const OTA_CATEGORIES = new Set(['ota']);
     const BLE_CATEGORIES = new Set(['ble']);
+    // 51.md Phase A+B (2026-05-04 第78回): ESP-NOW = ESP32 系のみ、m5stack カテゴリ = `category=='m5stack'` boards のみ。
+    const ESPNOW_CATEGORIES = new Set(['espnow']);
+    const M5STACK_CATEGORIES = new Set(['m5stack']);
     categories = categories.filter(catId => {
       if (!board.supportsWifi && WIFI_CATEGORIES.has(catId)) return false;
       if (!board.supportsOta && OTA_CATEGORIES.has(catId)) return false;
       if (!board.supportsBle && BLE_CATEGORIES.has(catId)) return false;
+      if (!board.supportsEspNow && ESPNOW_CATEGORIES.has(catId)) return false;
+      if (board.category !== 'm5stack' && M5STACK_CATEGORIES.has(catId)) return false;
       return true;
     });
   }
