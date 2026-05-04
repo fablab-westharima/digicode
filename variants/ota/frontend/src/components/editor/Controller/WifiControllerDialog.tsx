@@ -28,6 +28,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { QRCodeSVG } from 'qrcode.react';
+// `Sparkles` は SHOW_PHASE4_AI_CHAT=true 復活時に AI section header で使用、
+// `applyCustomizationDiff` 同様コード残置 (Phase 3 統合 HTML フロー復活時に flip back)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ChevronRight, Copy, ExternalLink, History, Search, Sparkles } from 'lucide-react';
 import {
   Dialog,
@@ -48,8 +51,23 @@ import { useSerialStore } from '@/stores/serialStore';
 import { inferWifiUiSchemaFromXml } from './inferWifiUiSchema';
 import type { WifiControllerSchema, WifiWidgetDefinition } from './types';
 import { UnifiedControllerSection } from './UnifiedControllerSection';
+// Phase 4 AI UI customize は dialog から非表示 (50.md commit #5、user 指示
+// 2026-05-04)。Phase 3 統合 HTML フロー復活時の revival: SHOW_PHASE4_AI_CHAT
+// を true に flip + details section の `&& false` を外す。コード本体
+// (ControllerAiChat / controllerCustomizer / jsonValidator / aiSystemPrompts.ts
+// controllerCustomize templates / clients chat() switch case / i18n
+// controllerAiChat.* 5 lang / aiStore conversationControllerCustomize /
+// featureFlagStore canUseAiUiCustomize) はすべて残置済。
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ControllerAiChat } from './ControllerAiChat';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { applyCustomizationDiff, type CustomizationDiff } from './controllerCustomizer';
+
+/** Phase 4 AI UI customize panel 表示制御 (50.md commit #5)。
+ *  false = dialog 非表示 (コードは全残置、Phase 3 統合 HTML フロー復活時に true)。
+ *  本フラグを true に flip + 該当 details section の `&& false` 削除で復活可能。
+ */
+const SHOW_PHASE4_AI_CHAT = false;
 
 const HISTORY_KEY = 'wifi-controller:lastIps';
 const HISTORY_MAX = 5;
@@ -399,32 +417,38 @@ export function WifiControllerDialog({
           </details>
 
           {/* 47.md Phase 4 / 50.md §10.1 — AI で UI をカスタマイズ chat panel
-              (Lite+ 限定、課金差別化)。folded by default。Free/student/guest
-              には lock CTA 表示 (ControllerAiChat 内 isAvailable 分岐)。 */}
-          <details className="border rounded-md mt-2 group">
-            <summary className="cursor-pointer px-4 py-3 hover:bg-muted/50 flex items-center gap-2 text-sm">
-              <ChevronRight className="w-4 h-4 group-open:rotate-90 transition-transform shrink-0" />
-              <Sparkles className="w-4 h-4 text-blue-400" />
-              <span className="font-medium">
-                {t('controllerAiChat.title', { defaultValue: 'AI で UI をカスタマイズ' })}
-              </span>
-              {!isAiUiCustomizeAvailable && (
-                <span className="ml-1 text-[10px] text-orange-400">LITE+</span>
-              )}
-              <span className="ml-auto text-xs text-muted-foreground hidden sm:inline">
-                {t('controllerAiChat.summary', {
-                  defaultValue: '自然文で widget の見た目を編集',
-                })}
-              </span>
-            </summary>
-            <ControllerAiChat
-              schema={schema}
-              onApplyDiff={handleApplyDiff}
-              onUndo={customizationDiffStack.length > 0 ? handleUndoDiff : undefined}
-              isAvailable={isAiUiCustomizeAvailable}
-              onUpgradePlan={onUpgradePlan}
-            />
-          </details>
+              (Lite+ 限定、課金差別化)。50.md commit #5 (2026-05-04 user 指示)
+              で本セクションは dialog 非表示化。Phase 3 統合 HTML フロー復活時
+              の revival: SHOW_PHASE4_AI_CHAT を true に変更 + 下記 `&& false`
+              削除で復活可能。コード本体 (ControllerAiChat /
+              controllerCustomizer / jsonValidator / customizationDiffStack
+              state / handleApplyDiff / handleUndoDiff) はすべて残置済。 */}
+          {SHOW_PHASE4_AI_CHAT && (
+            <details className="border rounded-md mt-2 group">
+              <summary className="cursor-pointer px-4 py-3 hover:bg-muted/50 flex items-center gap-2 text-sm">
+                <ChevronRight className="w-4 h-4 group-open:rotate-90 transition-transform shrink-0" />
+                <Sparkles className="w-4 h-4 text-blue-400" />
+                <span className="font-medium">
+                  {t('controllerAiChat.title', { defaultValue: 'AI で UI をカスタマイズ' })}
+                </span>
+                {!isAiUiCustomizeAvailable && (
+                  <span className="ml-1 text-[10px] text-orange-400">LITE+</span>
+                )}
+                <span className="ml-auto text-xs text-muted-foreground hidden sm:inline">
+                  {t('controllerAiChat.summary', {
+                    defaultValue: '自然文で widget の見た目を編集',
+                  })}
+                </span>
+              </summary>
+              <ControllerAiChat
+                schema={schema}
+                onApplyDiff={handleApplyDiff}
+                onUndo={customizationDiffStack.length > 0 ? handleUndoDiff : undefined}
+                isAvailable={isAiUiCustomizeAvailable}
+                onUpgradePlan={onUpgradePlan}
+              />
+            </details>
+          )}
         </div>
 
         <div className="border-t p-3 text-xs text-muted-foreground shrink-0">

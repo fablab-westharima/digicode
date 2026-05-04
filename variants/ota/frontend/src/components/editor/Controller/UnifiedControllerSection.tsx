@@ -36,6 +36,10 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+// `Sparkles` + `ChevronRight` は SHOW_PHASE4_AI_CHAT=true 復活時に
+// AI section header で使用、コード残置 (Phase 3 統合 HTML フロー復活時に
+// flip back、50.md commit #5)。
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Upload, X, AlertTriangle, Sparkles, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -52,9 +56,22 @@ import {
 } from './unifiedControllerBuilder';
 import { UNIFIED_BUNDLE_TEMPLATE } from '@/data/unifiedControllerBundle';
 import { inferWifiUiSchemaFromXml } from './inferWifiUiSchema';
+// Phase 4 AI UI customize は section から非表示 (50.md commit #5、user
+// 指示 2026-05-04)。Phase 3 統合 HTML フロー復活時の revival:
+// SHOW_PHASE4_AI_CHAT を true に flip + 該当 details section の `&& false`
+// を外す。コード本体 (ControllerAiChat / controllerCustomizer / mergedSchema
+// reduce / customizationDiffStack state / handleApplyDiff / handleUndoDiff)
+// は残置 (Phase 4.1/4.2 復活時 + buildUnifiedControllerHtml の
+// customizationDiffs API は BUG-076 fix 後も維持)。
 import { applyCustomizationDiff, type CustomizationDiff } from './controllerCustomizer';
 import type { WifiControllerSchema } from './types';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ControllerAiChat } from './ControllerAiChat';
+
+/** Phase 4 AI UI customize panel 表示制御 (50.md commit #5)。
+ *  WifiControllerDialog の同名フラグと同期させること (両方 true で復活)。
+ */
+const SHOW_PHASE4_AI_CHAT = false;
 
 // ---------------------------------------------------------------------------
 // localStorage schema (48.md §8.4). max 20 entries; oldest dropped on overflow.
@@ -628,10 +645,13 @@ export function UnifiedControllerSection({
       </p>
 
       {/* Phase 4 / 50.md §10.2 — AI で UI をカスタマイズ for the unified case.
-          UAT for the multi-device flow is deferred per D7 (physical multi-
-          device hardware needed); structural wiring uses the same panel as
-          Phase 2 dialog. Lock CTA shown for Free / student / guest. */}
-      {hasReadyDevices && (
+          50.md commit #5 (2026-05-04 user 指示) で本セクションは非表示化。
+          Phase 3 統合 HTML フロー復活時の revival: SHOW_PHASE4_AI_CHAT を
+          true に変更 + 下記 `&& false` 削除で復活可能。コード本体
+          (ControllerAiChat / mergedSchema reduce / customizationDiffStack
+          state) は残置済、buildUnifiedControllerHtml の customizationDiffs
+          API は BUG-076 fix 後も維持されているため復活時 zero-rework。 */}
+      {SHOW_PHASE4_AI_CHAT && hasReadyDevices && (
         <details className="border rounded-md mt-4 group">
           <summary className="cursor-pointer px-3 py-2 hover:bg-muted/50 flex items-center gap-2 text-sm">
             <ChevronRight className="w-4 h-4 group-open:rotate-90 transition-transform shrink-0" />
