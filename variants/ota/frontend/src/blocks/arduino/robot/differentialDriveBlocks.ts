@@ -115,6 +115,56 @@ javascriptGenerator.forBlock['diff_drive_init'] = function(block: Blockly.Block)
     `pinMode(DIFF_R_IN2, OUTPUT);\n` +
     `pinMode(DIFF_R_ENB, OUTPUT);\n`;
 
+  // post-Phase 4-4 commit 2-2 (case_0150/0151 fix): diff_drive_forward_distance
+  // and diff_drive_rotate_angle reference encoderLeftCount / encoderRightCount /
+  // getEncoderDistance() / getEncoderDistanceLeft() which are otherwise only
+  // declared by encoder_init. In singleton strategy (diff_drive_init + one
+  // distance/angle operation block without encoder_init), the references fail.
+  //
+  // We register CONDITIONAL default-value encoder vars/funcs under the same
+  // definitions_ keys encoder_init uses ('encoder_vars' / 'encoder_funcs').
+  // Order analysis (generator.definitions_ is a dict, last-write-wins):
+  //  - encoder_init alone           → encoder_init unconditional assign wins
+  //  - encoder_init then diff_drive  → encoder_init's value already present →
+  //                                    our `if (!...)` guard skips; user
+  //                                    pins/PPR survive
+  //  - diff_drive then encoder_init  → our defaults assigned first, then
+  //                                    encoder_init's unconditional assign
+  //                                    overrides → user pins/PPR survive
+  //  - diff_drive alone             → our defaults are emitted, compile passes
+  //
+  // See rules/digicode/03-block-workflow.md "Init block protocol".
+  if (!javascriptGenerator.definitions_['encoder_vars']) {
+    javascriptGenerator.definitions_['encoder_vars'] =
+      `// エンコーダー変数 (diff_drive_init default、encoder_init 不在時の compile-pass 用 stub)\n` +
+      `// emits: encoderLeftCount, encoderRightCount, ENCODER_PPR, WHEEL_DIAMETER, WHEEL_CIRCUMFERENCE\n` +
+      `#ifndef ENCODER_PPR\n` +
+      `#define ENCODER_PPR 360\n` +
+      `#endif\n` +
+      `#ifndef WHEEL_DIAMETER\n` +
+      `#define WHEEL_DIAMETER 65.0\n` +
+      `#endif\n` +
+      `#ifndef WHEEL_CIRCUMFERENCE\n` +
+      `#define WHEEL_CIRCUMFERENCE (WHEEL_DIAMETER * PI)\n` +
+      `#endif\n` +
+      `volatile long encoderLeftCount = 0;\n` +
+      `volatile long encoderRightCount = 0;\n`;
+  }
+  if (!javascriptGenerator.definitions_['encoder_funcs']) {
+    javascriptGenerator.definitions_['encoder_funcs'] =
+      `// エンコーダー関数 (diff_drive_init default、encoder_init 不在時の compile-pass 用 stub)\n` +
+      `// emits: getEncoderDistance(), getEncoderDistanceLeft(), getEncoderDistanceRight()\n` +
+      `float getEncoderDistanceLeft() {\n` +
+      `  return encoderLeftCount * WHEEL_CIRCUMFERENCE / ENCODER_PPR;\n` +
+      `}\n` +
+      `float getEncoderDistanceRight() {\n` +
+      `  return encoderRightCount * WHEEL_CIRCUMFERENCE / ENCODER_PPR;\n` +
+      `}\n` +
+      `float getEncoderDistance() {\n` +
+      `  return (getEncoderDistanceLeft() + getEncoderDistanceRight()) / 2.0;\n` +
+      `}\n`;
+  }
+
   return '';
 };
 
@@ -315,6 +365,7 @@ javascriptGenerator.forBlock['diff_drive_forward_distance'] = function(block: Bl
 
   javascriptGenerator.definitions_['diff_forward_dist_func'] =
     `// 距離指定直進\n` +
+    `// requires: encoderLeftCount, encoderRightCount, getEncoderDistance() — emitted by diff_drive_init or encoder_init\n` +
     `void diffForwardDistance(float distance, int speed) {\n` +
     `  encoderLeftCount = 0;\n` +
     `  encoderRightCount = 0;\n` +
@@ -361,6 +412,7 @@ javascriptGenerator.forBlock['diff_drive_rotate_angle'] = function(block: Blockl
 
   javascriptGenerator.definitions_['diff_rotate_func'] =
     `// 角度指定回転\n` +
+    `// requires: encoderLeftCount, encoderRightCount, getEncoderDistanceLeft() — emitted by diff_drive_init or encoder_init\n` +
     `void diffRotateAngle(float angle, int speed, bool turnRight) {\n` +
     `  // 回転距離 = (トレッド幅 × π × 角度) / 360\n` +
     `  float arcLength = (TRACK_WIDTH * PI * angle) / 360.0;\n` +
