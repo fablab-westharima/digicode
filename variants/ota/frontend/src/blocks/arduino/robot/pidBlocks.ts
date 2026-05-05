@@ -46,12 +46,28 @@ javascriptGenerator.forBlock['pid_init'] = function(block: Blockly.Block) {
 
   javascriptGenerator.definitions_[`pid_${name}_vars`] =
     `// PID制御変数 (${name})\n` +
+    `// emits: pid_${name}_kp, pid_${name}_ki, pid_${name}_kd, pid_${name}_integral, pid_${name}_lastError, pid_${name}_lastTime\n` +
     `float pid_${name}_kp = ${kp};\n` +
     `float pid_${name}_ki = ${ki};\n` +
     `float pid_${name}_kd = ${kd};\n` +
     `float pid_${name}_integral = 0;\n` +
     `float pid_${name}_lastError = 0;\n` +
     `unsigned long pid_${name}_lastTime = 0;\n`;
+
+  // post-Phase 4-4 commit 2-1 (case_0164 fix): pid_get_speed reads
+  // pidLeftSpeed/pidRightSpeed which are otherwise only declared by
+  // pid_motor_speeds. In singleton strategy (pid_init + pid_get_speed
+  // without pid_motor_speeds) the read fails. Declaring the same vars
+  // here under the same definitions_ key ('pid_motor_vars') makes
+  // pid_init self-sufficient — generator.definitions_ dedupe ensures
+  // the declaration emits exactly once even when both pid_init and
+  // pid_motor_speeds are present.
+  // See rules/digicode/03-block-workflow.md "Init block protocol".
+  javascriptGenerator.definitions_['pid_motor_vars'] =
+    `// PIDモーター速度変数\n` +
+    `// emits: pidLeftSpeed, pidRightSpeed (singleton-strategy survivability — pid_get_speed depends on these)\n` +
+    `int pidLeftSpeed = 0;\n` +
+    `int pidRightSpeed = 0;\n`;
 
   javascriptGenerator.definitions_['pid_calc_func'] =
     `// PID計算関数\n` +
@@ -221,6 +237,7 @@ javascriptGenerator.forBlock['pid_motor_speeds'] = function(block: Blockly.Block
 
   javascriptGenerator.definitions_['pid_motor_vars'] =
     `// PIDモーター速度変数\n` +
+    `// emits: pidLeftSpeed, pidRightSpeed (also emitted by pid_init for singleton survivability — same definitions_ key dedupes)\n` +
     `int pidLeftSpeed = 0;\n` +
     `int pidRightSpeed = 0;\n`;
 
@@ -253,7 +270,11 @@ Blockly.Blocks['pid_get_speed'] = {
 
 javascriptGenerator.forBlock['pid_get_speed'] = function(block: Blockly.Block) {
   const side = block.getFieldValue('SIDE');
-  const code = side === 'LEFT' ? 'pidLeftSpeed' : 'pidRightSpeed';
+  // requires: pidLeftSpeed, pidRightSpeed (declared by pid_init or pid_motor_speeds
+  // — see rules/digicode/03-block-workflow.md "Init block protocol")
+  const code = side === 'LEFT'
+    ? '/* requires: pidLeftSpeed */ pidLeftSpeed'
+    : '/* requires: pidRightSpeed */ pidRightSpeed';
   return [code, Order.ATOMIC];
 };
 
