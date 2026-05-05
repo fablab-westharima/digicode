@@ -711,9 +711,16 @@ Blockly.Blocks['wifi_reconnect'] = {
 };
 
 javascriptGenerator.forBlock['wifi_reconnect'] = function() {
-  return `  // WiFi Reconnect
+  // post-Phase 4-4 commit 2-9 fix (case_0260):
+  // Previous body called `mqttWifiConnect()` which is only declared by
+  // mqtt_setup. Standalone `wifi_reconnect` (without mqtt_setup) failed with
+  // "'mqttWifiConnect' was not declared in this scope" + missing WiFi.h.
+  // Use the framework-provided `WiFi.reconnect()` instead so the block works
+  // independently of mqtt_setup. emits: include_wifi only.
+  generator.definitions_['include_wifi'] = '#include <WiFi.h>';
+  return `  /* requires: WiFi (include_wifi) */
   if (WiFi.status() != WL_CONNECTED) {
-    mqttWifiConnect();
+    WiFi.reconnect();
   }
 `;
 };

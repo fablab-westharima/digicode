@@ -19,7 +19,17 @@ const generator = javascriptGenerator as any;
 
 const GOOGLE_COLOR = '#0F9D58';
 
-const GOOGLE_SHEETS_HELPER = `
+// post-Phase 4-4 commit 2-9 fix (case_0323):
+// Originally `GOOGLE_SHEETS_HELPER` bundled both `googleSheetsAppend` (uses
+// WiFi/WiFiClientSecure/HTTPClient) and `googleSheetsFormatRow` (pure String
+// op). Standalone `google_sheets_format_row` emitted the bundled helper but
+// not `include_google_sheets`, leaking WiFi references into a sketch with no
+// WiFi.h include → `'WiFi' was not declared in this scope` etc. Split into
+// two helpers so each block emits only what it actually needs.
+// emits (append): include_google_sheets + GOOGLE_SHEETS_APPEND_HELPER + GOOGLE_SHEETS_FORMAT_ROW_HELPER
+// emits (format_row): GOOGLE_SHEETS_FORMAT_ROW_HELPER only (pure String, no WiFi)
+
+const GOOGLE_SHEETS_APPEND_HELPER = `
 // 51.md commit #8: Google Sheets Apps Script Webhook helper (HTTPClient + TLS)
 bool googleSheetsAppend(const String& url, const String& data) {
   if (WiFi.status() != WL_CONNECTED) return false;
@@ -32,8 +42,10 @@ bool googleSheetsAppend(const String& url, const String& data) {
   int code = http.POST(data);
   http.end();
   return code >= 200 && code < 300;
-}
+}`;
 
+const GOOGLE_SHEETS_FORMAT_ROW_HELPER = `
+// 51.md commit #8: pure String formatting (no WiFi dependency)
 String googleSheetsFormatRow(const String& ts, const String& val) {
   String out = "{\\"ts\\":\\"";
   out += ts; out += "\\",\\"val\\":\\""; out += val; out += "\\"}";
@@ -61,7 +73,10 @@ generator.forBlock['google_sheets_append'] = function(block: Blockly.Block) {
   const url = generator.valueToCode(block, 'URL', Order.ATOMIC) || '""';
   const data = generator.valueToCode(block, 'DATA', Order.ATOMIC) || '""';
   generator.definitions_['include_google_sheets'] = '#include <WiFi.h>\n#include <WiFiClientSecure.h>\n#include <HTTPClient.h>';
-  generator.definitions_['google_sheets_helper'] = GOOGLE_SHEETS_HELPER;
+  // append needs both helpers (append calls into nothing, but format_row may be
+  // co-emitted in the same sketch; declaring both is the safe superset).
+  generator.definitions_['google_sheets_append_helper'] = GOOGLE_SHEETS_APPEND_HELPER;
+  generator.definitions_['google_sheets_format_row_helper'] = GOOGLE_SHEETS_FORMAT_ROW_HELPER;
   return `googleSheetsAppend(${url}, ${data});\n`;
 };
 
@@ -82,7 +97,9 @@ Blockly.Blocks['google_sheets_format_row'] = {
 generator.forBlock['google_sheets_format_row'] = function(block: Blockly.Block) {
   const ts = generator.valueToCode(block, 'TS', Order.ATOMIC) || '""';
   const val = generator.valueToCode(block, 'VAL', Order.ATOMIC) || '""';
-  generator.definitions_['google_sheets_helper'] = GOOGLE_SHEETS_HELPER;
+  // format_row is a pure String formatter — only emit the format_row helper,
+  // no WiFi/HTTPClient includes needed (commit 2-9 case_0323 fix).
+  generator.definitions_['google_sheets_format_row_helper'] = GOOGLE_SHEETS_FORMAT_ROW_HELPER;
   return [`googleSheetsFormatRow(String(${ts}), String(${val}))`, Order.FUNCTION_CALL];
 };
 

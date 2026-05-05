@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-04T09:44:08.607Z",
+  "generatedAt": "2026-05-05T20:01:58.285Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -5944,9 +5944,325 @@
       "statementInputs": []
     },
     {
+      "type": "a4988_init",
+      "category": "stepper_driver",
+      "tooltip": "A4988 ステッピングドライバを初期化します。STEP/DIR/EN ピン指定。EN は LOW で有効化。AccelStepper DRIVER mode 使用。",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robots_wheel",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "STEP",
+          "fieldType": "number",
+          "default": 14,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "DIR",
+          "fieldType": "number",
+          "default": 27,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "EN",
+          "fieldType": "number",
+          "default": 26,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "a4988_set_microstep",
+      "category": "stepper_driver",
+      "tooltip": "A4988 のマイクロステップモードを設定します (内部 step 倍率)。⚠️ HW の MS1/MS2/MS3 pin もこの値に合わせて配線必要。",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robots_wheel",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "MODE",
+          "fieldType": "dropdown",
+          "options": [
+            "1",
+            "2",
+            "4",
+            "8",
+            "16"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "a4988_set_direction",
+      "category": "stepper_driver",
+      "tooltip": "A4988 の方向を設定します。次の a4988_step が forward なら正、backward なら負ステップで動作。",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robots_wheel",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "DIR",
+          "fieldType": "dropdown",
+          "options": [
+            "FORWARD",
+            "BACKWARD"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "a4988_step",
+      "category": "stepper_driver",
+      "tooltip": "A4988 を指定ステップ数 (microstep 倍率込) で動作させます。runToNewPosition で完了まで block。",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robots_wheel",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "uln2003_init",
+      "category": "stepper_driver",
+      "tooltip": "ULN2003 ステッピングドライバ + 28BYJ-48 を初期化します。AccelStepper FULL4WIRE mode (pin 順 IN1, IN3, IN2, IN4 で正常回転)。",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robots_wheel",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "IN1",
+          "fieldType": "number",
+          "default": 13,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "IN2",
+          "fieldType": "number",
+          "default": 12,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "IN3",
+          "fieldType": "number",
+          "default": 14,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "IN4",
+          "fieldType": "number",
+          "default": 27,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "uln2003_step_28byj48",
+      "category": "stepper_driver",
+      "tooltip": "ULN2003 + 28BYJ-48 を指定ステップ・速度で動作させます (28BYJ-48 1 回転 = 4096 ステップ in half-step)。",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robots_wheel",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": "Number"
+        },
+        {
+          "name": "SPEED",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "relay_init",
+      "category": "relay",
+      "tooltip": "リレーを初期化します。アクティブ極性 = ON 時の出力レベル (機械式は HIGH、SSR は LOW が一般的)。",
+      "colour": "#FFB300",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robots_wheel",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": 2,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "ACTIVE",
+          "fieldType": "dropdown",
+          "options": [
+            "HIGH",
+            "LOW"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "relay_on",
+      "category": "relay",
+      "tooltip": "リレーを ON にします (active 極性に従う)。事前に relay_init が必要。",
+      "colour": "#FFB300",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robots_wheel",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": 2,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "relay_off",
+      "category": "relay",
+      "tooltip": "リレーを OFF にします (active と逆極性)。事前に relay_init が必要。",
+      "colour": "#FFB300",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robots_wheel",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": 2,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "relay_toggle",
+      "category": "relay",
+      "tooltip": "リレーの状態を反転します (digitalRead 値の逆を出力)。",
+      "colour": "#FFB300",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robots_wheel",
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": 2,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
       "type": "preferences_begin",
       "category": "storage_nvs",
-      "tooltip": "Open a Preferences namespace for read/write. ESP32: NVS flash storage. RP2040: EEPROM emulation.",
+      "tooltip": "Open a Preferences namespace for read/write (ESP32 NVS flash storage).",
       "colour": "#795548",
       "isStatement": true,
       "hasOutput": false,
@@ -9275,6 +9591,281 @@
       "statementInputs": []
     },
     {
+      "type": "lora_init",
+      "category": "lora",
+      "tooltip": "LoRa SX1276/77/78/79 transceiver を初期化します。SPI 経由、SS (CS)、RST、DIO0 (受信割込) ピン指定。デフォルト 915 MHz。",
+      "colour": "#4B0082",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "SS",
+          "fieldType": "number",
+          "default": 5,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "RST",
+          "fieldType": "number",
+          "default": 14,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "DIO0",
+          "fieldType": "number",
+          "default": 2,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "lora_set_freq",
+      "category": "lora",
+      "tooltip": "LoRa 周波数を設定します。⚠️ 地域別法令に従って選択してください (日本=920 MHz、欧州=868、米州=915)。",
+      "colour": "#4B0082",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "FREQ",
+          "fieldType": "dropdown",
+          "options": [
+            "433E6",
+            "868E6",
+            "915E6",
+            "920E6"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "lora_set_power",
+      "category": "lora",
+      "tooltip": "LoRa 送信電力を設定します (2-20 dBm、PA_BOOST pin 使用)。⚠️ 地域別法令制限あり (日本 = 13 dBm 上限)。",
+      "colour": "#4B0082",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "POWER",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "lora_send",
+      "category": "lora",
+      "tooltip": "LoRa パケットを送信します。事前に lora_init が必要。",
+      "colour": "#4B0082",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "DATA",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "lora_on_receive",
+      "category": "lora",
+      "tooltip": "LoRa パケット受信時に HANDLER を実行します。loopPre_ で 1 tick injection、HANDLER は arduino_loop の中に配置必須。",
+      "colour": "#4B0082",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "HANDLER"
+        }
+      ]
+    },
+    {
+      "type": "lora_received_value",
+      "category": "lora",
+      "tooltip": "LoRa で受信したパケットデータを返します。lora_on_receive の HANDLER 内でのみ valid (HANDLER 外では空文字列)。",
+      "colour": "#4B0082",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "modbus_init",
+      "category": "modbus",
+      "tooltip": "Modbus RTU master を初期化します。RS485 transceiver (MAX485 等) 経由で UART2 + DE/RE pin。デフォルト slave ID=1 で初期化、modbus_set_slave_id で変更。",
+      "colour": "#37474F",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "RX",
+          "fieldType": "number",
+          "default": 16,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "TX",
+          "fieldType": "number",
+          "default": 17,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "DE_RE",
+          "fieldType": "number",
+          "default": 4,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "BAUD",
+          "fieldType": "number",
+          "default": 9600,
+          "min": 1200,
+          "max": 115200
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "modbus_set_slave_id",
+      "category": "modbus",
+      "tooltip": "Modbus スレーブ ID を設定します (1-247)。複数スレーブ通信時は通信前に切替必要。",
+      "colour": "#37474F",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "ID",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "modbus_read_holding_register",
+      "category": "modbus",
+      "tooltip": "Modbus ホールディングレジスタを 1 つ読込みます (function code 0x03)。失敗時 -1 返却。",
+      "colour": "#37474F",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "ADDR",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "modbus_write_register",
+      "category": "modbus",
+      "tooltip": "Modbus レジスタに値を書込みます (function code 0x06)。",
+      "colour": "#37474F",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "ADDR",
+          "check": "Number"
+        },
+        {
+          "name": "VALUE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
       "type": "http_get",
       "category": "http",
       "tooltip": "Send a GET request to the specified URL and get the response",
@@ -10940,6 +11531,375 @@
       "statementInputs": []
     },
     {
+      "type": "scd30_init",
+      "category": "sensor_air_quality",
+      "tooltip": "SCD30 NDIR CO2 + 温湿度センサを初期化します (I2C 0x61、Sensirion 公式 lib)。startPeriodicMeasurement で 2 秒周期計測開始。",
+      "colour": "#00897B",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "scd30_read_co2",
+      "category": "sensor_air_quality",
+      "tooltip": "SCD30 の CO2 濃度を ppm で返します (range 400-10000、典型 outdoor 420、indoor 600-1500、警報 1000+)。",
+      "colour": "#00897B",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "scd30_read_temperature",
+      "category": "sensor_air_quality",
+      "tooltip": "SCD30 の温度を ℃ で返します。NDIR 内部発熱補正済。",
+      "colour": "#00897B",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "scd30_read_humidity",
+      "category": "sensor_air_quality",
+      "tooltip": "SCD30 の相対湿度を % で返します。",
+      "colour": "#00897B",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "pms5003_init",
+      "category": "sensor_air_quality",
+      "tooltip": "PMS5003 PM2.5/PM10 粉塵センサを初期化します (UART 9600 baud)。read() を 1 秒ごとに呼んでデータ更新。",
+      "colour": "#00897B",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "RX",
+          "fieldType": "number",
+          "default": 16,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "TX",
+          "fieldType": "number",
+          "default": 17,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "pms5003_read_pm25",
+      "category": "sensor_air_quality",
+      "tooltip": "PM2.5 (粒径 ≤ 2.5μm) 濃度を返します。WHO 24h ガイドライン 15 μg/m³、日本環境基準 35 μg/m³。",
+      "colour": "#00897B",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "pms5003_read_pm10",
+      "category": "sensor_air_quality",
+      "tooltip": "PM10 (粒径 ≤ 10μm) 濃度を返します。WHO 24h ガイドライン 45 μg/m³。",
+      "colour": "#00897B",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "microphone_i2s_init",
+      "category": "microphone",
+      "tooltip": "I2S MEMS microphone (INMP441 等) を初期化します。BCLK / LRCK (WS) / DIN (DOUT) ピン指定。16 kHz / 24-bit / 左 channel only。",
+      "colour": "#5D4037",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "BCLK",
+          "fieldType": "number",
+          "default": 14,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "LRCK",
+          "fieldType": "number",
+          "default": 15,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "DIN",
+          "fieldType": "number",
+          "default": 32,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "microphone_read_amplitude",
+      "category": "microphone",
+      "tooltip": "I2S microphone から 512 サンプル取得 → RMS 振幅を返します (24-bit 正規化値)。",
+      "colour": "#5D4037",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "microphone_read_db",
+      "category": "microphone",
+      "tooltip": "I2S microphone の相対 dB を返します (20*log10(RMS))。⚠️ dB SPL (絶対) 取得には外部基準音源との校正必要。",
+      "colour": "#5D4037",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "flow_meter_init",
+      "category": "flow_meter",
+      "tooltip": "YF-S201 流量計を初期化します。割り込みピンに接続 (RISING edge)、内部 INPUT_PULLUP、F=7.5*Q 換算 (datasheet)。",
+      "colour": "#0288D1",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": 2,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "flow_meter_get_rate",
+      "category": "flow_meter",
+      "tooltip": "流量計の流量を L/min で返します (1秒間隔で更新、その間は前回値)。事前に flow_meter_init が必要。",
+      "colour": "#0288D1",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "apds9960_init",
+      "category": "apds9960",
+      "tooltip": "APDS9960 (ジェスチャー/色/近接) を初期化します (I2C 0x39)。proximity + gesture を enable。",
+      "colour": "#7B1FA2",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "apds9960_read_gesture",
+      "category": "apds9960",
+      "tooltip": "APDS9960 のジェスチャーを返します (\"UP\"/\"DOWN\"/\"LEFT\"/\"RIGHT\"/\"NONE",
+      "colour": "#7B1FA2",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "apds9960_read_proximity",
+      "category": "apds9960",
+      "tooltip": "APDS9960 の近接値 (0-255、近いほど大きい) を返します。",
+      "colour": "#7B1FA2",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "max30102_init",
+      "category": "sensor_health",
+      "tooltip": "MAX30102 心拍/SpO2 センサを初期化します (I2C 0x57)。⚠️ 教育用途、医療精度ではない。指を軽く触れて使用。",
+      "colour": "#D32F2F",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "max30102_read_heart_rate",
+      "category": "sensor_health",
+      "tooltip": "MAX30102 から心拍数 (BPM) を返します (4 拍平均)。⚠️ 安定値取得には 5-10 秒必要、医療精度ではない。",
+      "colour": "#D32F2F",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "max30102_read_spo2",
+      "category": "sensor_health",
+      "tooltip": "MAX30102 から SpO2 (%) を簡易算出します (Red/IR ratio ベース)。⚠️ 教育用途、医療精度ではない、安定値取得には 10 秒以上必要。",
+      "colour": "#D32F2F",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
       "type": "ac_current_clamp_init",
       "category": "sensor_current",
       "tooltip": "AC クランプ電流センサ (SCT-013 等) を初期化します。ピン (ADC)、巻数比 (Current Transformer ratio)、負荷抵抗 (バーデン抵抗 Ω) を指定。",
@@ -11021,6 +11981,189 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "ina219_init",
+      "category": "sensor_current",
+      "tooltip": "INA219 高精度電流/電圧/電力センサを初期化します (I2C)。デフォルトアドレス 0x40。robtillaart/INA219 lib 使用。",
+      "colour": "#FF9800",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "ADDR",
+          "fieldType": "number",
+          "default": 0,
+          "min": 0,
+          "max": 0
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "ina219_read_voltage",
+      "category": "sensor_current",
+      "tooltip": "INA219 のバス電圧を V 単位で返します。事前に ina219_init が必要。",
+      "colour": "#FF9800",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "ina219_read_current",
+      "category": "sensor_current",
+      "tooltip": "INA219 の電流を mA 単位で返します。事前に ina219_init が必要。",
+      "colour": "#FF9800",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "ina219_read_power",
+      "category": "sensor_current",
+      "tooltip": "INA219 の電力を mW 単位で返します。事前に ina219_init が必要。",
+      "colour": "#FF9800",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "acs712_init",
+      "category": "sensor_current",
+      "tooltip": "ACS712 ホール電流センサを初期化します。モデル 5A/20A/30A 対応 (mV/A 感度値で識別)。robtillaart/ACS712 lib 使用、RMS 計算内蔵。",
+      "colour": "#FF9800",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": 34,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "MODEL",
+          "fieldType": "dropdown",
+          "options": [
+            "185",
+            "100",
+            "66"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "acs712_read_current",
+      "category": "sensor_current",
+      "tooltip": "ACS712 の電流を A 単位で返します (mA → A 変換、DC 計測)。事前に acs712_init が必要。",
+      "colour": "#FF9800",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "piezo_read_vibration",
+      "category": "piezo",
+      "tooltip": "圧電素子 (PZT) の振動を ADC で読み取ります (0-4095、ESP32 12-bit)。値が大きいほど強い振動。",
+      "colour": "#9E9E9E",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "PIN",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "piezo_threshold_detect",
+      "category": "piezo",
+      "tooltip": "圧電素子の振動値が指定しきい値を超えたら true を返します (typical threshold = 1000、調整推奨)。",
+      "colour": "#9E9E9E",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "PIN",
+          "check": "Number"
+        },
+        {
+          "name": "THRESHOLD",
+          "check": "Number"
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -11235,6 +12378,225 @@
       "colour": "#880E4F",
       "isStatement": false,
       "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "gps_init",
+      "category": "gps",
+      "tooltip": "GPS NEO-6M/8M モジュールを初期化します。HardwareSerial2 経由 UART (default 9600 baud)。loopPre_ で continuous NMEA parse。屋外 cold start で衛星捕捉まで 30 秒〜数分必要。",
+      "colour": "#3F51B5",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "RX",
+          "fieldType": "number",
+          "default": 16,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "TX",
+          "fieldType": "number",
+          "default": 17,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "BAUD",
+          "fieldType": "number",
+          "default": 9600,
+          "min": 4800,
+          "max": 115200
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "gps_get_lat",
+      "category": "gps",
+      "tooltip": "GPS の緯度 (degrees、北緯+/南緯-) を返します。location.isValid() チェック内蔵、未測位時 0.0。",
+      "colour": "#3F51B5",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "gps_get_lng",
+      "category": "gps",
+      "tooltip": "GPS の経度 (degrees、東経+/西経-) を返します。未測位時 0.0。",
+      "colour": "#3F51B5",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "gps_get_altitude",
+      "category": "gps",
+      "tooltip": "GPS の高度 (海抜 m) を返します。未測位時 0.0。",
+      "colour": "#3F51B5",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "gps_get_satellites_count",
+      "category": "gps",
+      "tooltip": "GPS の捕捉衛星数を返します。3 以上で 2D 測位可、4 以上で 3D 測位可。",
+      "colour": "#3F51B5",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "neomatrix_init",
+      "category": "neomatrix",
+      "tooltip": "NeoMatrix (NeoPixel 2D) を初期化します。デフォルト 8x8、TOP+LEFT+ROWS+PROGRESSIVE 配線。WS2812B / SK6812 互換。",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": 6,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "W",
+          "fieldType": "number",
+          "default": 8,
+          "min": 1,
+          "max": 64
+        },
+        {
+          "name": "H",
+          "fieldType": "number",
+          "default": 8,
+          "min": 1,
+          "max": 64
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "neomatrix_set_pixel",
+      "category": "neomatrix",
+      "tooltip": "NeoMatrix のピクセルに色を設定します。色は hex 文字列 \"#FF0000\" 形式。show で反映。",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "X",
+          "check": "Number"
+        },
+        {
+          "name": "Y",
+          "check": "Number"
+        },
+        {
+          "name": "COLOR",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "neomatrix_clear",
+      "category": "neomatrix",
+      "tooltip": "NeoMatrix を全消灯します (buffer reset、show で反映)。",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "neomatrix_show",
+      "category": "neomatrix",
+      "tooltip": "NeoMatrix buffer の内容を物理 LED に反映します。set_pixel 後に必須。",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
       "modes": [
         "homeassistant",
         "generic",
@@ -11527,6 +12889,462 @@
         },
         {
           "name": "R",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "tm1637_init",
+      "category": "tm1637",
+      "tooltip": "TM1637 4桁7セグメントディスプレイを初期化します。akj7/TM1637 Driver lib 使用、template <4, 1> で 4 桁 + index 1 にコロン。",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "CLK",
+          "fieldType": "number",
+          "default": 26,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "DIO",
+          "fieldType": "number",
+          "default": 25,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "tm1637_show_number",
+      "category": "tm1637",
+      "tooltip": "TM1637 に整数を表示します (-999〜9999、コロン off)。事前に tm1637_init が必要。",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "VALUE",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "tm1637_show_with_colon",
+      "category": "tm1637",
+      "tooltip": "TM1637 に時刻を HH:MM 形式で表示します (コロン on)。事前に tm1637_init が必要。",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "HH",
+          "check": "Number"
+        },
+        {
+          "name": "MM",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "tm1637_set_brightness",
+      "category": "tm1637",
+      "tooltip": "TM1637 の輝度を 0 (最暗) 〜 7 (最明) で設定します。",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "LEVEL",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "tm1637_clear",
+      "category": "tm1637",
+      "tooltip": "TM1637 の全桁を消灯します。",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "max7219_init",
+      "category": "max7219",
+      "tooltip": "MAX7219 8x8 LED マトリクスを初期化します。N モジュール (最大 8) を daisy-chain 接続。SPI 経由、inline driver。",
+      "colour": "#E91E63",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "DIN",
+          "fieldType": "number",
+          "default": 23,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "CS",
+          "fieldType": "number",
+          "default": 5,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "CLK",
+          "fieldType": "number",
+          "default": 18,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "N",
+          "fieldType": "number",
+          "default": 1,
+          "min": 1,
+          "max": 8
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "max7219_set_pixel",
+      "category": "max7219",
+      "tooltip": "MAX7219 マトリクスの指定ピクセルを ON/OFF します。buffer に書込み、show で反映。",
+      "colour": "#E91E63",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "STATE",
+          "fieldType": "dropdown",
+          "options": [
+            "true",
+            "false"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "X",
+          "check": "Number"
+        },
+        {
+          "name": "Y",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "max7219_clear",
+      "category": "max7219",
+      "tooltip": "MAX7219 マトリクスを全消灯します (buffer reset + 即時反映)。",
+      "colour": "#E91E63",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "max7219_scroll_text",
+      "category": "max7219",
+      "tooltip": "MAX7219 マトリクスに文字列を左へスクロール表示します (5x7 font、ASCII 0x20-0x5A)。速度 (ms) は 1 列移動の delay。",
+      "colour": "#E91E63",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "TEXT",
+          "check": "String"
+        },
+        {
+          "name": "SPEED",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "max7219_set_brightness",
+      "category": "max7219",
+      "tooltip": "MAX7219 マトリクスの輝度を 0 (最暗) 〜 15 (最明) で設定します。",
+      "colour": "#E91E63",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "LEVEL",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "max7219_show",
+      "category": "max7219",
+      "tooltip": "MAX7219 buffer の内容を物理 LED に反映します。set_pixel 後に必須。",
+      "colour": "#E91E63",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "epaper_init",
+      "category": "epaper",
+      "tooltip": "E-paper ディスプレイを初期化します。デフォルト 2.9\" Waveshare (GxEPD2_290_BS)。他パネル使用時は cpp 直接編集が必要。",
+      "colour": "#607D8B",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "CS",
+          "fieldType": "number",
+          "default": 15,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "DC",
+          "fieldType": "number",
+          "default": 27,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "RST",
+          "fieldType": "number",
+          "default": 26,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "BUSY",
+          "fieldType": "number",
+          "default": 25,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "epaper_print",
+      "category": "epaper",
+      "tooltip": "E-paper に文字列を表示します (X, Y)。表示反映には epaper_partial_update or epaper_full_refresh が必要。",
+      "colour": "#607D8B",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "TEXT",
+          "check": "String"
+        },
+        {
+          "name": "X",
+          "check": "Number"
+        },
+        {
+          "name": "Y",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "epaper_partial_update",
+      "category": "epaper",
+      "tooltip": "E-paper を部分更新します (高速、フリッカー少、長期使用でゴーストが残る場合あり)。",
+      "colour": "#607D8B",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "epaper_full_refresh",
+      "category": "epaper",
+      "tooltip": "E-paper を全画面リフレッシュします (低速、フリッカー大、ゴースト除去)。1 日 1 回 or 数時間ごと推奨。",
+      "colour": "#607D8B",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "epaper_clear",
+      "category": "epaper",
+      "tooltip": "E-paper を白でクリアします (反映には full_refresh or partial_update が必要)。",
+      "colour": "#607D8B",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "epaper_draw_image",
+      "category": "epaper",
+      "tooltip": "E-paper に PROGMEM bitmap を描画します。画像変数名は事前に const unsigned char で定義必要 (生 cpp 編集)。",
+      "colour": "#607D8B",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "IMG_NAME",
+          "check": "String"
+        },
+        {
+          "name": "X",
+          "check": "Number"
+        },
+        {
+          "name": "Y",
           "check": "Number"
         }
       ],
@@ -12389,6 +14207,83 @@
       "fields": [],
       "valueInputs": [],
       "statementInputs": []
+    },
+    {
+      "type": "esp32_touch_read",
+      "category": "esp32_touch",
+      "tooltip": "ESP32 静電容量タッチピンの raw 値を読み取ります (0-1023、未接触で大きい / 触れると小さい)。ESP32 オリジナル + S2/S3 のみ動作、C3/C6/H2 不対応。",
+      "colour": "#00BCD4",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "dropdown",
+          "options": [
+            "4",
+            "2",
+            "15",
+            "13",
+            "12",
+            "14",
+            "27",
+            "33",
+            "32"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "esp32_touch_attach_interrupt",
+      "category": "esp32_touch",
+      "tooltip": "ESP32 タッチピンが指定しきい値より低い (=触れた) 時 HANDLER を実行します。touchAttachInterrupt 経由 ISR + loopPre_ で安全に loop 内実行。HANDLER は arduino_loop の中に配置必須。",
+      "colour": "#00BCD4",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "dropdown",
+          "options": [
+            "4",
+            "2",
+            "15",
+            "13",
+            "12",
+            "14",
+            "27",
+            "33",
+            "32"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "THRESHOLD",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": [
+        {
+          "name": "HANDLER"
+        }
+      ]
     },
     {
       "type": "attach_interrupt",
@@ -13398,7 +15293,7 @@
     {
       "type": "fs_mount",
       "category": "storage_fs",
-      "tooltip": "Mount the LittleFS filesystem. Returns true if successful. ESP32 and RP2040 both supported.",
+      "tooltip": "Mount the LittleFS filesystem. Returns true if successful.",
       "colour": "#009688",
       "isStatement": false,
       "hasOutput": true,
@@ -13788,46 +15683,6 @@
       "supportsOta": true,
       "supportsBle": true,
       "supportsEspNow": true
-    },
-    {
-      "id": "rp2040-xiao",
-      "name": "XIAO RP2040",
-      "category": "xiao",
-      "supportsWifi": false,
-      "supportsOta": false,
-      "supportsBle": false,
-      "supportsEspNow": false,
-      "experimental": true
-    },
-    {
-      "id": "rp2040-pico-w",
-      "name": "Raspberry Pi Pico W",
-      "category": "rp2040",
-      "supportsWifi": true,
-      "supportsOta": false,
-      "supportsBle": false,
-      "supportsEspNow": false,
-      "experimental": true
-    },
-    {
-      "id": "rp2040-nano-connect",
-      "name": "Arduino Nano RP2040 Connect",
-      "category": "rp2040",
-      "supportsWifi": true,
-      "supportsOta": false,
-      "supportsBle": false,
-      "supportsEspNow": false,
-      "experimental": true
-    },
-    {
-      "id": "rp2040-pico",
-      "name": "Raspberry Pi Pico",
-      "category": "rp2040",
-      "supportsWifi": false,
-      "supportsOta": false,
-      "supportsBle": false,
-      "supportsEspNow": false,
-      "experimental": true
     },
     {
       "id": "esp32-c6-generic",
