@@ -267,11 +267,86 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
   {
     // ha_device_init が HAMqtt インスタンス (haMqtt) を declares、
     // ha_is_connected / ha_loop / ha_report_interval が直接参照。
-    // ha_*_create 系 (light/fan/switch/...) は別 cluster の問題で、
-    // create→op の name field link 不整合に起因するため別途対処。
     init: 'ha_device_init',
     label: 'ha-device',
     operations: ['ha_is_connected', 'ha_loop', 'ha_report_interval'],
+  },
+  // post-Phase 4-4 commit 2-6 (case_0266-0302 fix、最大 cluster 25 件): HA 11
+  // entity の create→operation 依存を明示登録。各 _create が entity instance を
+  // declare、operation は instance 参照。第80回 commit で 11 entity 追加時、
+  // INIT_DEPENDENCIES への登録漏れ + commit 2-6 で arduinoHABlocks.ts 11 helper
+  // function 追加 (operation block 単独配置で default declare、conditional
+  // guard) の併用 fix。詳細は arduinoHABlocks.ts:14- ensureHa<Entity>Default
+  // helper 群を参照。
+  {
+    init: 'ha_sensor_create',
+    label: 'ha-sensor',
+    operations: ['ha_sensor_update'],
+  },
+  {
+    init: 'ha_binary_sensor_create',
+    label: 'ha-binary-sensor',
+    operations: ['ha_binary_sensor_update'],
+  },
+  {
+    init: 'ha_switch_create',
+    label: 'ha-switch',
+    operations: ['ha_switch_on_command', 'ha_switch_set_state'],
+  },
+  {
+    init: 'ha_light_create',
+    label: 'ha-light',
+    operations: [
+      'ha_light_on_command', 'ha_light_state', 'ha_light_brightness',
+      'ha_light_set_state',
+    ],
+  },
+  {
+    init: 'ha_light_create_rgb',
+    label: 'ha-light-rgb',
+    operations: [
+      'ha_light_on_rgb_command', 'ha_light_rgb_r', 'ha_light_rgb_g',
+      'ha_light_rgb_b', 'ha_light_set_rgb',
+    ],
+  },
+  {
+    init: 'ha_number_create',
+    label: 'ha-number',
+    operations: [
+      'ha_number_on_command', 'ha_number_value', 'ha_number_set_state',
+    ],
+  },
+  {
+    init: 'ha_fan_create',
+    label: 'ha-fan',
+    operations: [
+      'ha_fan_on_command', 'ha_fan_state', 'ha_fan_speed', 'ha_fan_set_state',
+    ],
+  },
+  {
+    init: 'ha_cover_create',
+    label: 'ha-cover',
+    operations: ['ha_cover_on_command', 'ha_cover_set_state'],
+  },
+  {
+    init: 'ha_button_create',
+    label: 'ha-button',
+    operations: ['ha_button_on_press'],
+  },
+  {
+    init: 'ha_device_trigger_create',
+    label: 'ha-device-trigger',
+    operations: ['ha_device_trigger_fire'],
+  },
+  {
+    init: 'ha_scene_create',
+    label: 'ha-scene',
+    operations: ['ha_scene_on_command'],
+  },
+  {
+    init: 'ha_tag_scanner_create',
+    label: 'ha-tag-scanner',
+    operations: ['ha_tag_scanner_scanned'],
   },
   {
     // servo_attach は init 役で `Servo servo<N>` を declares、

@@ -21,6 +21,131 @@ function ensureArduinoHAInclude() {
   generator.definitions_['include_arduinoha'] = '#include <ArduinoHA.h>';
 }
 
+// post-Phase 4-4 commit 2-6 (case_0266-0302 fix): HA 11 entity の operation
+// block (ha_<entity>_update / on_command / set_state / state / value / etc) は
+// それぞれ ha_<entity>_create が declare する entity instance (haSensor_<id> /
+// haSwitch_<id> / haLight_<id> 等) を参照する。Phase 4-4 で _create 不在 +
+// operation 単独配置の 25 case が `'ha<Entity>_<id>' was not declared` で fail。
+//
+// 各 operation block forBlock 冒頭で対応する ensureHa<Entity>Default(id) helper
+// を呼び、_create と同 definitions_ key で conditional default declare。
+// Order analysis (generator.definitions_ last-write-wins):
+//  - ha_<entity>_create alone, before operation → unconditional 値あり →
+//                                                  helper guard skip → user 設定 (Name/DeviceClass/Unit/etc) 維持
+//  - ha_<entity>_create after operation         → operation default 先 →
+//                                                  ha_<entity>_create unconditional override → user 設定維持
+//  - operation alone (_create 不在)             → default 値で compile pass
+//
+// commit 2-6 = 最大 cluster (25/77 = 32%)、case_0266-0302 全件解消。
+// See rules/digicode/03-block-workflow.md "Init block protocol".
+function ensureHaSensorDefault(sensorId: string) {
+  if (!generator.definitions_[`ha_sensor_${sensorId}`]) {
+    const varName = `haSensor_${sensorId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    generator.definitions_[`ha_sensor_${sensorId}`] = `HASensorNumber ${varName}("${sensorId}", HASensorNumber::PrecisionP1);`;
+  }
+}
+function ensureHaBinarySensorDefault(sensorId: string) {
+  if (!generator.definitions_[`ha_binary_sensor_${sensorId}`]) {
+    const varName = `haBinarySensor_${sensorId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    generator.definitions_[`ha_binary_sensor_${sensorId}`] = `HABinarySensor ${varName}("${sensorId}");`;
+  }
+}
+function ensureHaSwitchDefault(switchId: string) {
+  if (!generator.definitions_[`ha_switch_${switchId}`]) {
+    const varName = `haSwitch_${switchId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    generator.definitions_[`ha_switch_${switchId}`] = `HASwitch ${varName}("${switchId}");`;
+  }
+}
+function ensureHaLightDefault(lightId: string) {
+  if (!generator.definitions_[`ha_light_${lightId}`]) {
+    const varName = `haLight_${lightId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    // Default = BrightnessFeature (ha_light_create 'BRIGHTNESS' default 'TRUE' と一致)
+    generator.definitions_[`ha_light_${lightId}`] = `HALight ${varName}("${lightId}", HALight::BrightnessFeature);`;
+  }
+}
+function ensureHaLightRgbDefault(lightId: string) {
+  if (!generator.definitions_[`ha_light_${lightId}`]) {
+    const varName = `haLight_${lightId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    generator.definitions_[`ha_light_${lightId}`] = `HALight ${varName}("${lightId}", HALight::BrightnessFeature | HALight::RGBFeature);`;
+  }
+}
+function ensureHaNumberDefault(numberId: string) {
+  if (!generator.definitions_[`ha_number_${numberId}`]) {
+    const varName = `haNumber_${numberId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    generator.definitions_[`ha_number_${numberId}`] = `HANumber ${varName}("${numberId}", HANumber::PrecisionP1);`;
+  }
+}
+function ensureHaFanDefault(fanId: string) {
+  if (!generator.definitions_[`ha_fan_${fanId}`]) {
+    const varName = `haFan_${fanId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    // Default = SpeedsFeature (ha_fan_create 'SPEEDS' default 'TRUE' と一致)
+    generator.definitions_[`ha_fan_${fanId}`] = `HAFan ${varName}("${fanId}", HAFan::SpeedsFeature);`;
+  }
+}
+function ensureHaCoverDefault(coverId: string) {
+  if (!generator.definitions_[`ha_cover_${coverId}`]) {
+    const varName = `haCover_${coverId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    generator.definitions_[`ha_cover_${coverId}`] = `HACover ${varName}("${coverId}");`;
+  }
+}
+function ensureHaButtonDefault(buttonId: string) {
+  if (!generator.definitions_[`ha_button_${buttonId}`]) {
+    const varName = `haButton_${buttonId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    generator.definitions_[`ha_button_${buttonId}`] = `HAButton ${varName}("${buttonId}");`;
+  }
+}
+function ensureHaDeviceTriggerDefault(triggerId: string) {
+  if (!generator.definitions_[`ha_trigger_${triggerId}`]) {
+    const varName = `haTrigger_${triggerId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    // Default = ('button', 'default') = ha_device_trigger_create 'TYPE' default 'button'
+    generator.definitions_[`ha_trigger_${triggerId}`] = `HADeviceTrigger ${varName}("button", "default");`;
+  }
+}
+function ensureHaSceneDefault(sceneId: string) {
+  if (!generator.definitions_[`ha_scene_${sceneId}`]) {
+    const varName = `haScene_${sceneId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    generator.definitions_[`ha_scene_${sceneId}`] = `HAScene ${varName}("${sceneId}");`;
+  }
+}
+function ensureHaTagScannerDefault(scannerId: string) {
+  if (!generator.definitions_[`ha_tag_scanner_${scannerId}`]) {
+    const varName = `haTagScanner_${scannerId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    generator.definitions_[`ha_tag_scanner_${scannerId}`] = `HATagScanner ${varName}("${scannerId}");`;
+  }
+}
+
+// Global var helpers (ha_light_state / brightness / r/g/b、ha_number_value、
+// ha_fan_state / speed) — declared by callback (_on_command / _on_rgb_command)
+// blocks; output blocks reference them. operation block 単独配置で fail 防御。
+function ensureHaLightStateVars() {
+  if (!generator.definitions_['ha_light_state_var']) {
+    generator.definitions_['ha_light_state_var'] = 'bool ha_light_state = false;';
+  }
+  if (!generator.definitions_['ha_light_brightness_var']) {
+    generator.definitions_['ha_light_brightness_var'] = 'uint8_t ha_light_brightness = 0;';
+  }
+}
+function ensureHaLightRgbVars() {
+  if (!generator.definitions_['ha_light_rgb_vars']) {
+    generator.definitions_['ha_light_rgb_vars'] = `uint8_t ha_light_r = 0;
+uint8_t ha_light_g = 0;
+uint8_t ha_light_b = 0;`;
+  }
+}
+function ensureHaNumberValueVar() {
+  if (!generator.definitions_['ha_number_value_var']) {
+    generator.definitions_['ha_number_value_var'] = 'float ha_number_value = 0;';
+  }
+}
+function ensureHaFanStateVars() {
+  if (!generator.definitions_['ha_fan_state_var']) {
+    generator.definitions_['ha_fan_state_var'] = 'bool ha_fan_state = false;';
+  }
+  if (!generator.definitions_['ha_fan_speed_var']) {
+    generator.definitions_['ha_fan_speed_var'] = 'uint16_t ha_fan_speed = 0;';
+  }
+}
+
 // ===== デバイス初期化 =====
 
 /**
@@ -260,6 +385,7 @@ Blockly.Blocks['ha_sensor_update'] = {
 javascriptGenerator.forBlock['ha_sensor_update'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const sensorId = block.getFieldValue('SENSOR_ID');
+  ensureHaSensorDefault(sensorId);
   const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.ATOMIC) || '0';
   const varName = `haSensor_${sensorId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
@@ -346,6 +472,7 @@ Blockly.Blocks['ha_binary_sensor_update'] = {
 javascriptGenerator.forBlock['ha_binary_sensor_update'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const sensorId = block.getFieldValue('SENSOR_ID');
+  ensureHaBinarySensorDefault(sensorId);
   const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.ATOMIC) || 'false';
   const varName = `haBinarySensor_${sensorId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
@@ -424,6 +551,7 @@ Blockly.Blocks['ha_switch_on_command'] = {
 javascriptGenerator.forBlock['ha_switch_on_command'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const switchId = block.getFieldValue('SWITCH_ID');
+  ensureHaSwitchDefault(switchId);
   const onCallback = javascriptGenerator.statementToCode(block, 'ON_CALLBACK');
   const offCallback = javascriptGenerator.statementToCode(block, 'OFF_CALLBACK');
   const varName = `haSwitch_${switchId.replace(/[^a-zA-Z0-9]/g, '_')}`;
@@ -461,6 +589,7 @@ Blockly.Blocks['ha_switch_set_state'] = {
 javascriptGenerator.forBlock['ha_switch_set_state'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const switchId = block.getFieldValue('SWITCH_ID');
+  ensureHaSwitchDefault(switchId);
   const state = javascriptGenerator.valueToCode(block, 'STATE', Order.ATOMIC) || 'false';
   const varName = `haSwitch_${switchId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
@@ -527,6 +656,7 @@ Blockly.Blocks['ha_light_on_command'] = {
 javascriptGenerator.forBlock['ha_light_on_command'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const lightId = block.getFieldValue('LIGHT_ID');
+  ensureHaLightDefault(lightId);
   const callback = javascriptGenerator.statementToCode(block, 'CALLBACK');
   const varName = `haLight_${lightId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
@@ -559,7 +689,8 @@ Blockly.Blocks['ha_light_state'] = {
 
 javascriptGenerator.forBlock['ha_light_state'] = function() {
   ensureArduinoHAInclude();
-  return ['ha_light_state', Order.ATOMIC];
+  ensureHaLightStateVars();
+  return ['/* requires: ha_light_state (template global) */ ha_light_state', Order.ATOMIC];
 };
 
 /**
@@ -577,7 +708,8 @@ Blockly.Blocks['ha_light_brightness'] = {
 
 javascriptGenerator.forBlock['ha_light_brightness'] = function() {
   ensureArduinoHAInclude();
-  return ['ha_light_brightness', Order.ATOMIC];
+  ensureHaLightStateVars();
+  return ['/* requires: ha_light_brightness (template global) */ ha_light_brightness', Order.ATOMIC];
 };
 
 /**
@@ -605,6 +737,7 @@ Blockly.Blocks['ha_light_set_state'] = {
 javascriptGenerator.forBlock['ha_light_set_state'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const lightId = block.getFieldValue('LIGHT_ID');
+  ensureHaLightDefault(lightId);
   const state = javascriptGenerator.valueToCode(block, 'STATE', Order.ATOMIC) || 'false';
   const brightness = javascriptGenerator.valueToCode(block, 'BRIGHTNESS', Order.ATOMIC) || '255';
   const varName = `haLight_${lightId.replace(/[^a-zA-Z0-9]/g, '_')}`;
@@ -680,6 +813,7 @@ Blockly.Blocks['ha_button_on_press'] = {
 javascriptGenerator.forBlock['ha_button_on_press'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const buttonId = block.getFieldValue('BUTTON_ID');
+  ensureHaButtonDefault(buttonId);
   const callback = javascriptGenerator.statementToCode(block, 'CALLBACK');
   const varName = `haButton_${buttonId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
@@ -812,6 +946,7 @@ Blockly.Blocks['ha_number_on_command'] = {
 javascriptGenerator.forBlock['ha_number_on_command'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const numberId = block.getFieldValue('NUMBER_ID');
+  ensureHaNumberDefault(numberId);
   const callback = javascriptGenerator.statementToCode(block, 'CALLBACK');
   const varName = `haNumber_${numberId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
@@ -845,7 +980,8 @@ Blockly.Blocks['ha_number_value'] = {
 
 javascriptGenerator.forBlock['ha_number_value'] = function() {
   ensureArduinoHAInclude();
-  return ['ha_number_value', Order.ATOMIC];
+  ensureHaNumberValueVar();
+  return ['/* requires: ha_number_value (template global) */ ha_number_value', Order.ATOMIC];
 };
 
 /**
@@ -868,6 +1004,7 @@ Blockly.Blocks['ha_number_set_state'] = {
 javascriptGenerator.forBlock['ha_number_set_state'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const numberId = block.getFieldValue('NUMBER_ID');
+  ensureHaNumberDefault(numberId);
   const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.ATOMIC) || '0';
   const varName = `haNumber_${numberId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
@@ -941,6 +1078,7 @@ Blockly.Blocks['ha_fan_on_command'] = {
 javascriptGenerator.forBlock['ha_fan_on_command'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const fanId = block.getFieldValue('FAN_ID');
+  ensureHaFanDefault(fanId);
   const callback = javascriptGenerator.statementToCode(block, 'CALLBACK');
   const varName = `haFan_${fanId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
@@ -980,7 +1118,8 @@ Blockly.Blocks['ha_fan_state'] = {
 
 javascriptGenerator.forBlock['ha_fan_state'] = function() {
   ensureArduinoHAInclude();
-  return ['ha_fan_state', Order.ATOMIC];
+  ensureHaFanStateVars();
+  return ['/* requires: ha_fan_state (template global) */ ha_fan_state', Order.ATOMIC];
 };
 
 /**
@@ -998,7 +1137,8 @@ Blockly.Blocks['ha_fan_speed'] = {
 
 javascriptGenerator.forBlock['ha_fan_speed'] = function() {
   ensureArduinoHAInclude();
-  return ['ha_fan_speed', Order.ATOMIC];
+  ensureHaFanStateVars();
+  return ['/* requires: ha_fan_speed (template global) */ ha_fan_speed', Order.ATOMIC];
 };
 
 /**
@@ -1024,6 +1164,7 @@ Blockly.Blocks['ha_fan_set_state'] = {
 javascriptGenerator.forBlock['ha_fan_set_state'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const fanId = block.getFieldValue('FAN_ID');
+  ensureHaFanDefault(fanId);
   const state = javascriptGenerator.valueToCode(block, 'STATE', Order.ATOMIC) || 'false';
   const speed = javascriptGenerator.valueToCode(block, 'SPEED', Order.ATOMIC) || '0';
   const varName = `haFan_${fanId.replace(/[^a-zA-Z0-9]/g, '_')}`;
@@ -1106,6 +1247,7 @@ Blockly.Blocks['ha_cover_on_command'] = {
 javascriptGenerator.forBlock['ha_cover_on_command'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const coverId = block.getFieldValue('COVER_ID');
+  ensureHaCoverDefault(coverId);
   const openCallback = javascriptGenerator.statementToCode(block, 'OPEN_CALLBACK');
   const closeCallback = javascriptGenerator.statementToCode(block, 'CLOSE_CALLBACK');
   const stopCallback = javascriptGenerator.statementToCode(block, 'STOP_CALLBACK');
@@ -1154,6 +1296,7 @@ Blockly.Blocks['ha_cover_set_state'] = {
 javascriptGenerator.forBlock['ha_cover_set_state'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const coverId = block.getFieldValue('COVER_ID');
+  ensureHaCoverDefault(coverId);
   const state = block.getFieldValue('STATE');
   const varName = `haCover_${coverId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
@@ -1212,6 +1355,7 @@ Blockly.Blocks['ha_light_on_rgb_command'] = {
 javascriptGenerator.forBlock['ha_light_on_rgb_command'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const lightId = block.getFieldValue('LIGHT_ID');
+  ensureHaLightRgbDefault(lightId);
   const callback = javascriptGenerator.statementToCode(block, 'CALLBACK');
   const varName = `haLight_${lightId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
@@ -1247,7 +1391,8 @@ Blockly.Blocks['ha_light_rgb_r'] = {
 
 javascriptGenerator.forBlock['ha_light_rgb_r'] = function() {
   ensureArduinoHAInclude();
-  return ['ha_light_r', Order.ATOMIC];
+  ensureHaLightRgbVars();
+  return ['/* requires: ha_light_r (template global) */ ha_light_r', Order.ATOMIC];
 };
 
 /**
@@ -1265,7 +1410,8 @@ Blockly.Blocks['ha_light_rgb_g'] = {
 
 javascriptGenerator.forBlock['ha_light_rgb_g'] = function() {
   ensureArduinoHAInclude();
-  return ['ha_light_g', Order.ATOMIC];
+  ensureHaLightRgbVars();
+  return ['/* requires: ha_light_g (template global) */ ha_light_g', Order.ATOMIC];
 };
 
 /**
@@ -1283,7 +1429,8 @@ Blockly.Blocks['ha_light_rgb_b'] = {
 
 javascriptGenerator.forBlock['ha_light_rgb_b'] = function() {
   ensureArduinoHAInclude();
-  return ['ha_light_b', Order.ATOMIC];
+  ensureHaLightRgbVars();
+  return ['/* requires: ha_light_b (template global) */ ha_light_b', Order.ATOMIC];
 };
 
 /**
@@ -1314,6 +1461,7 @@ Blockly.Blocks['ha_light_set_rgb'] = {
 javascriptGenerator.forBlock['ha_light_set_rgb'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const lightId = block.getFieldValue('LIGHT_ID');
+  ensureHaLightRgbDefault(lightId);
   const r = javascriptGenerator.valueToCode(block, 'R', Order.ATOMIC) || '0';
   const g = javascriptGenerator.valueToCode(block, 'G', Order.ATOMIC) || '0';
   const b = javascriptGenerator.valueToCode(block, 'B', Order.ATOMIC) || '0';
@@ -1385,6 +1533,7 @@ Blockly.Blocks['ha_device_trigger_fire'] = {
 javascriptGenerator.forBlock['ha_device_trigger_fire'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const triggerId = block.getFieldValue('TRIGGER_ID');
+  ensureHaDeviceTriggerDefault(triggerId);
   const varName = `haTrigger_${triggerId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
   return `  ${varName}.trigger();\n`;
@@ -1442,6 +1591,7 @@ Blockly.Blocks['ha_scene_on_command'] = {
 javascriptGenerator.forBlock['ha_scene_on_command'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const sceneId = block.getFieldValue('SCENE_ID');
+  ensureHaSceneDefault(sceneId);
   const callback = javascriptGenerator.statementToCode(block, 'CALLBACK');
   const varName = `haScene_${sceneId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
@@ -1506,6 +1656,7 @@ Blockly.Blocks['ha_tag_scanner_scanned'] = {
 javascriptGenerator.forBlock['ha_tag_scanner_scanned'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   const scannerId = block.getFieldValue('SCANNER_ID');
+  ensureHaTagScannerDefault(scannerId);
   const tagId = javascriptGenerator.valueToCode(block, 'TAG_ID', Order.ATOMIC) || '""';
   const varName = `haTagScanner_${scannerId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
