@@ -208,6 +208,9 @@ describe('runOrchestrator — stage="spot" injects unique tag into setupCode', (
     ]);
     const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'orchestrator-out-'));
     // Capture POST bodies sent to compileCpp via a one-shot HTTP listener.
+    // commit #4 (BUG-078 fix layer 3/3) で compile-client.ts が SSE only に
+    // 切替わったため、mock server も `text/event-stream` で SSE event flow
+    // (start → firmware-meta → firmware-chunk → complete) を返却する必要あり。
     const http = await import('http');
     const captured: string[] = [];
     const server = http.createServer((req, res) => {
@@ -215,16 +218,20 @@ describe('runOrchestrator — stage="spot" injects unique tag into setupCode', (
       req.on('data', (chunk) => (body += chunk));
       req.on('end', () => {
         captured.push(body);
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(
-          JSON.stringify({
-            success: true,
-            firmware: '',
-            durationMs: 1,
-            template: 'DigiCodeUSB',
-            pioBoard: 'esp32dev',
-          }),
+        res.writeHead(200, {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache, no-transform',
+          'X-Accel-Buffering': 'no',
+        });
+        // SSE event flow (commit #2 server.ts と整合): start → firmware-meta →
+        // firmware-chunk × 1 → complete (mock のため firmware data は空 base64)
+        res.write('event: start\ndata: {"ts":1}\n\n');
+        res.write('event: firmware-meta\ndata: {"totalChunks":1,"totalBytes":0}\n\n');
+        res.write('event: firmware-chunk\nid: 0\ndata: {"seq":0,"total":1,"data":""}\n\n');
+        res.write(
+          'event: complete\ndata: {"success":true,"durationMs":1,"template":"DigiCodeUSB","pioBoard":"esp32dev"}\n\n',
         );
+        res.end();
       });
     });
     await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
