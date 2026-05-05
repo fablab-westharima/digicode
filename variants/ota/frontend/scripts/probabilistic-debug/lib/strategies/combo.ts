@@ -230,6 +230,30 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     label: 'array',
     operations: ['array_set', 'array_get', 'array_size'],
   },
+  // post-Phase 4-4 commit 2-8 (case_0089/0091/0093/0096 fix): ble_init 登録漏れ。
+  // ble_init が NimBLEDevice::init + pBleServer (server instance) + advertising
+  // pre-config を declare、operation block (ble_add_service / ble_add_characteristic /
+  // ble_notify / ble_on_write / ble_disconnect / ble_start_advertising) が
+  // pBleServer / bleConnected / bleCharMap / bleServiceMap を参照。第80回 BP4
+  // 期 BLE 系 block 追加時、INIT_DEPENDENCIES 登録漏れた systematic 設計欠陥。
+  // 加えて ble_disconnect は NimBLE v2 API drift (`disconnectAll()` → per-conn
+  // loop with `getPeerDevices()`) で fail、ble_beacon_broadcast は
+  // NimBLEAdvertisementData::addData(std::string) overload 不在 (uint8_t* form
+  // 必要) で fail。本 commit で 3 layer 同時 fix。
+  //
+  // 注: ble_uart_setup は init 役を兼ねる別 path (NUS UART)、独立 init で
+  // 自身が pBleServer 等 declare、ble_init と互換 (両者 idempotent)。
+  // GATT custom services (ble_add_service / characteristic 系) は ble_init
+  // 経由で auto-prepend (ble_uart_setup 経由でも OK だが singleton では
+  // ble_init を選ぶ、operations 単純化)。
+  {
+    init: 'ble_init',
+    label: 'ble',
+    operations: [
+      'ble_add_service', 'ble_add_characteristic', 'ble_notify',
+      'ble_on_write', 'ble_disconnect', 'ble_start_advertising',
+    ],
+  },
   {
     init: 'pid_init',
     label: 'pid',

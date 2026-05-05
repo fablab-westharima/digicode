@@ -23,6 +23,47 @@ const BLE_SCAN_COLOR = '#00BCD4';
 
 const NimBLE_INCLUDE = `#include <NimBLEDevice.h>`;
 
+/**
+ * post-Phase 4-4 commit 2-8 (case_0089/0091/0093/0096 fix): BLE GATT operation
+ * block (ble_add_service / ble_notify / ble_disconnect / ble_on_write /
+ * ble_start_advertising) は ble_init が declare する pBleServer / bleConnected /
+ * bleCharMap / bleServiceMap を参照する。Phase 4-4 で ble_init 不在 + operation
+ * 単独配置で fail。
+ *
+ * 各 operation block forBlock 冒頭で本 helper を呼び、ble_init が contribute
+ * する definitions_ keys を conditional default declare。同 key で ble_init と
+ * dedupe、ble_init 同梱時は user device name 反映 (last-write-wins):
+ *  - ble_init alone, before operation → ble_init 値既在 → guard skip → user 値勝ち
+ *  - ble_init after operation         → operation default 先 → ble_init
+ *                                        unconditional override → user 値勝ち
+ *  - operation alone (ble_init 不在) → default device name 'DigiCode' で compile pass
+ *
+ * 注: ble_init / operation 全 block は NimBLE v2 API + bleConnected / bleMessage
+ * 等の global vars に依存、ble_init forBlock の return code には if(!pBleServer)
+ * guard ed init/createServer/setCallbacks/enableScanResponse/setName が含まれる
+ * が、これは setup() 内 statement で operation 単独配置では user code に
+ * 含まれない。本 helper は file-scope global declarations のみを保証 (BLE_GLOBALS /
+ * GATT_GLOBALS / SERVER_CALLBACKS、setup() 内の init は ble_init 同梱時のみ)。
+ *
+ * See rules/digicode/03-block-workflow.md "Init block protocol".
+ */
+function ensureBleInitDefault() {
+  if (!generator.definitions_['include_nimble']) {
+    generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
+  }
+  if (!generator.definitions_['ble_globals']) {
+    // emits: pBleServer, pBleTxChar, bleConnected, bleMessage, bleWriteCharUuid
+    generator.definitions_['ble_globals'] = BLE_GLOBALS;
+  }
+  if (!generator.definitions_['ble_gatt_globals']) {
+    // emits: bleCharMap, bleServiceMap, bleStartedServices
+    generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
+  }
+  if (!generator.definitions_['ble_server_callbacks']) {
+    generator.definitions_['ble_server_callbacks'] = SERVER_CALLBACKS;
+  }
+}
+
 const NUS_UUIDS = `
 #define NUS_SERVICE_UUID "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
 #define NUS_RX_UUID      "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
@@ -320,6 +361,18 @@ generator.forBlock['ble_beacon_broadcast'] = function(block: Blockly.Block) {
   const uuid = block.getFieldValue('UUID');
   generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
   generator.definitions_['include_nimble_beacon'] = '#include <NimBLEBeacon.h>';
+  // post-Phase 4-4 commit 2-8 layer 3 fix (case_0096): 2 件の v2 API drift:
+  //  1. NimBLEAdvertisementData::addData は `(const std::string&)` overload
+  //     不在 (利用可能 = `(const uint8_t*, size_t)` または
+  //     `(const std::vector<uint8_t>&)`)。
+  //  2. NimBLEBeacon::getData() return type は v2 で `const BeaconData&`
+  //     (struct、std::string ではない)。string operator+= で fail。
+  // BeaconData struct には `operator std::vector<uint8_t>()` 変換オペレータ
+  // 既定義 (NimBLEBeacon.h:struct BeaconData)、vector form で safe & cleanest:
+  //   - vector に length byte (26) + AD type (0xFF) を push_back
+  //   - oBeacon.getData() を std::vector<uint8_t> に implicit conversion
+  //   - vector::insert で連結
+  //   - addData(vector) overload 呼出
   return `
   NimBLEDevice::init("");
   NimBLEAdvertising* pAdv = NimBLEDevice::getAdvertising();
@@ -330,10 +383,12 @@ generator.forBlock['ble_beacon_broadcast'] = function(block: Blockly.Block) {
   oBeacon.setMinor(String(${minor}).toInt());
   NimBLEAdvertisementData advData;
   advData.setFlags(0x04);
-  std::string beaconData = "";
-  beaconData += (char)26;
-  beaconData += (char)0xFF;
-  beaconData += oBeacon.getData();
+  std::vector<uint8_t> beaconData;
+  beaconData.reserve(2 + sizeof(NimBLEBeacon::BeaconData));
+  beaconData.push_back(26);   // iBeacon manufacturer data length
+  beaconData.push_back(0xFF); // AD type: Manufacturer Specific Data
+  std::vector<uint8_t> bdVec = oBeacon.getData();  // implicit BeaconData → vector
+  beaconData.insert(beaconData.end(), bdVec.begin(), bdVec.end());
   advData.addData(beaconData);
   pAdv->setAdvertisementData(advData);
   pAdv->start();
@@ -529,9 +584,23 @@ Blockly.Blocks['ble_disconnect'] = {
 };
 
 generator.forBlock['ble_disconnect'] = function() {
+  ensureBleInitDefault();
   generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
   generator.definitions_['ble_globals'] = BLE_GLOBALS;
-  return `  if (pBleServer) { pBleServer->disconnectAll(); NimBLEDevice::startAdvertising(); }\n`;
+  // post-Phase 4-4 commit 2-8 layer 2 fix (case_0089): NimBLE-Arduino v2.4.0
+  // で `disconnectAll()` method 不在 (BUG-065 第60回 closure 残漏れ、当時 v2
+  // callback signature drift fix で全 API drift 列挙されず)。NimBLEServer.h
+  // で確認した v2 API:
+  //   - disconnect(uint16_t connHandle, uint8_t reason) ✅ 存在
+  //   - getPeerDevices() → std::vector<uint16_t> connection handles
+  // per-conn loop で全 client disconnect、再 advertising に統一。
+  // requires: pBleServer (declared by ble_init or ensureBleInitDefault)
+  return `  if (pBleServer) {
+    for (uint16_t _connHandle : pBleServer->getPeerDevices()) {
+      pBleServer->disconnect(_connHandle);
+    }
+    NimBLEDevice::startAdvertising();
+  }\n`;
 };
 
 // ===== BP4-1b: GATT カスタムサービス =====
@@ -642,6 +711,7 @@ Blockly.Blocks['ble_add_service'] = {
 };
 
 generator.forBlock['ble_add_service'] = function(block: Blockly.Block) {
+  ensureBleInitDefault();
   const uuid = block.getFieldValue('UUID');
   generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
   generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
@@ -722,6 +792,7 @@ Blockly.Blocks['ble_add_characteristic'] = {
 };
 
 generator.forBlock['ble_add_characteristic'] = function(block: Blockly.Block) {
+  ensureBleInitDefault();
   const serviceUuid = block.getFieldValue('SERVICE_UUID');
   const charUuid = block.getFieldValue('CHAR_UUID');
   const canRead = block.getFieldValue('READ') === 'TRUE';
@@ -777,10 +848,12 @@ Blockly.Blocks['ble_notify'] = {
 };
 
 generator.forBlock['ble_notify'] = function(block: Blockly.Block) {
+  ensureBleInitDefault();
   const charUuid = block.getFieldValue('CHAR_UUID');
   const value = javascriptGenerator.valueToCode(block, 'VALUE', 0) || '""';
   generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
   generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
+  // requires: bleConnected, bleCharMap (declared by ble_init or ensureBleInitDefault)
   return `  if (bleConnected && bleCharMap.count("${charUuid}")) { String _v = String(${value}); bleCharMap["${charUuid}"]->setValue(_v.c_str()); bleCharMap["${charUuid}"]->notify(); }\n`;
 };
 
@@ -805,6 +878,7 @@ Blockly.Blocks['ble_on_write'] = {
 };
 
 generator.forBlock['ble_on_write'] = function(block: Blockly.Block) {
+  ensureBleInitDefault();
   const charUuid = block.getFieldValue('CHAR_UUID');
   const handler = javascriptGenerator.statementToCode(block, 'HANDLER');
   generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
@@ -849,6 +923,7 @@ Blockly.Blocks['ble_start_advertising'] = {
 };
 
 generator.forBlock['ble_start_advertising'] = function() {
+  ensureBleInitDefault();
   generator.definitions_['include_nimble'] = NimBLE_INCLUDE;
   generator.definitions_['ble_gatt_globals'] = GATT_GLOBALS;
   // Bug 2 fix (2026-05-03): start every service that has not yet been started.
