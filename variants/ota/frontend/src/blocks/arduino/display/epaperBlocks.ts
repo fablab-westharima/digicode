@@ -26,8 +26,35 @@ const EPAPER_COLOR = '#607D8B';
 function buildEpaperInclude(cs: string | number, dc: string | number, rst: string | number, busy: string | number): string {
   return `
 // E-paper default: 2.9" Waveshare GxEPD2_290_BS (b/w)。他パネル使用時は GxEPD2_xxx を変更。
+// emits: epaperDisplay (global instance、include + class typedef + instance を 1 まとめに declare、
+//        operation block (epaper_print / partial_update / full_refresh / clear / draw_image) が参照)
+// post-Phase 4-4 commit 2-4: combo.ts INIT_DEPENDENCIES に epaper_init 登録 (手段 1) +
+// 各 operation block の ensureEpaperDefaultDeclare() (手段 2) 併用、case_0482-0486 解消。
+// See rules/digicode/03-block-workflow.md "Init block protocol".
 #include <GxEPD2_BW.h>
 GxEPD2_BW<GxEPD2_290_BS, GxEPD2_290_BS::HEIGHT> epaperDisplay(GxEPD2_290_BS(/*CS*/${cs}, /*DC*/${dc}, /*RST*/${rst}, /*BUSY*/${busy}));`;
+}
+
+/**
+ * post-Phase 4-4 commit 2-4: 既存 case file (case_0482-0486) で epaper_init 不在の
+ * compile-pass を保証する conditional default declare。combo.ts INIT_DEPENDENCIES
+ * は新規 case 生成時の auto-prepend に effect するが、既存 case file は epaper_init
+ * 不在のまま。手段 2 (operation block 側 default) でも保護する。
+ *
+ * Order analysis (generator.definitions_ last-write-wins):
+ *  - epaper_init alone, before operation        → unconditional assign 値あり →
+ *                                                  operation guard skip → user pins 維持
+ *  - operation alone (epaper_init 不在)         → default pins assign、compile pass
+ *  - epaper_init after operation                → operation default 先 →
+ *                                                  epaper_init unconditional override → user pins 維持
+ *
+ * Default pins (15/27/26/25) は epaper_init block の FieldNumber default と一致
+ * = 同 user 体験の base case (epaper_init を user が置いた default 状態と同等)。
+ */
+function ensureEpaperDefaultDeclare() {
+  if (!generator.definitions_['include_epaper']) {
+    generator.definitions_['include_epaper'] = buildEpaperInclude(15, 27, 26, 25);
+  }
 }
 
 Blockly.Blocks['epaper_init'] = {
@@ -91,10 +118,12 @@ Blockly.Blocks['epaper_print'] = {
 };
 
 generator.forBlock['epaper_print'] = function(block: Blockly.Block) {
+  ensureEpaperDefaultDeclare();
   const text = generator.valueToCode(block, 'TEXT', Order.ATOMIC) || '""';
   const x = generator.valueToCode(block, 'X', Order.ATOMIC) || '0';
   const y = generator.valueToCode(block, 'Y', Order.ATOMIC) || '20';
-  return `epaperDisplay.setCursor((int16_t)(${x}), (int16_t)(${y}));
+  return `// requires: epaperDisplay (declared by epaper_init or ensureEpaperDefaultDeclare() default)
+epaperDisplay.setCursor((int16_t)(${x}), (int16_t)(${y}));
 epaperDisplay.print(String(${text}));
 `;
 };
@@ -111,7 +140,9 @@ Blockly.Blocks['epaper_partial_update'] = {
 };
 
 generator.forBlock['epaper_partial_update'] = function() {
-  return `epaperDisplay.setPartialWindow(0, 0, epaperDisplay.width(), epaperDisplay.height());
+  ensureEpaperDefaultDeclare();
+  return `// requires: epaperDisplay (declared by epaper_init or ensureEpaperDefaultDeclare() default)
+epaperDisplay.setPartialWindow(0, 0, epaperDisplay.width(), epaperDisplay.height());
 epaperDisplay.firstPage();
 do {} while (epaperDisplay.nextPage());
 `;
@@ -129,7 +160,9 @@ Blockly.Blocks['epaper_full_refresh'] = {
 };
 
 generator.forBlock['epaper_full_refresh'] = function() {
-  return `epaperDisplay.setFullWindow();
+  ensureEpaperDefaultDeclare();
+  return `// requires: epaperDisplay (declared by epaper_init or ensureEpaperDefaultDeclare() default)
+epaperDisplay.setFullWindow();
 epaperDisplay.firstPage();
 do {} while (epaperDisplay.nextPage());
 `;
@@ -147,6 +180,8 @@ Blockly.Blocks['epaper_clear'] = {
 };
 
 generator.forBlock['epaper_clear'] = function() {
+  ensureEpaperDefaultDeclare();
+  // requires: epaperDisplay (declared by epaper_init or ensureEpaperDefaultDeclare() default)
   return 'epaperDisplay.fillScreen(GxEPD_WHITE);\n';
 };
 
@@ -172,6 +207,7 @@ Blockly.Blocks['epaper_draw_image'] = {
 };
 
 generator.forBlock['epaper_draw_image'] = function(block: Blockly.Block) {
+  ensureEpaperDefaultDeclare();
   const imgName = generator.valueToCode(block, 'IMG_NAME', Order.ATOMIC) || '""';
   const x = generator.valueToCode(block, 'X', Order.ATOMIC) || '0';
   const y = generator.valueToCode(block, 'Y', Order.ATOMIC) || '0';
@@ -179,6 +215,7 @@ generator.forBlock['epaper_draw_image'] = function(block: Blockly.Block) {
   // Blockly String input は実行時値、ここでは PROGMEM 配列名を期待するため
   // 引用符を剥がして識別子化 (string concat → bitmap pointer)。
   return `// epaper_draw_image: ${imgName} (PROGMEM bitmap、user が事前定義必要)
+// requires: epaperDisplay (declared by epaper_init or ensureEpaperDefaultDeclare() default)
 epaperDisplay.drawBitmap((int16_t)(${x}), (int16_t)(${y}),
   reinterpret_cast<const uint8_t*>(${imgName}), 64, 64, GxEPD_BLACK);
 `;

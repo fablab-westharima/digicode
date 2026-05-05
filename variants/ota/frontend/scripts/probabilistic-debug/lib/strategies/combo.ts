@@ -187,6 +187,21 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     label: 'display',
     operations: ['display_clear', 'display_show', 'display_text'],
   },
+  // post-Phase 4-4 commit 2-4 (case_0482-0486 fix): epaper_init 登録漏れ。
+  // 第80回 ac01a56 で epaper 6 block (GxEPD2_BW、Waveshare 2.9"+) 追加時、
+  // INIT_DEPENDENCIES への登録が漏れた systematic 設計欠陥。epaper_print /
+  // partial_update / full_refresh / clear / draw_image が `epaperDisplay`
+  // global instance を参照、epaper_init 不在で undefined → fail。
+  // 本登録で singleton (prependInitForOp 経由) + combo の両 strategy で
+  // epaper_init を auto-prepend、case_0482-0486 解消。
+  {
+    init: 'epaper_init',
+    label: 'epaper',
+    operations: [
+      'epaper_print', 'epaper_partial_update', 'epaper_full_refresh',
+      'epaper_clear', 'epaper_draw_image',
+    ],
+  },
   {
     init: 'pid_init',
     label: 'pid',
