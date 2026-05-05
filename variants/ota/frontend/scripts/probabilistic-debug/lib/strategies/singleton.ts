@@ -31,6 +31,7 @@ import type { GeneratedCase } from '../case-types';
 import {
   pickMode,
   pickBoard,
+  hasCompatibleBoard,
   collectBlockTypes,
   generateCaseId,
   wrapForCompilability,
@@ -51,6 +52,12 @@ export function generateSingletonCases(
   let seq = options.startIndex ?? 1;
 
   for (const block of catalog.blocks) {
+    // post-Phase 4-4 commit 4 (2026-05-06): skip blocks where no supported
+    // board satisfies the constraints (category-level boardRequires AND
+    // block-level BLOCK_BOARD_GUARDS). Today this excludes hall_sensor_esp32
+    // (arduino-esp32 v3 dropped `hallRead()` for every chip family). Future
+    // chip-specific guarded blocks will skip the same way.
+    if (!hasCompatibleBoard(block, catalog)) continue;
     const mode = pickMode(block);
     const board = pickBoard(block, catalog);
     const synth = synthesizeBlock(block, { mode, blockIndex: idx });

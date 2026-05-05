@@ -80,6 +80,28 @@ export function pickBoard(
   );
 }
 
+/**
+ * Whether at least one supported (non-experimental) board satisfies the
+ * block's constraints (category-level `boardRequires` AND block-level
+ * `BLOCK_BOARD_GUARDS`). Strategies call this before iterating to skip
+ * blocks that no board can host (post-Phase 4-4 commit 4, 2026-05-06).
+ *
+ * Returns false today for `hall_sensor_esp32` because arduino-esp32 v3
+ * removed `hallRead()` for every chip family — every board has
+ * `supportsHallSensor: false`, the BLOCK_BOARD_GUARDS predicate fails on
+ * all of them, and `pickBoard` would throw. Skipping at the iteration
+ * level keeps generation total stable and lets future regenerated cases
+ * re-include the block when arduino-esp32 v4 (or a new chip flag) flips
+ * any board's `supportsHallSensor` to `true`.
+ */
+export function hasCompatibleBoard(
+  block: CatalogBlock,
+  catalog: Catalog,
+): boolean {
+  const supported = catalog.boards.filter((b) => !b.experimental);
+  return supported.some((board) => isBlockAllowedOnBoard(block, board));
+}
+
 export function generateCaseId(seq: number): string {
   return `case_${String(seq).padStart(4, '0')}`;
 }

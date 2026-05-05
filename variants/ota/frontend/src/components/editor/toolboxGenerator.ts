@@ -2,6 +2,7 @@
 import type { RobotMode } from '@/stores/robotModeStore';
 import { ROBOT_MODES } from '@/stores/robotModeStore';
 import type { BoardDefinition } from '@/stores/boardStore';
+import { BLOCK_BOARD_GUARDS } from '@/data/blockBoardGuards';
 import i18n from '@/i18n';
 
 // 翻訳ヘルパー関数
@@ -2032,15 +2033,55 @@ export function generateToolbox(
   // 毎回新しく翻訳を取得（言語切り替え時に対応）
   const toolboxCategories = getToolboxCategories();
 
-  const categoryXml = categories
+  let categoryXml = categories
     .map(catId => toolboxCategories[catId] || '')
     .filter(xml => xml.length > 0)
     .join('\n');
+
+  // post-Phase 4-4 commit 4 (case_0019 fix, 2026-05-06): block-level board guard.
+  // Some blocks emit code that depends on chip-family-specific Arduino-core APIs
+  // that are absent on certain ESP32 variants. The category-level filter above
+  // (5 flags → category visibility) is too coarse: we want to keep the parent
+  // category visible (e.g. `digitalSensor` works on every board) while hiding
+  // a single block within it (e.g. `hall_sensor_esp32`). This map drives a
+  // post-render strip pass that removes any `<block type="X">` whose guard
+  // returns false for the selected board. Reusable for future board-specific
+  // blocks (touchPin, I2S, etc.) without inventing new mechanisms.
+  if (board) {
+    categoryXml = applyBlockBoardGuards(categoryXml, board);
+  }
 
   return `
 <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
 ${categoryXml}
 </xml>`;
+}
+
+/**
+ * Strip block-element XML for any block whose `BLOCK_BOARD_GUARDS` predicate
+ * returns false on the selected board. Mirror of the script-land filter in
+ * `lib/catalog.ts` `isBlockAllowedOnBoard` — UI + case generation share the
+ * same guard list (`@/data/blockBoardGuards`) for symmetric defense.
+ *
+ * The block definition + generator are intentionally kept in the source so
+ * legacy XML workspaces saved before this commit still load (the block
+ * just won't be reachable from the toolbox or case generator going forward).
+ */
+function applyBlockBoardGuards(xml: string, board: BoardDefinition): string {
+  let result = xml;
+  for (const guard of BLOCK_BOARD_GUARDS) {
+    if (guard.required(board)) continue;
+    // Match the block element with optional attributes and either
+    // self-closing form (`/>`) or paired form (`></block>`), plus any
+    // surrounding leading whitespace/newline so we don't leave blank lines.
+    const escaped = guard.blockType.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pattern = new RegExp(
+      `\\s*<block\\s+type="${escaped}"(?:\\s+[^>]*)?(?:></block>|\\s*/>)\\s*\\n?`,
+      'g',
+    );
+    result = result.replace(pattern, '\n');
+  }
+  return result;
 }
 
 /**

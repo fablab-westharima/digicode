@@ -18,14 +18,26 @@ export type FlashMethod = 'wifi' | 'wifi-batch' | 'usb' | 'ble';
  * compile fail し、Phase 3.5 (lib_deps 細分化) より削除を選択。永続的な
  * 技術的負債解消、保守工数削減。
  *
- * 4 軸フラグ:
- * - supportsWifi:    ユーザープログラムで WiFi.h / wifi_connect / MQTT / Home Assistant / HTTP 系を使えるか (BP1-2a)
- * - supportsOta:     WiFi OTA（無線）でのプログラム書き込みに対応するか（対応 FW が焼けるか）
- * - supportsBle:     ユーザープログラムで BLE を使えるか（BP4 で BLE ブロック実装時に参照）
- * - supportsEspNow:  ESP32 ↔ ESP32 直接通信 (esp_now.h) に対応するか。
+ * 5 軸フラグ:
+ * - supportsWifi:        ユーザープログラムで WiFi.h / wifi_connect / MQTT / Home Assistant / HTTP 系を使えるか (BP1-2a)
+ * - supportsOta:         WiFi OTA（無線）でのプログラム書き込みに対応するか（対応 FW が焼けるか）
+ * - supportsBle:         ユーザープログラムで BLE を使えるか（BP4 で BLE ブロック実装時に参照）
+ * - supportsEspNow:      ESP32 ↔ ESP32 直接通信 (esp_now.h) に対応するか。
+ * - supportsHallSensor:  ESP32 内蔵 hall sensor (`hallRead()` API) を持つか。
+ *                        **現時点で全 16 boards `false`**: arduino-esp32 v3.2.1
+ *                        で `hallRead()` 宣言が **全 chip family** から削除済
+ *                        (ML30 内 packages 直接 grep で 0 hits 実証、2026-05-06
+ *                        commit 4)。元祖 ESP32 (xtensa LX6) は hall 素子自体は
+ *                        持つが Arduino core からアクセス不能、ESP32-S3
+ *                        (xtensa LX7) と C3/C6 (RISC-V) は素子そのものが無い。
+ *                        post-Phase 4-4 commit 4 で block-level board guard
+ *                        機構として導入、将来 v4 で復活 or 新 chip 追加時に
+ *                        該当 board のみ true にして再利用する。
  *
  * ツールボックスの可視性フィルタ（toolboxGenerator）とブロックジェネレータの
  * 条件分岐（wifiBlocks / servoBlocks 等）がこのフラグを参照する。
+ * supportsWifi/Ota/Ble/EspNow は category-level filter (5 flag → カテゴリ単位)、
+ * supportsHallSensor は block-level filter (個別 block 単位、新機構)。
  */
 export interface BoardDefinition {
   id: string;
@@ -37,6 +49,7 @@ export interface BoardDefinition {
   supportsOta: boolean;
   supportsBle: boolean;
   supportsEspNow: boolean;
+  supportsHallSensor: boolean;
   supportedFlashMethods: FlashMethod[];
   /**
    * BUG-073: True for boards we ship UI access to but cannot guarantee
@@ -88,6 +101,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-S3 (xtensa LX7、hall 素子なし)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -100,6 +114,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-S3 (xtensa LX7、hall 素子なし)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -112,6 +127,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-S3 (xtensa LX7、hall 素子なし)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -124,6 +140,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-C3 (RISC-V、hall 素子なし)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -136,6 +153,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-PICO-D4 (xtensa LX6、hall 素子はあるが arduino-esp32 v3 で API 削除)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -148,6 +166,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-PICO-D4 (xtensa LX6、hall 素子はあるが arduino-esp32 v3 で API 削除)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -160,6 +179,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-PICO-D4 (xtensa LX6、hall 素子はあるが arduino-esp32 v3 で API 削除)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -172,6 +192,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-PICO (xtensa LX6、hall 素子はあるが arduino-esp32 v3 で API 削除)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -184,6 +205,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32 (xtensa LX6、hall 素子はあるが arduino-esp32 v3 で API 削除)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   // ===== 2. XIAO 系 (発売日新しい順、4 boards) =====
@@ -197,6 +219,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-C6 (RISC-V、hall 素子なし)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -209,6 +232,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-S3 (xtensa LX7、hall 素子なし)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -221,6 +245,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-C3 (RISC-V、hall 素子なし)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   // ===== 3. ESP32 Devkit 系 (汎用、発売日新しい順、4 boards) =====
@@ -234,6 +259,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-C6 (RISC-V、hall 素子なし)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -246,6 +272,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-S3 (xtensa LX7、hall 素子なし)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -258,6 +285,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-C3 (RISC-V、hall 素子なし)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
   {
@@ -270,6 +298,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsOta: true,
     supportsBle: true,
     supportsEspNow: true,
+    supportsHallSensor: false, // ESP32-WROOM (xtensa LX6、hall 素子はあるが arduino-esp32 v3 で API 削除)
     supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
   },
 ];

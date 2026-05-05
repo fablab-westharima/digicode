@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { loadCatalog, indexByType } from '../catalog';
 import { generateSingletonCases } from './singleton';
+import { hasCompatibleBoard } from '../case-helpers';
 import { validateRoots } from '../case-validator';
 
 const cat = loadCatalog();
@@ -8,9 +9,16 @@ const idx = indexByType(cat);
 
 describe('generateSingletonCases', () => {
   const cases = generateSingletonCases(cat);
+  // post-Phase 4-4 commit 4 (2026-05-06): the strategy skips blocks that no
+  // supported board can host (BLOCK_BOARD_GUARDS deny list — currently
+  // `hall_sensor_esp32` for every chip family). Compute the expected
+  // coverage from `hasCompatibleBoard` so the assertion tracks the live
+  // guard list instead of hard-coding "every catalog block".
+  const generableBlocks = cat.blocks.filter((b) => hasCompatibleBoard(b, cat));
+  const skippedBlocks = cat.blocks.filter((b) => !hasCompatibleBoard(b, cat));
 
-  it('produces exactly catalog.blocks.length cases', () => {
-    expect(cases.length).toBe(cat.blocks.length);
+  it('produces exactly the count of blocks with at least one compatible board', () => {
+    expect(cases.length).toBe(generableBlocks.length);
   });
 
   it('every case is tagged with strategy="singleton"', () => {
@@ -50,17 +58,28 @@ describe('generateSingletonCases', () => {
       expect(target).toBeDefined();
       covered++;
     }
-    // Sanity: number of cases that link to a catalog block equals blocks.length
-    expect(covered).toBe(cat.blocks.length);
+    // Sanity: number of cases that link to a catalog block equals the count
+    // of catalog blocks with at least one compatible board (skipped blocks
+    // are excluded by the BLOCK_BOARD_GUARDS deny list).
+    expect(covered).toBe(generableBlocks.length);
   });
 
-  it('singleton coverage hits every catalog block at least once', () => {
+  it('singleton coverage hits every generable catalog block at least once', () => {
     const seen = new Set<string>();
     for (const c of cases) {
       for (const t of c.blocksUsed) seen.add(t);
     }
-    for (const b of cat.blocks) {
+    for (const b of generableBlocks) {
       expect(seen.has(b.type), `block "${b.type}" never appears`).toBe(true);
+    }
+    // Conversely, blocks with no compatible board should NOT appear in any
+    // case (post-Phase 4-4 commit 4: hall_sensor_esp32 is the only such
+    // block today).
+    for (const b of skippedBlocks) {
+      expect(
+        seen.has(b.type),
+        `block "${b.type}" was skipped by BLOCK_BOARD_GUARDS but appeared in a case`,
+      ).toBe(false);
     }
   });
 

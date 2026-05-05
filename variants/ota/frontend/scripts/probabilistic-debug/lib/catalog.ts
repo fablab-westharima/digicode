@@ -15,6 +15,7 @@ import type {
   CatalogBoard,
   Mode,
 } from './catalog-types';
+import { isBlockAllowedByGuards } from '../../../src/data/blockBoardGuards';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,11 +51,24 @@ export function blocksForMode(catalog: Catalog, mode: Mode): CatalogBlock[] {
   return catalog.blocks.filter((b) => b.modes.includes(mode));
 }
 
-/** Whether a block's `boardRequires` capability is satisfied by the board. */
+/**
+ * Whether a block's `boardRequires` capability is satisfied by the board,
+ * AND the block-level guard for its specific blockType permits this board.
+ *
+ * Two layers:
+ *   1. Category-level (`block.boardRequires`) — the 5 catalog flags that
+ *      govern entire categories (wifi/ota/ble/espnow/m5stack).
+ *   2. Block-level (`BLOCK_BOARD_GUARDS` in `src/data/blockBoardGuards.ts`)
+ *      — chip-family-specific deny list keyed by individual blockType.
+ *      The toolbox UI enforces the same guard list, so case generation
+ *      and the user-facing toolbox stay in sync (post-Phase 4-4 commit 4,
+ *      2026-05-06).
+ */
 export function isBlockAllowedOnBoard(
   block: CatalogBlock,
   board: CatalogBoard,
 ): boolean {
+  if (!isBlockAllowedByGuards(block.type, board)) return false;
   if (block.boardRequires === null) return true;
   switch (block.boardRequires) {
     case 'supportsBle':

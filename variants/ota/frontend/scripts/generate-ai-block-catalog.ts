@@ -60,6 +60,15 @@ interface BoardInfo {
   supportsOta: boolean;
   supportsBle: boolean;
   supportsEspNow: boolean;
+  /**
+   * post-Phase 4-4 commit 4 (2026-05-06): block-level guard flag for
+   * `hall_sensor_esp32`. Currently false for every supported board because
+   * arduino-esp32 v3+ removed the `hallRead()` declaration for all chip
+   * families. Kept as a board-level flag + guard so the mechanism is
+   * available for future chip-specific blocks. Mirrors
+   * `BoardDefinition.supportsHallSensor` in src/stores/boardStore.ts.
+   */
+  supportsHallSensor: boolean;
   /** BUG-073: omitted (or false) for the supported set; true for boards
    *  excluded from probabilistic-debug case generation. */
   experimental?: boolean;
@@ -355,7 +364,8 @@ function parseBoards(content: string): BoardInfo[] {
     const otaMatch = /supportsOta:\s*(true|false)/.exec(body);
     const bleMatch = /supportsBle:\s*(true|false)/.exec(body);
     const espnowMatch = /supportsEspNow:\s*(true|false)/.exec(body);
-    if (!nameMatch || !categoryMatch || !wifiMatch || !otaMatch || !bleMatch || !espnowMatch) continue;
+    const hallMatch = /supportsHallSensor:\s*(true|false)/.exec(body);
+    if (!nameMatch || !categoryMatch || !wifiMatch || !otaMatch || !bleMatch || !espnowMatch || !hallMatch) continue;
     const expMatch = /experimental:\s*(true|false)/.exec(body);
     const board: BoardInfo = {
       id: m[1],
@@ -365,6 +375,7 @@ function parseBoards(content: string): BoardInfo[] {
       supportsOta: otaMatch[1] === 'true',
       supportsBle: bleMatch[1] === 'true',
       supportsEspNow: espnowMatch[1] === 'true',
+      supportsHallSensor: hallMatch[1] === 'true',
     };
     if (expMatch && expMatch[1] === 'true') board.experimental = true;
     boards.push(board);

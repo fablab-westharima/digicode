@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { allocate, buildAllCases } from './generate-cases';
 import { loadCatalog, indexByType } from './lib/catalog';
+import { hasCompatibleBoard } from './lib/case-helpers';
 
 const cat = loadCatalog();
 const idx = indexByType(cat);
@@ -123,17 +124,30 @@ describe('buildAllCases (count=1000 full run)', () => {
     }
   });
 
-  it('singleton coverage hits every catalog block', () => {
+  it('singleton coverage hits every generable catalog block', () => {
+    // post-Phase 4-4 commit 4 (2026-05-06): singleton skips blocks with no
+    // compatible board (BLOCK_BOARD_GUARDS deny list — currently
+    // `hall_sensor_esp32` for every chip family). Coverage is checked only
+    // against the generable subset; skipped blocks should be absent from
+    // any case.
     const seenInSingleton = new Set<string>();
     for (const c of result.cases) {
       if (c.strategy !== 'singleton') continue;
       for (const t of c.blocksUsed) seenInSingleton.add(t);
     }
-    for (const b of cat.blocks) {
+    const generable = cat.blocks.filter((b) => hasCompatibleBoard(b, cat));
+    const skipped = cat.blocks.filter((b) => !hasCompatibleBoard(b, cat));
+    for (const b of generable) {
       expect(
         seenInSingleton.has(b.type),
-        `singleton missed catalog block "${b.type}"`,
+        `singleton missed generable catalog block "${b.type}"`,
       ).toBe(true);
+    }
+    for (const b of skipped) {
+      expect(
+        seenInSingleton.has(b.type),
+        `singleton produced a case for guard-skipped block "${b.type}"`,
+      ).toBe(false);
     }
   });
 });

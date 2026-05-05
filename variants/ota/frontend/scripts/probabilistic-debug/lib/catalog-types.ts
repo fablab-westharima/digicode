@@ -88,6 +88,14 @@ export interface CatalogBoard {
   supportsBle: boolean;
   supportsEspNow: boolean;
   /**
+   * post-Phase 4-4 commit 4 (2026-05-06): block-level guard flag.
+   * Currently false for every supported board (arduino-esp32 v3+ removed
+   * `hallRead()` for all chip families). See
+   * `src/data/blockBoardGuards.ts` for the guard list and
+   * `BoardDefinition.supportsHallSensor` in `boardStore.ts` for the source.
+   */
+  supportsHallSensor: boolean;
+  /**
    * BUG-073: True for boards we ship in the UI but exclude from the
    * probabilistic-debug case generator (and thus from the release passRate
    * denominator). Mirrors `BoardDefinition.experimental` in boardStore.ts.
