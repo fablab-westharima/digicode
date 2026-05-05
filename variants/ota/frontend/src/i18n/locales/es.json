@@ -453,6 +453,14 @@
         "compileSuccessBle": "Compilación BLE exitosa",
         "compileFailed": "La compilación ha fallado",
         "unknownError": "Error desconocido"
+      },
+      "sse": {
+        "httpError": "Error HTTP {{status}}",
+        "invalidContentType": "Tipo de respuesta inesperado: {{type}}",
+        "streamEndedNoComplete": "El flujo SSE finalizó sin un evento de finalización",
+        "chunkMismatch": "Discrepancia en el número de fragmentos de firmware ({{received}}/{{expected}}, vuelve a intentarlo)",
+        "chunkMissing": "Falta el fragmento {{seq}} del firmware",
+        "unknown": "Error inesperado del flujo SSE"
       }
     },
     "unknownError": "Error desconocido",

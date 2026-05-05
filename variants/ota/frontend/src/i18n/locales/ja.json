@@ -453,6 +453,14 @@
         "compileSuccessBle": "BLE用コンパイル成功",
         "compileFailed": "コンパイル失敗",
         "unknownError": "不明なエラー"
+      },
+      "sse": {
+        "httpError": "HTTP {{status}} エラー",
+        "invalidContentType": "予期しないレスポンス形式: {{type}}",
+        "streamEndedNoComplete": "SSE ストリームが完了 event なしで終了しました",
+        "chunkMismatch": "ファームウェア chunk 数不整合 ({{received}}/{{expected}}、再試行してください)",
+        "chunkMissing": "ファームウェア chunk {{seq}} が欠落しています",
+        "unknown": "予期しない SSE ストリームエラー"
       }
     },
     "unknownError": "不明なエラー",

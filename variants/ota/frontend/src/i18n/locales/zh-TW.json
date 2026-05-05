@@ -453,6 +453,14 @@
         "compileSuccessBle": "BLE 編譯成功",
         "compileFailed": "編譯失敗",
         "unknownError": "不明錯誤"
+      },
+      "sse": {
+        "httpError": "HTTP {{status}} 錯誤",
+        "invalidContentType": "未預期的回應類型:{{type}}",
+        "streamEndedNoComplete": "SSE 串流在沒有 complete 事件的情況下結束",
+        "chunkMismatch": "韌體區塊數量不一致 ({{received}}/{{expected}}, 請重試)",
+        "chunkMissing": "韌體區塊 {{seq}} 遺失",
+        "unknown": "未預期的 SSE 串流錯誤"
       }
     },
     "unknownError": "不明錯誤",

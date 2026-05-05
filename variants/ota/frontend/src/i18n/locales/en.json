@@ -453,6 +453,14 @@
         "compileSuccessBle": "BLE compile succeeded",
         "compileFailed": "Compile failed",
         "unknownError": "Unknown error"
+      },
+      "sse": {
+        "httpError": "HTTP {{status}} error",
+        "invalidContentType": "Unexpected response type: {{type}}",
+        "streamEndedNoComplete": "SSE stream ended without a complete event",
+        "chunkMismatch": "Firmware chunk count mismatch ({{received}}/{{expected}}, please retry)",
+        "chunkMissing": "Firmware chunk {{seq}} is missing",
+        "unknown": "Unexpected SSE stream error"
       }
     },
     "unknownError": "Unknown error",
