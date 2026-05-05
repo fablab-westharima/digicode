@@ -162,7 +162,16 @@ Blockly.Blocks['ota_loop'] = {
 };
 
 javascriptGenerator.forBlock['ota_loop'] = function() {
-  return `  ArduinoOTA.handle();\n`;
+  // post-Phase 4-4 commit 2-10 fix (case_0370):
+  // Standalone `ota_loop` (without ota_setup or ota_setup_simple) failed with
+  // "'ArduinoOTA' was not declared in this scope" — the ArduinoOTA singleton
+  // is declared in <ArduinoOTA.h>, so any block that touches it must emit the
+  // include. ota_get_hostname (line 184) already does this; ota_loop now
+  // matches that parallel structure. emits: include_arduinoota.
+  // requires: ArduinoOTA.begin() (provided by ota_setup / ota_setup_simple at
+  // runtime — combo strategy auto-prepends one of them via INIT_DEPENDENCIES).
+  generator.definitions_['include_arduinoota'] = '#include <ArduinoOTA.h>';
+  return `  /* requires: ArduinoOTA (include_arduinoota) */ ArduinoOTA.handle();\n`;
 };
 
 // ===== OTA状態 =====

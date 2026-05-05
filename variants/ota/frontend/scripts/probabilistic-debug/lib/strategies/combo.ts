@@ -254,6 +254,22 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
       'ble_on_write', 'ble_disconnect', 'ble_start_advertising',
     ],
   },
+  // post-Phase 4-4 commit 2-10 (case_0370 fix): ota_setup_simple 登録漏れ。
+  // ota_loop が `ArduinoOTA.handle()` を呼び、ota_get_hostname が
+  // `ArduinoOTA.getHostname()` を呼ぶが、両者とも standalone (init 不在) では
+  // ArduinoOTA singleton が undeclared でコンパイル失敗していた。第80回 BP3
+  // 期 OTA block 追加時、INIT_DEPENDENCIES 登録漏れた systematic 設計欠陥。
+  //
+  // ota_setup_simple を init に選択 (full-fledged ota_setup より軽量で
+  // WiFi 接続を前提としない、tooltip "use after mqtt_setup or ha_device_init")。
+  // ota_loop / ota_get_hostname は generator 側で <ArduinoOTA.h> include を
+  // self-emit するため singleton/edge も compile pass (commit 2-10 wifi pattern
+  // 同型の「2 手段併用」案 X)。
+  {
+    init: 'ota_setup_simple',
+    label: 'ota',
+    operations: ['ota_loop', 'ota_get_hostname'],
+  },
   {
     init: 'pid_init',
     label: 'pid',
