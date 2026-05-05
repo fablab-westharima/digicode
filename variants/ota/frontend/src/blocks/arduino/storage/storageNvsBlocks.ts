@@ -42,12 +42,17 @@ Blockly.Blocks['preferences_begin'] = {
 generator.forBlock['preferences_begin'] = function(block: Blockly.Block) {
   const namespace = block.getFieldValue('NAMESPACE');
   const readonly = block.getFieldValue('READONLY') === 'TRUE';
-  // The OTA template (compile-api/templates/DigiCodeOTA.ino:56) already
-  // declares `Preferences preferences;` for its own NVS persistence layer.
-  // Emitting a second declaration here causes "redefinition" (Round 1
-  // cluster #5 RCA, 4 failures). Just include the header.
+  // post-Phase 4-4 commit 2-5 update (case_0207-0212 fix): all 3 templates
+  // (DigiCodeOTA.ino + DigiCodeUSB.ino + DigiCodeBLE.ino) now declare
+  // `Preferences preferences;` at file scope (asymmetry resolved). This
+  // generator emits the header include and the .begin() call only — declaring
+  // the instance here would still cause Round 1 cluster #5 redefinition.
+  // emits: (none — relies on template global `preferences`)
+  // requires: preferences (template-provided instance)
+  // See rules/digicode/03-block-workflow.md "Init block protocol".
   generator.definitions_['include_preferences'] = '#include <Preferences.h>';
-  return `  preferences.begin("${namespace}", ${readonly});\n`;
+  return `  // requires: preferences (declared by all 3 templates as file-scope global)
+  preferences.begin("${namespace}", ${readonly});\n`;
 };
 
 /**
@@ -65,7 +70,7 @@ Blockly.Blocks['preferences_end'] = {
 };
 
 generator.forBlock['preferences_end'] = function() {
-  return '  preferences.end();\n';
+  return '  /* requires: preferences (template global) */ preferences.end();\n';
 };
 
 /**
@@ -96,6 +101,7 @@ generator.forBlock['preferences_put'] = function(block: Blockly.Block) {
   const type = block.getFieldValue('TYPE');
   const key = block.getFieldValue('KEY');
   const value = javascriptGenerator.valueToCode(block, 'VALUE', 0) || '0';
+  // requires: preferences (template global)
   return `  preferences.put${type}("${key}", ${value});\n`;
 };
 
@@ -126,7 +132,8 @@ generator.forBlock['preferences_get'] = function(block: Blockly.Block) {
   const type = block.getFieldValue('TYPE');
   const key = block.getFieldValue('KEY');
   const defaultVal = javascriptGenerator.valueToCode(block, 'DEFAULT', 0) || (type === 'String' ? '""' : '0');
-  return [`preferences.get${type}("${key}", ${defaultVal})`, 0];
+  // requires: preferences (template global)
+  return [`/* requires: preferences */ preferences.get${type}("${key}", ${defaultVal})`, 0];
 };
 
 /**
@@ -147,6 +154,7 @@ Blockly.Blocks['preferences_remove'] = {
 
 generator.forBlock['preferences_remove'] = function(block: Blockly.Block) {
   const key = block.getFieldValue('KEY');
+  // requires: preferences (template global)
   return `  preferences.remove("${key}");\n`;
 };
 
@@ -165,7 +173,7 @@ Blockly.Blocks['preferences_clear'] = {
 };
 
 generator.forBlock['preferences_clear'] = function() {
-  return '  preferences.clear();\n';
+  return '  /* requires: preferences (template global) */ preferences.clear();\n';
 };
 
 // ===== EEPROM (BP3-4) =====

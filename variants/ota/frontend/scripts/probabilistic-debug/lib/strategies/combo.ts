@@ -202,6 +202,21 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
       'epaper_clear', 'epaper_draw_image',
     ],
   },
+  // post-Phase 4-4 commit 2-5 (case_0207-0212 fix): preferences_begin 登録漏れ。
+  // 第80回 BP3 期に NVS storage block 追加時、INIT_DEPENDENCIES への登録漏れた
+  // systematic 設計欠陥。preferences_put / get / remove / clear / end が template
+  // 内 global `Preferences preferences;` instance を参照、template (USB/BLE) で
+  // declare 不在 + preferences_begin generator も declare せず (OTA template
+  // との redefinition 回避設計) で undefined → fail。本 commit で USB+BLE
+  // template に declare 追加 + INIT_DEPENDENCIES 登録の併用 fix。
+  {
+    init: 'preferences_begin',
+    label: 'preferences',
+    operations: [
+      'preferences_put', 'preferences_get', 'preferences_remove',
+      'preferences_clear', 'preferences_end',
+    ],
+  },
   {
     init: 'pid_init',
     label: 'pid',
