@@ -84,6 +84,60 @@ void mqttWifiConnect() {
   }
 }`;
 
+  // post-Phase 4-4 commit 2-3 (case_0246/0254/0255/0794 fix): dependent blocks
+  // reference identifiers that are otherwise only declared by sibling event/
+  // configuration blocks:
+  //   - mqtt_topic_value / mqtt_message_value → mqtt_topic / mqtt_message
+  //     (String) — normally emitted by mqtt_on_message
+  //   - mqtt_connect_with_lwt → mqtt_lwt_topic / mqtt_lwt_message /
+  //     mqtt_lwt_qos / mqtt_lwt_retain (const) — normally emitted by
+  //     mqtt_last_will
+  //
+  // Phase 4-4 confirmed combo strategy auto-prepended mqtt_setup but case_0794
+  // STILL FAILED because mqtt_setup itself didn't declare these — so
+  // INIT_DEPENDENCIES alone isn't sufficient (commit 1 contract case_0794 = the
+  // canonical witness for "両手段必要").
+  //
+  // We register CONDITIONAL default declarations under the same definitions_
+  // keys the sibling blocks use, so:
+  //   - mqtt_on_message / mqtt_last_will alone, before mqtt_setup → sibling
+  //     value already present → our `if (!...)` guard skips → user data wins
+  //   - mqtt_setup before sibling → our defaults emit first, sibling
+  //     unconditional assign overrides → user data wins
+  //   - mqtt_setup alone → defaults emit, compile passes
+  //
+  // See rules/digicode/03-block-workflow.md "Init block protocol".
+  if (!generator.definitions_['mqtt_topic_var']) {
+    generator.definitions_['mqtt_topic_var'] =
+      '// emits: mqtt_topic (mqtt_setup default、mqtt_on_message callback で書き換え)\n' +
+      'String mqtt_topic = "";';
+  }
+  if (!generator.definitions_['mqtt_message_var']) {
+    generator.definitions_['mqtt_message_var'] =
+      '// emits: mqtt_message (mqtt_setup default、mqtt_on_message callback で書き換え)\n' +
+      'String mqtt_message = "";';
+  }
+  if (!generator.definitions_['mqtt_lwt_topic']) {
+    generator.definitions_['mqtt_lwt_topic'] =
+      '// emits: mqtt_lwt_topic (mqtt_setup default、mqtt_last_will で user 値に override)\n' +
+      'const char* mqtt_lwt_topic = "";';
+  }
+  if (!generator.definitions_['mqtt_lwt_message']) {
+    generator.definitions_['mqtt_lwt_message'] =
+      '// emits: mqtt_lwt_message (mqtt_setup default、mqtt_last_will で override)\n' +
+      'const char* mqtt_lwt_message = "";';
+  }
+  if (!generator.definitions_['mqtt_lwt_retain']) {
+    generator.definitions_['mqtt_lwt_retain'] =
+      '// emits: mqtt_lwt_retain (mqtt_setup default、mqtt_last_will で override)\n' +
+      'const bool mqtt_lwt_retain = false;';
+  }
+  if (!generator.definitions_['mqtt_lwt_qos']) {
+    generator.definitions_['mqtt_lwt_qos'] =
+      '// emits: mqtt_lwt_qos (mqtt_setup default、mqtt_last_will で override)\n' +
+      'const int mqtt_lwt_qos = 0;';
+  }
+
   return `  // MQTT Setup
   mqttClient.setServer(mqtt_broker, String(${port}).toInt());
   mqttWifiConnect();
@@ -299,7 +353,9 @@ Blockly.Blocks['mqtt_topic_value'] = {
 };
 
 javascriptGenerator.forBlock['mqtt_topic_value'] = function() {
-  return ['mqtt_topic', Order.ATOMIC];
+  // requires: mqtt_topic (declared by mqtt_setup default or mqtt_on_message
+  // — see rules/digicode/03-block-workflow.md "Init block protocol")
+  return ['/* requires: mqtt_topic */ mqtt_topic', Order.ATOMIC];
 };
 
 /**
@@ -316,7 +372,9 @@ Blockly.Blocks['mqtt_message_value'] = {
 };
 
 javascriptGenerator.forBlock['mqtt_message_value'] = function() {
-  return ['mqtt_message', Order.ATOMIC];
+  // requires: mqtt_message (declared by mqtt_setup default or mqtt_on_message
+  // — see rules/digicode/03-block-workflow.md "Init block protocol")
+  return ['/* requires: mqtt_message */ mqtt_message', Order.ATOMIC];
 };
 
 /**
@@ -520,6 +578,7 @@ javascriptGenerator.forBlock['mqtt_connect_with_lwt'] = function(block: Blockly.
     generator.definitions_['mqtt_username'] = `const char* mqtt_username = "${username}";`;
     generator.definitions_['mqtt_password'] = `const char* mqtt_password = "${password}";`;
     generator.definitions_['mqtt_reconnect_lwt_func'] = `
+// requires: mqtt_lwt_topic, mqtt_lwt_message, mqtt_lwt_qos, mqtt_lwt_retain — declared by mqtt_setup default or mqtt_last_will
 void mqttReconnectLWT() {
   while (!mqttClient.connected()) {
     Serial.print("MQTT connecting with LWT...");
@@ -537,6 +596,7 @@ void mqttReconnectLWT() {
 }`;
   } else {
     generator.definitions_['mqtt_reconnect_lwt_func'] = `
+// requires: mqtt_lwt_topic, mqtt_lwt_message, mqtt_lwt_qos, mqtt_lwt_retain — declared by mqtt_setup default or mqtt_last_will
 void mqttReconnectLWT() {
   while (!mqttClient.connected()) {
     Serial.print("MQTT connecting with LWT...");
