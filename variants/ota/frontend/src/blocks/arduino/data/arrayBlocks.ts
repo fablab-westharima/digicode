@@ -32,6 +32,34 @@ const TYPE_OPTIONS: [string, string][] = [
   ['unsigned int', 'unsigned int'],
 ];
 
+/**
+ * post-Phase 4-4 commit 2-7 (case_0128-0130 fix): array_set / array_get /
+ * array_size operation block 単独配置 (array_create 不在) で `'<varName>' was
+ * not declared in this scope` fail。array_create が `${type} ${varName}[size];`
+ * declare、operation 各 block が同 varName 参照する設計だが INIT_DEPENDENCIES
+ * 登録漏れ + 既存 case file は array_create 不在のまま生成済 (commit 2-4 epaper
+ * と同 2 layer 問題)。
+ *
+ * combo.ts INIT_DEPENDENCIES 登録 (手段 1、新規 case 生成で auto-prepend) +
+ * 本 helper の conditional default declare (手段 2、既存 case file で
+ * compile-pass) の 2 手段併用 fix。
+ *
+ * Default declare = `int <varName>[10];` (1D int 10-element、minimum
+ * compile-pass)。array_create 同梱時は同 definitions_ key で last-write-wins:
+ *  - array_create alone, before operation → array_create 値 (user type/dim/size)
+ *                                            既在 → guard skip → user 値勝ち
+ *  - array_create after operation         → operation default 先 →
+ *                                            array_create unconditional override → user 値勝ち
+ *  - operation alone (array_create 不在)  → default 値で compile pass
+ *
+ * See rules/digicode/03-block-workflow.md "Init block protocol".
+ */
+function ensureArrayDefault(varName: string) {
+  if (!javascriptGenerator.definitions_[`array_${varName}`]) {
+    javascriptGenerator.definitions_[`array_${varName}`] = `// emits: ${varName} (array_create 不在時の default 1D int 10-element stub)\nint ${varName}[10];`;
+  }
+}
+
 // ========================================
 // 配列作成ブロック
 // ========================================
@@ -244,6 +272,7 @@ Blockly.Blocks['array_set'] = {
 
 javascriptGenerator.forBlock['array_set'] = function(block: Blockly.Block) {
   const varName = block.getFieldValue('VAR');
+  ensureArrayDefault(varName);
   const dim = parseInt(block.getFieldValue('DIM'), 10);
   const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.ATOMIC) || '0';
 
@@ -253,6 +282,7 @@ javascriptGenerator.forBlock['array_set'] = function(block: Blockly.Block) {
     indexStr += `[${index}]`;
   }
 
+  // requires: <varName> (declared by array_create or ensureArrayDefault default)
   return `${varName}${indexStr} = ${value};\n`;
 };
 
@@ -323,6 +353,7 @@ Blockly.Blocks['array_get'] = {
 
 javascriptGenerator.forBlock['array_get'] = function(block: Blockly.Block) {
   const varName = block.getFieldValue('VAR');
+  ensureArrayDefault(varName);
   const dim = parseInt(block.getFieldValue('DIM'), 10);
 
   let indexStr = '';
@@ -331,7 +362,8 @@ javascriptGenerator.forBlock['array_get'] = function(block: Blockly.Block) {
     indexStr += `[${index}]`;
   }
 
-  return [`${varName}${indexStr}`, Order.ATOMIC];
+  // requires: <varName> (declared by array_create or ensureArrayDefault default)
+  return [`/* requires: ${varName} */ ${varName}${indexStr}`, Order.ATOMIC];
 };
 
 // ========================================
@@ -353,7 +385,9 @@ Blockly.Blocks['array_size'] = {
 
 javascriptGenerator.forBlock['array_size'] = function(block: Blockly.Block) {
   const varName = block.getFieldValue('VAR');
-  return [`sizeof(${varName})/sizeof(${varName}[0])`, Order.ATOMIC];
+  ensureArrayDefault(varName);
+  // requires: <varName> (declared by array_create or ensureArrayDefault default)
+  return [`/* requires: ${varName} */ sizeof(${varName})/sizeof(${varName}[0])`, Order.ATOMIC];
 };
 
 // ========================================

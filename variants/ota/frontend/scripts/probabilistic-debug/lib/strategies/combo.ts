@@ -217,6 +217,19 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
       'preferences_clear', 'preferences_end',
     ],
   },
+  // post-Phase 4-4 commit 2-7 (case_0128-0130 fix): array_create 登録漏れ。
+  // array_create は varName + type + dim を user 入力で `${type} ${varName}[size];`
+  // declare、array_set / array_get / array_size が同 varName を参照
+  // (default 'myArray')。第80回 commit (BP2 系) で array block 追加時、
+  // INIT_DEPENDENCIES への登録漏れた = singleton/combo strategy で array_create
+  // auto-prepend されず undefined → fail。commit 2-4 epaper / 2-5 preferences と
+  // 同根 pattern。本 commit で INIT_DEPENDENCIES 登録 + arrayBlocks.ts
+  // ensureArrayDefault helper の併用 fix。
+  {
+    init: 'array_create',
+    label: 'array',
+    operations: ['array_set', 'array_get', 'array_size'],
+  },
   {
     init: 'pid_init',
     label: 'pid',
