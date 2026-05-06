@@ -356,11 +356,32 @@ generator.forBlock['qmp6988_read_pressure'] = function() {
 // env4 = SHT40 (Adafruit_SHT4x = sht40_init globals) + BMP280 (Adafruit_BMP280 = bmp280_init globals)。
 // ============================================================================
 
-const ENV3_INCLUDE = `
+// post-Phase 4-4 commit 7 fix (case_0406-0409):
+// Previously `ENV3_INCLUDE` bundled SHT3X + QMP6988 + both globals in a single
+// definitions_ literal (key `include_env3`). `qmp6988_init` (line ~330) and
+// `env3_init` both touched the QMP6988 type, but they used DIFFERENT keys
+// (`include_qmp6988` vs `include_env3`) — definitions_ dedupes by key, not by
+// content, so the file ended up with TWO declarations of `QMP6988 qmp6988;`
+// → `redefinition of 'QMP6988 qmp6988'`. Worse, env3_init alone failed
+// (case_0406) because it emitted BOTH literals itself, so the conflict
+// occurred without qmp6988_init being present.
+//
+// Split the include into two key-aligned literals:
+//   - `include_qmp6988` (line 313)             → QMP6988 header + qmp6988
+//   - `include_sht3x_env3` (this block, below) → SHT3X header + env3Sht3x
+//
+// Operation blocks emit only what they need:
+//   - env3_init             → both (init begins both peripherals)
+//   - env3_read_temperature → SHT3X only (SHT30 channel)
+//   - env3_read_humidity    → SHT3X only (SHT30 channel)
+//   - env3_read_pressure    → QMP6988 only (barometer channel)
+//
+// Now `qmp6988_init + env3_init` in the same case dedupe correctly via the
+// shared `include_qmp6988` key, and env3_init alone declares each global
+// exactly once.
+const SHT3X_ENV3_INCLUDE = `
 #include <SHT3X.h>
-#include <QMP6988.h>
-SHT3X env3Sht3x;
-QMP6988 qmp6988;`;
+SHT3X env3Sht3x;`;
 
 Blockly.Blocks['env3_init'] = {
   init: function() {
@@ -374,8 +395,9 @@ Blockly.Blocks['env3_init'] = {
 };
 
 generator.forBlock['env3_init'] = function() {
-  generator.definitions_['include_env3'] = ENV3_INCLUDE;
-  // qmp6988 は qmp6988_init 経由でも emit される (同 key で dedupe、global 競合なし)
+  // emits: SHT3X global (env3Sht3x) + QMP6988 global (qmp6988、shares
+  // include_qmp6988 key with qmp6988_init for dedupe). begins both in setup.
+  generator.definitions_['include_sht3x_env3'] = SHT3X_ENV3_INCLUDE;
   generator.definitions_['include_qmp6988'] = QMP6988_INCLUDE;
   if (!generator.setups_) generator.setups_ = {};
   generator.setups_['env3_begin'] = 'Wire.begin();\n  env3Sht3x.begin(&Wire);\n  qmp6988.begin();';
@@ -393,8 +415,10 @@ Blockly.Blocks['env3_read_temperature'] = {
 };
 
 generator.forBlock['env3_read_temperature'] = function() {
-  generator.definitions_['include_env3'] = ENV3_INCLUDE;
-  return ['(env3Sht3x.update() ? env3Sht3x.cTemp : 0.0f)', 0];
+  // requires: env3Sht3x (declared by env3_init via include_sht3x_env3).
+  // emits: include_sht3x_env3 only (no QMP6988 dependency).
+  generator.definitions_['include_sht3x_env3'] = SHT3X_ENV3_INCLUDE;
+  return ['/* requires: env3Sht3x */ (env3Sht3x.update() ? env3Sht3x.cTemp : 0.0f)', 0];
 };
 
 Blockly.Blocks['env3_read_humidity'] = {
@@ -408,8 +432,9 @@ Blockly.Blocks['env3_read_humidity'] = {
 };
 
 generator.forBlock['env3_read_humidity'] = function() {
-  generator.definitions_['include_env3'] = ENV3_INCLUDE;
-  return ['(env3Sht3x.update() ? env3Sht3x.humidity : 0.0f)', 0];
+  // requires: env3Sht3x. emits: include_sht3x_env3 only.
+  generator.definitions_['include_sht3x_env3'] = SHT3X_ENV3_INCLUDE;
+  return ['/* requires: env3Sht3x */ (env3Sht3x.update() ? env3Sht3x.humidity : 0.0f)', 0];
 };
 
 Blockly.Blocks['env3_read_pressure'] = {
@@ -423,8 +448,10 @@ Blockly.Blocks['env3_read_pressure'] = {
 };
 
 generator.forBlock['env3_read_pressure'] = function() {
-  generator.definitions_['include_env3'] = ENV3_INCLUDE;
-  return ['(qmp6988.calcPressure() / 100.0f)', 0];
+  // requires: qmp6988 (declared by env3_init via include_qmp6988, shared key
+  // with qmp6988_init). emits: include_qmp6988 only (no SHT3X dependency).
+  generator.definitions_['include_qmp6988'] = QMP6988_INCLUDE;
+  return ['/* requires: qmp6988 */ (qmp6988.calcPressure() / 100.0f)', 0];
 };
 
 /**
