@@ -127,10 +127,24 @@ Blockly.Blocks['ir_sender_send'] = {
 generator.forBlock['ir_sender_send'] = function(block: Blockly.Block) {
   const protocol = block.getFieldValue('PROTOCOL');
   const code = javascriptGenerator.valueToCode(block, 'CODE', 0) || '0';
+  // post-Phase 4-4 commit 13 fix (case_0504):
+  // IRremoteESP8266 v2.8+ の `IRsend::send` には 2 overload (verified via
+  // ML30 stderr diagnostic、IRsend.h:298 + 300):
+  //   1. `bool send(decode_type_t type, uint64_t data, uint16_t nbits, uint16_t repeat=0)`
+  //   2. `bool send(decode_type_t type, const uint8_t* state, uint16_t nbytes)`
+  // generator は `${code}` (default `'0'`) を 2 番目の arg として渡すが、
+  // C++ では `0` literal は **null pointer constant** として解釈可能、
+  // overload 1 (uint64_t) も overload 2 (const uint8_t*) も match して
+  // `call of overloaded 'send(decode_type_t, int, int)' is ambiguous` で fail。
+  // Fix: `(uint64_t)` cast で overload 1 に明示 dispatch、null pointer
+  // 解釈 path を物理的に閉じる。第 3 引数 `32` (uint16_t nbits) は両 overload
+  // 同型のため ambiguity に寄与せず維持。
+  // emits: include_ir_send (IRsend instance) / requires: irSend declared
+  // by ir_sender_init.
   generator.definitions_['include_ir_send'] = generator.definitions_['include_ir_send'] || `
 #include <IRsend.h>
 IRsend irSend(4);`;
-  return `  irSend.send(decode_type_t::${protocol}, ${code}, 32);\n`;
+  return `  /* requires: irSend (ir_sender_init) */ irSend.send(decode_type_t::${protocol}, (uint64_t)(${code}), 32);\n`;
 };
 
 console.log('IR remote blocks loaded');
