@@ -660,13 +660,31 @@ javascriptGenerator.forBlock['ha_light_on_command'] = function(block: Blockly.Bl
   const callback = javascriptGenerator.statementToCode(block, 'CALLBACK');
   const varName = `haLight_${lightId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
+  // post-Phase 4-4 commit W fix (case_0273):
+  // ArduinoHA v2.x で `HALight::onStateCommand` の callback signature が
+  // 変更されている (verified via ML30 grep on
+  // `.pio/libdeps/.../device-types/HALight.h:9`):
+  //   旧 (本 generator が emit していた form):
+  //     void(bool state, uint8_t brightness)
+  //   新 (lib v2.x、HALIGHT_STATE_CALLBACK macro 経由):
+  //     void(bool state, HALight* sender)
+  // brightness は別 callback `onBrightnessCommand` (HALIGHT_BRIGHTNESS_CALLBACK)
+  // で受信する設計に分離。state callback 内で現在 brightness が必要なら
+  // `sender->getCurrentBrightness()` (line 168) 経由で取得。
+  // 同 file 内の他 entity callback (switch/number/fan/cover/light RGB/scene)
+  // は commit 2-6 で正規化済、本 entry のみ migration 漏れ = systematic
+  // 設計欠陥 (lib upgrade 時の追従漏れ、BUG-056 / 058 / 065 / 066 と同 cluster)。
+  // user-facing globals (ha_light_state / ha_light_brightness) は維持、
+  // brightness は sender->getCurrentBrightness() 経由で取得継続。
+  // emits: ha_light_state_var + ha_light_brightness_var + ha_light_callback_*
+  // requires: HALight ${varName} declared (ensureHaLightDefault 経由).
   generator.definitions_['ha_light_state_var'] = 'bool ha_light_state = false;';
   generator.definitions_['ha_light_brightness_var'] = 'uint8_t ha_light_brightness = 0;';
 
   generator.definitions_[`ha_light_callback_${lightId}`] = `
-void onLight_${lightId.replace(/[^a-zA-Z0-9]/g, '_')}Command(bool state, uint8_t brightness) {
+void onLight_${lightId.replace(/[^a-zA-Z0-9]/g, '_')}Command(bool state, HALight* sender) {
   ha_light_state = state;
-  ha_light_brightness = brightness;
+  ha_light_brightness = sender->getCurrentBrightness();
 ${callback}}`;
 
   generator.setups_[`ha_light_callback_${lightId}`] = `  ${varName}.onStateCommand(onLight_${lightId.replace(/[^a-zA-Z0-9]/g, '_')}Command);`;
