@@ -4,13 +4,26 @@
  * 5 ブロック構成 (Fab Academy 頻出デバイス):
  *   - tm1637_init             (CLK/DIO pins、akj7/TM1637 Driver、4-digit + colon)
  *   - tm1637_show_number      (VALUE Number、整数表示)
- *   - tm1637_show_with_colon  (HH/MM Number、時刻表示、template colon 利用)
+ *   - tm1637_show_with_colon  (HH/MM Number、時刻表示、colonOn() で colon 制御)
  *   - tm1637_set_brightness   (LEVEL 0-7)
  *   - tm1637_clear            (全桁消灯)
  *
  * 内部 lib: `akj7/TM1637 Driver@^2.2.1` (commit #2 で追加済、blink/scroll/animation 内蔵)
  * boardRequires: null (GPIO 全 board 対応)
  * 制約: 1 プログラムにつき 1 モジュールのみ (compile-time pin 固定、教育用途では十分)
+ *
+ * post-Phase 4-4 commit 8 fix (case_0470-0474, 2026-05-06):
+ * 旧実装は `TM1637<4, 1> tm1637Display(${clk}, ${dio});` を emit、これは
+ * template syntax の誤用で `'TM1637' is not a template` で全 5 block fail。
+ * 真の lib API は (ML30 内 v2.2.1 ヘッダ直接 grep で確証):
+ *   - `class TM1637 { ... };` (NOT a template、line 130)
+ *   - constructor `TM1637(uint8_t clkPin, uint8_t dataPin) noexcept` (line 141、2 args)
+ *   - `static constexpr uint8_t TOTAL_DIGITS = 4;` (固定、template parameter ではない)
+ *   - methods: `begin()` / `display(value)` / `colonOn()` / `colonOff()` /
+ *     `setBrightness(uint8_t)` / `changeBrightness(uint8_t)` / `clearScreen()`
+ * 第80回 commit ca2b789 で TM1637 5 block 追加時、generator 設計時の lib API
+ * 確認漏れによる systematic 設計欠陥 (rules/digicode/03-block-workflow.md
+ * 「lib API 実 grep 確証」追記候補)。
  */
 import * as Blockly from 'blockly';
 import { javascriptGenerator, Order } from 'blockly/javascript';
@@ -21,9 +34,11 @@ const generator = javascriptGenerator as any;
 const TM1637_COLOR = '#9C27B0';
 
 function buildTm1637Include(clk: string | number, dio: string | number): string {
+  // emits: include_tm1637 (header + tm1637Display global、constructor 2 args)
+  // requires: nothing (file-scope declaration)
   return `
 #include <TM1637.h>
-TM1637<4, 1> tm1637Display(${clk}, ${dio});`;
+TM1637 tm1637Display(${clk}, ${dio});`;
 }
 
 Blockly.Blocks['tm1637_init'] = {
@@ -39,7 +54,7 @@ Blockly.Blocks['tm1637_init'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(TM1637_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_TM1637_INIT_TOOLTIP || 'TM1637 4桁7セグメントディスプレイを初期化します。akj7/TM1637 Driver lib 使用、template <4, 1> で 4 桁 + index 1 にコロン。');
+    this.setTooltip(Blockly.Msg.BLOCKS_TM1637_INIT_TOOLTIP || 'TM1637 4桁7セグメントディスプレイを初期化します。akj7/TM1637 Driver lib 使用、4 桁固定 (TOTAL_DIGITS=4)、コロンは colonOn()/colonOff() で制御。');
   }
 };
 

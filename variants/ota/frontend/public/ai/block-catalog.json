@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-06T01:23:55.510Z",
+  "generatedAt": "2026-05-06T01:31:37.978Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -12897,7 +12897,7 @@
     {
       "type": "tm1637_init",
       "category": "tm1637",
-      "tooltip": "TM1637 4桁7セグメントディスプレイを初期化します。akj7/TM1637 Driver lib 使用、template <4, 1> で 4 桁 + index 1 にコロン。",
+      "tooltip": "TM1637 4桁7セグメントディスプレイを初期化します。akj7/TM1637 Driver lib 使用、4 桁固定 (TOTAL_DIGITS=4)、コロンは colonOn()/colonOff() で制御。",
       "colour": "#9C27B0",
       "isStatement": true,
       "hasOutput": false,
