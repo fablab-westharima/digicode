@@ -189,17 +189,27 @@ generator.forBlock['camera_stream_start'] = function(block: Blockly.Block) {
   generator.definitions_['include_camera'] = CAM_GLOBALS;
   generator.definitions_['include_webserver'] = '#include <WebServer.h>';
   generator.definitions_['cam_stream_server'] = `WebServer camStreamServer(${port});`;
+  // post-Phase 4-4 commit 12 fix (case_0500):
+  // 旧実装は JS template literal で `\r\n` をそのまま記述、JS が \r/\n を
+  // 実改行に展開して C++ 出力に literal newline 混入 → C++ string literal
+  // は改行禁止のため切断、後続 `Content-Type:` が C++ identifier として
+  // parse され `found ':' in nested-name-specifier, expected '::'` で fail。
+  // Fix: JS 側で `\\r\\n` (double-escape) → C++ 出力に literal `\r\n`
+  // (escape sequence) として残し HTTP CRLF を維持。
+  // emits: include_camera + include_webserver + cam_stream_server +
+  //        cam_stream_handler / requires: WiFi connected (user setup),
+  //        camera initialized (via camera_init).
   generator.definitions_['cam_stream_handler'] = `
 void handleCamStream() {
   WiFiClient client = camStreamServer.client();
-  String resp = "HTTP/1.1 200 OK\r\nContent-Type: multipart/x-mixed-replace; boundary=frame\r\n\r\n";
+  String resp = "HTTP/1.1 200 OK\\r\\nContent-Type: multipart/x-mixed-replace; boundary=frame\\r\\n\\r\\n";
   client.print(resp);
   while (client.connected()) {
     camera_fb_t* fb = esp_camera_fb_get();
     if (!fb) continue;
-    client.printf("--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n", fb->len);
+    client.printf("--frame\\r\\nContent-Type: image/jpeg\\r\\nContent-Length: %u\\r\\n\\r\\n", fb->len);
     client.write(fb->buf, fb->len);
-    client.print("\r\n");
+    client.print("\\r\\n");
     esp_camera_fb_return(fb);
     delay(30);
   }
