@@ -111,10 +111,23 @@ Blockly.Blocks['camera_save_sd'] = {
 
 generator.forBlock['camera_save_sd'] = function(block: Blockly.Block) {
   const filename = javascriptGenerator.valueToCode(block, 'FILENAME', 0) || '"/photo.jpg"';
+  // post-Phase 4-4 commit 11 fix (case_0498):
+  // 旧実装は `File f = SD.open(...)` を emit するが <SD.h> include 不在で
+  // `'File' was not declared in this scope` でコンパイル fail。`File` 型は
+  // arduino-esp32 の framework-shipped SD lib (`SD.h`) で declare される。
+  // BUG-068 (第60回 closure) で `lib_ignore = SD` を compile.ts に追加して
+  // registry SD lib を除外する fix は適用済だが、generator side で <SD.h>
+  // を emit する責務は別途残っていた = systematic 設計欠陥。
+  // 注: SD.begin() は user (or 別 init block) 側で呼び出す前提を維持
+  // (camera_save_sd 自体には pin 引数なし、SD card module の SS pin は
+  // board ごとに異なるため init を勝手に injecting しない設計判断)。
+  // emits: include_camera (esp_camera + camFb) + include_sd (SD.h) /
+  // requires: SD initialized (SD.begin() を user 側 setup で実行済)
   generator.definitions_['include_camera'] = CAM_GLOBALS;
+  generator.definitions_['include_sd'] = '#include <SD.h>';
   return [`([&](){
   if (!camFb) return false;
-  File f = SD.open(${filename}, FILE_WRITE);
+  /* requires: SD initialized */ File f = SD.open(${filename}, FILE_WRITE);
   if (!f) return false;
   f.write(camFb->buf, camFb->len);
   f.close();
