@@ -68,6 +68,23 @@ javascriptGenerator.forBlock['text'] = function (block: Blockly.Block) {
   return [`"${escaped}"`, Order.ATOMIC];
 };
 
+// post-Phase 4-4 commit 15 fix (case_0564):
+// Blockly stock `text_length` emits JavaScript `text.length` (a property),
+// which is invalid C++ — `const char[N]` literals have no `.length` member,
+// producing `request for member 'length' in '""', which is of non-class type
+// 'const char [1]'`. Wrap the operand in `String(...)` so the C-string
+// literal is converted to Arduino's `String` class, which exposes a
+// `.length()` method returning `unsigned int`. Empty / connected /
+// numeric-coerced operands all work because Arduino String has explicit
+// constructors for `int`, `float`, `const char*`, `String`, etc.
+// (verified earlier this session at WString.h:57-77).
+// emits: nothing extra (Arduino String is built into the core)
+// requires: nothing extra
+javascriptGenerator.forBlock['text_length'] = function (block: Blockly.Block) {
+  const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.NONE) || '""';
+  return [`String(${value}).length()`, Order.FUNCTION_CALL];
+};
+
 // ===== Math overrides (Round 1 cluster #7 RCA) =====
 // Stock JS generator emits `Math.min/max/round/floor/ceil/...` which Arduino
 // C++ does not have (C++ uses bare `min`/`max` macros + math.h functions).
