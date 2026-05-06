@@ -75,10 +75,17 @@ Blockly.Blocks['ntp_get_unix_time'] = {
 };
 
 generator.forBlock['ntp_get_unix_time'] = function() {
-  return [
-    '#if defined(ESP32)\n(unsigned long)time(nullptr)\n#else\nntpClient.getEpochTime()\n#endif',
-    0
-  ];
+  // post-Phase 4-4 commit 14 fix (case_0546):
+  // 旧実装は value context で `#if defined(ESP32) ... #else ... #endif` を
+  // 直接 emit していたが、`Serial.println(...)` 等の expression に展開
+  // されると行頭が `Serial.println(` で始まるため C preprocessor は `#if` を
+  // directive として認識せず、C++ parser が `'stray # in program'` と判定。
+  // 56.md (2026-05-05) で RP2040 系 4 boards 完全削除済 = ESP32 系 16 boards
+  // 専用、`#else` path (RP2040 ntpClient) は実態として dead code。
+  // Fix: ESP32-only path のみ emit、`#if/#else/#endif` 削除。
+  // emits: nothing (uses `<time.h>` already pulled in by ntp_init) /
+  // requires: configTime() 実行済 (ntp_init 経由) で system clock 同期済.
+  return ['/* requires: configTime() called */ (unsigned long)time(nullptr)', 0];
 };
 
 /**
@@ -146,16 +153,10 @@ generator.forBlock['ntp_get_component'] = function(block: Blockly.Block) {
     minute: 'tm_min',
     second: 'tm_sec',
   };
-  const ntpMap: Record<string, string> = {
-    year: 'ntpClient.getEpochTime()', // RP2040 では struct tm で同様に取得
-    month: 'ntpClient.getEpochTime()',
-    day: 'ntpClient.getEpochTime()',
-    hour: 'ntpClient.getHours()',
-    minute: 'ntpClient.getMinutes()',
-    second: 'ntpClient.getSeconds()',
-  };
+  // 56.md (2026-05-05) で RP2040 系削除、ESP32 系 16 boards 専用。
+  // 旧 `ntpMap`/`ntpExpr` (RP2040 NTPClient fallback) は dead code として
+  // 削除 (post-Phase 4-4 commit 14)。
   const tmField = componentMap[component] || 'tm_hour';
-  const ntpExpr = ntpMap[component] || 'ntpClient.getHours()';
 
   if (['year', 'month', 'day'].includes(component)) {
     generator.definitions_['ntp_component_func'] = `
@@ -175,10 +176,17 @@ int getTimeComponent(const char* comp) {
     return [`getTimeComponent("${component}")`, 0];
   }
 
+  // post-Phase 4-4 commit 14 fix (latent bug, sibling to case_0546):
+  // ntp_get_component の hour/minute/second path も value context で
+  // `#if/#else/#endif` を emit していたため、case_0545 では default `year`
+  // (helper 関数 path) で偶然 PASS したが、hour/minute/second 選択時に
+  // 同根 fail (`'stray # in program'`)。56.md ESP32-only に合わせて
+  // ESP32 path のみ emit。helper 関数 path (year/month/day) は line 161 の
+  // `getTimeComponent` helper 内に `#if` がある形式 (helper 関数定義は行頭
+  // `#` で OK、preprocessor directive として正しく処理される) で不変。
+  // requires: getLocalTime() callable (ntp_init で system clock 同期済).
   return [
-    `(int)(` +
-    `#if defined(ESP32)\n([&](){ struct tm t; getLocalTime(&t); return t.${tmField}; })()\n` +
-    `#else\n${ntpExpr}\n#endif\n)`,
+    `(int)(/* requires: getLocalTime() callable */ ([&](){ struct tm t; getLocalTime(&t); return t.${tmField}; })())`,
     0
   ];
 };
