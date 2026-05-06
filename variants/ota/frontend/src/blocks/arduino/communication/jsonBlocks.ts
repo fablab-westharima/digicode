@@ -450,16 +450,29 @@ javascriptGenerator.forBlock['json_simple'] = function(block: Blockly.Block) {
 
   generator.definitions_['include_arduinojson'] = '#include <ArduinoJson.h>';
 
+  // post-Phase 4-4 commit 10 fix (case_0367, v2):
+  // 旧実装は 2 overload (String,String,String,String) と (String,float,String,float)
+  // を提供。VALUE1/VALUE2 setCheck は ['String','Number','Boolean'] 混在許容
+  // のため、`jsonSimple("", "", "", 0)` のような mixed-type 呼出が発生し、
+  // 4 番目の int → String 変換が `String(const char*)` と
+  // `String(const __FlashStringHelper*)` の両 candidate で ambiguous。
+  //
+  // v1 試行: helper を template (typename V1, V2) 1 個に集約 → Arduino/PIO
+  // auto-prototype が `template` clause を hoist せず、自動生成した forward
+  // declaration の中で V1/V2 が undeclared になり別エラーで fail
+  // (`'V1' has not been declared`)。Arduino preprocessor の構造的制約。
+  //
+  // v2 採用: helper は all-String 単一 overload に簡素化、call site で
+  // `String(${valueN})` wrap で int/float/bool を実体的に String 化して
+  // 一意 dispatch。trade-off: JSON 出力は string typed values (`"k1":"42"`)
+  // だが、本 block は "simple JSON" 用途で型保持より「ambiguity 不在 +
+  // mixed-type 入力受容」を優先。型保持が必要な場合は別 block (json_create
+  // _object + 型別 json_add_*) を使う設計。
+  //
+  // emits: include_arduinojson + json_simple_func (single overload) /
+  // requires: nothing extra (Arduino String 標準 ctor は int/float/bool 受領).
   generator.definitions_['json_simple_func'] = `
-String jsonSimple(String k1, String v1, String k2, String v2) {
-  StaticJsonDocument<256> doc;
-  doc[k1] = v1;
-  doc[k2] = v2;
-  String output;
-  serializeJson(doc, output);
-  return output;
-}
-String jsonSimple(String k1, float v1, String k2, float v2) {
+String jsonSimple(const String& k1, const String& v1, const String& k2, const String& v2) {
   StaticJsonDocument<256> doc;
   doc[k1] = v1;
   doc[k2] = v2;
@@ -468,7 +481,7 @@ String jsonSimple(String k1, float v1, String k2, float v2) {
   return output;
 }`;
 
-  return [`jsonSimple(${key1}, ${value1}, ${key2}, ${value2})`, Order.FUNCTION_CALL];
+  return [`jsonSimple(${key1}, String(${value1}), ${key2}, String(${value2}))`, Order.FUNCTION_CALL];
 };
 
 console.log('JSON blocks loaded');
