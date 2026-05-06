@@ -404,7 +404,15 @@ String urlEncode(String str) {
   return encoded;
 }`;
 
-  return [`(${baseUrl} + "?" + ${param1Name} + "=" + urlEncode(String(${param1Value})))`, Order.ADDITION];
+  // post-Phase 4-4 commit 9 fix (case_0349):
+  // 旧: `(${baseUrl} + "?" + ...)` was emitted directly. When BASE_URL is
+  // unconnected, valueToCode returns the literal `""` (a `const char[1]`),
+  // and `"" + "?"` becomes `const char[1] + const char[2]` which C++
+  // rejects ('invalid operands ... to binary operator+'). Wrapping the
+  // first operand in `String(...)` forces the chain into Arduino String
+  // concatenation, after which mixed `String + const char*` works.
+  // emits: url_encode_func only / requires: nothing extra.
+  return [`(String(${baseUrl}) + "?" + ${param1Name} + "=" + urlEncode(String(${param1Value})))`, Order.ADDITION];
 };
 
 console.log('HTTP blocks loaded');
