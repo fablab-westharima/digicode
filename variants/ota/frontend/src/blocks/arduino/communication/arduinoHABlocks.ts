@@ -1026,7 +1026,30 @@ javascriptGenerator.forBlock['ha_number_set_state'] = function(block: Blockly.Bl
   const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.ATOMIC) || '0';
   const varName = `haNumber_${numberId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
-  return `  ${varName}.setState(${value});\n`;
+  // post-Phase 4-4 commit X fix (case_0286):
+  // ArduinoHA `HANumber::setState` は `_SET_STATE_OVERLOAD(type)` macro 経由で
+  // 8 overloads (int8/int16/int32/uint8/uint16/uint32/int/float) を提供
+  // (verified via ML30 grep on .../device-types/HANumber.h:5-12 macro
+  // definition + lines 59-68 instantiations)。`setState(0)` の int literal は
+  // integer promotion / narrowing / widening の全 conversion が同 rank の
+  // implicit conversion candidate となり `call of overloaded 'setState(int)'
+  // is ambiguous` で全 8 候補を提示してコンパイル fail。connected な
+  // valueToCode でも `int` / `float` 連結式は同 ambiguity に陥る。
+  //
+  // BUG-066 (改定log 第61回 closure) の `ha_*::setValue(static_cast<float>())`
+  // 適用と同根 cluster (lib upgrade で overload 増加 → mixed-type
+  // implicit conversion ambiguous)、本 commit で setState 系も同 fix を
+  // 適用して整合性確保。
+  //
+  // 罠 B defense (本セッション 12 件目): Phase 4-4 stderr
+  // `'haNumber_servo_angle' was not declared` は commit 2-6 effective 前の
+  // stale cached fail。cache eviction 後の fresh smoke で真因 (overload
+  // ambiguity) が露呈、commit W と同 pattern (本 session 2 件目の stale
+  // stderr 発見)。
+  //
+  // emits: nothing extra / requires: HANumber ${varName} declared
+  // (ensureHaNumberDefault 経由).
+  return `  ${varName}.setState(static_cast<float>(${value}));\n`;
 };
 
 // ===== ファン（HAFan） =====
