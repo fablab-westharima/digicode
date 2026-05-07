@@ -78,9 +78,22 @@ export interface CompileClientOptions {
   noCache?: boolean;
 }
 
-// PlatformIO Core: cold compile (first per board×template) ~52s, warm ~9.6s.
-// 180s gives cold compiles ~3.5× headroom while cutting truly stuck runs.
-const DEFAULT_TIMEOUT_MS = 180_000;
+// amendment 8 (2026-05-07): per-attempt compile timeout default.
+// History:
+//   ~9.6s warm, ~52s cold (45.md Phase 1 baseline) → 180s default with 3.5×
+//     headroom seemed safe.
+//   BUG-078 (Stage D v2 第84回): heavy lib lottery (NimBLE + ArduinoHA +
+//     deep registry chain) ranged 360-509s. 180s default + missing CLI
+//     `--timeout-ms` flag failed 11/77 spot cases.
+//   amendment 8 raises default to 1000s (16.7 min) to cover the worst
+//     observed cold compile + buffer. SSE heartbeat (15s) + stuck detection
+//     (30s of silence) catches genuinely-hung compiles long before this
+//     timeout fires; 1000s exists only for "first compile after volume
+//     eviction with the heaviest lib set" outlier. Pair with server-side
+//     COMPILE_TIMEOUT_MS=900s (Dockerfile baked, amendment 7) — server kills
+//     before client times out, so the client never reports a false timeout
+//     when the server has already errored.
+const DEFAULT_TIMEOUT_MS = 1_000_000;
 
 // Stuck detection: heartbeat 15s 間隔に対し 2× safety margin。
 const DEFAULT_STUCK_MS = 30_000;

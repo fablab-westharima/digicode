@@ -47,7 +47,12 @@ export { processWithConcurrency };
 
 const DEFAULT_SERVER_URL = 'https://compile.digital-fab.jp';
 const DEFAULT_PARALLEL = 4;
-const DEFAULT_TIMEOUT_MS = 180_000;
+// amendment 8 (2026-05-07): match compile-client.ts DEFAULT_TIMEOUT_MS so
+// `npx tsx orchestrator.ts ...` without `--timeout-ms` covers the worst
+// observed cold compile (Stage D v2 max 509s) plus headroom. Without this
+// bump every full re-run had to remember `--timeout-ms 1000000`, and BUG-078
+// 第84回 hit this trap (11/77 timeout fails at default 180s).
+const DEFAULT_TIMEOUT_MS = 1_000_000;
 const DEFAULT_CONNECTION_TYPE: 'ota' | 'usb' | 'ble' = 'ota';
 const DEFAULT_STAGE: CaseStage = 'full';
 const VALID_STAGES: ReadonlyArray<CaseStage> = ['full', 'code-gen', 'spot'];
