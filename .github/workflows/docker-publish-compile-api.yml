@@ -3,12 +3,17 @@ name: Build and Publish compile-api Docker Image
 # Push to main → build the compile-api image and push to ghcr.io.
 # Triggered only when something under compile-api/ changes, so frontend /
 # backend / docs commits don't waste a 30-40 min build slot.
+# This workflow file is also in the trigger list so changes to the build
+# pipeline itself rebuild the image without needing a synthetic
+# compile-api/ touch (added 2026-05-07 alongside the free-disk-space
+# step that fixes amendment 9's "No space left on device" failure).
 on:
   push:
     branches:
       - main
     paths:
       - 'compile-api/**'
+      - '.github/workflows/docker-publish-compile-api.yml'
 
 # Cancel in-flight builds for the same ref when a newer push arrives.
 concurrency:
@@ -29,6 +34,35 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      # amendment 9 (2026-05-07, post-fail commit): warmup-pio.ts bakes 7 PIO
+      # target persistent projects (~3-4 GB) into the image at build time, so
+      # the runtime first compile per (board × template) is ~30s instead of
+      # ~5 min cold (Stage D v2 max 509s, BUG-078 第84回). The first attempt
+      # at amendment 9 (commit 1e64d9c, run #36) ran out of disk during
+      # `Build and push Docker image` export — Annotation:
+      #   "System.IO.IOException: No space left on device :
+      #    '/home/runner/actions-runner/_extracted/_diag/...'"
+      # ubuntu-latest's ~14 GB free disk + GHA cache mode=max + amendment 9
+      # image growth + build context tmp files put us over the cliff.
+      # warmup-pio itself completed fine (7/7 targets baked in 57.3 min).
+      #
+      # jlumbroso/free-disk-space removes preinstalled runner tooling
+      # (Android SDK ~14 GB, .NET, Haskell, CodeQL, preinstalled docker
+      # images, swap) for ~28-30 GB total freed. Widely adopted across the
+      # GH Actions ecosystem; safe for our build (we don't use Android /
+      # .NET / Haskell; the docker daemon stays, only its preinstalled
+      # images go).
+      - name: Free disk space (amendment 9 build context)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
