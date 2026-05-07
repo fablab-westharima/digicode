@@ -42,6 +42,17 @@ export interface CaseResult {
   stderr?: string;
   retryUsed?: boolean;
   stage?: CaseStage;
+  /**
+   * amendment 9 (2026-05-07): the server's result-blob cache HIT/MISS signal,
+   * propagated from CompileResult.cached. `true` = HIT (~50ms latency, no
+   * fresh compile), `false` = MISS (real PIO run), `undefined` = unknown
+   * (older server, error path, or stage='code-gen' which has no compile).
+   * Aggregated by ResultStore.summary() into cacheHit / cacheMiss /
+   * cacheUnknown counts so the orchestrator's per-run report can call out
+   * whether the cache was effective or whether the run actually exercised
+   * cold-compile paths.
+   */
+  cached?: boolean;
 }
 
 export interface RunMetadata {
@@ -65,6 +76,12 @@ export interface RunSummary {
   passRate: number;
   /** Mean ML30 round-trip duration over successful + failed compiles. */
   meanDurationMs: number;
+  /** amendment 9 cache HIT/MISS aggregation. `cacheUnknown` = stage='code-gen'
+   *  (no compile happened) + older-server responses + error paths that did
+   *  not surface a `complete` event. */
+  cacheHit: number;
+  cacheMiss: number;
+  cacheUnknown: number;
 }
 
 export interface CombinedResults {
@@ -116,12 +133,23 @@ export class ResultStore {
     const meanDurationMs = total === 0
       ? 0
       : this.results.reduce((acc, r) => acc + r.durationMs, 0) / total;
+    let cacheHit = 0;
+    let cacheMiss = 0;
+    let cacheUnknown = 0;
+    for (const r of this.results) {
+      if (r.cached === true) cacheHit++;
+      else if (r.cached === false) cacheMiss++;
+      else cacheUnknown++;
+    }
     return {
       total,
       pass,
       fail: total - pass,
       passRate: total === 0 ? 0 : pass / total,
       meanDurationMs,
+      cacheHit,
+      cacheMiss,
+      cacheUnknown,
     };
   }
 

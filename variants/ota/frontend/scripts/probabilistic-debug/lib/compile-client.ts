@@ -44,6 +44,15 @@ export interface CompileResult {
    * 524 は SSE で原理発生せず、`event: error` (compile fail) は retry なし。
    */
   retryUsed?: boolean;
+  /**
+   * amendment 9 (2026-05-07): `true` when the server served the result from
+   * its result-blob cache (cache.ts), `false` for a fresh compile, `undefined`
+   * when the server response did not carry the field (older servers / errors).
+   * The orchestrator aggregates this for the per-run cache HIT/MISS report.
+   * When `noCache: true` is set, this should always be `false` from a
+   * compliant server.
+   */
+  cached?: boolean;
 }
 
 export interface CompileClientOptions {
@@ -59,6 +68,14 @@ export interface CompileClientOptions {
    * margin。production smoke (commit #5) で false positive 観測時に 60s 化検討。
    */
   stuckMs?: number;
+  /**
+   * amendment 9 (2026-05-07): pass `?no-cache=true` to the server so the
+   * result-blob cache (cache.ts) is bypassed for both lookup and store. Used
+   * by the orchestrator's `--no-cache` flag for cold-compile measurement and
+   * to keep the production cache untouched during test runs. Production
+   * clients (frontend) MUST NOT set this. Default false.
+   */
+  noCache?: boolean;
 }
 
 // PlatformIO Core: cold compile (first per board×template) ~52s, warm ~9.6s.
@@ -198,7 +215,14 @@ async function attempt(
   };
 
   const isEsp32 = opts.board.startsWith('esp32:');
-  const queryParams = isEsp32 ? '?fullPackage=true' : '';
+  // amendment 9: append `no-cache=true` when caller opts in. Combine with
+  // `fullPackage` cleanly even though only one is currently expected on
+  // ESP32 production traffic (the orchestrator's --no-cache also targets
+  // ESP32-only board matrices today).
+  const queryPairs: string[] = [];
+  if (isEsp32) queryPairs.push('fullPackage=true');
+  if (opts.noCache) queryPairs.push('no-cache=true');
+  const queryParams = queryPairs.length > 0 ? `?${queryPairs.join('&')}` : '';
   const url = `${opts.serverUrl}/api/compile/sse${queryParams}`;
 
   const body = JSON.stringify({
@@ -263,6 +287,7 @@ async function attempt(
     let totalChunks: number | undefined;
     let firmwareChunkCount = 0;
     let completeReceived = false;
+    let cached: boolean | undefined;
     let errorData: { error?: string; details?: string; stderr?: string } | null = null;
     let parseError: string | null = null;
 
@@ -285,6 +310,11 @@ async function attempt(
             break; // 単一 event 受信確認のみ (orchestrator は success/fail のみ判定)
           case 'complete':
             completeReceived = true;
+            // amendment 9: propagate the server's cache HIT/MISS signal to
+            // the orchestrator's per-run aggregation. `cached` is omitted
+            // entirely from older servers, in which case we leave it as
+            // undefined (CompileResult.cached === undefined → "unknown").
+            if (obj && typeof obj.cached === 'boolean') cached = obj.cached;
             break;
           case 'error':
             errorData = (obj as { error?: string; details?: string; stderr?: string }) ?? { error: 'unknown error' };
@@ -354,7 +384,7 @@ async function attempt(
       };
     }
 
-    return { ok: true, durationMs: Date.now() - start, status: response.status };
+    return { ok: true, durationMs: Date.now() - start, status: response.status, cached };
   } catch (e) {
     const err = e as Error;
     const durationMs = Date.now() - start;

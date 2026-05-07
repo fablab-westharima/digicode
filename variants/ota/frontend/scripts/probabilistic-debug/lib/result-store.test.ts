@@ -111,6 +111,23 @@ describe('ResultStore', () => {
     expect(combined.summary.total).toBe(0);
     expect(combined.summary.passRate).toBe(0);
     expect(combined.summary.meanDurationMs).toBe(0);
+    // amendment 9: empty run should report all-zero cache aggregation.
+    expect(combined.summary.cacheHit).toBe(0);
+    expect(combined.summary.cacheMiss).toBe(0);
+    expect(combined.summary.cacheUnknown).toBe(0);
+  });
+
+  it('aggregates cacheHit / cacheMiss / cacheUnknown from CaseResult.cached (amendment 9)', () => {
+    const store = new ResultStore(tmpDir, baseMeta);
+    store.append({ ...okResult, caseId: 'case_hit_a', cached: true });
+    store.append({ ...okResult, caseId: 'case_hit_b', cached: true });
+    store.append({ ...okResult, caseId: 'case_miss_a', cached: false });
+    // No `cached` field — older server / code-gen / error path counts as unknown.
+    store.append({ ...okResult, caseId: 'case_unknown_a' });
+    const combined = store.finalize();
+    expect(combined.summary.cacheHit).toBe(2);
+    expect(combined.summary.cacheMiss).toBe(1);
+    expect(combined.summary.cacheUnknown).toBe(1);
   });
 });
 

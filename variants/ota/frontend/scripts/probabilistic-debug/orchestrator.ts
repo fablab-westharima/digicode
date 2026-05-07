@@ -81,6 +81,7 @@ interface CliArgs {
   stage: CaseStage;
   sampleSize?: number;
   boardCoverage: BoardCoverage;
+  noCache: boolean;
 }
 
 export interface OrchestratorOptions {
@@ -110,6 +111,13 @@ export interface OrchestratorOptions {
   sampleSize?: number;
   /** Stage 3 only: which boards to include (default 'all'). */
   boardCoverage?: BoardCoverage;
+  /**
+   * amendment 9 (2026-05-07): pass `?no-cache=true` to the compile API so
+   * the result-blob cache is bypassed. Used for cold-compile measurement
+   * after a cutover and to keep the production cache untouched during test
+   * sessions. Default false.
+   */
+  noCache?: boolean;
 }
 
 // --- CLI parsing -------------------------------------------------------
@@ -181,6 +189,7 @@ function parseArgs(argv: string[]): CliArgs {
       ? Number.parseInt(args['sample-size'], 10)
       : undefined,
     boardCoverage,
+    noCache: args['no-cache'] === 'true',
   };
 }
 
@@ -208,6 +217,11 @@ function printHelp(): void {
                          Phase 4-3 — board-coverage real-compile sweep).
   --sample-size N        Stage 3 only: total cases to sample (default ${DEFAULT_SPOT_SAMPLE_SIZE}).
   --board-coverage MODE  Stage 3 only: '${VALID_BOARD_COVERAGE.join(' | ')}' (default 'all').
+  --no-cache             amendment 9 (2026-05-07): bypass the compile-server
+                         result-blob cache for both lookup and store. Use for
+                         cold-compile measurement post-cutover and to keep
+                         the production cache untouched during test runs.
+                         Production clients (frontend) MUST NOT use this.
   --help                 Show this message
 `,
   );
@@ -223,6 +237,7 @@ async function processCase(
   timeoutMs: number,
   stage: CaseStage,
   uniqueTag?: string,
+  noCache?: boolean,
 ): Promise<CaseResult> {
   const xmlPath = path.join(inDir, entry.fileName);
   const start = Date.now();
@@ -275,6 +290,7 @@ async function processCase(
       board: fqbn,
       connectionType,
       timeoutMs,
+      noCache,
     });
     return {
       caseId: entry.id,
@@ -288,6 +304,7 @@ async function processCase(
       error: compileResult.error,
       stderr: compileResult.stderr,
       retryUsed: compileResult.retryUsed,
+      cached: compileResult.cached,
       stage,
     };
   } catch (e) {
@@ -352,8 +369,9 @@ export async function runOrchestrator(opts: OrchestratorOptions): Promise<void> 
       : stage === 'spot'
         ? ` (spot sample, sample-size=${opts.sampleSize ?? DEFAULT_SPOT_SAMPLE_SIZE}, unique-tag cold compile)`
         : '';
+  const noCacheBanner = opts.noCache && stage !== 'code-gen' ? ' [--no-cache]' : '';
   process.stdout.write(
-    `▶︎ Run ${metadata.runId}: ${cases.length} cases × parallel=${opts.parallel}${stageBanner}\n` +
+    `▶︎ Run ${metadata.runId}: ${cases.length} cases × parallel=${opts.parallel}${stageBanner}${noCacheBanner}\n` +
       (stage !== 'code-gen' ? `  Server: ${opts.serverUrl}\n` : '') +
       `  Results: ${opts.outDir}\n`,
   );
@@ -369,6 +387,7 @@ export async function runOrchestrator(opts: OrchestratorOptions): Promise<void> 
       opts.timeoutMs,
       stage,
       uniqueTag,
+      opts.noCache,
     );
     store.append(result);
 
@@ -398,11 +417,24 @@ export async function runOrchestrator(opts: OrchestratorOptions): Promise<void> 
   const combined = store.finalize();
   const summary = combined.summary;
   const totalSec = (Date.now() - startTime) / 1000;
+  // amendment 9: cache HIT/MISS aggregation. Surface unconditionally so the
+  // user can confirm at a glance whether a `--no-cache` run actually MISSed
+  // (cacheHit must be 0 / cacheMiss == compileCount when --no-cache works).
+  const compileCount = summary.cacheHit + summary.cacheMiss;
+  const cacheLine =
+    compileCount > 0
+      ? `   Cache: HIT ${summary.cacheHit} / MISS ${summary.cacheMiss}` +
+        (summary.cacheUnknown > 0 ? ` (unknown ${summary.cacheUnknown})` : '') +
+        ` — HIT rate ${((summary.cacheHit / compileCount) * 100).toFixed(1)}%\n`
+      : summary.cacheUnknown > 0
+        ? `   Cache: n/a (${summary.cacheUnknown} cases without compile)\n`
+        : '';
   process.stdout.write(
     `\n✅ Done: ${summary.total} cases in ${totalSec.toFixed(1)}s ` +
       `(parallel=${opts.parallel}, sec/case=${(totalSec / Math.max(1, summary.total)).toFixed(1)})\n` +
       `   Pass: ${summary.pass} (${(summary.passRate * 100).toFixed(1)}%)\n` +
       `   Fail: ${summary.fail}\n` +
+      cacheLine +
       `   Output: ${opts.outDir}\n`,
   );
 }
@@ -529,6 +561,7 @@ async function main(): Promise<void> {
     stage: args.stage,
     sampleSize: args.sampleSize,
     boardCoverage: args.boardCoverage,
+    noCache: args.noCache,
   });
 }
 

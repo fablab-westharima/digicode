@@ -267,6 +267,29 @@ describe('compileCpp — SSE defensive coding (新規 5 cases)', () => {
     expect(result.retryUsed).toBe(true);
   }, 5000);
 
+  it('appends &no-cache=true when noCache option set on ESP32 (amendment 9, case 13)', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(sseResponse(HAPPY_EVENTS)) as unknown as typeof fetch;
+    await compileCpp(FRAGMENTS, { ...OPTS, fetchImpl, noCache: true });
+    const calledUrl = fetchImpl.mock.calls[0][0] as string;
+    expect(calledUrl).toContain('?fullPackage=true');
+    expect(calledUrl).toContain('&no-cache=true');
+  });
+
+  it('propagates CompileResult.cached from SSE complete event data (amendment 9, case 14)', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(
+      sseResponse([
+        { event: 'start', data: { ts: 1 } },
+        { event: 'firmware-meta', data: { totalChunks: 1, totalBytes: 4 } },
+        { event: 'firmware-chunk', id: '0', data: { seq: 0, total: 1, data: btoa('test') } },
+        // server reports cache HIT
+        { event: 'complete', data: { success: true, durationMs: 50, template: 'X', cached: true } },
+      ]),
+    ) as unknown as typeof fetch;
+    const result = await compileCpp(FRAGMENTS, { ...OPTS, fetchImpl });
+    expect(result.ok).toBe(true);
+    expect(result.cached).toBe(true);
+  });
+
   it('handles SSE comment line (`:` heartbeat) without crashing (case 12)', async () => {
     // Custom SSE body with heartbeat (`:\n\n`) interleaved between events.
     // Verifies parser correctly ignores comment lines per WHATWG spec.
