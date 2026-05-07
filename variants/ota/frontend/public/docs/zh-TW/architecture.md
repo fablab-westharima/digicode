@@ -48,7 +48,7 @@
 
 ### 編譯伺服器
 
-- **原始碼：** DigiCode monorepo `compile-api/`（proprietary）
+- **原始碼：** [`fablab-westharima/digicode-compile-api`](https://github.com/fablab-westharima/digicode-compile-api)（獨立儲存庫、MIT）
 - **執行環境：** Node.js + Hono
 - **編譯器：** PlatformIO Core
 - **目標平台：** ESP32 + RP2040（Arduino framework）

@@ -45,7 +45,6 @@ ESP32マイコンを使ったロボット・IoTデバイスのプログラミン
 DigiCode/
 ├── esp32-blockly-frontend/  # React + Blockly フロントエンド
 ├── esp32-blockly-backend/   # Cloudflare Workers バックエンドAPI
-├── compile-api/             # Node.js + Hono コンパイルサーバー (PlatformIO Core)
 ├── Arduino/                 # ESP32ファームウェア
 ├── docs/                    # ドキュメント
 └── prompt/                  # 開発計画・記録

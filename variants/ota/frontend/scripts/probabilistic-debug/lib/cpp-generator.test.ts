@@ -221,7 +221,7 @@ describe('xmlToCpp — NTP block header casing (BUG-058)', () => {
 });
 
 describe('xmlToCpp — NimBLE v2 API (BUG-056)', () => {
-  // The vendored NimBLE-Arduino is v2.4.0 (compile-api/libs/NimBLE-Arduino).
+  // The vendored NimBLE-Arduino is v2.4.0 (digicode-compile-api libs/NimBLE-Arduino).
   // The 1.x→2.x migration guide renamed the static check
   // `NimBLEDevice::getInitialized` to `NimBLEDevice::isInitialized`. Generators
   // that emit `getInitialized()` fail to compile against the vendored copy.

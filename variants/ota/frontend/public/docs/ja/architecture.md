@@ -48,7 +48,7 @@ DigiCodeシステムの全体構成と技術スタックを説明します。
 
 ### コンパイルサーバー
 
-- **ソース:** DigiCode モノレポ `compile-api/`（proprietary）
+- **ソース:** [`fablab-westharima/digicode-compile-api`](https://github.com/fablab-westharima/digicode-compile-api)（独立リポジトリ、MIT）
 - **ランタイム:** Node.js + Hono
 - **コンパイラ:** PlatformIO Core
 - **ターゲット:** ESP32 + RP2040（Arduino framework）

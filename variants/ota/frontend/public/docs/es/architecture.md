@@ -48,7 +48,7 @@ Explica la configuración general del sistema y el stack tecnológico de DigiCod
 
 ### Servidor de Compilación
 
-- **Fuente:** monorepo DigiCode `compile-api/` (propietario)
+- **Fuente:** [`fablab-westharima/digicode-compile-api`](https://github.com/fablab-westharima/digicode-compile-api) (repositorio independiente, MIT)
 - **Runtime:** Node.js + Hono
 - **Compilador:** PlatformIO Core
 - **Plataforma objetivo:** ESP32 + RP2040 (framework Arduino)
