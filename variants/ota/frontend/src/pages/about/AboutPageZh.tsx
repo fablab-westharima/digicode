@@ -196,7 +196,7 @@ export default function AboutPageZh() {
           />
           <UniqueFeature
             title="本機編譯伺服器(Docker)"
-            description="在自己的電腦上執行公開的 Docker 映像(ghcr.io/fablab-westharima/digicode-compile-api)即可於本機編譯。與雲端使用同一個映像,因此編譯結果完全一致(無 lib drift)。離線也可使用,不會消耗雲端編譯額度(無限次)。適合對外連線受限的校園、公司環境,或編譯頻率高的開發者。"
+            description="在自己的電腦上執行公開的 Docker 映像(Docker Hub 的 `digicollc/digicode-compile-server` 或 ghcr.io 的 `fablab-westharima/digicode-compile-api`,兩個 registry 以相同 digest 同步發佈)即可於本機編譯。在 Docker Desktop 上三個點擊 — 搜尋映像名稱 → Pull → Run — 即可啟動伺服器(不需操作終端機),或在 DigiCode 的「編譯設定 → 本機伺服器 → 設定」對話框查看相同步驟。與雲端使用同一個映像,因此編譯結果完全一致(無 lib drift)。離線也可使用,不會消耗雲端編譯額度(無限次)。適合對外連線受限的校園、公司環境,或編譯頻率高的開發者。"
             tag="離線對應"
           />
         </div>
