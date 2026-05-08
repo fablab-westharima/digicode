@@ -2,6 +2,17 @@
 
 ESP32マイコンを使ったロボット・IoTデバイスのプログラミングを、ブロックで簡単に行えるビジュアル開発環境です。
 
+## 受付窓口について
+
+DigiCode は AGPL-3.0 のオープンソースソフトウェアとして公開されていますが、現時点で GitHub 上での Issue / Pull Request / Discussions による外部貢献の受付は行っておりません。
+
+ご質問・お問い合わせは以下のいずれかからお願いします:
+
+- DigiCode 利用中のユーザー: アプリ内 HELP メニュー →「要望を送る」
+- 一般のお問い合わせ: [ファブラボ西播磨 お問い合わせフォーム](https://fablab-westharima.jp/contact)
+
+将来的にコミュニティからの貢献受付方針を変更する場合は、本リポジトリで告知します。
+
 ## 特徴
 
 - 🎨 **ビジュアルプログラミング** - Blocklyによる直感的なブロックエディタ
@@ -128,15 +139,12 @@ DigiCode は複数のリポジトリに分かれて配布されています:
 - [DigiCode-Finder](https://github.com/fablab-westharima/DigiCode-Finder) — mDNS device detector (WiFi OTA 用デスクトップアプリ)
 - [digicode-installer](https://github.com/fablab-westharima/digicode-installer) — Local compile server installer (Mac / Windows / Linux)
 
-## コントリビューション
-
-Issue・Pull Request を歓迎します。
-
 ## サポート
 
-問題が発生した場合は、[トラブルシューティング](./docs/troubleshooting.md)を確認するか、GitHub の Issue で報告してください。
+問題が発生した場合は、[トラブルシューティング](./docs/troubleshooting.md)をご参照ください。本リポジトリでの Issue 受付は行っていないため、お問い合わせは README 冒頭「[受付窓口について](#受付窓口について)」section をご参照ください。
 
-## 開発者
+## お問い合わせ
 
-- DigiCo LLC (合同会社デジコ) — Email: contact@digital-fab.jp
-- ファブラボ西播磨 — https://fablab-westharima.jp
+ご質問・お問い合わせは README 冒頭「[受付窓口について](#受付窓口について)」section をご参照ください。
+
+開発: [ファブラボ西播磨](https://fablab-westharima.jp) (DigiCo LLC / 合同会社デジコ)
