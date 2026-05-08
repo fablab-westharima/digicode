@@ -1,6 +1,6 @@
 # Servidor de compilação local
 
-**Última atualização:** 2026-05-01
+**Última atualização:** 2026-05-08
 
 Executa o servidor de compilação do DigiCode no teu próprio computador como contentor Docker, em vez de usar o servidor em nuvem. A nuvem e o local utilizam **a mesma imagem Docker**, pelo que o resultado da compilação é idêntico (sem deriva de bibliotecas).
 
@@ -30,13 +30,38 @@ Executa o servidor de compilação do DigiCode no teu próprio computador como c
 
 ## 🚀 Instalação rápida
 
-### macOS / Linux
+### 🥇 Recomendado: Docker Desktop GUI (Mac / Windows)
+
+**A imagem oficial `digicollc/digicode-compile-server` está publicada no DockerHub. Faz Pull e Run a partir da GUI do Docker Desktop com poucos cliques** — sem necessidade de terminal.
+
+1. Inicia o Docker Desktop (se não estiver instalado, consulta os [URL de transferência](#instalar-o-docker) abaixo)
+2. Escreve o seguinte nome de imagem na barra de pesquisa superior → **"Pull"**
+   ```
+   digicollc/digicode-compile-server
+   ```
+3. No separador **Images**, clica **"Run"** sobre essa imagem → expande **Optional settings**
+4. Configura:
+   - **Container name**: `digicode-compile-server` (qualquer)
+   - **Host port**: `3001`
+   - **Container port**: `3001`
+5. Clica **"Run"** → abre [http://localhost:3001/health](http://localhost:3001/health) no browser para verificar (OK = sucesso)
+
+> 💡 **O mesmo guia está disponível dentro do DigiCode**
+> Abre Definições de Compilação → Servidor Local → **Configurar** para veres os mesmos passos (com botão de cópia para o nome da imagem).
+
+---
+
+### 🛠 Avançado: instalação por linha de comandos
+
+Para uso em servidor, automação ou Linux. O script trata da verificação do Docker, arranque do contentor, evita conflitos de portas e integra com a UI do DigiCode.
+
+#### macOS / Linux
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.sh)
 ```
 
-### Windows (PowerShell)
+#### Windows (PowerShell)
 
 Abre o **"Windows PowerShell"** a partir do menu Iniciar — a versão padrão de 64 bits, *não* as variantes "x86" ou "ISE" que a pesquisa do Windows também mostra. No Windows 11 com o PowerShell 7 instalado, **"PowerShell"** também serve. Não requer privilégios de administrador.
 
@@ -45,9 +70,6 @@ irm https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/
 ```
 
 O script descarrega a imagem Docker, inicia o contentor e verifica `http://localhost:3001/health` automaticamente.
-
-> 💡 **Também disponível dentro do DigiCode**
-> Abre Definições de Compilação → Servidor Local → **botão "Configurar"** para veres o comando específico do teu sistema operativo (com botão de cópia). Não precisas de ler a documentação.
 
 ---
 
@@ -65,6 +87,15 @@ Está pronto. As próximas compilações usam o servidor local.
 
 ## 🗑️ Desinstalação
 
+### 🥇 Recomendado: Docker Desktop GUI
+
+1. Abre o separador **Containers** no Docker Desktop
+2. **Stop → Delete** do contentor `digicode-compile-server`
+3. No separador **Volumes**, **Delete** `digicode-projects` / `digicode-cache` (a cache será apagada)
+4. No separador **Images**, **Delete** `digicollc/digicode-compile-server` (opcional; mantê-la acelera a reinstalação)
+
+### 🛠 Avançado: desinstalação por linha de comandos
+
 ```bash
 # macOS / Linux
 bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.sh) uninstall
@@ -75,8 +106,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-i
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.ps1))) uninstall
 ```
 
-> 💡 **Também disponível dentro do DigiCode**
-> Abre Definições de Compilação → Servidor Local → **botão "Desinstalar"** para copiar o mesmo comando.
+> 💡 **O mesmo guia está disponível dentro do DigiCode**
+> Abre Definições de Compilação → Servidor Local → **Desinstalar** para veres os mesmos passos.
 
 São removidos o contentor, os volumes persistentes e a pasta de configuração; depois é-te perguntado se queres apagar também a imagem Docker (mantê-la torna a reinstalação mais rápida).
 

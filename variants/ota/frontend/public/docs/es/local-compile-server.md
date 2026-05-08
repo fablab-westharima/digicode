@@ -1,6 +1,6 @@
 # Servidor de compilación local
 
-**Última actualización:** 2026-05-01
+**Última actualización:** 2026-05-08
 
 Ejecuta el servidor de compilación de DigiCode en tu propio ordenador como contenedor Docker, en lugar de usar el servidor en la nube. La nube y el local utilizan **la misma imagen Docker**, así que el resultado de compilación es idéntico (sin desfase de bibliotecas).
 
@@ -30,13 +30,38 @@ Ejecuta el servidor de compilación de DigiCode en tu propio ordenador como cont
 
 ## 🚀 Instalación rápida
 
-### macOS / Linux
+### 🥇 Recomendado: Docker Desktop GUI (Mac / Windows)
+
+**La imagen oficial `digicollc/digicode-compile-server` está publicada en DockerHub. Pull y Run desde la GUI de Docker Desktop con unos clics** — sin necesidad de terminal.
+
+1. Inicia Docker Desktop (si no está instalado, consulta los [enlaces de descarga](#instalación-de-docker) más abajo)
+2. Escribe el siguiente nombre de imagen en la barra de búsqueda superior → **"Pull"**
+   ```
+   digicollc/digicode-compile-server
+   ```
+3. En la pestaña **Images**, haz clic en **"Run"** sobre esa imagen → expande **Optional settings**
+4. Configura:
+   - **Container name**: `digicode-compile-server` (cualquiera)
+   - **Host port**: `3001`
+   - **Container port**: `3001`
+5. Haz clic en **"Run"** → abre [http://localhost:3001/health](http://localhost:3001/health) en el navegador para verificar (OK = éxito)
+
+> 💡 **La misma guía está disponible dentro de DigiCode**
+> Abre Configuración de Compilación → Servidor Local → **Configurar** para ver los mismos pasos (con botón de copia para el nombre de la imagen).
+
+---
+
+### 🛠 Avanzado: instalación por línea de comandos
+
+Para uso en servidor, automatización o Linux. El script gestiona la verificación de Docker, el arranque del contenedor, evita conflictos de puerto e integra con la UI de DigiCode.
+
+#### macOS / Linux
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.sh)
 ```
 
-### Windows (PowerShell)
+#### Windows (PowerShell)
 
 Abre **"Windows PowerShell"** desde el menú Inicio — la versión estándar de 64 bits, *no* las variantes "x86" o "ISE" que el buscador de Windows también muestra. En Windows 11 con PowerShell 7 instalado, también vale **"PowerShell"**. No se requieren permisos de administrador.
 
@@ -45,9 +70,6 @@ irm https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/
 ```
 
 El script descarga la imagen Docker, arranca el contenedor y verifica `http://localhost:3001/health` automáticamente.
-
-> 💡 **También disponible dentro de DigiCode**
-> Abre Configuración de Compilación → Servidor Local → **botón "Configurar"** para ver el comando específico de tu sistema operativo (con botón de copia). No es necesario leer la documentación.
 
 ---
 
@@ -65,6 +87,15 @@ Listo. Las compilaciones siguientes usarán el servidor local.
 
 ## 🗑️ Desinstalación
 
+### 🥇 Recomendado: Docker Desktop GUI
+
+1. Abre la pestaña **Containers** en Docker Desktop
+2. **Stop → Delete** del contenedor `digicode-compile-server`
+3. En la pestaña **Volumes**, **Delete** `digicode-projects` / `digicode-cache` (la caché se borrará)
+4. En la pestaña **Images**, **Delete** `digicollc/digicode-compile-server` (opcional; mantenerla acelera la reinstalación)
+
+### 🛠 Avanzado: desinstalación por línea de comandos
+
 ```bash
 # macOS / Linux
 bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.sh) uninstall
@@ -75,8 +106,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-i
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.ps1))) uninstall
 ```
 
-> 💡 **También disponible dentro de DigiCode**
-> Abre Configuración de Compilación → Servidor Local → **botón "Desinstalar"** para copiar el mismo comando.
+> 💡 **La misma guía está disponible dentro de DigiCode**
+> Abre Configuración de Compilación → Servidor Local → **Desinstalar** para ver los mismos pasos.
 
 Se eliminarán el contenedor, los volúmenes persistentes y la carpeta de configuración; al final se preguntará si también deseas eliminar la imagen Docker (mantenerla acelera una posible reinstalación).
 

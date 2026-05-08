@@ -4115,7 +4115,19 @@
     "installNotePort": "The script asks which host port to use on first run. Press Enter to accept 3001 if it's free; if 3001 is in use, an alternate port (e.g., 3002) is suggested.",
     "uninstallWarning": "Removing the container and volumes also deletes the compile cache. The next compile will be a cold start (~30–60s). The Docker image can be kept on request.",
     "fullGuide": "Open the full guide in a new tab",
-    "close": "Close"
+    "close": "Close",
+    "methodGui": "Docker Desktop (recommended)",
+    "methodCli": "Command line (advanced)",
+    "guiStep1": "Launch Docker Desktop (if not installed, download from the OS-specific link below)",
+    "guiStep2": "Type the following image name into the top search bar → Pull",
+    "guiStep3": "On the Images tab, click \"Run\" on the image → expand Optional settings",
+    "guiStep4": "Container name (e.g., digicode-compile-server), Host port: 3001, Container port: 3001 → Run",
+    "guiStep5": "Open the URL below in a browser to verify (OK = success)",
+    "guiNotePort": "If port 3001 is taken, pick another. Enter the same number under DigiCode's \"Compile settings\" → Local server.",
+    "guiUninstall1": "Open the \"Containers\" tab in Docker Desktop",
+    "guiUninstall2": "Stop and Delete the digicode-compile-server container",
+    "guiUninstall3": "On the \"Volumes\" tab, Delete digicode-projects / digicode-cache (the cache will be erased)",
+    "guiUninstall4": "On the \"Images\" tab, Delete digicollc/digicode-compile-server (optional; keep it to make re-install faster)"
   },
   "feedback": {
     "button": {

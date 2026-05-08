@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Apple, Monitor, Terminal, Copy, Check, ExternalLink, AlertTriangle } from 'lucide-react';
+import { Apple, Monitor, Terminal, Copy, Check, ExternalLink, AlertTriangle, Box, Code } from 'lucide-react';
 
 export type LocalSetupMode = 'install' | 'uninstall';
 
@@ -97,6 +97,9 @@ export function LocalServerSetupDialog({
 }: LocalServerSetupDialogProps) {
   const { t } = useTranslation();
   const [os, setOs] = useState<'mac' | 'linux' | 'windows'>(guessDefaultOs());
+  // 案内の主経路は Docker Desktop GUI (DockerHub publish 後の推奨)。CLI は上級者向けに残す。
+  const [installMethod, setInstallMethod] = useState<'gui' | 'cli'>('gui');
+  const dockerImage = 'digicollc/digicode-compile-server';
 
   // The installer treats "install" as the default subcommand and accepts
   // "uninstall" as an explicit subcommand. PowerShell and bash both follow
@@ -140,49 +143,106 @@ export function LocalServerSetupDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={os} onValueChange={(v) => setOs(v as typeof os)} className="mt-2">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="mac" className="gap-1.5">
-              <Apple className="h-3.5 w-3.5" />
-              macOS
+        <Tabs value={installMethod} onValueChange={(v) => setInstallMethod(v as typeof installMethod)} className="mt-2">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="gui" className="gap-1.5">
+              <Box className="h-3.5 w-3.5" />
+              {t('localServerSetup.methodGui', { defaultValue: 'Docker Desktop (推奨)' })}
             </TabsTrigger>
-            <TabsTrigger value="linux" className="gap-1.5">
-              <Terminal className="h-3.5 w-3.5" />
-              Linux
-            </TabsTrigger>
-            <TabsTrigger value="windows" className="gap-1.5">
-              <Monitor className="h-3.5 w-3.5" />
-              Windows
+            <TabsTrigger value="cli" className="gap-1.5">
+              <Code className="h-3.5 w-3.5" />
+              {t('localServerSetup.methodCli', { defaultValue: 'コマンド (上級者向け)' })}
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="mac" className="space-y-2 mt-3">
-            <p className="text-xs text-muted-foreground">
-              {t('localServerSetup.macHint', {
-                defaultValue: 'ターミナル.app で実行してください。',
-              })}
-            </p>
-            <CommandBlock command={macLinuxCmd} />
+          {/* === GUI 経路: Docker Desktop GUI で pull + run === */}
+          <TabsContent value="gui" className="space-y-3 mt-3">
+            {mode === 'install' ? (
+              <>
+                <ol className="list-decimal list-inside space-y-2 text-sm text-foreground">
+                  <li>{t('localServerSetup.guiStep1', { defaultValue: 'Docker Desktop を起動 (未インストールの場合は下の OS 別リンクから DL)' })}</li>
+                  <li>
+                    {t('localServerSetup.guiStep2', { defaultValue: '上部の検索バーに次のイメージ名を入力 → Pull' })}
+                    <CommandBlock command={dockerImage} />
+                  </li>
+                  <li>
+                    {t('localServerSetup.guiStep3', { defaultValue: 'Images タブで該当イメージの「Run」をクリック → Optional settings を展開' })}
+                  </li>
+                  <li>
+                    {t('localServerSetup.guiStep4', { defaultValue: 'Container name 任意 (例: digicode-compile-server)、Host port: 3001、Container port も 3001 を入力 → Run' })}
+                  </li>
+                  <li>
+                    {t('localServerSetup.guiStep5', { defaultValue: '次の URL をブラウザで開いて動作確認 (OK が表示されれば成功)' })}
+                    <CommandBlock command="http://localhost:3001/health" />
+                  </li>
+                </ol>
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p>
+                    {t('localServerSetup.guiNotePort', {
+                      defaultValue: 'ポート 3001 が他で使用中の場合は別の番号を指定。DigiCode の「コンパイル設定」 → ローカルサーバーで同じ番号を入力してください。',
+                    })}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <ol className="list-decimal list-inside space-y-2 text-sm text-foreground">
+                  <li>{t('localServerSetup.guiUninstall1', { defaultValue: 'Docker Desktop の「Containers」タブを開く' })}</li>
+                  <li>{t('localServerSetup.guiUninstall2', { defaultValue: 'digicode-compile-server コンテナを Stop → Delete' })}</li>
+                  <li>{t('localServerSetup.guiUninstall3', { defaultValue: '「Volumes」タブで digicode-projects / digicode-cache を Delete (キャッシュも消えます)' })}</li>
+                  <li>{t('localServerSetup.guiUninstall4', { defaultValue: '「Images」タブで digicollc/digicode-compile-server を Delete (任意、再 install 時間短縮のために残してもよい)' })}</li>
+                </ol>
+              </>
+            )}
           </TabsContent>
 
-          <TabsContent value="linux" className="space-y-2 mt-3">
-            <p className="text-xs text-muted-foreground">
-              {t('localServerSetup.linuxHint', {
-                defaultValue:
-                  '任意のターミナル (bash/zsh) で実行してください。',
-              })}
-            </p>
-            <CommandBlock command={macLinuxCmd} />
-          </TabsContent>
+          {/* === CLI 経路: 上級者向け、Linux サーバ / 自動化向け === */}
+          <TabsContent value="cli" className="space-y-3 mt-3">
+            <Tabs value={os} onValueChange={(v) => setOs(v as typeof os)}>
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="mac" className="gap-1.5">
+                  <Apple className="h-3.5 w-3.5" />
+                  macOS
+                </TabsTrigger>
+                <TabsTrigger value="linux" className="gap-1.5">
+                  <Terminal className="h-3.5 w-3.5" />
+                  Linux
+                </TabsTrigger>
+                <TabsTrigger value="windows" className="gap-1.5">
+                  <Monitor className="h-3.5 w-3.5" />
+                  Windows
+                </TabsTrigger>
+              </TabsList>
 
-          <TabsContent value="windows" className="space-y-2 mt-3">
-            <p className="text-xs text-muted-foreground">
-              {t('localServerSetup.windowsHint', {
-                defaultValue:
-                  '「Windows PowerShell」 (64-bit 標準版、x86 / ISE ではない方) を起動して実行してください。Windows 11 で PowerShell 7 を入れている場合は 「PowerShell」 でも OK。管理者権限は不要です。',
-              })}
-            </p>
-            <CommandBlock command={windowsCmd} />
+              <TabsContent value="mac" className="space-y-2 mt-3">
+                <p className="text-xs text-muted-foreground">
+                  {t('localServerSetup.macHint', {
+                    defaultValue: 'ターミナル.app で実行してください。',
+                  })}
+                </p>
+                <CommandBlock command={macLinuxCmd} />
+              </TabsContent>
+
+              <TabsContent value="linux" className="space-y-2 mt-3">
+                <p className="text-xs text-muted-foreground">
+                  {t('localServerSetup.linuxHint', {
+                    defaultValue:
+                      '任意のターミナル (bash/zsh) で実行してください。',
+                  })}
+                </p>
+                <CommandBlock command={macLinuxCmd} />
+              </TabsContent>
+
+              <TabsContent value="windows" className="space-y-2 mt-3">
+                <p className="text-xs text-muted-foreground">
+                  {t('localServerSetup.windowsHint', {
+                    defaultValue:
+                      '「Windows PowerShell」 (64-bit 標準版、x86 / ISE ではない方) を起動して実行してください。Windows 11 で PowerShell 7 を入れている場合は 「PowerShell」 でも OK。管理者権限は不要です。',
+                  })}
+                </p>
+                <CommandBlock command={windowsCmd} />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
         </Tabs>
 

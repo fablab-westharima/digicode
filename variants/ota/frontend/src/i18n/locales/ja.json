@@ -4105,7 +4105,19 @@
     "installNotePort": "初回起動時に使用ポートを聞かれます。3001 が空いていればそのまま Enter で OK、3001 が使用中なら別ポート (例: 3002) が提示されます。",
     "uninstallWarning": "コンテナと永続ボリュームを削除すると、コンパイルキャッシュも消えます。次回コンパイルは ~30-60 秒の cold start になります (Docker イメージは保持を選択可能)。",
     "fullGuide": "詳細ガイドを別タブで開く",
-    "close": "閉じる"
+    "close": "閉じる",
+    "methodGui": "Docker Desktop (推奨)",
+    "methodCli": "コマンド (上級者向け)",
+    "guiStep1": "Docker Desktop を起動 (未インストールの場合は下の OS 別リンクから DL)",
+    "guiStep2": "上部の検索バーに次のイメージ名を入力 → Pull",
+    "guiStep3": "Images タブで該当イメージの「Run」をクリック → Optional settings を展開",
+    "guiStep4": "Container name 任意 (例: digicode-compile-server)、Host port: 3001、Container port も 3001 を入力 → Run",
+    "guiStep5": "次の URL をブラウザで開いて動作確認 (OK が表示されれば成功)",
+    "guiNotePort": "ポート 3001 が他で使用中の場合は別の番号を指定。DigiCode の「コンパイル設定」 → ローカルサーバーで同じ番号を入力してください。",
+    "guiUninstall1": "Docker Desktop の「Containers」タブを開く",
+    "guiUninstall2": "digicode-compile-server コンテナを Stop → Delete",
+    "guiUninstall3": "「Volumes」タブで digicode-projects / digicode-cache を Delete (キャッシュも消えます)",
+    "guiUninstall4": "「Images」タブで digicollc/digicode-compile-server を Delete (任意、再 install 時間短縮のために残してもよい)"
   },
   "feedback": {
     "button": {

@@ -4300,7 +4300,19 @@
     "installNotePort": "首次啟動時會詢問使用的連接埠。若 3001 可用則直接按 Enter,若已被佔用會建議其他連接埠 (例如 3002)。",
     "uninstallWarning": "刪除容器與磁碟區會同時清除編譯快取,下次編譯將為冷啟動 (約 30〜60 秒)。可選擇保留 Docker 映像。",
     "fullGuide": "在新分頁開啟完整指南",
-    "close": "關閉"
+    "close": "關閉",
+    "methodGui": "Docker Desktop (建議)",
+    "methodCli": "命令列 (進階使用者)",
+    "guiStep1": "啟動 Docker Desktop (尚未安裝時請從下方依 OS 提供的連結下載)",
+    "guiStep2": "在上方搜尋列輸入下列映像名稱 → Pull",
+    "guiStep3": "在 Images 分頁點擊該映像的「Run」→ 展開 Optional settings",
+    "guiStep4": "Container name 自訂 (例: digicode-compile-server)、Host port: 3001、Container port 也輸入 3001 → Run",
+    "guiStep5": "在瀏覽器開啟以下 URL 確認 (顯示 OK 即成功)",
+    "guiNotePort": "若 3001 已被使用,請改用其他連接埠。並在 DigiCode「編譯設定」→ 本機伺服器中輸入相同號碼。",
+    "guiUninstall1": "開啟 Docker Desktop 的「Containers」分頁",
+    "guiUninstall2": "Stop → Delete digicode-compile-server 容器",
+    "guiUninstall3": "在「Volumes」分頁刪除 digicode-projects / digicode-cache (快取會被清除)",
+    "guiUninstall4": "在「Images」分頁刪除 digicollc/digicode-compile-server (可選;保留可加速重新安裝)"
   },
   "feedback": {
     "button": {

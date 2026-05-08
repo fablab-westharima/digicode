@@ -4300,7 +4300,19 @@
     "installNotePort": "En la primera ejecución se pregunta qué puerto usar. Pulsa Enter para aceptar 3001 si está libre; si 3001 está ocupado, se sugiere un puerto alternativo (p. ej., 3002).",
     "uninstallWarning": "Al eliminar el contenedor y los volúmenes también se borra la caché de compilación. La próxima compilación será un arranque en frío (~30–60s). La imagen de Docker se puede conservar a petición.",
     "fullGuide": "Abrir la guía completa en una pestaña nueva",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "methodGui": "Docker Desktop (recomendado)",
+    "methodCli": "Línea de comandos (avanzado)",
+    "guiStep1": "Inicia Docker Desktop (si no está instalado, descárgalo desde el enlace según tu OS más abajo)",
+    "guiStep2": "Escribe el siguiente nombre de imagen en la barra de búsqueda superior → Pull",
+    "guiStep3": "En la pestaña Images, haz clic en \"Run\" → expande Optional settings",
+    "guiStep4": "Container name (ej.: digicode-compile-server), Host port: 3001, Container port: 3001 → Run",
+    "guiStep5": "Abre la URL siguiente en el navegador para verificar (OK = éxito)",
+    "guiNotePort": "Si el puerto 3001 está ocupado, elige otro. Introduce el mismo número en \"Configuración de compilación\" → Servidor local de DigiCode.",
+    "guiUninstall1": "Abre la pestaña \"Containers\" en Docker Desktop",
+    "guiUninstall2": "Stop y Delete del contenedor digicode-compile-server",
+    "guiUninstall3": "En la pestaña \"Volumes\", Delete digicode-projects / digicode-cache (la caché se borra)",
+    "guiUninstall4": "En la pestaña \"Images\", Delete digicollc/digicode-compile-server (opcional; mantenerla acelera la reinstalación)"
   },
   "feedback": {
     "button": {

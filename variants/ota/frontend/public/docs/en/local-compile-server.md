@@ -1,6 +1,6 @@
 # Local compile server
 
-**Last updated:** 2026-05-01
+**Last updated:** 2026-05-08
 
 Run the DigiCode compile server locally as a Docker container instead of using the cloud. Local and cloud share the **same Docker image**, so the compile output is byte-identical (no library drift).
 
@@ -30,13 +30,38 @@ Run the DigiCode compile server locally as a Docker container instead of using t
 
 ## 🚀 Quick install
 
-### macOS / Linux
+### 🥇 Recommended: Docker Desktop GUI (Mac / Windows)
+
+**The official `digicollc/digicode-compile-server` image is published on DockerHub. Pull and run it from the Docker Desktop GUI in just a few clicks** — no terminal commands required.
+
+1. Launch Docker Desktop (if not installed, see [OS-specific download URLs](#installing-docker) below)
+2. Type the following image name into the top search bar → click **"Pull"**
+   ```
+   digicollc/digicode-compile-server
+   ```
+3. On the **Images** tab, click **"Run"** for that image → expand **Optional settings**
+4. Configure:
+   - **Container name**: `digicode-compile-server` (any)
+   - **Host port**: `3001`
+   - **Container port**: `3001`
+5. Click **"Run"** → open [http://localhost:3001/health](http://localhost:3001/health) in your browser to verify (OK = success)
+
+> 💡 **The same guide is available inside DigiCode**
+> Open Compile Settings → Local Server → **Set up** to see the same steps right there (image name has a copy button).
+
+---
+
+### 🛠 Advanced: Command-line install
+
+For server use, automation, or Linux. The script handles Docker checks, container startup, port-conflict avoidance, and DigiCode UI integration end-to-end.
+
+#### macOS / Linux
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.sh)
 ```
 
-### Windows (PowerShell)
+#### Windows (PowerShell)
 
 Open **"Windows PowerShell"** from the Start menu — the 64-bit standard
 build, *not* the "x86" or "ISE" variants Windows search also lists. On
@@ -48,9 +73,6 @@ irm https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/
 ```
 
 The script pulls the Docker image, starts the container, and verifies `http://localhost:3001/health` automatically.
-
-> 💡 **Also available from inside DigiCode**
-> Open Compile Settings → Local Server → **Set up button** to see the OS-specific command directly (with a copy button). No need to read the docs.
 
 ---
 
@@ -68,6 +90,15 @@ You're done. Subsequent compiles use the local server.
 
 ## 🗑️ Uninstall
 
+### 🥇 Recommended: Docker Desktop GUI
+
+1. Open the **Containers** tab in Docker Desktop
+2. **Stop → Delete** the `digicode-compile-server` container
+3. On the **Volumes** tab, **Delete** `digicode-projects` / `digicode-cache` (the cache will be erased)
+4. On the **Images** tab, **Delete** `digicollc/digicode-compile-server` (optional; keep it to make re-install faster)
+
+### 🛠 Advanced: Command-line uninstall
+
 ```bash
 # macOS / Linux
 bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.sh) uninstall
@@ -78,8 +109,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/fablab-westharima/digicode-i
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/fablab-westharima/digicode-installer/main/install.ps1))) uninstall
 ```
 
-> 💡 **Also available from inside DigiCode**
-> Open Compile Settings → Local Server → **Uninstall button** to copy the same command.
+> 💡 **The same guide is available inside DigiCode**
+> Open Compile Settings → Local Server → **Uninstall** to see the same steps.
 
 The container, persistent volumes and config directory are removed; you're then asked whether to delete the Docker image too (keeping it makes a re-install faster).
 
