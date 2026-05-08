@@ -295,6 +295,16 @@ export default function AboutPageEn() {
         </div>
       </section>
 
+      <section className="space-y-2">
+        <h2 className="text-xl font-bold text-[#E6EDF3]">License</h2>
+        <p className="text-sm text-[#8B949E]">
+          DigiCode is open source software distributed under the <strong className="text-[#E6EDF3]">GNU Affero General Public License version 3 (AGPL-3.0)</strong>. Copyright © 2024-2026 DigiCo LLC.
+        </p>
+        <p className="text-sm text-[#8B949E]">
+          Source code is available on <a href="https://github.com/fablab-westharima/digicode" target="_blank" rel="noopener noreferrer" className="text-[#58A6FF] hover:underline">GitHub</a>. See the <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer" className="text-[#58A6FF] hover:underline">official GNU AGPL v3 text</a> for details.
+        </p>
+      </section>
+
       {/* Footer */}
       <footer className="text-center text-sm text-[#8B949E] pt-8 border-t border-[#30363D]">
         <p>DigiCode - FabLab Nishi-Harima</p>

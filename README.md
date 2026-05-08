@@ -113,17 +113,30 @@ npm run test
 
 ## ライセンス
 
-MIT License
+GNU Affero General Public License version 3 (AGPL-3.0)
+
+Copyright © 2024-2026 DigiCo LLC。詳細は [LICENSE](./LICENSE) を参照。
+
+ソースコードは [GitHub リポジトリ](https://github.com/fablab-westharima/digicode) で公開されています。
+
+## DigiCode Ecosystem
+
+DigiCode は複数のリポジトリに分かれて配布されています:
+
+- [DigiCode](https://github.com/fablab-westharima/digicode) — 本リポジトリ (Block-based ESP32 programming tool、frontend + Workers backend)
+- [digicode-compile-api](https://github.com/fablab-westharima/digicode-compile-api) — PlatformIO compile server (ESP32 firmware build API)
+- [DigiCode-Finder](https://github.com/fablab-westharima/DigiCode-Finder) — mDNS device detector (WiFi OTA 用デスクトップアプリ)
+- [digicode-installer](https://github.com/fablab-westharima/digicode-installer) — Local compile server installer (Mac / Windows / Linux)
 
 ## コントリビューション
 
-Issue・Pull Requestを歓迎します。
+Issue・Pull Request を歓迎します。
 
 ## サポート
 
-問題が発生した場合は、[トラブルシューティング](./docs/troubleshooting.md)を確認するか、GitHubのIssueで報告してください。
+問題が発生した場合は、[トラブルシューティング](./docs/troubleshooting.md)を確認するか、GitHub の Issue で報告してください。
 
 ## 開発者
 
-- GitHub: [your-username]
-- Email: your-email@example.com
+- DigiCo LLC (合同会社デジコ) — Email: contact@digital-fab.jp
+- ファブラボ西播磨 — https://fablab-westharima.jp

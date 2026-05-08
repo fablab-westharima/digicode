@@ -292,6 +292,16 @@ export default function AboutPageZh() {
         </div>
       </section>
 
+      <section className="space-y-2">
+        <h2 className="text-xl font-bold text-[#E6EDF3]">授權條款</h2>
+        <p className="text-sm text-[#8B949E]">
+          DigiCode 是依據 <strong className="text-[#E6EDF3]">GNU Affero General Public License version 3 (AGPL-3.0)</strong> 發行的開放原始碼軟體。Copyright © 2024-2026 DigiCo LLC。
+        </p>
+        <p className="text-sm text-[#8B949E]">
+          原始碼公開於 <a href="https://github.com/fablab-westharima/digicode" target="_blank" rel="noopener noreferrer" className="text-[#58A6FF] hover:underline">GitHub 儲存庫</a>。詳細請參閱 <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer" className="text-[#58A6FF] hover:underline">GNU AGPL v3 官方條文</a>。
+        </p>
+      </section>
+
       {/* Footer */}
       <footer className="text-center text-sm text-[#8B949E] pt-8 border-t border-[#30363D]">
         <p>DigiCode - 西播磨 FabLab</p>
