@@ -181,10 +181,25 @@ Blockly.Blocks['ha_device_init'] = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DEVICEID || 'Device ID')
         .appendField(new Blockly.FieldTextInput('esp32_sensor'), 'DEVICE_ID');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_MANUFACTURER || 'Manufacturer')
+        .appendField(new Blockly.FieldTextInput('Digi Co LLC'), 'MANUFACTURER');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_MODEL || 'Model')
+        .appendField(new Blockly.FieldTextInput('ESP32'), 'MODEL');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_SOFTWAREVERSION || 'Software Version')
+        .appendField(new Blockly.FieldTextInput('1.0.0'), 'SOFTWARE_VERSION');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_AUTOUNIQUEID || 'Auto deviceId (MAC)')
+        .appendField(new Blockly.FieldCheckbox('TRUE'), 'AUTO_UNIQUE_ID');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_AVAILABILITY || 'Availability (LWT)')
+        .appendField(new Blockly.FieldCheckbox('TRUE'), 'AVAILABILITY');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#4CAF50');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_DEVICEINITTOOLTIP || 'Initialize a device that auto-registers with Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_DEVICEINITTOOLTIP || 'Initialize a device that auto-registers with Home Assistant. Manufacturer/Model/Software Version appear on HA Devices page. Auto deviceId (MAC) avoids collisions across multiple ESP32. Availability (LWT) marks the device Unavailable in HA UI on disconnect.');
   }
 };
 
@@ -196,6 +211,11 @@ javascriptGenerator.forBlock['ha_device_init'] = function(block: Blockly.Block) 
   const port = block.getFieldValue('PORT');
   const deviceName = block.getFieldValue('DEVICE_NAME');
   const deviceId = block.getFieldValue('DEVICE_ID');
+  const manufacturer = block.getFieldValue('MANUFACTURER') || 'Digi Co LLC';
+  const model = block.getFieldValue('MODEL') || 'ESP32';
+  const softwareVersion = block.getFieldValue('SOFTWARE_VERSION') || '1.0.0';
+  const autoUniqueId = block.getFieldValue('AUTO_UNIQUE_ID') === 'TRUE';
+  const availability = block.getFieldValue('AVAILABILITY') === 'TRUE';
 
   // インクルードとグローバル変数
   generator.definitions_['include_wifi'] = '#include <WiFi.h>';
@@ -223,12 +243,27 @@ void haWifiConnect() {
   Serial.println(WiFi.localIP());
 }`;
 
-  return `  // HA Device Init
-  haDevice.setName("${deviceName}");
-  haDevice.setSoftwareVersion("1.0.0");
-  haWifiConnect();
-  haMqtt.begin(ha_broker, ha_port);
-`;
+  // commit 2: connect WiFi first so the WiFi peripheral is fully initialised,
+  // then read MAC (eFuse-backed, but safer post-init), then call HADevice
+  // setters. setUniqueId / enableSharedAvailability MUST happen before
+  // haMqtt.begin so the MQTT Discovery payload picks them up.
+  let body = '  // HA Device Init\n';
+  body += `  haWifiConnect();\n`;
+  if (autoUniqueId) {
+    body += `  uint8_t _haMac[6];\n`;
+    body += `  WiFi.macAddress(_haMac);\n`;
+    body += `  haDevice.setUniqueId(_haMac, 6);\n`;
+  }
+  body += `  haDevice.setName("${deviceName}");\n`;
+  body += `  haDevice.setManufacturer("${manufacturer}");\n`;
+  body += `  haDevice.setModel("${model}");\n`;
+  body += `  haDevice.setSoftwareVersion("${softwareVersion}");\n`;
+  if (availability) {
+    body += `  haDevice.enableSharedAvailability();\n`;
+    body += `  haDevice.enableLastWill();\n`;
+  }
+  body += `  haMqtt.begin(ha_broker, ha_port);\n`;
+  return body;
 };
 
 /**
@@ -262,10 +297,25 @@ Blockly.Blocks['ha_device_init_auth'] = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DEVICEID || 'Device ID')
         .appendField(new Blockly.FieldTextInput('esp32_sensor'), 'DEVICE_ID');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_MANUFACTURER || 'Manufacturer')
+        .appendField(new Blockly.FieldTextInput('Digi Co LLC'), 'MANUFACTURER');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_MODEL || 'Model')
+        .appendField(new Blockly.FieldTextInput('ESP32'), 'MODEL');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_SOFTWAREVERSION || 'Software Version')
+        .appendField(new Blockly.FieldTextInput('1.0.0'), 'SOFTWARE_VERSION');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_AUTOUNIQUEID || 'Auto deviceId (MAC)')
+        .appendField(new Blockly.FieldCheckbox('TRUE'), 'AUTO_UNIQUE_ID');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_AVAILABILITY || 'Availability (LWT)')
+        .appendField(new Blockly.FieldCheckbox('TRUE'), 'AVAILABILITY');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#4CAF50');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_DEVICEINITAUTHTOOLTIP || 'Initialize HA device with MQTT authentication');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_DEVICEINITAUTHTOOLTIP || 'Initialize HA device with MQTT authentication. Manufacturer/Model/Software Version appear on HA Devices page. Auto deviceId (MAC) avoids collisions across multiple ESP32. Availability (LWT) marks the device Unavailable in HA UI on disconnect.');
   }
 };
 
@@ -279,6 +329,11 @@ javascriptGenerator.forBlock['ha_device_init_auth'] = function(block: Blockly.Bl
   const mqttPass = block.getFieldValue('MQTT_PASS');
   const deviceName = block.getFieldValue('DEVICE_NAME');
   const deviceId = block.getFieldValue('DEVICE_ID');
+  const manufacturer = block.getFieldValue('MANUFACTURER') || 'Digi Co LLC';
+  const model = block.getFieldValue('MODEL') || 'ESP32';
+  const softwareVersion = block.getFieldValue('SOFTWARE_VERSION') || '1.0.0';
+  const autoUniqueId = block.getFieldValue('AUTO_UNIQUE_ID') === 'TRUE';
+  const availability = block.getFieldValue('AVAILABILITY') === 'TRUE';
 
   generator.definitions_['include_wifi'] = '#include <WiFi.h>';
   generator.definitions_['include_arduinoha'] = '#include <ArduinoHA.h>';
@@ -304,12 +359,23 @@ void haWifiConnect() {
   Serial.println(WiFi.localIP());
 }`;
 
-  return `  // HA Device Init with Auth
-  haDevice.setName("${deviceName}");
-  haDevice.setSoftwareVersion("1.0.0");
-  haWifiConnect();
-  haMqtt.begin(ha_broker, ha_port, "${mqttUser}", "${mqttPass}");
-`;
+  let body = '  // HA Device Init with Auth\n';
+  body += `  haWifiConnect();\n`;
+  if (autoUniqueId) {
+    body += `  uint8_t _haMac[6];\n`;
+    body += `  WiFi.macAddress(_haMac);\n`;
+    body += `  haDevice.setUniqueId(_haMac, 6);\n`;
+  }
+  body += `  haDevice.setName("${deviceName}");\n`;
+  body += `  haDevice.setManufacturer("${manufacturer}");\n`;
+  body += `  haDevice.setModel("${model}");\n`;
+  body += `  haDevice.setSoftwareVersion("${softwareVersion}");\n`;
+  if (availability) {
+    body += `  haDevice.enableSharedAvailability();\n`;
+    body += `  haDevice.enableLastWill();\n`;
+  }
+  body += `  haMqtt.begin(ha_broker, ha_port, "${mqttUser}", "${mqttPass}");\n`;
+  return body;
 };
 
 // ===== センサー登録 =====
@@ -320,10 +386,12 @@ void haWifiConnect() {
 Blockly.Blocks['ha_sensor_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('📊 ' + (Blockly.Msg.BLOCKS_HA_SENSORCREATE || 'HA Sensor Register'))
+        .appendField('📊 ' + (Blockly.Msg.BLOCKS_HA_SENSORCREATE || 'HA Sensor Register'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_OBJECTID || 'Object ID (entity_id)')
         .appendField(new Blockly.FieldTextInput('temperature'), 'SENSOR_ID');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
         .appendField(new Blockly.FieldTextInput('温度'), 'NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DEVICECLASS || 'Device Class')
@@ -345,10 +413,22 @@ Blockly.Blocks['ha_sensor_create'] = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_UNIT || 'Unit')
         .appendField(new Blockly.FieldTextInput('°C'), 'UNIT');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_ICON || 'Icon')
+        .appendField(new Blockly.FieldDropdown([
+          [(Blockly.Msg.BLOCKS_HA_ICON_THERMOMETER || 'Thermometer (mdi:thermometer)'), 'mdi:thermometer'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_WATER || 'Water (mdi:water-percent)'), 'mdi:water-percent'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_GAUGE || 'Gauge (mdi:gauge)'), 'mdi:gauge'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_LIGHTNING || 'Lightning (mdi:lightning-bolt)'), 'mdi:lightning-bolt'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_BATTERY || 'Battery (mdi:battery)'), 'mdi:battery'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_GAS_CYLINDER || 'Gas (mdi:gas-cylinder)'), 'mdi:gas-cylinder'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_BRIGHTNESS || 'Brightness (mdi:brightness-5)'), 'mdi:brightness-5'],
+          [(Blockly.Msg.BLOCKS_NONE || 'None'), '']
+        ]), 'ICON');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FF9800');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_SENSORCREATETOOLTIP || 'Create a sensor to register with Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_SENSORCREATETOOLTIP || 'Create a sensor to register with Home Assistant. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language). Icon overrides the HA UI icon.');
   }
 };
 
@@ -358,6 +438,7 @@ javascriptGenerator.forBlock['ha_sensor_create'] = function(block: Blockly.Block
   const name = block.getFieldValue('NAME');
   const deviceClass = block.getFieldValue('DEVICE_CLASS');
   const unit = block.getFieldValue('UNIT');
+  const icon = block.getFieldValue('ICON') || '';
 
   const varName = `haSensor_${sensorId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
@@ -369,6 +450,9 @@ javascriptGenerator.forBlock['ha_sensor_create'] = function(block: Blockly.Block
     code += `  ${varName}.setDeviceClass("${deviceClass}");\n`;
   }
   code += `  ${varName}.setUnitOfMeasurement("${unit}");\n`;
+  if (icon) {
+    code += `  ${varName}.setIcon("${icon}");\n`;
+  }
 
   return code;
 };
@@ -414,10 +498,12 @@ javascriptGenerator.forBlock['ha_sensor_update'] = function(block: Blockly.Block
 Blockly.Blocks['ha_binary_sensor_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔘 ' + (Blockly.Msg.BLOCKS_HA_BINARYSENSORCREATE || 'HA Binary Sensor Register'))
+        .appendField('🔘 ' + (Blockly.Msg.BLOCKS_HA_BINARYSENSORCREATE || 'HA Binary Sensor Register'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_OBJECTID || 'Object ID (entity_id)')
         .appendField(new Blockly.FieldTextInput('motion'), 'SENSOR_ID');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
         .appendField(new Blockly.FieldTextInput('人感センサー'), 'NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DEVICECLASS || 'Device Class')
@@ -434,10 +520,23 @@ Blockly.Blocks['ha_binary_sensor_create'] = {
           [(Blockly.Msg.BLOCKS_HA_DC_CONNECTIVITY || 'Connectivity'), 'connectivity'],
           [(Blockly.Msg.BLOCKS_NONE || 'None'), 'None']
         ]), 'DEVICE_CLASS');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_ICON || 'Icon')
+        .appendField(new Blockly.FieldDropdown([
+          [(Blockly.Msg.BLOCKS_HA_ICON_MOTION_SENSOR || 'Motion (mdi:motion-sensor)'), 'mdi:motion-sensor'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_DOOR_BIN || 'Door (mdi:door)'), 'mdi:door'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_WATER_ALERT || 'Leak (mdi:water-alert)'), 'mdi:water-alert'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_SMOKE_DETECTOR || 'Smoke (mdi:smoke-detector)'), 'mdi:smoke-detector'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_WINDOW_OPEN || 'Window (mdi:window-open)'), 'mdi:window-open'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_VIBRATE || 'Vibration (mdi:vibrate)'), 'mdi:vibrate'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_ACCOUNT || 'Occupancy (mdi:account)'), 'mdi:account'],
+          [(Blockly.Msg.BLOCKS_HA_ICON_WIFI || 'Connectivity (mdi:wifi)'), 'mdi:wifi'],
+          [(Blockly.Msg.BLOCKS_NONE || 'None'), '']
+        ]), 'ICON');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#E91E63');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_BINARYSENSORCREATETOOLTIP || 'Create an ON/OFF binary sensor');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_BINARYSENSORCREATETOOLTIP || 'Create an ON/OFF binary sensor. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language). Icon overrides the HA UI icon.');
   }
 };
 
@@ -446,6 +545,7 @@ javascriptGenerator.forBlock['ha_binary_sensor_create'] = function(block: Blockl
   const sensorId = block.getFieldValue('SENSOR_ID');
   const name = block.getFieldValue('NAME');
   const deviceClass = block.getFieldValue('DEVICE_CLASS');
+  const icon = block.getFieldValue('ICON') || '';
 
   const varName = `haBinarySensor_${sensorId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
@@ -455,6 +555,9 @@ javascriptGenerator.forBlock['ha_binary_sensor_create'] = function(block: Blockl
   code += `  ${varName}.setName("${name}");\n`;
   if (deviceClass !== 'None') {
     code += `  ${varName}.setDeviceClass("${deviceClass}");\n`;
+  }
+  if (icon) {
+    code += `  ${varName}.setIcon("${icon}");\n`;
   }
 
   return code;
@@ -495,10 +598,12 @@ javascriptGenerator.forBlock['ha_binary_sensor_update'] = function(block: Blockl
 Blockly.Blocks['ha_switch_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔌 ' + (Blockly.Msg.BLOCKS_HA_SWITCHCREATE || 'HA Switch Register'))
+        .appendField('🔌 ' + (Blockly.Msg.BLOCKS_HA_SWITCHCREATE || 'HA Switch Register'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_OBJECTID || 'Object ID (entity_id)')
         .appendField(new Blockly.FieldTextInput('relay'), 'SWITCH_ID');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
         .appendField(new Blockly.FieldTextInput('リレー'), 'NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_ICON || 'Icon')
@@ -513,7 +618,7 @@ Blockly.Blocks['ha_switch_create'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#2196F3');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_SWITCHCREATETOOLTIP || 'Create a switch controllable from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_SWITCHCREATETOOLTIP || 'Create a switch controllable from Home Assistant. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).');
   }
 };
 
@@ -612,10 +717,12 @@ javascriptGenerator.forBlock['ha_switch_set_state'] = function(block: Blockly.Bl
 Blockly.Blocks['ha_light_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('💡 ' + (Blockly.Msg.BLOCKS_HA_LIGHTCREATE || 'HA Light Register'))
+        .appendField('💡 ' + (Blockly.Msg.BLOCKS_HA_LIGHTCREATE || 'HA Light Register'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_OBJECTID || 'Object ID (entity_id)')
         .appendField(new Blockly.FieldTextInput('led'), 'LIGHT_ID');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
         .appendField(new Blockly.FieldTextInput('LED'), 'NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_BRIGHTNESS || 'Brightness')
@@ -623,7 +730,7 @@ Blockly.Blocks['ha_light_create'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FFEB3B');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_LIGHTCREATETOOLTIP || 'Create a light controllable from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_LIGHTCREATETOOLTIP || 'Create a light controllable from Home Assistant. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).');
   }
 };
 
@@ -779,10 +886,12 @@ javascriptGenerator.forBlock['ha_light_set_state'] = function(block: Blockly.Blo
 Blockly.Blocks['ha_button_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔘 ' + (Blockly.Msg.BLOCKS_HA_BUTTONCREATE || 'HA Button Register'))
+        .appendField('🔘 ' + (Blockly.Msg.BLOCKS_HA_BUTTONCREATE || 'HA Button Register'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_OBJECTID || 'Object ID (entity_id)')
         .appendField(new Blockly.FieldTextInput('restart'), 'BUTTON_ID');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
         .appendField(new Blockly.FieldTextInput('再起動'), 'NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_ICON || 'Icon')
@@ -796,7 +905,7 @@ Blockly.Blocks['ha_button_create'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#9C27B0');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_BUTTONCREATETOOLTIP || 'Create a button pressable from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_BUTTONCREATETOOLTIP || 'Create a button pressable from Home Assistant. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).');
   }
 };
 
@@ -899,10 +1008,12 @@ javascriptGenerator.forBlock['ha_is_connected'] = function() {
 Blockly.Blocks['ha_number_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔢 ' + (Blockly.Msg.BLOCKS_HA_NUMBERCREATE || 'HA Number Register'))
+        .appendField('🔢 ' + (Blockly.Msg.BLOCKS_HA_NUMBERCREATE || 'HA Number Register'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_OBJECTID || 'Object ID (entity_id)')
         .appendField(new Blockly.FieldTextInput('servo_angle'), 'NUMBER_ID');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
         .appendField(new Blockly.FieldTextInput('サーボ角度'), 'NAME');
     this.appendValueInput('MIN').appendField(Blockly.Msg.BLOCKS_MIN || 'Min');
     this.appendValueInput('MAX').appendField(Blockly.Msg.BLOCKS_MAX || 'Max');
@@ -921,7 +1032,7 @@ Blockly.Blocks['ha_number_create'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#00BCD4');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_NUMBERCREATETOOLTIP || 'Create an entity that accepts number input from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_NUMBERCREATETOOLTIP || 'Create an entity that accepts number input from Home Assistant. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).');
   }
 };
 
@@ -1068,10 +1179,12 @@ javascriptGenerator.forBlock['ha_number_set_state'] = function(block: Blockly.Bl
 Blockly.Blocks['ha_fan_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🌀 ' + (Blockly.Msg.BLOCKS_HA_FANCREATE || 'HA Fan Register'))
+        .appendField('🌀 ' + (Blockly.Msg.BLOCKS_HA_FANCREATE || 'HA Fan Register'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_OBJECTID || 'Object ID (entity_id)')
         .appendField(new Blockly.FieldTextInput('fan'), 'FAN_ID');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
         .appendField(new Blockly.FieldTextInput('換気扇'), 'NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_SPEEDCONTROL || 'Speed Control')
@@ -1079,7 +1192,7 @@ Blockly.Blocks['ha_fan_create'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#795548');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_FANCREATETOOLTIP || 'Create a fan controllable from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_FANCREATETOOLTIP || 'Create a fan controllable from Home Assistant. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).');
   }
 };
 
@@ -1229,10 +1342,12 @@ javascriptGenerator.forBlock['ha_fan_set_state'] = function(block: Blockly.Block
 Blockly.Blocks['ha_cover_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🚪 ' + (Blockly.Msg.BLOCKS_HA_COVERCREATE || 'HA Cover Register'))
+        .appendField('🚪 ' + (Blockly.Msg.BLOCKS_HA_COVERCREATE || 'HA Cover Register'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_OBJECTID || 'Object ID (entity_id)')
         .appendField(new Blockly.FieldTextInput('shutter'), 'COVER_ID');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
         .appendField(new Blockly.FieldTextInput('シャッター'), 'NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DEVICECLASS || 'Device Class')
@@ -1247,7 +1362,7 @@ Blockly.Blocks['ha_cover_create'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#607D8B');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_COVERCREATETOOLTIP || 'Create a cover (shutter, etc.) controllable from Home Assistant');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_COVERCREATETOOLTIP || 'Create a cover (shutter, etc.) controllable from Home Assistant. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).');
   }
 };
 
@@ -1360,15 +1475,17 @@ javascriptGenerator.forBlock['ha_cover_set_state'] = function(block: Blockly.Blo
 Blockly.Blocks['ha_light_create_rgb'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🌈 ' + (Blockly.Msg.BLOCKS_HA_LIGHTCREATERGB || 'HA Light Register (RGB)'))
+        .appendField('🌈 ' + (Blockly.Msg.BLOCKS_HA_LIGHTCREATERGB || 'HA Light Register (RGB)'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_OBJECTID || 'Object ID (entity_id)')
         .appendField(new Blockly.FieldTextInput('rgb_led'), 'LIGHT_ID');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
         .appendField(new Blockly.FieldTextInput('RGB LED'), 'NAME');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#FFEB3B');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_LIGHTCREATERGBTOOLTIP || 'Create an RGB color-controllable light');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_LIGHTCREATERGBTOOLTIP || 'Create an RGB color-controllable light. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).');
   }
 };
 
@@ -1596,15 +1713,17 @@ javascriptGenerator.forBlock['ha_device_trigger_fire'] = function(block: Blockly
 Blockly.Blocks['ha_scene_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🎬 ' + (Blockly.Msg.BLOCKS_HA_SCENECREATE || 'HA Scene Register'))
+        .appendField('🎬 ' + (Blockly.Msg.BLOCKS_HA_SCENECREATE || 'HA Scene Register'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_OBJECTID || 'Object ID (entity_id)')
         .appendField(new Blockly.FieldTextInput('night_mode'), 'SCENE_ID');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
         .appendField(new Blockly.FieldTextInput('ナイトモード'), 'NAME');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#3F51B5');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_SCENECREATETOOLTIP || 'Create a scene executable from HA');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_SCENECREATETOOLTIP || 'Create a scene executable from HA. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).');
   }
 };
 
@@ -1661,15 +1780,17 @@ ${callback}}`;
 Blockly.Blocks['ha_tag_scanner_create'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🏷️ ' + (Blockly.Msg.BLOCKS_HA_TAGSCANNERCREATE || 'HA Tag Scanner Register'))
+        .appendField('🏷️ ' + (Blockly.Msg.BLOCKS_HA_TAGSCANNERCREATE || 'HA Tag Scanner Register'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_OBJECTID || 'Object ID (entity_id)')
         .appendField(new Blockly.FieldTextInput('nfc_reader'), 'SCANNER_ID');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_NAME || 'Name')
+        .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
         .appendField(new Blockly.FieldTextInput('NFCリーダー'), 'NAME');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#009688');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_TAGSCANNERCREATETOOLTIP || 'Register NFC tag scanner, etc.');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_TAGSCANNERCREATETOOLTIP || 'Register NFC tag scanner, etc. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).');
   }
 };
 

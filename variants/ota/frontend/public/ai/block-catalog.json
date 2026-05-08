@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-08T13:24:39.043Z",
+  "generatedAt": "2026-05-08T20:41:21.989Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -7649,7 +7649,7 @@
     {
       "type": "ha_device_init",
       "category": "arduino_ha",
-      "tooltip": "Initialize a device that auto-registers with Home Assistant",
+      "tooltip": "Initialize a device that auto-registers with Home Assistant. Manufacturer/Model/Software Version appear on HA Devices page. Auto deviceId (MAC) avoids collisions across multiple ESP32. Availability (LWT) marks the device Unavailable in HA UI on disconnect.",
       "colour": "#4CAF50",
       "isStatement": true,
       "hasOutput": false,
@@ -7695,6 +7695,31 @@
           "name": "DEVICE_ID",
           "fieldType": "text",
           "default": "esp32_sensor"
+        },
+        {
+          "name": "MANUFACTURER",
+          "fieldType": "text",
+          "default": "Digi Co LLC"
+        },
+        {
+          "name": "MODEL",
+          "fieldType": "text",
+          "default": "ESP32"
+        },
+        {
+          "name": "SOFTWARE_VERSION",
+          "fieldType": "text",
+          "default": "1.0.0"
+        },
+        {
+          "name": "AUTO_UNIQUE_ID",
+          "fieldType": "checkbox",
+          "default": true
+        },
+        {
+          "name": "AVAILABILITY",
+          "fieldType": "checkbox",
+          "default": true
         }
       ],
       "valueInputs": [],
@@ -7703,7 +7728,7 @@
     {
       "type": "ha_device_init_auth",
       "category": "arduino_ha",
-      "tooltip": "Initialize HA device with MQTT authentication",
+      "tooltip": "Initialize HA device with MQTT authentication. Manufacturer/Model/Software Version appear on HA Devices page. Auto deviceId (MAC) avoids collisions across multiple ESP32. Availability (LWT) marks the device Unavailable in HA UI on disconnect.",
       "colour": "#4CAF50",
       "isStatement": true,
       "hasOutput": false,
@@ -7761,6 +7786,31 @@
           "name": "DEVICE_ID",
           "fieldType": "text",
           "default": "esp32_sensor"
+        },
+        {
+          "name": "MANUFACTURER",
+          "fieldType": "text",
+          "default": "Digi Co LLC"
+        },
+        {
+          "name": "MODEL",
+          "fieldType": "text",
+          "default": "ESP32"
+        },
+        {
+          "name": "SOFTWARE_VERSION",
+          "fieldType": "text",
+          "default": "1.0.0"
+        },
+        {
+          "name": "AUTO_UNIQUE_ID",
+          "fieldType": "checkbox",
+          "default": true
+        },
+        {
+          "name": "AVAILABILITY",
+          "fieldType": "checkbox",
+          "default": true
         }
       ],
       "valueInputs": [],
@@ -7769,7 +7819,7 @@
     {
       "type": "ha_sensor_create",
       "category": "arduino_ha",
-      "tooltip": "Create a sensor to register with Home Assistant",
+      "tooltip": "Create a sensor to register with Home Assistant. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language). Icon overrides the HA UI icon.",
       "colour": "#FF9800",
       "isStatement": true,
       "hasOutput": false,
@@ -7798,6 +7848,19 @@
             "pm25",
             "distance",
             "None"
+          ]
+        },
+        {
+          "name": "ICON",
+          "fieldType": "dropdown",
+          "options": [
+            "mdi:thermometer",
+            "mdi:water-percent",
+            "mdi:gauge",
+            "mdi:lightning-bolt",
+            "mdi:battery",
+            "mdi:gas-cylinder",
+            "mdi:brightness-5"
           ]
         },
         {
@@ -7851,7 +7914,7 @@
     {
       "type": "ha_binary_sensor_create",
       "category": "arduino_ha",
-      "tooltip": "Create an ON/OFF binary sensor",
+      "tooltip": "Create an ON/OFF binary sensor. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language). Icon overrides the HA UI icon.",
       "colour": "#E91E63",
       "isStatement": true,
       "hasOutput": false,
@@ -7878,6 +7941,20 @@
             "problem",
             "connectivity",
             "None"
+          ]
+        },
+        {
+          "name": "ICON",
+          "fieldType": "dropdown",
+          "options": [
+            "mdi:motion-sensor",
+            "mdi:door",
+            "mdi:water-alert",
+            "mdi:smoke-detector",
+            "mdi:window-open",
+            "mdi:vibrate",
+            "mdi:account",
+            "mdi:wifi"
           ]
         },
         {
@@ -7926,7 +8003,7 @@
     {
       "type": "ha_switch_create",
       "category": "arduino_ha",
-      "tooltip": "Create a switch controllable from Home Assistant",
+      "tooltip": "Create a switch controllable from Home Assistant. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).",
       "colour": "#2196F3",
       "isStatement": true,
       "hasOutput": false,
@@ -8026,7 +8103,7 @@
     {
       "type": "ha_light_create",
       "category": "arduino_ha",
-      "tooltip": "Create a light controllable from Home Assistant",
+      "tooltip": "Create a light controllable from Home Assistant. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).",
       "colour": "#FFEB3B",
       "isStatement": true,
       "hasOutput": false,
@@ -8157,7 +8234,7 @@
     {
       "type": "ha_light_create_rgb",
       "category": "arduino_ha",
-      "tooltip": "Create an RGB color-controllable light",
+      "tooltip": "Create an RGB color-controllable light. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).",
       "colour": "#FFEB3B",
       "isStatement": true,
       "hasOutput": false,
@@ -8305,7 +8382,7 @@
     {
       "type": "ha_number_create",
       "category": "arduino_ha",
-      "tooltip": "Create an entity that accepts number input from Home Assistant",
+      "tooltip": "Create an entity that accepts number input from Home Assistant. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).",
       "colour": "#00BCD4",
       "isStatement": true,
       "hasOutput": false,
@@ -8436,7 +8513,7 @@
     {
       "type": "ha_fan_create",
       "category": "arduino_ha",
-      "tooltip": "Create a fan controllable from Home Assistant",
+      "tooltip": "Create a fan controllable from Home Assistant. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).",
       "colour": "#795548",
       "isStatement": true,
       "hasOutput": false,
@@ -8567,7 +8644,7 @@
     {
       "type": "ha_cover_create",
       "category": "arduino_ha",
-      "tooltip": "Create a cover (shutter, etc.) controllable from Home Assistant",
+      "tooltip": "Create a cover (shutter, etc.) controllable from Home Assistant. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).",
       "colour": "#607D8B",
       "isStatement": true,
       "hasOutput": false,
@@ -8677,7 +8754,7 @@
     {
       "type": "ha_button_create",
       "category": "arduino_ha",
-      "tooltip": "Create a button pressable from Home Assistant",
+      "tooltip": "Create a button pressable from Home Assistant. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).",
       "colour": "#9C27B0",
       "isStatement": true,
       "hasOutput": false,
@@ -8806,7 +8883,7 @@
     {
       "type": "ha_scene_create",
       "category": "arduino_ha",
-      "tooltip": "Create a scene executable from HA",
+      "tooltip": "Create a scene executable from HA. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).",
       "colour": "#3F51B5",
       "isStatement": true,
       "hasOutput": false,
@@ -8863,7 +8940,7 @@
     {
       "type": "ha_tag_scanner_create",
       "category": "arduino_ha",
-      "tooltip": "Register NFC tag scanner, etc.",
+      "tooltip": "Register NFC tag scanner, etc. Object ID = HA entity_id (ASCII snake_case). Display Name = HA UI label (any language).",
       "colour": "#009688",
       "isStatement": true,
       "hasOutput": false,
