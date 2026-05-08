@@ -1,3 +1,11 @@
+/*
+ * DigiCode - Block-based ESP32 Programming Tool
+ * Copyright (C) 2024-2026 DigiCo LLC
+ *
+ * Licensed under the GNU Affero General Public License version 3 or later.
+ * See LICENSE file in the repository root for full terms.
+ */
+
 /**
  * 時刻ブロック (BP3-1/BP3-2, 2026-04-20)
  *

@@ -1,3 +1,11 @@
+/*
+ * DigiCode - Block-based ESP32 Programming Tool
+ * Copyright (C) 2024-2026 DigiCo LLC
+ *
+ * Licensed under the GNU Affero General Public License version 3 or later.
+ * See LICENSE file in the repository root for full terms.
+ */
+
 /**
  * E-paper ディスプレイブロック (52.md Phase D、第80回 commit #6 / 2026-05-04
  *  → 第89回 GxEPD2 (GPL-3) → Adafruit_EPD (MIT) 置換 / 2026-05-08)

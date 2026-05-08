@@ -1,3 +1,11 @@
+/*
+ * DigiCode - Block-based ESP32 Programming Tool
+ * Copyright (C) 2024-2026 DigiCo LLC
+ *
+ * Licensed under the GNU Affero General Public License version 3 or later.
+ * See LICENSE file in the repository root for full terms.
+ */
+
 /**
  * LCD I2C キャラクタ表示ブロック (BP5-3, 2026-04-20)
  *

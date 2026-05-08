@@ -1,3 +1,11 @@
+/*
+ * DigiCode - Block-based ESP32 Programming Tool
+ * Copyright (C) 2024-2026 DigiCo LLC
+ *
+ * Licensed under the GNU Affero General Public License version 3 or later.
+ * See LICENSE file in the repository root for full terms.
+ */
+
 /**
  * ESP32 静電容量タッチブロック (52.md Phase C、第80回 commit #5 / 2026-05-04)
  *

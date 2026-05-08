@@ -1,3 +1,11 @@
+/*
+ * DigiCode - Block-based ESP32 Programming Tool
+ * Copyright (C) 2024-2026 DigiCo LLC
+ *
+ * Licensed under the GNU Affero General Public License version 3 or later.
+ * See LICENSE file in the repository root for full terms.
+ */
+
 /**
  * Azure IoT ブロック (51.md Phase A+B、第78回 commit #4-A 着手 / 2026-05-04)
  * — Microsoft Azure IoT Hub / IoT Central 連携用

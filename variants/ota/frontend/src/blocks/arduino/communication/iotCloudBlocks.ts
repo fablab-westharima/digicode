@@ -1,3 +1,11 @@
+/*
+ * DigiCode - Block-based ESP32 Programming Tool
+ * Copyright (C) 2024-2026 DigiCo LLC
+ *
+ * Licensed under the GNU Affero General Public License version 3 or later.
+ * See LICENSE file in the repository root for full terms.
+ */
+
 /**
  * IoT クラウド抽象化ブロック (51.md Phase A+B、第78回 commit #5 / 2026-05-04)
  * + AWS/GCP stub 公式化 (52.md Phase D、第80回 commit #10 / 2026-05-04)
