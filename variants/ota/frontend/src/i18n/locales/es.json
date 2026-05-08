@@ -2202,7 +2202,14 @@
       "iconWindowOpen": "Ventana (mdi:window-open)",
       "iconVibrate": "Vibración (mdi:vibrate)",
       "iconAccount": "Ocupación (mdi:account)",
-      "iconWifi": "Conectividad (mdi:wifi)"
+      "iconWifi": "Conectividad (mdi:wifi)",
+      "diagnosticsAuto": "🩺 Diagnóstico automático HA",
+      "diagnosticsAutoTooltip": "Publica automáticamente RSSI / Tiempo activo / Memoria libre / Motivo de reinicio en Home Assistant en el intervalo especificado (por defecto 60 s). Funciona con un temporizador millis() independiente (separado de ha_report_interval). entity_category aún no es compatible con ArduinoHA, por lo que las entidades aparecen como sensores normales en la interfaz de HA (previsto para commit 6). Colócalo dentro de arduino_setup; debe estar activado al menos un elemento.",
+      "diagnosticReportInterval": "Intervalo de informe (s)",
+      "enableRssi": "Intensidad WiFi (RSSI)",
+      "enableUptime": "Tiempo activo (Uptime)",
+      "enableHeap": "Memoria libre (Heap)",
+      "enableResetReason": "Motivo de reinicio"
     },
     "common": {
       "steps": "pasos",

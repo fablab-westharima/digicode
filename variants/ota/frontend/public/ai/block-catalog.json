@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-08T20:41:21.989Z",
+  "generatedAt": "2026-05-08T21:23:13.421Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -9057,6 +9057,52 @@
           "name": "CALLBACK"
         }
       ]
+    },
+    {
+      "type": "ha_diagnostics_auto",
+      "category": "arduino_ha",
+      "tooltip": "Automatically publish RSSI / Uptime / Free Heap / Reset Reason to HA at the specified interval. Operates on an independent millis() timer (separate from ha_report_interval). entity_category is not yet supported by ArduinoHA, so entities currently appear as regular sensors in the HA UI. Place inside arduino_setup; at least one item must be enabled.",
+      "colour": "#4CAF50",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [
+        {
+          "name": "REPORT_INTERVAL",
+          "fieldType": "number",
+          "default": 60,
+          "min": 10,
+          "max": 3600
+        },
+        {
+          "name": "ENABLE_RSSI",
+          "fieldType": "checkbox",
+          "default": true
+        },
+        {
+          "name": "ENABLE_UPTIME",
+          "fieldType": "checkbox",
+          "default": true
+        },
+        {
+          "name": "ENABLE_HEAP",
+          "fieldType": "checkbox",
+          "default": true
+        },
+        {
+          "name": "ENABLE_RESET_REASON",
+          "fieldType": "checkbox",
+          "default": true
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
     },
     {
       "type": "iot_cloud_connect",

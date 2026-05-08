@@ -2412,7 +2412,14 @@
       "iconWindowOpen": "窓 (mdi:window-open)",
       "iconVibrate": "振動 (mdi:vibrate)",
       "iconAccount": "在室 (mdi:account)",
-      "iconWifi": "接続 (mdi:wifi)"
+      "iconWifi": "接続 (mdi:wifi)",
+      "diagnosticsAuto": "🩺 HA自動診断",
+      "diagnosticsAutoTooltip": "RSSI / 稼働時間 / 空きメモリ / リセット理由を Home Assistant に自動報告します。指定間隔で更新（既定 60 秒）、ha_report_interval とは独立した内部タイマーで動作します。entity_category は ArduinoHA 未対応のため、HA UI では通常 sensor として表示されます（commit 6 で改善予定）。arduino_setup 内に配置し、最低 1 つの項目を ON にしてください。",
+      "diagnosticReportInterval": "報告間隔 (秒)",
+      "enableRssi": "電波強度 (RSSI)",
+      "enableUptime": "稼働時間 (Uptime)",
+      "enableHeap": "空きメモリ (Heap)",
+      "enableResetReason": "リセット理由"
     },
     "common": {
       "steps": "歩",

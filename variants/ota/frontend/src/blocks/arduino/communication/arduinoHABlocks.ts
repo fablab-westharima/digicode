@@ -1833,6 +1833,164 @@ javascriptGenerator.forBlock['ha_tag_scanner_scanned'] = function(block: Blockly
   return `  ${varName}.tagScanned(${tagId});\n`;
 };
 
+// ===== 自動診断 (RSSI / Uptime / Heap / ResetReason) =====
+
+/**
+ * ha_diagnostics_auto - HA 自動診断 (commit 3)
+ *
+ * 4 health indicators (RSSI / Uptime / Free Heap / Reset Reason) を独立 millis()
+ * timer で定期 publish。ha_report_interval の `_lastHAReport` / `_haReportInterval`
+ * とは別変数 (`_lastHaDiagReport` / `_haDiagInterval`) で動作 = D-3.6 確定。
+ *
+ * ArduinoHA v2.1.0 は `setEntityCategory` API を提供しないため (HABaseDeviceType.h
+ * 240 行精読 + HASerializer.cpp/.h grep + ML30 installed lib v2.1.0 grep の
+ * triple verify、`entity_category` mention 0 件 確定)、本 commit では
+ * `entity_category: diagnostic` Discovery payload を emit しない。HA UI 上は
+ * 通常 sensor として表示される。release 前 entity_category 自前 override は
+ * commit 6 (via_device payload override infrastructure) と統合予定 = D-3.3 (B' 案)。
+ *
+ * Reset Reason は HASensor (string、人間可読 "PowerOn" / "Software" 等) で publish
+ * = D-3.2 確定。boot 時 esp_reset_reason() 1 回読取で確定値を初回 publish 後不変。
+ */
+Blockly.Blocks['ha_diagnostics_auto'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🩺 ' + (Blockly.Msg.BLOCKS_HA_DIAGNOSTICSAUTO || 'HA Auto Diagnostics'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_DIAGNOSTICREPORTINTERVAL || 'Report Interval (s)')
+        .appendField(new Blockly.FieldNumber(60, 10, 3600), 'REPORT_INTERVAL');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_ENABLERSSI || 'WiFi RSSI')
+        .appendField(new Blockly.FieldCheckbox('TRUE'), 'ENABLE_RSSI');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_ENABLEUPTIME || 'Uptime')
+        .appendField(new Blockly.FieldCheckbox('TRUE'), 'ENABLE_UPTIME');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_ENABLEHEAP || 'Free Heap')
+        .appendField(new Blockly.FieldCheckbox('TRUE'), 'ENABLE_HEAP');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_ENABLERESETREASON || 'Reset Reason')
+        .appendField(new Blockly.FieldCheckbox('TRUE'), 'ENABLE_RESET_REASON');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour('#4CAF50');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_DIAGNOSTICSAUTOTOOLTIP || 'Automatically publish RSSI / Uptime / Free Heap / Reset Reason to HA at the specified interval. Operates on an independent millis() timer (separate from ha_report_interval). entity_category is not yet supported by ArduinoHA, so entities currently appear as regular sensors in the HA UI. Place inside arduino_setup; at least one item must be enabled.');
+  }
+};
+
+javascriptGenerator.forBlock['ha_diagnostics_auto'] = function(block: Blockly.Block) {
+  ensureArduinoHAInclude();
+  const intervalRaw = parseInt(block.getFieldValue('REPORT_INTERVAL') || '60', 10);
+  const interval = Number.isFinite(intervalRaw) && intervalRaw >= 10 ? intervalRaw : 60;
+  const enableRssi = block.getFieldValue('ENABLE_RSSI') === 'TRUE';
+  const enableUptime = block.getFieldValue('ENABLE_UPTIME') === 'TRUE';
+  const enableHeap = block.getFieldValue('ENABLE_HEAP') === 'TRUE';
+  const enableResetReason = block.getFieldValue('ENABLE_RESET_REASON') === 'TRUE';
+
+  // D-3.7: silent skip when all four ENABLE_* are OFF — block is a no-op,
+  // tooltip already advises "at least one item must be enabled".
+  if (!enableRssi && !enableUptime && !enableHeap && !enableResetReason) {
+    return '';
+  }
+
+  // RSSI uses WiFi.RSSI() — ensure WiFi.h include is present even if the user
+  // somehow places this block without ha_device_init (singleton-strategy case).
+  if (enableRssi) {
+    generator.definitions_['include_wifi'] = '#include <WiFi.h>';
+  }
+
+  // Entity declarations (D-3.4: setIcon hard-coded in setup body, no Dropdown).
+  // RSSI/Uptime/Heap = HASensorNumber, Reset Reason = HASensor (string, D-3.2).
+  if (enableRssi) {
+    generator.definitions_['ha_diag_rssi_entity'] =
+      'HASensorNumber haDiag_wifi_rssi("wifi_rssi", HASensorNumber::PrecisionP0);';
+  }
+  if (enableUptime) {
+    generator.definitions_['ha_diag_uptime_entity'] =
+      'HASensorNumber haDiag_uptime("uptime", HASensorNumber::PrecisionP0);';
+  }
+  if (enableHeap) {
+    generator.definitions_['ha_diag_heap_entity'] =
+      'HASensorNumber haDiag_free_heap("free_heap", HASensorNumber::PrecisionP0);';
+  }
+  if (enableResetReason) {
+    generator.definitions_['ha_diag_reset_reason_entity'] =
+      'HASensor haDiag_reset_reason("reset_reason");';
+    generator.definitions_['include_esp_system'] = '#include <esp_system.h>';
+    generator.definitions_['ha_diag_reset_reason_helper'] = `
+const char* _haDiagResetReasonStr() {
+  switch (esp_reset_reason()) {
+    case ESP_RST_POWERON:  return "PowerOn";
+    case ESP_RST_EXT:      return "External";
+    case ESP_RST_SW:       return "Software";
+    case ESP_RST_PANIC:    return "Panic";
+    case ESP_RST_INT_WDT:  return "WDT-Int";
+    case ESP_RST_TASK_WDT: return "WDT-Task";
+    case ESP_RST_WDT:      return "WDT-Other";
+    case ESP_RST_UNKNOWN:  return "Unknown";
+    default:               return "Other";
+  }
+}`;
+  }
+
+  // Independent millis() timer (D-3.6) — variable names distinct from
+  // ha_report_interval's _lastHAReport / _haReportInterval.
+  generator.definitions_['ha_diag_timer_vars'] = `unsigned long _lastHaDiagReport = 0;
+unsigned long _haDiagInterval = ${interval * 1000}UL;`;
+
+  // Setup body (runs once when block placed inside arduino_setup) — entity
+  // metadata: setName / setDeviceClass / setUnitOfMeasurement / setIcon.
+  // BUG-066 cluster: setValue(int) is ambiguous against the 8-overload set;
+  // emit static_cast<float>(...) at every call site for unambiguous dispatch.
+  let setupBody = '  // HA Auto Diagnostics: setup\n';
+  if (enableRssi) {
+    setupBody += '  haDiag_wifi_rssi.setName("WiFi RSSI");\n';
+    setupBody += '  haDiag_wifi_rssi.setDeviceClass("signal_strength");\n';
+    setupBody += '  haDiag_wifi_rssi.setUnitOfMeasurement("dBm");\n';
+    setupBody += '  haDiag_wifi_rssi.setIcon("mdi:wifi");\n';
+  }
+  if (enableUptime) {
+    setupBody += '  haDiag_uptime.setName("Uptime");\n';
+    setupBody += '  haDiag_uptime.setDeviceClass("duration");\n';
+    setupBody += '  haDiag_uptime.setUnitOfMeasurement("s");\n';
+    setupBody += '  haDiag_uptime.setIcon("mdi:clock-outline");\n';
+  }
+  if (enableHeap) {
+    setupBody += '  haDiag_free_heap.setName("Free Heap");\n';
+    setupBody += '  haDiag_free_heap.setDeviceClass("data_size");\n';
+    setupBody += '  haDiag_free_heap.setUnitOfMeasurement("B");\n';
+    setupBody += '  haDiag_free_heap.setIcon("mdi:memory");\n';
+  }
+  if (enableResetReason) {
+    setupBody += '  haDiag_reset_reason.setName("Reset Reason");\n';
+    setupBody += '  haDiag_reset_reason.setIcon("mdi:restart");\n';
+    setupBody += '  haDiag_reset_reason.setValue(_haDiagResetReasonStr());\n';
+  }
+
+  // Periodic tick via loopPre_ (rule 03 "Loop-side dedupe" — auto-injected
+  // into loop() prologue, placement-independent). RSSI / Uptime / Heap update
+  // every interval; Reset Reason is fixed at boot (no periodic update needed).
+  if (enableRssi || enableUptime || enableHeap) {
+    if (!generator.loopPre_) generator.loopPre_ = {};
+    let loopTick = `  if (millis() - _lastHaDiagReport >= _haDiagInterval) {
+    _lastHaDiagReport = millis();
+`;
+    if (enableRssi) {
+      loopTick += '    haDiag_wifi_rssi.setValue(static_cast<float>(WiFi.RSSI()));\n';
+    }
+    if (enableUptime) {
+      loopTick += '    haDiag_uptime.setValue(static_cast<float>(millis() / 1000UL));\n';
+    }
+    if (enableHeap) {
+      loopTick += '    haDiag_free_heap.setValue(static_cast<float>(ESP.getFreeHeap()));\n';
+    }
+    loopTick += '  }\n';
+    generator.loopPre_['ha_diagnostics_auto_tick'] = loopTick;
+  }
+
+  return setupBody;
+};
+
 // ===== 報告間隔制御 =====
 
 /**

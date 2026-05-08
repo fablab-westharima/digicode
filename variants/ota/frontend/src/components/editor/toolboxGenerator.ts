@@ -987,6 +987,7 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="ha_loop"></block>
     <block type="ha_is_connected"></block>
     <block type="ha_report_interval"></block>
+    <block type="ha_diagnostics_auto"></block>
   </category>`,
 
   // HTTPリクエスト

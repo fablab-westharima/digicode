@@ -2202,7 +2202,14 @@
       "iconWindowOpen": "窗戶 (mdi:window-open)",
       "iconVibrate": "震動 (mdi:vibrate)",
       "iconAccount": "佔用 (mdi:account)",
-      "iconWifi": "連線 (mdi:wifi)"
+      "iconWifi": "連線 (mdi:wifi)",
+      "diagnosticsAuto": "🩺 HA 自動診斷",
+      "diagnosticsAutoTooltip": "依指定間隔自動將 RSSI / 運轉時間 / 可用記憶體 / 重啟原因發布至 Home Assistant（預設 60 秒）。使用獨立的 millis() 計時器運作（與 ha_report_interval 分離）。ArduinoHA 尚不支援 entity_category，因此實體目前以一般感測器形式顯示於 HA UI（將於 commit 6 改善）。請放置於 arduino_setup 中，至少需啟用一個項目。",
+      "diagnosticReportInterval": "報告間隔（秒）",
+      "enableRssi": "訊號強度（RSSI）",
+      "enableUptime": "運轉時間（Uptime）",
+      "enableHeap": "可用記憶體（Heap）",
+      "enableResetReason": "重啟原因"
     },
     "common": {
       "steps": "步數",

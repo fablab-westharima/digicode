@@ -319,10 +319,12 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
   },
   {
     // ha_device_init が HAMqtt インスタンス (haMqtt) を declares、
-    // ha_is_connected / ha_loop / ha_report_interval が直接参照。
+    // ha_is_connected / ha_loop / ha_report_interval / ha_diagnostics_auto が
+    // 直接参照 (ha_diagnostics_auto は HASensorNumber / HASensor を自前 declare
+    // するが、publish 経路は haMqtt 経由)。
     init: 'ha_device_init',
     label: 'ha-device',
-    operations: ['ha_is_connected', 'ha_loop', 'ha_report_interval'],
+    operations: ['ha_is_connected', 'ha_loop', 'ha_report_interval', 'ha_diagnostics_auto'],
   },
   // post-Phase 4-4 commit 2-6 (case_0266-0302 fix、最大 cluster 25 件): HA 11
   // entity の create→operation 依存を明示登録。各 _create が entity instance を
