@@ -198,7 +198,7 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     init: 'epaper_init',
     label: 'epaper',
     operations: [
-      'epaper_print', 'epaper_full_refresh',
+      'epaper_print', 'epaper_partial_update', 'epaper_full_refresh',
       'epaper_clear', 'epaper_draw_image',
     ],
   },
