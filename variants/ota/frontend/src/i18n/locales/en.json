@@ -3174,6 +3174,7 @@
     "wifiInstallerTitle": "Write WiFi Firmware",
     "bleInstallerDescription": "Write the ESP32 BLE OTA firmware via USB. Required for the first flash.",
     "wifiInstallerDescription": "Write the ESP32 WiFi OTA firmware via USB. Required for the first flash.",
+    "betaBadge": "Beta",
     "status": {
       "webSerialUnsupported": "Web Serial API is not supported by this browser. Use Chrome or Edge.",
       "webSerialUnsupportedShort": "Web Serial API is not supported by this browser",

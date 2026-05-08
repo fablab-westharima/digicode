@@ -3132,6 +3132,7 @@
     "wifiInstallerTitle": "Gravar firmware WiFi",
     "bleInstallerDescription": "Grave o firmware BLE OTA no ESP32 via USB. Necessário para a primeira gravação.",
     "wifiInstallerDescription": "Grave o firmware WiFi OTA no ESP32 via USB. Necessário para a primeira gravação.",
+    "betaBadge": "Beta",
     "status": {
       "webSerialUnsupported": "Web Serial API não é suportada por este navegador. Utilize Chrome ou Edge.",
       "webSerialUnsupportedShort": "Web Serial API não é suportada por este navegador",

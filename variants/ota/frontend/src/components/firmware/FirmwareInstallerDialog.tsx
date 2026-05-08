@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Usb, Trash2, Wifi, Bluetooth } from 'lucide-react';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
 import { compileService, type ConnectionType } from '@/services/compileService';
@@ -322,9 +323,17 @@ export function FirmwareInstallerDialog({ open, onOpenChange, defaultFirmwareTyp
         <DialogHeader>
           <DialogTitle className="text-[#58D5D5] flex items-center gap-2">
             {defaultFirmwareType === 'ble' ? (
-              <><Bluetooth className="w-5 h-5 text-[#8B5CF6]" /> {t('firmware.bleInstallerTitle', { defaultValue: 'BLEファームウェア書き込み' })}</>
+              <>
+                <Bluetooth className="w-5 h-5 text-[#8B5CF6]" />
+                {t('firmware.bleInstallerTitle', { defaultValue: 'BLEファームウェア書き込み' })}
+                <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{t('firmware.betaBadge', { defaultValue: 'ベータ' })}</Badge>
+              </>
             ) : defaultFirmwareType === 'ota' ? (
-              <><Wifi className="w-5 h-5 text-purple-400" /> {t('firmware.wifiInstallerTitle', { defaultValue: 'WiFiファームウェア書き込み' })}</>
+              <>
+                <Wifi className="w-5 h-5 text-purple-400" />
+                {t('firmware.wifiInstallerTitle', { defaultValue: 'WiFiファームウェア書き込み' })}
+                <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{t('firmware.betaBadge', { defaultValue: 'ベータ' })}</Badge>
+              </>
             ) : (
               t('firmware.installerTitle')
             )}
@@ -368,6 +377,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange, defaultFirmwareTyp
                     <div className="flex-1 text-left">
                       <div className="flex items-center gap-2">
                         <p className="font-semibold text-[#E6EDF3]">{t('firmware.wifiFirmwareTitle')}</p>
+                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{t('firmware.betaBadge', { defaultValue: 'ベータ' })}</Badge>
                         {firmwareType === 'ota' && (
                           <span className="text-xs text-[#58A6F9] bg-[#1f6feb] px-2 py-0.5 rounded">{t('firmware.selected')}</span>
                         )}
@@ -396,6 +406,7 @@ export function FirmwareInstallerDialog({ open, onOpenChange, defaultFirmwareTyp
                     <div className="flex-1 text-left">
                       <div className="flex items-center gap-2">
                         <p className="font-semibold text-[#E6EDF3]">{t('firmware.bleFirmwareTitle')}</p>
+                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{t('firmware.betaBadge', { defaultValue: 'ベータ' })}</Badge>
                         {firmwareType === 'ble' && (
                           <span className="text-xs text-[#8B5CF6] bg-[#8B5CF6]/20 px-2 py-0.5 rounded">{t('firmware.selected')}</span>
                         )}

@@ -3132,6 +3132,7 @@
     "wifiInstallerTitle": "寫入 WiFi 韌體",
     "bleInstallerDescription": "透過 USB 寫入 ESP32 的 BLE OTA 韌體。首次寫入時必要。",
     "wifiInstallerDescription": "透過 USB 寫入 ESP32 的 WiFi OTA 韌體。首次寫入時必要。",
+    "betaBadge": "Beta",
     "status": {
       "webSerialUnsupported": "此瀏覽器不支援 Web Serial API。請使用 Chrome 或 Edge。",
       "webSerialUnsupportedShort": "此瀏覽器不支援 Web Serial API",

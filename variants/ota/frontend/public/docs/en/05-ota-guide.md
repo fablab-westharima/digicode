@@ -1,6 +1,8 @@
 # OTA Setup Guide (Optional)
 
-**Last updated:** 2026-05-02
+**Last updated:** 2026-05-08
+
+> ⚠️ **BLE / WiFi OTA are beta features.** Basic flashing and updates are verified, but disconnects / retries can occur in edge cases. For mission-critical setups we recommend USB flashing.
 
 > **This guide is optional.** DigiCode works **with just a USB cable**. Get comfortable with the USB workflow in [Getting Started](./getting-started.md) first, then refer to this guide when needed.
 
@@ -43,9 +45,20 @@ WiFi OTA (Over-The-Air) lets you upload programs wirelessly via WiFi. Once set u
 | ❌ Initial setup needed | FW upload + WiFi config (~10 min) |
 | ❌ Requires WiFi | PC and ESP32 must be on the same LAN |
 | ❌ Requires Bonjour / mDNS | Extra install on Windows |
+| ❌ Analog pin restriction | ADC2 (GPIO 0/2/4/12-15/25-27) unavailable while WiFi is active; only ADC1 (GPIO 32-39) usable |
 | ❌ Recovery requires USB | Re-do WiFi setup via USB if WiFi config is lost |
 
 > **Intermediate+ recommended**: WiFi OTA issues can require firmware re-flashing via USB to recover.
+
+> ⚠️ **Analog pin restriction (ESP32) when using WiFi OTA**
+>
+> ESP32's ADC2 cannot be used while WiFi is active. When using WiFi OTA, restrict analog inputs (potentiometer / light sensor / distance sensor / etc.) to **ADC1 (GPIO 32-39)**.
+>
+> - ✅ **Available (ADC1)**: GPIO 32, 33, 34, 35, 36, 39
+> - ❌ **Unavailable (ADC2)**: GPIO 0, 2, 4, 12, 13, 14, 15, 25, 26, 27
+> - Reference: Espressif official [ADC Limitations](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html)
+>
+> ADC2 is fully usable when flashing via USB. If your project needs more analog inputs than ADC1's 6 pins can provide, consider USB flashing instead.
 
 ---
 

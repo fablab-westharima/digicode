@@ -3164,6 +3164,7 @@
     "wifiInstallerTitle": "WiFiファームウェア書き込み",
     "bleInstallerDescription": "ESP32にBLE OTAファームウェアをUSB経由で書き込みます。初回書き込みに必要です。",
     "wifiInstallerDescription": "ESP32にWiFi OTAファームウェアをUSB経由で書き込みます。初回書き込みに必要です。",
+    "betaBadge": "ベータ",
     "status": {
       "webSerialUnsupported": "Web Serial APIはこのブラウザでサポートされていません。Chrome または Edge を使用してください。",
       "webSerialUnsupportedShort": "Web Serial APIはこのブラウザでサポートされていません",
