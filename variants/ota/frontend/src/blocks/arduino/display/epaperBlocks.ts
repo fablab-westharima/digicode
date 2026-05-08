@@ -41,8 +41,8 @@ function buildEpaperInclude(cs: string | number, dc: string | number, rst: strin
 // post-Phase 4-4 commit 2-4: combo.ts INIT_DEPENDENCIES に epaper_init 登録 (手段 1) +
 // 各 operation block の ensureEpaperDefaultDeclare() (手段 2) 併用、case_0482-0486 解消。
 // See rules/digicode/03-block-workflow.md "Init block protocol".
+// Adafruit_EPD.h が drivers/Adafruit_SSD1680.h を内部 include 済 (PIO LDF 経路で他の panel header が見つからない場合の対策)。
 #include <Adafruit_EPD.h>
-#include <Adafruit_SSD1680.h>
 Adafruit_SSD1680 epaperDisplay(296, 128, /*DC*/${dc}, /*RST*/${rst}, /*CS*/${cs}, /*SRAM_CS*/-1, /*BUSY*/${busy});`;
 }
 
