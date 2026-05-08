@@ -210,6 +210,55 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Air Quality Dashboard (CO2 + PM2.5 + OLED)',
         description: 'Show SCD30 (CO2) + PMS5003 (PM2.5) on OLED, publish to iot_cloud (Factory IoT)',
       },
+      // 第88回 (2026-05-08) AI 参照ファイルメンテ: 51.md/52.md 残カテゴリ 12 sample
+      'm5stack-button-lcd': {
+        title: 'M5Stack Button + LCD Display',
+        description: 'Update LCD on M5Stack Core/Atom/StickC when button A is pressed (m5stack_begin required)',
+      },
+      'hx711-scale': {
+        title: 'HX711 Load Cell Scale',
+        description: 'Read weight via HX711 and print to Serial (factory scale, Fab Academy Final Project)',
+      },
+      'espnow-mesh-receiver': {
+        title: 'ESP-NOW Mesh Receiver',
+        description: 'Receive ESP-NOW messages from peers and print to Serial (Fab Academy Networking week)',
+      },
+      'sht40-temp-humidity': {
+        title: 'SHT40 Temperature & Humidity',
+        description: 'Read temperature and humidity from SHT40 every 5 seconds (M5Stack ENV IV unit compatible)',
+      },
+      'epaper-status-display': {
+        title: 'e-Paper Status Display',
+        description: 'Display status text once on e-Paper (GxEPD2) — low power signage',
+      },
+      'stepper-position-control': {
+        title: 'Stepper Position Control (28BYJ-48)',
+        description: 'Rotate 90° forward, wait 1 s, rotate back (CNC / automation)',
+      },
+      'relay-timer-control': {
+        title: 'Relay Timer Control',
+        description: 'Toggle relay 3 s ON / 5 s OFF in a loop (Factory IoT control)',
+      },
+      'neomatrix-pixel-display': {
+        title: 'NeoMatrix Pixel Display',
+        description: 'Show 2 colored pixels diagonally on 8x8 NeoMatrix LED, hold 1 s (NeoPixel 2D matrix)',
+      },
+      'max30102-pulse-monitor': {
+        title: 'MAX30102 Heart Rate / SpO2 Monitor',
+        description: 'Print heart rate and SpO2 every 1 s via Serial (educational, NOT medical-grade)',
+      },
+      'ina219-power-monitor': {
+        title: 'INA219 Power Monitor',
+        description: 'Print voltage and current every 2 s via Serial (battery / solar power)',
+      },
+      'apds9960-gesture-control': {
+        title: 'APDS9960 Gesture Control',
+        description: 'Print detected gesture (UP/DOWN/LEFT/RIGHT) via Serial (HCI input)',
+      },
+      'pushover-distance-alert': {
+        title: 'Pushover Distance Alert',
+        description: 'Send Pushover smartphone notification when ultrasonic distance < 10 cm (security / occupancy)',
+      },
     },
   },
   es: {
@@ -396,6 +445,55 @@ const overrides: Record<string, LocaleOverride> = {
       'air-quality-dashboard': {
         title: 'Panel de calidad del aire (CO2 + PM2.5 + OLED)',
         description: 'Muestra SCD30 (CO2) + PMS5003 (PM2.5) en OLED, publica a iot_cloud',
+      },
+      // Sesión 88 (2026-05-08): 12 muestras restantes de 51.md/52.md
+      'm5stack-button-lcd': {
+        title: 'M5Stack Botón + Pantalla LCD',
+        description: 'Actualiza la LCD en M5Stack Core/Atom/StickC al pulsar el botón A (m5stack_begin obligatorio)',
+      },
+      'hx711-scale': {
+        title: 'Báscula con célula de carga HX711',
+        description: 'Lee peso vía HX711 e imprime a Serial (báscula industrial, Final Project de Fab Academy)',
+      },
+      'espnow-mesh-receiver': {
+        title: 'Receptor mesh ESP-NOW',
+        description: 'Recibe mensajes ESP-NOW de pares e imprime a Serial (semana Networking de Fab Academy)',
+      },
+      'sht40-temp-humidity': {
+        title: 'Temperatura y humedad SHT40',
+        description: 'Lee temperatura y humedad de SHT40 cada 5 s (compatible con unidad ENV IV de M5Stack)',
+      },
+      'epaper-status-display': {
+        title: 'Pantalla de estado e-Paper',
+        description: 'Muestra texto de estado una vez en e-Paper (GxEPD2) — señalética de bajo consumo',
+      },
+      'stepper-position-control': {
+        title: 'Control de posición Stepper (28BYJ-48)',
+        description: 'Rota 90° hacia adelante, espera 1 s, rota al revés (CNC / automatización)',
+      },
+      'relay-timer-control': {
+        title: 'Control temporizado de relé',
+        description: 'Conmuta relé 3 s ON / 5 s OFF en bucle (control IoT industrial)',
+      },
+      'neomatrix-pixel-display': {
+        title: 'Pantalla de píxeles NeoMatrix',
+        description: 'Muestra 2 píxeles de color en diagonal en LED NeoMatrix 8x8, mantén 1 s (matriz 2D NeoPixel)',
+      },
+      'max30102-pulse-monitor': {
+        title: 'Monitor de pulso/SpO2 MAX30102',
+        description: 'Imprime pulso cardíaco y SpO2 cada 1 s a Serial (educativo, NO grado médico)',
+      },
+      'ina219-power-monitor': {
+        title: 'Monitor de potencia INA219',
+        description: 'Imprime tensión y corriente cada 2 s a Serial (batería / energía solar)',
+      },
+      'apds9960-gesture-control': {
+        title: 'Control por gestos APDS9960',
+        description: 'Imprime el gesto detectado (UP/DOWN/LEFT/RIGHT) a Serial (entrada HCI)',
+      },
+      'pushover-distance-alert': {
+        title: 'Alerta de distancia Pushover',
+        description: 'Envía notificación al smartphone vía Pushover cuando la distancia ultrasónica < 10 cm (seguridad / ocupación)',
       },
     },
   },
@@ -584,6 +682,55 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Painel de qualidade do ar (CO2 + PM2.5 + OLED)',
         description: 'Mostra SCD30 (CO2) + PMS5003 (PM2.5) em OLED, publica em iot_cloud',
       },
+      // Sessão 88 (2026-05-08): 12 amostras restantes de 51.md/52.md
+      'm5stack-button-lcd': {
+        title: 'M5Stack Botão + Mostrador LCD',
+        description: 'Atualiza o LCD no M5Stack Core/Atom/StickC ao premir o botão A (m5stack_begin obrigatório)',
+      },
+      'hx711-scale': {
+        title: 'Balança com célula de carga HX711',
+        description: 'Lê peso via HX711 e imprime no Serial (balança industrial, Final Project Fab Academy)',
+      },
+      'espnow-mesh-receiver': {
+        title: 'Receptor mesh ESP-NOW',
+        description: 'Recebe mensagens ESP-NOW de pares e imprime no Serial (semana Networking Fab Academy)',
+      },
+      'sht40-temp-humidity': {
+        title: 'Temperatura e humidade SHT40',
+        description: 'Lê temperatura e humidade do SHT40 a cada 5 s (compatível com ENV IV M5Stack)',
+      },
+      'epaper-status-display': {
+        title: 'Visor de estado e-Paper',
+        description: 'Mostra texto de estado uma vez no e-Paper (GxEPD2) — sinalética de baixo consumo',
+      },
+      'stepper-position-control': {
+        title: 'Controlo de posição Stepper (28BYJ-48)',
+        description: 'Roda 90° para a frente, espera 1 s, roda para trás (CNC / automação)',
+      },
+      'relay-timer-control': {
+        title: 'Controlo temporizado de relé',
+        description: 'Alterna relé 3 s ON / 5 s OFF em loop (controlo IoT industrial)',
+      },
+      'neomatrix-pixel-display': {
+        title: 'Visor de pixels NeoMatrix',
+        description: 'Mostra 2 pixels coloridos na diagonal em LED NeoMatrix 8x8, mantém 1 s (matriz 2D NeoPixel)',
+      },
+      'max30102-pulse-monitor': {
+        title: 'Monitor pulso/SpO2 MAX30102',
+        description: 'Imprime pulso cardíaco e SpO2 a cada 1 s no Serial (educativo, NÃO grau médico)',
+      },
+      'ina219-power-monitor': {
+        title: 'Monitor de potência INA219',
+        description: 'Imprime tensão e corrente a cada 2 s no Serial (bateria / energia solar)',
+      },
+      'apds9960-gesture-control': {
+        title: 'Controlo por gestos APDS9960',
+        description: 'Imprime o gesto detetado (UP/DOWN/LEFT/RIGHT) no Serial (entrada HCI)',
+      },
+      'pushover-distance-alert': {
+        title: 'Alerta de distância Pushover',
+        description: 'Envia notificação ao smartphone via Pushover quando a distância ultrassónica < 10 cm (segurança / ocupação)',
+      },
     },
   },
   'zh-TW': {
@@ -770,6 +917,55 @@ const overrides: Record<string, LocaleOverride> = {
       'air-quality-dashboard': {
         title: '空氣品質儀表板 (CO2 + PM2.5 + OLED)',
         description: '在 OLED 顯示 SCD30 (CO2) + PMS5003 (PM2.5)，發布到 iot_cloud',
+      },
+      // 第 88 回 (2026-05-08): 51.md/52.md 殘餘類別 12 個範例
+      'm5stack-button-lcd': {
+        title: 'M5Stack 按鈕 + LCD 顯示',
+        description: '在 M5Stack Core/Atom/StickC 上，按下 A 鍵時更新 LCD (必須呼叫 m5stack_begin)',
+      },
+      'hx711-scale': {
+        title: 'HX711 荷重感測秤',
+        description: '透過 HX711 讀取重量並輸出至 Serial (工業秤、Fab Academy 期末專案範例)',
+      },
+      'espnow-mesh-receiver': {
+        title: 'ESP-NOW 網狀網路接收器',
+        description: '接收來自其他裝置的 ESP-NOW 訊息並輸出至 Serial (Fab Academy Networking 週)',
+      },
+      'sht40-temp-humidity': {
+        title: 'SHT40 溫濕度感測器',
+        description: '每 5 秒讀取 SHT40 溫濕度並輸出 Serial (M5Stack ENV IV 單元相容)',
+      },
+      'epaper-status-display': {
+        title: '電子紙狀態顯示',
+        description: '在電子紙 (GxEPD2) 上顯示一次狀態文字並保留 (低耗電看板)',
+      },
+      'stepper-position-control': {
+        title: '步進馬達位置控制 (28BYJ-48)',
+        description: '順時針轉 90 度 → 等待 1 秒 → 反向轉 (CNC / 自動化)',
+      },
+      'relay-timer-control': {
+        title: '繼電器計時控制',
+        description: '繼電器 3 秒 ON → 5 秒 OFF 循環 (工業 IoT 控制)',
+      },
+      'neomatrix-pixel-display': {
+        title: 'NeoMatrix 像素繪製',
+        description: '在 8x8 NeoMatrix LED 對角顯示 2 顆彩色像素並保留 1 秒 (NeoPixel 2D 矩陣)',
+      },
+      'max30102-pulse-monitor': {
+        title: 'MAX30102 心率 / 血氧監測',
+        description: '每秒輸出心率與 SpO2 至 Serial (教育用、非醫療等級)',
+      },
+      'ina219-power-monitor': {
+        title: 'INA219 電力監測',
+        description: '每 2 秒輸出電壓與電流至 Serial (電池 / 太陽能)',
+      },
+      'apds9960-gesture-control': {
+        title: 'APDS9960 手勢控制',
+        description: '將偵測到的手勢 (UP/DOWN/LEFT/RIGHT) 輸出至 Serial (HCI 輸入)',
+      },
+      'pushover-distance-alert': {
+        title: 'Pushover 距離警示',
+        description: '超音波距離 < 10 cm 時透過 Pushover 推播至手機 (安防 / 在席偵測)',
       },
     },
   },

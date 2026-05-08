@@ -16,13 +16,29 @@ const MODE_SPECIFIC_SAMPLES: Record<RobotMode, readonly [string, string]> = {
 };
 
 // 優先度順（上から match 試行、最初に hit したものを採用）
-// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 20 / Phase 3 (BUG-052): +1 → 21 / BUG-053+054: +2 → 23 / 47.md Phase 2 commit #7 (第73回 wifi-controller-mix): +1 → 24 entries
+// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 20 / Phase 3 (BUG-052): +1 → 21 / BUG-053+054: +2 → 23 / 47.md Phase 2 commit #7 (第73回 wifi-controller-mix): +1 → 24 / 52.md commit #21 (2026-05-04 第80回): +6 → 30 / 第88回 (2026-05-08 残カテゴリ FEW_SHOT 12 sample): +12 → 42 entries
 const KEYWORD_TO_SAMPLE: ReadonlyArray<readonly [RegExp, string]> = [
   // 47.md Phase 2 WiFi controller (commit #7): WebSocket server / WiFi
   // controller / browser-based control patterns. Listed near the top so
   // controller-flavored prompts hit this canonical Few-shot before the
   // generic IoT heuristics (mqtt / http / json) below.
   [/websocket|wi.?fi.?controller|wi.?fi.*コントロー|LAN.*control|ブラウザ.*制御|browser.*control/i, 'wifi-controller-mix'],
+  // 第88回 (2026-05-08) AI 参照ファイルメンテ: 51.md/52.md 残カテゴリ 12 sample 対応 KEYWORD。
+  // 特定 HW 名 (M5Stack / SHT40 / APDS9960 等) を generic pattern (LCD / 温度湿度 / ジェスチャ等) より上に置くことで
+  // user の意図 (specific HW を使いたい) を優先解決。下方の 52.md commit #21 6 sample (TM1637/MAX7219/LoRa/...) と
+  // 共存可 (それらは specific 名 only で generic と衝突しないため移動不要)。
+  [/m5stack.*(begin|button|LCD)|本体.?(LCD|ボタン)|M5.*Core|M5.*Atom|M5.*Stick/i, 'm5stack-button-lcd'],
+  [/HX711|ロードセル|load.?cell|秤|scale|計量|重量/i, 'hx711-scale'],
+  [/ESP.?NOW|esp.?now|peer.?to.?peer.*ESP|ESP.*P2P|メッシュ.*ESP/i, 'espnow-mesh-receiver'],
+  [/SHT40|SHT4x|ENV.*IV|温湿度.*Sensirion/i, 'sht40-temp-humidity'],
+  [/e.?paper|epaper|電子ペーパー|GxEPD/i, 'epaper-status-display'],
+  [/stepper|ステッパ|28BYJ|ULN2003|a4988/i, 'stepper-position-control'],
+  [/relay|リレー(?!.*set)|electromagnetic.*switch|タイマー.?制御.*ON.?OFF/i, 'relay-timer-control'],
+  [/neomatrix|NeoMatrix|NeoPixel.*matrix|LED.*8x8|ピクセル.?描画/i, 'neomatrix-pixel-display'],
+  [/MAX30102|心拍|脈拍|heart.?rate|SpO2|血中酸素|pulse.*ox/i, 'max30102-pulse-monitor'],
+  [/INA219|電力.?(モニタ|測定)|電圧.*電流.?同時|power.?monitor|消費電力/i, 'ina219-power-monitor'],
+  [/APDS9960|ジェスチャ|gesture(?!.*BLE)|手.?(振り|かざす).*検出|非接触.?入力/i, 'apds9960-gesture-control'],
+  [/Pushover|push.?notification|スマホ.*(通知|alert)|プッシュ通知/i, 'pushover-distance-alert'],
   // 条件分岐パターン
   [/温度|湿度|temperature|humidity|alert|°C/i, 'temp-alert'],
   [/距離|障害物|obstacle|proximity|超音波.*停/i, 'proximity-stop'],

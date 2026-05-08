@@ -330,4 +330,65 @@ describe('selectFewShot (動的 Few-shot 選択)', () => {
     const result = selectFewShot('generic', 'CO2 と PM2.5 の空気質ダッシュボード');
     expect(result).toContain('air-quality-dashboard');
   });
+
+  // 第88回 (2026-05-08) AI 参照ファイルメンテ: 51.md/52.md 残カテゴリ 12 sample 検証
+  it('M5Stack body button keyword maps to m5stack-button-lcd (88回)', () => {
+    const result = selectFewShot('generic', 'M5Stack Atom で本体ボタンと LCD を使いたい');
+    expect(result).toContain('m5stack-button-lcd');
+  });
+
+  it('HX711 load cell keyword maps to hx711-scale (88回)', () => {
+    const result = selectFewShot('generic', 'HX711 でロードセルから重量を計量したい');
+    expect(result).toContain('hx711-scale');
+  });
+
+  it('ESP-NOW peer keyword maps to espnow-mesh-receiver (88回)', () => {
+    const result = selectFewShot('generic', 'ESP-NOW でデバイス間通信を作りたい');
+    expect(result).toContain('espnow-mesh-receiver');
+  });
+
+  it('SHT40 sensor keyword maps to sht40-temp-humidity (88回)', () => {
+    const result = selectFewShot('generic', 'SHT40 で温湿度を取得したい');
+    expect(result).toContain('sht40-temp-humidity');
+  });
+
+  it('e-Paper display keyword maps to epaper-status-display (88回)', () => {
+    const result = selectFewShot('generic', '電子ペーパーに状態を表示したい');
+    expect(result).toContain('epaper-status-display');
+  });
+
+  it('Stepper motor keyword maps to stepper-position-control (88回)', () => {
+    const result = selectFewShot('generic', '28BYJ-48 ステッパで位置制御したい');
+    expect(result).toContain('stepper-position-control');
+  });
+
+  it('Relay timer keyword maps to relay-timer-control (88回)', () => {
+    const result = selectFewShot('generic', 'リレーをタイマー制御で ON/OFF 切替');
+    expect(result).toContain('relay-timer-control');
+  });
+
+  it('NeoMatrix keyword maps to neomatrix-pixel-display (88回)', () => {
+    const result = selectFewShot('generic', 'NeoMatrix 8x8 LED にピクセル描画したい');
+    expect(result).toContain('neomatrix-pixel-display');
+  });
+
+  it('MAX30102 heart rate keyword maps to max30102-pulse-monitor (88回)', () => {
+    const result = selectFewShot('generic', 'MAX30102 で心拍と SpO2 を取得したい');
+    expect(result).toContain('max30102-pulse-monitor');
+  });
+
+  it('INA219 power monitor keyword maps to ina219-power-monitor (88回)', () => {
+    const result = selectFewShot('generic', 'INA219 で消費電力を測定したい');
+    expect(result).toContain('ina219-power-monitor');
+  });
+
+  it('APDS9960 gesture keyword maps to apds9960-gesture-control (88回)', () => {
+    const result = selectFewShot('generic', 'APDS9960 でジェスチャー入力したい');
+    expect(result).toContain('apds9960-gesture-control');
+  });
+
+  it('Pushover notification keyword maps to pushover-distance-alert (88回)', () => {
+    const result = selectFewShot('generic', 'Pushover でスマホにプッシュ通知したい');
+    expect(result).toContain('pushover-distance-alert');
+  });
 });

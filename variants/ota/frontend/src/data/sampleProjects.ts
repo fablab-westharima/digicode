@@ -1149,6 +1149,107 @@ export const sampleProjects: SampleProject[] = [
     category: 'iot',
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="wifi_connect"><field name="SSID">your_ssid</field><field name="PASSWORD">your_password</field><next><block type="scd30_init"><next><block type="pms5003_init"><field name="RX">16</field><field name="TX">17</field><next><block type="oled_ssd1306_init"><field name="ADDR">0x3C</field><field name="WIDTH">128</field><field name="HEIGHT">64</field></block></next></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="350"><statement name="LOOP"><block type="oled_ssd1306_clear"><next><block type="oled_ssd1306_print"><value name="TEXT"><block type="scd30_read_co2"></block></value><value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="Y"><shadow type="math_number"><field name="NUM">10</field></shadow></value><next><block type="oled_ssd1306_print"><value name="TEXT"><block type="pms5003_read_pm25"></block></value><value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="Y"><shadow type="math_number"><field name="NUM">30</field></shadow></value><next><block type="oled_ssd1306_display"><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">2000</field></shadow></value></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+  },
+  // ========= 第88回 AI 参照ファイルメンテ (2026-05-08): 51.md/52.md 残カテゴリ FEW_SHOT 12 sample =========
+  // 第78-80回 で 147 ブロック追加されたが、52.md commit #21 で 6 sample 追加止まりだった。
+  // 第88回 Task 1 調査で残 ~22 カテゴリの FEW_SHOT 不在を確認 → 高優先 12 sample を追加。
+  // sampleProjects.ts (本 file) + sampleProjectsI18n.ts (4 lang override) + fewShotSelector.ts
+  // (KEYWORD_TO_SAMPLE) + catalogInvariants.test.ts (keyword 検証) を atomic で揃える。
+  {
+    id: 'm5stack-button-lcd',
+    title: 'M5Stack ボタン + LCD 表示',
+    description: 'M5Stack Core / Atom / StickC で本体ボタン押下時に LCD を更新 (m5stack_begin 必須)',
+    category: 'basic',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="m5stack_begin"><next><block type="m5stack_lcd_print"><value name="TEXT"><shadow type="text"><field name="TEXT">Press button A</field></shadow></value></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="controls_if"><value name="IF0"><block type="m5stack_button_a_pressed"></block></value><statement name="DO0"><block type="m5stack_lcd_clear"><next><block type="m5stack_lcd_print"><value name="TEXT"><shadow type="text"><field name="TEXT">Hello!</field></shadow></value></block></next></block></statement><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">100</field></shadow></value></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'hx711-scale',
+    title: 'HX711 ロードセル 計量',
+    description: 'HX711 で重量を読込んでシリアル出力 (ファクトリー秤、Fab Academy Final Project 例)',
+    category: 'sensor',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_serial_begin"><field name="BAUD">115200</field><next><block type="hx711_init"><field name="DOUT">27</field><field name="SCK">26</field><next><block type="hx711_set_scale"><value name="SCALE"><shadow type="math_number"><field name="NUM">420</field></shadow></value><next><block type="hx711_tare"></block></next></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="320"><statement name="LOOP"><block type="esp32_serial_print"><value name="VALUE"><shadow type="text"><field name="TEXT">Weight (g): </field></shadow></value><next><block type="esp32_serial_println"><value name="VALUE"><block type="hx711_read_weight"></block></value><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">1000</field></shadow></value></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'espnow-mesh-receiver',
+    title: 'ESP-NOW 受信機',
+    description: 'ESP-NOW で他デバイスからのメッセージを受信して Serial 出力 (Fab Academy Networking 週)',
+    category: 'iot',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_serial_begin"><field name="BAUD">115200</field><next><block type="espnow_init"></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="espnow_on_receive"><statement name="HANDLER"><block type="esp32_serial_print"><value name="VALUE"><shadow type="text"><field name="TEXT">From: </field></shadow></value><next><block type="esp32_serial_print"><value name="VALUE"><block type="espnow_received_mac"></block></value><next><block type="esp32_serial_print"><value name="VALUE"><shadow type="text"><field name="TEXT"> data: </field></shadow></value><next><block type="esp32_serial_println"><value name="VALUE"><block type="espnow_received_data"></block></value></block></next></block></next></block></next></block></statement></block></statement></block></xml>`
+  },
+  {
+    id: 'sht40-temp-humidity',
+    title: 'SHT40 温湿度センサ',
+    description: 'SHT40 (Sensirion 後継) で温湿度を 5 秒ごとに Serial 出力 (M5Stack ENV IV ユニット互換)',
+    category: 'sensor',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_serial_begin"><field name="BAUD">115200</field><next><block type="sht40_init"></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="esp32_serial_print"><value name="VALUE"><shadow type="text"><field name="TEXT">Temp: </field></shadow></value><next><block type="esp32_serial_println"><value name="VALUE"><block type="sht40_read_temperature"></block></value><next><block type="esp32_serial_print"><value name="VALUE"><shadow type="text"><field name="TEXT">Hum: </field></shadow></value><next><block type="esp32_serial_println"><value name="VALUE"><block type="sht40_read_humidity"></block></value><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">5000</field></shadow></value></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'epaper-status-display',
+    title: 'e-Paper 状態表示',
+    description: 'e-Paper (GxEPD2) にステータステキストを 1 度表示して保持 (低消費電力サイネージ)',
+    category: 'iot',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="epaper_init"><field name="CS">5</field><field name="DC">17</field><field name="RST">16</field><field name="BUSY">4</field><next><block type="epaper_clear"><next><block type="epaper_print"><value name="TEXT"><shadow type="text"><field name="TEXT">Status: OK</field></shadow></value><value name="X"><shadow type="math_number"><field name="NUM">10</field></shadow></value><value name="Y"><shadow type="math_number"><field name="NUM">30</field></shadow></value><next><block type="epaper_full_refresh"></block></next></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="350"><statement name="LOOP"><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">60000</field></shadow></value></block></statement></block></xml>`
+  },
+  {
+    id: 'stepper-position-control',
+    title: 'ステッパー 位置制御 (28BYJ-48)',
+    description: '28BYJ-48 + ULN2003 で 90 度回転 → 1 秒待機 → 反対回転 (CNC / 自動化)',
+    category: 'motor',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="stepper_init"><field name="IN1">14</field><field name="IN2">27</field><field name="IN3">26</field><field name="IN4">25</field></block></statement></block><block type="arduino_loop" x="50" y="200"><statement name="LOOP"><block type="stepper_rotate"><field name="SPEED">5</field><value name="ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">1000</field></shadow></value><next><block type="stepper_rotate"><field name="SPEED">5</field><value name="ANGLE"><shadow type="math_number"><field name="NUM">-90</field></shadow></value><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">1000</field></shadow></value></block></next></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'relay-timer-control',
+    title: 'リレー タイマー制御',
+    description: 'リレーを 3 秒 ON → 5 秒 OFF で繰返す (Factory IoT 制御)',
+    category: 'motor',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="relay_init"><field name="PIN">26</field><field name="ACTIVE">HIGH</field></block></statement></block><block type="arduino_loop" x="50" y="200"><statement name="LOOP"><block type="relay_on"><field name="PIN">26</field><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">3000</field></shadow></value><next><block type="relay_off"><field name="PIN">26</field><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">5000</field></shadow></value></block></next></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'neomatrix-pixel-display',
+    title: 'NeoMatrix ピクセル描画',
+    description: 'NeoMatrix 8x8 LED で対角に 2 色のピクセルを表示 → 1 秒待機 (NeoPixel 2D matrix)',
+    category: 'motor',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="neomatrix_init"><field name="PIN">16</field><field name="W">8</field><field name="H">8</field></block></statement></block><block type="arduino_loop" x="50" y="200"><statement name="LOOP"><block type="neomatrix_clear"><next><block type="neomatrix_set_pixel"><value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="COLOR"><shadow type="math_number"><field name="NUM">16711680</field></shadow></value><next><block type="neomatrix_set_pixel"><value name="X"><shadow type="math_number"><field name="NUM">7</field></shadow></value><value name="Y"><shadow type="math_number"><field name="NUM">7</field></shadow></value><value name="COLOR"><shadow type="math_number"><field name="NUM">255</field></shadow></value><next><block type="neomatrix_show"><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">1000</field></shadow></value></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'max30102-pulse-monitor',
+    title: 'MAX30102 心拍 / SpO2 モニター',
+    description: 'MAX30102 で心拍と SpO2 を 1 秒ごとに Serial 出力 (教育用、医療精度ではない)',
+    category: 'sensor',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_serial_begin"><field name="BAUD">115200</field><next><block type="max30102_init"></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="esp32_serial_print"><value name="VALUE"><shadow type="text"><field name="TEXT">HR: </field></shadow></value><next><block type="esp32_serial_println"><value name="VALUE"><block type="max30102_read_heart_rate"></block></value><next><block type="esp32_serial_print"><value name="VALUE"><shadow type="text"><field name="TEXT">SpO2: </field></shadow></value><next><block type="esp32_serial_println"><value name="VALUE"><block type="max30102_read_spo2"></block></value><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">1000</field></shadow></value></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'ina219-power-monitor',
+    title: 'INA219 電力モニター',
+    description: 'INA219 で電圧 / 電流 を 2 秒ごとに Serial 出力 (バッテリー / 太陽光発電)',
+    category: 'sensor',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_serial_begin"><field name="BAUD">115200</field><next><block type="ina219_init"><field name="ADDR">0</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="esp32_serial_print"><value name="VALUE"><shadow type="text"><field name="TEXT">V: </field></shadow></value><next><block type="esp32_serial_println"><value name="VALUE"><block type="ina219_read_voltage"></block></value><next><block type="esp32_serial_print"><value name="VALUE"><shadow type="text"><field name="TEXT">I: </field></shadow></value><next><block type="esp32_serial_println"><value name="VALUE"><block type="ina219_read_current"></block></value><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">2000</field></shadow></value></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'apds9960-gesture-control',
+    title: 'APDS9960 ジェスチャー制御',
+    description: 'APDS9960 でジェスチャー検出 (UP/DOWN/LEFT/RIGHT) を Serial 出力 (HCI 入力)',
+    category: 'sensor',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="esp32_serial_begin"><field name="BAUD">115200</field><next><block type="apds9960_init"></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="esp32_serial_print"><value name="VALUE"><shadow type="text"><field name="TEXT">Gesture: </field></shadow></value><next><block type="esp32_serial_println"><value name="VALUE"><block type="apds9960_read_gesture"></block></value><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">100</field></shadow></value></block></next></block></next></block></statement></block></xml>`
+  },
+  {
+    id: 'pushover-distance-alert',
+    title: 'Pushover 距離アラート',
+    description: '超音波距離が 10 cm 以下になったら Pushover でスマホに通知 (セキュリティ / 在室監視)',
+    category: 'iot',
+    language: 'arduino',
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="wifi_connect"><field name="SSID">your_ssid</field><field name="PASSWORD">your_password</field><next><block type="ultrasonic_init"><field name="TRIG_PIN">18</field><field name="ECHO_PIN">19</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="controls_if"><value name="IF0"><block type="logic_compare"><field name="OP">LT</field><value name="A"><block type="ultrasonic_distance"></block></value><value name="B"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block></value><statement name="DO0"><block type="pushover_send"><field name="PRIORITY">0</field><value name="TOKEN"><shadow type="text"><field name="TEXT">your_app_token</field></shadow></value><value name="USER"><shadow type="text"><field name="TEXT">your_user_key</field></shadow></value><value name="MESSAGE"><shadow type="text"><field name="TEXT">Object detected within 10 cm</field></shadow></value></block></statement><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">30000</field></shadow></value></block></next></block></statement></block></xml>`
   }
 ];
 
