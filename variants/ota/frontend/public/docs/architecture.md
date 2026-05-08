@@ -48,12 +48,14 @@ DigiCodeシステムの全体構成と技術スタックを説明します。
 
 ### コンパイルサーバー
 
-- **リポジトリ:** `fablab-westharima/arduino-compile-server`（Public）
-- **ランタイム:** Node.js + Express
-- **コンパイラ:** Arduino CLI 1.3.1
-- **ターゲット:** ESP32 Arduino Core 3.3.4
-- **デプロイ先:** HPE ML30（クラウドコンパイル）/ Railway（バックアップ）
-- **ローカル版:** Docker イメージ公開済み（`ghcr.io/fablab-westharima/digicode-compile-server`）
+- **リポジトリ:** [`fablab-westharima/digicode-compile-api`](https://github.com/fablab-westharima/digicode-compile-api)（Public、MIT、2026-05-08 切り出し）
+- **ランタイム:** Node.js + Hono
+- **コンパイラ:** PlatformIO Core 6.1.19（pioarduino fork、ESP32 専用）
+- **ターゲット:** ESP32 16 boards（warmup-pio.ts で esp32dev/s3/c3 = 3 target precompile baked）
+- **デプロイ先:** HPE ML30（クラウドコンパイル、`https://compile.digital-fab.jp`）/ Railway（バックアップ、復旧 phase 6 後判断）
+- **配布:**
+  - `ghcr.io/fablab-westharima/digicode-compile-api:latest`（canonical、CLI / orchestrator 向け）
+  - `docker.io/digicollc/digicode-compile-server:latest`（DockerHub mirror、Docker Desktop GUI 向け、両 registry に同 digest publish）
 
 ### ESP32ファームウェア
 

@@ -141,13 +141,21 @@ esp32-blockly-backend/
 └── wrangler.toml         # Cloudflare Workers設定
 ```
 
-### コンパイルサーバー
+### コンパイルサーバー（別 Public リポ）
+
+ソースは [`fablab-westharima/digicode-compile-api`](https://github.com/fablab-westharima/digicode-compile-api)（Public、MIT、2026-05-08 切り出し）に分離。
+
 ```
-arduino-compile-server/
-├── server.js             # Express サーバー
-├── templates/            # コード生成テンプレート
-├── temp/                 # 一時ファイル
-└── build/                # ビルド出力
+digicode-compile-api/      # 別リポ
+├── src/
+│   ├── server.ts         # Hono サーバー (TypeScript)
+│   ├── compile.ts        # PlatformIO Core invocation + SSE
+│   ├── inject.ts         # template + fragment merge
+│   └── boards.ts         # FQBN → PIO target
+├── scripts/warmup-pio.ts # build-time precompile bake (3 target)
+├── templates/            # .ino テンプレート
+├── libs/                 # vendored Arduino libraries
+└── Dockerfile
 ```
 
 ## セキュリティ
