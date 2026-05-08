@@ -229,7 +229,7 @@ const overrides: Record<string, LocaleOverride> = {
       },
       'epaper-status-display': {
         title: 'e-Paper Status Display',
-        description: 'Display status text once on e-Paper (GxEPD2) — low power signage',
+        description: 'Display status text once on e-Paper (Adafruit_EPD) — low power signage',
       },
       'stepper-position-control': {
         title: 'Stepper Position Control (28BYJ-48)',
@@ -465,7 +465,7 @@ const overrides: Record<string, LocaleOverride> = {
       },
       'epaper-status-display': {
         title: 'Pantalla de estado e-Paper',
-        description: 'Muestra texto de estado una vez en e-Paper (GxEPD2) — señalética de bajo consumo',
+        description: 'Muestra texto de estado una vez en e-Paper (Adafruit_EPD) — señalética de bajo consumo',
       },
       'stepper-position-control': {
         title: 'Control de posición Stepper (28BYJ-48)',
@@ -701,7 +701,7 @@ const overrides: Record<string, LocaleOverride> = {
       },
       'epaper-status-display': {
         title: 'Visor de estado e-Paper',
-        description: 'Mostra texto de estado uma vez no e-Paper (GxEPD2) — sinalética de baixo consumo',
+        description: 'Mostra texto de estado uma vez no e-Paper (Adafruit_EPD) — sinalética de baixo consumo',
       },
       'stepper-position-control': {
         title: 'Controlo de posição Stepper (28BYJ-48)',
@@ -937,7 +937,7 @@ const overrides: Record<string, LocaleOverride> = {
       },
       'epaper-status-display': {
         title: '電子紙狀態顯示',
-        description: '在電子紙 (GxEPD2) 上顯示一次狀態文字並保留 (低耗電看板)',
+        description: '在電子紙 (Adafruit_EPD) 上顯示一次狀態文字並保留 (低耗電看板)',
       },
       'stepper-position-control': {
         title: '步進馬達位置控制 (28BYJ-48)',

@@ -1190,7 +1190,7 @@ export const sampleProjects: SampleProject[] = [
   {
     id: 'epaper-status-display',
     title: 'e-Paper 状態表示',
-    description: 'e-Paper (GxEPD2) にステータステキストを 1 度表示して保持 (低消費電力サイネージ)',
+    description: 'e-Paper (Adafruit_EPD) にステータステキストを 1 度表示して保持 (低消費電力サイネージ)',
     category: 'iot',
     language: 'arduino',
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="epaper_init"><field name="CS">5</field><field name="DC">17</field><field name="RST">16</field><field name="BUSY">4</field><next><block type="epaper_clear"><next><block type="epaper_print"><value name="TEXT"><shadow type="text"><field name="TEXT">Status: OK</field></shadow></value><value name="X"><shadow type="math_number"><field name="NUM">10</field></shadow></value><value name="Y"><shadow type="math_number"><field name="NUM">30</field></shadow></value><next><block type="epaper_full_refresh"></block></next></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="350"><statement name="LOOP"><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">60000</field></shadow></value></block></statement></block></xml>`
