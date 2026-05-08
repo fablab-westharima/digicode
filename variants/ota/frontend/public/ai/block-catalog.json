@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-08T03:20:38.833Z",
+  "generatedAt": "2026-05-08T03:56:39.324Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -13190,7 +13190,7 @@
     {
       "type": "epaper_init",
       "category": "epaper",
-      "tooltip": "E-paper ディスプレイを初期化します。デフォルト 2.9\" Waveshare (GxEPD2_290_BS)。他パネル使用時は cpp 直接編集が必要。",
+      "tooltip": "E-paper ディスプレイを初期化します。デフォルト Waveshare 2.9\" b/w (SSD1680)。他 driver は header + class 差し替え。",
       "colour": "#607D8B",
       "isStatement": true,
       "hasOutput": false,
@@ -13237,7 +13237,7 @@
     {
       "type": "epaper_print",
       "category": "epaper",
-      "tooltip": "E-paper に文字列を表示します (X, Y)。表示反映には epaper_partial_update or epaper_full_refresh が必要。",
+      "tooltip": "E-paper に文字列を表示します (X, Y)。表示反映には epaper_full_refresh が必要。",
       "colour": "#607D8B",
       "isStatement": true,
       "hasOutput": false,
@@ -13266,27 +13266,9 @@
       "statementInputs": []
     },
     {
-      "type": "epaper_partial_update",
-      "category": "epaper",
-      "tooltip": "E-paper を部分更新します (高速、フリッカー少、長期使用でゴーストが残る場合あり)。",
-      "colour": "#607D8B",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "homeassistant",
-        "generic",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
       "type": "epaper_full_refresh",
       "category": "epaper",
-      "tooltip": "E-paper を全画面リフレッシュします (低速、フリッカー大、ゴースト除去)。1 日 1 回 or 数時間ごと推奨。",
+      "tooltip": "E-paper を全画面リフレッシュして表示反映します (フリッカー大、低頻度更新向け)。",
       "colour": "#607D8B",
       "isStatement": true,
       "hasOutput": false,
@@ -13304,7 +13286,7 @@
     {
       "type": "epaper_clear",
       "category": "epaper",
-      "tooltip": "E-paper を白でクリアします (反映には full_refresh or partial_update が必要)。",
+      "tooltip": "E-paper のフレームバッファをクリアします (反映には epaper_full_refresh が必要)。",
       "colour": "#607D8B",
       "isStatement": true,
       "hasOutput": false,
