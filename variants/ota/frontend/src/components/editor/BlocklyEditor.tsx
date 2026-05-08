@@ -13,6 +13,7 @@ import { useFavoriteCategoriesStore } from '../../stores/favoriteCategoriesStore
 import { useBoardStore } from '../../stores/boardStore';
 import { digiCodeDarkTheme } from './blocklyTheme';
 import { populateBlocklyMessages } from '@/utils/blocklyMessages';
+import { showToast } from '@/components/common/Toast';
 import { FavoriteSettingsDialog } from './FavoriteSettingsDialog';
 // Old esp32BlocksArduino.ts removed - using arduino/core/esp32Blocks with Blockly.Msg.*
 import '../../blocks/arduino/core/esp32Blocks';
@@ -134,7 +135,7 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
     const selectedBoardId = useBoardStore(s => s.selectedBoardId);
     const selectedBoard = useBoardStore.getState().getSelectedBoard();
     void selectedBoardId; // 購読目的、lint 抑制
-    const { i18n } = useTranslation();
+    const { i18n, t } = useTranslation();
     const [uiLanguage, setUiLanguage] = useState(i18n.language);
     const [isFavoriteDialogOpen, setIsFavoriteDialogOpen] = useState(false);
 
@@ -247,13 +248,32 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         workspaceRef.current.clear();
         if (xml && xml !== '<xml></xml>') {
           const dom = Blockly.utils.xml.textToDom(xml);
+          // 削除/リネーム済みブロックを事前検出 → toast 通知 (ファイルは変更しない、読み取り専用)
+          const blockTypes = Array.from(dom.querySelectorAll('block, shadow'))
+            .map((el) => el.getAttribute('type'))
+            .filter((type): type is string => Boolean(type));
+          const unknownTypes = [
+            ...new Set(blockTypes.filter((type) => !Blockly.Blocks[type])),
+          ];
+          if (unknownTypes.length > 0) {
+            const list = unknownTypes.slice(0, 5).join(', ');
+            const more = unknownTypes.length > 5 ? ` +${unknownTypes.length - 5}` : '';
+            showToast(
+              t('editor.unknownBlocksDropped', {
+                count: unknownTypes.length,
+                list: `${list}${more}`,
+                defaultValue: `{{count}} 個のブロックが見つからずスキップしました: {{list}}`,
+              }),
+              'error'
+            );
+          }
           Blockly.Xml.domToWorkspace(dom, workspaceRef.current);
           savedXmlRef.current = xml;
         }
       } catch (e) {
         console.error('Failed to load XML:', e);
       }
-    }, []);
+    }, [t]);
 
     // ブロックをワークスペースに追加（既存のブロックは保持）
     const appendBlocks = useCallback((xml: string) => {

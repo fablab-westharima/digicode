@@ -367,6 +367,7 @@
     "unsavedChanges": "未保存の変更があります。破棄して新規作成しますか？",
     "arduinoOnly": "コンパイルはArduino C++言語でのみ利用できます。",
     "noCodeToCompile": "コンパイルするコードがありません。",
+    "unknownBlocksDropped": "{{count}} 個のブロックが見つからずスキップしました: {{list}}",
     "connectionCheck": "接続確認",
     "wifiOtaSelected": "WiFi OTA書込みが選択されています",
     "targetDevice": "WiFiデバイス",

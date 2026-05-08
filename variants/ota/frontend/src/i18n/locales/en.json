@@ -367,6 +367,7 @@
     "unsavedChanges": "You have unsaved changes. Discard and create new?",
     "arduinoOnly": "Compile is only available for Arduino C++ language.",
     "noCodeToCompile": "No code to compile.",
+    "unknownBlocksDropped": "{{count}} block(s) not found and skipped: {{list}}",
     "connectionCheck": "Connection Check",
     "wifiOtaSelected": "WiFi OTA write selected",
     "targetDevice": "WiFi Device",

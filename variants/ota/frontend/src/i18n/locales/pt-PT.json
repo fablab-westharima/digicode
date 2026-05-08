@@ -367,6 +367,7 @@
     "unsavedChanges": "Você tem alterações não salvas. Descartar e criar novo?",
     "arduinoOnly": "A compilação está disponível apenas para a linguagem Arduino C++.",
     "noCodeToCompile": "Nenhum código para compilar.",
+    "unknownBlocksDropped": "{{count}} bloco(s) não encontrado(s) e ignorado(s): {{list}}",
     "connectionCheck": "Verificação de Conexão",
     "wifiOtaSelected": "Escrita WiFi OTA selecionada",
     "targetDevice": "Dispositivo WiFi",

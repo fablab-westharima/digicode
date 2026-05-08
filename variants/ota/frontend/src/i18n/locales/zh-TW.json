@@ -367,6 +367,7 @@
     "unsavedChanges": "您有未保存的變更。要放棄並建立新的嗎？",
     "arduinoOnly": "編譯僅適用於 Arduino C++ 語言。",
     "noCodeToCompile": "沒有程式碼可編譯。",
+    "unknownBlocksDropped": "找不到 {{count}} 個積木已略過：{{list}}",
     "connectionCheck": "連線檢查",
     "wifiOtaSelected": "已選擇 WiFi OTA 寫入",
     "targetDevice": "WiFi裝置",
