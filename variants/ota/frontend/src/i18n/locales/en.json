@@ -2419,7 +2419,11 @@
       "enableRssi": "WiFi RSSI",
       "enableUptime": "Uptime",
       "enableHeap": "Free Heap",
-      "enableResetReason": "Reset Reason"
+      "enableResetReason": "Reset Reason",
+      "onConnected": "HA Connected",
+      "onConnectedTooltip": "Fires when MQTT connection to the HA broker is acquired (initial connect + every reconnect). Place once per project — HAMqtt holds a single callback, so multiple placements silently overwrite each other.",
+      "onDisconnected": "HA Disconnected",
+      "onDisconnectedTooltip": "Fires when MQTT connection to the HA broker is lost. Place once per project — HAMqtt holds a single callback, so multiple placements silently overwrite each other."
     },
     "common": {
       "steps": "steps",

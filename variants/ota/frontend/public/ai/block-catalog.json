@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-08T21:23:13.421Z",
+  "generatedAt": "2026-05-09T02:12:49.240Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -9103,6 +9103,50 @@
       ],
       "valueInputs": [],
       "statementInputs": []
+    },
+    {
+      "type": "ha_on_connected",
+      "category": "arduino_ha",
+      "tooltip": "Fires when MQTT connection to the HA broker is acquired (initial connect + every reconnect). Place once at the top level of arduino_loop or arduino_setup. Multiple placements will silently overwrite each other (HAMqtt holds a single callback).",
+      "colour": "#4CAF50",
+      "isStatement": false,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "CALLBACK"
+        }
+      ]
+    },
+    {
+      "type": "ha_on_disconnected",
+      "category": "arduino_ha",
+      "tooltip": "Fires when MQTT connection to the HA broker is lost. Place once at the top level of arduino_loop or arduino_setup. Multiple placements will silently overwrite each other (HAMqtt holds a single callback).",
+      "colour": "#4CAF50",
+      "isStatement": false,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [
+        {
+          "name": "CALLBACK"
+        }
+      ]
     },
     {
       "type": "iot_cloud_connect",

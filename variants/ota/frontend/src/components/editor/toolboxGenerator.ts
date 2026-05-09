@@ -988,6 +988,8 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="ha_is_connected"></block>
     <block type="ha_report_interval"></block>
     <block type="ha_diagnostics_auto"></block>
+    <block type="ha_on_connected"></block>
+    <block type="ha_on_disconnected"></block>
   </category>`,
 
   // HTTPリクエスト

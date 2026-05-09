@@ -1833,6 +1833,74 @@ javascriptGenerator.forBlock['ha_tag_scanner_scanned'] = function(block: Blockly
   return `  ${varName}.tagScanned(${tagId});\n`;
 };
 
+// ===== 接続/切断ハンドラ =====
+
+/**
+ * ha_on_connected - HA 接続時 callback (commit 4)
+ *
+ * HAMqtt broker 接続成功時に発火 (初回接続 + 再接続毎、HAMqtt.h:144 docstring
+ * 「The callback is also fired after reconnecting to the broker」)。
+ *
+ * HAMqtt 内部 callback storage (`_connectedCallback`) は単一 member、複数
+ * onConnected() 呼び出しは last-wins (HAMqtt.h:417 verify 済)。よって 1 block
+ * per project が推奨、複数配置すると最後の登録のみ動作 (silent override)。
+ */
+Blockly.Blocks['ha_on_connected'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🔗 ' + (Blockly.Msg.BLOCKS_HA_ONCONNECTED || 'HA Connected'));
+    this.appendStatementInput('CALLBACK')
+        .setCheck(null)
+        .appendField(Blockly.Msg.BLOCKS_DO || 'Do');
+    this.setColour('#4CAF50');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_ONCONNECTEDTOOLTIP || 'Fires when MQTT connection to the HA broker is acquired (initial connect + every reconnect). Place once at the top level of arduino_loop or arduino_setup. Multiple placements will silently overwrite each other (HAMqtt holds a single callback).');
+  }
+};
+
+javascriptGenerator.forBlock['ha_on_connected'] = function(block: Blockly.Block) {
+  ensureArduinoHAInclude();
+  const callback = javascriptGenerator.statementToCode(block, 'CALLBACK');
+
+  // Fixed function name (D-4.1) + setups_/definitions_ key dedupe = last-wins
+  // when multiple ha_on_connected blocks are placed (D-4.2).
+  generator.definitions_['ha_on_connected_func'] = `
+void onHaConnected() {
+${callback}}`;
+  generator.setups_['ha_on_connected_register'] = '  haMqtt.onConnected(onHaConnected);';
+
+  return '';
+};
+
+/**
+ * ha_on_disconnected - HA 切断時 callback (commit 4)
+ *
+ * HAMqtt broker 切断時に発火。HAMqtt.h:152 onDisconnected。
+ * ha_on_connected と同じく単一 callback、last-wins。
+ */
+Blockly.Blocks['ha_on_disconnected'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🔌 ' + (Blockly.Msg.BLOCKS_HA_ONDISCONNECTED || 'HA Disconnected'));
+    this.appendStatementInput('CALLBACK')
+        .setCheck(null)
+        .appendField(Blockly.Msg.BLOCKS_DO || 'Do');
+    this.setColour('#4CAF50');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_ONDISCONNECTEDTOOLTIP || 'Fires when MQTT connection to the HA broker is lost. Place once at the top level of arduino_loop or arduino_setup. Multiple placements will silently overwrite each other (HAMqtt holds a single callback).');
+  }
+};
+
+javascriptGenerator.forBlock['ha_on_disconnected'] = function(block: Blockly.Block) {
+  ensureArduinoHAInclude();
+  const callback = javascriptGenerator.statementToCode(block, 'CALLBACK');
+
+  generator.definitions_['ha_on_disconnected_func'] = `
+void onHaDisconnected() {
+${callback}}`;
+  generator.setups_['ha_on_disconnected_register'] = '  haMqtt.onDisconnected(onHaDisconnected);';
+
+  return '';
+};
+
 // ===== 自動診断 (RSSI / Uptime / Heap / ResetReason) =====
 
 /**

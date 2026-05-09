@@ -2419,7 +2419,11 @@
       "enableRssi": "電波強度 (RSSI)",
       "enableUptime": "稼働時間 (Uptime)",
       "enableHeap": "空きメモリ (Heap)",
-      "enableResetReason": "リセット理由"
+      "enableResetReason": "リセット理由",
+      "onConnected": "HA 接続時",
+      "onConnectedTooltip": "HA broker への MQTT 接続成功時に発火 (初回接続 + 再接続毎)。1 block per project 推奨、HAMqtt は単一 callback のみ保持するため複数配置時は最後のみ動作 (silent override)。",
+      "onDisconnected": "HA 切断時",
+      "onDisconnectedTooltip": "HA broker との MQTT 接続切断時に発火。1 block per project 推奨、HAMqtt は単一 callback のみ保持するため複数配置時は最後のみ動作 (silent override)。"
     },
     "common": {
       "steps": "歩",

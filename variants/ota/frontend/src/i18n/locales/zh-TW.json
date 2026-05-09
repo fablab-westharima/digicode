@@ -2209,7 +2209,11 @@
       "enableRssi": "訊號強度（RSSI）",
       "enableUptime": "運轉時間（Uptime）",
       "enableHeap": "可用記憶體（Heap）",
-      "enableResetReason": "重啟原因"
+      "enableResetReason": "重啟原因",
+      "onConnected": "HA 已連線",
+      "onConnectedTooltip": "當與 HA broker 的 MQTT 連線建立時觸發（初始連線 + 每次重連）。每個專案放置一個區塊即可，HAMqtt 只保存單一回呼，多次放置會以靜默方式互相覆蓋。",
+      "onDisconnected": "HA 已斷線",
+      "onDisconnectedTooltip": "當與 HA broker 的 MQTT 連線中斷時觸發。每個專案放置一個區塊即可，HAMqtt 只保存單一回呼，多次放置會以靜默方式互相覆蓋。"
     },
     "common": {
       "steps": "步數",

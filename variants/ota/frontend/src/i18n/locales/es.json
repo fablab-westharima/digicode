@@ -2209,7 +2209,11 @@
       "enableRssi": "Intensidad WiFi (RSSI)",
       "enableUptime": "Tiempo activo (Uptime)",
       "enableHeap": "Memoria libre (Heap)",
-      "enableResetReason": "Motivo de reinicio"
+      "enableResetReason": "Motivo de reinicio",
+      "onConnected": "HA Conectado",
+      "onConnectedTooltip": "Se activa cuando se establece la conexión MQTT con el broker HA (conexión inicial + cada reconexión). Coloca un solo bloque por proyecto: HAMqtt solo guarda un callback, por lo que múltiples colocaciones se sobrescriben silenciosamente.",
+      "onDisconnected": "HA Desconectado",
+      "onDisconnectedTooltip": "Se activa cuando se pierde la conexión MQTT con el broker HA. Coloca un solo bloque por proyecto: HAMqtt solo guarda un callback, por lo que múltiples colocaciones se sobrescriben silenciosamente."
     },
     "common": {
       "steps": "pasos",
