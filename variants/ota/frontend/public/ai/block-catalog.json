@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-09T02:58:21.577Z",
+  "generatedAt": "2026-05-09T04:57:06.019Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -7649,7 +7649,7 @@
     {
       "type": "ha_device_init",
       "category": "arduino_ha",
-      "tooltip": "Initialize a device that auto-registers with Home Assistant. Manufacturer/Model/Software Version appear on HA Devices page. Auto deviceId (MAC) avoids collisions across multiple ESP32. Availability (LWT) marks the device Unavailable in HA UI on disconnect.",
+      "tooltip": "Initialize a device that auto-registers with Home Assistant. Manufacturer/Model/Software Version appear on HA Devices page. Auto deviceId (MAC) avoids collisions across multiple ESP32. Availability (LWT) marks the device Unavailable in HA UI on disconnect. Parent Device (via_device): set the parent device name to group multiple ESP32 modules under one HA device (leave blank for top-level).",
       "colour": "#4CAF50",
       "isStatement": true,
       "hasOutput": false,
@@ -7712,6 +7712,11 @@
           "default": "1.0.0"
         },
         {
+          "name": "VIA_DEVICE",
+          "fieldType": "text",
+          "default": ""
+        },
+        {
           "name": "AUTO_UNIQUE_ID",
           "fieldType": "checkbox",
           "default": true
@@ -7728,7 +7733,7 @@
     {
       "type": "ha_device_init_auth",
       "category": "arduino_ha",
-      "tooltip": "Initialize HA device with MQTT authentication. Manufacturer/Model/Software Version appear on HA Devices page. Auto deviceId (MAC) avoids collisions across multiple ESP32. Availability (LWT) marks the device Unavailable in HA UI on disconnect.",
+      "tooltip": "Initialize HA device with MQTT authentication. Manufacturer/Model/Software Version appear on HA Devices page. Auto deviceId (MAC) avoids collisions across multiple ESP32. Availability (LWT) marks the device Unavailable in HA UI on disconnect. Parent Device (via_device): set the parent device name to group multiple ESP32 modules under one HA device (leave blank for top-level).",
       "colour": "#4CAF50",
       "isStatement": true,
       "hasOutput": false,
@@ -7801,6 +7806,11 @@
           "name": "SOFTWARE_VERSION",
           "fieldType": "text",
           "default": "1.0.0"
+        },
+        {
+          "name": "VIA_DEVICE",
+          "fieldType": "text",
+          "default": ""
         },
         {
           "name": "AUTO_UNIQUE_ID",

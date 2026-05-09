@@ -154,6 +154,225 @@ function ensureHaFanStateVars() {
   }
 }
 
+// ===== commit 6: via_device + entity_category override infrastructure =====
+//
+// ArduinoHA v2.1.0 lacks setViaDevice / setEntityCategory APIs (3-source triple
+// verify in commit 3 / Session 94). To meet Takeda 判断 3 (multi-ESP32 single
+// device hierarchy) and D-3.3 B' (diagnostic entity_category), DigiCode emits
+// its own MQTT Discovery payload with via_device + entity_category appended,
+// publishing AFTER ArduinoHA's own Discovery emit so the latest retained
+// message wins on the broker.
+//
+// TQ-5 resolution (実コード verify、HAMqtt.cpp:288-352):
+//   - HAMqtt::onConnectedLogic() runs user `_connectedCallback` FIRST, then
+//     `_device.publishAvailability()`, then loops `_devicesTypes[i]->
+//     onMqttConnected()` which publishes Discovery synchronously via
+//     PubSubClient. After `haMqtt.loop()` returns, all Discovery payloads have
+//     reached the broker.
+//   - Therefore: override is published from ha_loop AFTER haMqtt.loop()
+//     returns, on the same loop iteration that observes isConnected() →
+//     true. NO 500ms delay needed (Case A).
+//   - The `haMqtt.onConnected()` slot is single-callback last-wins; commit 4
+//     ha_on_connected uses it. Override does NOT use that slot, instead a
+//     state-transition flag in ha_loop. Zero conflict with commit 4.
+//
+// Rule 13 (framework isolation): only public ArduinoHA APIs used —
+// HAMqtt::publish (HAMqtt.h:295), getDiscoveryPrefix / getDataPrefix (h:96/108),
+// HADevice::getUniqueId / isSharedAvailabilityEnabled / getAvailabilityTopic
+// (HADevice.h:47/61/68). No patch / fork / private member access. Survives
+// upstream upgrade with mechanical rename if any.
+//
+// Rule 03 Trap 1 (escape semantics): JS template literals embed C++ source as
+// literal text — no \r\n / \t in the C++ output, only plain ASCII + spaces.
+// Trap 6 (definitions_ key collision): each emitted globals uses a unique
+// `ha_override_*` prefix that no other block path uses (grep verified).
+function ensureHaOverrideInfra() {
+  // ArduinoJson v6 — already in lib_deps via jsonBlocks/iotCloudBlocks/
+  // webSocketBlocks; reusing the same definitions_ key avoids duplicate include.
+  generator.definitions_['include_arduinojson'] = '#include <ArduinoJson.h>';
+
+  // Device metadata variables (also emitted by ha_device_init / _auth, last-
+  // write-wins keeps both block paths consistent).
+  if (!generator.definitions_['ha_override_device_meta_vars']) {
+    generator.definitions_['ha_override_device_meta_vars'] =
+`const char* _haDeviceName = nullptr;
+const char* _haManufacturer = nullptr;
+const char* _haModel = nullptr;
+const char* _haSoftwareVersion = nullptr;
+const char* _haViaDevice = nullptr;`;
+  }
+
+  // Per-entity metadata struct + topic-flag bitmask + registry array.
+  // Size = HAMQTT_DEFAULT_DEVICES_LIMIT (24) — matches ArduinoHA's own cap, so
+  // overflow can never happen with valid HAMqtt configurations.
+  //
+  // The helpers are written as `auto NAME = [](...) {...};` (lambdas assigned
+  // to auto variables) rather than free functions because Arduino's .ino
+  // preprocessor auto-generates forward function prototypes after the last
+  // `#include` line, which lands above the `globals` injection point (line
+  // ~1465 in DigiCodeOTA.ino). At that point _HaEntityMeta is not yet
+  // defined, so a top-level `void _haEntityRegister(const _HaEntityMeta&)`
+  // prototype fails with "_HaEntityMeta does not name a type". `static` and
+  // anonymous-namespace wrapping do NOT suppress the prototype on this
+  // arduino-cli version (ML30 verified — namespace-internal functions still
+  // get auto-prototyped at global scope, causing both "type not defined"
+  // errors AND ambiguity with the namespace version). Lambdas are not
+  // function definitions, so the auto-prototype regex skips them. Call
+  // sites stay unchanged: `_haEntityRegister({...})` and
+  // `_haOverridePublishAll()` work as before.
+  generator.definitions_['ha_override_struct'] =
+`enum HaEntityKind : uint8_t {
+  HAEK_NORMAL = 0,
+  HAEK_TRIGGER = 1,
+  HAEK_TAG = 2
+};
+constexpr uint16_t HAOFLAG_STATE       = 0x01;
+constexpr uint16_t HAOFLAG_COMMAND     = 0x02;
+constexpr uint16_t HAOFLAG_BRIGHTNESS  = 0x04;
+constexpr uint16_t HAOFLAG_RGB         = 0x08;
+constexpr uint16_t HAOFLAG_PERCENTAGE  = 0x10;
+constexpr uint16_t HAOFLAG_PAYLOAD_ON  = 0x20;
+struct _HaEntityMeta {
+  uint8_t kind;
+  const char* component;
+  const char* uniqueId;
+  const char* name;
+  const char* deviceClass;
+  const char* unit;
+  const char* icon;
+  const char* entityCategory;
+  const char* mode;
+  const char* triggerType;
+  const char* triggerSubtype;
+  long numberMin;
+  long numberMax;
+  long numberStep;
+  uint16_t topicFlags;
+};
+constexpr uint8_t HAOVERRIDE_REGISTRY_SIZE = 24;
+_HaEntityMeta _haEntityRegistry[HAOVERRIDE_REGISTRY_SIZE];
+uint8_t _haEntityRegistryNb = 0;
+auto _haEntityRegister = [](const _HaEntityMeta& meta) {
+  if (_haEntityRegistryNb < HAOVERRIDE_REGISTRY_SIZE) {
+    _haEntityRegistry[_haEntityRegistryNb++] = meta;
+  }
+};`;
+
+  // The override publish helper. Iterates registry, builds topic + payload
+  // (ArduinoJson StaticJsonDocument<1024>), publishes with retain=true.
+  // Per-entity skip: only entities that need override (via_device set OR
+  // entity_category set) are re-published — others are left untouched so
+  // ArduinoHA's payload remains authoritative.
+  generator.definitions_['ha_override_publish_func'] =
+`auto _haOverridePublishAll = []() {
+  HAMqtt* mqtt = HAMqtt::instance();
+  if (!mqtt || !mqtt->isConnected()) return;
+  const HADevice* dev = mqtt->getDevice();
+  if (!dev || !dev->getUniqueId()) return;
+  const char* deviceId = dev->getUniqueId();
+  const char* discoveryPrefix = mqtt->getDiscoveryPrefix();
+  const char* dataPrefix = mqtt->getDataPrefix();
+  if (!discoveryPrefix || !dataPrefix) return;
+  bool viaDeviceSet = (_haViaDevice != nullptr && _haViaDevice[0] != 0);
+  for (uint8_t i = 0; i < _haEntityRegistryNb; i++) {
+    const _HaEntityMeta& m = _haEntityRegistry[i];
+    bool needsOverride = viaDeviceSet || (m.entityCategory != nullptr);
+    if (!needsOverride) continue;
+    char topic[160];
+    snprintf(topic, sizeof(topic), "%s/%s/%s/%s/config",
+             discoveryPrefix, m.component, deviceId, m.uniqueId);
+    StaticJsonDocument<1024> doc;
+    if (m.kind == HAEK_TRIGGER) {
+      doc["atype"] = "trigger";
+      if (m.triggerType) doc["type"] = m.triggerType;
+      if (m.triggerSubtype) doc["stype"] = m.triggerSubtype;
+      char tBuf[100];
+      snprintf(tBuf, sizeof(tBuf), "%s/%s/%s/t",
+               dataPrefix, deviceId, m.uniqueId);
+      doc["t"] = tBuf;
+    } else if (m.kind == HAEK_TAG) {
+      char tBuf[100];
+      snprintf(tBuf, sizeof(tBuf), "%s/%s/%s/t",
+               dataPrefix, deviceId, m.uniqueId);
+      doc["t"] = tBuf;
+    } else {
+      if (m.name) doc["name"] = m.name;
+      char uniqIdBuf[100];
+      snprintf(uniqIdBuf, sizeof(uniqIdBuf), "%s_%s", deviceId, m.uniqueId);
+      doc["uniq_id"] = uniqIdBuf;
+      if (m.deviceClass) doc["dev_cla"] = m.deviceClass;
+      if (m.unit) doc["unit_of_meas"] = m.unit;
+      if (m.icon) doc["ic"] = m.icon;
+      if (m.entityCategory) doc["ent_cat"] = m.entityCategory;
+      if (m.mode) doc["mode"] = m.mode;
+      if (m.numberMin != 0 || m.numberMax != 0 || m.numberStep != 0) {
+        doc["min"] = m.numberMin;
+        doc["max"] = m.numberMax;
+        doc["step"] = m.numberStep;
+      }
+      char buf[100];
+      if (m.topicFlags & HAOFLAG_STATE) {
+        snprintf(buf, sizeof(buf), "%s/%s/%s/stat_t",
+                 dataPrefix, deviceId, m.uniqueId);
+        doc["stat_t"] = buf;
+      }
+      if (m.topicFlags & HAOFLAG_COMMAND) {
+        snprintf(buf, sizeof(buf), "%s/%s/%s/cmd_t",
+                 dataPrefix, deviceId, m.uniqueId);
+        doc["cmd_t"] = buf;
+      }
+      if (m.topicFlags & HAOFLAG_BRIGHTNESS) {
+        char b1[100], b2[100];
+        snprintf(b1, sizeof(b1), "%s/%s/%s/bri_stat_t",
+                 dataPrefix, deviceId, m.uniqueId);
+        snprintf(b2, sizeof(b2), "%s/%s/%s/bri_cmd_t",
+                 dataPrefix, deviceId, m.uniqueId);
+        doc["bri_stat_t"] = b1;
+        doc["bri_cmd_t"] = b2;
+      }
+      if (m.topicFlags & HAOFLAG_RGB) {
+        char b1[100], b2[100];
+        snprintf(b1, sizeof(b1), "%s/%s/%s/rgb_stat_t",
+                 dataPrefix, deviceId, m.uniqueId);
+        snprintf(b2, sizeof(b2), "%s/%s/%s/rgb_cmd_t",
+                 dataPrefix, deviceId, m.uniqueId);
+        doc["rgb_stat_t"] = b1;
+        doc["rgb_cmd_t"] = b2;
+      }
+      if (m.topicFlags & HAOFLAG_PERCENTAGE) {
+        char b1[100], b2[100];
+        snprintf(b1, sizeof(b1), "%s/%s/%s/pct_stat_t",
+                 dataPrefix, deviceId, m.uniqueId);
+        snprintf(b2, sizeof(b2), "%s/%s/%s/pct_cmd_t",
+                 dataPrefix, deviceId, m.uniqueId);
+        doc["pct_stat_t"] = b1;
+        doc["pct_cmd_t"] = b2;
+      }
+      if (m.topicFlags & HAOFLAG_PAYLOAD_ON) {
+        doc["pl_on"] = "ON";
+      }
+      if (dev->isSharedAvailabilityEnabled()) {
+        const char* avtyT = dev->getAvailabilityTopic();
+        if (avtyT) doc["avty_t"] = avtyT;
+      }
+    }
+    JsonObject devObj = doc.createNestedObject("dev");
+    JsonArray ids = devObj.createNestedArray("ids");
+    ids.add(deviceId);
+    if (_haDeviceName) devObj["name"] = _haDeviceName;
+    if (_haManufacturer) devObj["mf"] = _haManufacturer;
+    if (_haModel) devObj["mdl"] = _haModel;
+    if (_haSoftwareVersion) devObj["sw"] = _haSoftwareVersion;
+    if (viaDeviceSet) devObj["via_device"] = _haViaDevice;
+    char payload[1280];
+    size_t len = serializeJson(doc, payload, sizeof(payload));
+    if (len > 0) {
+      mqtt->publish(topic, payload, true);
+    }
+  }
+};`;
+}
+
 // ===== デバイス初期化 =====
 
 /**
@@ -196,15 +415,19 @@ Blockly.Blocks['ha_device_init'] = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_AVAILABILITY || 'Availability (LWT)')
         .appendField(new Blockly.FieldCheckbox('TRUE'), 'AVAILABILITY');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_VIADEVICE || 'Parent Device (via_device)')
+        .appendField(new Blockly.FieldTextInput(''), 'VIA_DEVICE');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#4CAF50');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_DEVICEINITTOOLTIP || 'Initialize a device that auto-registers with Home Assistant. Manufacturer/Model/Software Version appear on HA Devices page. Auto deviceId (MAC) avoids collisions across multiple ESP32. Availability (LWT) marks the device Unavailable in HA UI on disconnect.');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_DEVICEINITTOOLTIP || 'Initialize a device that auto-registers with Home Assistant. Manufacturer/Model/Software Version appear on HA Devices page. Auto deviceId (MAC) avoids collisions across multiple ESP32. Availability (LWT) marks the device Unavailable in HA UI on disconnect. Parent Device (via_device): set the parent device name to group multiple ESP32 modules under one HA device (leave blank for top-level).');
   }
 };
 
 javascriptGenerator.forBlock['ha_device_init'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const ssid = block.getFieldValue('SSID');
   const wifiPass = block.getFieldValue('WIFI_PASS');
   const broker = block.getFieldValue('BROKER');
@@ -216,6 +439,7 @@ javascriptGenerator.forBlock['ha_device_init'] = function(block: Blockly.Block) 
   const softwareVersion = block.getFieldValue('SOFTWARE_VERSION') || '1.0.0';
   const autoUniqueId = block.getFieldValue('AUTO_UNIQUE_ID') === 'TRUE';
   const availability = block.getFieldValue('AVAILABILITY') === 'TRUE';
+  const viaDevice = block.getFieldValue('VIA_DEVICE') || '';
 
   // インクルードとグローバル変数
   generator.definitions_['include_wifi'] = '#include <WiFi.h>';
@@ -261,6 +485,16 @@ void haWifiConnect() {
   if (availability) {
     body += `  haDevice.enableSharedAvailability();\n`;
     body += `  haDevice.enableLastWill();\n`;
+  }
+  // commit 6: hand string-literal pointers to override infrastructure. The
+  // setters above only retain a reference per HASerializer (no deep copy), so
+  // the same string literals stay valid for the override publish loop.
+  body += `  _haDeviceName = "${deviceName}";\n`;
+  body += `  _haManufacturer = "${manufacturer}";\n`;
+  body += `  _haModel = "${model}";\n`;
+  body += `  _haSoftwareVersion = "${softwareVersion}";\n`;
+  if (viaDevice !== '') {
+    body += `  _haViaDevice = "${viaDevice}";\n`;
   }
   body += `  haMqtt.begin(ha_broker, ha_port);\n`;
   return body;
@@ -312,15 +546,19 @@ Blockly.Blocks['ha_device_init_auth'] = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_AVAILABILITY || 'Availability (LWT)')
         .appendField(new Blockly.FieldCheckbox('TRUE'), 'AVAILABILITY');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_VIADEVICE || 'Parent Device (via_device)')
+        .appendField(new Blockly.FieldTextInput(''), 'VIA_DEVICE');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#4CAF50');
-    this.setTooltip(Blockly.Msg.BLOCKS_HA_DEVICEINITAUTHTOOLTIP || 'Initialize HA device with MQTT authentication. Manufacturer/Model/Software Version appear on HA Devices page. Auto deviceId (MAC) avoids collisions across multiple ESP32. Availability (LWT) marks the device Unavailable in HA UI on disconnect.');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_DEVICEINITAUTHTOOLTIP || 'Initialize HA device with MQTT authentication. Manufacturer/Model/Software Version appear on HA Devices page. Auto deviceId (MAC) avoids collisions across multiple ESP32. Availability (LWT) marks the device Unavailable in HA UI on disconnect. Parent Device (via_device): set the parent device name to group multiple ESP32 modules under one HA device (leave blank for top-level).');
   }
 };
 
 javascriptGenerator.forBlock['ha_device_init_auth'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const ssid = block.getFieldValue('SSID');
   const wifiPass = block.getFieldValue('WIFI_PASS');
   const broker = block.getFieldValue('BROKER');
@@ -334,6 +572,7 @@ javascriptGenerator.forBlock['ha_device_init_auth'] = function(block: Blockly.Bl
   const softwareVersion = block.getFieldValue('SOFTWARE_VERSION') || '1.0.0';
   const autoUniqueId = block.getFieldValue('AUTO_UNIQUE_ID') === 'TRUE';
   const availability = block.getFieldValue('AVAILABILITY') === 'TRUE';
+  const viaDevice = block.getFieldValue('VIA_DEVICE') || '';
 
   generator.definitions_['include_wifi'] = '#include <WiFi.h>';
   generator.definitions_['include_arduinoha'] = '#include <ArduinoHA.h>';
@@ -373,6 +612,15 @@ void haWifiConnect() {
   if (availability) {
     body += `  haDevice.enableSharedAvailability();\n`;
     body += `  haDevice.enableLastWill();\n`;
+  }
+  // commit 6: hand string-literal pointers to override infrastructure (see
+  // ha_device_init for the lifetime rationale).
+  body += `  _haDeviceName = "${deviceName}";\n`;
+  body += `  _haManufacturer = "${manufacturer}";\n`;
+  body += `  _haModel = "${model}";\n`;
+  body += `  _haSoftwareVersion = "${softwareVersion}";\n`;
+  if (viaDevice !== '') {
+    body += `  _haViaDevice = "${viaDevice}";\n`;
   }
   body += `  haMqtt.begin(ha_broker, ha_port, "${mqttUser}", "${mqttPass}");\n`;
   return body;
@@ -434,6 +682,7 @@ Blockly.Blocks['ha_sensor_create'] = {
 
 javascriptGenerator.forBlock['ha_sensor_create'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const sensorId = block.getFieldValue('SENSOR_ID');
   const name = block.getFieldValue('NAME');
   const deviceClass = block.getFieldValue('DEVICE_CLASS');
@@ -453,6 +702,12 @@ javascriptGenerator.forBlock['ha_sensor_create'] = function(block: Blockly.Block
   if (icon) {
     code += `  ${varName}.setIcon("${icon}");\n`;
   }
+
+  // commit 6: register for via_device override (no entity_category, default
+  // user sensor is not diagnostic).
+  const dcLit = deviceClass !== 'None' ? `"${deviceClass}"` : 'nullptr';
+  const iconLit = icon ? `"${icon}"` : 'nullptr';
+  code += `  _haEntityRegister({HAEK_NORMAL, "sensor", "${sensorId}", "${name}", ${dcLit}, "${unit}", ${iconLit}, nullptr, nullptr, nullptr, nullptr, 0, 0, 0, HAOFLAG_STATE});\n`;
 
   return code;
 };
@@ -542,6 +797,7 @@ Blockly.Blocks['ha_binary_sensor_create'] = {
 
 javascriptGenerator.forBlock['ha_binary_sensor_create'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const sensorId = block.getFieldValue('SENSOR_ID');
   const name = block.getFieldValue('NAME');
   const deviceClass = block.getFieldValue('DEVICE_CLASS');
@@ -559,6 +815,11 @@ javascriptGenerator.forBlock['ha_binary_sensor_create'] = function(block: Blockl
   if (icon) {
     code += `  ${varName}.setIcon("${icon}");\n`;
   }
+
+  // commit 6: register for via_device override
+  const dcLit = deviceClass !== 'None' ? `"${deviceClass}"` : 'nullptr';
+  const iconLit = icon ? `"${icon}"` : 'nullptr';
+  code += `  _haEntityRegister({HAEK_NORMAL, "binary_sensor", "${sensorId}", "${name}", ${dcLit}, nullptr, ${iconLit}, nullptr, nullptr, nullptr, nullptr, 0, 0, 0, HAOFLAG_STATE});\n`;
 
   return code;
 };
@@ -624,6 +885,7 @@ Blockly.Blocks['ha_switch_create'] = {
 
 javascriptGenerator.forBlock['ha_switch_create'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const switchId = block.getFieldValue('SWITCH_ID');
   const name = block.getFieldValue('NAME');
   const icon = block.getFieldValue('ICON');
@@ -637,6 +899,10 @@ javascriptGenerator.forBlock['ha_switch_create'] = function(block: Blockly.Block
   if (icon) {
     code += `  ${varName}.setIcon("${icon}");\n`;
   }
+
+  // commit 6: register for via_device override
+  const iconLit = icon ? `"${icon}"` : 'nullptr';
+  code += `  _haEntityRegister({HAEK_NORMAL, "switch", "${switchId}", "${name}", nullptr, nullptr, ${iconLit}, nullptr, nullptr, nullptr, nullptr, 0, 0, 0, (uint16_t)(HAOFLAG_STATE | HAOFLAG_COMMAND)});\n`;
 
   return code;
 };
@@ -736,6 +1002,7 @@ Blockly.Blocks['ha_light_create'] = {
 
 javascriptGenerator.forBlock['ha_light_create'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const lightId = block.getFieldValue('LIGHT_ID');
   const name = block.getFieldValue('NAME');
   const hasBrightness = block.getFieldValue('BRIGHTNESS') === 'TRUE';
@@ -748,7 +1015,11 @@ javascriptGenerator.forBlock['ha_light_create'] = function(block: Blockly.Block)
     generator.definitions_[`ha_light_${lightId}`] = `HALight ${varName}("${lightId}");`;
   }
 
-  return `  // HA Light: ${name}\n  ${varName}.setName("${name}");\n`;
+  // commit 6: register for via_device override
+  const flagsExpr = hasBrightness
+    ? '(uint16_t)(HAOFLAG_STATE | HAOFLAG_COMMAND | HAOFLAG_BRIGHTNESS)'
+    : '(uint16_t)(HAOFLAG_STATE | HAOFLAG_COMMAND)';
+  return `  // HA Light: ${name}\n  ${varName}.setName("${name}");\n  _haEntityRegister({HAEK_NORMAL, "light", "${lightId}", "${name}", nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, 0, 0, 0, ${flagsExpr}});\n`;
 };
 
 /**
@@ -911,6 +1182,7 @@ Blockly.Blocks['ha_button_create'] = {
 
 javascriptGenerator.forBlock['ha_button_create'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const buttonId = block.getFieldValue('BUTTON_ID');
   const name = block.getFieldValue('NAME');
   const icon = block.getFieldValue('ICON');
@@ -924,6 +1196,11 @@ javascriptGenerator.forBlock['ha_button_create'] = function(block: Blockly.Block
   if (icon) {
     code += `  ${varName}.setIcon("${icon}");\n`;
   }
+
+  // commit 6: register for via_device override (button has command_topic only,
+  // no state_topic — matches HAButton::buildSerializer)
+  const iconLit = icon ? `"${icon}"` : 'nullptr';
+  code += `  _haEntityRegister({HAEK_NORMAL, "button", "${buttonId}", "${name}", nullptr, nullptr, ${iconLit}, nullptr, nullptr, nullptr, nullptr, 0, 0, 0, HAOFLAG_COMMAND});\n`;
 
   return code;
 };
@@ -979,6 +1256,7 @@ Blockly.Blocks['ha_loop'] = {
 
 javascriptGenerator.forBlock['ha_loop'] = function() {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   // commit 5 hybrid (v4 §10.2 + D-5.4): WiFi auto-reconnect every 5s.
   // Existing ha_loop callers gain transparent WiFi resilience without
   // needing a separate wifi_reconnect block; v4 §3.4 grep-verified that
@@ -988,6 +1266,11 @@ javascriptGenerator.forBlock['ha_loop'] = function() {
   // (ha_device_init absent) compile resilience.
   generator.definitions_['include_wifi'] = '#include <WiFi.h>';
   generator.definitions_['ha_loop_wifi_check_var'] = 'unsigned long _lastWifiCheck = 0;';
+  // commit 6: state-transition flag for via_device + entity_category override.
+  // After haMqtt.loop() returns, ArduinoHA's onConnectedLogic (HAMqtt.cpp:288)
+  // has run synchronously — discovery payloads are already on the broker.
+  // _haOverrideDone is reset on disconnect so reconnect retriggers override.
+  generator.definitions_['ha_override_state_var'] = 'bool _haOverrideDone = false;';
   return `  if (millis() - _lastWifiCheck > 5000) {
     _lastWifiCheck = millis();
     if (WiFi.status() != WL_CONNECTED) {
@@ -995,6 +1278,14 @@ javascriptGenerator.forBlock['ha_loop'] = function() {
     }
   }
   haMqtt.loop();
+  if (haMqtt.isConnected()) {
+    if (!_haOverrideDone) {
+      _haOverridePublishAll();
+      _haOverrideDone = true;
+    }
+  } else {
+    _haOverrideDone = false;
+  }
 `;
 };
 
@@ -1054,6 +1345,7 @@ Blockly.Blocks['ha_number_create'] = {
 
 javascriptGenerator.forBlock['ha_number_create'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const numberId = block.getFieldValue('NUMBER_ID');
   const name = block.getFieldValue('NAME');
   const min = generator.valueToCode(block, 'MIN', generator.ORDER_ATOMIC) || '0';
@@ -1075,6 +1367,12 @@ javascriptGenerator.forBlock['ha_number_create'] = function(block: Blockly.Block
     code += `  ${varName}.setUnitOfMeasurement("${unit}");\n`;
   }
   code += `  ${varName}.setMode(HANumber::Mode${mode.charAt(0).toUpperCase() + mode.slice(1)});\n`;
+
+  // commit 6: register for via_device override. Min/max/step come from the
+  // user expression at runtime; pass through (long)(...) so the override
+  // payload reflects the actual configured range. Mode literal goes verbatim.
+  const unitLit = unit ? `"${unit}"` : 'nullptr';
+  code += `  _haEntityRegister({HAEK_NORMAL, "number", "${numberId}", "${name}", nullptr, ${unitLit}, nullptr, nullptr, "${mode}", nullptr, nullptr, (long)(${min}), (long)(${max}), (long)(${step}), (uint16_t)(HAOFLAG_STATE | HAOFLAG_COMMAND)});\n`;
 
   return code;
 };
@@ -1214,6 +1512,7 @@ Blockly.Blocks['ha_fan_create'] = {
 
 javascriptGenerator.forBlock['ha_fan_create'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const fanId = block.getFieldValue('FAN_ID');
   const name = block.getFieldValue('NAME');
   const hasSpeeds = block.getFieldValue('SPEEDS') === 'TRUE';
@@ -1232,6 +1531,12 @@ javascriptGenerator.forBlock['ha_fan_create'] = function(block: Blockly.Block) {
     code += `  ${varName}.setSpeedRangeMin(1);\n`;
     code += `  ${varName}.setSpeedRangeMax(100);\n`;
   }
+
+  // commit 6: register for via_device override (Percentage topic when SpeedsFeature on)
+  const flagsExpr = hasSpeeds
+    ? '(uint16_t)(HAOFLAG_STATE | HAOFLAG_COMMAND | HAOFLAG_PERCENTAGE)'
+    : '(uint16_t)(HAOFLAG_STATE | HAOFLAG_COMMAND)';
+  code += `  _haEntityRegister({HAEK_NORMAL, "fan", "${fanId}", "${name}", nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, 0, 0, 0, ${flagsExpr}});\n`;
 
   return code;
 };
@@ -1384,6 +1689,7 @@ Blockly.Blocks['ha_cover_create'] = {
 
 javascriptGenerator.forBlock['ha_cover_create'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const coverId = block.getFieldValue('COVER_ID');
   const name = block.getFieldValue('NAME');
   const deviceClass = block.getFieldValue('DEVICE_CLASS');
@@ -1397,6 +1703,10 @@ javascriptGenerator.forBlock['ha_cover_create'] = function(block: Blockly.Block)
   if (deviceClass !== 'None') {
     code += `  ${varName}.setDeviceClass("${deviceClass}");\n`;
   }
+
+  // commit 6: register for via_device override
+  const dcLit = deviceClass !== 'None' ? `"${deviceClass}"` : 'nullptr';
+  code += `  _haEntityRegister({HAEK_NORMAL, "cover", "${coverId}", "${name}", ${dcLit}, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, 0, 0, 0, (uint16_t)(HAOFLAG_STATE | HAOFLAG_COMMAND)});\n`;
 
   return code;
 };
@@ -1507,6 +1817,7 @@ Blockly.Blocks['ha_light_create_rgb'] = {
 
 javascriptGenerator.forBlock['ha_light_create_rgb'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const lightId = block.getFieldValue('LIGHT_ID');
   const name = block.getFieldValue('NAME');
 
@@ -1514,7 +1825,8 @@ javascriptGenerator.forBlock['ha_light_create_rgb'] = function(block: Blockly.Bl
 
   generator.definitions_[`ha_light_${lightId}`] = `HALight ${varName}("${lightId}", HALight::BrightnessFeature | HALight::RGBFeature);`;
 
-  return `  // HA RGB Light: ${name}\n  ${varName}.setName("${name}");\n`;
+  // commit 6: register for via_device override (Brightness + RGB topics)
+  return `  // HA RGB Light: ${name}\n  ${varName}.setName("${name}");\n  _haEntityRegister({HAEK_NORMAL, "light", "${lightId}", "${name}", nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, 0, 0, 0, (uint16_t)(HAOFLAG_STATE | HAOFLAG_COMMAND | HAOFLAG_BRIGHTNESS | HAOFLAG_RGB)});\n`;
 };
 
 /**
@@ -1681,6 +1993,7 @@ Blockly.Blocks['ha_device_trigger_create'] = {
 
 javascriptGenerator.forBlock['ha_device_trigger_create'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const triggerId = block.getFieldValue('TRIGGER_ID');
   const type = block.getFieldValue('TYPE');
   const subtype = block.getFieldValue('SUBTYPE');
@@ -1694,7 +2007,10 @@ javascriptGenerator.forBlock['ha_device_trigger_create'] = function(block: Block
   // (e.g. 'button_short_press') are a future UX refinement.
   generator.definitions_[`ha_trigger_${triggerId}`] = `HADeviceTrigger ${varName}("${type}", "${subtype}");`;
 
-  return `  // HA Device Trigger: ${triggerId}\n`;
+  // commit 6: register for via_device override (component = "device_automation",
+  // single "t" topic, atype/type/stype payload — matches HADeviceTrigger::
+  // buildSerializer)
+  return `  // HA Device Trigger: ${triggerId}\n  _haEntityRegister({HAEK_TRIGGER, "device_automation", "${triggerId}", nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, "${type}", "${subtype}", 0, 0, 0, 0});\n`;
 };
 
 /**
@@ -1745,6 +2061,7 @@ Blockly.Blocks['ha_scene_create'] = {
 
 javascriptGenerator.forBlock['ha_scene_create'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const sceneId = block.getFieldValue('SCENE_ID');
   const name = block.getFieldValue('NAME');
 
@@ -1752,7 +2069,9 @@ javascriptGenerator.forBlock['ha_scene_create'] = function(block: Blockly.Block)
 
   generator.definitions_[`ha_scene_${sceneId}`] = `HAScene ${varName}("${sceneId}");`;
 
-  return `  // HA Scene: ${name}\n  ${varName}.setName("${name}");\n`;
+  // commit 6: register for via_device override (cmd_t + pl_on="ON",
+  // matches HAScene::buildSerializer)
+  return `  // HA Scene: ${name}\n  ${varName}.setName("${name}");\n  _haEntityRegister({HAEK_NORMAL, "scene", "${sceneId}", "${name}", nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, 0, 0, 0, (uint16_t)(HAOFLAG_COMMAND | HAOFLAG_PAYLOAD_ON)});\n`;
 };
 
 /**
@@ -1812,6 +2131,7 @@ Blockly.Blocks['ha_tag_scanner_create'] = {
 
 javascriptGenerator.forBlock['ha_tag_scanner_create'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const scannerId = block.getFieldValue('SCANNER_ID');
   const name = block.getFieldValue('NAME');
 
@@ -1819,7 +2139,9 @@ javascriptGenerator.forBlock['ha_tag_scanner_create'] = function(block: Blockly.
 
   generator.definitions_[`ha_tag_scanner_${scannerId}`] = `HATagScanner ${varName}("${scannerId}");`;
 
-  return `  // HA Tag Scanner: ${name}\n  ${varName}.setName("${name}");\n`;
+  // commit 6: register for via_device override (single "t" topic, no name/
+  // unique_id in HATagScanner::buildSerializer — kind = HAEK_TAG)
+  return `  // HA Tag Scanner: ${name}\n  ${varName}.setName("${name}");\n  _haEntityRegister({HAEK_TAG, "tag", "${scannerId}", nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, 0, 0, 0, 0});\n`;
 };
 
 /**
@@ -1964,6 +2286,7 @@ Blockly.Blocks['ha_diagnostics_auto'] = {
 
 javascriptGenerator.forBlock['ha_diagnostics_auto'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
   const intervalRaw = parseInt(block.getFieldValue('REPORT_INTERVAL') || '60', 10);
   const interval = Number.isFinite(intervalRaw) && intervalRaw >= 10 ? intervalRaw : 60;
   const enableRssi = block.getFieldValue('ENABLE_RSSI') === 'TRUE';
@@ -2032,23 +2355,28 @@ unsigned long _haDiagInterval = ${interval * 1000}UL;`;
     setupBody += '  haDiag_wifi_rssi.setDeviceClass("signal_strength");\n';
     setupBody += '  haDiag_wifi_rssi.setUnitOfMeasurement("dBm");\n';
     setupBody += '  haDiag_wifi_rssi.setIcon("mdi:wifi");\n';
+    // commit 6 D-3.3 (B' 案): entity_category=diagnostic via override
+    setupBody += '  _haEntityRegister({HAEK_NORMAL, "sensor", "wifi_rssi", "WiFi RSSI", "signal_strength", "dBm", "mdi:wifi", "diagnostic", nullptr, nullptr, nullptr, 0, 0, 0, HAOFLAG_STATE});\n';
   }
   if (enableUptime) {
     setupBody += '  haDiag_uptime.setName("Uptime");\n';
     setupBody += '  haDiag_uptime.setDeviceClass("duration");\n';
     setupBody += '  haDiag_uptime.setUnitOfMeasurement("s");\n';
     setupBody += '  haDiag_uptime.setIcon("mdi:clock-outline");\n';
+    setupBody += '  _haEntityRegister({HAEK_NORMAL, "sensor", "uptime", "Uptime", "duration", "s", "mdi:clock-outline", "diagnostic", nullptr, nullptr, nullptr, 0, 0, 0, HAOFLAG_STATE});\n';
   }
   if (enableHeap) {
     setupBody += '  haDiag_free_heap.setName("Free Heap");\n';
     setupBody += '  haDiag_free_heap.setDeviceClass("data_size");\n';
     setupBody += '  haDiag_free_heap.setUnitOfMeasurement("B");\n';
     setupBody += '  haDiag_free_heap.setIcon("mdi:memory");\n';
+    setupBody += '  _haEntityRegister({HAEK_NORMAL, "sensor", "free_heap", "Free Heap", "data_size", "B", "mdi:memory", "diagnostic", nullptr, nullptr, nullptr, 0, 0, 0, HAOFLAG_STATE});\n';
   }
   if (enableResetReason) {
     setupBody += '  haDiag_reset_reason.setName("Reset Reason");\n';
     setupBody += '  haDiag_reset_reason.setIcon("mdi:restart");\n';
     setupBody += '  haDiag_reset_reason.setValue(_haDiagResetReasonStr());\n';
+    setupBody += '  _haEntityRegister({HAEK_NORMAL, "sensor", "reset_reason", "Reset Reason", nullptr, nullptr, "mdi:restart", "diagnostic", nullptr, nullptr, nullptr, 0, 0, 0, HAOFLAG_STATE});\n';
   }
 
   // Periodic tick via loopPre_ (rule 03 "Loop-side dedupe" — auto-injected

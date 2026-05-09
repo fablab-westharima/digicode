@@ -2419,7 +2419,7 @@
       "iconAccount": "Occupancy (mdi:account)",
       "iconWifi": "Connectivity (mdi:wifi)",
       "diagnosticsAuto": "🩺 HA Auto Diagnostics",
-      "diagnosticsAutoTooltip": "Automatically publish RSSI / Uptime / Free Heap / Reset Reason to Home Assistant at the specified interval (default 60 s). Operates on an independent millis() timer (separate from ha_report_interval). entity_category is not yet supported by ArduinoHA, so entities currently appear as regular sensors in the HA UI (planned for commit 6). Place inside arduino_setup; at least one item must be enabled.",
+      "diagnosticsAutoTooltip": "Automatically publish RSSI / Uptime / Free Heap / Reset Reason to Home Assistant at the specified interval (default 60 s). Operates on an independent millis() timer (separate from ha_report_interval). entity_category=diagnostic is applied via the ha_loop retain-override path so the entities appear under the Diagnostics section of the HA UI. Place inside arduino_setup; at least one item must be enabled.",
       "diagnosticReportInterval": "Report Interval (s)",
       "enableRssi": "WiFi RSSI",
       "enableUptime": "Uptime",
@@ -2428,7 +2428,9 @@
       "onConnected": "HA Connected",
       "onConnectedTooltip": "Fires when MQTT connection to the HA broker is acquired (initial connect + every reconnect). Place once per project — HAMqtt holds a single callback, so multiple placements silently overwrite each other.",
       "onDisconnected": "HA Disconnected",
-      "onDisconnectedTooltip": "Fires when MQTT connection to the HA broker is lost. Place once per project — HAMqtt holds a single callback, so multiple placements silently overwrite each other."
+      "onDisconnectedTooltip": "Fires when MQTT connection to the HA broker is lost. Place once per project — HAMqtt holds a single callback, so multiple placements silently overwrite each other.",
+      "viaDevice": "Parent Device (via_device)",
+      "viaDeviceTooltip": "Set a parent device name to group multiple ESP32 modules under a single HA device (Takeda decision 3 — multi-mechanism scenarios). Leave blank to register as a top-level device — fully compatible with existing projects. ArduinoHA has no setViaDevice API, so ha_loop retain-overrides the MQTT Discovery payload to inject via_device (switch to the official API is a polish-phase task once the upstream PR is merged)."
     },
     "common": {
       "steps": "steps",

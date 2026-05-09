@@ -2209,7 +2209,7 @@
       "iconAccount": "Ocupação (mdi:account)",
       "iconWifi": "Conectividade (mdi:wifi)",
       "diagnosticsAuto": "🩺 Diagnóstico automático HA",
-      "diagnosticsAutoTooltip": "Publica automaticamente RSSI / Tempo ativo / Memória livre / Motivo de reinício no Home Assistant no intervalo especificado (predefinição 60 s). Funciona com um temporizador millis() independente (separado de ha_report_interval). entity_category ainda não é suportada pela ArduinoHA, pelo que as entidades aparecem como sensores normais na interface do HA (previsto para commit 6). Coloque dentro de arduino_setup; deve ser ativado pelo menos um item.",
+      "diagnosticsAutoTooltip": "Publica automaticamente RSSI / Tempo ativo / Memória livre / Motivo de reinício no Home Assistant no intervalo especificado (predefinição 60 s). Funciona com um temporizador millis() independente (separado de ha_report_interval). entity_category=diagnostic é aplicado através da sobrescrita retida do ha_loop, pelo que as entidades aparecem na secção Diagnóstico da interface do HA. Coloque dentro de arduino_setup; deve ser ativado pelo menos um item.",
       "diagnosticReportInterval": "Intervalo de relatório (s)",
       "enableRssi": "Intensidade WiFi (RSSI)",
       "enableUptime": "Tempo ativo (Uptime)",
@@ -2218,7 +2218,9 @@
       "onConnected": "HA Conectado",
       "onConnectedTooltip": "Dispara quando a ligação MQTT ao broker HA é estabelecida (ligação inicial + cada reconexão). Coloque apenas um bloco por projeto: HAMqtt guarda apenas um callback, pelo que múltiplas colocações se sobrescrevem silenciosamente.",
       "onDisconnected": "HA Desconectado",
-      "onDisconnectedTooltip": "Dispara quando a ligação MQTT ao broker HA é perdida. Coloque apenas um bloco por projeto: HAMqtt guarda apenas um callback, pelo que múltiplas colocações se sobrescrevem silenciosamente."
+      "onDisconnectedTooltip": "Dispara quando a ligação MQTT ao broker HA é perdida. Coloque apenas um bloco por projeto: HAMqtt guarda apenas um callback, pelo que múltiplas colocações se sobrescrevem silenciosamente.",
+      "viaDevice": "Dispositivo principal (via_device)",
+      "viaDeviceTooltip": "Defina o nome do dispositivo principal para agrupar vários módulos ESP32 sob um único dispositivo HA (decisão 3 de Takeda — cenários de múltiplos mecanismos). Deixe em branco para registar como dispositivo de nível superior — totalmente compatível com projetos existentes. A ArduinoHA não expõe setViaDevice, pelo que o ha_loop sobrescreve o payload retido do MQTT Discovery para injetar via_device (mudar para a API oficial é uma tarefa de polimento após o merge do PR upstream)."
     },
     "common": {
       "steps": "passos",
