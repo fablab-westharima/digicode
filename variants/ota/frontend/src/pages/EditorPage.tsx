@@ -1556,49 +1556,12 @@ export function EditorPage() {
 
               return (
                 <>
-                  {/* WiFi OTA */}
-                  {supportedMethods.includes('wifi') && (
-                    <button
-                      onClick={() => handleFlashMethodSelect('wifi')}
-                      className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all hover:bg-purple-50 dark:hover:bg-purple-950 hover:border-purple-300 dark:hover:border-purple-700 ${
-                        getLastFlashMethod() === 'wifi' ? 'border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-950' : 'border-gray-200 dark:border-gray-700'
-                      }`}
-                    >
-                      <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                        <Wifi className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                      </div>
-                      <div className="text-left flex-1">
-                        <div className="font-medium text-gray-900 dark:text-gray-100">{t('editor.flash.wifiOta')}</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">{t('editor.flash.wifiOtaDesc')}</div>
-                      </div>
-                      {getLastFlashMethod() === 'wifi' && (
-                        <span className="text-xs text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900 px-2 py-0.5 rounded">{t('editor.flash.previous')}</span>
-                      )}
-                    </button>
-                  )}
+                  {/* Session 98 (commit 6831bfcd 後の follow-up) で並び順を
+                      ユーザーの手軽さ順に変更。事前準備不要なものを上位に。
+                      順序: USB → .bin export → BLE → WiFi OTA → WiFi-batch (admin only)。
+                      WiFi OTA は事前設定 / ツールインストール / アナログ制約あり = 最下位。 */}
 
-                  {/* WiFi OTA一括更新 */}
-                  {supportedMethods.includes('wifi-batch') && (
-                        <button
-                          onClick={() => handleFlashMethodSelect('wifi-batch')}
-                          className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all hover:bg-orange-50 dark:hover:bg-orange-950 hover:border-orange-300 dark:hover:border-orange-700 ${
-                            getLastFlashMethod() === 'wifi-batch' ? 'border-orange-400 dark:border-orange-600 bg-orange-50 dark:bg-orange-950' : 'border-gray-200 dark:border-gray-700'
-                          }`}
-                        >
-                          <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
-                            <Wifi className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                          </div>
-                          <div className="text-left flex-1">
-                            <div className="font-medium text-gray-900 dark:text-gray-100">{t('editor.flash.wifiBatch')}</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">{t('editor.flash.wifiBatchDesc')}</div>
-                          </div>
-                          {getLastFlashMethod() === 'wifi-batch' && (
-                            <span className="text-xs text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900 px-2 py-0.5 rounded">{t('editor.flash.previous')}</span>
-                          )}
-                        </button>
-                      )}
-
-                  {/* USB直接書き込み */}
+                  {/* 1. USB直接書き込み (事前準備不要、最易) */}
                   {supportedMethods.includes('usb') && (
                     <button
                       onClick={() => handleFlashMethodSelect('usb')}
@@ -1619,30 +1582,9 @@ export function EditorPage() {
                     </button>
                   )}
 
-                  {/* BLE書き込み */}
-                  {supportedMethods.includes('ble') && (
-                    <button
-                      onClick={() => handleFlashMethodSelect('ble')}
-                      className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all hover:bg-violet-50 dark:hover:bg-violet-950 hover:border-violet-300 dark:hover:border-violet-700 ${
-                        getLastFlashMethod() === 'ble' ? 'border-violet-400 dark:border-violet-600 bg-violet-50 dark:bg-violet-950' : 'border-gray-200 dark:border-gray-700'
-                      }`}
-                    >
-                      <div className="p-2 bg-violet-100 dark:bg-violet-900 rounded-lg">
-                        <Bluetooth className="w-5 h-5 text-violet-600 dark:text-violet-400" />
-                      </div>
-                      <div className="text-left flex-1">
-                        <div className="font-medium text-gray-900 dark:text-gray-100">Bluetooth書き込み</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">Chrome/Edge推奨、初回USB必須</div>
-                      </div>
-                      {getLastFlashMethod() === 'ble' && (
-                        <span className="text-xs text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900 px-2 py-0.5 rounded">{t('editor.flash.previous')}</span>
-                      )}
-                    </button>
-                  )}
-
-                  {/* ファームウェア書出し (.bin) section: 2 sub-options
+                  {/* 2. ファームウェア書出し (.bin) section: 2 sub-options (事前準備不要、device 接続なし)
                       Session 98 Task 4-side: ha_ota_setup ブロック有無で grey-out 切替。
-                      工具屋 device 接続なし、汎用 firmware backup / HA OTA registration 用途。 */}
+                      汎用 firmware backup / HA OTA registration 用途。 */}
                   {(supportedMethods.includes('bin-generic') || supportedMethods.includes('bin-ha-ota')) && (() => {
                     const hasHaOtaSetup = workspaceXml.includes('type="ha_ota_setup"');
                     return (
@@ -1705,6 +1647,73 @@ export function EditorPage() {
                       </>
                     );
                   })()}
+
+                  {/* 3. BLE 書き込み (DigiCode Finder 不要、アナログ制約なし) */}
+                  {supportedMethods.includes('ble') && (
+                    <button
+                      onClick={() => handleFlashMethodSelect('ble')}
+                      className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all hover:bg-violet-50 dark:hover:bg-violet-950 hover:border-violet-300 dark:hover:border-violet-700 ${
+                        getLastFlashMethod() === 'ble' ? 'border-violet-400 dark:border-violet-600 bg-violet-50 dark:bg-violet-950' : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <div className="p-2 bg-violet-100 dark:bg-violet-900 rounded-lg">
+                        <Bluetooth className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                      </div>
+                      <div className="text-left flex-1">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">Bluetooth書き込み</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Chrome/Edge推奨、初回USB必須</div>
+                      </div>
+                      {getLastFlashMethod() === 'ble' && (
+                        <span className="text-xs text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900 px-2 py-0.5 rounded">{t('editor.flash.previous')}</span>
+                      )}
+                    </button>
+                  )}
+
+                  {/* 4. WiFi OTA (事前設定 / ツールインストール / アナログ制約あり、最下位) */}
+                  {supportedMethods.includes('wifi') && (
+                    <button
+                      onClick={() => handleFlashMethodSelect('wifi')}
+                      className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all hover:bg-purple-50 dark:hover:bg-purple-950 hover:border-purple-300 dark:hover:border-purple-700 ${
+                        getLastFlashMethod() === 'wifi' ? 'border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-950' : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                        <Wifi className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <div className="text-left flex-1">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">{t('editor.flash.wifiOta')}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{t('editor.flash.wifiOtaDesc')}</div>
+                      </div>
+                      {getLastFlashMethod() === 'wifi' && (
+                        <span className="text-xs text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900 px-2 py-0.5 rounded">{t('editor.flash.previous')}</span>
+                      )}
+                    </button>
+                  )}
+
+                  {/* 5. WiFi OTA 一括更新 (admin-only、Session 98 follow-up で 16 boards から
+                      'wifi-batch' 削除済 = supportedMethods.includes('wifi-batch') が常に false で
+                      一般 UI では非表示。FlashMethod 型 union には残置 = Admin 経由で動的に boards 配列に
+                      injection or 別 trigger UI を経て handleFlashMethodSelect('wifi-batch') 呼出可能。
+                      Admin ページ実装は別 commit) */}
+                  {supportedMethods.includes('wifi-batch') && (
+                    <button
+                      onClick={() => handleFlashMethodSelect('wifi-batch')}
+                      className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all hover:bg-orange-50 dark:hover:bg-orange-950 hover:border-orange-300 dark:hover:border-orange-700 ${
+                        getLastFlashMethod() === 'wifi-batch' ? 'border-orange-400 dark:border-orange-600 bg-orange-50 dark:bg-orange-950' : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
+                        <Wifi className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                      </div>
+                      <div className="text-left flex-1">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">{t('editor.flash.wifiBatch')}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{t('editor.flash.wifiBatchDesc')}</div>
+                      </div>
+                      {getLastFlashMethod() === 'wifi-batch' && (
+                        <span className="text-xs text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900 px-2 py-0.5 rounded">{t('editor.flash.previous')}</span>
+                      )}
+                    </button>
+                  )}
                 </>
               );
             })()}
