@@ -7,8 +7,16 @@ import { persist } from 'zustand/middleware';
  * - wifi-batch: WiFi OTA一括書き込み（複数デバイス）
  * - usb: USB直接書き込み（esptool-js, fullPackageモード）
  * - ble: Bluetooth Low Energy経由書き込み（NimBLEOta）
+ * - bin-generic: ファームウェア書出し (.bin、汎用、ha_ota_setup なし時の通常 firmware)
+ * - bin-ha-ota: ファームウェア書出し (.bin、Home Assistant OTA 対応、ha_ota_setup あり時)
  */
-export type FlashMethod = 'wifi' | 'wifi-batch' | 'usb' | 'ble';
+export type FlashMethod =
+  | 'wifi'
+  | 'wifi-batch'
+  | 'usb'
+  | 'ble'
+  | 'bin-generic'
+  | 'bin-ha-ota';
 
 /**
  * 対応ボード定義 (OTA版) — ESP32 系 16 boards 専用 (M5Stack 9 + XIAO 3 + 汎用 4)。
@@ -102,7 +110,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-S3 (xtensa LX7、hall 素子なし)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   {
     id: 'm5stack-atoms3-lite',
@@ -115,7 +123,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-S3 (xtensa LX7、hall 素子なし)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   {
     id: 'm5stamp-s3a',
@@ -128,7 +136,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-S3 (xtensa LX7、hall 素子なし)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   {
     id: 'm5stamp-c3',
@@ -141,7 +149,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-C3 (RISC-V、hall 素子なし)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   {
     id: 'm5stickc-plus',
@@ -154,7 +162,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-PICO-D4 (xtensa LX6、hall 素子はあるが arduino-esp32 v3 で API 削除)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   {
     id: 'atom-lite',
@@ -167,7 +175,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-PICO-D4 (xtensa LX6、hall 素子はあるが arduino-esp32 v3 で API 削除)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   {
     id: 'atom-matrix',
@@ -180,7 +188,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-PICO-D4 (xtensa LX6、hall 素子はあるが arduino-esp32 v3 で API 削除)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   {
     id: 'm5stamp-pico',
@@ -193,7 +201,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-PICO (xtensa LX6、hall 素子はあるが arduino-esp32 v3 で API 削除)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   {
     id: 'm5stack-basic',
@@ -206,7 +214,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32 (xtensa LX6、hall 素子はあるが arduino-esp32 v3 で API 削除)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   // ===== 2. XIAO 系 (発売日新しい順、4 boards) =====
   {
@@ -220,7 +228,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-C6 (RISC-V、hall 素子なし)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   {
     id: 'xiao-esp32s3',
@@ -233,7 +241,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-S3 (xtensa LX7、hall 素子なし)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   {
     id: 'xiao-esp32c3',
@@ -246,7 +254,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-C3 (RISC-V、hall 素子なし)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   // ===== 3. ESP32 Devkit 系 (汎用、発売日新しい順、4 boards) =====
   {
@@ -260,7 +268,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-C6 (RISC-V、hall 素子なし)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   {
     id: 'esp32-s3-generic',
@@ -273,7 +281,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-S3 (xtensa LX7、hall 素子なし)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   {
     id: 'esp32-c3-generic',
@@ -286,7 +294,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-C3 (RISC-V、hall 素子なし)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
   {
     id: 'esp32-generic',
@@ -299,7 +307,7 @@ export const SUPPORTED_BOARDS: BoardDefinition[] = [
     supportsBle: true,
     supportsEspNow: true,
     supportsHallSensor: false, // ESP32-WROOM (xtensa LX6、hall 素子はあるが arduino-esp32 v3 で API 削除)
-    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble'],
+    supportedFlashMethods: ['wifi', 'wifi-batch', 'usb', 'ble', 'bin-generic', 'bin-ha-ota'],
   },
 ];
 

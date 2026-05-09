@@ -681,6 +681,24 @@ export function EditorPage() {
     }
   };
 
+  // Session 98 Task 4-side: 通常ファームウェア書出し (ha_ota_setup なし時)。
+  // version dialog skip、`<projectName>.bin` 命名。compile flow は handleBinExport
+  // と同じ executeCompile('bin') 経路、download 名のみ違う。汎用 firmware backup
+  // / 別 OTA 経路 (ESP-IDF native OTA / curl push 等) 用途。
+  const handleBinExportGeneric = async () => {
+    try {
+      const firmwareBinary = await executeCompile('bin');
+      if (firmwareBinary) {
+        const rawName = currentProject?.title?.trim() || 'untitled';
+        const safeName = rawName.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '') || 'untitled';
+        const filename = `${safeName}.bin`;
+        compileService.downloadBinary(firmwareBinary, filename);
+      }
+    } catch (err) {
+      console.error('Generic .bin export failed:', err);
+    }
+  };
+
   // 複数デバイス選択後の処理（一括更新）- 旧DeviceSelectDialog用
   const handleBatchDeviceSelect = (devices: DigiCodeDevice[]) => {
     setBatchUpdateDevices(devices);
@@ -1196,6 +1214,19 @@ export function EditorPage() {
         await handleBleWrite();
         break;
       }
+      case 'bin-generic': {
+        // 通常ファームウェア書出し (.bin): version dialog skip、直接 compile + download。
+        // ha_ota_setup なし時のみ enable (workspaceXml で grey-out 切替)。
+        await handleBinExportGeneric();
+        break;
+      }
+      case 'bin-ha-ota': {
+        // Home Assistant OTA ファームウェア書出し: BinaryExportDialog で version 入力後
+        // <projectName>_v<version>.bin で download (existing handleBinExport flow)。
+        // ha_ota_setup あり時のみ enable。
+        setBinExportDialogOpen(true);
+        break;
+      }
     }
 
     setCompiledBinary(null);
@@ -1244,7 +1275,6 @@ export function EditorPage() {
           onServoTrim={() => setServoTrimDialogOpen(true)}
           onPinAssignment={() => setPinSettingsDialogOpen(true)}
           onCompileServerSettings={() => setCompileServerSettingsDialogOpen(true)}
-          onBinExport={() => setBinExportDialogOpen(true)}
           onDocs={() => window.open('/docs', '_blank')}
           onCodePreview={() => setCodePreviewDialogOpen(true)}
           onPidTuning={() => setPidTuningDialogOpen(true)}
@@ -1609,6 +1639,72 @@ export function EditorPage() {
                       )}
                     </button>
                   )}
+
+                  {/* ファームウェア書出し (.bin) section: 2 sub-options
+                      Session 98 Task 4-side: ha_ota_setup ブロック有無で grey-out 切替。
+                      工具屋 device 接続なし、汎用 firmware backup / HA OTA registration 用途。 */}
+                  {(supportedMethods.includes('bin-generic') || supportedMethods.includes('bin-ha-ota')) && (() => {
+                    const hasHaOtaSetup = workspaceXml.includes('type="ha_ota_setup"');
+                    return (
+                      <>
+                        <div className="pt-3 pb-1 mt-2 border-t border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 dark:text-gray-400">
+                          {t('editor.flash.binExportSection')}
+                        </div>
+                        {/* 通常ファームウェア — ha_ota_setup なし時 enable */}
+                        {supportedMethods.includes('bin-generic') && (
+                          <button
+                            onClick={() => !hasHaOtaSetup && handleFlashMethodSelect('bin-generic')}
+                            disabled={hasHaOtaSetup}
+                            title={hasHaOtaSetup ? t('editor.flash.binGenericDisabledHint') : ''}
+                            className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all ${
+                              hasHaOtaSetup
+                                ? 'border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 opacity-50 cursor-not-allowed'
+                                : `hover:bg-gray-100 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 ${
+                                    getLastFlashMethod() === 'bin-generic' ? 'border-gray-400 dark:border-gray-500 bg-gray-100 dark:bg-gray-800' : 'border-gray-200 dark:border-gray-700'
+                                  }`
+                            }`}
+                          >
+                            <div className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg">
+                              <Download className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                            </div>
+                            <div className="text-left flex-1">
+                              <div className="font-medium text-gray-900 dark:text-gray-100">{t('editor.flash.binGeneric')}</div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400">{t('editor.flash.binGenericDesc')}</div>
+                            </div>
+                            {!hasHaOtaSetup && getLastFlashMethod() === 'bin-generic' && (
+                              <span className="text-xs text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded">{t('editor.flash.previous')}</span>
+                            )}
+                          </button>
+                        )}
+                        {/* Home Assistant OTA ファームウェア — ha_ota_setup あり時 enable */}
+                        {supportedMethods.includes('bin-ha-ota') && (
+                          <button
+                            onClick={() => hasHaOtaSetup && handleFlashMethodSelect('bin-ha-ota')}
+                            disabled={!hasHaOtaSetup}
+                            title={!hasHaOtaSetup ? t('editor.flash.binHaOtaDisabledHint') : ''}
+                            className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all ${
+                              !hasHaOtaSetup
+                                ? 'border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 opacity-50 cursor-not-allowed'
+                                : `hover:bg-gray-100 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 ${
+                                    getLastFlashMethod() === 'bin-ha-ota' ? 'border-gray-400 dark:border-gray-500 bg-gray-100 dark:bg-gray-800' : 'border-gray-200 dark:border-gray-700'
+                                  }`
+                            }`}
+                          >
+                            <div className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg">
+                              <Download className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                            </div>
+                            <div className="text-left flex-1">
+                              <div className="font-medium text-gray-900 dark:text-gray-100">{t('editor.flash.binHaOta')}</div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400">{t('editor.flash.binHaOtaDesc')}</div>
+                            </div>
+                            {hasHaOtaSetup && getLastFlashMethod() === 'bin-ha-ota' && (
+                              <span className="text-xs text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded">{t('editor.flash.previous')}</span>
+                            )}
+                          </button>
+                        )}
+                      </>
+                    );
+                  })()}
                 </>
               );
             })()}

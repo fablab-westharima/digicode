@@ -52,7 +52,6 @@ interface SidebarProps {
   onServoTrim?: () => void;
   onPinAssignment?: () => void;
   onCompileServerSettings?: () => void;
-  onBinExport?: () => void;
   onDocs?: () => void;
   onCodePreview?: () => void;
   onPidTuning?: () => void;
@@ -105,7 +104,6 @@ export function Sidebar({
   onServoTrim,
   onPinAssignment,
   onCompileServerSettings,
-  onBinExport,
   onDocs,
   onCodePreview,
   onPidTuning,
@@ -238,21 +236,9 @@ export function Sidebar({
         },
       ],
     },
-    // HA OTA — DigiCode で書き出した .bin を Home Assistant 経由で OTA 更新
-    {
-      id: 'ha-ota',
-      label: t('sidebar.haOta', { defaultValue: 'HA OTA' }),
-      icon: <Download className="w-4 h-4" />,
-      category: 'otaSetup',
-      children: [
-        {
-          id: 'ha-ota-bin-export',
-          label: t('sidebar.haOtaBinExport', { defaultValue: '.bin ダウンロード' }),
-          icon: <Download className="w-3 h-3" />,
-          action: onBinExport || (() => {}),
-        },
-      ],
-    },
+    // Session 98 Task 4-side: 旧「HA OTA → .bin ダウンロード」menu は
+    // コンパイル＆書き込みダイアログの「ファームウェア書出し (.bin)」section に
+    // 統合して削除。元意図 = 書込み方法選択ダイアログ内に統合。
     // USBドライバー（独立カテゴリ）
     {
       id: 'usb-driver-cp210x',
