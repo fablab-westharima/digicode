@@ -259,6 +259,26 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Pushover Distance Alert',
         description: 'Send Pushover smartphone notification when ultrasonic distance < 10 cm (security / occupancy)',
       },
+      'ha-binary-sensor-motion': {
+        title: 'HA Binary Sensor (motion)',
+        description: 'Auto-register a GPIO 13 motion sensor as a Home Assistant binary_sensor (motion class) and report state',
+      },
+      'ha-diagnostics-only': {
+        title: 'HA Diagnostics Only',
+        description: 'Auto-publish WiFi RSSI / Uptime / Free Heap / Reset Reason every 60 s as HA diagnostic entities (no user sensors)',
+      },
+      'ha-via-device-multi-esp32': {
+        title: 'HA Multi-ESP32 (via_device hierarchy, extruder side)',
+        description: 'Extruder ESP32 of a clay 3D printer. Setting VIA_DEVICE to the parent device name groups multiple ESP32 modules under one HA device on the Devices page (Takeda decision 3 use case)',
+      },
+      'ha-ota-firmware-update': {
+        title: 'HA OTA Firmware Update',
+        description: 'ESP32 self-fetches its .bin and reboots when the user clicks Install in the HA UI. Export the .bin from the DigiCode IDE compile dialog and upload it to the HA add-on local/ folder (Takeda decision 1 use case)',
+      },
+      'ha-watchdog-resilience': {
+        title: 'HA Robust Build (with watchdog)',
+        description: 'watchdog_enable auto-restarts on a 60 s loop hang; ha_diagnostics_auto continuously reports RSSI / Uptime / Heap / reset reason to HA. For 24/7 sensors and factory IoT',
+      },
     },
   },
   es: {
@@ -494,6 +514,26 @@ const overrides: Record<string, LocaleOverride> = {
       'pushover-distance-alert': {
         title: 'Alerta de distancia Pushover',
         description: 'Envía notificación al smartphone vía Pushover cuando la distancia ultrasónica < 10 cm (seguridad / ocupación)',
+      },
+      'ha-binary-sensor-motion': {
+        title: 'Sensor Binary (movimiento) HA',
+        description: 'Registra automáticamente un sensor de movimiento en GPIO 13 como binary_sensor (clase motion) en Home Assistant y reporta el estado',
+      },
+      'ha-diagnostics-only': {
+        title: 'Diagnóstico automático HA',
+        description: 'Publica WiFi RSSI / Uptime / Heap libre / Razón de reinicio cada 60 s como entidades de diagnóstico HA (sin sensores de usuario)',
+      },
+      'ha-via-device-multi-esp32': {
+        title: 'HA varios ESP32 (jerarquía via_device, lado extrusor)',
+        description: 'ESP32 del extrusor de una impresora 3D de arcilla. Estableciendo VIA_DEVICE con el nombre del dispositivo padre se agrupan varios ESP32 bajo un único dispositivo HA en la página Devices (caso de uso Takeda decisión 3)',
+      },
+      'ha-ota-firmware-update': {
+        title: 'Actualización OTA por HA',
+        description: 'El ESP32 obtiene su propio .bin y se reinicia cuando el usuario pulsa Instalar en la UI de HA. Exporta el .bin desde el diálogo de compilación de DigiCode IDE y súbelo a la carpeta local/ del add-on HA (caso de uso Takeda decisión 1)',
+      },
+      'ha-watchdog-resilience': {
+        title: 'Construcción robusta HA (con watchdog)',
+        description: 'watchdog_enable reinicia automáticamente tras 60 s de bloqueo del loop; ha_diagnostics_auto reporta continuamente RSSI / Uptime / Heap / motivo de reinicio a HA. Para sensores 24/7 e IoT industrial',
       },
     },
   },
@@ -731,6 +771,26 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Alerta de distância Pushover',
         description: 'Envia notificação ao smartphone via Pushover quando a distância ultrassónica < 10 cm (segurança / ocupação)',
       },
+      'ha-binary-sensor-motion': {
+        title: 'Sensor Binário (movimento) HA',
+        description: 'Regista automaticamente um sensor de movimento no GPIO 13 como binary_sensor (classe motion) em Home Assistant e reporta o estado',
+      },
+      'ha-diagnostics-only': {
+        title: 'Diagnóstico automático HA',
+        description: 'Publica WiFi RSSI / Uptime / Heap livre / Motivo de reinício a cada 60 s como entidades de diagnóstico HA (sem sensores do utilizador)',
+      },
+      'ha-via-device-multi-esp32': {
+        title: 'HA múltiplos ESP32 (hierarquia via_device, lado extrusor)',
+        description: 'ESP32 do extrusor de uma impressora 3D de argila. Definindo VIA_DEVICE com o nome do dispositivo pai agrupa vários ESP32 sob um único dispositivo HA na página Devices (caso de uso Takeda decisão 3)',
+      },
+      'ha-ota-firmware-update': {
+        title: 'Atualização OTA por HA',
+        description: 'O ESP32 obtém o seu próprio .bin e reinicia quando o utilizador clica em Instalar na UI HA. Exporta o .bin a partir do diálogo de compilação do DigiCode IDE e carrega-o para a pasta local/ do add-on HA (caso de uso Takeda decisão 1)',
+      },
+      'ha-watchdog-resilience': {
+        title: 'Implementação robusta HA (com watchdog)',
+        description: 'watchdog_enable reinicia automaticamente após 60 s de bloqueio do loop; ha_diagnostics_auto reporta continuamente RSSI / Uptime / Heap / motivo de reinício para HA. Para sensores 24/7 e IoT industrial',
+      },
     },
   },
   'zh-TW': {
@@ -966,6 +1026,26 @@ const overrides: Record<string, LocaleOverride> = {
       'pushover-distance-alert': {
         title: 'Pushover 距離警示',
         description: '超音波距離 < 10 cm 時透過 Pushover 推播至手機 (安防 / 在席偵測)',
+      },
+      'ha-binary-sensor-motion': {
+        title: 'HA 二元感測器 (人體偵測)',
+        description: '將 GPIO 13 的人體偵測器自動註冊為 Home Assistant binary_sensor (motion 類別) 並回報狀態',
+      },
+      'ha-diagnostics-only': {
+        title: 'HA 自動診斷專用',
+        description: '每 60 秒將 WiFi RSSI / Uptime / 可用 Heap / 重啟原因自動發佈為 HA 診斷 entity (無使用者 sensor)',
+      },
+      'ha-via-device-multi-esp32': {
+        title: 'HA 多 ESP32 (via_device 階層、擠出機構側)',
+        description: '黏土 3D 印表機的擠出機構 ESP32。將 VIA_DEVICE 設為親裝置名稱可將多個 ESP32 分組於單一 HA 裝置 (Takeda 判斷 3 使用案例)',
+      },
+      'ha-ota-firmware-update': {
+        title: 'HA OTA 韌體更新',
+        description: '使用者於 HA UI 點選「安裝」後 ESP32 自行取得 .bin 並重啟。從 DigiCode IDE 編譯完成對話框匯出 .bin、上傳至 HA add-on local/ 資料夾 (Takeda 判斷 1 使用案例)',
+      },
+      'ha-watchdog-resilience': {
+        title: 'HA 堅韌構成 (整合 watchdog)',
+        description: 'watchdog_enable 在 60 秒 loop 卡住時自動重啟；ha_diagnostics_auto 持續向 HA 回報 RSSI / Uptime / Heap / 重啟原因。適合 24/7 感測器 / 工廠 IoT',
       },
     },
   },

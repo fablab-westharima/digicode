@@ -16,13 +16,24 @@ const MODE_SPECIFIC_SAMPLES: Record<RobotMode, readonly [string, string]> = {
 };
 
 // 優先度順（上から match 試行、最初に hit したものを採用）
-// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 20 / Phase 3 (BUG-052): +1 → 21 / BUG-053+054: +2 → 23 / 47.md Phase 2 commit #7 (第73回 wifi-controller-mix): +1 → 24 / 52.md commit #21 (2026-05-04 第80回): +6 → 30 / 第88回 (2026-05-08 残カテゴリ FEW_SHOT 12 sample): +12 → 42 entries
+// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 20 / Phase 3 (BUG-052): +1 → 21 / BUG-053+054: +2 → 23 / 47.md Phase 2 commit #7 (第73回 wifi-controller-mix): +1 → 24 / 52.md commit #21 (2026-05-04 第80回): +6 → 30 / 第88回 (2026-05-08 残カテゴリ FEW_SHOT 12 sample): +12 → 42 / 第98回 (2026-05-09 Task 3 HA 対応強化 5 sample 対応): +5 → 47 entries
 const KEYWORD_TO_SAMPLE: ReadonlyArray<readonly [RegExp, string]> = [
   // 47.md Phase 2 WiFi controller (commit #7): WebSocket server / WiFi
   // controller / browser-based control patterns. Listed near the top so
   // controller-flavored prompts hit this canonical Few-shot before the
   // generic IoT heuristics (mqtt / http / json) below.
   [/websocket|wi.?fi.?controller|wi.?fi.*コントロー|LAN.*control|ブラウザ.*制御|browser.*control/i, 'wifi-controller-mix'],
+  // 第98回 (2026-05-09) Task 3 HA 対応強化 commit 0-7 で追加された specific use case
+  // pattern (HA OTA / via_device 階層 / watchdog 堅牢化 / 自動診断 / binary sensor)。
+  // MODE_SPECIFIC_SAMPLES.homeassistant の 2 sample (ha-led-control / ha-multi-sensor)
+  // で cover できない specific use case を pattern 駆動で hit させる。
+  // generic な MQTT / HTTP / 温度 pattern より上に置くことで HA-prefix 付き prompt
+  // を優先解決。
+  [/HA.*OTA|HA.*ファームウェア|HA.*更新|firmware.*update.*HA|HA.*に.*OTA/i, 'ha-ota-firmware-update'],
+  [/via.?device|親.?デバイス|複数.*ESP32.*1.*機器|複数.*ESP32.*HA.*階層|3D.*プリンタ.*ESP32|押出.*ESP32/i, 'ha-via-device-multi-esp32'],
+  [/watchdog|ウォッチドッグ|堅牢|ハング.*再起動|loop.*hang|24.*時間.*稼働/i, 'ha-watchdog-resilience'],
+  [/HA.*診断|HA.*diagnostics|RSSI.*HA|稼働状況.*HA|ESP32.*稼働.*監視.*HA|HA.*Uptime/i, 'ha-diagnostics-only'],
+  [/人感.*HA|motion.*HA|ドア.*HA|door.*HA|HA.*binary|HA.*ON.?OFF.*センサ/i, 'ha-binary-sensor-motion'],
   // 第88回 (2026-05-08) AI 参照ファイルメンテ: 51.md/52.md 残カテゴリ 12 sample 対応 KEYWORD。
   // 特定 HW 名 (M5Stack / SHT40 / APDS9960 等) を generic pattern (LCD / 温度湿度 / ジェスチャ等) より上に置くことで
   // user の意図 (specific HW を使いたい) を優先解決。下方の 52.md commit #21 6 sample (TM1637/MAX7219/LoRa/...) と
