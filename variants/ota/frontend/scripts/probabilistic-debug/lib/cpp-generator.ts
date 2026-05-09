@@ -49,6 +49,13 @@ export function xmlToCpp(xml: string): CompileFragments {
 
     gen.definitions_ = {};
     gen.setups_ = {};
+    // loopPre_ : counterpart to setups_ for void loop(). Block generators
+    // register dedupable lines (e.g. `bleLoopTick();`, ha_diagnostics_auto
+    // periodic publish, watchdog reset) by key; values are injected
+    // immediately after `void loop() {`. Mirrors BlocklyEditor.tsx
+    // (L205 reset / L220-226 inject) so headless code-gen and the
+    // production frontend produce the same C++ source.
+    gen.loopPre_ = {};
 
     let code: string = gen.workspaceToCode(workspace);
 
@@ -57,6 +64,14 @@ export function xmlToCpp(xml: string): CompileFragments {
       code = code.replace(
         /void setup\(\) \{\n/,
         `void setup() {\n${setupsCode}\n`,
+      );
+    }
+
+    if (gen.loopPre_ && Object.keys(gen.loopPre_).length > 0) {
+      const loopPreCode = Object.values(gen.loopPre_).join('\n');
+      code = code.replace(
+        /void loop\(\) \{\n/,
+        `void loop() {\n${loopPreCode}\n`,
       );
     }
 

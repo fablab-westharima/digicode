@@ -488,6 +488,82 @@ describe('xmlToCpp — ArduinoHA defensive include (BUG-057)', () => {
   });
 });
 
+describe('xmlToCpp — loopPre_ injection (parity with BlocklyEditor.tsx)', () => {
+  // Block generators that register periodic ticks via `generator.loopPre_['key'] =
+  // '  call();'` (rule 03 §"Loop-side dedupe via loopPre_") rely on the host to
+  // inject those values into `void loop() {`. The production frontend
+  // (BlocklyEditor.tsx L205 / L220-226) does this; xmlToCpp must mirror it so
+  // the headless smoke runs the same C++ as production. Without injection,
+  // ha_diagnostics_auto / watchdog_enable / ha_ota_setup / handler-style BLE +
+  // WebSocket blocks compile cleanly but never tick at runtime — silent
+  // divergence between Phase-4-4 / Round-N smoke results and real-device
+  // behaviour. (Discovered in Session 98 Task 2 cold-start verification.)
+  it('ha_diagnostics_auto periodic tick lands inside void loop()', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="ha_diagnostics_auto">' +
+      '<field name="REPORT_INTERVAL">60</field>' +
+      '<field name="ENABLE_RSSI">TRUE</field>' +
+      '<field name="ENABLE_UPTIME">TRUE</field>' +
+      '<field name="ENABLE_HEAP">TRUE</field>' +
+      '<field name="ENABLE_RESET_REASON">TRUE</field>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    expect(out.loopCode).toContain('_lastHaDiagReport');
+    expect(out.loopCode).toContain('haDiag_wifi_rssi.setValue');
+    expect(out.loopCode).toContain('haDiag_uptime.setValue');
+    expect(out.loopCode).toContain('haDiag_free_heap.setValue');
+  });
+
+  it('watchdog_enable emits esp_task_wdt_reset() inside void loop() — Trap 7-aware path', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="watchdog_enable">' +
+      '<field name="TIMEOUT_SEC">60</field>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    expect(out.loopCode).toContain('esp_task_wdt_reset()');
+    expect(out.setupCode).toContain('esp_task_wdt_init(&_wdtConfig)');
+  });
+
+  it('loopPre_ is reset between consecutive xmlToCpp calls (no cross-case leak)', () => {
+    const watchdogXml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="watchdog_enable">' +
+      '<field name="TIMEOUT_SEC">60</field>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    const emptyXml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50"></block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    // Run watchdog case first → loopPre_['watchdog_reset'] is set on the
+    // shared generator singleton.
+    xmlToCpp(watchdogXml);
+    // The empty case must NOT inherit the prior watchdog_reset line.
+    const out = xmlToCpp(emptyXml);
+    expect(out.loopCode).not.toContain('esp_task_wdt_reset');
+  });
+});
+
 describe('xmlToCpp — esp32_digital_read accepts Boolean sockets (BUG-070)', () => {
   // Before BUG-070, esp32_digital_read declared setOutput(true, 'Number'), so
   // Blockly's type checker silently rejected its connection to Boolean sockets
