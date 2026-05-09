@@ -373,6 +373,203 @@ auto _haEntityRegister = [](const _HaEntityMeta& meta) {
 };`;
 }
 
+// ===== commit 7 (Session 96): HA OTA Phase 1+2 — ha_ota_setup infrastructure =====
+//
+// ArduinoHA v2.1.0 ships no HAUpdate / HAOTA / HAFirmware classes (3-source
+// triple verify in commit 3 / Session 94). To meet Takeda 判断 1 (.bin export
+// + manual HA registration + HA-triggered remote OTA, release-front), DigiCode
+// emits its own MQTT Update entity Discovery / state / install-command path
+// using only ArduinoHA public APIs (HAMqtt::publish/subscribe/onMessage,
+// HAMqtt::instance, HADevice getters — line numbers in HAMqtt.h v2.1.0:
+// publish=238, subscribe=286, onMessage=123, instance=49, getDevice=115,
+// getDiscoveryPrefix=96, getDataPrefix=109) plus ESP32 framework standards
+// (Update.h, HTTPClient).
+//
+// Design (Session 96 / D-7.1〜D-7.7、user 確定):
+//   D-7.1 — independent publish lambda (NOT _haEntityRegister flow): the
+//           registry's _HaEntityMeta struct is normal/trigger/tag-shaped and
+//           has no firmware-update fields; extending it would bloat all 24
+//           registry slots. The 5 commit-6 device-meta vars (_haDeviceName /
+//           _haManufacturer / _haModel / _haSoftwareVersion / _haViaDevice)
+//           ARE shared so the Update entity inherits the same device hierarchy.
+//   D-7.2 — firmware version comes from _haSoftwareVersion (ha_device_init
+//           field). Falls back to "1.0.0" when ha_ota_setup is placed alone
+//           (singleton-strategy survivability per rule 03 Init block protocol).
+//   D-7.3 — FIRMWARE_URL on the block field. User types the .bin URL once
+//           in Blockly; ESP32 stores it in _haOtaUrl and pulls from there on
+//           "install" command. Workflow stays Blockly-only — no HA Automation
+//           authoring required (per Takeda「ヘビーユーザーでもハードルが高い」).
+//   D-7.4 — HTTPClient default timeout, single attempt. User retries from HA
+//           UI on failure ("及第点" baseline; multi-retry is Phase 7 polish).
+//   D-7.5 — progress publish throttled to 10% steps (broker friendly).
+//   D-7.6 — .bin export UI lives in the existing compileDialog (EditorPage).
+//   D-7.7 — ha_ota_setup lives in arduinoHABlocks.ts (HA family).
+//
+// Trap 7 (Arduino .ino auto-prototype) defense: every helper that takes a
+// user-defined struct/global as a parameter, OR that needs to be referenced
+// from another helper definition, is emitted as a lambda assigned to `auto`,
+// never as a free function. See ensureHaOverrideInfra (line 189) for the
+// failure modes that prompted this discipline.
+//
+// HAMqtt::onMessage is single-callback last-wins (HAMqtt.cpp processMessage
+// fires _messageCallback once before per-entity onMqttMessage). Grep
+// confirmed zero existing usage in blocks/ at the time of writing. Future
+// HA blocks that also want to listen to MQTT will need a chain pattern.
+//
+// rule 03 Init block protocol — emits/requires contract:
+//   ha_ota_setup emits: _haOtaObjectId, _haOtaName, _haOtaUrl,
+//     _haOtaInProgress, _haOtaDiscoveryDone, _haOtaCmdTopic,
+//     _haOtaPublishState, _haOtaPublishDiscovery, _haOtaPerform,
+//     _haOtaOnMessage. No dependent blocks reference these symbols
+//     externally (the lambdas drive themselves), so no `requires:` from
+//     other blocks. ha_ota_setup itself requires the commit-6 globals
+//     (_haDeviceName etc.) — supplied by ensureHaOverrideInfra() which we
+//     call at the top of the forBlock.
+function ensureHaOtaInfra() {
+  // ArduinoJson is already pulled by ensureHaOverrideInfra(); ensureArduinoHA
+  // is called in the ha_ota_setup forBlock before this helper. Update.h and
+  // HTTPClient are added here.
+  generator.definitions_['include_update'] = '#include <Update.h>';
+  generator.definitions_['include_httpclient'] = '#include <HTTPClient.h>';
+
+  if (!generator.definitions_['ha_ota_meta_vars']) {
+    generator.definitions_['ha_ota_meta_vars'] =
+`/* emits: _haOtaObjectId, _haOtaName, _haOtaUrl, _haOtaInProgress, _haOtaDiscoveryDone, _haOtaCmdTopic, _haOtaLastReportedPct (HA OTA Phase 1+2) */
+const char* _haOtaObjectId = nullptr;
+const char* _haOtaName = nullptr;
+const char* _haOtaUrl = nullptr;
+bool _haOtaInProgress = false;
+bool _haOtaDiscoveryDone = false;
+int _haOtaLastReportedPct = -10;
+char _haOtaCmdTopic[120] = {0};`;
+  }
+
+  if (!generator.definitions_['ha_ota_publish_state_func']) {
+    generator.definitions_['ha_ota_publish_state_func'] =
+`auto _haOtaPublishState = [](const char* installedVersion, bool inProgress, int updatePercentage) {
+  HAMqtt* mqtt = HAMqtt::instance();
+  if (!mqtt || !mqtt->isConnected()) return;
+  const HADevice* dev = mqtt->getDevice();
+  if (!dev || !dev->getUniqueId() || !_haOtaObjectId) return;
+  const char* deviceId = dev->getUniqueId();
+  const char* dataPrefix = mqtt->getDataPrefix();
+  if (!dataPrefix) return;
+  char topic[120];
+  snprintf(topic, sizeof(topic), "%s/%s/%s/stat_t", dataPrefix, deviceId, _haOtaObjectId);
+  StaticJsonDocument<256> doc;
+  if (installedVersion) doc["installed_version"] = installedVersion;
+  doc["in_progress"] = inProgress;
+  if (inProgress) doc["update_percentage"] = updatePercentage;
+  char payload[256];
+  size_t len = serializeJson(doc, payload, sizeof(payload));
+  if (len > 0) mqtt->publish(topic, payload, true);
+};`;
+  }
+
+  if (!generator.definitions_['ha_ota_publish_discovery_func']) {
+    generator.definitions_['ha_ota_publish_discovery_func'] =
+`auto _haOtaPublishDiscovery = []() {
+  HAMqtt* mqtt = HAMqtt::instance();
+  if (!mqtt || !mqtt->isConnected()) return;
+  const HADevice* dev = mqtt->getDevice();
+  if (!dev || !dev->getUniqueId() || !_haOtaObjectId) return;
+  const char* deviceId = dev->getUniqueId();
+  const char* discoveryPrefix = mqtt->getDiscoveryPrefix();
+  const char* dataPrefix = mqtt->getDataPrefix();
+  if (!discoveryPrefix || !dataPrefix) return;
+  char topic[160];
+  snprintf(topic, sizeof(topic), "%s/update/%s/%s/config", discoveryPrefix, deviceId, _haOtaObjectId);
+  StaticJsonDocument<1024> doc;
+  if (_haOtaName) doc["name"] = _haOtaName;
+  char uniqIdBuf[100];
+  snprintf(uniqIdBuf, sizeof(uniqIdBuf), "%s_%s", deviceId, _haOtaObjectId);
+  doc["uniq_id"] = uniqIdBuf;
+  doc["dev_cla"] = "firmware";
+  char stateBuf[120];
+  snprintf(stateBuf, sizeof(stateBuf), "%s/%s/%s/stat_t", dataPrefix, deviceId, _haOtaObjectId);
+  doc["stat_t"] = stateBuf;
+  snprintf(_haOtaCmdTopic, sizeof(_haOtaCmdTopic), "%s/%s/%s/cmd_t", dataPrefix, deviceId, _haOtaObjectId);
+  doc["cmd_t"] = _haOtaCmdTopic;
+  doc["pl_inst"] = "install";
+  if (dev->isSharedAvailabilityEnabled()) {
+    const char* avtyT = dev->getAvailabilityTopic();
+    if (avtyT) doc["avty_t"] = avtyT;
+  }
+  JsonObject devObj = doc.createNestedObject("dev");
+  JsonArray ids = devObj.createNestedArray("ids");
+  ids.add(deviceId);
+  if (_haDeviceName) devObj["name"] = _haDeviceName;
+  if (_haManufacturer) devObj["mf"] = _haManufacturer;
+  if (_haModel) devObj["mdl"] = _haModel;
+  if (_haSoftwareVersion) devObj["sw"] = _haSoftwareVersion;
+  if (_haViaDevice && _haViaDevice[0] != 0) devObj["via_device"] = _haViaDevice;
+  char payload[1280];
+  size_t len = serializeJson(doc, payload, sizeof(payload));
+  if (len > 0) {
+    mqtt->publish(topic, payload, true);
+    mqtt->subscribe(_haOtaCmdTopic);
+  }
+  // Initial state: surface installed_version immediately so HA UI shows the
+  // current version even before any update is offered.
+  const char* ver = _haSoftwareVersion ? _haSoftwareVersion : "1.0.0";
+  _haOtaPublishState(ver, false, 0);
+};`;
+  }
+
+  if (!generator.definitions_['ha_ota_perform_func']) {
+    generator.definitions_['ha_ota_perform_func'] =
+`auto _haOtaPerform = []() {
+  if (_haOtaInProgress || !_haOtaUrl || _haOtaUrl[0] == 0) return;
+  _haOtaInProgress = true;
+  _haOtaLastReportedPct = -10;
+  const char* ver = _haSoftwareVersion ? _haSoftwareVersion : "1.0.0";
+  _haOtaPublishState(ver, true, 0);
+  HTTPClient http;
+  http.begin(_haOtaUrl);
+  int httpCode = http.GET();
+  bool success = false;
+  if (httpCode == HTTP_CODE_OK) {
+    int contentLength = http.getSize();
+    if (contentLength > 0 && Update.begin(contentLength)) {
+      Update.onProgress([](size_t prog, size_t total) {
+        if (total == 0) return;
+        int pct = (int)((prog * 100) / total);
+        if (pct - _haOtaLastReportedPct >= 10 || pct >= 100) {
+          const char* v = _haSoftwareVersion ? _haSoftwareVersion : "1.0.0";
+          _haOtaPublishState(v, true, pct);
+          _haOtaLastReportedPct = pct;
+        }
+      });
+      WiFiClient* client = http.getStreamPtr();
+      size_t written = Update.writeStream(*client);
+      if (written == (size_t)contentLength && Update.end(true)) {
+        success = true;
+      }
+    }
+  }
+  http.end();
+  _haOtaInProgress = false;
+  if (success) {
+    _haOtaPublishState(ver, false, 100);
+    delay(500);
+    ESP.restart();
+  } else {
+    _haOtaPublishState(ver, false, 0);
+  }
+};`;
+  }
+
+  if (!generator.definitions_['ha_ota_on_message_func']) {
+    generator.definitions_['ha_ota_on_message_func'] =
+`auto _haOtaOnMessage = [](const char* topic, const uint8_t* payload, uint16_t length) {
+  if (_haOtaCmdTopic[0] == 0 || strcmp(topic, _haOtaCmdTopic) != 0) return;
+  if (length == 7 && memcmp(payload, "install", 7) == 0) {
+    _haOtaPerform();
+  }
+};`;
+  }
+}
+
 // ===== デバイス初期化 =====
 
 /**
@@ -2438,6 +2635,79 @@ unsigned long _haReportInterval = 30000;`;
     _lastHAReport = millis();
 ${callback}  }
 `;
+};
+
+// ===== HA OTA (commit 7、Phase 1+2) =====
+
+/**
+ * ha_ota_setup - HA OTA Phase 2 (independent block)
+ *
+ * Registers an MQTT Update entity in HA. When the user clicks "Install" in
+ * the HA UI, the broker publishes "install" to the entity's command topic;
+ * _haOtaOnMessage routes that to _haOtaPerform which fetches the .bin from
+ * FIRMWARE_URL via HTTPClient and writes it via Update.h. Progress is
+ * published back as state JSON (in_progress / update_percentage).
+ *
+ * Place inside arduino_setup, after ha_device_init / ha_device_init_auth
+ * (so the device-meta vars and HAMqtt are already configured).
+ */
+Blockly.Blocks['ha_ota_setup'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🔄 ' + (Blockly.Msg.BLOCKS_HA_OTASETUP || 'HA OTA Setup'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_OBJECTID || 'Object ID (entity_id)')
+        .appendField(new Blockly.FieldTextInput('firmware_update'), 'OBJECT_ID');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
+        .appendField(new Blockly.FieldTextInput('ファームウェア更新'), 'NAME');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_HA_OTAFIRMWAREURL || 'Firmware URL (.bin)')
+        .appendField(new Blockly.FieldTextInput('http://homeassistant.local:8123/local/firmware.bin'), 'FIRMWARE_URL');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour('#4CAF50');
+    this.setTooltip(Blockly.Msg.BLOCKS_HA_OTASETUPTOOLTIP || 'Register a Home Assistant Update entity. Place inside arduino_setup after ha_device_init. Object ID = HA entity_id (ASCII). Display Name = HA UI label. Firmware URL = the .bin file location reachable from the ESP32 (e.g. HA local/<file>.bin or any HTTP server). Workflow: build firmware in DigiCode → click ".bin Download" in compile dialog → upload .bin to that URL → trigger Install from HA UI.');
+  }
+};
+
+javascriptGenerator.forBlock['ha_ota_setup'] = function(block: Blockly.Block) {
+  ensureArduinoHAInclude();
+  ensureHaOverrideInfra();
+  ensureHaOtaInfra();
+  const objectId = block.getFieldValue('OBJECT_ID') || 'firmware_update';
+  const name = block.getFieldValue('NAME') || 'ファームウェア更新';
+  const firmwareUrl = block.getFieldValue('FIRMWARE_URL') || '';
+
+  // Register the user-message callback so HAMqtt routes incoming MQTT
+  // messages (PubSubClient → HAMqtt::processMessage → _messageCallback)
+  // to _haOtaOnMessage. HAMqtt::onMessage is single-callback last-wins,
+  // and there is currently no other block in src/blocks/ that uses it
+  // (grep verified Session 96). Future HA blocks will need to chain.
+  generator.setups_['ha_ota_on_message_register'] = '  haMqtt.onMessage(_haOtaOnMessage);';
+
+  // Discovery + state-transition flag dispatch via loopPre_, so multiple
+  // ha_ota_setup placements (logically meaningless but possible) only inject
+  // a single tick line into loop() (rule 03 "Loop-side dedupe").
+  if (!generator.loopPre_) generator.loopPre_ = {};
+  generator.loopPre_['ha_ota_dispatch'] = `  if (HAMqtt::instance() && HAMqtt::instance()->isConnected()) {
+    if (!_haOtaDiscoveryDone) {
+      _haOtaPublishDiscovery();
+      _haOtaDiscoveryDone = true;
+    }
+  } else {
+    _haOtaDiscoveryDone = false;
+  }
+`;
+
+  // setup() body assigns the meta vars from this block's fields so the
+  // lambdas above see consistent values. String literals stay alive for
+  // the program's lifetime (PROGMEM-backed by the Arduino toolchain).
+  let body = '  // HA OTA Setup\n';
+  body += `  _haOtaObjectId = "${objectId}";\n`;
+  body += `  _haOtaName = "${name}";\n`;
+  body += `  _haOtaUrl = "${firmwareUrl}";\n`;
+  return body;
 };
 
 console.log('ArduinoHA blocks loaded');

@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-09T04:57:06.019Z",
+  "generatedAt": "2026-05-09T06:15:46.276Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -9109,6 +9109,40 @@
           "name": "ENABLE_RESET_REASON",
           "fieldType": "checkbox",
           "default": true
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "ha_ota_setup",
+      "category": "arduino_ha",
+      "tooltip": "Register a Home Assistant Update entity. Place inside arduino_setup after ha_device_init. Object ID = HA entity_id (ASCII). Display Name = HA UI label. Firmware URL = the .bin file location reachable from the ESP32 (e.g. HA local/<file>.bin or any HTTP server). Workflow: build firmware in DigiCode → click \".bin Download\" in compile dialog → upload .bin to that URL → trigger Install from HA UI.",
+      "colour": "#4CAF50",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsWifi",
+      "fields": [
+        {
+          "name": "OBJECT_ID",
+          "fieldType": "text",
+          "default": "firmware_update"
+        },
+        {
+          "name": "NAME",
+          "fieldType": "text",
+          "default": "ファームウェア更新"
+        },
+        {
+          "name": "FIRMWARE_URL",
+          "fieldType": "text",
+          "default": "http://homeassistant.local:8123/local/firmware.bin"
         }
       ],
       "valueInputs": [],

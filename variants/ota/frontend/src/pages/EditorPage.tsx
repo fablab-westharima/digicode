@@ -55,7 +55,7 @@ import { bleFirmwareService, type BleFlashProgress, type BleDeviceInfo } from '@
 import { checkADC2Usage, type ADC2Warning } from '@/utils/adc2Check';
 import { api } from '@/lib/api';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
-import { Loader2, Zap, SlidersHorizontal, Code, Usb, Wifi, Bluetooth, AlertTriangle } from 'lucide-react';
+import { Loader2, Zap, SlidersHorizontal, Code, Usb, Wifi, Bluetooth, AlertTriangle, Download } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -63,6 +63,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -126,6 +128,9 @@ export function EditorPage() {
   const [pinSettingsDialogOpen, setPinSettingsDialogOpen] = useState(false);
   const [servoTrimDialogOpen, setServoTrimDialogOpen] = useState(false);
   const [compileServerSettingsDialogOpen, setCompileServerSettingsDialogOpen] = useState(false);
+  const [binExportDialogOpen, setBinExportDialogOpen] = useState(false);
+  const [binExportVersion, setBinExportVersion] = useState('1.0.0');
+  const [binExportInProgress, setBinExportInProgress] = useState(false);
   const [flashMethodDialogOpen, setFlashMethodDialogOpen] = useState(false);
   const [compiledBinary, setCompiledBinary] = useState<Blob | null>(null);
   const [codePreviewDialogOpen, setCodePreviewDialogOpen] = useState(false);
@@ -653,6 +658,26 @@ export function EditorPage() {
       setStatusBarState('error');
       setStatusBarMessage(error instanceof Error ? error.message : t('status.unknownError'));
       return null;
+    }
+  };
+
+  // commit 7 Phase 1: HA OTA 用 .bin export — compile then download as `<projectName>_v<version>.bin`.
+  // The compile flow is shared with OTA/USB/BLE (executeCompile) so the cloud-compile dialog
+  // shows progress; on success we trigger a browser download via compileService.downloadBinary.
+  const handleBinExport = async () => {
+    setBinExportInProgress(true);
+    try {
+      const firmwareBinary = await executeCompile('bin');
+      if (firmwareBinary) {
+        const rawName = currentProject?.title?.trim() || 'untitled';
+        const safeName = rawName.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '') || 'untitled';
+        const safeVersion = (binExportVersion.trim() || '1.0.0').replace(/[^a-zA-Z0-9_.-]/g, '_');
+        const filename = `${safeName}_v${safeVersion}.bin`;
+        compileService.downloadBinary(firmwareBinary, filename);
+      }
+    } finally {
+      setBinExportInProgress(false);
+      setBinExportDialogOpen(false);
     }
   };
 
@@ -1219,6 +1244,7 @@ export function EditorPage() {
           onServoTrim={() => setServoTrimDialogOpen(true)}
           onPinAssignment={() => setPinSettingsDialogOpen(true)}
           onCompileServerSettings={() => setCompileServerSettingsDialogOpen(true)}
+          onBinExport={() => setBinExportDialogOpen(true)}
           onDocs={() => window.open('/docs', '_blank')}
           onCodePreview={() => setCodePreviewDialogOpen(true)}
           onPidTuning={() => setPidTuningDialogOpen(true)}
@@ -1344,6 +1370,53 @@ export function EditorPage() {
                 {t('common.close')}
               </Button>
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* HA OTA: .bin エクスポートダイアログ (commit 7 Phase 1) */}
+      <Dialog
+        open={binExportDialogOpen}
+        onOpenChange={(o) => !binExportInProgress && setBinExportDialogOpen(o)}
+      >
+        <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Download className="h-4 w-4" />
+              {t('editor.binExport.button', { defaultValue: '📥 .bin ダウンロード' })}
+            </DialogTitle>
+            <DialogDescription>
+              {t('editor.binExport.tooltip', { defaultValue: 'コンパイル済みの firmware を .bin ファイルとしてダウンロードします。HA OTA 用に HA add-on の local/ または web サーバーにアップロードしてご利用ください。' })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="space-y-1">
+              <Label htmlFor="bin-export-version">{t('editor.binExport.versionLabel', { defaultValue: 'バージョン' })}</Label>
+              <Input
+                id="bin-export-version"
+                value={binExportVersion}
+                onChange={(e) => setBinExportVersion(e.target.value)}
+                placeholder={t('editor.binExport.versionPlaceholder', { defaultValue: '1.0.0' })}
+                disabled={binExportInProgress}
+              />
+            </div>
+            <Button
+              onClick={handleBinExport}
+              disabled={binExportInProgress || !binExportVersion.trim()}
+              className="w-full"
+            >
+              {binExportInProgress ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  {t('editor.compileLog.title.compilingRunning', { defaultValue: 'コンパイル中...' })}
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4 mr-2" />
+                  {t('editor.binExport.button', { defaultValue: '📥 .bin ダウンロード' })}
+                </>
+              )}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

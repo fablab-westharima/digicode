@@ -464,6 +464,13 @@
         "unknown": "Erro inesperado do fluxo SSE"
       }
     },
+    "binExport": {
+      "button": "📥 Transferir .bin",
+      "versionLabel": "Versão",
+      "versionPlaceholder": "1.0.0",
+      "downloadStarted": ".bin transferido: {{filename}}",
+      "tooltip": "Transfere o firmware compilado como ficheiro .bin. Para OTA do HA, carregue-o para a pasta local/ do add-on do HA ou para qualquer servidor web."
+    },
     "unknownError": "Erro desconhecido",
     "ipResolved": "Endereço IP resolvido",
     "deviceResponseOk": "Resposta do dispositivo OK",
@@ -2220,7 +2227,10 @@
       "onDisconnected": "HA Desconectado",
       "onDisconnectedTooltip": "Dispara quando a ligação MQTT ao broker HA é perdida. Coloque apenas um bloco por projeto: HAMqtt guarda apenas um callback, pelo que múltiplas colocações se sobrescrevem silenciosamente.",
       "viaDevice": "Dispositivo principal (via_device)",
-      "viaDeviceTooltip": "Defina o nome do dispositivo principal para agrupar vários módulos ESP32 sob um único dispositivo HA (decisão 3 de Takeda — cenários de múltiplos mecanismos). Deixe em branco para registar como dispositivo de nível superior — totalmente compatível com projetos existentes. A ArduinoHA não expõe setViaDevice, pelo que o ha_loop sobrescreve o payload retido do MQTT Discovery para injetar via_device (mudar para a API oficial é uma tarefa de polimento após o merge do PR upstream)."
+      "viaDeviceTooltip": "Defina o nome do dispositivo principal para agrupar vários módulos ESP32 sob um único dispositivo HA (decisão 3 de Takeda — cenários de múltiplos mecanismos). Deixe em branco para registar como dispositivo de nível superior — totalmente compatível com projetos existentes. A ArduinoHA não expõe setViaDevice, pelo que o ha_loop sobrescreve o payload retido do MQTT Discovery para injetar via_device (mudar para a API oficial é uma tarefa de polimento após o merge do PR upstream).",
+      "otaSetup": "🔄 Configuração OTA do HA",
+      "otaFirmwareUrl": "URL do firmware (.bin)",
+      "otaSetupTooltip": "Regista uma entidade Update do Home Assistant para que o ESP32 vá buscar o novo firmware por si quando carregar em Instalar na UI do HA. Object ID é o entity_id do HA (ASCII), Display Name é a etiqueta na UI do HA, Firmware URL é a localização do .bin acessível a partir do ESP32 (HA add-on local/<ficheiro>.bin ou qualquer servidor HTTP). Coloque dentro de arduino_setup, depois de ha_device_init. A versão de software é partilhada com o campo de ha_device_init. Fluxo: compile no DigiCode → carregue em Transferir .bin no diálogo de compilação → carregue o .bin para esse URL → carregue em Instalar na UI do HA. A distribuição automática e a verificação de assinaturas são tarefas da fase de polimento."
     },
     "common": {
       "steps": "passos",
@@ -3312,6 +3322,8 @@
     "wifiFirmwareWrite": "Gravar firmware via WiFi",
     "apSetup": "Conectar ao ponto de acesso",
     "wifiDeviceName": "Alterar nome WiFi",
+    "haOta": "HA OTA",
+    "haOtaBinExport": "Transferir .bin",
     "submissionList": "Lista de tarefas",
     "submissionSave": "Salvar e enviar",
     "submissionSaveWithTitle": "Salvar e enviar — {{title}}",

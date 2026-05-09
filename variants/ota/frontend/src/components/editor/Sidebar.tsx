@@ -52,6 +52,7 @@ interface SidebarProps {
   onServoTrim?: () => void;
   onPinAssignment?: () => void;
   onCompileServerSettings?: () => void;
+  onBinExport?: () => void;
   onDocs?: () => void;
   onCodePreview?: () => void;
   onPidTuning?: () => void;
@@ -104,6 +105,7 @@ export function Sidebar({
   onServoTrim,
   onPinAssignment,
   onCompileServerSettings,
+  onBinExport,
   onDocs,
   onCodePreview,
   onPidTuning,
@@ -233,6 +235,21 @@ export function Sidebar({
           label: t('sidebar.wifiDeviceName', { defaultValue: 'WiFiデバイス名変更' }),
           icon: <Pencil className="w-3 h-3" />,
           action: onDeviceName || (() => {}),
+        },
+      ],
+    },
+    // HA OTA — DigiCode で書き出した .bin を Home Assistant 経由で OTA 更新
+    {
+      id: 'ha-ota',
+      label: t('sidebar.haOta', { defaultValue: 'HA OTA' }),
+      icon: <Download className="w-4 h-4" />,
+      category: 'otaSetup',
+      children: [
+        {
+          id: 'ha-ota-bin-export',
+          label: t('sidebar.haOtaBinExport', { defaultValue: '.bin ダウンロード' }),
+          icon: <Download className="w-3 h-3" />,
+          action: onBinExport || (() => {}),
         },
       ],
     },

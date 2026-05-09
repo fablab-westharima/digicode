@@ -138,14 +138,18 @@ interface StrategyAllocation {
 // watchdog_enable (+1) = 4 ブロック追加。commit 3-4 では singleton bump 漏れ
 // で +2 buffer convention が崩れていた (568 vs 569 = -1 buffer) が、運良く
 // generable / skipped 配置で test invariant pass。commit 5 で 570 → buffer
-// -2 となり variables_set が singleton coverage 漏れで test fail。本 commit
-// で singleton 568 → 572 (+4)、pair 31 → 27 (-4) で総数 1000 維持 + +2
-// buffer convention 復元。
+// -2 となり variables_set が singleton coverage 漏れで test fail。第94回
+// commit 5 で singleton 568 → 572 (+4)、pair 31 → 27 (-4) で総数 1000 維持
+// + +2 buffer convention 復元。
+//
+// HA 対応強化 commit 7 (2026-05-09 第96回): catalog 570 → 571 で
+// ha_ota_setup (+1) ブロック追加。singleton 572 → 573 (+1)、pair 27 → 26
+// (-1) で総数 1000 維持 + +2 buffer convention (catalog 571 + 2 = 573) 維持。
 const FULL_ALLOCATION: StrategyAllocation = {
-  singleton: 572,
+  singleton: 573,
   edge: 86,
   matrix: 100,
-  pair: 27,
+  pair: 26,
   template: 200,
   combo: 15,
 };
