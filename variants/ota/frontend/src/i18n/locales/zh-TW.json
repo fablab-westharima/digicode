@@ -2010,6 +2010,11 @@
       "getFreeSketchSpace": "可用 sketch 空間 (bytes)",
       "getFreeSketchSpaceTooltip": "取得 OTA 可用 sketch 空間 (bytes)"
     },
+    "watchdog": {
+      "enable": "啟用看門狗",
+      "enableTooltip": "啟用 ESP32 任務看門狗計時器 (TWDT)。當 loop() 阻塞超過 timeout 秒時，ESP32 會 panic 並自動重啟。請放置於 arduino_setup 中。請將 timeout 設為大於最長 loop 迭代時間；長時間呼叫 (HTTP / OTA download) 應拆分或手動呼叫 esp_task_wdt_reset()。",
+      "timeoutSec": "Timeout (秒)"
+    },
     "ha": {
       "deviceInit": "HA 裝置初始化",
       "deviceInitTooltip": "初始化會自動註冊到 Home Assistant 的裝置。Manufacturer / Model / Software Version 會顯示在 HA Devices 頁。Auto deviceId (MAC) 可避免多個 ESP32 的衝突。Availability (LWT) 在斷線時於 HA UI 顯示 Unavailable。",
@@ -2091,7 +2096,7 @@
       "iconPlay": "播放 (mdi:play)",
       "iconStop": "停止 (mdi:stop)",
       "loop": "HA 迴圈",
-      "loopTooltip": "維持與 Home Assistant 的通訊。在 loop() 中呼叫。",
+      "loopTooltip": "維持與 Home Assistant 的通訊，並在 WiFi 中斷時每 5 秒嘗試自動重連。請在 loop() 中呼叫。",
       "isConnected": "HA 已連接",
       "isConnectedTooltip": "檢查是否已連接 Home Assistant",
       "numberCreate": "建立 HA 數字",

@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-09T02:12:49.240Z",
+  "generatedAt": "2026-05-09T02:58:21.577Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -10891,6 +10891,32 @@
           "check": "Number"
         }
       ],
+      "statementInputs": []
+    },
+    {
+      "type": "watchdog_enable",
+      "category": "ota",
+      "tooltip": "Enable ESP32 task watchdog timer. If loop() blocks longer than the timeout, the ESP32 panics and auto-restarts. Place inside arduino_setup. Set the timeout above your longest expected loop iteration; long blocking calls (HTTP, OTA download) should be split or call esp_task_wdt_reset() manually.",
+      "colour": "#FF9800",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "homeassistant",
+        "generic",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": "supportsOta",
+      "fields": [
+        {
+          "name": "TIMEOUT_SEC",
+          "fieldType": "number",
+          "default": 60,
+          "min": 1,
+          "max": 3600
+        }
+      ],
+      "valueInputs": [],
       "statementInputs": []
     },
     {

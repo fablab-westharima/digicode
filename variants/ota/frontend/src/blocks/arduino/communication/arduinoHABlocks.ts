@@ -979,7 +979,23 @@ Blockly.Blocks['ha_loop'] = {
 
 javascriptGenerator.forBlock['ha_loop'] = function() {
   ensureArduinoHAInclude();
-  return `  haMqtt.loop();\n`;
+  // commit 5 hybrid (v4 §10.2 + D-5.4): WiFi auto-reconnect every 5s.
+  // Existing ha_loop callers gain transparent WiFi resilience without
+  // needing a separate wifi_reconnect block; v4 §3.4 grep-verified that
+  // mqttBlocks.ts:721 wifi_reconnect uses the same WiFi.reconnect() API.
+  // _lastWifiCheck declared once via definitions_ key dedupe = multi
+  // ha_loop placement safe. WiFi.h is also ensured here for singleton
+  // (ha_device_init absent) compile resilience.
+  generator.definitions_['include_wifi'] = '#include <WiFi.h>';
+  generator.definitions_['ha_loop_wifi_check_var'] = 'unsigned long _lastWifiCheck = 0;';
+  return `  if (millis() - _lastWifiCheck > 5000) {
+    _lastWifiCheck = millis();
+    if (WiFi.status() != WL_CONNECTED) {
+      WiFi.reconnect();
+    }
+  }
+  haMqtt.loop();
+`;
 };
 
 /**

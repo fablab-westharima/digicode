@@ -270,6 +270,63 @@ javascriptGenerator.forBlock['esp_light_sleep'] = function(block: Blockly.Block)
 `;
 };
 
+// ===== ウォッチドッグ (commit 5、汎用 ESP32 reliability) =====
+
+/**
+ * watchdog_enable - ウォッチドッグタイマー有効化 (commit 5)
+ *
+ * ESP32 task watchdog timer (TWDT) を有効化、loop ハングアップを検出して
+ * panic + 自動再起動。汎用 ESP32 reliability 機能で HA とは独立 (HA 不使用
+ * project / BLE / WiFi 単独 user にも採用可)。
+ *
+ * ESP-IDF v5.x 新 signature `esp_task_wdt_init(const esp_task_wdt_config_t*)`
+ * 確定 (TQ-4 resolved、commit 0 smoke 3a 成功 + smoke 3b で旧 v4 signature
+ * `(uint32_t, bool)` の compile fail 実証)。compat shim 不在のため新 form
+ * のみ採用。詳細 = `prompt/maintenance/HA-impl-commit0-smoke-results-2026-05-09.md`
+ *
+ * 設計 (D-5.3): trigger_panic = true 固定 (graceful no-panic handler は polish phase)。
+ * idle_core_mask = 0 = 全 core 監視 (loop task は esp_task_wdt_add(NULL) で
+ * 明示登録、loopPre_ の esp_task_wdt_reset() で毎 iter tick)。
+ *
+ * Loop reset emission via loopPre_ (rule 03 "Loop-side dedupe"、placement-
+ * independent、複数 watchdog_enable 配置でも reset 1 回のみ inject)。
+ */
+Blockly.Blocks['watchdog_enable'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('🛡️ ' + (Blockly.Msg.BLOCKS_WATCHDOG_ENABLE || 'Watchdog Enable'));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.BLOCKS_WATCHDOG_TIMEOUTSEC || 'Timeout (s)')
+        .appendField(new Blockly.FieldNumber(60, 1, 3600), 'TIMEOUT_SEC');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour('#FF9800');
+    this.setTooltip(Blockly.Msg.BLOCKS_WATCHDOG_ENABLETOOLTIP || 'Enable ESP32 task watchdog timer. If loop() blocks longer than the timeout, the ESP32 panics and auto-restarts. Place inside arduino_setup. Set the timeout above your longest expected loop iteration; long blocking calls (HTTP, OTA download) should be split or call esp_task_wdt_reset() manually.');
+  }
+};
+
+javascriptGenerator.forBlock['watchdog_enable'] = function(block: Blockly.Block) {
+  const timeoutRaw = parseInt(block.getFieldValue('TIMEOUT_SEC') || '60', 10);
+  const timeout = Number.isFinite(timeoutRaw) && timeoutRaw >= 1 ? timeoutRaw : 60;
+
+  generator.definitions_['include_esp_task_wdt'] = '#include <esp_task_wdt.h>';
+
+  // loopPre_ via rule 03 "Loop-side dedupe": placement-independent, single
+  // injection regardless of how many watchdog_enable blocks are placed.
+  if (!generator.loopPre_) generator.loopPre_ = {};
+  generator.loopPre_['watchdog_reset'] = '  esp_task_wdt_reset();';
+
+  return `  // Watchdog enable (panic on ${timeout}s timeout)
+  esp_task_wdt_config_t _wdtConfig = {
+    .timeout_ms = ${timeout * 1000}UL,
+    .idle_core_mask = 0,
+    .trigger_panic = true
+  };
+  esp_task_wdt_init(&_wdtConfig);
+  esp_task_wdt_add(NULL);
+`;
+};
+
 // ===== ESP情報取得 =====
 
 /**

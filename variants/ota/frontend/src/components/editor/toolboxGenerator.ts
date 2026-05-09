@@ -1064,6 +1064,7 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="esp_restart"></block>
     <block type="esp_deep_sleep"></block>
     <block type="esp_light_sleep"></block>
+    <block type="watchdog_enable"></block>
     <sep></sep>
     <label text="${label('espInfo')}"></label>
     <block type="esp_get_free_heap"></block>

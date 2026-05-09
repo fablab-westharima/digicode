@@ -132,11 +132,20 @@ interface StrategyAllocation {
 // Phase C+D 33 + 強推奨 19 + 中推奨 11 + 低推奨採用 11 (microphone 3 + flow_meter 2 + apds9960 3 + sensor_health 3) = 74 ブロック追加。
 // singleton 494 → 568 (+74)、pair 105 → 31 (-74) で総数 1000 維持。
 // 52.md セッション 2 (commit #11-#20) 完走時点。
+//
+// HA 対応強化 commit 3-5 (2026-05-09 第94回): catalog 566 → 570 で
+// ha_diagnostics_auto (+1) + ha_on_connected/disconnected (+2) +
+// watchdog_enable (+1) = 4 ブロック追加。commit 3-4 では singleton bump 漏れ
+// で +2 buffer convention が崩れていた (568 vs 569 = -1 buffer) が、運良く
+// generable / skipped 配置で test invariant pass。commit 5 で 570 → buffer
+// -2 となり variables_set が singleton coverage 漏れで test fail。本 commit
+// で singleton 568 → 572 (+4)、pair 31 → 27 (-4) で総数 1000 維持 + +2
+// buffer convention 復元。
 const FULL_ALLOCATION: StrategyAllocation = {
-  singleton: 568,
+  singleton: 572,
   edge: 86,
   matrix: 100,
-  pair: 31,
+  pair: 27,
   template: 200,
   combo: 15,
 };

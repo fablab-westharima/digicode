@@ -2220,6 +2220,11 @@
       "getFreeSketchSpace": "Free Sketch Space (bytes)",
       "getFreeSketchSpaceTooltip": "Get the free sketch space for OTA in bytes"
     },
+    "watchdog": {
+      "enable": "Watchdog Enable",
+      "enableTooltip": "Enable ESP32 task watchdog timer (TWDT). If loop() blocks longer than the timeout, the ESP32 panics and auto-restarts. Place inside arduino_setup. Set the timeout above your longest expected loop iteration; long blocking calls (HTTP, OTA download) should be split or call esp_task_wdt_reset() manually.",
+      "timeoutSec": "Timeout (s)"
+    },
     "ha": {
       "deviceInit": "HA Device Init",
       "deviceInitTooltip": "Initialize a device that auto-registers with Home Assistant. Manufacturer / Model / Software Version appear on the HA Devices page. Auto deviceId (MAC) avoids collisions across multiple ESP32. Availability (LWT) marks the device Unavailable in HA UI on disconnect.",
@@ -2301,7 +2306,7 @@
       "iconPlay": "Play (mdi:play)",
       "iconStop": "Stop (mdi:stop)",
       "loop": "HA Loop",
-      "loopTooltip": "Maintain communication with Home Assistant. Call in loop().",
+      "loopTooltip": "Maintain communication with Home Assistant and auto-reconnect WiFi every 5 s if disconnected. Call inside loop().",
       "isConnected": "HA is Connected",
       "isConnectedTooltip": "Check if connected to Home Assistant",
       "numberCreate": "HA Number Create",

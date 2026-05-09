@@ -2220,6 +2220,11 @@
       "getFreeSketchSpace": "空きスケッチスペース（バイト）",
       "getFreeSketchSpaceTooltip": "OTA用の空きスケッチスペースをバイト単位で取得します"
     },
+    "watchdog": {
+      "enable": "ウォッチドッグ有効化",
+      "enableTooltip": "ESP32 ウォッチドッグタイマー (TWDT) を有効化、loop が timeout 秒を超えてブロックすると ESP32 が panic + 自動再起動します。arduino_setup 内に配置。長い処理 (HTTP / OTA download 等) を含む場合は timeout を処理時間より長く設定するか、処理を分割 / esp_task_wdt_reset() を手動 call してください。",
+      "timeoutSec": "Timeout (秒)"
+    },
     "ha": {
       "deviceInit": "HAデバイス初期化",
       "deviceInitTooltip": "Home Assistantに自動登録されるデバイスを初期化します。Manufacturer / Model / Software Version は HA Devices ページに表示されます。Auto deviceId (MAC) は複数機構機器での衝突回避に推奨。Availability (LWT) で切断時に HA UI が Unavailable に切替。",
@@ -2301,7 +2306,7 @@
       "iconPlay": "再生 (mdi:play)",
       "iconStop": "停止 (mdi:stop)",
       "loop": "HAループ処理",
-      "loopTooltip": "Home Assistantとの通信を維持します。loop()内で呼び出してください。",
+      "loopTooltip": "Home Assistantとの通信を維持します。WiFi 切断時は 5 秒間隔で自動再接続を試みます。loop() 内で呼び出してください。",
       "isConnected": "HAに接続中",
       "isConnectedTooltip": "Home Assistantに接続中かどうかを返します",
       "numberCreate": "HA数値登録",
