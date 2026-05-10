@@ -12,6 +12,7 @@ import { useRobotModeStore } from '../../stores/robotModeStore';
 import { useFavoriteCategoriesStore } from '../../stores/favoriteCategoriesStore';
 import { useBoardStore } from '../../stores/boardStore';
 import { digiCodeDarkTheme } from './blocklyTheme';
+import { installContrastTextPatch } from './blocklyContrast';
 import { populateBlocklyMessages } from '@/utils/blocklyMessages';
 import { showToast } from '@/components/common/Toast';
 import { FavoriteSettingsDialog } from './FavoriteSettingsDialog';
@@ -374,6 +375,11 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
         horizontalLayout: false,
         toolboxPosition: 'start',
       };
+
+      // BUG-081 contrast fix: BlockSvg.applyColour wrap で WCAG 4.5:1 駆動の文字色
+      // 切替 + 中間色 outline を全 block に自動適用 (idempotent、複数 mount で 1 回のみ
+      // 実発動)。inject 前に patch 設置必須 (inject 後の block 生成で hook 発火)。
+      installContrastTextPatch();
 
       // ワークスペース作成
       const workspace = Blockly.inject(blocklyDiv.current, blocklyOptions);
