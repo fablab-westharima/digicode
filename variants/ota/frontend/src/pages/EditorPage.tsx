@@ -1289,7 +1289,11 @@ export function EditorPage() {
           onSubmissionSaveDialog={() => setSubmissionSaveDialogOpen(true)}
           onGradedList={() => setGradedListOpen(true)}
           currentSubmissionTitle={currentSubmission?.assignmentTitle || null}
-          onAiAppendBlocks={(xml) => blocklyEditorRef.current?.appendBlocks(xml)}
+          // Session 98 Task 5: AI 二重生成 bug fix。AI には existingXml が同梱 (AIAssistantPanel:144)
+          // されており、AI は完全な新 workspace XML を返す仕様 = full replace 用 output。
+          // 旧 `appendBlocks` は clear なしで既存 block を残した = 二重生成 bug。
+          // `loadXml` (clear() + domToWorkspace の atomic full reset) に切替。
+          onAiAppendBlocks={(xml) => blocklyEditorRef.current?.loadXml(xml)}
           onAiClearWorkspace={() => blocklyEditorRef.current?.loadXml('<xml xmlns="https://developers.google.com/blockly/xml"></xml>')}
           workspaceXml={workspaceXml}
           onOpenAiSettings={() => setAiSettingsDialogOpen(true)}

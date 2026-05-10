@@ -117,7 +117,6 @@ interface BlocklyEditorProps {
 
 export interface BlocklyEditorRef {
   loadXml: (xml: string) => void;
-  appendBlocks: (xml: string) => void;
   setReadOnly: (readOnly: boolean) => void;
   centerView: () => void;
 }
@@ -275,50 +274,12 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
       }
     }, [t]);
 
-    // ブロックをワークスペースに追加（既存のブロックは保持）
-    const appendBlocks = useCallback((xml: string) => {
-      console.log('[BlocklyEditor] appendBlocks called');
-      console.log('[BlocklyEditor] XML to append:', xml);
-      console.log('[BlocklyEditor] workspaceRef.current exists:', !!workspaceRef.current);
-
-      if (!workspaceRef.current) {
-        console.error('[BlocklyEditor] workspaceRef.current is null!');
-        return;
-      }
-
-      try {
-        if (xml && xml !== '<xml></xml>') {
-          console.log('[BlocklyEditor] Converting XML to DOM...');
-          const dom = Blockly.utils.xml.textToDom(xml);
-          console.log('[BlocklyEditor] DOM created, appending to workspace...');
-
-          // Blockly.Xml.domToWorkspaceは既存のブロックを残したまま追加する
-          Blockly.Xml.domToWorkspace(dom, workspaceRef.current);
-          console.log('[BlocklyEditor] Blocks appended to workspace');
-
-          // 追加されたブロックを少しずらして表示（重ならないように）
-          const allBlocks = workspaceRef.current.getAllBlocks(false);
-          console.log('[BlocklyEditor] Total blocks after append:', allBlocks.length);
-
-          const newBlocks = allBlocks.slice(-1); // 最後に追加されたブロック
-          if (newBlocks.length > 0) {
-            const block = newBlocks[0];
-            console.log('[BlocklyEditor] Moving last block by (20, 20)');
-            // 右下に少しずらす
-            block.moveBy(20, 20);
-          }
-
-          // ワークスペース変更を通知
-          console.log('[BlocklyEditor] Calling handleWorkspaceChange...');
-          handleWorkspaceChange();
-          console.log('[BlocklyEditor] appendBlocks completed successfully');
-        } else {
-          console.warn('[BlocklyEditor] XML is empty or default, skipping append');
-        }
-      } catch (e) {
-        console.error('[BlocklyEditor] Failed to append blocks:', e);
-      }
-    }, [handleWorkspaceChange]);
+    // Session 98 Task 5 で削除: 旧 `appendBlocks` API は AI 生成 path 専用、`workspace.clear()`
+    // 不在で既存 block を残したまま domToWorkspace を呼ぶため、AI に既存 XML を同梱して
+    // 完全な新 workspace XML を生成させる仕様 (AIAssistantPanel.tsx:144 `existingXml`) と
+    // gap が生じ二重生成 bug を引き起こした。AI 生成 path は `loadXml` に一本化
+    // (clear() + domToWorkspace で atomic full replace)、唯一の caller (EditorPage.tsx:1292)
+    // も同 commit で `loadXml` に切替済。append 用途の他 caller は git grep 確認で 0 件。
 
     const setReadOnly = useCallback((readOnly: boolean) => {
       const ws = workspaceRef.current;
@@ -354,10 +315,9 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
     // refを通じてメソッドを公開
     useImperativeHandle(ref, () => ({
       loadXml,
-      appendBlocks,
       setReadOnly,
       centerView,
-    }), [loadXml, appendBlocks, setReadOnly, centerView]);
+    }), [loadXml, setReadOnly, centerView]);
 
     // Blocklyワークスペースの初期化
     // 言語が変わったらワークスペース全体を再構築
