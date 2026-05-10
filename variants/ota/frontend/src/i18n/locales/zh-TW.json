@@ -469,7 +469,7 @@
       "versionLabel": "版本",
       "versionPlaceholder": "1.0.0",
       "downloadStarted": "已下載 .bin: {{filename}}",
-      "tooltip": "將編譯完成的韌體下載為 .bin 檔。HA OTA 用途請上傳至 HA add-on 的 local/ 資料夾或任意 web 伺服器。"
+      "tooltip": "將編譯完成的韌體下載為 .bin 檔。Home Assistant OTA 用途請上傳至 Home Assistant add-on 的 local/ 資料夾或任意 web 伺服器。"
     },
     "unknownError": "不明錯誤",
     "ipResolved": "IP 位址已解析",
@@ -2235,7 +2235,7 @@
       "onDisconnectedTooltip": "當與 HA broker 的 MQTT 連線中斷時觸發。每個專案放置一個區塊即可，HAMqtt 只保存單一回呼，多次放置會以靜默方式互相覆蓋。",
       "viaDevice": "上層裝置 (via_device)",
       "viaDeviceTooltip": "指定父裝置名稱可將多個 ESP32 模組歸屬於同一個 HA 裝置（Takeda 判斷 3 — 多機構裝置情境）。留空則註冊為頂層裝置，與既有專案完全相容。ArduinoHA 並未提供 setViaDevice API，因此 ha_loop 會 retain 覆寫 MQTT Discovery payload 來注入 via_device（待 upstream PR 合併後改用官方 API 屬於 polish 階段任務）。",
-      "otaSetup": "🔄 HA OTA 設定",
+      "otaSetup": "🔄 Home Assistant OTA 設定",
       "otaFirmwareUrl": "韌體 URL (.bin)",
       "otaSetupTooltip": "註冊 Home Assistant 的 Update 實體，當您在 HA UI 點選「安裝」時，ESP32 會自行下載新韌體並寫入後重啟。Object ID 為 HA 的 entity_id（ASCII），Display Name 為 HA UI 顯示名稱，Firmware URL 為 ESP32 可存取的 .bin 位置（HA add-on 的 local/<檔案>.bin 或任何 HTTP 伺服器）。請放在 arduino_setup 內、ha_device_init 之後。軟體版本與 ha_device_init 的 Software Version field 共用。流程：在 DigiCode 中建置 → 於編譯完成對話框點選「下載 .bin」→ 將 .bin 上傳到該 URL → 於 HA UI 點選「安裝」。自動派發 / 簽章驗證屬於後續 polish 階段工作。"
     },
@@ -3329,8 +3329,6 @@
     "wifiFirmwareWrite": "透過 WiFi 寫入韌體",
     "apSetup": "連線至存取點",
     "wifiDeviceName": "變更 WiFi 裝置名稱",
-    "haOta": "HA OTA",
-    "haOtaBinExport": "下載 .bin",
     "submissionList": "作業清單",
     "submissionSave": "儲存並提交",
     "submissionSaveWithTitle": "儲存並提交 — {{title}}",

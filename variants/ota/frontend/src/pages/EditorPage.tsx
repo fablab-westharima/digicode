@@ -1420,7 +1420,7 @@ export function EditorPage() {
               {t('editor.binExport.button', { defaultValue: '📥 .bin ダウンロード' })}
             </DialogTitle>
             <DialogDescription>
-              {t('editor.binExport.tooltip', { defaultValue: 'コンパイル済みの firmware を .bin ファイルとしてダウンロードします。HA OTA 用に HA add-on の local/ または web サーバーにアップロードしてご利用ください。' })}
+              {t('editor.binExport.tooltip', { defaultValue: 'コンパイル済みの firmware を .bin ファイルとしてダウンロードします。Home Assistant OTA 用に Home Assistant add-on の local/ または web サーバーにアップロードしてご利用ください。' })}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">

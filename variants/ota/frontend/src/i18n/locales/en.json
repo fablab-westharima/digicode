@@ -469,7 +469,7 @@
       "versionLabel": "Version",
       "versionPlaceholder": "1.0.0",
       "downloadStarted": "Downloaded .bin: {{filename}}",
-      "tooltip": "Download the compiled firmware as a .bin file. For HA OTA, upload it to your HA add-on local/ folder or any web server."
+      "tooltip": "Download the compiled firmware as a .bin file. For Home Assistant OTA, upload it to your Home Assistant add-on local/ folder or any web server."
     },
     "unknownError": "Unknown error",
     "ipResolved": "IP address resolved",
@@ -1052,8 +1052,6 @@
     "wifiFirmwareWrite": "Write Firmware via WiFi",
     "apSetup": "Connect to Access Point",
     "wifiDeviceName": "Change WiFi Device Name",
-    "haOta": "HA OTA",
-    "haOtaBinExport": "Download .bin",
     "submissionList": "Assignment List",
     "submissionSave": "Save and Submit",
     "submissionSaveWithTitle": "Save and Submit — {{title}}",
@@ -2447,7 +2445,7 @@
       "onDisconnectedTooltip": "Fires when MQTT connection to the HA broker is lost. Place once per project — HAMqtt holds a single callback, so multiple placements silently overwrite each other.",
       "viaDevice": "Parent Device (via_device)",
       "viaDeviceTooltip": "Set a parent device name to group multiple ESP32 modules under a single HA device (Takeda decision 3 — multi-mechanism scenarios). Leave blank to register as a top-level device — fully compatible with existing projects. ArduinoHA has no setViaDevice API, so ha_loop retain-overrides the MQTT Discovery payload to inject via_device (switch to the official API is a polish-phase task once the upstream PR is merged).",
-      "otaSetup": "🔄 HA OTA Setup",
+      "otaSetup": "🔄 Home Assistant OTA Setup",
       "otaFirmwareUrl": "Firmware URL (.bin)",
       "otaSetupTooltip": "Register a Home Assistant Update entity so the ESP32 fetches new firmware itself when you click Install in HA. Object ID is the HA entity_id (ASCII), Display Name is the HA UI label, Firmware URL is the .bin location reachable from the ESP32 (HA add-on local/<file>.bin or any HTTP server). Place inside arduino_setup, after ha_device_init. The software version is shared from the ha_device_init field. Workflow: build in DigiCode → click Download .bin in the compile dialog → upload .bin to the URL → click Install in HA UI. Auto-distribution / signature verification are polish-phase work."
     },

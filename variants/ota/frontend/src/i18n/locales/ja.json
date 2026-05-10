@@ -469,7 +469,7 @@
       "versionLabel": "バージョン",
       "versionPlaceholder": "1.0.0",
       "downloadStarted": ".bin ファイルをダウンロードしました: {{filename}}",
-      "tooltip": "コンパイル済みの firmware を .bin ファイルとしてダウンロードします。HA OTA 用に HA add-on の local/ または web サーバーにアップロードしてご利用ください。"
+      "tooltip": "コンパイル済みの firmware を .bin ファイルとしてダウンロードします。Home Assistant OTA 用に Home Assistant add-on の local/ または web サーバーにアップロードしてご利用ください。"
     },
     "unknownError": "不明なエラー",
     "ipResolved": "IPアドレス解決",
@@ -1052,8 +1052,6 @@
     "wifiFirmwareWrite": "WiFiファームウェア書き込み",
     "apSetup": "アクセスポイント接続",
     "wifiDeviceName": "WiFiデバイス名変更",
-    "haOta": "HA OTA",
-    "haOtaBinExport": ".bin ダウンロード",
     "submissionList": "課題一覧",
     "submissionSave": "保存と提出",
     "submissionSaveWithTitle": "保存と提出 — {{title}}",
@@ -2447,7 +2445,7 @@
       "onDisconnectedTooltip": "HA broker との MQTT 接続切断時に発火。1 block per project 推奨、HAMqtt は単一 callback のみ保持するため複数配置時は最後のみ動作 (silent override)。",
       "viaDevice": "親デバイス (via_device)",
       "viaDeviceTooltip": "親デバイス名を指定すると、複数の ESP32 を 1 つの HA デバイス配下にまとめて表示できます (Takeda 判断 3 — 複数機構機器のシナリオ向け)。空欄の場合は最上位デバイスとして登録され、既存プロジェクトの挙動と完全互換です。ArduinoHA の setViaDevice API 不在のため、ha_loop で MQTT Discovery payload を retain 上書きして via_device を付与します (upstream PR merge 後の正式 API 切替は polish phase)。",
-      "otaSetup": "🔄 HA OTA セットアップ",
+      "otaSetup": "🔄 Home Assistant OTA セットアップ",
       "otaFirmwareUrl": "ファームウェア URL (.bin)",
       "otaSetupTooltip": "Home Assistant の Update entity を登録し、HA UI の「インストール」ボタンから ESP32 が自分でファームウェアを取得・書き換え・再起動する経路を設定します。Object ID は HA 上の entity_id (ASCII)、Display Name は HA UI の表示名、Firmware URL は ESP32 から到達可能な .bin の HTTP URL (例: HA add-on の local/<file>.bin、または任意の web サーバー)。arduino_setup 内、ha_device_init の後に配置してください。バージョン番号は ha_device_init の Software Version field を共有します。手順: DigiCode でビルド → コンパイル完了ダイアログから「.bin ダウンロード」→ 上記 URL に .bin をアップロード → HA UI で「インストール」をクリック。完了自動配信・署名検証は将来 polish phase 対応。"
     },

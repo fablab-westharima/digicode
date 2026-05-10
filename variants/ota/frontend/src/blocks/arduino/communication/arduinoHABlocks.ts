@@ -2654,7 +2654,7 @@ ${callback}  }
 Blockly.Blocks['ha_ota_setup'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔄 ' + (Blockly.Msg.BLOCKS_HA_OTASETUP || 'HA OTA Setup'));
+        .appendField('🔄 ' + (Blockly.Msg.BLOCKS_HA_OTASETUP || 'Home Assistant OTA Setup'));
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_OBJECTID || 'Object ID (entity_id)')
         .appendField(new Blockly.FieldTextInput('firmware_update'), 'OBJECT_ID');

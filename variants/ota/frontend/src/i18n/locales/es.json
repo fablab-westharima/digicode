@@ -469,7 +469,7 @@
       "versionLabel": "Versión",
       "versionPlaceholder": "1.0.0",
       "downloadStarted": ".bin descargado: {{filename}}",
-      "tooltip": "Descarga el firmware compilado como archivo .bin. Para OTA de HA, súbelo a la carpeta local/ del add-on de HA o a cualquier servidor web."
+      "tooltip": "Descarga el firmware compilado como archivo .bin. Para OTA de Home Assistant, súbelo a la carpeta local/ del add-on de Home Assistant o a cualquier servidor web."
     },
     "unknownError": "Error desconocido",
     "ipResolved": "Dirección IP resuelta",
@@ -2235,7 +2235,7 @@
       "onDisconnectedTooltip": "Se activa cuando se pierde la conexión MQTT con el broker HA. Coloca un solo bloque por proyecto: HAMqtt solo guarda un callback, por lo que múltiples colocaciones se sobrescriben silenciosamente.",
       "viaDevice": "Dispositivo padre (via_device)",
       "viaDeviceTooltip": "Define un nombre de dispositivo padre para agrupar varios módulos ESP32 bajo un mismo dispositivo HA (decisión 3 de Takeda — escenarios de mecanismos múltiples). Déjalo en blanco para registrar como dispositivo de nivel superior — totalmente compatible con proyectos existentes. ArduinoHA no expone setViaDevice, así que ha_loop sobrescribe el payload retenido de MQTT Discovery para inyectar via_device (cambiar a la API oficial es una tarea de pulido tras el merge del PR upstream).",
-      "otaSetup": "🔄 Configuración OTA de HA",
+      "otaSetup": "🔄 Configuración OTA de Home Assistant",
       "otaFirmwareUrl": "URL del firmware (.bin)",
       "otaSetupTooltip": "Registra una entidad Update de Home Assistant para que el ESP32 obtenga el nuevo firmware por sí mismo cuando pulses Instalar en HA. Object ID es el entity_id de HA (ASCII), Display Name es la etiqueta en la UI de HA, Firmware URL es la ruta del .bin alcanzable desde el ESP32 (HA add-on local/<archivo>.bin o cualquier servidor HTTP). Coloca dentro de arduino_setup, después de ha_device_init. La versión de software se comparte con el campo de ha_device_init. Flujo: compila en DigiCode → pulsa Descargar .bin en el diálogo de compilación → sube el .bin a esa URL → pulsa Instalar en la UI de HA. La distribución automática y la verificación de firmas son tareas de pulido futuras."
     },
@@ -3329,8 +3329,6 @@
     "wifiFirmwareWrite": "Escribir firmware vía WiFi",
     "apSetup": "Conectar a punto de acceso",
     "wifiDeviceName": "Cambiar nombre WiFi",
-    "haOta": "HA OTA",
-    "haOtaBinExport": "Descargar .bin",
     "submissionList": "Lista de tareas",
     "submissionSave": "Guardar y enviar",
     "submissionSaveWithTitle": "Guardar y enviar — {{title}}",
