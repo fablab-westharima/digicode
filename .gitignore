@@ -44,3 +44,16 @@ prompt/image/
 
 # Claude Code local artifacts (個人ごとのBash許可リスト + scheduled_tasks lock 等)
 .claude/
+
+# Internal docs — Public 公開対象外 (history rewrite 2026-05-11 Session 100 emergency pivot 適用)
+# - prompt/maintenance/: handover / plans / bugs / investigations (内部運用 docs)
+# - prompt/archive/: 過去 session 作業記録 (2024-09 〜 2026-04 historical work logs)
+# - prompt/logs/: session_state (decisions_log / current_work / context_quick_ref / _CRITICAL_DEFINITIONS)
+# - CLAUDE.md: 内部 instruction file (settled decisions / target_users / Takeda strategic axis)
+# - docs/dev/deployment.md: 内部 deploy 手順 (/opt/digicode + ssh ml30 等の internal infra path)
+# 全件ローカル保持 (本リポジトリ管理外、Public 観点 sensitivity)。
+prompt/maintenance/
+prompt/archive/
+prompt/logs/
+CLAUDE.md
+docs/dev/deployment.md
