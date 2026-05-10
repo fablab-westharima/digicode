@@ -66,6 +66,7 @@ export interface CompileResult {
   fullPackage?: FullPackage;
   error?: string;
   details?: string;
+  stderr?: string;     // server 側 compile stderr (defensive passthrough、SSE event:error から)
   version?: string;    // ファームウェアバージョン（サーバーから取得）
   template?: string;   // 使用したテンプレート名
 }
@@ -202,9 +203,12 @@ async function compileViaSse(url: string, requestBody: string): Promise<CompileR
   }
 
   if (parseError) {
+    // closure 内代入のため TS narrowing 不能 (errorData / completeData と同 pattern)、
+    // 明示型注釈で `never` 化を回避
+    const err: Error = parseError;
     return {
       success: false,
-      error: parseError.message,
+      error: err.message,
     };
   }
 
