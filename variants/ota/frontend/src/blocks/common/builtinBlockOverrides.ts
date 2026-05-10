@@ -141,3 +141,25 @@ javascriptGenerator.forBlock['math_random_int'] = function (block: Blockly.Block
   // matching Blockly's "random integer from a to b" semantics.
   return [`random(${from}, (${to}) + 1)`, Order.FUNCTION_CALL];
 };
+
+// Round 5 polish (case_0117): Blockly stock `controls_flow_statements` emits
+// `break;` / `continue;` unconditionally without checking that the block lives
+// inside a loop/switch context. C++ rejects bare `break;` outside for/while/switch
+// (`error: break statement not within loop or switch`). Walk getSurroundParent()
+// looking for a Blockly built-in loop block; if none, emit empty string so the
+// program compiles (silent skip — runtime no-op).
+const FLOW_LOOP_TYPES = new Set([
+  'controls_for',
+  'controls_repeat_ext',
+  'controls_whileUntil',
+  'controls_forEach',
+]);
+javascriptGenerator.forBlock['controls_flow_statements'] = function (block: Blockly.Block) {
+  let surround: Blockly.Block | null = block.getSurroundParent();
+  while (surround && !FLOW_LOOP_TYPES.has(surround.type)) {
+    surround = surround.getSurroundParent();
+  }
+  if (!surround) return '';
+  const op = block.getFieldValue('FLOW');
+  return op === 'CONTINUE' ? '  continue;\n' : '  break;\n';
+};

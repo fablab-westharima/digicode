@@ -192,6 +192,46 @@ describe('xmlToCpp — built-in block overrides (BUG-060 / BUG-061)', () => {
     const out = xmlToCpp(xml);
     expect(out.loopCode).toContain('Serial.println("a\\\\b\\"c")');
   });
+
+  // Round 5 polish (case_0117): controls_flow_statements outside loop/switch
+  // → silent skip (empty emit) so C++ doesn't see a bare `break;` /`continue;`
+  // in userSetup() / userLoop() body.
+  it('controls_flow_statements (BREAK) directly under arduino_setup emits nothing', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50">' +
+      '<statement name="SETUP">' +
+      '<block type="controls_flow_statements"><field name="FLOW">BREAK</field></block>' +
+      '</statement>' +
+      '</block>' +
+      '<block type="arduino_loop" x="50" y="350"></block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    expect(out.setupCode).not.toMatch(/\bbreak\s*;/);
+    expect(out.fullCode).not.toMatch(/\bbreak\s*;/);
+  });
+
+  it('controls_flow_statements (BREAK) inside controls_for still emits break;', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+      '<block type="arduino_setup" x="50" y="50"></block>' +
+      '<block type="arduino_loop" x="50" y="350">' +
+      '<statement name="LOOP">' +
+      '<block type="controls_for">' +
+      '<field name="VAR">i</field>' +
+      '<value name="FROM"><block type="math_number"><field name="NUM">0</field></block></value>' +
+      '<value name="TO"><block type="math_number"><field name="NUM">5</field></block></value>' +
+      '<value name="BY"><block type="math_number"><field name="NUM">1</field></block></value>' +
+      '<statement name="DO">' +
+      '<block type="controls_flow_statements"><field name="FLOW">BREAK</field></block>' +
+      '</statement>' +
+      '</block>' +
+      '</statement>' +
+      '</block>' +
+      '</xml>';
+    const out = xmlToCpp(xml);
+    expect(out.loopCode).toMatch(/break\s*;/);
+  });
 });
 
 describe('xmlToCpp — NTP block header casing (BUG-058)', () => {
