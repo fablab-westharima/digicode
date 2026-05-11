@@ -40,7 +40,7 @@ export const ROBOT_MODES: Record<RobotMode, RobotModeInfo> = {
       'sensor_motion', 'sensor_environment', 'sensor_air_quality', 'sensor_current',
       'sensor_tof', 'sensor_encoder_mag', 'gps', 'sensor_line', 'sensor_qtr', 'sensor_wall',
       'microphone', 'flow_meter', 'apds9960', 'sensor_health', 'hx711', 'piezo',
-      'esp32_touch', 'rfid', 'ir_remote',
+      'esp32_touch', 'rfid', 'ir_remote', 'camera',
     ],
   },
   output: {
@@ -50,7 +50,7 @@ export const ROBOT_MODES: Record<RobotMode, RobotModeInfo> = {
     description: '表示・音響・出力系のブロック',
     categories: [
       'neopixel', 'neomatrix',
-      'display', 'oled_ssd1306', 'tft_display', 'epaper', 'max7219', 'tm1637', 'm5stack', 'camera',
+      'display', 'oled_ssd1306', 'tft_display', 'epaper', 'max7219', 'tm1637', 'm5stack',
       'buzzer', 'audio_dfplayer',
       'relay',
     ],

@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-11T13:17:29.828Z",
+  "generatedAt": "2026-05-11T13:30:57.477Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -3433,6 +3433,121 @@
       "statementInputs": []
     },
     {
+      "type": "camera_init",
+      "category": "camera",
+      "tooltip": "Initialize camera. Select your board model — all pins are automatically configured. Returns true if successful. Call in setup block.",
+      "colour": "#212121",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "input",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "MODEL",
+          "fieldType": "dropdown",
+          "options": [
+            "AI_THINKER",
+            "XIAO_ESP32S3",
+            "M5STACK_PSRAM",
+            "M5STACK_WIDE",
+            "M5STACK_UNITCAM"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "camera_capture",
+      "category": "camera",
+      "tooltip": "Take a photo and store in internal buffer. Returns true if successful. Call camera_save_sd or camera_send_http to use the captured image.",
+      "colour": "#212121",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "input",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "camera_save_sd",
+      "category": "camera",
+      "tooltip": "Save the captured image to SD card as JPEG. Call camera_capture first. Returns true if saved successfully. Requires SD to be initialized (sd_begin block).",
+      "colour": "#212121",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "input",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "FILENAME",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "camera_send_http",
+      "category": "camera",
+      "tooltip": "Send captured image via HTTP POST to a URL. Call camera_capture first. WiFi connection required. Returns true if sent successfully.",
+      "colour": "#212121",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "input",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "URL",
+          "check": "String"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "camera_stream_start",
+      "category": "camera",
+      "tooltip": "Start MJPEG streaming server on the specified port. WiFi required. View in browser: http://<ESP32-IP>:<port>/stream",
+      "colour": "#212121",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "input",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PORT",
+          "fieldType": "number",
+          "default": 81,
+          "min": 1,
+          "max": 65535
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
       "type": "neopixel_init",
       "category": "neopixel",
       "tooltip": "Initialize NeoPixel ring",
@@ -5277,121 +5392,6 @@
       ],
       "boardRequires": "category=m5stack",
       "fields": [],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "camera_init",
-      "category": "camera",
-      "tooltip": "Initialize camera. Select your board model — all pins are automatically configured. Returns true if successful. Call in setup block.",
-      "colour": "#212121",
-      "isStatement": false,
-      "hasOutput": true,
-      "modes": [
-        "output",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "MODEL",
-          "fieldType": "dropdown",
-          "options": [
-            "AI_THINKER",
-            "XIAO_ESP32S3",
-            "M5STACK_PSRAM",
-            "M5STACK_WIDE",
-            "M5STACK_UNITCAM"
-          ]
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "camera_capture",
-      "category": "camera",
-      "tooltip": "Take a photo and store in internal buffer. Returns true if successful. Call camera_save_sd or camera_send_http to use the captured image.",
-      "colour": "#212121",
-      "isStatement": false,
-      "hasOutput": true,
-      "modes": [
-        "output",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "camera_save_sd",
-      "category": "camera",
-      "tooltip": "Save the captured image to SD card as JPEG. Call camera_capture first. Returns true if saved successfully. Requires SD to be initialized (sd_begin block).",
-      "colour": "#212121",
-      "isStatement": false,
-      "hasOutput": true,
-      "modes": [
-        "output",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [
-        {
-          "name": "FILENAME",
-          "check": "String"
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "camera_send_http",
-      "category": "camera",
-      "tooltip": "Send captured image via HTTP POST to a URL. Call camera_capture first. WiFi connection required. Returns true if sent successfully.",
-      "colour": "#212121",
-      "isStatement": false,
-      "hasOutput": true,
-      "modes": [
-        "output",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [
-        {
-          "name": "URL",
-          "check": "String"
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "camera_stream_start",
-      "category": "camera",
-      "tooltip": "Start MJPEG streaming server on the specified port. WiFi required. View in browser: http://<ESP32-IP>:<port>/stream",
-      "colour": "#212121",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "output",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "PORT",
-          "fieldType": "number",
-          "default": 81,
-          "min": 1,
-          "max": 65535
-        }
-      ],
       "valueInputs": [],
       "statementInputs": []
     },

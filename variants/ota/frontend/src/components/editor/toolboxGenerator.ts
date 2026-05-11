@@ -1517,7 +1517,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 // Session 104 で機能カテゴリベース 10 mode 構成に再編 (D-2 (a) 完全置換)。
 // arduino_core は D-3 (a) で全 mode の先頭固定 (pin top)。
 const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
-  // インプット — センサー入力系 (23 categories)
+  // インプット — センサー入力系 (24 categories)
   input: [
     'arduino_core',
     'separator1',
@@ -1551,8 +1551,9 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'esp32_touch',
     'rfid',
     'ir_remote',
+    'camera',
   ],
-  // アウトプット — 表示・音響・出力系 (13 categories)
+  // アウトプット — 表示・音響・出力系 (12 categories)
   output: [
     'arduino_core',
     'separator1',
@@ -1568,7 +1569,6 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'max7219',
     'tm1637',
     'm5stack',
-    'camera',
     'separator3',
     // 音響
     'buzzer',
