@@ -28,6 +28,7 @@ import { AssignmentSubmissionsPage } from '@/pages/AssignmentSubmissionsPage';
 import PlanPage from '@/pages/PlanPage';
 import { initBlocklyMessages } from '@/utils/blocklyMessages';
 import { ToastContainer } from '@/components/common/Toast';
+import { FeatureFlagBanner } from '@/components/common/FeatureFlagBanner';
 
 // 保護されたルート
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -203,6 +204,7 @@ function App() {
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <FeatureFlagBanner />
       <ToastContainer />
     </BrowserRouter>
   );
