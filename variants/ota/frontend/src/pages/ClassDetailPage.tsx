@@ -454,7 +454,10 @@ export function ClassDetailPage() {
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
-          <h1 className="text-xl font-bold">{classInfo.name}</h1>
+          <h1 className="text-xl font-bold">
+            {classInfo.name}
+            <span className="ml-2 text-xs text-amber-400 font-normal align-middle">β</span>
+          </h1>
           <span className="text-xs px-2 py-1 rounded bg-primary/10 text-primary">
             {classInfo.status}
           </span>

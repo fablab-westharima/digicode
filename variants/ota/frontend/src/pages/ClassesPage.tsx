@@ -97,7 +97,10 @@ export function ClassesPage() {
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            <h1 className="text-xl font-bold">{t('classes.title')}</h1>
+            <h1 className="text-xl font-bold">
+              {t('classes.title')}
+              <span className="ml-2 text-xs text-amber-400 font-normal align-middle">β</span>
+            </h1>
           </div>
           <button
             onClick={() => setCreateDialogOpen(true)}

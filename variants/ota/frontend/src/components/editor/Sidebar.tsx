@@ -95,6 +95,7 @@ interface NavItem {
   premium?: boolean; // 有料機能フラグ（未ログイン時グレーアウト）
   disabled?: boolean; // 一時的な非活性 (例: 連携サーバーダウン中)
   disabledLabel?: string; // disabled 時に表示する補助ラベル (赤文字 inline)
+  beta?: boolean; // ベータ機能（β バッジ常時表示）
 }
 
 export function Sidebar({
@@ -404,6 +405,7 @@ export function Sidebar({
         disabledLabel: isClassServerDown
           ? t('sidebar.classServerDown', { defaultValue: 'サーバーダウン中' })
           : undefined,
+        beta: true,
       }] : []),
       // 生徒アカウント: パスワード変更のみ表示
       // 通常アカウント: パスキー登録・2段階認証・アカウント削除を表示
@@ -644,6 +646,9 @@ export function Sidebar({
                         )}
                         {shouldShowFull && item.disabled && item.disabledLabel && (
                           <span className="text-[10px] text-red-400 ml-1">{item.disabledLabel}</span>
+                        )}
+                        {shouldShowFull && !item.disabled && item.beta && (
+                          <span className="text-[10px] text-amber-400 ml-1">β</span>
                         )}
                         {shouldShowFull && !item.disabled && item.premium && !isPinAssignAvailable && (
                           <span className="text-[10px] text-orange-400 ml-1">PRO</span>
