@@ -4181,7 +4181,16 @@
     "guiUninstall1": "Docker Desktop の「Containers」タブを開く",
     "guiUninstall2": "digicode-compile-server コンテナを Stop → Delete",
     "guiUninstall3": "「Volumes」タブで digicode-projects / digicode-cache を Delete (キャッシュも消えます)",
-    "guiUninstall4": "「Images」タブで digicollc/digicode-compile-server を Delete (任意、再 install 時間短縮のために残してもよい)"
+    "guiUninstall4": "「Images」タブで digicollc/digicode-compile-server を Delete (任意、再 install 時間短縮のために残してもよい)",
+    "aiButton": "🤖 AI に聞く",
+    "aiTitle": "AI アシスタントに聞く",
+    "aiDescription": "下のプロンプトを Gemini / ChatGPT 等の AI アシスタントにコピー&ペーストしてください。各プロンプトは「最新の Docker Desktop の画面構成をまず調べてから回答」を含むため、AI が web 検索した上で現行 UI に即した手順を返します。",
+    "aiPullRunTab": "イメージ取得・起動",
+    "aiVerifyTab": "起動確認・トラブル",
+    "aiPullRunHint": "まだセットアップしていない場合 / コンテナが起動していない場合の手順を AI に聞くプロンプトです。",
+    "aiVerifyHint": "セットアップ済だが接続テストに失敗した場合の確認手順を AI に聞くプロンプトです。",
+    "aiPullRunPrompt": "Docker Desktop の最新 UI で、DockerHub からイメージを検索して Pull し、\nコンテナを起動する手順を教えてください。\n最新の Docker Desktop の画面構成をまず調べてから回答してください。\n- イメージ名: digicollc/digicode-compile-server\n- Container name: digicode-compile-server\n- Host port: 3001\n上記の設定で起動する手順を、初心者向けに 1 ステップずつ教えてください。",
+    "aiVerifyPrompt": "Docker Desktop でコンテナが正常に起動しているか確認する方法を教えてください。\n最新の Docker Desktop の画面構成をまず調べてから回答してください。\nコンテナ名は digicode-compile-server、ポートは 3001 です。\nhttp://localhost:3001/health にアクセスして確認する方法も含めて教えてください。"
   },
   "feedback": {
     "button": {

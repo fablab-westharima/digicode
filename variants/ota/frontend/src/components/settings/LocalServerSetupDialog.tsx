@@ -21,7 +21,8 @@ import {
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Apple, Monitor, Terminal, Copy, Check, ExternalLink, AlertTriangle, Box, Code } from 'lucide-react';
+import { Apple, Monitor, Terminal, ExternalLink, AlertTriangle, Box, Code } from 'lucide-react';
+import { CommandBlock } from '@/components/common/CommandBlock';
 
 export type LocalSetupMode = 'install' | 'uninstall';
 
@@ -42,52 +43,6 @@ function guessDefaultOs(): 'mac' | 'linux' | 'windows' {
   if (ua.includes('win')) return 'windows';
   if (ua.includes('linux') && !ua.includes('android')) return 'linux';
   return 'mac';
-}
-
-interface CommandBlockProps {
-  command: string;
-  /** Optional second-line command rendered below `command` (same copy target). */
-}
-
-function CommandBlock({ command }: CommandBlockProps) {
-  const { t } = useTranslation();
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(command);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
-  return (
-    <div className="relative bg-muted border border-border rounded-md">
-      <pre className="p-3 pr-20 overflow-x-auto text-xs text-foreground font-mono whitespace-pre-wrap break-all leading-relaxed">
-        {command}
-      </pre>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handleCopy}
-        className="absolute top-2 right-2 h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
-      >
-        {copied ? (
-          <>
-            <Check className="w-3 h-3 mr-1" />
-            {t('localServerSetup.copied', { defaultValue: 'コピー済' })}
-          </>
-        ) : (
-          <>
-            <Copy className="w-3 h-3 mr-1" />
-            {t('localServerSetup.copy', { defaultValue: 'コピー' })}
-          </>
-        )}
-      </Button>
-    </div>
-  );
 }
 
 export function LocalServerSetupDialog({

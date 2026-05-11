@@ -4376,7 +4376,16 @@
     "guiUninstall1": "Abre la pestaña \"Containers\" en Docker Desktop",
     "guiUninstall2": "Stop y Delete del contenedor digicode-compile-server",
     "guiUninstall3": "En la pestaña \"Volumes\", Delete digicode-projects / digicode-cache (la caché se borra)",
-    "guiUninstall4": "En la pestaña \"Images\", Delete digicollc/digicode-compile-server (opcional; mantenerla acelera la reinstalación)"
+    "guiUninstall4": "En la pestaña \"Images\", Delete digicollc/digicode-compile-server (opcional; mantenerla acelera la reinstalación)",
+    "aiButton": "🤖 Preguntar a una IA",
+    "aiTitle": "Pregunta a un asistente de IA",
+    "aiDescription": "Copia el prompt de abajo y pégalo en Gemini / ChatGPT u otro asistente de IA. Cada prompt pide a la IA que primero consulte la composición actual de la pantalla de Docker Desktop, para que la respuesta refleje la UI vigente.",
+    "aiPullRunTab": "Pull / Run",
+    "aiVerifyTab": "Verificar / Solucionar",
+    "aiPullRunHint": "Usa este prompt cuando todavía no hayas configurado el servidor local o cuando el contenedor no esté en ejecución.",
+    "aiVerifyHint": "Usa este prompt cuando el servidor esté configurado pero la prueba de conexión falle.",
+    "aiPullRunPrompt": "Explícame cómo, en la UI más reciente de Docker Desktop, buscar una imagen en DockerHub, hacer Pull e iniciar un contenedor.\nPrimero consulta la composición actual de la pantalla de Docker Desktop y luego responde.\n- Nombre de imagen: digicollc/digicode-compile-server\n- Container name: digicode-compile-server\n- Host port: 3001\nGuíame con estos valores paso a paso para principiantes.",
+    "aiVerifyPrompt": "Explícame cómo verificar que un contenedor está funcionando correctamente en Docker Desktop.\nPrimero consulta la composición actual de la pantalla de Docker Desktop y luego responde.\nEl nombre del contenedor es digicode-compile-server y el puerto es 3001.\nIncluye cómo verificar mediante http://localhost:3001/health en el navegador."
   },
   "feedback": {
     "button": {

@@ -18,9 +18,10 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
-import { Cloud, Server, CheckCircle2, XCircle, Loader2, BarChart3, Lock, AlertCircle, Download, Trash2 } from 'lucide-react';
+import { Cloud, Server, CheckCircle2, XCircle, Loader2, BarChart3, Lock, AlertCircle, Download, Trash2, Bot } from 'lucide-react';
 import { DEFAULT_LOCAL_PORT } from '@/config/servers';
 import { LocalServerSetupDialog, type LocalSetupMode } from './LocalServerSetupDialog';
+import { AiPromptDialog, type AiPromptTab } from './AiPromptDialog';
 
 type ConnectionStatus = 'checking' | 'connected' | 'disconnected';
 
@@ -78,6 +79,15 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
     setSetupDialogOpen(true);
   };
 
+  // AI prompt dialog (BUG-081 follow-up F-2 拡張、第101回): disconnected hint
+  // 内の「🤖 AI に聞く」button から呼び出し、context (initial vs manual test 失敗)
+  // で default tab を切替。lastFailReason は接続テスト button click でのみ
+  // 'manual-test' に set、初回 mount + port apply の checkLocalConnection は
+  // 'initial' のまま (disconnected の主因 = setup 未完了 と推定)。
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
+  const [lastFailReason, setLastFailReason] = useState<'initial' | 'manual-test'>('initial');
+  const aiDefaultTab: AiPromptTab = lastFailReason === 'manual-test' ? 'verify' : 'pullRun';
+
   // 使用量を取得（ログイン時のみ）
   const fetchUsage = useCallback(async () => {
     if (!isAuthenticated) {
@@ -105,6 +115,15 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
     const connected = await compileService.testConnection(compileService.getLocalUrl());
     setLocalStatus(connected ? 'connected' : 'disconnected');
   }, []);
+
+  // 「接続テスト」button click 専用 wrapper: 失敗時に AI prompt の default tab を
+  // 'verify' に向けるため lastFailReason を 'manual-test' に set してから check。
+  // 成功時は AI prompt が開くこと自体ないため reason の値は無視される (next failure
+  // 時に再度 set される、明示 reset 不要)。
+  const handleManualConnectionTest = useCallback(async () => {
+    setLastFailReason('manual-test');
+    await checkLocalConnection();
+  }, [checkLocalConnection]);
 
   // Apply a typed port: validate, persist via compileService.setLocalUrl,
   // re-run the connection check so the status badge stays in sync with
@@ -307,7 +326,7 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={checkLocalConnection}
+                  onClick={handleManualConnectionTest}
                   disabled={localStatus === 'checking'}
                 >
                   {t('settings.connectionTest')}
@@ -369,12 +388,23 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
                 <div className="mt-4 p-3 bg-destructive/10 border border-destructive/30 rounded text-sm text-foreground">
                   <div className="flex items-start gap-2">
                     <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5 text-destructive" />
-                    <span>
-                      {t('settings.localNotRunningHint', {
-                        defaultValue:
-                          'ローカルサーバーが起動していません。上の「セットアップ」ボタンからインストールできます。',
-                      })}
-                    </span>
+                    <div className="flex-1">
+                      <p>
+                        {t('settings.localNotRunningHint', {
+                          defaultValue:
+                            'ローカルサーバーが起動していません。上の「セットアップ」ボタンからインストールできます。',
+                        })}
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setAiDialogOpen(true)}
+                        className="mt-2 gap-1"
+                      >
+                        <Bot className="h-3.5 w-3.5" />
+                        {t('localServerSetup.aiButton', { defaultValue: '🤖 AI に聞く' })}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -387,6 +417,13 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
           open={setupDialogOpen}
           mode={setupDialogMode}
           onOpenChange={setSetupDialogOpen}
+        />
+
+        {/* AI prompt ダイアログ (disconnected hint 内 button から呼び出し) */}
+        <AiPromptDialog
+          open={aiDialogOpen}
+          onOpenChange={setAiDialogOpen}
+          defaultTab={aiDefaultTab}
         />
 
         {/* 現在の設定表示 */}
