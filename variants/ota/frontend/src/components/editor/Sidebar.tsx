@@ -384,7 +384,10 @@ export function Sidebar({
         action: () => navigate('/admin'),
         category: 'account' as const,
       }] : []),
-      ...(user?.plan === 'enterprise' ? [{
+      // 第103回 hotfix2: プレリリース期間中 (pin_assign_pro.isFreeNow=true) は
+      // 認証 user (plan 不問) にもクラス管理 menu を表示。anonymous は user 自体が
+      // 不在なため対象外 (class owner_id が必要)。
+      ...((user && (user.plan === 'enterprise' || isPinAssignFreeOpen)) ? [{
         id: 'class-management',
         label: t('sidebar.classManagement', { defaultValue: 'クラス管理' }),
         icon: <Users className="w-4 h-4" />,

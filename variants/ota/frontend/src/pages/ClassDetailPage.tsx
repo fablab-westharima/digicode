@@ -7,6 +7,7 @@ import {
   FileText, Send, Upload, Paperclip, BarChart3, Archive, CopyPlus,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import { useFeatureFlagStore } from '@/stores/featureFlagStore';
 import { fetchWithAuth } from '@/lib/api';
 import {
   getClass,
@@ -104,6 +105,18 @@ export function ClassDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuthStore();
   const { t, i18n } = useTranslation();
+  const fetchFlags = useFeatureFlagStore((s) => s.fetchFlags);
+  // 第103回 hotfix2: プレリリース期間中は class 機能を非 enterprise 認証 user にも開放。
+  // slice value subscription (function ref ではない、第103回 hotfix #1 教訓踏襲)。
+  const isPinAssignFreeOpen = useFeatureFlagStore(
+    (s) => s.flags['pin_assign_pro']?.isFreeNow ?? false
+  );
+  const isClassFeatureAvailable = !!user && (user.plan === 'enterprise' || isPinAssignFreeOpen);
+
+  // 直接 /classes/:id 着地時の flag fetch (Sidebar 経由なら mount 時に fetch 済)
+  useEffect(() => {
+    fetchFlags();
+  }, [fetchFlags]);
 
   const [classInfo, setClassInfo] = useState<ClassInfo | null>(null);
   const [students, setStudents] = useState<StudentInfo[]>([]);
@@ -162,10 +175,10 @@ export function ClassDetailPage() {
   }, [classId, t]);
 
   useEffect(() => {
-    if (user?.plan === 'enterprise') {
+    if (isClassFeatureAvailable) {
       fetchData();
     }
-  }, [user?.plan, fetchData]);
+  }, [isClassFeatureAvailable, fetchData]);
 
   // --- クラス情報系 ---
 
@@ -356,7 +369,7 @@ export function ClassDetailPage() {
   };
 
   // --- 権限ガード ---
-  if (user?.plan !== 'enterprise') {
+  if (!isClassFeatureAvailable) {
     return (
       <div className="min-h-screen bg-background text-foreground">
         <div className="max-w-5xl mx-auto px-6 py-6">

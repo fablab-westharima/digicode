@@ -76,6 +76,9 @@ export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
   },
 
   canUseAiBlockGeneration: (userPlan?: string, accountType?: string) => {
+    // 第103回 hotfix2: プレリリース期間中は全 user (student / guest 含む) に開放
+    const flag = get().flags['pin_assign_pro'];
+    if (flag && flag.isFreeNow) return true;
     if (accountType === 'student') return false;
     if (!userPlan) return false;
     return ['lite', 'pro', 'enterprise'].includes(userPlan);
@@ -84,6 +87,9 @@ export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
   // AI チャット: blockGen と同じく Lite+ 非 student 限定（判断 10 変更 2026-04-22）
   // BYOK + 有料プランの差別化機能として位置づけ
   canUseAiHelpBot: (userPlan?: string, accountType?: string) => {
+    // 第103回 hotfix2: プレリリース期間中は全 user (student / guest 含む) に開放
+    const flag = get().flags['pin_assign_pro'];
+    if (flag && flag.isFreeNow) return true;
     if (accountType === 'student') return false;
     if (!userPlan) return false;
     return ['lite', 'pro', 'enterprise'].includes(userPlan);
@@ -93,6 +99,9 @@ export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
   // 第 2 層 = AI チャットで Layer 1 ルールベース UI に customization fields populate、
   // BYOK + 課金差別化の柱 (47.md §7.1)。Free / student / ゲストは lock + Upgrade CTA。
   canUseAiUiCustomize: (userPlan?: string, accountType?: string) => {
+    // 第103回 hotfix2: プレリリース期間中は全 user (student / guest 含む) に開放
+    const flag = get().flags['pin_assign_pro'];
+    if (flag && flag.isFreeNow) return true;
     if (accountType === 'student') return false;
     if (!userPlan) return false;
     return ['lite', 'pro', 'enterprise'].includes(userPlan);

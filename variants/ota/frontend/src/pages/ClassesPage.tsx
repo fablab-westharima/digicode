@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Plus, Copy, Check, AlertTriangle } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import { useFeatureFlagStore } from '@/stores/featureFlagStore';
 import { listClasses, daysUntilExpiry, type ClassInfo } from '@/services/classService';
 import { CreateClassDialog } from '@/components/classes/CreateClassDialog';
 
@@ -10,6 +11,18 @@ export function ClassesPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuthStore();
+  const fetchFlags = useFeatureFlagStore((s) => s.fetchFlags);
+  // 第103回 hotfix2: プレリリース期間中は class 機能を非 enterprise 認証 user にも開放。
+  // 第103回 hotfix #1 教訓 = StatusBar pattern 踏襲、function ref ではなく slice value を subscribe。
+  const isPinAssignFreeOpen = useFeatureFlagStore(
+    (s) => s.flags['pin_assign_pro']?.isFreeNow ?? false
+  );
+  const isClassFeatureAvailable = !!user && (user.plan === 'enterprise' || isPinAssignFreeOpen);
+
+  // 直接 /classes 着地時の flag fetch (Sidebar 経由なら mount 時に fetch 済)
+  useEffect(() => {
+    fetchFlags();
+  }, [fetchFlags]);
 
   const [classes, setClasses] = useState<ClassInfo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,10 +44,10 @@ export function ClassesPage() {
   }, [t]);
 
   useEffect(() => {
-    if (user?.plan === 'enterprise') {
+    if (isClassFeatureAvailable) {
       fetchClasses();
     }
-  }, [user?.plan, fetchClasses]);
+  }, [isClassFeatureAvailable, fetchClasses]);
 
   const handleCopyCode = async (code: string) => {
     try {
@@ -47,7 +60,7 @@ export function ClassesPage() {
   };
 
   // 権限ガード
-  if (user?.plan !== 'enterprise') {
+  if (!isClassFeatureAvailable) {
     return (
       <div className="min-h-screen bg-background text-foreground">
         <div className="max-w-5xl mx-auto px-6 py-6">

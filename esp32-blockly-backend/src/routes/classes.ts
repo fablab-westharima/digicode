@@ -24,12 +24,26 @@ import { requirePlan } from '../middleware/plan';
 import { hashPassword } from '../utils/password';
 import { proxyClassApi, type ClassApiEnv } from '../utils/classApi';
 import { errorJson } from '../utils/errorJson';
+import { isFlagFreeNow } from '../utils/featureFlag';
+import { getUserPlan } from '../utils/plan';
 import type { Bindings, Variables } from '../types/env';
 
 const classes = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 classes.use('*', authMiddleware);
-classes.use('*', requirePlan('enterprise'));
+// 第103回 hotfix2: プレリリース期間中 (pin_assign_pro.isFreeNow=true) は
+// requirePlan('enterprise') を bypass、認証 user 全員 class 機能アクセス可。
+// downstream handler が `c.get('userPlan')` を参照するため bypass 時も plan 設定。
+classes.use('*', async (c, next) => {
+  if (await isFlagFreeNow(c.env.DB, 'pin_assign_pro')) {
+    const user = c.get('user');
+    if (user) {
+      c.set('userPlan', await getUserPlan(c.env.DB, user.userId));
+    }
+    return next();
+  }
+  return requirePlan('enterprise')(c, next);
+});
 
 function generateInviteCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
