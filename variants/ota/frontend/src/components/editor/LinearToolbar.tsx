@@ -12,13 +12,13 @@ import {
   FolderOpen,
   FileCode,
   Download,
-  HelpCircle,
   Zap,
   Loader2,
   Terminal,
   LineChart,
   Bluetooth,
   Wifi,
+  MessageSquare,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LocaleSelector } from '@/components/common/LocaleSelector';
@@ -44,19 +44,21 @@ interface LinearToolbarProps {
   // ロボットモード切り替え
   onRobotModeChange?: () => void;
 
-  // シリアルモニタ / プロッター
+  // シリアルモニタ / プロッター (第102回 C3: モニタ ▼ DropdownMenu に統合)
   showSerialMonitor?: boolean;
   showSerialPlotter?: boolean;
   onToggleSerialMonitor?: () => void;
   onToggleSerialPlotter?: () => void;
 
-  // BLE Controller (47.md commit #5)
+  // BLE / WiFi Controller (第102回 C3: UI 生成 ▼ DropdownMenu に統合)
   showBleController?: boolean;
   onToggleBleController?: () => void;
-
-  // WiFi Controller (47.md Phase 2 commit #4)
   showWifiController?: boolean;
   onToggleWifiController?: () => void;
+
+  // 第102回 C3: ヘッダー Feedback button (D-4 案 a: canSubmitFeedback 厳守)
+  showFeedbackButton?: boolean;
+  onOpenFeedback?: () => void;
 }
 
 export function LinearToolbar({
@@ -80,8 +82,15 @@ export function LinearToolbar({
   onToggleBleController,
   showWifiController = false,
   onToggleWifiController,
+  showFeedbackButton = false,
+  onOpenFeedback,
 }: LinearToolbarProps) {
   const { t } = useTranslation();
+
+  const anyMonitorActive = showSerialMonitor || showSerialPlotter;
+  const anyControllerActive = showBleController || showWifiController;
+  const hasMonitorMenu = !!(onToggleSerialMonitor || onToggleSerialPlotter);
+  const hasControllerMenu = !!(onToggleBleController || onToggleWifiController);
 
   return (
     <div className="flex items-center justify-between h-12 px-4 bg-[#1C1F26] text-[#E6EDF3] border-b border-[#2E333D]">
@@ -165,76 +174,86 @@ export function LinearToolbar({
         </Button>
       </div>
 
-      {/* 右側: 言語切替、設定、ヘルプ、ユーザーメニュー */}
+      {/* 右側: モニタ / UI 生成 / フィードバック / 言語切替 */}
       <div className="flex items-center gap-1">
-        {/* シリアルモニタ */}
-        {onToggleSerialMonitor && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`px-2 ${showSerialMonitor ? 'text-green-400 bg-[#2E333D]' : 'text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D]'}`}
-            onClick={onToggleSerialMonitor}
-          >
-            <Terminal className="w-3.5 h-3.5 mr-1" />
-            <span className="text-xs">{t('editor.menu.serialMonitor', { defaultValue: 'シリアルモニター' })}</span>
-          </Button>
+        {/* モニタ ▼ (シリアルモニター + プロッター) */}
+        {hasMonitorMenu && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`px-2 ${anyMonitorActive ? 'text-green-400 bg-[#2E333D]' : 'text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D]'}`}
+              >
+                <Terminal className="w-3.5 h-3.5 mr-1" />
+                <span className="text-xs">{t('editor.menu.monitorDropdown')}</span>
+                <ChevronDown className="w-3 h-3 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-44">
+              {onToggleSerialMonitor && (
+                <DropdownMenuItem onClick={onToggleSerialMonitor}>
+                  <Terminal className={`w-4 h-4 mr-2 ${showSerialMonitor ? 'text-green-500' : ''}`} />
+                  {t('editor.menu.serialMonitor')}
+                </DropdownMenuItem>
+              )}
+              {onToggleSerialPlotter && (
+                <DropdownMenuItem onClick={onToggleSerialPlotter}>
+                  <LineChart className={`w-4 h-4 mr-2 ${showSerialPlotter ? 'text-green-500' : ''}`} />
+                  {t('editor.menu.plotter')}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
 
-        {/* シリアルプロッター */}
-        {onToggleSerialPlotter && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`px-2 ${showSerialPlotter ? 'text-green-400 bg-[#2E333D]' : 'text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D]'}`}
-            onClick={onToggleSerialPlotter}
-          >
-            <LineChart className="w-3.5 h-3.5 mr-1" />
-            <span className="text-xs">{t('editor.menu.plotter', { defaultValue: 'プロッター' })}</span>
-          </Button>
+        {/* UI 生成 ▼ (BLE Controller + WiFi Controller) */}
+        {hasControllerMenu && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`px-2 ${anyControllerActive ? 'text-green-400 bg-[#2E333D]' : 'text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D]'}`}
+              >
+                <Bluetooth className="w-3.5 h-3.5 mr-1" />
+                <span className="text-xs">{t('editor.menu.uiGeneratorDropdown')}</span>
+                <ChevronDown className="w-3 h-3 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-44">
+              {onToggleBleController && (
+                <DropdownMenuItem onClick={onToggleBleController}>
+                  <Bluetooth className={`w-4 h-4 mr-2 ${showBleController ? 'text-green-500' : ''}`} />
+                  {t('editor.menu.bleController')}
+                  {/* "BLE" intentionally untranslated — universal abbreviation. */}
+                </DropdownMenuItem>
+              )}
+              {onToggleWifiController && (
+                <DropdownMenuItem onClick={onToggleWifiController}>
+                  <Wifi className={`w-4 h-4 mr-2 ${showWifiController ? 'text-green-500' : ''}`} />
+                  {t('editor.menu.wifiController')}
+                  {/* "WiFi" intentionally untranslated — universal abbreviation. */}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
 
-        {/* BLE Controller (47.md commit #5) */}
-        {onToggleBleController && (
+        {/* フィードバック (D-7 案 a: violet-600 強調 / D-10 案 a: 既存 label + MessageSquare) */}
+        {showFeedbackButton && onOpenFeedback && (
           <Button
-            variant="ghost"
             size="sm"
-            className={`px-2 ${showBleController ? 'text-green-400 bg-[#2E333D]' : 'text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D]'}`}
-            onClick={onToggleBleController}
+            onClick={onOpenFeedback}
+            className="bg-violet-600 hover:bg-violet-700 text-white px-3 ml-1"
           >
-            <Bluetooth className="w-3.5 h-3.5 mr-1" />
-            <span className="text-xs">{t('editor.menu.bleController', { defaultValue: 'BLE' })}</span>
-            {/* "BLE" intentionally untranslated — universal abbreviation. */}
-          </Button>
-        )}
-
-        {/* WiFi Controller (47.md Phase 2 commit #4) */}
-        {onToggleWifiController && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`px-2 ${showWifiController ? 'text-green-400 bg-[#2E333D]' : 'text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D]'}`}
-            onClick={onToggleWifiController}
-          >
-            <Wifi className="w-3.5 h-3.5 mr-1" />
-            <span className="text-xs">{t('editor.menu.wifiController', { defaultValue: 'WiFi' })}</span>
-            {/* "WiFi" intentionally untranslated — universal abbreviation. */}
+            <MessageSquare className="w-3.5 h-3.5 mr-1" />
+            <span className="text-xs">{t('feedback.button.label')}</span>
           </Button>
         )}
 
         {/* 言語切替 */}
         <LocaleSelector />
-
-        {/* ヘルプ */}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-[#E6EDF3] hover:bg-[#2E333D] px-2"
-          onClick={() => window.open('/docs', '_blank')}
-          title={t('editor.menu.help')}
-        >
-          <HelpCircle className="w-4 h-4" />
-        </Button>
-
       </div>
     </div>
   );

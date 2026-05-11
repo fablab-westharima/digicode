@@ -534,6 +534,8 @@
       "plotter": "繪圖機",
       "bleController": "BLE",
       "wifiController": "WiFi",
+      "monitorDropdown": "監視器",
+      "uiGeneratorDropdown": "UI 生成",
       "displayLanguage": "顯示語言",
       "mode": "模式",
       "compileTargetBoard": "編譯目標開發板",

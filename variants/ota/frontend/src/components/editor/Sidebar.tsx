@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AIAssistantPanel } from './AIAssistantPanel';
 import { AIAssistantDialog } from './AIAssistantDialog';
-import { FeedbackFormDialog } from '../feedback/FeedbackFormDialog';
 import {
   FolderOpen,
   Zap,
@@ -73,6 +72,8 @@ interface SidebarProps {
   onOpenAiSettings?: () => void;
   onShowBleController?: () => void;
   onShowWifiController?: () => void;
+  // 第102回 C3: ヘッダー Feedback button と state 共有、EditorPage が mount を保持
+  onOpenFeedback?: () => void;
 }
 
 interface NavSubItem {
@@ -125,6 +126,7 @@ export function Sidebar({
   onOpenAiSettings,
   onShowBleController,
   onShowWifiController,
+  onOpenFeedback,
 }: SidebarProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -135,7 +137,6 @@ export function Sidebar({
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['project'])); // デフォルトでprojectを開く
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set()); // サブメニュー展開状態
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
-  const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
 
   // Feature Flagsを取得
   useEffect(() => {
@@ -357,11 +358,11 @@ export function Sidebar({
       category: 'help'
     },
     // 要望を送る（課金ユーザーのみ、ヘルプ category 内）
-    ...(isAuthenticated && isFeedbackAvailable ? [{
+    ...(isAuthenticated && isFeedbackAvailable && onOpenFeedback ? [{
       id: 'feedback',
       label: t('feedback.button.label', { defaultValue: '要望を送る' }),
       icon: <Megaphone className="w-4 h-4" />,
-      action: () => setIsFeedbackDialogOpen(true),
+      action: onOpenFeedback,
       category: 'help' as const,
     }] : []),
     // アカウント（認証状態・アカウント種別で表示を切り替え）
@@ -660,13 +661,7 @@ export function Sidebar({
         onUpgradePlan={() => navigate('/plan')}
       />
 
-      {/* 要望フォーム ダイアログ（ヘルプメニューから起動） */}
-      {isAuthenticated && isFeedbackAvailable && (
-        <FeedbackFormDialog
-          open={isFeedbackDialogOpen}
-          onOpenChange={setIsFeedbackDialogOpen}
-        />
-      )}
+      {/* 要望フォーム ダイアログは EditorPage 側に移譲 (第102回 C3 state lift)。 */}
     </div>
   );
 }

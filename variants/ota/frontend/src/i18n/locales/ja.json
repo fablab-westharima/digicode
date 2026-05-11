@@ -537,6 +537,8 @@
       "plotter": "プロッター",
       "bleController": "BLE",
       "wifiController": "WiFi",
+      "monitorDropdown": "モニタ",
+      "uiGeneratorDropdown": "UI 生成",
       "displayLanguage": "表示言語",
       "mode": "モード",
       "compileTargetBoard": "コンパイル対象ボード",

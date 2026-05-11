@@ -534,6 +534,8 @@
       "plotter": "Plotter",
       "bleController": "BLE",
       "wifiController": "WiFi",
+      "monitorDropdown": "Monitor",
+      "uiGeneratorDropdown": "UI Generator",
       "displayLanguage": "Display Language",
       "mode": "Mode",
       "compileTargetBoard": "Compile Target Board",

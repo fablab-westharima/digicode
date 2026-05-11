@@ -6,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Globe, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { api } from '@/lib/api';
 
@@ -36,9 +36,9 @@ export function LocaleSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="text-[#E6EDF3] hover:bg-[#2E333D] px-2 gap-2">
-          <Globe className="h-4 w-4" />
-          <span className="hidden sm:inline text-sm">{currentLanguage.flag} {currentLanguage.name}</span>
+        <Button variant="ghost" size="sm" className="text-[#E6EDF3] hover:bg-[#2E333D] px-2 gap-1">
+          <span className="text-base leading-none">{currentLanguage.flag}</span>
+          <span className="hidden sm:inline text-sm">{currentLanguage.name}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">

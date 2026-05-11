@@ -22,6 +22,7 @@ import { BatchUpdateDialog } from '@/components/device/BatchUpdateDialog';
 import { TutorialOverlay } from '@/components/tutorial/TutorialOverlay';
 import { TutorialSelectDialog } from '@/components/tutorial/TutorialSelectDialog';
 import { WifiSetupDialog } from '@/components/wifi/WifiSetupDialog';
+import { FeedbackFormDialog } from '@/components/feedback/FeedbackFormDialog';
 import { WifiPrerequisitesDialog } from '@/components/wifi/WifiPrerequisitesDialog';
 import { DeviceNameDialog } from '@/components/device/DeviceNameDialog';
 import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstallerDialog';
@@ -83,6 +84,9 @@ export function EditorPage() {
   const [searchParams] = useSearchParams();
   const { logout, isAuthenticated, user } = useAuthStore();
   const canUseAiUiCustomize = useFeatureFlagStore((s) => s.canUseAiUiCustomize);
+  const canSubmitFeedback = useFeatureFlagStore((s) => s.canSubmitFeedback);
+  // 第102回 C3: ヘッダー Feedback button + Sidebar 「要望を送る」共通可否
+  const isFeedbackAvailable = isAuthenticated && canSubmitFeedback(user?.plan, user?.accountType);
   const isAiUiCustomizeAvailable = canUseAiUiCustomize(user?.plan, user?.accountType);
   const { currentProject, setCurrentProject } = useProjectStore();
   const { status: serialStatus, forceReleaseAllPorts } = useSerialStore();
@@ -119,6 +123,8 @@ export function EditorPage() {
   const [pendingOtaBinary, setPendingOtaBinary] = useState<Blob | null>(null);
   const [tutorialDialogOpen, setTutorialDialogOpen] = useState(false);
   const [wifiSetupDialogOpen, setWifiSetupDialogOpen] = useState(false);
+  // 第102回 C3: ヘッダー Feedback button が opens、Sidebar 「要望を送る」と state 共有
+  const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [wifiPrerequisitesDialogOpen, setWifiPrerequisitesDialogOpen] = useState(false);
   const [deviceNameDialogOpen, setDeviceNameDialogOpen] = useState(false);
   const [wifiDeviceSelectDialogOpen, setWifiDeviceSelectDialogOpen] = useState(false);
@@ -1258,6 +1264,8 @@ export function EditorPage() {
         onToggleBleController={() => setShowBleController(prev => !prev)}
         showWifiController={showWifiController}
         onToggleWifiController={() => setShowWifiController(prev => !prev)}
+        showFeedbackButton={isFeedbackAvailable}
+        onOpenFeedback={() => setIsFeedbackDialogOpen(true)}
       />
 
       {/* メインコンテンツ */}
@@ -1299,6 +1307,7 @@ export function EditorPage() {
           onOpenAiSettings={() => setAiSettingsDialogOpen(true)}
           onShowBleController={() => setShowBleController(true)}
           onShowWifiController={() => setShowWifiController(true)}
+          onOpenFeedback={() => setIsFeedbackDialogOpen(true)}
         />
 
         {/* メインコンテンツエリア (Blocklyワークスペース) */}
@@ -1742,6 +1751,14 @@ export function EditorPage() {
         open={wifiSetupDialogOpen}
         onOpenChange={setWifiSetupDialogOpen}
       />
+
+      {/* 要望フォームダイアログ (第102回 C3: ヘッダー + Sidebar 共有 mount) */}
+      {isFeedbackAvailable && (
+        <FeedbackFormDialog
+          open={isFeedbackDialogOpen}
+          onOpenChange={setIsFeedbackDialogOpen}
+        />
+      )}
 
       {/* デバイス名設定ダイアログ */}
       <DeviceNameDialog

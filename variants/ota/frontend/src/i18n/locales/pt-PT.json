@@ -534,6 +534,8 @@
       "plotter": "Traçador",
       "bleController": "BLE",
       "wifiController": "WiFi",
+      "monitorDropdown": "Monitor",
+      "uiGeneratorDropdown": "Gerador UI",
       "displayLanguage": "Idioma de Exibição",
       "mode": "Modo",
       "compileTargetBoard": "Placa de Destino da Compilação",
