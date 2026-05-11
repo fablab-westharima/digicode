@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bot, Loader2, Sparkles, AlertTriangle, Trash2, Download, Maximize2 } from 'lucide-react';
-import { useFeatureFlagStore } from '@/stores/featureFlagStore';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useAiStore } from '@/stores/aiStore';
@@ -47,11 +46,6 @@ export function AIAssistantPanel({
     appendMessage, setCurrentMode, setLastTokenUsage,
     isGenerating, setGenerating,
   } = useAiStore();
-  // 第103回 hotfix4: プレリリース期間中は AI tab に「無料開放中」badge 表示。
-  // slice value subscription (function ref ではない、hotfix #1 教訓踏襲)。
-  const isPinAssignFreeOpen = useFeatureFlagStore(
-    (s) => s.flags['pin_assign_pro']?.isFreeNow ?? false
-  );
   const { mode: robotMode } = useRobotModeStore();
   const getSelectedBoard = useBoardStore((s) => s.getSelectedBoard);
 
@@ -253,11 +247,6 @@ export function AIAssistantPanel({
             }`}
           >
             {tab === 'blockGen' ? t('ai.tabBlockGen') : t('ai.tabHelp')}
-            {isPinAssignFreeOpen && (
-              <span className="ml-1 text-[9px] text-green-400 font-normal">
-                {t('sidebar.freeOpenNow')}
-              </span>
-            )}
           </button>
         ))}
         {conversation.length > 0 && (
