@@ -70,75 +70,76 @@ describe('contrastRatio (WCAG 2.1)', () => {
   });
 });
 
-describe('pickTextStyle (case 18 mitigation evidence)', () => {
-  it('returns dark text for bright LED yellow (no outline needed)', () => {
+describe('pickTextStyle (case 18 mitigation evidence、BUG-081 follow-up #2 で outline 廃止)', () => {
+  it('returns dark text for bright LED yellow', () => {
     const result = pickTextStyle('#facc15');
     expect(result.fill).toBe(__testing__.DARK_TEXT);
-    expect(result.needsOutline).toBe(false);
   });
 
-  it('returns dark text for bright sound lime (no outline needed)', () => {
+  it('returns dark text for bright sound lime', () => {
     const result = pickTextStyle('#a3e635');
     expect(result.fill).toBe(__testing__.DARK_TEXT);
-    expect(result.needsOutline).toBe(false);
   });
 
-  it('returns dark text for sensor cyan (no outline needed)', () => {
+  it('returns dark text for sensor cyan', () => {
     const result = pickTextStyle('#22d3ee');
     expect(result.fill).toBe(__testing__.DARK_TEXT);
-    expect(result.needsOutline).toBe(false);
   });
 
-  it('returns white text for camera dark color (no outline needed)', () => {
+  it('returns white text for camera dark color', () => {
     const result = pickTextStyle('#212121');
     expect(result.fill).toBe(__testing__.LIGHT_TEXT);
-    expect(result.needsOutline).toBe(false);
   });
 
-  it('returns white text for LORA deep purple (no outline needed)', () => {
+  it('returns white text for LORA deep purple', () => {
     const result = pickTextStyle('#4B0082');
     expect(result.fill).toBe(__testing__.LIGHT_TEXT);
-    expect(result.needsOutline).toBe(false);
   });
 
-  it('returns dark + outline for mid-luminance gray where dark wins (両方 4.5 未達)', () => {
-    // #888888 (gray) → linear lum ≈ 0.236 → white ratio ≈ 3.67 (fail) / dark ratio ≈ 3.91 (fail)
-    // 両方 4.5 未達、higher contrast 側 = dark
-    const result = pickTextStyle('#888888');
-    expect(result.needsOutline).toBe(true);
+  it('returns white text for HA Light yellow (#FFEB3B)', () => {
+    // 第101回 follow-up trigger 案件、case-insensitive hex 受容と higher contrast 採択 verify
+    const result = pickTextStyle('#FFEB3B');
     expect(result.fill).toBe(__testing__.DARK_TEXT);
   });
 
-  it('returns white + outline for mid-luminance gray where white wins (両方 4.5 未達)', () => {
-    // #7d7d7d (gray) → linear lum ≈ 0.202 → white ratio ≈ 4.17 (fail) / dark ratio ≈ 3.44 (fail)
-    // 両方 4.5 未達、higher contrast 側 = white
-    const result = pickTextStyle('#7d7d7d');
-    expect(result.needsOutline).toBe(true);
+  it('returns white text for mid-luminance gray #888888 (両方 AA 未達 → higher contrast = white)', () => {
+    // DARK=#374151 (gray-700) で再計算: white ratio ≈ 3.54 (fail) / dark ratio ≈ 2.91 (fail)
+    // higher contrast 側 = white (旧 gray-800 では dark wins だったが、gray-700 化で逆転)
+    const result = pickTextStyle('#888888');
     expect(result.fill).toBe(__testing__.LIGHT_TEXT);
   });
 
-  it('returns dark text for #aaaaaa (lighter gray、dark passes AA)', () => {
-    // #aaaaaa → linear lum ≈ 0.402 → dark ratio ≈ 6.17 (pass)、outline 不要
-    const result = pickTextStyle('#aaaaaa');
-    expect(result.fill).toBe(__testing__.DARK_TEXT);
-    expect(result.needsOutline).toBe(false);
+  it('returns white text for mid-luminance gray #7d7d7d (両方 AA 未達 → higher contrast = white)', () => {
+    // DARK=#374151 で: white ratio ≈ 4.12 (fail) / dark ratio ≈ 2.50 (fail)、higher = white
+    const result = pickTextStyle('#7d7d7d');
+    expect(result.fill).toBe(__testing__.LIGHT_TEXT);
   });
 
-  it('respects WCAG AA threshold (4.5:1)', () => {
-    // black on white → white ratio = 1, dark ratio = 21 → dark, no outline
+  it('returns dark text for #aaaaaa (lighter gray、dark borderline 4.44 で AA fail だが higher contrast)', () => {
+    // DARK=#374151 で: white ratio ≈ 2.32 (fail) / dark ratio ≈ 4.44 (fail by 0.06)、
+    // higher contrast 側 = dark
+    const result = pickTextStyle('#aaaaaa');
+    expect(result.fill).toBe(__testing__.DARK_TEXT);
+  });
+
+  it('respects WCAG AA threshold (4.5:1) for boundary cases', () => {
+    // black on white → white ratio = 1, dark ratio ≈ 10.31 → dark wins (AA pass)
     const onWhite = pickTextStyle('#ffffff');
     expect(onWhite.fill).toBe(__testing__.DARK_TEXT);
-    expect(onWhite.needsOutline).toBe(false);
-    // white on black → white ratio = 21 → white, no outline
+    // white on black → white ratio = 21 → white wins (AA pass)
     const onBlack = pickTextStyle('#000000');
     expect(onBlack.fill).toBe(__testing__.LIGHT_TEXT);
-    expect(onBlack.needsOutline).toBe(false);
+  });
+
+  it('returns object with fill only (needsOutline removed in follow-up #2)', () => {
+    const result = pickTextStyle('#facc15');
+    expect(Object.keys(result)).toEqual(['fill']);
   });
 });
 
 describe('module constants (sanity check)', () => {
-  it('DARK_TEXT matches Tailwind gray-800 per rule 08-ui-theme', () => {
-    expect(__testing__.DARK_TEXT).toBe('#1f2937');
+  it('DARK_TEXT matches Tailwind gray-700 (BUG-081 follow-up #2 で gray-800 → gray-700 soften)', () => {
+    expect(__testing__.DARK_TEXT).toBe('#374151');
   });
 
   it('LIGHT_TEXT is pure white', () => {
@@ -149,8 +150,7 @@ describe('module constants (sanity check)', () => {
     expect(__testing__.WCAG_AA_NORMAL).toBe(4.5);
   });
 
-  it('class names follow blockly-text-* convention', () => {
+  it('class name follows blockly-text-* convention', () => {
     expect(__testing__.CLASS_DARK).toBe('blockly-text-dark');
-    expect(__testing__.CLASS_OUTLINE).toBe('blockly-text-outline');
   });
 });

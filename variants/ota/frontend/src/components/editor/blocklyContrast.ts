@@ -15,12 +15,11 @@
  */
 import * as Blockly from 'blockly';
 
-const DARK_TEXT = '#1f2937';        // Tailwind gray-800、rule 08-ui-theme.md theme tokens 整合
+const DARK_TEXT = '#374151';        // Tailwind gray-700、rule 08-ui-theme.md theme tokens 整合 (BUG-081 follow-up #2 で gray-800 → gray-700 に soften)
 const LIGHT_TEXT = '#ffffff';
 const WCAG_AA_NORMAL = 4.5;          // WCAG 2.1 AA normal text threshold (Blockly font 12pt weight 500 = normal)
 
 const CLASS_DARK = 'blockly-text-dark';
-const CLASS_OUTLINE = 'blockly-text-outline';
 const PATCH_FLAG = '__digiCodeContrastPatched';
 
 /** sRGB hex (#RRGGBB) → linear RGB component (0-1) */
@@ -51,19 +50,19 @@ export function contrastRatio(fg: string, bg: string): number {
 }
 
 /**
- * 背景 hex から最適な文字色 + outline 必要性を判定。
- * - white が WCAG AA pass → 白文字、outline 不要
- * - dark が WCAG AA pass → 黒文字、outline 不要
- * - 両方 fail (中間色帯) → higher contrast 側 + outline で補強
+ * 背景 hex から最適な文字色を判定。
+ * - white が WCAG AA pass → 白文字
+ * - dark が WCAG AA pass → 黒寄り (gray-700) 文字
+ * - 両方 fail (中間色帯) → higher contrast 側 (BUG-081 follow-up #2 で outline 補強廃止、
+ *   mid-luminance band でも 2 色のうち高い側のみ採択、SVG outline は visual noise との
+ *   trade-off で user 不採択)
  */
-export function pickTextStyle(bgHex: string): { fill: string; needsOutline: boolean } {
+export function pickTextStyle(bgHex: string): { fill: string } {
   const whiteRatio = contrastRatio(LIGHT_TEXT, bgHex);
   const darkRatio = contrastRatio(DARK_TEXT, bgHex);
-  if (whiteRatio >= WCAG_AA_NORMAL) return { fill: LIGHT_TEXT, needsOutline: false };
-  if (darkRatio >= WCAG_AA_NORMAL) return { fill: DARK_TEXT, needsOutline: false };
-  return whiteRatio > darkRatio
-    ? { fill: LIGHT_TEXT, needsOutline: true }
-    : { fill: DARK_TEXT, needsOutline: true };
+  if (whiteRatio >= WCAG_AA_NORMAL) return { fill: LIGHT_TEXT };
+  if (darkRatio >= WCAG_AA_NORMAL) return { fill: DARK_TEXT };
+  return whiteRatio > darkRatio ? { fill: LIGHT_TEXT } : { fill: DARK_TEXT };
 }
 
 /**
@@ -77,7 +76,6 @@ function applyContrastClass(block: Blockly.BlockSvg): void {
   if (!colour) return;
   const style = pickTextStyle(colour);
   root.classList.toggle(CLASS_DARK, style.fill === DARK_TEXT);
-  root.classList.toggle(CLASS_OUTLINE, style.needsOutline);
 }
 
 /**
@@ -137,7 +135,6 @@ export function attachContrastWorkspaceListener(workspace: Blockly.WorkspaceSvg)
 export const __testing__ = {
   PATCH_FLAG,
   CLASS_DARK,
-  CLASS_OUTLINE,
   DARK_TEXT,
   LIGHT_TEXT,
   WCAG_AA_NORMAL,

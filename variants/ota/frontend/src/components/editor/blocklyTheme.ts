@@ -117,18 +117,9 @@ export const digiCodeDarkTheme = Blockly.Theme.defineTheme('digicode-dark', {
 });
 
 // BUG-081 contrast fix: blocklyContrast.ts の installContrastTextPatch が
-// BlockSvg.applyColour wrap で .blockly-text-dark / .blockly-text-outline を toggle、
-// 本 CSS が文字色 + outline を適用。Blockly stock の zelos-renderer 系 selector
-// (`.blocklyDropdownText { fill: #fff !important }` 等) と競合するため `!important`
-// で完全 override (BUG-081 第101回 follow-up = 初版 push 後の本番検証で white text
-// 残存報告 → CSS specificity 不足が真因と判定、`!important` で bullet-proof 化)。
-Blockly.Css.register(`
-  .blockly-text-dark .blocklyText { fill: #1f2937 !important; }
-  .blockly-text-outline .blocklyText {
-    paint-order: stroke fill !important;
-    stroke: rgba(0, 0, 0, 0.45) !important;
-    stroke-width: 2.5px !important;
-    stroke-linejoin: round !important;
-  }
-  .blockly-text-outline.blockly-text-dark .blocklyText { stroke: rgba(255, 255, 255, 0.55) !important; }
-`);
+// BlockSvg.applyColour wrap で .blockly-text-dark を toggle、本 CSS が文字色を適用。
+// Blockly stock の zelos-renderer 系 selector (`.blocklyDropdownText { fill: #fff
+// !important }` 等) との競合実害は本番 verify 時に確認 (BUG-081 第101回 follow-up
+// で `!important` 導入と outline 補強を試行 → 後者は visual noise 過大で user 不採択、
+// CSS は単純 1 rule に簡素化、文字色は #374151 = Tailwind gray-700 に soften)。
+Blockly.Css.register('.blockly-text-dark .blocklyText { fill: #374151; }');
