@@ -121,7 +121,7 @@
 
 /* 区切り線 */
 .blocklyTreeSeparator {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22) !important;
   margin: 8px 12px !important;
   height: 0 !important;
   padding: 0 !important;
