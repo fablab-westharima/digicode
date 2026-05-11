@@ -67,6 +67,20 @@ export function pickTextStyle(bgHex: string): { fill: string; needsOutline: bool
 }
 
 /**
+ * 単一 block への contrast class 適用 (applyColour patch + workspace listener 双方から呼ばれる)。
+ * 内部 helper、export しない。
+ */
+function applyContrastClass(block: Blockly.BlockSvg): void {
+  const root = block.getSvgRoot();
+  if (!root) return;
+  const colour = block.getColour();
+  if (!colour) return;
+  const style = pickTextStyle(colour);
+  root.classList.toggle(CLASS_DARK, style.fill === DARK_TEXT);
+  root.classList.toggle(CLASS_OUTLINE, style.needsOutline);
+}
+
+/**
  * Blockly.BlockSvg.prototype.applyColour を wrap、block 生成 + colour 変更時に
  * SVG root の class を contrast 判定で toggle。idempotent (二重呼び出し時 no-op)。
  *
@@ -79,13 +93,44 @@ export function installContrastTextPatch(): void {
   const original = proto.applyColour as () => void;
   proto.applyColour = function (this: Blockly.BlockSvg) {
     original.call(this);
-    const root = this.getSvgRoot();
-    if (!root) return;
-    const style = pickTextStyle(this.getColour());
-    root.classList.toggle(CLASS_DARK, style.fill === DARK_TEXT);
-    root.classList.toggle(CLASS_OUTLINE, style.needsOutline);
+    applyContrastClass(this);
   };
   proto[PATCH_FLAG] = true;
+}
+
+/**
+ * workspace に BLOCK_CREATE / BLOCK_CHANGE listener を attach、applyColour patch
+ * の safety net (flyout 経由の dynamic block / xml load / theme 切替後など、
+ * applyColour が想定外 path で発火しないケースも cover)。
+ *
+ * 適用時機: BlocklyEditor.tsx の `Blockly.inject()` 後、対象 workspace + flyout
+ * workspace 双方に attach 推奨。
+ */
+export function attachContrastWorkspaceListener(workspace: Blockly.WorkspaceSvg): void {
+  const handler = (event: Blockly.Events.Abstract) => {
+    const t = event.type;
+    if (t !== Blockly.Events.BLOCK_CREATE && t !== Blockly.Events.BLOCK_CHANGE) return;
+    const blockId = (event as Blockly.Events.BlockBase).blockId;
+    if (!blockId) return;
+    const block = workspace.getBlockById(blockId);
+    if (block && typeof (block as Blockly.BlockSvg).getSvgRoot === 'function') {
+      applyContrastClass(block as Blockly.BlockSvg);
+    }
+  };
+  workspace.addChangeListener(handler);
+  // 既存 block (XML restore / undo など、listener attach 前に存在する block) にも一括適用
+  const existing = workspace.getAllBlocks(false);
+  existing.forEach((blk) => applyContrastClass(blk as Blockly.BlockSvg));
+  // flyout workspace も同様 (toolbox category 開閉で動的に block 生成、applyColour
+  // 経路で patch は届くが、theme reload や workspace switch の race 防御として安全網)。
+  const flyout = workspace.getFlyout?.(true) ?? null;
+  const flyoutWs = flyout && typeof (flyout as { getWorkspace?: () => Blockly.WorkspaceSvg }).getWorkspace === 'function'
+    ? (flyout as { getWorkspace: () => Blockly.WorkspaceSvg }).getWorkspace()
+    : null;
+  if (flyoutWs && flyoutWs !== workspace) {
+    flyoutWs.addChangeListener(handler);
+    flyoutWs.getAllBlocks(false).forEach((blk) => applyContrastClass(blk as Blockly.BlockSvg));
+  }
 }
 
 // test 用 export (production code は installContrastTextPatch のみ呼べば OK)

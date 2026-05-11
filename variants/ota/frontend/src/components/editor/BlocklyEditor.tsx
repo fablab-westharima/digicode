@@ -12,7 +12,7 @@ import { useRobotModeStore } from '../../stores/robotModeStore';
 import { useFavoriteCategoriesStore } from '../../stores/favoriteCategoriesStore';
 import { useBoardStore } from '../../stores/boardStore';
 import { digiCodeDarkTheme } from './blocklyTheme';
-import { installContrastTextPatch } from './blocklyContrast';
+import { installContrastTextPatch, attachContrastWorkspaceListener } from './blocklyContrast';
 import { populateBlocklyMessages } from '@/utils/blocklyMessages';
 import { showToast } from '@/components/common/Toast';
 import { FavoriteSettingsDialog } from './FavoriteSettingsDialog';
@@ -385,6 +385,11 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
       const workspace = Blockly.inject(blocklyDiv.current, blocklyOptions);
 
       workspaceRef.current = workspace;
+
+      // BUG-081 contrast safety net: workspace + flyout workspace への
+      // BLOCK_CREATE / BLOCK_CHANGE listener (applyColour patch と二重防御、
+      // flyout 動的 block / XML restore / theme reload 等の race 経路 cover)。
+      attachContrastWorkspaceListener(workspace);
 
       // 初期状態でフライアウトを閉じる（カテゴリ未選択状態にする）
       setTimeout(() => {
