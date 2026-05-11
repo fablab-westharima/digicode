@@ -3811,8 +3811,6 @@
       "cloudCompile250": "250 cloud compiles/month",
       "cloudCompile500": "500 cloud compiles/month",
       "cloudCompileUnlimited": "Unlimited cloud compiles",
-      "basicBlocks": "Basic blocks",
-      "allBlocks": "All blocks",
       "pinAssign": "Pin assignment feature",
       "aiBlockGeneration": "AI block generation (BYOK)",
       "aiChat": "AI Chat (BYOK)",

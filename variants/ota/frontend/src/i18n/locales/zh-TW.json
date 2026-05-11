@@ -3996,8 +3996,6 @@
       "cloudCompile250": "每月 250 次雲端編譯",
       "cloudCompile500": "每月 500 次雲端編譯",
       "cloudCompileUnlimited": "無限制雲端編譯",
-      "basicBlocks": "基本積木",
-      "allBlocks": "所有積木",
       "pinAssign": "腳位指定功能",
       "aiBlockGeneration": "AI 積木生成（BYOK）",
       "aiChat": "AI 對話（BYOK）",

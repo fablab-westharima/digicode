@@ -3996,8 +3996,6 @@
       "cloudCompile250": "250 compilações na nuvem/mês",
       "cloudCompile500": "500 compilações na nuvem/mês",
       "cloudCompileUnlimited": "Compilações na nuvem ilimitadas",
-      "basicBlocks": "Blocos básicos",
-      "allBlocks": "Todos os blocos",
       "pinAssign": "Função de atribuição de pinos",
       "aiBlockGeneration": "Geração de blocos com AI (BYOK)",
       "aiChat": "AI Chat (BYOK)",

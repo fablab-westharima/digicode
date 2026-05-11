@@ -3801,8 +3801,6 @@
       "cloudCompile250": "月250回クラウドコンパイル",
       "cloudCompile500": "月500回クラウドコンパイル",
       "cloudCompileUnlimited": "無制限クラウドコンパイル",
-      "basicBlocks": "基本ブロック",
-      "allBlocks": "全ブロック",
       "pinAssign": "ピンアサイン機能",
       "aiBlockGeneration": "AIブロック生成（BYOK）",
       "aiChat": "AIチャット（BYOK）",
