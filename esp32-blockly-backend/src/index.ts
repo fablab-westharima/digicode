@@ -23,6 +23,7 @@ import classes, { deleteClassCascade } from './routes/classes';
 import submissionsRoute from './routes/submissions';
 import { rateLimitPresets } from './middleware/rateLimit';
 import { localeMiddleware } from './middleware/locale';
+import { auditCrossDbIntegrity } from './utils/auditCrossDb';
 import type { Bindings } from './types/env';
 
 // Re-exported for backwards-compatibility with any pre-consolidation
@@ -272,6 +273,24 @@ async function handleScheduled(
           console.error(`[scheduled ${runId}] C-2: exception for user#${row.user_id}:`, err);
         }
       }
+    }
+
+    // 第103回 BUG-051 案 A: cross-DB integrity audit
+    // ML30 にあって D1 に無い class_id (orphan) を検出、構造化ログ出力。
+    // read-only、回収は手動 (DELETE /assignments/by-class/:orphan_id を curl で発行)
+    try {
+      const audit = await auditCrossDbIntegrity(env);
+      if (!audit.healthy) {
+        console.error(JSON.stringify({
+          event: 'cross_db_audit_orphans',
+          runId,
+          ...audit,
+        }));
+      } else {
+        console.log(`[scheduled ${runId}] cross-DB audit healthy: D1=${audit.d1Count} / ML30=${audit.ml30Count} / orphans=0`);
+      }
+    } catch (err) {
+      console.error(`[scheduled ${runId}] cross-DB audit failed:`, err);
     }
 
   } catch (err) {

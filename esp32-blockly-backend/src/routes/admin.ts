@@ -7,6 +7,7 @@ import { authMiddleware } from '../middleware/auth';
 import { adminMiddleware } from '../middleware/admin';
 import { errorJson } from '../utils/errorJson';
 import { computeIsFreeNow } from '../utils/featureFlag';
+import { auditCrossDbIntegrity } from '../utils/auditCrossDb';
 import type { Bindings, Variables } from '../types/env';
 
 const admin = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -304,6 +305,20 @@ admin.get('/feature-flags', async (c) => {
   } catch (error) {
     console.error('Get feature flags error:', error);
     return c.json({ flags: {} });
+  }
+});
+
+// ========================================
+// 第103回 BUG-051: cross-DB integrity audit (manual admin trigger)
+// 日次 cron が `handleScheduled` で同 logic を自動実行、本 endpoint は admin 手動 verify 用
+// ========================================
+admin.get('/audit-cross-db', authMiddleware, adminMiddleware, async (c) => {
+  try {
+    const report = await auditCrossDbIntegrity(c.env);
+    return c.json(report);
+  } catch (error) {
+    console.error('Cross-DB audit error:', error);
+    return errorJson(c, 'common.serverConfigError', 500);
   }
 });
 

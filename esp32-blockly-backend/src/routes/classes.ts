@@ -196,15 +196,33 @@ classes.delete('/:id', async (c) => {
     ).bind(id).all<{ user_id: number }>();
 
     // Step 8: ML30 の assignments/assignment_submissions を先に削除
-    // 失敗した場合は D1 側を触らず中断（孤児は残るが二次的被害なし、次回 cron で再挑戦）
-    const ml30Result = await proxyClassApi(getClassApiEnv(c), {
+    // 失敗した場合は D1 側を触らず中断、orphan は cross-DB audit cron で回収
+    // (BUG-051 案 B 第103回: 2 回試行 + 1s backoff、Workers 30s subrequest 制約内)
+    const ml30Env = getClassApiEnv(c);
+    let ml30Result = await proxyClassApi(ml30Env, {
       method: 'DELETE',
       path: `/assignments/by-class/${id}`,
       userId,
     });
+    if (!ml30Result.ok && ml30Result.status !== 404) {
+      // 1 回目失敗: 1s backoff 後に retry (transient failure 吸収)
+      await new Promise((r) => setTimeout(r, 1000));
+      ml30Result = await proxyClassApi(ml30Env, {
+        method: 'DELETE',
+        path: `/assignments/by-class/${id}`,
+        userId,
+      });
+    }
 
     if (!ml30Result.ok && ml30Result.status !== 404) {
-      console.error(`Delete class: ML30 cleanup failed for class#${id}:`, ml30Result.error);
+      // 全 retry 失敗 → cross-DB orphan 確定、cron audit で回収対象
+      // 構造化ログで Workers Logs / `wrangler tail` 監視に乗せる
+      console.error(JSON.stringify({
+        event: 'cross_db_orphan_detected',
+        class_id: id,
+        last_status: ml30Result.status,
+        last_error: ml30Result.error,
+      }));
       return c.json(
         { error: `クラス関連データの削除に失敗しました: ${ml30Result.error}` },
         ml30Result.status as any
