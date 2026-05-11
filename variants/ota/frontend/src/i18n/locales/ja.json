@@ -4243,12 +4243,8 @@
       "newFeatureTest": "新機能テスト期間 - 全機能開放",
       "campaign": "キャンペーン中 - 全機能無料開放"
     },
-    "banner": {
-      "untilDate": "{{date}} まで",
-      "endsInDays": "あと {{count}} 日",
-      "endsTomorrow": "明日終了",
-      "endsToday": "本日終了",
-      "dismiss": "閉じる"
+    "status": {
+      "endsInDays": "残り {{count}} 日"
     }
   }
 }

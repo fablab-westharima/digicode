@@ -4438,12 +4438,8 @@
       "newFeatureTest": "Período de prueba de nuevas funciones — Todas las funciones abiertas",
       "campaign": "Campaña — Todas las funciones gratis"
     },
-    "banner": {
-      "untilDate": "Hasta {{date}}",
-      "endsInDays": "Quedan {{count}} días",
-      "endsTomorrow": "Termina mañana",
-      "endsToday": "Termina hoy",
-      "dismiss": "Cerrar"
+    "status": {
+      "endsInDays": "Quedan {{count}} días"
     }
   }
 }

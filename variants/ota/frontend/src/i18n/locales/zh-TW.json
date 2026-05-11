@@ -4438,12 +4438,8 @@
       "newFeatureTest": "新功能測試期間 — 全功能開放",
       "campaign": "活動期間 — 全功能免費開放"
     },
-    "banner": {
-      "untilDate": "至 {{date}}",
-      "endsInDays": "剩 {{count}} 天",
-      "endsTomorrow": "明日結束",
-      "endsToday": "今日結束",
-      "dismiss": "關閉"
+    "status": {
+      "endsInDays": "剩 {{count}} 天"
     }
   }
 }

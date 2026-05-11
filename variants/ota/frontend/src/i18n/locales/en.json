@@ -4253,12 +4253,8 @@
       "newFeatureTest": "New feature test period — All features open",
       "campaign": "Campaign — All features free"
     },
-    "banner": {
-      "untilDate": "Until {{date}}",
-      "endsInDays": "{{count}} days left",
-      "endsTomorrow": "Ends tomorrow",
-      "endsToday": "Ends today",
-      "dismiss": "Dismiss"
+    "status": {
+      "endsInDays": "{{count}} days left"
     }
   }
 }

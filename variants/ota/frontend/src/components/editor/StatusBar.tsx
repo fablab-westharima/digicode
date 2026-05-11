@@ -1,5 +1,9 @@
+import type { ReactElement } from 'react';
 import { Zap, Upload, AlertCircle, Check, Wifi, WifiOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useFeatureFlagStore } from '@/stores/featureFlagStore';
+import { isKnownPreset, presetTranslationKey } from '@/utils/featureFlagPresets';
+import { getDaysRemaining, getStatusVariant } from '@/utils/featureFlagStatus';
 
 export type StatusBarState = 'ready' | 'compiling' | 'uploading' | 'error' | 'success';
 
@@ -14,6 +18,16 @@ interface StatusBarProps {
     connected: boolean;
   };
 }
+
+// 第102回 C4: StatusBar inline Feature Flag 表示の trigger key (D-5 確定)。
+// 複数 flag 対応は後続 task、現状 seed 1 件のみ。
+const FEATURE_FLAG_TRIGGER_KEY = 'pin_assign_pro';
+
+const VARIANT_COLOR_CLASS: Record<'normal' | 'warning' | 'critical', string> = {
+  normal: 'text-emerald-400',
+  warning: 'text-amber-400',
+  critical: 'text-orange-400',
+};
 
 export function StatusBar({
   state,
@@ -67,6 +81,28 @@ export function StatusBar({
 
   const stateDisplay = getStateDisplay();
 
+  // 第102回 C4: Feature Flag inline 表示 (グローバル下部 banner を撤回、StatusBar に集約)
+  // 「✓ 準備完了」の左側に "🎁 <preset> | 残り N 日" を表示、threshold で色変化、dismiss なし
+  const flag = useFeatureFlagStore((s) => s.flags[FEATURE_FLAG_TRIGGER_KEY]);
+  let featureFlagInline: ReactElement | null = null;
+  if (flag?.isFreeNow && flag.freeUntil) {
+    const days = getDaysRemaining(flag.freeUntil);
+    const variant = getStatusVariant(days);
+    if (variant !== 'expired') {
+      const reasonLabel = isKnownPreset(flag.freeReason)
+        ? t(presetTranslationKey(flag.freeReason))
+        : flag.freeReason;
+      featureFlagInline = (
+        <div className={`flex items-center gap-1.5 ${VARIANT_COLOR_CLASS[variant]}`}>
+          <span aria-hidden>🎁</span>
+          {reasonLabel && <span className="font-medium">{reasonLabel}</span>}
+          <span className="text-gray-500">|</span>
+          <span className="tabular-nums">{t('featureFlag.status.endsInDays', { count: days })}</span>
+        </div>
+      );
+    }
+  }
+
   // バイナリサイズをフォーマット
   const formatSize = (bytes?: number) => {
     if (!bytes) return '-';
@@ -94,6 +130,9 @@ export function StatusBar({
           )}
         </div>
       )}
+
+      {/* Feature Flag inline (✓ 準備完了 の左側、第102回 C4) */}
+      {featureFlagInline}
 
       {/* 状態インジケーター */}
       <div className={`flex items-center gap-2 ${stateDisplay.color}`}>
