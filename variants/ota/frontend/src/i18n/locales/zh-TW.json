@@ -3517,40 +3517,38 @@
     "downloadApple": "下載（Apple 官方）"
   },
   "modeSelector": {
-    "groups": {
-      "robots": "Robots",
-      "_deleted_competition": "",
-      "iot": "IoT / 智慧家庭",
-      "other": "其他"
-    },
     "modes": {
-      "humanoid": {
-        "name": "Humanoid 雙足步行",
-        "description": "4伺服雙足機器人"
+      "input": {
+        "name": "輸入",
+        "description": "感測器 / 輸入相關積木"
       },
-      "wheelRobot": {
-        "name": "Wheel",
-        "description": "兩輪驅動機器人"
+      "output": {
+        "name": "輸出",
+        "description": "顯示 / 音效 / 輸出相關積木"
       },
-      "transform": {
-        "name": "Transform",
-        "description": "步行/滾動變形機器人"
+      "robotics": {
+        "name": "機器人技術",
+        "description": "機器人套件與馬達控制"
       },
-      "micromouse": {
-        "name": "Micromouse",
-        "description": "迷宮探索機器人"
-      },
-      "lineTrace": {
-        "name": "循線機器人",
-        "description": "循線追蹤機器人"
+      "network": {
+        "name": "網路",
+        "description": "通訊 / 無線 / 通訊協定"
       },
       "homeassistant": {
         "name": "Home Assistant",
-        "description": "IoT / 智慧家庭整合"
+        "description": "Home Assistant 整合 (ArduinoHA)"
       },
-      "generic": {
-        "name": "通用裝置",
-        "description": "微控制器與電子工作用途"
+      "storageTime": {
+        "name": "儲存 / 時間",
+        "description": "持久化、時鐘、計時器"
+      },
+      "gpioBus": {
+        "name": "GPIO / 匯流排",
+        "description": "GPIO、I2C/SPI、中斷、UART、CAN"
+      },
+      "programming": {
+        "name": "邏輯 / 程式設計",
+        "description": "程式設計基礎與 I/O 原語"
       },
       "allBlocks": {
         "name": "顯示所有積木",
@@ -3558,15 +3556,7 @@
       },
       "custom": {
         "name": "我的最愛",
-        "description": "註冊常用區塊"
-      },
-      "line_trace": {
-        "name": "循線機器人",
-        "description": "循線機器人"
-      },
-      "all_blocks": {
-        "name": "全部區塊",
-        "description": "顯示所有區塊"
+        "description": "註冊常用積木"
       }
     }
   },

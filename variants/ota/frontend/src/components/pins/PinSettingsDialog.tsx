@@ -170,13 +170,16 @@ interface PinSettingsDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-// Map store mode IDs to i18n keys
+// Map store mode IDs to i18n keys (Session 104 で 10 entry に再構成、snake_case → camelCase)
 const MODE_ID_TO_I18N_KEY: Record<string, string> = {
-  'robots_humanoid': 'humanoid',
-  'robots_wheel': 'wheel',
-  'robots_transform': 'transform',
+  'input': 'input',
+  'output': 'output',
+  'robotics': 'robotics',
+  'network': 'network',
   'homeassistant': 'homeassistant',
-  'generic': 'generic',
+  'storage_time': 'storageTime',
+  'gpio_bus': 'gpioBus',
+  'programming': 'programming',
   'all_blocks': 'allBlocks',
   'custom': 'custom',
 };

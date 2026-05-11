@@ -3349,31 +3349,38 @@
     }
   },
   "modeSelector": {
-    "groups": {
-      "robots": "Robots",
-      "iot": "IoT / Smart Home",
-      "other": "Other"
-    },
     "modes": {
-      "humanoid": {
-        "name": "Humanoid",
-        "description": "4-servo bipedal robot"
+      "input": {
+        "name": "Input",
+        "description": "Sensor / input blocks"
       },
-      "wheel": {
-        "name": "Wheel",
-        "description": "Wheel robot (2-wheel / competition)"
+      "output": {
+        "name": "Output",
+        "description": "Display / audio / output blocks"
       },
-      "transform": {
-        "name": "Transform",
-        "description": "Walk/roll transforming robot"
+      "robotics": {
+        "name": "Robotics",
+        "description": "Robot kits and motor control"
+      },
+      "network": {
+        "name": "Network",
+        "description": "Communication / wireless / protocols"
       },
       "homeassistant": {
         "name": "Home Assistant",
-        "description": "IoT / Smart-home integration"
+        "description": "Home Assistant integration (ArduinoHA)"
       },
-      "generic": {
-        "name": "Generic Device",
-        "description": "For microcontroller projects"
+      "storageTime": {
+        "name": "Storage / Time",
+        "description": "Persistence, clocks, timers"
+      },
+      "gpioBus": {
+        "name": "GPIO / Bus",
+        "description": "GPIO, I2C/SPI, interrupts, UART, CAN"
+      },
+      "programming": {
+        "name": "Logic / Programming",
+        "description": "Programming basics and I/O primitives"
       },
       "allBlocks": {
         "name": "All Blocks",

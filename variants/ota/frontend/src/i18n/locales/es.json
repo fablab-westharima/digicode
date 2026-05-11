@@ -3517,40 +3517,38 @@
     "downloadApple": "Descargar (oficial de Apple)"
   },
   "modeSelector": {
-    "groups": {
-      "robots": "Robots",
-      "_deleted_competition": "",
-      "iot": "IoT / Hogar inteligente",
-      "other": "Otros"
-    },
     "modes": {
-      "humanoid": {
-        "name": "Humanoid Bípedo",
-        "description": "Robot bípedo de 4 servos"
+      "input": {
+        "name": "Entrada",
+        "description": "Bloques de sensores / entrada"
       },
-      "wheelRobot": {
-        "name": "Wheel",
-        "description": "Robot de 2 ruedas"
+      "output": {
+        "name": "Salida",
+        "description": "Bloques de pantalla / audio / salida"
       },
-      "transform": {
-        "name": "Transform",
-        "description": "Robot transformable"
+      "robotics": {
+        "name": "Robótica",
+        "description": "Kits de robot y control de motores"
       },
-      "micromouse": {
-        "name": "Micromouse",
-        "description": "Robot resolvedor de laberintos"
-      },
-      "lineTrace": {
-        "name": "Seguidor de línea",
-        "description": "Robot seguidor de línea"
+      "network": {
+        "name": "Red",
+        "description": "Comunicación / inalámbrico / protocolos"
       },
       "homeassistant": {
         "name": "Home Assistant",
-        "description": "Integración IoT / Smart-home"
+        "description": "Integración con Home Assistant (ArduinoHA)"
       },
-      "generic": {
-        "name": "Dispositivo genérico",
-        "description": "Para proyectos con microcontroladores"
+      "storageTime": {
+        "name": "Almacenamiento / Tiempo",
+        "description": "Persistencia, relojes y temporizadores"
+      },
+      "gpioBus": {
+        "name": "GPIO / Bus",
+        "description": "GPIO, I2C/SPI, interrupciones, UART, CAN"
+      },
+      "programming": {
+        "name": "Lógica / Programación",
+        "description": "Conceptos básicos de programación y primitivas de E/S"
       },
       "allBlocks": {
         "name": "Todos los bloques",
@@ -3559,14 +3557,6 @@
       "custom": {
         "name": "Favoritos",
         "description": "Registra los bloques que usas a menudo"
-      },
-      "line_trace": {
-        "name": "Seguidor de línea",
-        "description": "Robot seguidor de líneas"
-      },
-      "all_blocks": {
-        "name": "Todos los bloques",
-        "description": "Muestra todos los bloques"
       }
     }
   },

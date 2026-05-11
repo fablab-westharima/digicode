@@ -3517,40 +3517,38 @@
     "downloadApple": "Baixar (oficial da Apple)"
   },
   "modeSelector": {
-    "groups": {
-      "_deleted_competition": "",
-      "iot": "IoT / Casa inteligente",
-      "other": "Outros",
-      "robots": "Robôs"
-    },
     "modes": {
-      "humanoid": {
-        "name": "Humanoid Bípede",
-        "description": "Robô bípede de 4 servos"
+      "input": {
+        "name": "Entrada",
+        "description": "Blocos de sensores / entrada"
       },
-      "wheelRobot": {
-        "name": "Wheel",
-        "description": "Robô de 2 rodas"
+      "output": {
+        "name": "Saída",
+        "description": "Blocos de ecrã / áudio / saída"
       },
-      "transform": {
-        "name": "Transform",
-        "description": "Robô transformável"
+      "robotics": {
+        "name": "Robótica",
+        "description": "Kits de robôs e controlo de motores"
       },
-      "micromouse": {
-        "name": "Micromouse",
-        "description": "Robô solucionador de labirintos"
-      },
-      "lineTrace": {
-        "name": "Seguidor de linha",
-        "description": "Robô seguidor de linha"
+      "network": {
+        "name": "Rede",
+        "description": "Comunicação / sem fios / protocolos"
       },
       "homeassistant": {
         "name": "Home Assistant",
-        "description": "Integração IoT / Casa inteligente"
+        "description": "Integração com Home Assistant (ArduinoHA)"
       },
-      "generic": {
-        "name": "Dispositivo genérico",
-        "description": "Para projetos com microcontroladores"
+      "storageTime": {
+        "name": "Armazenamento / Tempo",
+        "description": "Persistência, relógios e temporizadores"
+      },
+      "gpioBus": {
+        "name": "GPIO / Barramento",
+        "description": "GPIO, I2C/SPI, interrupções, UART, CAN"
+      },
+      "programming": {
+        "name": "Lógica / Programação",
+        "description": "Programação básica e primitivas de E/S"
       },
       "allBlocks": {
         "name": "Todos os blocos",
@@ -3559,14 +3557,6 @@
       "custom": {
         "name": "Favoritos",
         "description": "Regista os blocos que usa com frequência"
-      },
-      "line_trace": {
-        "name": "Seguidor de linha",
-        "description": "Robô seguidor de linha"
-      },
-      "all_blocks": {
-        "name": "Todos os blocos",
-        "description": "Mostra todos os blocos"
       }
     }
   },

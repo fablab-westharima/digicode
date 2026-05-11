@@ -9,22 +9,28 @@
  */
 
 export type Mode =
-  | 'all_blocks'
-  | 'custom'
-  | 'generic'
+  | 'input'
+  | 'output'
+  | 'robotics'
+  | 'network'
   | 'homeassistant'
-  | 'robots_humanoid'
-  | 'robots_transform'
-  | 'robots_wheel';
+  | 'storage_time'
+  | 'gpio_bus'
+  | 'programming'
+  | 'all_blocks'
+  | 'custom';
 
 export const ALL_MODES: readonly Mode[] = [
+  'input',
+  'output',
+  'robotics',
+  'network',
+  'homeassistant',
+  'storage_time',
+  'gpio_bus',
+  'programming',
   'all_blocks',
   'custom',
-  'generic',
-  'homeassistant',
-  'robots_humanoid',
-  'robots_transform',
-  'robots_wheel',
 ] as const;
 
 export type FieldType = 'angle' | 'checkbox' | 'dropdown' | 'number' | 'text';

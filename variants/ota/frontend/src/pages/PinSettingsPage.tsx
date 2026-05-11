@@ -18,6 +18,20 @@ import { useAuthStore } from '@/stores/authStore';
 import { useFeatureFlagStore } from '@/stores/featureFlagStore';
 import { CompileServerSettings } from '@/components/settings/CompileServerSettings';
 import { useRobotModeStore, ROBOT_MODES, type RobotMode } from '@/stores/robotModeStore';
+
+// Map store mode IDs to i18n keys (Session 104 で 10 entry に再構成、snake_case → camelCase)
+const MODE_ID_TO_I18N_KEY: Record<string, string> = {
+  'input': 'input',
+  'output': 'output',
+  'robotics': 'robotics',
+  'network': 'network',
+  'homeassistant': 'homeassistant',
+  'storage_time': 'storageTime',
+  'gpio_bus': 'gpioBus',
+  'programming': 'programming',
+  'all_blocks': 'allBlocks',
+  'custom': 'custom',
+};
 import { LocaleSelector } from '@/components/common/LocaleSelector';
 import {
   Dialog,
@@ -430,8 +444,8 @@ export function PinSettingsPage() {
                   onClick={() => setRobotMode(modeInfo.id as RobotMode)}
                 >
                   <span className="text-2xl">{modeInfo.icon}</span>
-                  <span className="text-sm font-medium">{t(`modeSelector.modes.${modeInfo.id}.name`, { defaultValue: modeInfo.name })}</span>
-                  <span className="text-xs text-muted-foreground">{t(`modeSelector.modes.${modeInfo.id}.description`, { defaultValue: modeInfo.description })}</span>
+                  <span className="text-sm font-medium">{t(`modeSelector.modes.${MODE_ID_TO_I18N_KEY[modeInfo.id] ?? modeInfo.id}.name`, { defaultValue: modeInfo.name })}</span>
+                  <span className="text-xs text-muted-foreground">{t(`modeSelector.modes.${MODE_ID_TO_I18N_KEY[modeInfo.id] ?? modeInfo.id}.description`, { defaultValue: modeInfo.description })}</span>
                 </Button>
               ))}
             </div>

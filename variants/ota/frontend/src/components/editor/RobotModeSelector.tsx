@@ -1,38 +1,45 @@
-import { useRobotModeStore, ROBOT_MODES, MODE_GROUPS, type RobotMode, type ModeGroup } from '@/stores/robotModeStore';
+import { useRobotModeStore, ROBOT_MODES, type RobotMode } from '@/stores/robotModeStore';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-// Mode ID to i18n key mapping
+// Mode ID to i18n key mapping (snake_case mode ID → camelCase i18n key)
 const MODE_I18N_KEYS: Record<RobotMode, string> = {
-  robots_humanoid: 'humanoid',
-  robots_wheel: 'wheel',
-  robots_transform: 'transform',
+  input: 'input',
+  output: 'output',
+  robotics: 'robotics',
+  network: 'network',
   homeassistant: 'homeassistant',
-  generic: 'generic',
+  storage_time: 'storageTime',
+  gpio_bus: 'gpioBus',
+  programming: 'programming',
   all_blocks: 'allBlocks',
   custom: 'custom',
 };
 
+// 表示順 (D-9 flat、グループなし、機能カテゴリ → HA → ストレージ/GPIO → ロジック → View/Settings の流れ)
+const MODE_ORDER: RobotMode[] = [
+  'input',
+  'output',
+  'robotics',
+  'network',
+  'homeassistant',
+  'storage_time',
+  'gpio_bus',
+  'programming',
+  'all_blocks',
+  'custom',
+];
+
 interface RobotModeSelectorProps {
   onModeChange?: (mode: RobotMode) => void;
 }
-
-// グループの表示順序（メタモード → ドメインモードの順）
-const GROUP_ORDER: ModeGroup[] = ['other', 'robots', 'iot'];
-
-// 平坦化表示するグループ（サブメニューではなくトップレベルに個別表示）
-const FLATTEN_GROUPS: Set<ModeGroup> = new Set(['other']);
 
 export function RobotModeSelector({ onModeChange }: RobotModeSelectorProps) {
   const { mode, setMode } = useRobotModeStore();
@@ -58,21 +65,6 @@ export function RobotModeSelector({ onModeChange }: RobotModeSelectorProps) {
     return t(`modeSelector.modes.${key}.description`, { defaultValue: ROBOT_MODES[modeId].description });
   };
 
-  // Get translated group name
-  const getGroupName = (groupId: ModeGroup) => {
-    return t(`modeSelector.groups.${groupId}`, { defaultValue: MODE_GROUPS[groupId].name });
-  };
-
-  // モードをグループごとに分類
-  const modesByGroup = Object.values(ROBOT_MODES).reduce((acc, modeInfo) => {
-    const group = modeInfo.group;
-    if (!acc[group]) {
-      acc[group] = [];
-    }
-    acc[group].push(modeInfo);
-    return acc;
-  }, {} as Record<ModeGroup, typeof ROBOT_MODES[RobotMode][]>);
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -85,70 +77,23 @@ export function RobotModeSelector({ onModeChange }: RobotModeSelectorProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56 bg-[#1C1F26] text-[#E6EDF3] border-[#2E333D]">
-        {GROUP_ORDER.map((groupId, idx) => {
-          const groupInfo = MODE_GROUPS[groupId];
-          const modesInGroup = modesByGroup[groupId];
-
-          if (!modesInGroup || modesInGroup.length === 0) return null;
-
-          // 平坦化グループ（その他）または 1 モードのみ のグループは、サブメニューにせず個別表示
-          const shouldFlatten = FLATTEN_GROUPS.has(groupId) || modesInGroup.length === 1;
-
-          // 前のグループとの境界にセパレータを入れる
-          const separator = idx > 0 ? <DropdownMenuSeparator key={`sep-${groupId}`} className="bg-[#2E333D]" /> : null;
-
-          if (shouldFlatten) {
-            return (
-              <div key={groupId}>
-                {separator}
-                {modesInGroup.map((modeInfo) => (
-                  <DropdownMenuItem
-                    key={modeInfo.id}
-                    onClick={() => handleModeChange(modeInfo.id)}
-                    className="flex items-center gap-2 hover:bg-[#2E333D] focus:bg-[#2E333D]"
-                  >
-                    <span>{modeInfo.icon}</span>
-                    <div className="flex-1">
-                      <div className="font-medium">{getModeName(modeInfo.id)}</div>
-                      <div className="text-xs text-gray-400">
-                        {getModeDescription(modeInfo.id)}
-                      </div>
-                    </div>
-                    {mode === modeInfo.id && <Check className="h-4 w-4" />}
-                  </DropdownMenuItem>
-                ))}
-              </div>
-            );
-          }
-
+        {MODE_ORDER.map((modeId) => {
+          const modeInfo = ROBOT_MODES[modeId];
           return (
-            <div key={groupId}>
-              {separator}
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger className="flex items-center gap-1.5 hover:bg-[#2E333D] focus:bg-[#2E333D]">
-                  <span>{groupInfo.icon}</span>
-                  <span>{getGroupName(groupId)}</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent className="w-56 bg-[#1C1F26] text-[#E6EDF3] border-[#2E333D]">
-                  {modesInGroup.map((modeInfo) => (
-                    <DropdownMenuItem
-                      key={modeInfo.id}
-                      onClick={() => handleModeChange(modeInfo.id)}
-                      className="flex items-center gap-2 hover:bg-[#2E333D] focus:bg-[#2E333D]"
-                    >
-                      <span>{modeInfo.icon}</span>
-                      <div className="flex-1">
-                        <div className="font-medium">{getModeName(modeInfo.id)}</div>
-                        <div className="text-xs text-gray-400">
-                          {getModeDescription(modeInfo.id)}
-                        </div>
-                      </div>
-                      {mode === modeInfo.id && <Check className="h-4 w-4" />}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-            </div>
+            <DropdownMenuItem
+              key={modeInfo.id}
+              onClick={() => handleModeChange(modeInfo.id)}
+              className="flex items-center gap-2 hover:bg-[#2E333D] focus:bg-[#2E333D]"
+            >
+              <span>{modeInfo.icon}</span>
+              <div className="flex-1">
+                <div className="font-medium">{getModeName(modeInfo.id)}</div>
+                <div className="text-xs text-gray-400">
+                  {getModeDescription(modeInfo.id)}
+                </div>
+              </div>
+              {mode === modeInfo.id && <Check className="h-4 w-4" />}
+            </DropdownMenuItem>
           );
         })}
       </DropdownMenuContent>

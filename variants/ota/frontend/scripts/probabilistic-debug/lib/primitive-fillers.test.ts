@@ -19,12 +19,12 @@ describe('fillerForCheck', () => {
   });
 
   it('returns text for String check in modes that have text', () => {
-    const node = fillerForCheck('String', 'generic', idx);
+    const node = fillerForCheck('String', 'programming', idx);
     expect(node.type).toBe('text');
   });
 
-  it('falls back to math_number for String check in robots_humanoid (no text block)', () => {
-    const node = fillerForCheck('String', 'robots_humanoid', idx);
+  it('falls back to math_number for String check in robotics (no text block)', () => {
+    const node = fillerForCheck('String', 'robotics', idx);
     expect(node.type).toBe('math_number');
   });
 
@@ -34,7 +34,7 @@ describe('fillerForCheck', () => {
     // on int arrays). Picking math_number first keeps those compile-clean;
     // text was the previous default and produced the cluster #13 errors.
     expect(fillerForCheck(undefined, 'all_blocks', idx).type).toBe('math_number');
-    expect(fillerForCheck(undefined, 'robots_wheel', idx).type).toBe('math_number');
+    expect(fillerForCheck(undefined, 'robotics', idx).type).toBe('math_number');
   });
 
   it('returns tft_color_rgb for Colour check in modes that have it', () => {
@@ -44,13 +44,13 @@ describe('fillerForCheck', () => {
   });
 
   it('falls back to math_number for Colour check in robots modes (no tft_color_rgb)', () => {
-    const node = fillerForCheck('Colour', 'robots_humanoid', idx);
+    const node = fillerForCheck('Colour', 'robotics', idx);
     expect(node.type).toBe('math_number');
   });
 
   it('treats unknown check string as ANY — math_number in every mode (BUG-062)', () => {
     expect(fillerForCheck('Frobnicator', 'all_blocks', idx).type).toBe('math_number');
-    expect(fillerForCheck('Frobnicator', 'robots_humanoid', idx).type).toBe('math_number');
+    expect(fillerForCheck('Frobnicator', 'robotics', idx).type).toBe('math_number');
   });
 
   it('ANY filler emits literal 0 — safe in int / String / numeric Serial.print contexts (BUG-062)', () => {

@@ -77,7 +77,7 @@ describe('synthesizeBlock', () => {
     const b = idx.get('esp32_pin_mode');
     expect(b).toBeDefined();
     if (!b) return;
-    const node = synthesizeBlock(b, { mode: 'generic', blockIndex: idx });
+    const node = synthesizeBlock(b, { mode: 'all_blocks', blockIndex: idx });
     expect(node.type).toBe('esp32_pin_mode');
     expect(node.fields?.PIN).toBeDefined();
     expect(node.fields?.MODE).toBeDefined();
@@ -88,7 +88,7 @@ describe('synthesizeBlock', () => {
     const b = idx.get('esp32_delay');
     expect(b).toBeDefined();
     if (!b) return;
-    const node = synthesizeBlock(b, { mode: 'generic', blockIndex: idx });
+    const node = synthesizeBlock(b, { mode: 'all_blocks', blockIndex: idx });
     expect(node.values?.TIME?.type).toBe('math_number');
   });
 
@@ -96,7 +96,7 @@ describe('synthesizeBlock', () => {
     const b = idx.get('arduino_setup');
     expect(b).toBeDefined();
     if (!b) return;
-    const node = synthesizeBlock(b, { mode: 'generic', blockIndex: idx });
+    const node = synthesizeBlock(b, { mode: 'all_blocks', blockIndex: idx });
     expect(node.type).toBe('arduino_setup');
     expect(node.fields).toBeUndefined();
     expect(node.values).toBeUndefined();

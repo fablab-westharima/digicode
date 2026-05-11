@@ -27,13 +27,13 @@ describe('pickMode', () => {
       colour: '#000',
       isStatement: true,
       hasOutput: false,
-      modes: ['robots_humanoid' as const],
+      modes: ['robotics' as const],
       boardRequires: null,
       fields: [],
       valueInputs: [],
       statementInputs: [],
     };
-    expect(pickMode(synth)).toBe('robots_humanoid');
+    expect(pickMode(synth)).toBe('robotics');
   });
 });
 
@@ -72,7 +72,7 @@ describe('pickBoard', () => {
       colour: '#000',
       isStatement: true,
       hasOutput: false,
-      modes: ['generic' as const],
+      modes: ['all_blocks' as const],
       // Use an unsupported boardRequires string so isBlockAllowedOnBoard returns false.
       boardRequires: 'supportsZigbee' as unknown as null,
       fields: [],

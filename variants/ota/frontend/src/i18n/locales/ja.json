@@ -3339,31 +3339,38 @@
     }
   },
   "modeSelector": {
-    "groups": {
-      "robots": "Robots",
-      "iot": "IoT / スマートホーム",
-      "other": "その他"
-    },
     "modes": {
-      "humanoid": {
-        "name": "Humanoid",
-        "description": "4サーボ二足歩行ロボット"
+      "input": {
+        "name": "インプット",
+        "description": "センサー入力系のブロック"
       },
-      "wheel": {
-        "name": "Wheel",
-        "description": "車輪ロボット（2輪・競技）"
+      "output": {
+        "name": "アウトプット",
+        "description": "表示・音響・出力系のブロック"
       },
-      "transform": {
-        "name": "Transform",
-        "description": "変形ロボット（歩行/走行変形）"
+      "robotics": {
+        "name": "ロボティクス",
+        "description": "ロボットキット・モーター制御"
+      },
+      "network": {
+        "name": "ネットワーク",
+        "description": "通信・無線・プロトコル"
       },
       "homeassistant": {
         "name": "Home Assistant",
-        "description": "IoT/スマートホーム連携"
+        "description": "Home Assistant 連携 (ArduinoHA)"
       },
-      "generic": {
-        "name": "汎用デバイス",
-        "description": "マイコン工作・電子工作向け"
+      "storageTime": {
+        "name": "ストレージ/時間",
+        "description": "永続化・時計・タイマー"
+      },
+      "gpioBus": {
+        "name": "GPIO/バス",
+        "description": "GPIO・I2C/SPI・割り込み・UART・CAN"
+      },
+      "programming": {
+        "name": "ロジック/プログラミング",
+        "description": "プログラミング基礎・I/O プリミティブ"
       },
       "allBlocks": {
         "name": "全ブロック表示",

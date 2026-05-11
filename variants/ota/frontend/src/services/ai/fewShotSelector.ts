@@ -5,14 +5,19 @@ import type { RobotMode } from '@/stores/robotModeStore';
 
 const SHARED_BASIC = ['led-blink', 'serial-hello'] as const;
 
+// Session 104 で 10 mode に再構成。mode = block scope hint (D-5) として AI に伝達、
+// mode-specific sample は user が見ている category 帯の典型 sample で domain bias を付与する。
 const MODE_SPECIFIC_SAMPLES: Record<RobotMode, readonly [string, string]> = {
-  robots_humanoid:  ['humanoid-dance', 'humanoid-walk'],
-  robots_wheel:     ['wheel-obstacle', 'wheel-line-follow'],
-  robots_transform: ['transform-ninja', 'transform-morph'],
-  homeassistant:    ['ha-led-control', 'ha-multi-sensor'],
-  generic:          ['ultrasonic-distance', 'dht-sensor'],
-  all_blocks:       ['ultrasonic-distance', 'dht-sensor'],
-  custom:           ['ultrasonic-distance', 'dht-sensor'],
+  input:         ['dht-sensor', 'ultrasonic-distance'],
+  output:        ['neopixel-animation', 'lcd-display'],
+  robotics:      ['humanoid-dance', 'wheel-line-follow'],
+  network:       ['mqtt-direct', 'http-get-request'],
+  homeassistant: ['ha-led-control', 'ha-multi-sensor'],
+  storage_time:  ['nvs-counter', 'ntp-time-sync'],
+  gpio_bus:      ['interrupt-button', 'hx711-scale'],
+  programming:   ['serial-hello', 'led-blink'],
+  all_blocks:    ['ultrasonic-distance', 'dht-sensor'],
+  custom:        ['ultrasonic-distance', 'dht-sensor'],
 };
 
 // 優先度順（上から match 試行、最初に hit したものを採用）
@@ -100,7 +105,7 @@ function selectThemedSample(promptText: string, exclude: ReadonlySet<string>): s
 }
 
 export function selectFewShot(mode: RobotMode, promptText: string): string[] {
-  const modeSpecific = MODE_SPECIFIC_SAMPLES[mode] ?? MODE_SPECIFIC_SAMPLES.generic;
+  const modeSpecific = MODE_SPECIFIC_SAMPLES[mode] ?? MODE_SPECIFIC_SAMPLES.all_blocks;
   const used = new Set<string>([...modeSpecific, ...SHARED_BASIC]);
   const themed = selectThemedSample(promptText, used);
   const result: string[] = [...modeSpecific, ...SHARED_BASIC];

@@ -32,7 +32,7 @@ describe('validateRoots — happy path', () => {
       },
     };
     const issues = validateRoots([root], {
-      mode: 'generic',
+      mode: 'all_blocks',
       board: fullBoard,
       blockIndex: idx,
     });
@@ -44,7 +44,7 @@ describe('validateRoots — failures', () => {
   it('flags unknown block type', () => {
     const root: BlockNode = { type: 'totally_made_up_block' };
     const issues = validateRoots([root], {
-      mode: 'generic',
+      mode: 'all_blocks',
       board: fullBoard,
       blockIndex: idx,
     });
@@ -53,18 +53,19 @@ describe('validateRoots — failures', () => {
   });
 
   it('flags mode mismatch', () => {
-    // esp32_pin_mode is NOT in robots_* modes per catalog audit.
+    // esp32_pin_mode (category=gpio) is in gpio_bus / all_blocks / custom only.
+    // Pick an unrelated mode to trigger the mismatch flag.
     const root: BlockNode = {
       type: 'esp32_pin_mode',
       fields: { PIN: 2, MODE: 'OUTPUT' },
     };
     const issues = validateRoots([root], {
-      mode: 'robots_humanoid',
+      mode: 'input',
       board: fullBoard,
       blockIndex: idx,
     });
     expect(issues.length).toBeGreaterThan(0);
-    expect(issues[0].reason).toMatch(/mode "robots_humanoid" not in/);
+    expect(issues[0].reason).toMatch(/mode "input" not in/);
   });
 
   it('flags board capability shortfall (BLE-required block on no-BLE board)', () => {
@@ -90,7 +91,7 @@ describe('validateRoots — failures', () => {
   it('flags missing required field', () => {
     const root: BlockNode = { type: 'esp32_pin_mode' /* fields omitted */ };
     const issues = validateRoots([root], {
-      mode: 'generic',
+      mode: 'all_blocks',
       board: fullBoard,
       blockIndex: idx,
     });
@@ -110,7 +111,7 @@ describe('validateRoots — failures', () => {
       },
     };
     const issues = validateRoots([root], {
-      mode: 'generic',
+      mode: 'all_blocks',
       board: fullBoard,
       blockIndex: idx,
     });

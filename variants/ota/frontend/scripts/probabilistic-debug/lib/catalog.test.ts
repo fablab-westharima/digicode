@@ -28,16 +28,19 @@ describe('catalog loader', () => {
     expect(a).toBe(b);
   });
 
-  it('all blocks have valid mode entries (subset of the 7 known modes)', () => {
+  it('all blocks have valid mode entries (subset of the 10 known modes)', () => {
     const cat = loadCatalog();
     const known = new Set([
+      'input',
+      'output',
+      'robotics',
+      'network',
+      'homeassistant',
+      'storage_time',
+      'gpio_bus',
+      'programming',
       'all_blocks',
       'custom',
-      'generic',
-      'homeassistant',
-      'robots_humanoid',
-      'robots_transform',
-      'robots_wheel',
     ]);
     for (const b of cat.blocks) {
       for (const m of b.modes) {
@@ -52,10 +55,10 @@ describe('catalog loader', () => {
 describe('blocksForMode', () => {
   it('returns only blocks that include the given mode', () => {
     const cat = loadCatalog();
-    const robots = blocksForMode(cat, 'robots_humanoid');
+    const robots = blocksForMode(cat, 'robotics');
     expect(robots.length).toBeGreaterThan(0);
     for (const b of robots) {
-      expect(b.modes).toContain('robots_humanoid');
+      expect(b.modes).toContain('robotics');
     }
   });
 });
@@ -80,7 +83,7 @@ describe('isBlockAllowedOnBoard', () => {
       colour: '#000',
       isStatement: true,
       hasOutput: false,
-      modes: ['generic' as const],
+      modes: ['all_blocks' as const],
       boardRequires: null,
       fields: [],
       valueInputs: [],
@@ -97,7 +100,7 @@ describe('isBlockAllowedOnBoard', () => {
       colour: '#000',
       isStatement: true,
       hasOutput: false,
-      modes: ['generic' as const],
+      modes: ['all_blocks' as const],
       boardRequires: 'supportsBle' as const,
       fields: [],
       valueInputs: [],
@@ -115,10 +118,10 @@ describe('blocksFor', () => {
     expect(fullBoard).toBeDefined();
     if (!fullBoard) return;
 
-    const all = blocksFor(cat, 'generic', fullBoard);
+    const all = blocksFor(cat, 'all_blocks', fullBoard);
     expect(all.length).toBeGreaterThan(0);
     for (const b of all) {
-      expect(b.modes).toContain('generic');
+      expect(b.modes).toContain('all_blocks');
     }
   });
 });

@@ -1513,297 +1513,163 @@ const getToolboxCategories = (): Record<string, string> => ({
   separator9: `<sep></sep>`,
 });
 
-// 各モードで表示するカテゴリの順序
+// 各モードで表示するカテゴリの順序。
+// Session 104 で機能カテゴリベース 10 mode 構成に再編 (D-2 (a) 完全置換)。
+// arduino_core は D-3 (a) で全 mode の先頭固定 (pin top)。
 const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
-  robots_humanoid: [
+  // インプット — センサー入力系 (23 categories)
+  input: [
     'arduino_core',
-    'robot_humanoid',
     'separator1',
-    // センサー（基本）
+    // 基礎センサー
     'sensor_digital',
     'sensor_analog',
     'sensor_ultrasonic',
     'sensor_dht',
-    // センサー（応用）
-    'sensor_motion',
     'separator2',
-    // アクチュエータ・表示・音声
-    'servo',
-    'buzzer',
-    'neopixel',
-    'display',
-    'audio_dfplayer',
+    // 環境・運動・距離・位置
+    'sensor_motion',
+    'sensor_environment',
+    'sensor_air_quality',
+    'sensor_current',
+    'sensor_tof',
+    'sensor_encoder_mag',
+    'gps',
     'separator3',
-    // 短距離無線
-    'ble',
+    // 競技センサー
+    'sensor_line',
+    'sensor_qtr',
+    'sensor_wall',
     'separator4',
-    // シリアル・時間
-    'serial',
-    'time',
-    'separator5',
-    // 基本プログラミング
-    'logic',
-    'loops',
-    'math',
-    'lists',
-    'variables',
-    'functions',
+    // 専門・物理量・識別
+    'microphone',
+    'flow_meter',
+    'apds9960',
+    'sensor_health',
+    'hx711',
+    'piezo',
+    'esp32_touch',
+    'rfid',
+    'ir_remote',
   ],
-  robots_wheel: [
+  // アウトプット — 表示・音響・出力系 (13 categories)
+  output: [
     'arduino_core',
-    'robot_wheel',
     'separator1',
+    // LED 系
+    'neopixel',
+    'neomatrix',
+    'separator2',
+    // 表示
+    'display',
+    'oled_ssd1306',
+    'tft_display',
+    'epaper',
+    'max7219',
+    'tm1637',
+    'm5stack',
+    'camera',
+    'separator3',
+    // 音響
+    'buzzer',
+    'audio_dfplayer',
+    'separator4',
+    // スイッチ
+    'relay',
+  ],
+  // ロボティクス — ロボットキット・モーター制御 (10 categories)
+  robotics: [
+    'arduino_core',
+    'separator1',
+    // ロボットキット
+    'robot_humanoid',
+    'robot_wheel',
+    'robot_transform',
+    'separator2',
     // モーター・駆動系・制御
     'motor',
     'diff_drive',
     'encoder',
     'pid',
-    'separator2',
-    // センサー（基本）
-    'sensor_digital',
-    'sensor_analog',
-    'sensor_ultrasonic',
-    'sensor_dht',
-    // センサー（応用: 競技ロボット）
-    'sensor_line',
-    'sensor_qtr',
-    'sensor_wall',
-    'sensor_motion',
-    'separator3',
-    // アクチュエータ・表示
     'servo',
     'stepper',
     'stepper_driver',
-    'relay',
-    'buzzer',
-    'neopixel',
-    'display',
-    'separator4',
-    // シリアル・時間・永続化
-    'serial',
-    'time',
-    'storage_nvs',
-    'separator5',
-    // 基本プログラミング
-    'logic',
-    'loops',
-    'math',
-    'lists',
-    'variables',
-    'functions',
   ],
-  robots_transform: [
+  // ネットワーク — 通信・無線・プロトコル (14 categories)
+  network: [
     'arduino_core',
-    'robot_transform',
     'separator1',
-    // センサー（基本）
-    'sensor_digital',
-    'sensor_analog',
-    'sensor_ultrasonic',
-    'sensor_dht',
-    'sensor_motion',
+    // WAN/LAN 基本通信
+    'wifi',
+    'http',
+    'mqtt',
+    'websocket',
     'separator2',
-    // アクチュエータ・表示・音声
-    'servo',
-    'buzzer',
-    'neopixel',
-    'display',
-    'audio_dfplayer',
-    'separator3',
-    // 短距離無線
+    // 短距離・特殊通信
     'ble',
+    'espnow',
+    'lora',
+    'modbus',
+    'separator3',
+    // クラウド・通知
+    'iot_cloud',
+    'azure_iot',
+    'notification',
+    'google_services',
     'separator4',
-    // シリアル・時間
-    'serial',
-    'time',
-    'separator5',
-    // 基本プログラミング
-    'logic',
-    'loops',
-    'math',
-    'lists',
-    'variables',
-    'functions',
+    // 配信・フォーマット
+    'ota',
+    'json',
   ],
-  // micromouse と line_trace は robots_wheel に統合済み
+  // Home Assistant — HA 連携 (1 category)
   homeassistant: [
     'arduino_core',
-    'm5stack',
     'separator1',
-    // ネットワーク通信（IoT特化モードのため最優先）
-    'wifi',
-    'mqtt',
     'arduino_ha',
-    'iot_cloud',
-    'azure_iot',
-    'notification',
-    'google_services',
-    'espnow',
-    'lora',
-    'modbus',
-    'http',
-    'json',
-    'ota',
-    'websocket',
-    'separator2',
-    // センサー（基礎 → 応用）
-    'sensor_digital',
-    'sensor_analog',
-    'sensor_ultrasonic',
-    'sensor_dht',
-    'sensor_motion',
-    'sensor_environment',
-    'sensor_air_quality',
-    'microphone',
-    'flow_meter',
-    'apds9960',
-    'sensor_health',
-    'sensor_current',
-    'piezo',
-    'hx711',
-    'sensor_tof',
-    'sensor_encoder_mag',
-    'gps',
-    'separator3',
-    // アクチュエータ・表示・音声
-    'servo',
-    'stepper',
-    'stepper_driver',
-    'relay',
-    'buzzer',
-    'neopixel',
-    'neomatrix',
-    'display',
-    'oled_ssd1306',
-    'tm1637',
-    'max7219',
-    'epaper',
-    'tft_display',
-    'camera',
-    'audio_dfplayer',
-    'separator4',
-    // 短距離無線・識別
-    'ble',
-    'ir_remote',
-    'rfid',
-    'separator5',
-    // GPIO・バス・割り込み
-    'gpio',
-    'esp32_touch',
-    'interrupt',
-    'i2c_spi',
-    'uart_extra',
-    'can_bus',
-    'separator6',
-    // シリアル・時間・永続化
-    'serial',
-    'time',
-    'ntp_time',
-    'rtc',
-    'storage_nvs',
-    'storage_fs',
-    'separator7',
-    // モーター・駆動系
-    'motor',
-    'diff_drive',
-    'encoder',
-    'pid',
-    'separator8',
-    // 基本プログラミング
-    'logic',
-    'loops',
-    'math',
-    'text',
-    'lists',
-    'variables',
-    'functions',
   ],
-  generic: [
+  // ストレージ/時間 — 永続化・時計・タイマー (5 categories)
+  storage_time: [
     'arduino_core',
-    'm5stack',
     'separator1',
-    // センサー（基礎 → 応用）
-    'sensor_digital',
-    'sensor_analog',
-    'sensor_ultrasonic',
-    'sensor_dht',
-    'sensor_motion',
-    'sensor_environment',
-    'sensor_air_quality',
-    'microphone',
-    'flow_meter',
-    'apds9960',
-    'sensor_health',
-    'sensor_current',
-    'piezo',
-    'hx711',
-    'sensor_tof',
-    'sensor_encoder_mag',
-    'gps',
-    'separator2',
-    // アクチュエータ・表示・音声
-    'servo',
-    'stepper',
-    'stepper_driver',
-    'relay',
-    'buzzer',
-    'neopixel',
-    'neomatrix',
-    'display',
-    'oled_ssd1306',
-    'tm1637',
-    'max7219',
-    'epaper',
-    'tft_display',
-    'camera',
-    'audio_dfplayer',
-    'separator3',
-    // ネットワーク通信
-    'wifi',
-    'mqtt',
-    'arduino_ha',
-    'iot_cloud',
-    'azure_iot',
-    'notification',
-    'google_services',
-    'espnow',
-    'lora',
-    'modbus',
-    'http',
-    'json',
-    'ota',
-    'websocket',
-    'separator4',
-    // 短距離無線・識別
-    'ble',
-    'ir_remote',
-    'rfid',
-    'separator5',
-    // GPIO・バス・割り込み
-    'gpio',
-    'esp32_touch',
-    'interrupt',
-    'i2c_spi',
-    'uart_extra',
-    'can_bus',
-    'separator6',
-    // シリアル・時間・永続化
-    'serial',
+    // 時計・タイマー
     'time',
     'ntp_time',
     'rtc',
+    'separator2',
+    // 永続化
     'storage_nvs',
     'storage_fs',
-    'separator7',
-    // 基本プログラミング
+  ],
+  // GPIO/バス — GPIO・I2C/SPI・割り込み・UART・CAN (5 categories)
+  gpio_bus: [
+    'arduino_core',
+    'separator1',
+    // GPIO 系
+    'gpio',
+    'interrupt',
+    'separator2',
+    // バス
+    'i2c_spi',
+    'uart_extra',
+    'can_bus',
+  ],
+  // ロジック/プログラミング — プログラミング基礎 + I/O プリミティブ (8 categories)
+  programming: [
+    'arduino_core',
+    'serial',
+    'separator1',
+    // 制御フロー
     'logic',
     'loops',
+    'separator2',
+    // データ型・抽象化
     'math',
     'text',
     'lists',
     'variables',
     'functions',
   ],
+  // 全ブロック表示 — すべてのカテゴリ (大全)
   all_blocks: [
     'arduino_core',
     'm5stack',

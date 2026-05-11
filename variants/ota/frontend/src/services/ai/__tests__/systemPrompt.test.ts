@@ -30,25 +30,25 @@ const mockCatalog: BlockCatalog = {
     {
       type: 'arduino_setup', category: 'core', tooltip: 'Setup',
       isStatement: false, hasOutput: false,
-      modes: ['generic', 'robots_humanoid', 'all_blocks', 'custom'], boardRequires: null,
+      modes: ['all_blocks', 'robotics', 'all_blocks', 'custom'], boardRequires: null,
       fields: [], valueInputs: [], statementInputs: [{ name: 'SETUP' }],
     },
     {
       type: 'humanoid_walk', category: 'robot_humanoid', tooltip: 'Walk',
       isStatement: true, hasOutput: false,
-      modes: ['robots_humanoid', 'all_blocks', 'custom'], boardRequires: null,
+      modes: ['robotics', 'all_blocks', 'custom'], boardRequires: null,
       fields: [], valueInputs: [], statementInputs: [],
     },
     {
       type: 'ble_scan', category: 'ble', tooltip: 'BLE Scan',
       isStatement: true, hasOutput: false,
-      modes: ['generic', 'robots_humanoid', 'all_blocks', 'custom'], boardRequires: 'supportsBle',
+      modes: ['all_blocks', 'robotics', 'all_blocks', 'custom'], boardRequires: 'supportsBle',
       fields: [], valueInputs: [], statementInputs: [],
     },
     {
       type: 'wifi_connect', category: 'wifi', tooltip: 'WiFi',
       isStatement: true, hasOutput: false,
-      modes: ['generic', 'all_blocks', 'custom'], boardRequires: 'supportsWifi',
+      modes: ['all_blocks', 'all_blocks', 'custom'], boardRequires: 'supportsWifi',
       fields: [
         { name: 'SSID',     fieldType: 'text', default: 'your_ssid',     isCredential: true as const },
         { name: 'PASSWORD', fieldType: 'text', default: 'your_password', isCredential: true as const },
@@ -58,14 +58,14 @@ const mockCatalog: BlockCatalog = {
     {
       type: 'bmp280_read', category: 'sensor', tooltip: 'BMP280',
       isStatement: false, hasOutput: true,
-      modes: ['generic', 'all_blocks', 'custom'], boardRequires: null,
+      modes: ['all_blocks', 'all_blocks', 'custom'], boardRequires: null,
       fields: [{ name: 'TYPE', fieldType: 'dropdown', options: ['temp', 'pres'] }],
       valueInputs: [], statementInputs: [],
     },
     {
       type: 'esp32_delay', category: 'core', tooltip: 'Delay',
       isStatement: true, hasOutput: false,
-      modes: ['generic', 'all_blocks', 'custom'], boardRequires: null,
+      modes: ['all_blocks', 'all_blocks', 'custom'], boardRequires: null,
       fields: [], valueInputs: [{ name: 'TIME', check: 'Number' }], statementInputs: [],
     },
   ],
@@ -74,7 +74,7 @@ const mockCatalog: BlockCatalog = {
 describe('buildSystemPrompt', () => {
   it('contains all 6 required section headers', () => {
     const filteredBlocks = filterCatalog(mockCatalog);
-    const prompt = buildSystemPrompt({ language: 'ja', mode: 'generic', board: mockBoard, filteredBlocks, userPromptText: 'LEDを点滅させたい' });
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard, filteredBlocks, userPromptText: 'LEDを点滅させたい' });
     expect(prompt).toContain('# Role');
     expect(prompt).toContain('# Output Format');
     expect(prompt).toContain('# Available Block Types');
@@ -85,7 +85,7 @@ describe('buildSystemPrompt', () => {
 
   it('groups blocks by connection shape (statement / value / hat)', () => {
     const filteredBlocks = filterCatalog(mockCatalog);
-    const prompt = buildSystemPrompt({ language: 'ja', mode: 'generic', board: mockBoard, filteredBlocks, userPromptText: 'LEDを点滅させたい' });
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard, filteredBlocks, userPromptText: 'LEDを点滅させたい' });
     expect(prompt).toContain('## Statement blocks');
     expect(prompt).toContain('## Value blocks');
     expect(prompt).toContain('## Top-level hat blocks');
@@ -103,7 +103,7 @@ describe('buildSystemPrompt', () => {
 
   it('marks credential fields with ★ in the schema', () => {
     const filteredBlocks = filterCatalog(mockCatalog);
-    const prompt = buildSystemPrompt({ language: 'ja', mode: 'generic', board: mockBoard, filteredBlocks, userPromptText: 'LEDを点滅させたい' });
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard, filteredBlocks, userPromptText: 'LEDを点滅させたい' });
     // wifi_connect has SSID and PASSWORD as credential fields
     expect(prompt).toContain('SSID:text★');
     expect(prompt).toContain('PASSWORD:text★');
@@ -113,14 +113,14 @@ describe('buildSystemPrompt', () => {
 
   it('includes dropdown options in schema', () => {
     const filteredBlocks = filterCatalog(mockCatalog);
-    const prompt = buildSystemPrompt({ language: 'ja', mode: 'generic', board: mockBoard, filteredBlocks, userPromptText: 'LEDを点滅させたい' });
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard, filteredBlocks, userPromptText: 'LEDを点滅させたい' });
     // bmp280_read has TYPE dropdown with temp|pres
     expect(prompt).toContain('TYPE:temp|pres');
   });
 
   it('includes value inputs and statement inputs in schema', () => {
     const filteredBlocks = filterCatalog(mockCatalog);
-    const prompt = buildSystemPrompt({ language: 'ja', mode: 'generic', board: mockBoard, filteredBlocks, userPromptText: 'LEDを点滅させたい' });
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard, filteredBlocks, userPromptText: 'LEDを点滅させたい' });
     // esp32_delay has TIME value input with Number check
     expect(prompt).toContain('[TIME:Number]');
     // arduino_setup has SETUP statement input
@@ -130,14 +130,14 @@ describe('buildSystemPrompt', () => {
   it('includes existingXml in context when provided', () => {
     const filteredBlocks = filterCatalog(mockCatalog);
     const existingXml = '<xml xmlns="https://developers.google.com/blockly/xml"></xml>';
-    const prompt = buildSystemPrompt({ language: 'en', mode: 'generic', board: mockBoard, existingXml, filteredBlocks, userPromptText: 'Make LED blink' });
+    const prompt = buildSystemPrompt({ language: 'en', mode: 'all_blocks', board: mockBoard, existingXml, filteredBlocks, userPromptText: 'Make LED blink' });
     expect(prompt).toContain('Existing workspace XML:');
     expect(prompt).toContain(existingXml);
   });
 
   it('omits existingXml section when not provided', () => {
     const filteredBlocks = filterCatalog(mockCatalog);
-    const prompt = buildSystemPrompt({ language: 'en', mode: 'generic', board: mockBoard, filteredBlocks, userPromptText: 'Make LED blink' });
+    const prompt = buildSystemPrompt({ language: 'en', mode: 'all_blocks', board: mockBoard, filteredBlocks, userPromptText: 'Make LED blink' });
     expect(prompt).not.toContain('Existing workspace XML:');
   });
 });
@@ -149,7 +149,7 @@ describe('filterCatalog（全ブロック返却、判断 16 付随）', () => {
   });
 
   it('returns all blocks even when mode is provided', () => {
-    const filtered = filterCatalog(mockCatalog, 'generic');
+    const filtered = filterCatalog(mockCatalog, 'all_blocks');
     expect(filtered).toHaveLength(mockCatalog.blocks.length);
     const types = filtered.map(b => b.type);
     expect(types).toContain('humanoid_walk');
@@ -158,7 +158,7 @@ describe('filterCatalog（全ブロック返却、判断 16 付随）', () => {
 
   it('returns all blocks even when mode and board are provided', () => {
     const noWifiBoard = { ...mockBoard, supportsWifi: false };
-    const filtered = filterCatalog(mockCatalog, 'generic', noWifiBoard);
+    const filtered = filterCatalog(mockCatalog, 'all_blocks', noWifiBoard);
     expect(filtered).toHaveLength(mockCatalog.blocks.length);
     expect(filtered.map(b => b.type)).toContain('wifi_connect');
   });
@@ -178,7 +178,7 @@ describe('getAllowedTypes', () => {
 
 describe('buildHelpBotSystemPrompt', () => {
   it('contains all 5 required sections', () => {
-    const prompt = buildHelpBotSystemPrompt({ language: 'ja', mode: 'generic', board: mockBoard });
+    const prompt = buildHelpBotSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard });
     expect(prompt).toContain('# Role');
     expect(prompt).toContain('# Response Style');
     expect(prompt).toContain('# Current Context');
@@ -187,9 +187,9 @@ describe('buildHelpBotSystemPrompt', () => {
   });
 
   it('includes board and mode in context', () => {
-    const prompt = buildHelpBotSystemPrompt({ language: 'en', mode: 'generic', board: mockBoard });
+    const prompt = buildHelpBotSystemPrompt({ language: 'en', mode: 'all_blocks', board: mockBoard });
     expect(prompt).toContain('Board: ESP32');
-    expect(prompt).toContain('Mode: generic');
+    expect(prompt).toContain('Mode: all_blocks');
   });
 
   it('omits current context section when neither mode nor board is provided', () => {
@@ -198,7 +198,7 @@ describe('buildHelpBotSystemPrompt', () => {
   });
 
   it('does not contain few-shot examples', () => {
-    const prompt = buildHelpBotSystemPrompt({ language: 'ja', mode: 'generic', board: mockBoard });
+    const prompt = buildHelpBotSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard });
     expect(prompt).not.toContain('## Example 1:');
     expect(prompt).not.toContain('## Example 2:');
   });
@@ -207,7 +207,7 @@ describe('buildHelpBotSystemPrompt', () => {
     const filteredBlocks = filterCatalog(mockCatalog);
     const prompt = buildHelpBotSystemPrompt({
       language: 'ja',
-      mode: 'generic',
+      mode: 'all_blocks',
       board: mockBoard,
       filteredBlocks,
     });
@@ -219,7 +219,7 @@ describe('buildHelpBotSystemPrompt', () => {
   });
 
   it('omits Available Blocks section when filteredBlocks is undefined (backward compat)', () => {
-    const prompt = buildHelpBotSystemPrompt({ language: 'ja', mode: 'generic', board: mockBoard });
+    const prompt = buildHelpBotSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard });
     expect(prompt).not.toContain('# Available Blocks');
   });
 
@@ -227,7 +227,7 @@ describe('buildHelpBotSystemPrompt', () => {
     const filteredBlocks = filterCatalog(mockCatalog);
     const prompt = buildHelpBotSystemPrompt({
       language: 'ja',
-      mode: 'generic',
+      mode: 'all_blocks',
       board: mockBoard,
       filteredBlocks,
     });
@@ -243,7 +243,7 @@ describe('buildHelpBotSystemPrompt', () => {
     const filteredBlocks = filterCatalog(mockCatalog);
     const prompt = buildHelpBotSystemPrompt({
       language: 'ja',
-      mode: 'generic',
+      mode: 'all_blocks',
       board: mockBoard,
       filteredBlocks,
     });
@@ -257,21 +257,21 @@ describe('buildHelpBotSystemPrompt', () => {
 
 describe('buildBlockGenConversationPrompt', () => {
   it('contains role and context sections', () => {
-    const prompt = buildBlockGenConversationPrompt({ language: 'ja', mode: 'generic', board: mockBoard });
+    const prompt = buildBlockGenConversationPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard });
     expect(prompt).toContain('# Role');
     expect(prompt).toContain('# Current Context');
     expect(prompt).toContain('Board: ESP32');
-    expect(prompt).toContain('Mode: generic');
+    expect(prompt).toContain('Mode: all_blocks');
   });
 
   it('does not contain xml output format or prohibitions', () => {
-    const prompt = buildBlockGenConversationPrompt({ language: 'ja', mode: 'generic', board: mockBoard });
+    const prompt = buildBlockGenConversationPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard });
     expect(prompt).not.toContain('# Output Format');
     expect(prompt).not.toContain('# Prohibitions');
   });
 
   it('does not contain few-shot examples', () => {
-    const prompt = buildBlockGenConversationPrompt({ language: 'en', mode: 'generic', board: mockBoard });
+    const prompt = buildBlockGenConversationPrompt({ language: 'en', mode: 'all_blocks', board: mockBoard });
     expect(prompt).not.toContain('## Example 1:');
   });
 
@@ -279,7 +279,7 @@ describe('buildBlockGenConversationPrompt', () => {
     const filteredBlocks = filterCatalog(mockCatalog);
     const prompt = buildBlockGenConversationPrompt({
       language: 'ja',
-      mode: 'generic',
+      mode: 'all_blocks',
       board: mockBoard,
       filteredBlocks,
     });
@@ -292,7 +292,7 @@ describe('buildBlockGenConversationPrompt', () => {
   });
 
   it('omits Available Blocks section when filteredBlocks is undefined (backward compat)', () => {
-    const prompt = buildBlockGenConversationPrompt({ language: 'ja', mode: 'generic', board: mockBoard });
+    const prompt = buildBlockGenConversationPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard });
     expect(prompt).not.toContain('# Available Blocks');
   });
 
@@ -300,7 +300,7 @@ describe('buildBlockGenConversationPrompt', () => {
     const filteredBlocks = filterCatalog(mockCatalog);
     const prompt = buildBlockGenConversationPrompt({
       language: 'ja',
-      mode: 'generic',
+      mode: 'all_blocks',
       board: mockBoard,
       filteredBlocks,
     });

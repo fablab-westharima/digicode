@@ -1,30 +1,22 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-// モードの定義
+// Block category groups. Each ID filters the toolbox to a function-oriented
+// view; `all_blocks` opts out of filtering, `custom` is the favorite picker.
+// Replaces the pre-Session-104 use-case-oriented modes (humanoid / wheel /
+// transform / homeassistant / generic) — see persist `migrate` below for the
+// legacy → new mapping.
 export type RobotMode =
-  | 'robots_humanoid'  // ヒューマノイドロボット
-  | 'robots_wheel'     // 車輪ロボット（micromouse / line_trace 統合）
-  | 'robots_transform' // 変形ロボット
-  | 'homeassistant'    // Home Assistant
-  | 'generic'          // 汎用デバイス
-  | 'all_blocks'       // 全ブロック表示
-  | 'custom';          // お気に入り
-
-// モードのグループ定義
-export type ModeGroup = 'robots' | 'iot' | 'other';
-
-export interface ModeGroupInfo {
-  id: ModeGroup;
-  name: string;
-  icon: string;
-}
-
-export const MODE_GROUPS: Record<ModeGroup, ModeGroupInfo> = {
-  robots: { id: 'robots', name: 'Robots', icon: '🤖' },
-  iot: { id: 'iot', name: 'IoT / スマートホーム', icon: '🏠' },
-  other: { id: 'other', name: 'その他', icon: '⚙️' },
-};
+  | 'input'         // センサー入力系
+  | 'output'        // 表示・音響・出力系
+  | 'robotics'      // ロボット・モーター制御
+  | 'network'       // 通信・無線・プロトコル
+  | 'homeassistant' // Home Assistant 連携
+  | 'storage_time'  // 永続化・時計・タイマー
+  | 'gpio_bus'      // GPIO・I2C/SPI・割り込み・UART
+  | 'programming'   // ロジック・データ型・I/O プリミティブ
+  | 'all_blocks'    // 全ブロック表示
+  | 'custom';       // お気に入り
 
 // 各モードの情報
 export interface RobotModeInfo {
@@ -32,84 +24,92 @@ export interface RobotModeInfo {
   name: string;
   icon: string;
   description: string;
-  // このモードで表示するブロックカテゴリ（参考用）
+  // このモードで表示するブロックカテゴリ（参考用、実体は toolboxGenerator.MODE_CATEGORY_ORDER）
   categories: string[];
-  // グループ
-  group: ModeGroup;
 }
 
-// ロボットモード定義
+// ブロックカテゴリ群モード定義（D-9: flat 10 entry、グループなし）
 export const ROBOT_MODES: Record<RobotMode, RobotModeInfo> = {
-  // Robots グループ
-  robots_humanoid: {
-    id: 'robots_humanoid',
-    name: 'Humanoid',
+  input: {
+    id: 'input',
+    name: 'インプット',
+    icon: '📥',
+    description: 'センサー入力系のブロック',
+    categories: [
+      'sensor_digital', 'sensor_analog', 'sensor_ultrasonic', 'sensor_dht',
+      'sensor_motion', 'sensor_environment', 'sensor_air_quality', 'sensor_current',
+      'sensor_tof', 'sensor_encoder_mag', 'gps', 'sensor_line', 'sensor_qtr', 'sensor_wall',
+      'microphone', 'flow_meter', 'apds9960', 'sensor_health', 'hx711', 'piezo',
+      'esp32_touch', 'rfid', 'ir_remote',
+    ],
+  },
+  output: {
+    id: 'output',
+    name: 'アウトプット',
+    icon: '📤',
+    description: '表示・音響・出力系のブロック',
+    categories: [
+      'neopixel', 'neomatrix',
+      'display', 'oled_ssd1306', 'tft_display', 'epaper', 'max7219', 'tm1637', 'm5stack', 'camera',
+      'buzzer', 'audio_dfplayer',
+      'relay',
+    ],
+  },
+  robotics: {
+    id: 'robotics',
+    name: 'ロボティクス',
     icon: '🤖',
-    description: '4サーボ二足歩行ロボット',
+    description: 'ロボットキット・モーター制御',
     categories: [
-      'logic', 'loops', 'math', 'variables', 'functions',
-      'time', 'serial',
-      'robot_humanoid',
-      'sensor_ultrasonic',
-    ],
-    group: 'robots',
-  },
-  robots_wheel: {
-    id: 'robots_wheel',
-    name: 'Wheel',
-    icon: '🛞',
-    description: '車輪ロボット（2輪・競技）',
-    categories: [
-      'logic', 'loops', 'math', 'variables', 'functions',
-      'time', 'serial',
-      'robot_wheel',
+      'robot_humanoid', 'robot_wheel', 'robot_transform',
       'motor', 'diff_drive', 'encoder', 'pid',
-      'sensor_ultrasonic', 'sensor_line', 'sensor_qtr', 'sensor_wall',
+      'servo', 'stepper', 'stepper_driver',
     ],
-    group: 'robots',
   },
-  robots_transform: {
-    id: 'robots_transform',
-    name: 'Transform',
-    icon: '🦾',
-    description: '変形ロボット（歩行/走行変形）',
+  network: {
+    id: 'network',
+    name: 'ネットワーク',
+    icon: '🌐',
+    description: '通信・無線・プロトコル',
     categories: [
-      'logic', 'loops', 'math', 'variables', 'functions',
-      'time', 'serial',
-      'robot_transform',
-      'sensor_ultrasonic',
+      'wifi', 'http', 'mqtt', 'websocket',
+      'ble', 'espnow', 'lora', 'modbus',
+      'iot_cloud', 'azure_iot', 'notification', 'google_services',
+      'ota', 'json',
     ],
-    group: 'robots',
   },
-  // IoT / スマートホーム
   homeassistant: {
     id: 'homeassistant',
     name: 'Home Assistant',
     icon: '🏠',
-    description: 'IoT/スマートホーム連携',
-    categories: [
-      'logic', 'loops', 'math', 'variables', 'functions',
-      'time', 'serial',
-      'mqtt',
-      'sensor_dht', 'sensor_digital', 'sensor_analog',
-      'gpio', 'neopixel',
-    ],
-    group: 'iot',
+    description: 'Home Assistant 連携 (ArduinoHA)',
+    categories: ['arduino_ha'],
   },
-  // その他
-  generic: {
-    id: 'generic',
-    name: '汎用デバイス',
-    icon: '🔧',
-    description: 'マイコン工作・電子工作向け',
+  storage_time: {
+    id: 'storage_time',
+    name: 'ストレージ/時間',
+    icon: '💾',
+    description: '永続化・時計・タイマー',
+    categories: ['time', 'ntp_time', 'rtc', 'storage_nvs', 'storage_fs'],
+  },
+  gpio_bus: {
+    id: 'gpio_bus',
+    name: 'GPIO/バス',
+    icon: '🔌',
+    description: 'GPIO・I2C/SPI・割り込み・UART・CAN',
+    categories: ['gpio', 'interrupt', 'i2c_spi', 'uart_extra', 'can_bus'],
+  },
+  programming: {
+    id: 'programming',
+    name: 'ロジック/プログラミング',
+    icon: '💡',
+    description: 'プログラミング基礎・I/O プリミティブ',
     categories: [
-      'logic', 'loops', 'math', 'variables', 'functions',
-      'time', 'serial',
-      'gpio',
-      'sensor_digital', 'sensor_analog', 'sensor_dht', 'sensor_ultrasonic',
-      'neopixel',
+      'serial',
+      'logic', 'loops',
+      'math', 'text', 'lists',
+      'variables', 'functions',
     ],
-    group: 'other',
   },
   all_blocks: {
     id: 'all_blocks',
@@ -117,7 +117,6 @@ export const ROBOT_MODES: Record<RobotMode, RobotModeInfo> = {
     icon: '📦',
     description: 'すべてのブロックを表示',
     categories: ['all'],
-    group: 'other',
   },
   custom: {
     id: 'custom',
@@ -125,7 +124,6 @@ export const ROBOT_MODES: Record<RobotMode, RobotModeInfo> = {
     icon: '⭐',
     description: 'よく使うブロックを登録',
     categories: ['all'],
-    group: 'other',
   },
 };
 
@@ -138,36 +136,54 @@ interface RobotModeState {
 export const useRobotModeStore = create<RobotModeState>()(
   persist(
     (set, get) => ({
-      mode: 'robots_humanoid', // デフォルトは Humanoid
+      // D-7: 新規 user の default は all_blocks (Takeda anchor 「heavy user 及第点 = 全部見える」)
+      mode: 'all_blocks',
       setMode: (mode) => set({ mode }),
       getModeInfo: () => ROBOT_MODES[get().mode],
     }),
     {
       name: 'robot-mode-storage',
-      // 旧モード名から新モード名へのマイグレーション
-      // sunset: 2027-04-21（OTTO 排除 2026-04-21 の 1 年後）以降、
-      //   この migrate 関数と modeMap の OTTO エントリを削除、version を 2 に上げて
-      //   version < 2 の旧 state は再初期化扱いとする。
-      //   理由: 1 年あれば全アクティブユーザーが 1 度以上アプリを開いて migrate 完了する想定。
-      //   削除後のリスク: inactive 半年超のユーザーは最後に使ったモードが失われるが UX 影響 acceptable。
+      // version 1 → 2: Session 104 で旧 7 use-case-mode を新 10 function-category-mode に置換。
+      //   旧 mode を持つ persisted state は以下の mapping で読み替え。
+      //   未知 mode は default ('all_blocks') にフォールバック。
+      //   OTTO migration (version 1 で導入) も継続維持。
+      // sunset: 2027-05-12（Session 104 の 1 年後）以降、modeMap から旧 ID 群を削除し
+      //   version 3 にバンプ。1 年以上 inactive な user は最後に使った mode が失われるが
+      //   UX 影響 acceptable。
       migrate: (persistedState: unknown, _version: number) => {
         if (typeof persistedState !== 'object' || persistedState === null) {
           return persistedState;
         }
         const state = persistedState as { mode?: string };
         const modeMap: Record<string, RobotMode> = {
-          otto_bipedal: 'robots_humanoid',
-          otto_wheel: 'robots_wheel',
-          otto_ninja: 'robots_transform',
-          micromouse: 'robots_wheel',
-          line_trace: 'robots_wheel',
+          // OTTO 系 (version 1 から継承、2027-04-21 sunset)
+          otto_bipedal: 'robotics',
+          otto_wheel: 'robotics',
+          otto_ninja: 'robotics',
+          micromouse: 'robotics',
+          line_trace: 'robotics',
+          // Pre-Session-104 use-case modes → function-category modes
+          robots_humanoid: 'robotics',
+          robots_wheel: 'robotics',
+          robots_transform: 'robotics',
+          generic: 'all_blocks',
+          // homeassistant / all_blocks / custom はそのまま carry-over
         };
-        if (state.mode && modeMap[state.mode]) {
-          state.mode = modeMap[state.mode];
+        const validNewModes = new Set<RobotMode>([
+          'input', 'output', 'robotics', 'network', 'homeassistant',
+          'storage_time', 'gpio_bus', 'programming', 'all_blocks', 'custom',
+        ]);
+        if (state.mode) {
+          if (modeMap[state.mode]) {
+            state.mode = modeMap[state.mode];
+          } else if (!validNewModes.has(state.mode as RobotMode)) {
+            // 未知 mode → default fallback
+            state.mode = 'all_blocks';
+          }
         }
         return state;
       },
-      version: 1,
+      version: 2,
     }
   )
 );
