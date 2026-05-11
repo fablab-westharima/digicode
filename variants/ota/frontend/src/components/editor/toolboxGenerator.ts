@@ -1510,6 +1510,7 @@ const getToolboxCategories = (): Record<string, string> => ({
   separator6: `<sep></sep>`,
   separator7: `<sep></sep>`,
   separator8: `<sep></sep>`,
+  separator9: `<sep></sep>`,
 });
 
 // 各モードで表示するカテゴリの順序
@@ -1536,9 +1537,11 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     // 短距離無線
     'ble',
     'separator4',
-    // 基本プログラミング
+    // シリアル・時間
     'serial',
     'time',
+    'separator5',
+    // 基本プログラミング
     'logic',
     'loops',
     'math',
@@ -1576,12 +1579,12 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'neopixel',
     'display',
     'separator4',
-    // 永続化
+    // シリアル・時間・永続化
+    'serial',
+    'time',
     'storage_nvs',
     'separator5',
     // 基本プログラミング
-    'serial',
-    'time',
     'logic',
     'loops',
     'math',
@@ -1610,9 +1613,11 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     // 短距離無線
     'ble',
     'separator4',
-    // 基本プログラミング
+    // シリアル・時間
     'serial',
     'time',
+    'separator5',
+    // 基本プログラミング
     'logic',
     'loops',
     'math',
@@ -1991,6 +1996,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'rtc',
     'storage_nvs',
     'storage_fs',
+    'separator9',
     // 基本プログラミング
     'logic',
     'loops',
