@@ -639,8 +639,12 @@ export function Sidebar({
         })}
       </div>
 
-      {/* AI Assistant Panel（Lite+ または upgrade 候補ユーザーに表示）*/}
-      {isAuthenticated && (isAiAvailable || isAiUpgradeCandidate) && (
+      {/* AI Assistant Panel: Lite+ ユーザー / upgrade 候補ユーザー / プレリリース期間中の全 user。
+          第103回 hotfix3: 旧 `isAuthenticated &&` gate を撤去 — `isAiAvailable` は
+          featureFlagStore で flag.isFreeNow OR layer 適用済 (hotfix2)、`isAiUpgradeCandidate`
+          は L150 定義に `isAuthenticated &&` 内包のため、auth user のみ upgrade CTA は維持される。
+          unauth user で flag.isFreeNow=false なら両方 false で従来通り非表示。 */}
+      {(isAiAvailable || isAiUpgradeCandidate) && (
         <div className={`${shouldShowFull ? 'flex-1 min-h-[40vh]' : ''} overflow-y-auto border-t border-[#2E333D]`}>
           <AIAssistantPanel
             onAppendBlocks={onAiAppendBlocks}
