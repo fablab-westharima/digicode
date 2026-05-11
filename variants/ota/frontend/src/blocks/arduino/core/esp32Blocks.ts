@@ -222,7 +222,7 @@ javascriptGenerator.forBlock['esp32_serial_begin'] = function(block: Blockly.Blo
 Blockly.Blocks['esp32_serial_print'] = {
   init: function() {
     this.appendValueInput('VALUE')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_ESP32_SERIALPRINT_LABEL || 'Serial print');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -240,7 +240,7 @@ javascriptGenerator.forBlock['esp32_serial_print'] = function(block: Blockly.Blo
 Blockly.Blocks['esp32_serial_println'] = {
   init: function() {
     this.appendValueInput('VALUE')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_ESP32_SERIALPRINTLN_LABEL || 'Serial println');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
