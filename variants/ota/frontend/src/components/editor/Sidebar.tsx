@@ -148,7 +148,10 @@ export function Sidebar({
   const isAiAvailable = canUseAiBlockGeneration(user?.plan, user?.accountType);
   const isHelpBotAvailable = canUseAiHelpBot(user?.plan, user?.accountType);
   const isAiUpgradeCandidate = isAuthenticated && user?.accountType !== 'student' && !isAiAvailable;
-  const isFeedbackAvailable = canSubmitFeedback(user?.plan, user?.accountType);
+  // 第103回: プレリリース期間中 (pin_assign_pro.isFreeNow=true) は全 user に開放、
+  // 通常時は canSubmitFeedback (lite/pro/enterprise non-student) のみ
+  const isFeedbackAvailable =
+    canSubmitFeedback(user?.plan, user?.accountType) || isFreeOpenNow('pin_assign_pro');
 
   const toggleCategory = (category: string) => {
     setExpandedCategories(prev => {
@@ -358,7 +361,7 @@ export function Sidebar({
       category: 'help'
     },
     // 要望を送る（課金ユーザーのみ、ヘルプ category 内）
-    ...(isAuthenticated && isFeedbackAvailable && onOpenFeedback ? [{
+    ...(isFeedbackAvailable && onOpenFeedback ? [{
       id: 'feedback',
       label: t('feedback.button.label', { defaultValue: '要望を送る' }),
       icon: <Megaphone className="w-4 h-4" />,

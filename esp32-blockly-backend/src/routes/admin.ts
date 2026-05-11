@@ -6,6 +6,7 @@ import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import { adminMiddleware } from '../middleware/admin';
 import { errorJson } from '../utils/errorJson';
+import { computeIsFreeNow } from '../utils/featureFlag';
 import type { Bindings, Variables } from '../types/env';
 
 const admin = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -290,12 +291,12 @@ admin.get('/feature-flags', async (c) => {
 
     for (const f of flags.results) {
       // enabled=false → 全員に開放、enabled=true+期間内 → 無料開放中
-      const isFreeNow = f.enabled !== 1 || (f.free_until !== null && f.free_until > now);
+      // (computeIsFreeNow と feedback.ts の isFlagFreeNow が同 formula、helper で single source 化)
       result[f.key] = {
         enabled: f.enabled === 1,
         freeUntil: f.free_until,
         freeReason: f.free_reason,
-        isFreeNow,
+        isFreeNow: computeIsFreeNow({ enabled: f.enabled, free_until: f.free_until }, now),
       };
     }
 

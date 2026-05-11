@@ -85,8 +85,13 @@ export function EditorPage() {
   const { logout, isAuthenticated, user } = useAuthStore();
   const canUseAiUiCustomize = useFeatureFlagStore((s) => s.canUseAiUiCustomize);
   const canSubmitFeedback = useFeatureFlagStore((s) => s.canSubmitFeedback);
+  const isFreeOpenNow = useFeatureFlagStore((s) => s.isFreeOpenNow);
   // 第102回 C3: ヘッダー Feedback button + Sidebar 「要望を送る」共通可否
-  const isFeedbackAvailable = isAuthenticated && canSubmitFeedback(user?.plan, user?.accountType);
+  // 第103回: プレリリース期間中 (pin_assign_pro.isFreeNow=true) は未ログイン含め全 user に開放、
+  // 通常時は canSubmitFeedback (lite/pro/enterprise non-student) のみ
+  const isFeedbackAvailable =
+    (isAuthenticated && canSubmitFeedback(user?.plan, user?.accountType)) ||
+    isFreeOpenNow('pin_assign_pro');
   const isAiUiCustomizeAvailable = canUseAiUiCustomize(user?.plan, user?.accountType);
   const { currentProject, setCurrentProject } = useProjectStore();
   const { status: serialStatus, forceReleaseAllPorts } = useSerialStore();
