@@ -52,6 +52,33 @@ Run the DigiCode compile server locally as a Docker container instead of using t
 > - Pull / Run flow: <https://docs.docker.com/desktop/use-desktop/images/>
 > - Containers tab: <https://docs.docker.com/desktop/use-desktop/>
 
+#### 🤖 Stuck on pull / run? Ask an AI
+
+Copy the prompt below and paste it into Gemini / ChatGPT or another AI assistant.
+
+```
+Tell me how, in the latest Docker Desktop UI, to search for an image
+on DockerHub, pull it, and run a container.
+Please look up the current Docker Desktop screen layout first, then
+answer.
+- Image name: digicollc/digicode-compile-server
+- Container name: digicode-compile-server
+- Host port: 3001
+Walk me through the setup with these values, step by step for a
+beginner.
+```
+
+#### 🤖 Stuck verifying the container? Ask an AI
+
+```
+Tell me how to verify a container is running properly in Docker
+Desktop.
+Please look up the current Docker Desktop screen layout first, then
+answer.
+The container name is digicode-compile-server and the port is 3001.
+Include how to check via http://localhost:3001/health in a browser.
+```
+
 > 💡 **The same guide is available inside DigiCode**
 > Open Compile Settings → Local Server → **Set up** to see the same steps right there (image name has a copy button).
 
@@ -186,6 +213,16 @@ sudo usermod -aG docker $USER
 sudo pacman -S --needed docker docker-compose
 sudo systemctl enable --now docker
 sudo usermod -aG docker $USER
+```
+
+### 🤖 Stuck installing Docker Desktop? Ask an AI
+
+Copy the prompt below and paste it into Gemini / ChatGPT or another AI assistant. Replace `[Windows/Mac]` with your own OS.
+
+```
+Tell me how to install the latest Docker Desktop on [Windows/Mac].
+Please look up the latest official site info first, then explain step
+by step for a beginner.
 ```
 
 ---

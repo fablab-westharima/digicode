@@ -52,6 +52,33 @@ Executa o servidor de compilação do DigiCode no teu próprio computador como c
 > - Fluxo Pull / Run: <https://docs.docker.com/desktop/use-desktop/images/>
 > - Separador Containers: <https://docs.docker.com/desktop/use-desktop/>
 
+#### 🤖 Bloqueado no pull / run? Pergunta a uma IA
+
+Copia o prompt abaixo e cola-o no Gemini / ChatGPT ou noutro assistente de IA.
+
+```
+Explica-me como, na UI mais recente do Docker Desktop, procurar uma
+imagem no DockerHub, fazer Pull e iniciar um contentor.
+Primeiro consulta a composição atual do ecrã do Docker Desktop e
+depois responde.
+- Nome da imagem: digicollc/digicode-compile-server
+- Container name: digicode-compile-server
+- Host port: 3001
+Guia-me com estes valores passo a passo para principiantes.
+```
+
+#### 🤖 Bloqueado a verificar o contentor? Pergunta a uma IA
+
+```
+Explica-me como verificar se um contentor está a funcionar
+corretamente no Docker Desktop.
+Primeiro consulta a composição atual do ecrã do Docker Desktop e
+depois responde.
+O nome do contentor é digicode-compile-server e a porta é 3001.
+Inclui como verificar através de http://localhost:3001/health no
+browser.
+```
+
 > 💡 **O mesmo guia está disponível dentro do DigiCode**
 > Abre Definições de Compilação → Servidor Local → **Configurar** para veres os mesmos passos (com botão de cópia para o nome da imagem).
 
@@ -185,6 +212,17 @@ sudo usermod -aG docker $USER
 sudo pacman -S --needed docker docker-compose
 sudo systemctl enable --now docker
 sudo usermod -aG docker $USER
+```
+
+### 🤖 Bloqueado a instalar o Docker Desktop? Pergunta a uma IA
+
+Copia o prompt abaixo e cola-o no Gemini / ChatGPT ou noutro assistente de IA. Substitui `[Windows/Mac]` pelo teu próprio sistema operativo.
+
+```
+Explica-me como instalar a versão mais recente do Docker Desktop em
+[Windows/Mac].
+Primeiro consulta a informação oficial mais recente e depois explica
+passo a passo para principiantes.
 ```
 
 ---
