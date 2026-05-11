@@ -97,6 +97,7 @@ app.use('/api/subscriptions/*', rateLimitPresets.standard);
 app.use('/api/classes/*', rateLimitPresets.standard);
 app.use('/api/submissions/*', rateLimitPresets.standard);
 app.use('/api/feedback/*', rateLimitPresets.standard);
+app.use('/api/health/*', rateLimitPresets.standard);
 
 // Webhook（制限緩め: 1000リクエスト/分）
 app.use('/api/webhooks/*', rateLimitPresets.webhook);
@@ -140,6 +141,33 @@ app.route('/api/classes', classes);
 
 // Phase C: 生徒用 submissions ルート（authMiddleware のみ、requirePlan なし）
 app.route('/api/submissions', submissionsRoute);
+
+// クラス機能サーバー (digicode-class-server on ML30) のヘルスチェック proxy。
+// frontend は CORS の preflight 不可 (class-server 側に Access-Control-* なし) のため
+// Workers 経由で polling、サーバーダウン時の UI 反映に使用 (rule 12 整合)。
+// no-auth、5s timeout、応答は up/down に正規化。
+app.get('/api/health/class-server', async (c) => {
+  const target = `${c.env.CLASS_API_URL}/health`;
+  try {
+    const res = await fetch(target, {
+      method: 'GET',
+      signal: AbortSignal.timeout(5000),
+      headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) {
+      return c.json(
+        { status: 'down', reason: 'non-200', httpStatus: res.status },
+        200,
+        { 'Cache-Control': 'no-store' }
+      );
+    }
+    const upstream = (await res.json().catch(() => null)) as unknown;
+    return c.json({ status: 'up', upstream }, 200, { 'Cache-Control': 'no-store' });
+  } catch (err) {
+    const reason = err instanceof Error && err.name === 'TimeoutError' ? 'timeout' : 'network';
+    return c.json({ status: 'down', reason }, 200, { 'Cache-Control': 'no-store' });
+  }
+});
 
 // ============================================================
 // Step 8: Cloudflare Workers Cron Trigger
