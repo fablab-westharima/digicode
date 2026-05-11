@@ -40,6 +40,16 @@ import { Button } from '../ui/button';
 import { useAuthStore } from '@/stores/authStore';
 import { useFeatureFlagStore } from '@/stores/featureFlagStore';
 
+// 第103回 hotfix4: プレリリース期間中 (pin_assign_pro.isFreeNow=true) に「無料開放中」
+// badge を表示するメニュー項目 ID 集合。premium gate 判定とは独立 (BLE/WiFi/class は
+// 実際のコード上 plan gate なし or hotfix2 で flag bypass 済 = 表示は marketing 文脈)。
+const PRERELEASE_BADGE_IDS = new Set([
+  'pin-assignment',
+  'ble-controller',
+  'wifi-controller',
+  'class-management',
+]);
+
 interface SidebarProps {
   isAuthenticated?: boolean;
   onProjectOpen?: () => void;
@@ -626,7 +636,7 @@ export function Sidebar({
                         {shouldShowFull && item.premium && !isPinAssignAvailable && (
                           <span className="text-[10px] text-orange-400 ml-1">PRO</span>
                         )}
-                        {shouldShowFull && item.premium && isPinAssignAvailable && isPinAssignFreeOpen && (
+                        {shouldShowFull && PRERELEASE_BADGE_IDS.has(item.id) && isPinAssignFreeOpen && (
                           <span className="text-[10px] text-green-400 ml-1">{t('sidebar.freeOpenNow', { defaultValue: '無料開放中' })}</span>
                         )}
                       </Button>
