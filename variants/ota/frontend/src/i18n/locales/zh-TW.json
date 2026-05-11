@@ -1003,7 +1003,7 @@
     "localPortInvalid": "連接埠必須是 1024〜65535 之間的整數。",
     "setupButton": "設定",
     "uninstallButton": "解除安裝",
-    "localNotRunningHint": "本機伺服器尚未啟動。請點擊上方的「設定」按鈕進行安裝。",
+    "localNotRunningHint": "本機伺服器尚未啟動。請點擊上方的「設定」按鈕進行安裝。也可以從下方的「請問 AI」按鈕複製提示詞,讓您所使用的 AI 助理為您詳細說明步驟。",
     "connectionOk": "已連線",
     "notConnected": "未連線",
     "unverified": "未驗證",

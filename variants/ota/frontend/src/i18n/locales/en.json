@@ -1003,7 +1003,7 @@
     "localPortInvalid": "Port must be an integer between 1024 and 65535.",
     "setupButton": "Set up",
     "uninstallButton": "Uninstall",
-    "localNotRunningHint": "Local server is not running. Click the \"Set up\" button above to install it.",
+    "localNotRunningHint": "Local server is not running. Click the \"Set up\" button above to install it. You can also copy the prompt from the \"Ask an AI\" button below and have your preferred AI assistant walk you through the steps.",
     "connectionOk": "Connected",
     "notConnected": "Not Connected",
     "unverified": "Unverified",

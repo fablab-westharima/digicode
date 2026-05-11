@@ -1003,7 +1003,7 @@
     "localPortInvalid": "ポート番号は 1024〜65535 の整数を指定してください。",
     "setupButton": "セットアップ",
     "uninstallButton": "アンインストール",
-    "localNotRunningHint": "ローカルサーバーが起動していません。上の「セットアップ」ボタンからインストールできます。",
+    "localNotRunningHint": "ローカルサーバーが起動していません。上の「セットアップ」ボタンからインストールできます。下の「AI に聞く」ボタンからプロンプトをコピーし、ご利用の AI アシスタントに詳しい手順を聞くこともできます。",
     "connectionOk": "接続OK",
     "notConnected": "未接続",
     "unverified": "未確認",
