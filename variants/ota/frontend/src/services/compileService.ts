@@ -335,37 +335,38 @@ export const compileService = {
     };
 
     if (mode === 'cloud') {
-      // primary: Ubuntu / ML30 (compile.digital-fab.jp 経由)
-      console.log('[Compile] Trying Ubuntu server (primary, SSE)...');
+      // primary: Cloudflare Load Balancer (api-compile.digital-fab.jp、CF LB が ML30 ↔ Railway 内部 failover、第105回 Task 1)
+      console.log('[Compile] Trying CF Load Balancer (primary, SSE)...');
       try {
         const result = await compileViaSse(
           `${COMPILE_SERVERS.primary}/api/compile/sse${queryParams}`,
           requestBody,
         );
         if (result.success) {
-          console.log('[Compile] ✓ Ubuntu server compilation successful (SSE)', {
+          console.log('[Compile] ✓ CF LB compilation successful (SSE)', {
             version: result.version,
             template: result.template,
           });
           incrementUsage();
           return result;
         }
-        // primary 失敗 → fallback (Railway) に流す。`result.error` を保持しないのは
-        // 既存挙動 (Railway 側で代替 compile を試行)。
-        console.warn('[Compile] Ubuntu server returned error, falling back to Railway:', result.error);
+        // primary (CF LB) 失敗 → layer 2 = Railway 直接にフォールバック。
+        // 通常時は CF LB 内部の ML30 ↔ Railway failover で完結、ここに到達するのは
+        // CF LB infrastructure 自体が down した場合のみ (defense-in-depth)。
+        console.warn('[Compile] CF LB returned error, falling back to direct Railway:', result.error);
       } catch (error) {
-        console.warn('[Compile] Ubuntu server SSE failed, falling back to Railway:', error);
+        console.warn('[Compile] CF LB SSE failed, falling back to direct Railway:', error);
       }
 
-      // fallback: Railway
-      console.log('[Compile] Trying Railway server (backup, SSE)...');
+      // fallback: Railway 直接 (CF LB infrastructure 障害時の最終避難)
+      console.log('[Compile] Trying Railway direct (backup, SSE)...');
       try {
         const result = await compileViaSse(
           `${COMPILE_SERVERS.fallback}/api/compile/sse${queryParams}`,
           requestBody,
         );
         if (result.success) {
-          console.log('[Compile] ✓ Railway server compilation successful (SSE, fallback)', {
+          console.log('[Compile] ✓ Railway direct compilation successful (SSE, fallback)', {
             version: result.version,
             template: result.template,
           });
@@ -375,7 +376,7 @@ export const compileService = {
       } catch (error) {
         return {
           success: false,
-          error: 'Both Ubuntu and Railway servers are unavailable',
+          error: 'Both CF LB and Railway direct are unavailable',
           details: error instanceof Error ? error.message : 'Unknown error',
         };
       }

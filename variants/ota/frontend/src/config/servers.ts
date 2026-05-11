@@ -16,17 +16,18 @@ export const DEFAULT_LOCAL_URL = `http://localhost:${DEFAULT_LOCAL_PORT}`;
 
 export const COMPILE_SERVERS = {
   /**
-   * Primary: 自宅Ubuntuサーバー
-   * - 安定性: 高
-   * - レイテンシ: 低（国内）
+   * Primary: Cloudflare Load Balancer (ML30 primary + Railway fallback の自動 failover、第105回 Task 1)
+   * - 安定性: 高（CF infrastructure が ML30 ↔ Railway 内部 failover を担う）
+   * - レイテンシ: 低（CF anycast、ML30 直接比 +20ms 程度の微増）
+   * - 内部 origin pool: ml30-compile (compile.digital-fab.jp) → railway-compile (Railway URL)
    */
-  primary: 'https://compile.digital-fab.jp',
+  primary: 'https://api-compile.digital-fab.jp',
 
   /**
-   * Backup: Railwayサーバー
-   * - 安定性: 中（Railwayの制約あり）
-   * - レイテンシ: 中（海外）
-   * - Primaryが落ちた時の自動フォールバック先
+   * Backup: Railway 直接（CF LB infrastructure 自体が down した場合の最終避難）
+   * - 2 層防御 layer 2: 通常時は layer 1 (CF LB primary) で完結、CF LB 障害時のみ発動
+   * - 安定性: 中（Railway の制約あり）
+   * - レイテンシ: 中（海外、~800ms）
    */
   fallback: 'https://amiable-patience-production-1d47.up.railway.app',
 
