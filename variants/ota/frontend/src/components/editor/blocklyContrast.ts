@@ -15,7 +15,7 @@
  */
 import * as Blockly from 'blockly';
 
-const DARK_TEXT = '#4b5563';        // Tailwind gray-600 (BUG-081 follow-up #4 で gray-700 → gray-600 にさらに soften、user 指示)
+const DARK_TEXT = '#374151';        // Tailwind gray-700 (BUG-081 follow-up #5 で gray-600 → gray-700 に戻し、user 指示)
 const LIGHT_TEXT = '#ffffff';
 const WCAG_AA_NORMAL = 4.5;          // WCAG 2.1 AA normal text threshold (Blockly font 12pt weight 500 = normal)
 

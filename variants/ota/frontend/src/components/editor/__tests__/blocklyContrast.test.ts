@@ -138,8 +138,8 @@ describe('pickTextStyle (case 18 mitigation evidence、BUG-081 follow-up #2 で 
 });
 
 describe('module constants (sanity check)', () => {
-  it('DARK_TEXT matches Tailwind gray-600 (BUG-081 follow-up #4 で gray-700 → gray-600 にさらに soften)', () => {
-    expect(__testing__.DARK_TEXT).toBe('#4b5563');
+  it('DARK_TEXT matches Tailwind gray-700 (BUG-081 follow-up #5 で gray-600 → gray-700 に戻し)', () => {
+    expect(__testing__.DARK_TEXT).toBe('#374151');
   });
 
   it('LIGHT_TEXT is pure white', () => {

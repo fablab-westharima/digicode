@@ -128,4 +128,4 @@ export const digiCodeDarkTheme = Blockly.Theme.defineTheme('digicode-dark', {
 // JSDOM 検証で全 blocklyText fill rule を列挙確認、本 selector 以外で .blocklyText に
 // 適用される 4-class 以上の rule は `.blocklyText.blocklyBubbleText` (bubble 専用、競合なし)
 // のみ = 本 fix が確実 win することを実証済 (改定log 第101回 follow-up #3 §証拠)。
-Blockly.Css.register('.injectionDiv.zelos-renderer .blockly-text-dark .blocklyText { fill: #4b5563; }');
+Blockly.Css.register('.injectionDiv.zelos-renderer .blockly-text-dark .blocklyText { fill: #374151; }');
