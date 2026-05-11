@@ -4194,7 +4194,7 @@
     "guiUninstall4": "On the \"Images\" tab, Delete digicollc/digicode-compile-server (optional; keep it to make re-install faster)",
     "aiButton": "🤖 Ask an AI",
     "aiTitle": "Ask an AI assistant",
-    "aiDescription": "Copy the prompt below and paste it into Gemini / ChatGPT or another AI assistant. Each prompt asks the AI to look up the latest Docker Desktop screen layout first, so the answer reflects the current UI.",
+    "aiDescription": "Copy the prompt below and paste it into the AI assistant you use — Gemini / ChatGPT / Claude etc. Each prompt asks the AI to look up the latest Docker Desktop screen layout first, so the answer reflects the current UI.",
     "aiPullRunTab": "Pull / Run",
     "aiVerifyTab": "Verify / Troubleshoot",
     "aiPullRunHint": "Use this prompt when you haven't set up the local server yet, or when the container isn't running.",

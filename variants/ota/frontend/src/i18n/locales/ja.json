@@ -4184,7 +4184,7 @@
     "guiUninstall4": "「Images」タブで digicollc/digicode-compile-server を Delete (任意、再 install 時間短縮のために残してもよい)",
     "aiButton": "🤖 AI に聞く",
     "aiTitle": "AI アシスタントに聞く",
-    "aiDescription": "下のプロンプトを Gemini / ChatGPT 等の AI アシスタントにコピー&ペーストしてください。各プロンプトは「最新の Docker Desktop の画面構成をまず調べてから回答」を含むため、AI が web 検索した上で現行 UI に即した手順を返します。",
+    "aiDescription": "下のプロンプトをご自身が使用されている Gemini / ChatGPT / Claude 等の AI アシスタントにコピー&ペーストしてください。各プロンプトは「最新の Docker Desktop の画面構成をまず調べてから回答」を含むため、AI が web 検索した上で現行 UI に即した手順を返します。",
     "aiPullRunTab": "イメージ取得・起動",
     "aiVerifyTab": "起動確認・トラブル",
     "aiPullRunHint": "まだセットアップしていない場合 / コンテナが起動していない場合の手順を AI に聞くプロンプトです。",

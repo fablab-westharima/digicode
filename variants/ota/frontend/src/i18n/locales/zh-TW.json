@@ -4379,7 +4379,7 @@
     "guiUninstall4": "在「Images」分頁刪除 digicollc/digicode-compile-server (可選;保留可加速重新安裝)",
     "aiButton": "🤖 請問 AI",
     "aiTitle": "請問 AI 助理",
-    "aiDescription": "複製下方提示詞,貼到 Gemini / ChatGPT 等 AI 助理。每個提示詞都會請 AI 先查詢目前 Docker Desktop 的畫面構成再回答,因此答案會反映現行 UI。",
+    "aiDescription": "複製下方提示詞,貼到您所使用的 Gemini / ChatGPT / Claude 等 AI 助理。每個提示詞都會請 AI 先查詢目前 Docker Desktop 的畫面構成再回答,因此答案會反映現行 UI。",
     "aiPullRunTab": "取得映像、啟動",
     "aiVerifyTab": "啟動確認、排除故障",
     "aiPullRunHint": "尚未設定本機伺服器、或容器未啟動時使用本提示詞。",

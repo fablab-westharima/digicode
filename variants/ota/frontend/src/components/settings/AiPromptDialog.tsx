@@ -73,7 +73,7 @@ export function AiPromptDialog({
           <DialogDescription>
             {t('localServerSetup.aiDescription', {
               defaultValue:
-                '下のプロンプトを Gemini / ChatGPT 等の AI アシスタントにコピー&ペーストしてください。各プロンプトは「最新の Docker Desktop の画面構成をまず調べてから回答」を含むため、AI が web 検索した上で現行 UI に即した手順を返します。',
+                '下のプロンプトをご自身が使用されている Gemini / ChatGPT / Claude 等の AI アシスタントにコピー&ペーストしてください。各プロンプトは「最新の Docker Desktop の画面構成をまず調べてから回答」を含むため、AI が web 検索した上で現行 UI に即した手順を返します。',
             })}
           </DialogDescription>
         </DialogHeader>
