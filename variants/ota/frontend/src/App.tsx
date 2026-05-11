@@ -9,6 +9,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import { useClassServerHealthStore } from '@/stores/classServerHealthStore';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { EmailVerificationWaiting } from '@/components/auth/EmailVerificationWaiting';
 import { EditorPage } from '@/pages/EditorPage';
@@ -122,13 +123,27 @@ function AuthRoute() {
 }
 
 function App() {
-  const { checkAuth } = useAuthStore();
+  const { checkAuth, isAuthenticated } = useAuthStore();
+  const startHealthPolling = useClassServerHealthStore((s) => s.startPolling);
+  const stopHealthPolling = useClassServerHealthStore((s) => s.stopPolling);
 
   useEffect(() => {
     checkAuth();
     // Initialize Blockly.Msg.* from i18next translations
     initBlocklyMessages();
   }, [checkAuth]);
+
+  // class-server (ML30) ヘルスチェック polling: 認証 user のみ対象 (anonymous は
+  // クラス機能 menu 自体が出ないため polling 不要)、60s 間隔で /api/health/class-server
+  // を Workers 経由で叩き、2 連続失敗で down 状態を UI に反映。
+  useEffect(() => {
+    if (isAuthenticated) {
+      startHealthPolling();
+      return () => stopHealthPolling();
+    }
+    stopHealthPolling();
+    return undefined;
+  }, [isAuthenticated, startHealthPolling, stopHealthPolling]);
 
   return (
     <BrowserRouter>

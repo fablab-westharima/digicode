@@ -39,6 +39,7 @@ import {
 import { Button } from '../ui/button';
 import { useAuthStore } from '@/stores/authStore';
 import { useFeatureFlagStore } from '@/stores/featureFlagStore';
+import { useClassServerHealthStore } from '@/stores/classServerHealthStore';
 
 interface SidebarProps {
   isAuthenticated?: boolean;
@@ -92,6 +93,8 @@ interface NavItem {
   category: string;
   children?: NavSubItem[]; // サブメニュー用
   premium?: boolean; // 有料機能フラグ（未ログイン時グレーアウト）
+  disabled?: boolean; // 一時的な非活性 (例: 連携サーバーダウン中)
+  disabledLabel?: string; // disabled 時に表示する補助ラベル (赤文字 inline)
 }
 
 export function Sidebar({
@@ -132,6 +135,9 @@ export function Sidebar({
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const { canUsePinAssign, isFreeOpenNow, fetchFlags, canUseAiBlockGeneration, canUseAiHelpBot, canSubmitFeedback } = useFeatureFlagStore();
+  // class-server (ML30) のヘルスチェック state を slice value で subscribe
+  // (`memory:zustand_state_reading_selector` 厳守、function ref ではなく値直接 select)。
+  const isClassServerDown = useClassServerHealthStore((s) => s.status === 'down');
   const [isPinned, setIsPinned] = useState(true); // デフォルトでピン留め
   const [isHovered, setIsHovered] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['project'])); // デフォルトでprojectを開く
@@ -387,12 +393,17 @@ export function Sidebar({
       // 第103回 hotfix2: プレリリース期間中 (pin_assign_pro.isFreeNow=true) は
       // 認証 user (plan 不問) にもクラス管理 menu を表示。anonymous は user 自体が
       // 不在なため対象外 (class owner_id が必要)。
+      // 第105回 Task 2: class-server ダウン時は赤文字「サーバーダウン中」表示 + click 不能化。
       ...((user && (user.plan === 'enterprise' || isPinAssignFreeOpen)) ? [{
         id: 'class-management',
         label: t('sidebar.classManagement', { defaultValue: 'クラス管理' }),
         icon: <Users className="w-4 h-4" />,
         action: () => navigate('/classes'),
         category: 'account' as const,
+        disabled: isClassServerDown,
+        disabledLabel: isClassServerDown
+          ? t('sidebar.classServerDown', { defaultValue: 'サーバーダウン中' })
+          : undefined,
       }] : []),
       // 生徒アカウント: パスワード変更のみ表示
       // 通常アカウント: パスキー登録・2段階認証・アカウント削除を表示
@@ -608,22 +619,33 @@ export function Sidebar({
                         )}
                       </>
                     ) : (
-                      // 通常のアイテム（premiumかつ機能制限中ならPROバッジ表示）
+                      // 通常のアイテム（premium かつ機能制限中なら PRO バッジ表示 / disabled なら赤文字補助ラベル）
                       <Button
                         variant="ghost"
                         className={`w-full justify-start ${
-                          item.premium && !isPinAssignAvailable
+                          (item.premium && !isPinAssignAvailable) || item.disabled
                             ? 'text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white cursor-not-allowed'
                             : 'text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white'
                         } ${shouldShowFull ? 'px-3' : 'px-0 justify-center'}`}
-                        onClick={item.premium && !isPinAssignAvailable ? undefined : item.action}
-                        title={!shouldShowFull ? item.label : item.premium && !isPinAssignAvailable ? t('sidebar.requiresPro', { defaultValue: 'Proプラン以上で利用可能です' }) : undefined}
+                        onClick={(item.premium && !isPinAssignAvailable) || item.disabled ? undefined : item.action}
+                        title={
+                          !shouldShowFull
+                            ? item.label
+                            : item.disabled
+                              ? item.disabledLabel
+                              : item.premium && !isPinAssignAvailable
+                                ? t('sidebar.requiresPro', { defaultValue: 'Proプラン以上で利用可能です' })
+                                : undefined
+                        }
                       >
                         <span className={shouldShowFull ? 'mr-3' : ''}>{item.icon}</span>
                         {shouldShowFull && (
                           <span className="text-sm flex-1 text-left">{item.label}</span>
                         )}
-                        {shouldShowFull && item.premium && !isPinAssignAvailable && (
+                        {shouldShowFull && item.disabled && item.disabledLabel && (
+                          <span className="text-[10px] text-red-400 ml-1">{item.disabledLabel}</span>
+                        )}
+                        {shouldShowFull && !item.disabled && item.premium && !isPinAssignAvailable && (
                           <span className="text-[10px] text-orange-400 ml-1">PRO</span>
                         )}
                       </Button>

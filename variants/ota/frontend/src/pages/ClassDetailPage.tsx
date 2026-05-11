@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useFeatureFlagStore } from '@/stores/featureFlagStore';
+import { useClassServerHealthStore } from '@/stores/classServerHealthStore';
 import { fetchWithAuth } from '@/lib/api';
 import {
   getClass,
@@ -112,6 +113,8 @@ export function ClassDetailPage() {
     (s) => s.flags['pin_assign_pro']?.isFreeNow ?? false
   );
   const isClassFeatureAvailable = !!user && (user.plan === 'enterprise' || isPinAssignFreeOpen);
+  // class-server (ML30) のヘルスチェック (slice value 経由、`memory:zustand_state_reading_selector` 厳守)
+  const isClassServerDown = useClassServerHealthStore((s) => s.status === 'down');
 
   // 直接 /classes/:id 着地時の flag fetch (Sidebar 経由なら mount 時に fetch 済)
   useEffect(() => {
@@ -383,6 +386,27 @@ export function ClassDetailPage() {
           <p className="text-center text-muted-foreground py-20">
             {t('classes.enterpriseRequired')}
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  // --- class-server ダウン中の graceful degrade ---
+  if (isClassServerDown) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <div className="max-w-5xl mx-auto px-6 py-6">
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            {t('classes.back')}
+          </button>
+          <div className="text-center py-20">
+            <p className="text-lg text-destructive mb-2">{t('classes.serverDownTitle')}</p>
+            <p className="text-sm text-muted-foreground">{t('classes.serverDownMessage')}</p>
+          </div>
         </div>
       </div>
     );

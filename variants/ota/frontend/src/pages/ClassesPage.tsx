@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Plus, Copy, Check, AlertTriangle } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useFeatureFlagStore } from '@/stores/featureFlagStore';
+import { useClassServerHealthStore } from '@/stores/classServerHealthStore';
 import { listClasses, daysUntilExpiry, type ClassInfo } from '@/services/classService';
 import { CreateClassDialog } from '@/components/classes/CreateClassDialog';
 
@@ -18,6 +19,8 @@ export function ClassesPage() {
     (s) => s.flags['pin_assign_pro']?.isFreeNow ?? false
   );
   const isClassFeatureAvailable = !!user && (user.plan === 'enterprise' || isPinAssignFreeOpen);
+  // class-server (ML30) のヘルスチェック (slice value 経由、`memory:zustand_state_reading_selector` 厳守)
+  const isClassServerDown = useClassServerHealthStore((s) => s.status === 'down');
 
   // 直接 /classes 着地時の flag fetch (Sidebar 経由なら mount 時に fetch 済)
   useEffect(() => {
@@ -106,7 +109,12 @@ export function ClassesPage() {
         </div>
 
         {/* コンテンツ */}
-        {loading ? (
+        {isClassServerDown ? (
+          <div className="text-center py-20">
+            <p className="text-lg text-destructive mb-2">{t('classes.serverDownTitle')}</p>
+            <p className="text-sm text-muted-foreground">{t('classes.serverDownMessage')}</p>
+          </div>
+        ) : loading ? (
           <div className="text-center py-20">
             <p className="text-muted-foreground">{t('classes.loading')}</p>
           </div>
