@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-11T13:30:57.477Z",
+  "generatedAt": "2026-05-11T13:38:52.618Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -1897,6 +1897,191 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "encoder_init",
+      "category": "encoder",
+      "tooltip": "Initialize rotary encoders",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "input",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "LEFT_A",
+          "fieldType": "number",
+          "default": 25,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "LEFT_B",
+          "fieldType": "number",
+          "default": 26,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "RIGHT_A",
+          "fieldType": "number",
+          "default": 27,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "RIGHT_B",
+          "fieldType": "number",
+          "default": 14,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "PPR",
+          "fieldType": "number",
+          "default": 360,
+          "min": 1,
+          "max": 10000
+        },
+        {
+          "name": "WHEEL_DIAMETER",
+          "fieldType": "number",
+          "default": 40,
+          "min": 1,
+          "max": 500
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "encoder_distance",
+      "category": "encoder",
+      "tooltip": "Get travel distance from encoder",
+      "colour": "#795548",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "input",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "WHEEL",
+          "fieldType": "dropdown",
+          "options": [
+            "AVG",
+            "LEFT",
+            "RIGHT"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "encoder_speed",
+      "category": "encoder",
+      "tooltip": "Get current speed",
+      "colour": "#795548",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "input",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "WHEEL",
+          "fieldType": "dropdown",
+          "options": [
+            "AVG",
+            "LEFT",
+            "RIGHT"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "encoder_count",
+      "category": "encoder",
+      "tooltip": "Get encoder pulse count",
+      "colour": "#795548",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "input",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "WHEEL",
+          "fieldType": "dropdown",
+          "options": [
+            "LEFT",
+            "RIGHT"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "encoder_reset",
+      "category": "encoder",
+      "tooltip": "Reset encoder count",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "input",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "encoder_wait_distance",
+      "category": "encoder",
+      "tooltip": "Wait until specified distance",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "input",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "DISTANCE",
+          "check": "Number"
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -5631,6 +5816,594 @@
       "statementInputs": []
     },
     {
+      "type": "motor_init",
+      "category": "motor",
+      "tooltip": "Initialize L298N motor driver",
+      "colour": "#607D8B",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "IN1",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "IN2",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "ENA",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "motor_move",
+      "category": "motor",
+      "tooltip": "Move motor in specified direction and speed",
+      "colour": "#607D8B",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "MOTOR",
+          "fieldType": "dropdown",
+          "options": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "name": "DIRECTION",
+          "fieldType": "dropdown",
+          "options": [
+            "forward",
+            "backward",
+            "stop"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "SPEED",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "motor_speed",
+      "category": "motor",
+      "tooltip": "Change motor speed only",
+      "colour": "#607D8B",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "MOTOR",
+          "fieldType": "dropdown",
+          "options": [
+            "A",
+            "B"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "SPEED",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "motor_stop",
+      "category": "motor",
+      "tooltip": "Stop the motor",
+      "colour": "#607D8B",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "MOTOR",
+          "fieldType": "dropdown",
+          "options": [
+            "A",
+            "B",
+            "BOTH"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "servo_attach",
+      "category": "servo",
+      "tooltip": "Attach servo to specified pin",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "servo_write",
+      "category": "servo",
+      "tooltip": "Move servo to specified angle",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "ANGLE",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "servo_sweep",
+      "category": "servo",
+      "tooltip": "Move servo from start angle to end angle",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "START",
+          "check": null
+        },
+        {
+          "name": "END",
+          "check": null
+        },
+        {
+          "name": "SPEED",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "servo_detach",
+      "category": "servo",
+      "tooltip": "Detach servo (power saving)",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "stepper_init",
+      "category": "stepper",
+      "tooltip": "Configure stepper motor pins (28BYJ-48 + ULN2003)",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "IN1",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "IN2",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "IN3",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "IN4",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "stepper_move",
+      "category": "stepper",
+      "tooltip": "Move motor by specified number of steps",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "5",
+            "3",
+            "2"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "stepper_rotate",
+      "category": "stepper",
+      "tooltip": "Rotate motor by specified angle",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "5",
+            "3",
+            "2"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "ANGLE",
+          "check": null
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "stepper_stop",
+      "category": "stepper",
+      "tooltip": "Stop motor and release coil current",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "a4988_init",
+      "category": "stepper_driver",
+      "tooltip": "A4988 ステッピングドライバを初期化します。STEP/DIR/EN ピン指定。EN は LOW で有効化。AccelStepper DRIVER mode 使用。",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "STEP",
+          "fieldType": "number",
+          "default": 14,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "DIR",
+          "fieldType": "number",
+          "default": 27,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "EN",
+          "fieldType": "number",
+          "default": 26,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "a4988_set_microstep",
+      "category": "stepper_driver",
+      "tooltip": "A4988 のマイクロステップモードを設定します (内部 step 倍率)。⚠️ HW の MS1/MS2/MS3 pin もこの値に合わせて配線必要。",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "MODE",
+          "fieldType": "dropdown",
+          "options": [
+            "1",
+            "2",
+            "4",
+            "8",
+            "16"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "a4988_set_direction",
+      "category": "stepper_driver",
+      "tooltip": "A4988 の方向を設定します。次の a4988_step が forward なら正、backward なら負ステップで動作。",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "DIR",
+          "fieldType": "dropdown",
+          "options": [
+            "FORWARD",
+            "BACKWARD"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "a4988_step",
+      "category": "stepper_driver",
+      "tooltip": "A4988 を指定ステップ数 (microstep 倍率込) で動作させます。runToNewPosition で完了まで block。",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "uln2003_init",
+      "category": "stepper_driver",
+      "tooltip": "ULN2003 ステッピングドライバ + 28BYJ-48 を初期化します。AccelStepper FULL4WIRE mode (pin 順 IN1, IN3, IN2, IN4 で正常回転)。",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "IN1",
+          "fieldType": "number",
+          "default": 13,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "IN2",
+          "fieldType": "number",
+          "default": 12,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "IN3",
+          "fieldType": "number",
+          "default": 14,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "IN4",
+          "fieldType": "number",
+          "default": 27,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "uln2003_step_28byj48",
+      "category": "stepper_driver",
+      "tooltip": "ULN2003 + 28BYJ-48 を指定ステップ・速度で動作させます (28BYJ-48 1 回転 = 4096 ステップ in half-step)。",
+      "colour": "#FF5722",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": "Number"
+        },
+        {
+          "name": "SPEED",
+          "check": "Number"
+        }
+      ],
+      "statementInputs": []
+    },
+    {
       "type": "relay_init",
       "category": "relay",
       "tooltip": "リレーを初期化します。アクティブ極性 = ON 時の出力レベル (機械式は HIGH、SSR は LOW が一般的)。",
@@ -6568,143 +7341,6 @@
       "statementInputs": []
     },
     {
-      "type": "motor_init",
-      "category": "motor",
-      "tooltip": "Initialize L298N motor driver",
-      "colour": "#607D8B",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "IN1",
-          "fieldType": "number",
-          "default": null,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "IN2",
-          "fieldType": "number",
-          "default": null,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "ENA",
-          "fieldType": "number",
-          "default": null,
-          "min": 0,
-          "max": 39
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "motor_move",
-      "category": "motor",
-      "tooltip": "Move motor in specified direction and speed",
-      "colour": "#607D8B",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "MOTOR",
-          "fieldType": "dropdown",
-          "options": [
-            "A",
-            "B"
-          ]
-        },
-        {
-          "name": "DIRECTION",
-          "fieldType": "dropdown",
-          "options": [
-            "forward",
-            "backward",
-            "stop"
-          ]
-        }
-      ],
-      "valueInputs": [
-        {
-          "name": "SPEED",
-          "check": null
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "motor_speed",
-      "category": "motor",
-      "tooltip": "Change motor speed only",
-      "colour": "#607D8B",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "MOTOR",
-          "fieldType": "dropdown",
-          "options": [
-            "A",
-            "B"
-          ]
-        }
-      ],
-      "valueInputs": [
-        {
-          "name": "SPEED",
-          "check": null
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "motor_stop",
-      "category": "motor",
-      "tooltip": "Stop the motor",
-      "colour": "#607D8B",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "MOTOR",
-          "fieldType": "dropdown",
-          "options": [
-            "A",
-            "B",
-            "BOTH"
-          ]
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
       "type": "diff_drive_init",
       "category": "diff_drive",
       "tooltip": "Initialize differential drive robot",
@@ -7051,185 +7687,6 @@
       "statementInputs": []
     },
     {
-      "type": "encoder_init",
-      "category": "encoder",
-      "tooltip": "Initialize rotary encoders",
-      "colour": "#795548",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "LEFT_A",
-          "fieldType": "number",
-          "default": 25,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "LEFT_B",
-          "fieldType": "number",
-          "default": 26,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "RIGHT_A",
-          "fieldType": "number",
-          "default": 27,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "RIGHT_B",
-          "fieldType": "number",
-          "default": 14,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "PPR",
-          "fieldType": "number",
-          "default": 360,
-          "min": 1,
-          "max": 10000
-        },
-        {
-          "name": "WHEEL_DIAMETER",
-          "fieldType": "number",
-          "default": 40,
-          "min": 1,
-          "max": 500
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "encoder_distance",
-      "category": "encoder",
-      "tooltip": "Get travel distance from encoder",
-      "colour": "#795548",
-      "isStatement": false,
-      "hasOutput": true,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "WHEEL",
-          "fieldType": "dropdown",
-          "options": [
-            "AVG",
-            "LEFT",
-            "RIGHT"
-          ]
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "encoder_speed",
-      "category": "encoder",
-      "tooltip": "Get current speed",
-      "colour": "#795548",
-      "isStatement": false,
-      "hasOutput": true,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "WHEEL",
-          "fieldType": "dropdown",
-          "options": [
-            "AVG",
-            "LEFT",
-            "RIGHT"
-          ]
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "encoder_count",
-      "category": "encoder",
-      "tooltip": "Get encoder pulse count",
-      "colour": "#795548",
-      "isStatement": false,
-      "hasOutput": true,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "WHEEL",
-          "fieldType": "dropdown",
-          "options": [
-            "LEFT",
-            "RIGHT"
-          ]
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "encoder_reset",
-      "category": "encoder",
-      "tooltip": "Reset encoder count",
-      "colour": "#795548",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "encoder_wait_distance",
-      "category": "encoder",
-      "tooltip": "Wait until specified distance",
-      "colour": "#795548",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [
-        {
-          "name": "DISTANCE",
-          "check": "Number"
-        }
-      ],
-      "statementInputs": []
-    },
-    {
       "type": "pid_init",
       "category": "pid",
       "tooltip": "Initialize PID controller",
@@ -7431,439 +7888,6 @@
         }
       ],
       "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "servo_attach",
-      "category": "servo",
-      "tooltip": "Attach servo to specified pin",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "PIN",
-          "fieldType": "number",
-          "default": null,
-          "min": 0,
-          "max": 39
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "servo_write",
-      "category": "servo",
-      "tooltip": "Move servo to specified angle",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "PIN",
-          "fieldType": "number",
-          "default": null,
-          "min": 0,
-          "max": 39
-        }
-      ],
-      "valueInputs": [
-        {
-          "name": "ANGLE",
-          "check": null
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "servo_sweep",
-      "category": "servo",
-      "tooltip": "Move servo from start angle to end angle",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "PIN",
-          "fieldType": "number",
-          "default": null,
-          "min": 0,
-          "max": 39
-        }
-      ],
-      "valueInputs": [
-        {
-          "name": "START",
-          "check": null
-        },
-        {
-          "name": "END",
-          "check": null
-        },
-        {
-          "name": "SPEED",
-          "check": null
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "servo_detach",
-      "category": "servo",
-      "tooltip": "Detach servo (power saving)",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "PIN",
-          "fieldType": "number",
-          "default": null,
-          "min": 0,
-          "max": 39
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "stepper_init",
-      "category": "stepper",
-      "tooltip": "Configure stepper motor pins (28BYJ-48 + ULN2003)",
-      "colour": "#795548",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "IN1",
-          "fieldType": "number",
-          "default": null,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "IN2",
-          "fieldType": "number",
-          "default": null,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "IN3",
-          "fieldType": "number",
-          "default": null,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "IN4",
-          "fieldType": "number",
-          "default": null,
-          "min": 0,
-          "max": 39
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "stepper_move",
-      "category": "stepper",
-      "tooltip": "Move motor by specified number of steps",
-      "colour": "#795548",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "5",
-            "3",
-            "2"
-          ]
-        }
-      ],
-      "valueInputs": [
-        {
-          "name": "STEPS",
-          "check": null
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "stepper_rotate",
-      "category": "stepper",
-      "tooltip": "Rotate motor by specified angle",
-      "colour": "#795548",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "5",
-            "3",
-            "2"
-          ]
-        }
-      ],
-      "valueInputs": [
-        {
-          "name": "ANGLE",
-          "check": null
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "stepper_stop",
-      "category": "stepper",
-      "tooltip": "Stop motor and release coil current",
-      "colour": "#795548",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "a4988_init",
-      "category": "stepper_driver",
-      "tooltip": "A4988 ステッピングドライバを初期化します。STEP/DIR/EN ピン指定。EN は LOW で有効化。AccelStepper DRIVER mode 使用。",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "STEP",
-          "fieldType": "number",
-          "default": 14,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "DIR",
-          "fieldType": "number",
-          "default": 27,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "EN",
-          "fieldType": "number",
-          "default": 26,
-          "min": 0,
-          "max": 39
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "a4988_set_microstep",
-      "category": "stepper_driver",
-      "tooltip": "A4988 のマイクロステップモードを設定します (内部 step 倍率)。⚠️ HW の MS1/MS2/MS3 pin もこの値に合わせて配線必要。",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "MODE",
-          "fieldType": "dropdown",
-          "options": [
-            "1",
-            "2",
-            "4",
-            "8",
-            "16"
-          ]
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "a4988_set_direction",
-      "category": "stepper_driver",
-      "tooltip": "A4988 の方向を設定します。次の a4988_step が forward なら正、backward なら負ステップで動作。",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "DIR",
-          "fieldType": "dropdown",
-          "options": [
-            "FORWARD",
-            "BACKWARD"
-          ]
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "a4988_step",
-      "category": "stepper_driver",
-      "tooltip": "A4988 を指定ステップ数 (microstep 倍率込) で動作させます。runToNewPosition で完了まで block。",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [
-        {
-          "name": "STEPS",
-          "check": "Number"
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "uln2003_init",
-      "category": "stepper_driver",
-      "tooltip": "ULN2003 ステッピングドライバ + 28BYJ-48 を初期化します。AccelStepper FULL4WIRE mode (pin 順 IN1, IN3, IN2, IN4 で正常回転)。",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "IN1",
-          "fieldType": "number",
-          "default": 13,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "IN2",
-          "fieldType": "number",
-          "default": 12,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "IN3",
-          "fieldType": "number",
-          "default": 14,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "IN4",
-          "fieldType": "number",
-          "default": 27,
-          "min": 0,
-          "max": 39
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "uln2003_step_28byj48",
-      "category": "stepper_driver",
-      "tooltip": "ULN2003 + 28BYJ-48 を指定ステップ・速度で動作させます (28BYJ-48 1 回転 = 4096 ステップ in half-step)。",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [
-        {
-          "name": "STEPS",
-          "check": "Number"
-        },
-        {
-          "name": "SPEED",
-          "check": "Number"
-        }
-      ],
       "statementInputs": []
     },
     {

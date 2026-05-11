@@ -35,10 +35,12 @@ export const ROBOT_MODES: Record<RobotMode, RobotModeInfo> = {
     name: 'インプット',
     icon: '📥',
     description: 'センサー入力系のブロック',
+    // encoder は robotics と cross-list (回転パルス検出 = 入力)
     categories: [
       'sensor_digital', 'sensor_analog', 'sensor_ultrasonic', 'sensor_dht',
       'sensor_motion', 'sensor_environment', 'sensor_air_quality', 'sensor_current',
-      'sensor_tof', 'sensor_encoder_mag', 'gps', 'sensor_line', 'sensor_qtr', 'sensor_wall',
+      'sensor_tof', 'sensor_encoder_mag', 'encoder', 'gps',
+      'sensor_line', 'sensor_qtr', 'sensor_wall',
       'microphone', 'flow_meter', 'apds9960', 'sensor_health', 'hx711', 'piezo',
       'esp32_touch', 'rfid', 'ir_remote', 'camera',
     ],
@@ -47,11 +49,13 @@ export const ROBOT_MODES: Record<RobotMode, RobotModeInfo> = {
     id: 'output',
     name: 'アウトプット',
     icon: '📤',
-    description: '表示・音響・出力系のブロック',
+    description: '表示・音響・出力系 + アクチュエータのブロック',
+    // motor/servo/stepper/stepper_driver は robotics と cross-list (出力デバイス全般)
     categories: [
       'neopixel', 'neomatrix',
       'display', 'oled_ssd1306', 'tft_display', 'epaper', 'max7219', 'tm1637', 'm5stack',
       'buzzer', 'audio_dfplayer',
+      'motor', 'servo', 'stepper', 'stepper_driver',
       'relay',
     ],
   },

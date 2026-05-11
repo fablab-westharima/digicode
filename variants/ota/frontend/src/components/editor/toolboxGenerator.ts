@@ -1517,7 +1517,7 @@ const getToolboxCategories = (): Record<string, string> => ({
 // Session 104 で機能カテゴリベース 10 mode 構成に再編 (D-2 (a) 完全置換)。
 // arduino_core は D-3 (a) で全 mode の先頭固定 (pin top)。
 const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
-  // インプット — センサー入力系 (24 categories)
+  // インプット — センサー入力系 (25 categories、encoder は robotics と cross-list)
   input: [
     'arduino_core',
     'separator1',
@@ -1534,6 +1534,7 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'sensor_current',
     'sensor_tof',
     'sensor_encoder_mag',
+    'encoder',
     'gps',
     'separator3',
     // 競技センサー
@@ -1553,7 +1554,8 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'ir_remote',
     'camera',
   ],
-  // アウトプット — 表示・音響・出力系 (12 categories)
+  // アウトプット — 表示・音響・出力系 + アクチュエータ (16 categories、
+  // motor/servo/stepper/stepper_driver は robotics と cross-list)
   output: [
     'arduino_core',
     'separator1',
@@ -1574,6 +1576,12 @@ const MODE_CATEGORY_ORDER: Record<RobotMode, string[]> = {
     'buzzer',
     'audio_dfplayer',
     'separator4',
+    // アクチュエータ
+    'motor',
+    'servo',
+    'stepper',
+    'stepper_driver',
+    'separator5',
     // スイッチ
     'relay',
   ],
