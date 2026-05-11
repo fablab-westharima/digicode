@@ -1,6 +1,6 @@
 # Local compile server
 
-**Last updated:** 2026-05-08
+**Last updated:** 2026-05-11
 
 Run the DigiCode compile server locally as a Docker container instead of using the cloud. Local and cloud share the **same Docker image**, so the compile output is byte-identical (no library drift).
 
@@ -44,7 +44,13 @@ Run the DigiCode compile server locally as a Docker container instead of using t
    - **Container name**: `digicode-compile-server` (any)
    - **Host port**: `3001`
    - **Container port**: `3001`
-5. Click **"Run"** → open [http://localhost:3001/health](http://localhost:3001/health) in your browser to verify (OK = success)
+5. Click **"Run"** → switch to the **Containers** tab in the left sidebar and confirm the `digicode-compile-server` row shows a green **"Running"** indicator with `3001:3001` in the **Port(s)** column
+6. As a final check, open [http://localhost:3001/health](http://localhost:3001/health) in your browser (`{"status":"ok",...}` = success)
+
+> 📖 **Docker Desktop UI changes between versions**
+> If labels differ, see the official guides:
+> - Pull / Run flow: <https://docs.docker.com/desktop/use-desktop/images/>
+> - Containers tab: <https://docs.docker.com/desktop/use-desktop/>
 
 > 💡 **The same guide is available inside DigiCode**
 > Open Compile Settings → Local Server → **Set up** to see the same steps right there (image name has a copy button).
@@ -119,14 +125,20 @@ The container, persistent volumes and config directory are removed; you're then 
 
 ---
 
-## ⚠️ Download size
+## ⚠️ Download size and first-run timing
 
-| Item | Size |
+| Item | Size / time |
 |---|---|
-| Docker image (compressed) | ~2.1 GB |
-| Disk usage (extracted) | ~8.8 GB |
+| Docker image (compressed pull) | ~5 GB |
+| Disk usage (extracted) | **~14 GB** (PlatformIO frameworks + libraries embedded) |
+| First pull (100 Mbps fibre) | ~7–10 minutes |
+| First compile (template caching) | a few minutes |
+| Subsequent compiles (cache HIT) | a few seconds |
 
-Use a stable wired connection (about 1–2 minutes on 100 Mbps fibre); a phone hotspot is not recommended.
+> ⚠️ **Check free disk space before pulling**
+> We recommend at least **20 GB free** (14 GB extracted + temp files + room for the compile cache).
+>
+> Use a stable wired connection or WiFi rather than a mobile hotspot — large transfers over cellular can blow through your data cap.
 
 ---
 
@@ -325,7 +337,8 @@ Click **Skip** in the top-right. DigiCode's local compile-server works without a
 
 | Scenario | Wall time |
 |---|---|
-| First compile (cold start + DL) | 30–60 s |
+| First compile after Docker pull | a few minutes (template + lib cache build) |
+| Cold start (after container restart) | 30–60 s |
 | Source-only change (warm rebuild) | ~9.6 s |
 | Identical source compile (cache HIT) | ~1 ms |
 

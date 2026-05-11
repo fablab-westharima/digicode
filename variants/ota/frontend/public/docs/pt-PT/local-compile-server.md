@@ -1,6 +1,6 @@
 # Servidor de compilação local
 
-**Última atualização:** 2026-05-08
+**Última atualização:** 2026-05-11
 
 Executa o servidor de compilação do DigiCode no teu próprio computador como contentor Docker, em vez de usar o servidor em nuvem. A nuvem e o local utilizam **a mesma imagem Docker**, pelo que o resultado da compilação é idêntico (sem deriva de bibliotecas).
 
@@ -44,7 +44,13 @@ Executa o servidor de compilação do DigiCode no teu próprio computador como c
    - **Container name**: `digicode-compile-server` (qualquer)
    - **Host port**: `3001`
    - **Container port**: `3001`
-5. Clica **"Run"** → abre [http://localhost:3001/health](http://localhost:3001/health) no browser para verificar (OK = sucesso)
+5. Clica **"Run"** → muda para o separador **Containers** na barra lateral esquerda e confirma que a linha `digicode-compile-server` mostra um indicador verde **"Running"** com `3001:3001` na coluna **Port(s)**
+6. Como verificação final, abre [http://localhost:3001/health](http://localhost:3001/health) no browser (`{"status":"ok",...}` = sucesso)
+
+> 📖 **A UI do Docker Desktop muda entre versões**
+> Se as etiquetas diferirem, consulta os guias oficiais:
+> - Fluxo Pull / Run: <https://docs.docker.com/desktop/use-desktop/images/>
+> - Separador Containers: <https://docs.docker.com/desktop/use-desktop/>
 
 > 💡 **O mesmo guia está disponível dentro do DigiCode**
 > Abre Definições de Compilação → Servidor Local → **Configurar** para veres os mesmos passos (com botão de cópia para o nome da imagem).
@@ -116,12 +122,20 @@ São removidos o contentor, os volumes persistentes e a pasta de configuração;
 
 ---
 
-## ⚠️ Tamanho da transferência
+## ⚠️ Tamanho da transferência e tempo da primeira execução
 
-| Item | Tamanho |
+| Item | Tamanho / tempo |
 |---|---|
-| Imagem Docker (comprimida) | ~2.1 GB |
-| Espaço em disco (após extração) | ~8.8 GB |
+| Imagem Docker (pull comprimido) | ~5 GB |
+| Espaço em disco (após extração) | **~14 GB** (frameworks PlatformIO + bibliotecas embutidas) |
+| Primeiro pull (fibra 100 Mbps) | ~7–10 minutos |
+| Primeira compilação (caching de templates) | alguns minutos |
+| Compilações seguintes (cache HIT) | alguns segundos |
+
+> ⚠️ **Verifica o espaço livre em disco antes do pull**
+> Recomendamos pelo menos **20 GB livres** (14 GB extraídos + ficheiros temporários + margem para a cache de compilação).
+>
+> Usa uma ligação por fios ou WiFi estável em vez de hotspot móvel — transferências grandes via 4G/5G podem esgotar o teu plafond de dados.
 
 Usa uma **ligação fixa estável** (cerca de 1–2 minutos em fibra de 100 Mbps); o tethering do telemóvel não é recomendado.
 
@@ -322,7 +336,8 @@ Clica em **Skip** no canto superior direito. O servidor de compilação local do
 
 | Cenário | Tempo total |
 |---|---|
-| Primeira compilação (arranque a frio + transferência) | 30–60 s |
+| Primeira compilação após pull do Docker | alguns minutos (caching de templates + libs) |
+| Arranque a frio (após reiniciar o contentor) | 30–60 s |
 | Alteração apenas de código (warm rebuild) | ~9.6 s |
 | Compilação idêntica (cache HIT) | ~1 ms |
 

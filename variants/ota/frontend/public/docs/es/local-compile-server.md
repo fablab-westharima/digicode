@@ -1,6 +1,6 @@
 # Servidor de compilación local
 
-**Última actualización:** 2026-05-08
+**Última actualización:** 2026-05-11
 
 Ejecuta el servidor de compilación de DigiCode en tu propio ordenador como contenedor Docker, en lugar de usar el servidor en la nube. La nube y el local utilizan **la misma imagen Docker**, así que el resultado de compilación es idéntico (sin desfase de bibliotecas).
 
@@ -44,7 +44,13 @@ Ejecuta el servidor de compilación de DigiCode en tu propio ordenador como cont
    - **Container name**: `digicode-compile-server` (cualquiera)
    - **Host port**: `3001`
    - **Container port**: `3001`
-5. Haz clic en **"Run"** → abre [http://localhost:3001/health](http://localhost:3001/health) en el navegador para verificar (OK = éxito)
+5. Haz clic en **"Run"** → cambia a la pestaña **Containers** en la barra lateral izquierda y confirma que la fila `digicode-compile-server` muestre un indicador verde **"Running"** con `3001:3001` en la columna **Port(s)**
+6. Como verificación final, abre [http://localhost:3001/health](http://localhost:3001/health) en el navegador (`{"status":"ok",...}` = éxito)
+
+> 📖 **La UI de Docker Desktop cambia entre versiones**
+> Si las etiquetas difieren, consulta las guías oficiales:
+> - Flujo Pull / Run: <https://docs.docker.com/desktop/use-desktop/images/>
+> - Pestaña Containers: <https://docs.docker.com/desktop/use-desktop/>
 
 > 💡 **La misma guía está disponible dentro de DigiCode**
 > Abre Configuración de Compilación → Servidor Local → **Configurar** para ver los mismos pasos (con botón de copia para el nombre de la imagen).
@@ -116,12 +122,20 @@ Se eliminarán el contenedor, los volúmenes persistentes y la carpeta de config
 
 ---
 
-## ⚠️ Tamaño de descarga
+## ⚠️ Tamaño de descarga y tiempo de la primera ejecución
 
-| Elemento | Tamaño |
+| Elemento | Tamaño / tiempo |
 |---|---|
-| Imagen Docker (comprimida) | ~2.1 GB |
-| Uso de disco (extraída) | ~8.8 GB |
+| Imagen Docker (comprimida en pull) | ~5 GB |
+| Uso de disco (extraída) | **~14 GB** (frameworks PlatformIO + librerías embebidas) |
+| Primer pull (fibra 100 Mbps) | ~7–10 minutos |
+| Primera compilación (caching de plantillas) | unos minutos |
+| Compilaciones siguientes (cache HIT) | unos segundos |
+
+> ⚠️ **Verifica el espacio libre en disco antes de hacer pull**
+> Recomendamos al menos **20 GB libres** (14 GB extraídos + archivos temporales + margen para la caché de compilación).
+>
+> Usa una conexión cableada o WiFi estable en lugar de un punto de acceso móvil — las transferencias grandes por móvil pueden agotar tu cuota de datos.
 
 Usa una **conexión cableada estable** (aproximadamente 1–2 minutos en fibra de 100 Mbps); el tethering del móvil no es recomendable.
 
@@ -322,7 +336,8 @@ Haz clic en **Skip** en la esquina superior derecha. El servidor de compilación
 
 | Escenario | Tiempo total |
 |---|---|
-| Primera compilación (arranque en frío + DL) | 30–60 s |
+| Primera compilación tras el pull de Docker | unos minutos (caching de plantillas + libs) |
+| Arranque en frío (tras reiniciar el contenedor) | 30–60 s |
 | Cambio solo de fuente (warm rebuild) | ~9.6 s |
 | Compilación idéntica (cache HIT) | ~1 ms |
 
