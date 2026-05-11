@@ -4290,7 +4290,8 @@
         "freeUntilLabel": "Fecha de fin de acceso gratuito",
         "freeUntilClear": "Borrar",
         "noteLabel": "Nota",
-        "notePlaceholder": "Nombre de campaña, etc."
+        "notePlaceholder": "Selecciona una plantilla...",
+        "noteClear": "Borrar"
       }
     },
     "common": {
@@ -4427,6 +4428,20 @@
     },
     "error": {
       "network": "El envío falló. Inténtelo más tarde."
+    }
+  },
+  "featureFlag": {
+    "presets": {
+      "prerelease": "Prelanzamiento — Todas las funciones abiertas",
+      "newFeatureTest": "Período de prueba de nuevas funciones — Todas las funciones abiertas",
+      "campaign": "Campaña — Todas las funciones gratis"
+    },
+    "banner": {
+      "untilDate": "Hasta {{date}}",
+      "endsInDays": "Quedan {{count}} días",
+      "endsTomorrow": "Termina mañana",
+      "endsToday": "Termina hoy",
+      "dismiss": "Cerrar"
     }
   }
 }

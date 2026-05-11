@@ -30,6 +30,11 @@ import {
   type FeedbackStatus,
   type FeedbackCategory,
 } from '@/services/feedbackService';
+import {
+  FREE_REASON_PRESETS,
+  isKnownPreset,
+  presetTranslationKey,
+} from '@/utils/featureFlagPresets';
 
 // i18n.language → toLocaleDateString locale 対応
 const LOCALE_MAP: Record<string, string> = {
@@ -436,7 +441,11 @@ function FlagsTab() {
             <div className="flex items-center justify-between mb-3">
               <div>
                 <h3 className="text-[#E6EDF3] font-medium">{flag.key}</h3>
-                {flag.freeReason && <p className="text-xs text-[#8B949E] mt-0.5">{flag.freeReason}</p>}
+                {flag.freeReason && (
+                  <p className="text-xs text-[#8B949E] mt-0.5">
+                    {isKnownPreset(flag.freeReason) ? t(presetTranslationKey(flag.freeReason)) : flag.freeReason}
+                  </p>
+                )}
               </div>
               <Badge className={`${status.color} text-white text-xs`}>{status.label}</Badge>
             </div>
@@ -471,12 +480,26 @@ function FlagsTab() {
                 </div>
                 <div className="flex items-center gap-3">
                   <Label className="text-[#8B949E] text-sm w-[100px]">{t('admin.flags.edit.noteLabel')}</Label>
-                  <Input
-                    placeholder={t('admin.flags.edit.notePlaceholder')}
-                    value={editFreeReason}
-                    onChange={(e) => setEditFreeReason(e.target.value)}
-                    className="flex-1 bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]"
-                  />
+                  <Select
+                    value={isKnownPreset(editFreeReason) ? editFreeReason : undefined}
+                    onValueChange={setEditFreeReason}
+                  >
+                    <SelectTrigger className="flex-1 bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]">
+                      <SelectValue placeholder={t('admin.flags.edit.notePlaceholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FREE_REASON_PRESETS.map((preset) => (
+                        <SelectItem key={preset} value={preset}>
+                          {t(presetTranslationKey(preset))}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {editFreeReason && (
+                    <Button size="sm" variant="ghost" className="text-xs text-[#8B949E]" onClick={() => setEditFreeReason('')}>
+                      {t('admin.flags.edit.noteClear')}
+                    </Button>
+                  )}
                 </div>
                 <div className="flex gap-2 justify-end">
                   <Button size="sm" variant="ghost" onClick={() => setEditingKey(null)}>{t('admin.common.cancel')}</Button>

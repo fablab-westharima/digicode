@@ -4290,7 +4290,8 @@
         "freeUntilLabel": "免費開放結束日",
         "freeUntilClear": "清除",
         "noteLabel": "備註",
-        "notePlaceholder": "活動名稱等"
+        "notePlaceholder": "選擇範本...",
+        "noteClear": "清除"
       }
     },
     "common": {
@@ -4427,6 +4428,20 @@
     },
     "error": {
       "network": "送出失敗,請稍後再試。"
+    }
+  },
+  "featureFlag": {
+    "presets": {
+      "prerelease": "預先發布 — 全功能開放",
+      "newFeatureTest": "新功能測試期間 — 全功能開放",
+      "campaign": "活動期間 — 全功能免費開放"
+    },
+    "banner": {
+      "untilDate": "至 {{date}}",
+      "endsInDays": "剩 {{count}} 天",
+      "endsTomorrow": "明日結束",
+      "endsToday": "今日結束",
+      "dismiss": "關閉"
     }
   }
 }

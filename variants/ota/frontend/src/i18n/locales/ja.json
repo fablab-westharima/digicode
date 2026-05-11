@@ -4095,7 +4095,8 @@
         "freeUntilLabel": "無料開放終了日",
         "freeUntilClear": "クリア",
         "noteLabel": "メモ",
-        "notePlaceholder": "キャンペーン名など"
+        "notePlaceholder": "テンプレートを選択...",
+        "noteClear": "クリア"
       }
     },
     "common": {
@@ -4232,6 +4233,20 @@
     },
     "error": {
       "network": "送信に失敗しました。時間をおいて再度お試しください。"
+    }
+  },
+  "featureFlag": {
+    "presets": {
+      "prerelease": "プレリリース - 全機能開放",
+      "newFeatureTest": "新機能テスト期間 - 全機能開放",
+      "campaign": "キャンペーン中 - 全機能無料開放"
+    },
+    "banner": {
+      "untilDate": "{{date}} まで",
+      "endsInDays": "あと {{count}} 日",
+      "endsTomorrow": "明日終了",
+      "endsToday": "本日終了",
+      "dismiss": "閉じる"
     }
   }
 }

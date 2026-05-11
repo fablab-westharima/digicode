@@ -4105,7 +4105,8 @@
         "freeUntilLabel": "Free access end date",
         "freeUntilClear": "Clear",
         "noteLabel": "Note",
-        "notePlaceholder": "Campaign name, etc."
+        "notePlaceholder": "Select a template...",
+        "noteClear": "Clear"
       }
     },
     "common": {
@@ -4242,6 +4243,20 @@
     },
     "error": {
       "network": "Submission failed. Please try again later."
+    }
+  },
+  "featureFlag": {
+    "presets": {
+      "prerelease": "Pre-release — All features open",
+      "newFeatureTest": "New feature test period — All features open",
+      "campaign": "Campaign — All features free"
+    },
+    "banner": {
+      "untilDate": "Until {{date}}",
+      "endsInDays": "{{count}} days left",
+      "endsTomorrow": "Ends tomorrow",
+      "endsToday": "Ends today",
+      "dismiss": "Dismiss"
     }
   }
 }
