@@ -118,8 +118,14 @@ export const digiCodeDarkTheme = Blockly.Theme.defineTheme('digicode-dark', {
 
 // BUG-081 contrast fix: blocklyContrast.ts の installContrastTextPatch が
 // BlockSvg.applyColour wrap で .blockly-text-dark を toggle、本 CSS が文字色を適用。
-// Blockly stock の zelos-renderer 系 selector (`.blocklyDropdownText { fill: #fff
-// !important }` 等) との競合実害は本番 verify 時に確認 (BUG-081 第101回 follow-up
-// で `!important` 導入と outline 補強を試行 → 後者は visual noise 過大で user 不採択、
-// CSS は単純 1 rule に簡素化、文字色は #374151 = Tailwind gray-700 に soften)。
-Blockly.Css.register('.blockly-text-dark .blocklyText { fill: #374151; }');
+//
+// Specificity 戦略 (BUG-081 follow-up #3): zelos renderer は theme 名から auto-register する
+// `.zelos-renderer.digicode-dark-theme .blocklyText { fill: #fff }` (3-class specificity) で
+// 全 block label を白固定。素朴な `.blockly-text-dark .blocklyText` (2-class) では負ける。
+// 4-class compound selector (`.injectionDiv.zelos-renderer` で 2-class + descendant 2-class)
+// で stock を outright override (cascade 順や `!important` に依存しない)。
+//
+// JSDOM 検証で全 blocklyText fill rule を列挙確認、本 selector 以外で .blocklyText に
+// 適用される 4-class 以上の rule は `.blocklyText.blocklyBubbleText` (bubble 専用、競合なし)
+// のみ = 本 fix が確実 win することを実証済 (改定log 第101回 follow-up #3 §証拠)。
+Blockly.Css.register('.injectionDiv.zelos-renderer .blockly-text-dark .blocklyText { fill: #374151; }');
