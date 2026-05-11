@@ -392,7 +392,7 @@ export const CompileServerSettings = ({ embedded = false }: CompileServerSetting
                       <p>
                         {t('settings.localNotRunningHint', {
                           defaultValue:
-                            'ローカルサーバーが起動していません。上の「セットアップ」ボタンからインストールできます。下の「AI に聞く」ボタンからプロンプトをコピーし、ご利用の AI アシスタントに詳しい手順を聞くこともできます。',
+                            'ローカルサーバーが起動していません。上の「セットアップ」ボタンからインストールするか、下の「AI に聞く」ボタンからプロンプトをコピーし、ご利用の AI アシスタントに詳しい手順を聞くこともできます。',
                         })}
                       </p>
                       <Button

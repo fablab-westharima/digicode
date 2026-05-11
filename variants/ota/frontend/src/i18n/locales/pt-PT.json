@@ -1003,7 +1003,7 @@
     "localPortInvalid": "A porta deve ser um inteiro entre 1024 e 65535.",
     "setupButton": "Configurar",
     "uninstallButton": "Desinstalar",
-    "localNotRunningHint": "O servidor local não está em execução. Clica no botão \"Configurar\" acima para o instalar. Também podes copiar o prompt do botão \"Perguntar a uma IA\" abaixo e pedir ao assistente de IA que utilizas para te guiar passo a passo.",
+    "localNotRunningHint": "O servidor local não está em execução. Clica no botão \"Configurar\" acima para o instalar, ou copia o prompt do botão \"Perguntar a uma IA\" abaixo e pede ao assistente de IA que utilizas para te guiar passo a passo.",
     "connectionOk": "Ligado",
     "notConnected": "Não ligado",
     "unverified": "Não verificado",
