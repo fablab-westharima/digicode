@@ -97,9 +97,10 @@ recoveryCodes.post('/verify', async (c) => {
     console.log('[Recovery Code Verify] Email:', email, 'Code:', code);
 
     // ユーザー取得
+    // case 19 cluster (BE-1) 第112回: account_type を SELECT に追加して student gate に供給
     const user = await c.env.DB.prepare(
-      'SELECT id, email, email_verified FROM users WHERE email = ?'
-    ).bind(email).first<{ id: number; email: string; email_verified: number }>();
+      'SELECT id, email, email_verified, account_type FROM users WHERE email = ?'
+    ).bind(email).first<{ id: number; email: string; email_verified: number; account_type: string | null }>();
 
     if (!user) {
       console.log('[Recovery Code Verify] User not found');
@@ -146,6 +147,22 @@ recoveryCodes.post('/verify', async (c) => {
     }
 
     console.log('[Recovery Code Verify] Valid code ID:', validCodeId);
+
+    // 生徒ログイン制限: student かつクラス未所属ならログイン不可
+    // case 19 cluster (BE-1) 第112回: auth.ts:221 / passkey.ts:337 / 2fa.ts (本 commit) と同 pattern。
+    // recovery code 消費前 (使用済みマークしない) で reject、student が gate に引っかかった場合
+    // recovery code は次回も使用可能。
+    if (user.account_type === 'student') {
+      const membership = await c.env.DB.prepare(
+        'SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?'
+      ).bind(user.id).first<{ n: number }>();
+
+      if (!membership || membership.n === 0) {
+        return c.json({
+          error: 'クラスに所属していないため、ログインできません。管理者にお問い合わせください。',
+        }, 403);
+      }
+    }
 
     // リカバリーコードを使用済みにマーク
     await c.env.DB.prepare(

@@ -117,6 +117,22 @@ twoFactor.post('/send-otp', async (c) => {
       ).bind(newHash, user.id).run();
     }
 
+    // 生徒ログイン制限: student かつクラス未所属ならログイン不可
+    // case 19 cluster (BE-1) 第112回: auth.ts:221 / passkey.ts:337 (F-5 第109回) と同 pattern。
+    // /send-otp は frontend LoginForm の primary login path (authService.sendOtp 経由)、
+    // 2FA disabled / trusted device / 2FA enabled の 3 sub-path 全てを覆う位置に配置。
+    if (user.account_type === 'student') {
+      const membership = await c.env.DB.prepare(
+        'SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?'
+      ).bind(user.id).first<{ n: number }>();
+
+      if (!membership || membership.n === 0) {
+        return c.json({
+          error: 'クラスに所属していないため、ログインできません。管理者にお問い合わせください。',
+        }, 403);
+      }
+    }
+
     // 2FA設定確認
     const twoFaSetting = await c.env.DB.prepare(
       'SELECT enabled FROM user_2fa_settings WHERE user_id = ?'
@@ -272,9 +288,10 @@ twoFactor.post('/verify-otp', async (c) => {
 
   try {
     // ユーザー取得
+    // case 19 cluster (BE-1) 第112回: account_type を SELECT に追加して student gate に供給
     const user = await c.env.DB.prepare(
-      'SELECT id, email FROM users WHERE email = ?'
-    ).bind(email).first<{ id: number; email: string }>();
+      'SELECT id, email, account_type FROM users WHERE email = ?'
+    ).bind(email).first<{ id: number; email: string; account_type: string | null }>();
 
     if (!user) {
       return errorJson(c, 'auth.failed', 401);
@@ -308,6 +325,22 @@ twoFactor.post('/verify-otp', async (c) => {
       return c.json({
         error: `認証コードが正しくありません（残り${remainingAttempts}回）`
       }, 401);
+    }
+
+    // 生徒ログイン制限: student かつクラス未所属ならログイン不可
+    // case 19 cluster (BE-1) 第112回: defense in depth、/send-otp gate を bypass する race
+    // / migration / 既発行 OTP 経路を防御。OTP 消費前 (使用済みマークしない) で reject、
+    // student が gate に引っかかった場合 OTP は次回も使用可能。
+    if (user.account_type === 'student') {
+      const membership = await c.env.DB.prepare(
+        'SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?'
+      ).bind(user.id).first<{ n: number }>();
+
+      if (!membership || membership.n === 0) {
+        return c.json({
+          error: 'クラスに所属していないため、ログインできません。管理者にお問い合わせください。',
+        }, 403);
+      }
     }
 
     // OTPを使用済みにマーク
