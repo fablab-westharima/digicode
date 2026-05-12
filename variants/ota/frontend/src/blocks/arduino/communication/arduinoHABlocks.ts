@@ -593,7 +593,7 @@ Blockly.Blocks['ha_device_init'] = {
         .appendField(new Blockly.FieldNumber(1883, 1, 65535), 'PORT');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DEVICENAME || 'Device Name')
-        .appendField(new Blockly.FieldTextInput('ESP32センサー'), 'DEVICE_NAME');
+        .appendField(new Blockly.FieldTextInput('ESP32 Sensor'), 'DEVICE_NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DEVICEID || 'Device ID')
         .appendField(new Blockly.FieldTextInput('esp32_sensor'), 'DEVICE_ID');
@@ -724,7 +724,7 @@ Blockly.Blocks['ha_device_init_auth'] = {
         .appendField(new Blockly.FieldTextInput(''), 'MQTT_PASS');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DEVICENAME || 'Device Name')
-        .appendField(new Blockly.FieldTextInput('ESP32センサー'), 'DEVICE_NAME');
+        .appendField(new Blockly.FieldTextInput('ESP32 Sensor'), 'DEVICE_NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DEVICEID || 'Device ID')
         .appendField(new Blockly.FieldTextInput('esp32_sensor'), 'DEVICE_ID');
@@ -837,7 +837,7 @@ Blockly.Blocks['ha_sensor_create'] = {
         .appendField(new Blockly.FieldTextInput('temperature'), 'SENSOR_ID');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
-        .appendField(new Blockly.FieldTextInput('温度'), 'NAME');
+        .appendField(new Blockly.FieldTextInput('Temperature'), 'NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DEVICECLASS || 'Device Class')
         .appendField(new Blockly.FieldDropdown([
@@ -956,7 +956,7 @@ Blockly.Blocks['ha_binary_sensor_create'] = {
         .appendField(new Blockly.FieldTextInput('motion'), 'SENSOR_ID');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
-        .appendField(new Blockly.FieldTextInput('人感センサー'), 'NAME');
+        .appendField(new Blockly.FieldTextInput('Motion Sensor'), 'NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DEVICECLASS || 'Device Class')
         .appendField(new Blockly.FieldDropdown([
@@ -1062,7 +1062,7 @@ Blockly.Blocks['ha_switch_create'] = {
         .appendField(new Blockly.FieldTextInput('relay'), 'SWITCH_ID');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
-        .appendField(new Blockly.FieldTextInput('リレー'), 'NAME');
+        .appendField(new Blockly.FieldTextInput('Relay'), 'NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_ICON || 'Icon')
         .appendField(new Blockly.FieldDropdown([
@@ -1360,7 +1360,7 @@ Blockly.Blocks['ha_button_create'] = {
         .appendField(new Blockly.FieldTextInput('restart'), 'BUTTON_ID');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
-        .appendField(new Blockly.FieldTextInput('再起動'), 'NAME');
+        .appendField(new Blockly.FieldTextInput('Restart'), 'NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_ICON || 'Icon')
         .appendField(new Blockly.FieldDropdown([
@@ -1518,7 +1518,7 @@ Blockly.Blocks['ha_number_create'] = {
         .appendField(new Blockly.FieldTextInput('servo_angle'), 'NUMBER_ID');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
-        .appendField(new Blockly.FieldTextInput('サーボ角度'), 'NAME');
+        .appendField(new Blockly.FieldTextInput('Servo Angle'), 'NAME');
     this.appendValueInput('MIN').appendField(Blockly.Msg.BLOCKS_MIN || 'Min');
     this.appendValueInput('MAX').appendField(Blockly.Msg.BLOCKS_MAX || 'Max');
     this.appendValueInput('STEP').appendField(Blockly.Msg.BLOCKS_STEP || 'Step');
@@ -1696,7 +1696,7 @@ Blockly.Blocks['ha_fan_create'] = {
         .appendField(new Blockly.FieldTextInput('fan'), 'FAN_ID');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
-        .appendField(new Blockly.FieldTextInput('換気扇'), 'NAME');
+        .appendField(new Blockly.FieldTextInput('Fan'), 'NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_SPEEDCONTROL || 'Speed Control')
         .appendField(new Blockly.FieldCheckbox('TRUE'), 'SPEEDS');
@@ -1866,7 +1866,7 @@ Blockly.Blocks['ha_cover_create'] = {
         .appendField(new Blockly.FieldTextInput('shutter'), 'COVER_ID');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
-        .appendField(new Blockly.FieldTextInput('シャッター'), 'NAME');
+        .appendField(new Blockly.FieldTextInput('Cover'), 'NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DEVICECLASS || 'Device Class')
         .appendField(new Blockly.FieldDropdown([
@@ -2248,7 +2248,7 @@ Blockly.Blocks['ha_scene_create'] = {
         .appendField(new Blockly.FieldTextInput('night_mode'), 'SCENE_ID');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
-        .appendField(new Blockly.FieldTextInput('ナイトモード'), 'NAME');
+        .appendField(new Blockly.FieldTextInput('Night Mode'), 'NAME');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#3F51B5');
@@ -2318,7 +2318,7 @@ Blockly.Blocks['ha_tag_scanner_create'] = {
         .appendField(new Blockly.FieldTextInput('nfc_reader'), 'SCANNER_ID');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
-        .appendField(new Blockly.FieldTextInput('NFCリーダー'), 'NAME');
+        .appendField(new Blockly.FieldTextInput('Tag Scanner'), 'NAME');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#009688');
@@ -2660,7 +2660,7 @@ Blockly.Blocks['ha_ota_setup'] = {
         .appendField(new Blockly.FieldTextInput('firmware_update'), 'OBJECT_ID');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
-        .appendField(new Blockly.FieldTextInput('ファームウェア更新'), 'NAME');
+        .appendField(new Blockly.FieldTextInput('Firmware Update'), 'NAME');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_OTAFIRMWAREURL || 'Firmware URL (.bin)')
         .appendField(new Blockly.FieldTextInput('http://homeassistant.local:8123/local/firmware.bin'), 'FIRMWARE_URL');
@@ -2676,7 +2676,7 @@ javascriptGenerator.forBlock['ha_ota_setup'] = function(block: Blockly.Block) {
   ensureHaOverrideInfra();
   ensureHaOtaInfra();
   const objectId = block.getFieldValue('OBJECT_ID') || 'firmware_update';
-  const name = block.getFieldValue('NAME') || 'ファームウェア更新';
+  const name = block.getFieldValue('NAME') || 'Firmware Update';
   const firmwareUrl = block.getFieldValue('FIRMWARE_URL') || '';
 
   // Register the user-message callback so HAMqtt routes incoming MQTT
