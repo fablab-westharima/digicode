@@ -365,6 +365,8 @@ export async function sendOtp(email: string, password: string): Promise<{
   accessToken?: string;
   refreshToken?: string;
   user?: { id: number; email: string };
+  // BUG-083: email未認証時に backend が返す flag、success path で handle
+  needsVerification?: boolean;
 }> {
   const response = await fetch(`${API_BASE_URL}/api/auth/2fa/send-otp`, {
     method: 'POST',
@@ -378,6 +380,10 @@ export async function sendOtp(email: string, password: string): Promise<{
 
   if (!response.ok) {
     const error = await response.json();
+    // BUG-083: email未認証は EmailVerificationWaiting に誘導するため success-but-needs-verify path で return
+    if (error.needsVerification) {
+      return { success: false, twoFactorRequired: false, needsVerification: true };
+    }
     throw new Error(error.error || i18n.t('errors.auth.authFailed', { defaultValue: '認証に失敗しました' }));
   }
 

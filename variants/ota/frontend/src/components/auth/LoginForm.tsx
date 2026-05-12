@@ -17,9 +17,11 @@ interface LoginFormProps {
   onSubmit: (email: string, password: string) => Promise<void>;
   isLoading: boolean;
   error: string | null;
+  // BUG-083: email未認証 (email_verified=0) 時に EmailVerificationWaiting に切替するための callback
+  onNeedsVerification?: (email: string) => void;
 }
 
-export function LoginForm({ isLoading, error }: LoginFormProps) {
+export function LoginForm({ isLoading, error, onNeedsVerification }: LoginFormProps) {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -40,6 +42,12 @@ export function LoginForm({ isLoading, error }: LoginFormProps) {
     try {
       // 2FA API を使用（パスワード検証 + 2FA判定）
       const result = await sendOtp(email, password);
+
+      // BUG-083: email未認証時は EmailVerificationWaiting に誘導 (admin 介入なし自己解決経路)
+      if (result.needsVerification) {
+        onNeedsVerification?.(email);
+        return;
+      }
 
       if (result.twoFactorRequired) {
         // 2FA が必要な場合、OTP入力ダイアログを表示

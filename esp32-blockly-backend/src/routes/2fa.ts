@@ -97,8 +97,9 @@ twoFactor.post('/send-otp', async (c) => {
     }
 
     // メール未確認チェック
+    // BUG-083: needsVerification flag を frontend に返して EmailVerificationWaiting に誘導
     if (!user.email_verified) {
-      return errorJson(c, 'auth.emailNotVerified', 401);
+      return errorJson(c, 'auth.emailNotVerified', 401, { needsVerification: true });
     }
 
     // パスワード検証

@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LoginForm } from './LoginForm';
 import { RegisterForm } from './RegisterForm';
 import { RecoveryTab } from './RecoveryTab';
+import { EmailVerificationWaiting } from './EmailVerificationWaiting';
 import { LocaleSelector } from '@/components/common/LocaleSelector';
 
 interface AuthPageProps {
@@ -24,6 +26,19 @@ export function AuthPage({
   error,
 }: AuthPageProps) {
   const { t } = useTranslation();
+  // BUG-083: login 失敗で email 未認証だった場合の EmailVerificationWaiting 切替 state
+  // (signup 完了経路は別系統で既存実装、本 state は login 失敗経路のみ track)
+  const [unverifiedLoginEmail, setUnverifiedLoginEmail] = useState<string | null>(null);
+
+  // BUG-083: login 失敗 (needsVerification) 時に EmailVerificationWaiting を表示
+  if (unverifiedLoginEmail) {
+    return (
+      <EmailVerificationWaiting
+        email={unverifiedLoginEmail}
+        onBackToLogin={() => setUnverifiedLoginEmail(null)}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0D1117] px-4">
@@ -49,6 +64,7 @@ export function AuthPage({
                 onSubmit={onLogin}
                 isLoading={isLoading}
                 error={activeTab === 'login' ? error : null}
+                onNeedsVerification={setUnverifiedLoginEmail}
               />
             </TabsContent>
             <TabsContent value="register" className="mt-4">
