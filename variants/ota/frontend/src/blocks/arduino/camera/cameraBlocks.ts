@@ -132,7 +132,7 @@ generator.forBlock['camera_save_sd'] = function(block: Blockly.Block) {
   // emits: include_camera (esp_camera + camFb) + include_sd (SD.h) /
   // requires: SD initialized (SD.begin() を user 側 setup で実行済)
   generator.definitions_['include_camera'] = CAM_GLOBALS;
-  generator.definitions_['include_sd'] = '#include <SD.h>';
+  generator.definitions_['include_sd'] = '#include <SD.h>\n#include <SPI.h>';
   return [`([&](){
   if (!camFb) return false;
   /* requires: SD initialized */ File f = SD.open(${filename}, FILE_WRITE);
@@ -162,7 +162,7 @@ Blockly.Blocks['camera_send_http'] = {
 generator.forBlock['camera_send_http'] = function(block: Blockly.Block) {
   const url = javascriptGenerator.valueToCode(block, 'URL', 0) || '"http://192.168.1.100/upload"';
   generator.definitions_['include_camera'] = CAM_GLOBALS;
-  generator.definitions_['include_http_client'] = '#include <HTTPClient.h>';
+  generator.definitions_['include_httpclient'] = '#include <HTTPClient.h>';
   return [`([&](){
   if (!camFb) return false;
   HTTPClient http;
