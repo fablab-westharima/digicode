@@ -3321,7 +3321,7 @@
     "usbPortRelease": "釋放USB連接埠",
     "servoTrim": "伺服馬達微調",
     "servoPulse": "伺服脈衝調整",
-    "extensions": "擴充功能",
+    "pinAssignment": "腳位指定設定",
     "passkeyManagement": "密鑰管理",
     "codePreview": "生成的程式碼",
     "pidTuning": "PID調整",

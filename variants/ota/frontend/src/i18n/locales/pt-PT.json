@@ -3321,7 +3321,7 @@
     "usbPortRelease": "Liberar porta USB",
     "servoTrim": "Ajuste de Servo",
     "servoPulse": "Ajuste de pulso de servo",
-    "extensions": "Extensões",
+    "pinAssignment": "Atribuição de pinos",
     "passkeyManagement": "Gerenciar Passkeys",
     "codePreview": "Código gerado",
     "pidTuning": "Ajuste PID",

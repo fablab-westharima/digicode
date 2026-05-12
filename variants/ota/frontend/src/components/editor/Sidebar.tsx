@@ -311,15 +311,18 @@ export function Sidebar({
       category: 'advanced' as const,
     },
     {
+      // 第107回 follow-up: USBポート解放を「詳細設定」→「USBドライバー」 category に移動
+      // (USB 関連機能が同 category に集約され UX cluster 整合)
       id: 'usb-port-release',
       label: t('sidebar.usbPortRelease', { defaultValue: 'USBポート解放' }),
       icon: <Trash2 className="w-4 h-4" />,
       action: onUsbPortRelease || (() => {}),
-      category: 'advanced'
+      category: 'usbDriver',
     },
     {
+      // 第107回 follow-up: 「拡張機能」→「ピンアサイン設定」に rename (PinSettingsDialog title と整合)
       id: 'pin-assignment',
-      label: t('sidebar.extensions', { defaultValue: '拡張機能' }),
+      label: t('sidebar.pinAssignment', { defaultValue: 'ピンアサイン設定' }),
       icon: <PinIcon className="w-4 h-4" />,
       action: onPinAssignment || (() => {}),
       category: 'advanced',

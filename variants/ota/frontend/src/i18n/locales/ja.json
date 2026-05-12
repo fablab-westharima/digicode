@@ -1038,7 +1038,7 @@
     "usbPortRelease": "USBポート解放",
     "servoTrim": "サーボトリム設定",
     "servoPulse": "サーボパルス調整",
-    "extensions": "拡張機能",
+    "pinAssignment": "ピンアサイン設定",
     "passkeyManagement": "パスキー管理",
     "codePreview": "生成コード",
     "pidTuning": "PIDチューニング",

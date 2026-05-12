@@ -1038,7 +1038,7 @@
     "usbPortRelease": "USB Port Release",
     "servoTrim": "Servo Trim Settings",
     "servoPulse": "Servo Pulse Settings",
-    "extensions": "Extensions",
+    "pinAssignment": "Pin Assignment",
     "passkeyManagement": "Passkey Management",
     "codePreview": "Generated Code",
     "pidTuning": "PID Tuning",
