@@ -311,12 +311,37 @@ export default function PlanPage() {
   );
 }
 
+// 第107回 Task 2: プラン差別化 = Pro/Enterprise narrow に整合する features list。
+// - Lite = AI 3 機能 (Block / Chat / UICustomize)
+// - Pro = サーボパルス + Lite
+// - Enterprise = ピンアサイン + クラス + Pro
 function getFallbackFeatures(planId: string, t: (key: string) => string): string[] {
   const map: Record<string, string[]> = {
-    free: [t('plan.features.cloudCompile50')],
-    lite: [t('plan.features.cloudCompile250'), t('plan.features.aiBlockGeneration'), t('plan.features.aiChat')],
-    pro: [t('plan.features.cloudCompile500'), t('plan.features.pinAssign'), t('plan.features.aiBlockGeneration'), t('plan.features.aiChat')],
-    enterprise: [t('plan.features.cloudCompileUnlimited'), t('plan.features.allFeatures'), t('plan.features.classFeature')],
+    free: [
+      t('plan.features.cloudCompile50'),
+    ],
+    lite: [
+      t('plan.features.cloudCompile250'),
+      t('plan.features.aiBlockGeneration'),
+      t('plan.features.aiChat'),
+      t('plan.features.aiUiCustomize'),
+    ],
+    pro: [
+      t('plan.features.cloudCompile500'),
+      t('plan.features.servoPulse'),
+      t('plan.features.aiBlockGeneration'),
+      t('plan.features.aiChat'),
+      t('plan.features.aiUiCustomize'),
+    ],
+    enterprise: [
+      t('plan.features.cloudCompileUnlimited'),
+      t('plan.features.pinAssign'),
+      t('plan.features.classFeature'),
+      t('plan.features.servoPulse'),
+      t('plan.features.aiBlockGeneration'),
+      t('plan.features.aiChat'),
+      t('plan.features.aiUiCustomize'),
+    ],
   };
   return map[planId] || [];
 }

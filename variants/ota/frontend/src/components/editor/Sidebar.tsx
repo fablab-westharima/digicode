@@ -93,7 +93,8 @@ interface NavItem {
   action?: () => void;
   category: string;
   children?: NavSubItem[]; // サブメニュー用
-  premium?: boolean; // 有料機能フラグ（未ログイン時グレーアウト）
+  premium?: boolean; // Enterprise 限定機能フラグ (第107回 Task 2 で narrow、ENT バッジ表示)
+  proGate?: boolean; // Pro/Enterprise 限定機能フラグ (第107回 Task 2、PRO バッジ表示)
   disabled?: boolean; // 一時的な非活性 (例: 連携サーバーダウン中)
   disabledLabel?: string; // disabled 時に表示する補助ラベル (赤文字 inline)
   beta?: boolean; // ベータ機能（β バッジ常時表示）
@@ -137,7 +138,7 @@ export function Sidebar({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
-  const { canUsePinAssign, isFreeOpenNow, fetchFlags, canUseAiBlockGeneration, canUseAiHelpBot, canSubmitFeedback } = useFeatureFlagStore();
+  const { canUsePinAssign, canUseServoPulse, isFreeOpenNow, fetchFlags, canUseAiBlockGeneration, canUseAiHelpBot, canSubmitFeedback } = useFeatureFlagStore();
   // class-server (ML30) のヘルスチェック state を slice value で subscribe
   // (`memory:zustand_state_reading_selector` 厳守、function ref ではなく値直接 select)。
   const isClassServerDown = useClassServerHealthStore((s) => s.status === 'down');
@@ -153,6 +154,7 @@ export function Sidebar({
   }, [fetchFlags]);
 
   const isPinAssignAvailable = canUsePinAssign(user?.plan);
+  const isServoPulseAvailable = canUseServoPulse(user?.plan);
   const isPinAssignFreeOpen = isFreeOpenNow('pin_assign_pro');
   const isAiAvailable = canUseAiBlockGeneration(user?.plan, user?.accountType);
   const isHelpBotAvailable = canUseAiHelpBot(user?.plan, user?.accountType);
@@ -282,13 +284,15 @@ export function Sidebar({
       action: onServoTrim || (() => {}),
       category: 'tuning',
     },
-    // 第107回 Task 1: サーボパルス調整 (ピンアサインから独立、ロボット製作者向け基本機能)
+    // 第107回 Task 1: サーボパルス調整 (ピンアサインから独立、ロボット製作者向け)
+    // Task 2: Pro/Enterprise 限定 (proGate)、プレリリース中は全 user 開放
     {
       id: 'servo-pulse',
       label: t('sidebar.servoPulse', { defaultValue: 'サーボパルス調整' }),
       icon: <SlidersHorizontal className="w-4 h-4" />,
       action: onServoPulse || (() => {}),
       category: 'tuning',
+      proGate: true,
     },
     {
       id: 'pid-tuning',
@@ -631,23 +635,26 @@ export function Sidebar({
                         )}
                       </>
                     ) : (
-                      // 通常のアイテム（premium かつ機能制限中なら PRO バッジ表示 / disabled なら赤文字補助ラベル）
+                      // 通常のアイテム (gate / disabled 状態に応じて lock 表示)
+                      // 第107回 Task 2: premium = Enterprise 限定 (ENT badge) / proGate = Pro+ 限定 (PRO badge)
                       <Button
                         variant="ghost"
                         className={`w-full justify-start ${
-                          (item.premium && !isPinAssignAvailable) || item.disabled
+                          (item.premium && !isPinAssignAvailable) || (item.proGate && !isServoPulseAvailable) || item.disabled
                             ? 'text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white cursor-not-allowed'
                             : 'text-[#E6EDF3] hover:bg-[#2E333D] hover:text-white'
                         } ${shouldShowFull ? 'px-3' : 'px-0 justify-center'}`}
-                        onClick={(item.premium && !isPinAssignAvailable) || item.disabled ? undefined : item.action}
+                        onClick={(item.premium && !isPinAssignAvailable) || (item.proGate && !isServoPulseAvailable) || item.disabled ? undefined : item.action}
                         title={
                           !shouldShowFull
                             ? item.label
                             : item.disabled
                               ? item.disabledLabel
                               : item.premium && !isPinAssignAvailable
-                                ? t('sidebar.requiresPro', { defaultValue: 'Proプラン以上で利用可能です' })
-                                : undefined
+                                ? t('sidebar.requiresEnterprise', { defaultValue: 'Enterprise プランで利用可能です' })
+                                : item.proGate && !isServoPulseAvailable
+                                  ? t('sidebar.requiresPro', { defaultValue: 'Pro プラン以上で利用可能です' })
+                                  : undefined
                         }
                       >
                         <span className={shouldShowFull ? 'mr-3' : ''}>{item.icon}</span>
@@ -661,6 +668,9 @@ export function Sidebar({
                           <span className="text-[10px] text-amber-400 ml-1">β</span>
                         )}
                         {shouldShowFull && !item.disabled && item.premium && !isPinAssignAvailable && (
+                          <span className="text-[10px] text-purple-400 ml-1">ENT</span>
+                        )}
+                        {shouldShowFull && !item.disabled && item.proGate && !isServoPulseAvailable && (
                           <span className="text-[10px] text-orange-400 ml-1">PRO</span>
                         )}
                       </Button>

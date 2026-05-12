@@ -3352,6 +3352,7 @@
     "pin": "Fijar",
     "unpin": "Desfijar",
     "requiresPro": "Disponible con plan Pro o superior",
+    "requiresEnterprise": "Disponible con plan Enterprise",
     "freeOpenNow": "Prueba gratuita",
     "category": {
       "project": "Proyectos",
@@ -3996,10 +3997,11 @@
       "cloudCompile250": "250 compilaciones en la nube/mes",
       "cloudCompile500": "500 compilaciones en la nube/mes",
       "cloudCompileUnlimited": "Compilaciones en la nube ilimitadas",
-      "pinAssign": "Función de asignación de pines",
+      "pinAssign": "Asignación de pines individual",
+      "servoPulse": "Ajuste de pulso de servo",
       "aiBlockGeneration": "Generación de bloques con AI (BYOK)",
-      "aiChat": "AI Chat (BYOK)",
-      "allFeatures": "Todas las funciones",
+      "aiChat": "AI Help Bot (BYOK)",
+      "aiUiCustomize": "Personalización de UI con AI (BYOK)",
       "classFeature": "Función de clases"
     }
   },

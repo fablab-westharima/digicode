@@ -65,22 +65,31 @@ export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
     }
   },
 
+  // 個別ピンアサイン (第107回 Task 2): Enterprise 限定。
+  // プレリリース期間中 (pin_assign_pro.isFreeNow=true) は全 user 開放を維持
+  // (`memory:prerelease_open_scope`)。flag 名は historical = 命名整理は post-release polish。
   canUsePinAssign: (userPlan?: string) => {
-    // Pro/Enterprise → 常に使える
-    if (userPlan === 'pro' || userPlan === 'enterprise') return true;
+    // Enterprise → 常に使える
+    if (userPlan === 'enterprise') return true;
 
-    // Free/Basic → 無料開放期間中なら使える
+    // 無料開放期間中なら全 user 開放
     const flag = get().flags['pin_assign_pro'];
     if (flag && flag.isFreeNow) return true;
 
     return false;
   },
 
-  // サーボパルス調整 (第107回 Task 1): 現状は全 user 開放 (default true)。
-  // Task 2 でプラン差別化 = Pro/Enterprise 限定化の entry point として独立 gate を設置。
-  // userPlan 引数は将来の gate 化に備えた signature placeholder。
-  canUseServoPulse: (_userPlan?: string) => {
-    return true;
+  // サーボパルス調整 (第107回 Task 1 entry point + Task 2 narrow): Pro/Enterprise 限定。
+  // プレリリース期間中は全 user 開放 (pin_assign_pro flag 共用、`memory:prerelease_open_scope`)。
+  canUseServoPulse: (userPlan?: string) => {
+    // Pro/Enterprise → 常に使える
+    if (userPlan === 'pro' || userPlan === 'enterprise') return true;
+
+    // 無料開放期間中なら全 user 開放
+    const flag = get().flags['pin_assign_pro'];
+    if (flag && flag.isFreeNow) return true;
+
+    return false;
   },
 
   canUseAiBlockGeneration: (userPlan?: string, accountType?: string) => {

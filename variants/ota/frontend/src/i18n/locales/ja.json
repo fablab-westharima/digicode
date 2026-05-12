@@ -1068,7 +1068,8 @@
     "login": "ログイン / 新規登録",
     "pin": "ピン留め",
     "unpin": "ピン留め解除",
-    "requiresPro": "Proプラン以上で利用可能です",
+    "requiresPro": "Pro プラン以上で利用可能です",
+    "requiresEnterprise": "Enterprise プランで利用可能です",
     "freeOpenNow": "無料開放中",
     "category": {
       "project": "プロジェクト",
@@ -3818,10 +3819,11 @@
       "cloudCompile250": "月250回クラウドコンパイル",
       "cloudCompile500": "月500回クラウドコンパイル",
       "cloudCompileUnlimited": "無制限クラウドコンパイル",
-      "pinAssign": "ピンアサイン機能",
+      "pinAssign": "個別ピンアサイン",
+      "servoPulse": "サーボパルス調整",
       "aiBlockGeneration": "AIブロック生成（BYOK）",
-      "aiChat": "AIチャット（BYOK）",
-      "allFeatures": "全機能",
+      "aiChat": "AIヘルプBot（BYOK）",
+      "aiUiCustomize": "AI UIカスタマイズ（BYOK）",
       "classFeature": "クラス機能"
     }
   },

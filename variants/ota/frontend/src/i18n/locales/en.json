@@ -1069,6 +1069,7 @@
     "pin": "Pin",
     "unpin": "Unpin",
     "requiresPro": "Available with Pro plan or higher",
+    "requiresEnterprise": "Available with Enterprise plan",
     "freeOpenNow": "Free trial",
     "category": {
       "project": "Projects",
@@ -3828,10 +3829,11 @@
       "cloudCompile250": "250 cloud compiles/month",
       "cloudCompile500": "500 cloud compiles/month",
       "cloudCompileUnlimited": "Unlimited cloud compiles",
-      "pinAssign": "Pin assignment feature",
+      "pinAssign": "Per-pin assignment",
+      "servoPulse": "Servo pulse adjustment",
       "aiBlockGeneration": "AI block generation (BYOK)",
-      "aiChat": "AI Chat (BYOK)",
-      "allFeatures": "All features",
+      "aiChat": "AI Help Bot (BYOK)",
+      "aiUiCustomize": "AI UI Customize (BYOK)",
       "classFeature": "Class feature"
     }
   },

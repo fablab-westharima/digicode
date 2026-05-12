@@ -3352,6 +3352,7 @@
     "pin": "釘選",
     "unpin": "取消釘選",
     "requiresPro": "需要 Pro 方案或更高方案",
+    "requiresEnterprise": "需要 Enterprise 方案",
     "freeOpenNow": "免費試用中",
     "category": {
       "project": "專案",
@@ -3996,10 +3997,11 @@
       "cloudCompile250": "每月 250 次雲端編譯",
       "cloudCompile500": "每月 500 次雲端編譯",
       "cloudCompileUnlimited": "無限制雲端編譯",
-      "pinAssign": "腳位指定功能",
+      "pinAssign": "個別腳位指定",
+      "servoPulse": "伺服脈衝調整",
       "aiBlockGeneration": "AI 積木生成（BYOK）",
-      "aiChat": "AI 對話（BYOK）",
-      "allFeatures": "所有功能",
+      "aiChat": "AI 對話 Bot（BYOK）",
+      "aiUiCustomize": "AI UI 客製化（BYOK）",
       "classFeature": "班級功能"
     }
   },
