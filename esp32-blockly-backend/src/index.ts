@@ -98,6 +98,10 @@ app.use('/api/classes/*', rateLimitPresets.standard);
 app.use('/api/submissions/*', rateLimitPresets.standard);
 app.use('/api/feedback/*', rateLimitPresets.standard);
 app.use('/api/health/*', rateLimitPresets.standard);
+// 第112回 case 19 cluster (MW-3): /api/feature-flags は admin module 内の no-auth
+// public endpoint (admin.ts L301 + index.ts 下の app.route('/api', admin) 経由)。
+// 他 rate-limit prefix と overlap しないため明示的 single-path use() で適用。
+app.use('/api/feature-flags', rateLimitPresets.standard);
 // F-19 fix: 管理者API + admin-feedback 両方カバー、admin route の brute-force defense
 app.use('/api/admin/*', rateLimitPresets.standard);
 
