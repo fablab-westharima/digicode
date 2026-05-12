@@ -129,13 +129,20 @@ compileUsage.get('/history', authMiddleware, async (c) => {
   try {
     const { userId } = c.get('user');
 
+    // 第112回 case 19 cluster (BE-3) 第112回: student の compile 枠は管理者の枠を
+    // 参照する設計 (/increment + GET / と同じ helper 経由)。本 endpoint は当初
+    // student own user_id を read していたため、count が常に 0 で履歴画面が空表示
+    // となる UX 機能不全だった (security 影響なし)。fix で 3 endpoint 全てが
+    // resolveCompileUserId 経由となり整合。
+    const targetUserId = await resolveCompileUserId(c.env.DB, userId);
+
     const history = await c.env.DB.prepare(`
       SELECT month, count, created_at, updated_at
       FROM compile_usage
       WHERE user_id = ?
       ORDER BY month DESC
       LIMIT 6
-    `).bind(userId).all<{ month: string; count: number; created_at: string; updated_at: string }>();
+    `).bind(targetUserId).all<{ month: string; count: number; created_at: string; updated_at: string }>();
 
     return c.json({
       history: history.results || [],
