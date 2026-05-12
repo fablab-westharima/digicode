@@ -108,11 +108,13 @@ export function ClassDetailPage() {
   const { t, i18n } = useTranslation();
   const fetchFlags = useFeatureFlagStore((s) => s.fetchFlags);
   // 第103回 hotfix2: プレリリース期間中は class 機能を非 enterprise 認証 user にも開放。
-  // slice value subscription (function ref ではない、第103回 hotfix #1 教訓踏襲)。
-  const isPinAssignFreeOpen = useFeatureFlagStore(
-    (s) => s.flags['pin_assign_pro']?.isFreeNow ?? false
+  // 第112回 case 19 cluster (FE-1): inline gate を canUseClasses helper に統合
+  // (Sidebar / ClassesPage と sync)。computed selector で boolean 結果を直接
+  // subscribe (slice value pattern、`memory:zustand_state_reading_selector`)、
+  // flag 変化時に正しく re-render trigger される。function ref selector は使わない。
+  const isClassFeatureAvailable = useFeatureFlagStore(
+    (s) => !!user && s.canUseClasses(user?.plan)
   );
-  const isClassFeatureAvailable = !!user && (user.plan === 'enterprise' || isPinAssignFreeOpen);
   // class-server (ML30) のヘルスチェック (slice value 経由、`memory:zustand_state_reading_selector` 厳守)
   const isClassServerDown = useClassServerHealthStore((s) => s.status === 'down');
 

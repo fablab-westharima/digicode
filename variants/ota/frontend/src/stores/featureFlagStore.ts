@@ -19,6 +19,7 @@ interface FeatureFlagState {
   fetchFlags: () => Promise<void>;
   canUsePinAssign: (userPlan?: string) => boolean;
   canUseServoPulse: (userPlan?: string) => boolean;
+  canUseClasses: (userPlan?: string) => boolean;
   canUseAiBlockGeneration: (userPlan?: string, accountType?: string) => boolean;
   canUseAiHelpBot: (userPlan?: string, accountType?: string) => boolean;
   canUseAiUiCustomize: (userPlan?: string, accountType?: string) => boolean;
@@ -84,6 +85,24 @@ export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
   canUseServoPulse: (userPlan?: string) => {
     // Pro/Enterprise → 常に使える
     if (userPlan === 'pro' || userPlan === 'enterprise') return true;
+
+    // 無料開放期間中なら全 user 開放
+    const flag = get().flags['pin_assign_pro'];
+    if (flag && flag.isFreeNow) return true;
+
+    return false;
+  },
+
+  // クラス機能: Enterprise 限定 (第107回 Task 2 と同 spirit)。
+  // プレリリース期間中 (pin_assign_pro.isFreeNow=true) は全 user 開放
+  // (`memory:prerelease_open_scope`)。第112回 case 19 cluster (FE-1) で
+  // inline `user.plan === 'enterprise' || isPinAssignFreeOpen` 3 callsite
+  // (Sidebar / ClassesPage / ClassDetailPage) を本 helper に統合、prerelease
+  // bypass 条件変更時の sync risk を構造的解消。callsite では `!!user &&`
+  // で認証 user 状態を別途確認 (anonymous は class owner_id 不在のため対象外)。
+  canUseClasses: (userPlan?: string) => {
+    // Enterprise → 常に使える
+    if (userPlan === 'enterprise') return true;
 
     // 無料開放期間中なら全 user 開放
     const flag = get().flags['pin_assign_pro'];

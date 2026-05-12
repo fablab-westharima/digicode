@@ -127,7 +127,7 @@ export function Sidebar({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
-  const { canUsePinAssign, canUseServoPulse, isFreeOpenNow, fetchFlags, canUseAiBlockGeneration, canUseAiHelpBot, canSubmitFeedback } = useFeatureFlagStore();
+  const { canUsePinAssign, canUseServoPulse, canUseClasses, isFreeOpenNow, fetchFlags, canUseAiBlockGeneration, canUseAiHelpBot, canSubmitFeedback } = useFeatureFlagStore();
   // class-server (ML30) のヘルスチェック state を slice value で subscribe
   // (`memory:zustand_state_reading_selector` 厳守、function ref ではなく値直接 select)。
   const isClassServerDown = useClassServerHealthStore((s) => s.status === 'down');
@@ -146,7 +146,6 @@ export function Sidebar({
 
   const isPinAssignAvailable = canUsePinAssign(user?.plan);
   const isServoPulseAvailable = canUseServoPulse(user?.plan);
-  const isPinAssignFreeOpen = isFreeOpenNow('pin_assign_pro');
   const isAiAvailable = canUseAiBlockGeneration(user?.plan, user?.accountType);
   const isHelpBotAvailable = canUseAiHelpBot(user?.plan, user?.accountType);
   const isAiUpgradeCandidate = isAuthenticated && user?.accountType !== 'student' && !isAiAvailable;
@@ -380,7 +379,9 @@ export function Sidebar({
       // 認証 user (plan 不問) にもクラス管理 menu を表示。anonymous は user 自体が
       // 不在なため対象外 (class owner_id が必要)。
       // 第105回 Task 2: class-server ダウン時は赤文字「サーバーダウン中」表示 + click 不能化。
-      ...((user && (user.plan === 'enterprise' || isPinAssignFreeOpen)) ? [{
+      // 第112回 case 19 cluster (FE-1): inline gate `user.plan === 'enterprise' ||
+      // isPinAssignFreeOpen` を canUseClasses helper に統合。
+      ...((user && canUseClasses(user?.plan)) ? [{
         id: 'class-management',
         label: t('sidebar.classManagement', { defaultValue: 'クラス管理' }),
         icon: <Users className="w-4 h-4" />,
