@@ -1298,7 +1298,6 @@ export function EditorPage() {
           onDocs={() => window.open('/docs', '_blank')}
           onCodePreview={() => setCodePreviewDialogOpen(true)}
           onPidTuning={() => setPidTuningDialogOpen(true)}
-          onUsbDriver={() => window.open('https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers', '_blank')}
           onLogin={() => navigate('/auth')}
           onLogout={handleLogout}
           onPasskeyRegister={handlePasskeyRegister}

@@ -1043,7 +1043,6 @@
     "codePreview": "Generated Code",
     "pidTuning": "PID Tuning",
     "usbDriver": "USB Driver",
-    "usbDriverAll": "All Drivers",
     "document": "Document",
     "bleController": "BLE UI Generator",
     "wifiController": "WiFi UI Generator",

@@ -3326,7 +3326,6 @@
     "codePreview": "生成的程式碼",
     "pidTuning": "PID調整",
     "usbDriver": "USB驅動程式",
-    "usbDriverAll": "所有驅動程式",
     "document": "文件",
     "bleController": "BLE UI 生成",
     "wifiController": "WiFi UI 生成",

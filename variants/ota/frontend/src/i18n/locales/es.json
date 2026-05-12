@@ -3326,7 +3326,6 @@
     "codePreview": "Código generado",
     "pidTuning": "Ajuste PID",
     "usbDriver": "Driver USB",
-    "usbDriverAll": "Todos los drivers",
     "document": "Documentación",
     "bleController": "Generador UI BLE",
     "wifiController": "Generador UI WiFi",

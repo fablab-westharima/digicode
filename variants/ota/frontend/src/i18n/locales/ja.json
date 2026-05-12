@@ -1043,7 +1043,6 @@
     "codePreview": "生成コード",
     "pidTuning": "PIDチューニング",
     "usbDriver": "USBドライバー",
-    "usbDriverAll": "すべてのドライバー",
     "document": "ドキュメント",
     "bleController": "BLE UI 生成",
     "wifiController": "WiFi UI 生成",

@@ -12,7 +12,6 @@ import {
   SlidersHorizontal,
   Cpu,
   Trash2,
-  Usb,
   LogOut,
   Key,
   UserX,
@@ -54,7 +53,6 @@ interface SidebarProps {
   onDocs?: () => void;
   onCodePreview?: () => void;
   onPidTuning?: () => void;
-  onUsbDriver?: () => void;
   onDeviceName?: () => void;
   onLogin?: () => void;
   onLogout?: () => void;
@@ -112,7 +110,6 @@ export function Sidebar({
   onDocs,
   onCodePreview,
   onPidTuning,
-  onUsbDriver,
   onDeviceName,
   onLogin,
   onLogout,
@@ -262,13 +259,8 @@ export function Sidebar({
       category: 'usbDriver',
       action: () => window.open('https://www.wch-ic.com/downloads/CH341SER_EXE.html', '_blank'),
     },
-    {
-      id: 'usb-driver-all',
-      label: t('sidebar.usbDriverAll', { defaultValue: 'すべてのドライバー' }),
-      icon: <Usb className="w-4 h-4" />,
-      action: onUsbDriver || (() => {}),
-      category: 'usbDriver',
-    },
+    // 第107回 follow-up: 「すべてのドライバー」 menu 削除 (wire が CP210x URL hardcoded
+    // で上 menu と重複、UsbDriverDialog component も未使用のため削除、rule 06 dead-code)
     // 調整（動作調整系）
     {
       id: 'servo-trim',
