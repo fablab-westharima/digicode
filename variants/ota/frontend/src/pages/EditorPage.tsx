@@ -28,6 +28,7 @@ import { DeviceNameDialog } from '@/components/device/DeviceNameDialog';
 import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstallerDialog';
 import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { ServoTrimDialog } from '@/components/servo/ServoTrimDialog';
+import { ServoPulseDialog } from '@/components/servo/ServoPulseDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
 import { WifiDeviceSelectDialog, type Device } from '@/components/device/WifiDeviceSelectDialog';
 import { PasskeyManagementDialog } from '@/components/auth/PasskeyManagementDialog';
@@ -143,6 +144,7 @@ export function EditorPage() {
   const [firmwareDialogDefaultType, setFirmwareDialogDefaultType] = useState<'ota' | 'ble'>('ota');
   const [pinSettingsDialogOpen, setPinSettingsDialogOpen] = useState(false);
   const [servoTrimDialogOpen, setServoTrimDialogOpen] = useState(false);
+  const [servoPulseDialogOpen, setServoPulseDialogOpen] = useState(false);
   const [compileServerSettingsDialogOpen, setCompileServerSettingsDialogOpen] = useState(false);
   const [binExportDialogOpen, setBinExportDialogOpen] = useState(false);
   const [binExportVersion, setBinExportVersion] = useState('1.0.0');
@@ -1291,6 +1293,7 @@ export function EditorPage() {
           onDeviceName={() => setDeviceNameDialogOpen(true)}
           onUsbPortRelease={handleUsbPortRelease}
           onServoTrim={() => setServoTrimDialogOpen(true)}
+          onServoPulse={() => setServoPulseDialogOpen(true)}
           onPinAssignment={() => setPinSettingsDialogOpen(true)}
           onCompileServerSettings={() => setCompileServerSettingsDialogOpen(true)}
           onDocs={() => window.open('/docs', '_blank')}
@@ -1802,6 +1805,12 @@ export function EditorPage() {
       <ServoTrimDialog
         open={servoTrimDialogOpen}
         onOpenChange={setServoTrimDialogOpen}
+      />
+
+      {/* サーボパルス調整ダイアログ (第107回 Task 1) */}
+      <ServoPulseDialog
+        open={servoPulseDialogOpen}
+        onOpenChange={setServoPulseDialogOpen}
       />
 
       {/* コンパイルサーバー設定ダイアログ */}

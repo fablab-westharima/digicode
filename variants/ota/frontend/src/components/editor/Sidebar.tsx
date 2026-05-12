@@ -50,6 +50,7 @@ interface SidebarProps {
   onApSetup?: () => void;
   onUsbPortRelease?: () => void;
   onServoTrim?: () => void;
+  onServoPulse?: () => void;
   onPinAssignment?: () => void;
   onCompileServerSettings?: () => void;
   onDocs?: () => void;
@@ -107,6 +108,7 @@ export function Sidebar({
   onApSetup,
   onUsbPortRelease,
   onServoTrim,
+  onServoPulse,
   onPinAssignment,
   onCompileServerSettings,
   onDocs,
@@ -278,6 +280,14 @@ export function Sidebar({
       label: t('sidebar.servoTrim', { defaultValue: 'サーボトリム設定' }),
       icon: <SlidersHorizontal className="w-4 h-4" />,
       action: onServoTrim || (() => {}),
+      category: 'tuning',
+    },
+    // 第107回 Task 1: サーボパルス調整 (ピンアサインから独立、ロボット製作者向け基本機能)
+    {
+      id: 'servo-pulse',
+      label: t('sidebar.servoPulse', { defaultValue: 'サーボパルス調整' }),
+      icon: <SlidersHorizontal className="w-4 h-4" />,
+      action: onServoPulse || (() => {}),
       category: 'tuning',
     },
     {

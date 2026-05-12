@@ -18,6 +18,7 @@ interface FeatureFlagState {
 
   fetchFlags: () => Promise<void>;
   canUsePinAssign: (userPlan?: string) => boolean;
+  canUseServoPulse: (userPlan?: string) => boolean;
   canUseAiBlockGeneration: (userPlan?: string, accountType?: string) => boolean;
   canUseAiHelpBot: (userPlan?: string, accountType?: string) => boolean;
   canUseAiUiCustomize: (userPlan?: string, accountType?: string) => boolean;
@@ -73,6 +74,13 @@ export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
     if (flag && flag.isFreeNow) return true;
 
     return false;
+  },
+
+  // サーボパルス調整 (第107回 Task 1): 現状は全 user 開放 (default true)。
+  // Task 2 でプラン差別化 = Pro/Enterprise 限定化の entry point として独立 gate を設置。
+  // userPlan 引数は将来の gate 化に備えた signature placeholder。
+  canUseServoPulse: (_userPlan?: string) => {
+    return true;
   },
 
   canUseAiBlockGeneration: (userPlan?: string, accountType?: string) => {
