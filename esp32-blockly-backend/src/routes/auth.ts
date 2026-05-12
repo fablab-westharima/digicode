@@ -672,10 +672,14 @@ auth.post('/verify-email/send', async (c) => {
       });
     }
 
-    // 既に確認済みの場合
+    // 既に確認済みの場合: silent success (anti-enumeration)
+    // 第112回 case 19 cluster (MW-1) 第112回: 旧コードは "このメールアドレスは既に
+    // 確認済みです" を返却していたが、これは email 存在 AND verified 状態の info leak
+    // (CWE-203 類)。!user path と同 message に統一し、verification email 送信処理を
+    // skip して silent success 返却で anti-enumeration 設計を完成。
     if (user.email_verified) {
       return c.json({
-        message: 'このメールアドレスは既に確認済みです'
+        message: 'メールアドレスが登録されている場合、確認メールを送信しました'
       });
     }
 
