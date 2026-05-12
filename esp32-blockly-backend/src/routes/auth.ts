@@ -939,6 +939,12 @@ auth.post('/recovery/verify', async (c) => {
       'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
     ).bind(recoveryToken.user_id, newTokenHash, expiresAt).run();
 
+    // F-1 fix: AdminPage inactive 判定のため recovery 経由 login でも last_login_at 更新
+    // (auth.ts:248 / 2fa.ts BUG-084 fix pattern 踏襲)
+    await c.env.DB.prepare(
+      "UPDATE users SET last_login_at = datetime('now') WHERE id = ?"
+    ).bind(recoveryToken.user_id).run();
+
     return c.json({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
@@ -986,7 +992,38 @@ auth.delete('/account', authMiddleware, async (c) => {
       'DELETE FROM recovery_tokens WHERE user_id = ?'
     ).bind(userId).run();
 
-    // 6. プロジェクトを全て削除
+    // F-15 fix: 削除漏れていた 6 tables を追加 (auth.ts と admin.ts cascade を同期)
+    // 6. クラス所属を削除
+    await c.env.DB.prepare(
+      'DELETE FROM class_members WHERE user_id = ?'
+    ).bind(userId).run();
+
+    // 7. 2FA OTP 履歴を削除
+    await c.env.DB.prepare(
+      'DELETE FROM login_otp_codes WHERE user_id = ?'
+    ).bind(userId).run();
+
+    // 8. 信頼済みデバイスを削除
+    await c.env.DB.prepare(
+      'DELETE FROM trusted_devices WHERE user_id = ?'
+    ).bind(userId).run();
+
+    // 9. 2FA 設定を削除
+    await c.env.DB.prepare(
+      'DELETE FROM user_2fa_settings WHERE user_id = ?'
+    ).bind(userId).run();
+
+    // 10. リカバリーコードを削除
+    await c.env.DB.prepare(
+      'DELETE FROM recovery_codes WHERE user_id = ?'
+    ).bind(userId).run();
+
+    // 11. 要望履歴を削除
+    await c.env.DB.prepare(
+      'DELETE FROM feedback WHERE user_id = ?'
+    ).bind(userId).run();
+
+    // 12. プロジェクトを全て削除
     await c.env.DB.prepare(
       'DELETE FROM projects WHERE user_id = ?'
     ).bind(userId).run();

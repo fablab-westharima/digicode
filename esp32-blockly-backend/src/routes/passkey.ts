@@ -34,6 +34,16 @@ function getRpId(origin: string | undefined): string {
   return hostname;
 }
 
+// リフレッシュトークンのハッシュ化（SHA-256、auth.ts / 2fa.ts と同実装）
+// F-4 fix: 旧コードは refreshToken を平文で DB 保存していたため修正
+async function hashRefreshToken(token: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(token);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 // Uint8ArrayをBase64URL文字列に変換（Cloudflare Workers用）
 function uint8ArrayToBase64url(uint8Array: Uint8Array): string {
   // バイナリ文字列に変換
@@ -302,7 +312,7 @@ app.post('/login/verify', async (c) => {
 
     // ユーザーを取得
     const userResult = await c.env.DB.prepare(
-      'SELECT id, email, email_verified, passkey_only FROM users WHERE email = ?'
+      'SELECT id, email, email_verified, passkey_only, account_type FROM users WHERE email = ?'
     )
       .bind(email)
       .first();
@@ -313,10 +323,27 @@ app.post('/login/verify', async (c) => {
 
     const userId = userResult.id as number;
     const emailVerified = userResult.email_verified as number;
+    const accountType = userResult.account_type as string | null;
 
     // メール確認チェック
+    // F-6 fix: needsVerification flag を frontend に返して EmailVerificationWaiting に誘導
+    // (2fa.ts:102 / auth.ts:190 と同 pattern)
     if (!emailVerified) {
-      return errorJson(c, 'auth.emailNotVerified', 403);
+      return errorJson(c, 'auth.emailNotVerified', 403, { needsVerification: true });
+    }
+
+    // 生徒ログイン制限: student かつクラス未所属ならログイン不可
+    // F-5 fix: auth.ts:220-230 pattern を passkey login にも適用
+    if (accountType === 'student') {
+      const membership = await c.env.DB.prepare(
+        'SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?'
+      ).bind(userId).first<{ n: number }>();
+
+      if (!membership || membership.n === 0) {
+        return c.json({
+          error: 'クラスに所属していないため、ログインできません。管理者にお問い合わせください。',
+        }, 403);
+      }
     }
 
     // KVからChallengeを取得
@@ -395,13 +422,15 @@ app.post('/login/verify', async (c) => {
     // v13 API typecheck で表面化したため正しい signature に修正。
     const refreshToken = generateRefreshToken();
 
-    // リフレッシュトークンをDBに保存
+    // リフレッシュトークンをDBに保存（SHA-256 ハッシュ化、auth.ts / 2fa.ts と同 pattern）
+    // F-4 fix: 旧コードは refreshToken 平文で保存していた = DB compromise 時に sessions hijack 可能
+    const tokenHash = await hashRefreshToken(refreshToken);
     await c.env.DB.prepare(
       'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
     )
       .bind(
         userId,
-        refreshToken, // 本来はハッシュ化すべきだが、簡略化
+        tokenHash,
         new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
       )
       .run();

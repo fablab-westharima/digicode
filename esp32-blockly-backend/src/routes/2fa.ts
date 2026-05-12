@@ -98,8 +98,9 @@ twoFactor.post('/send-otp', async (c) => {
 
     // メール未確認チェック
     // BUG-083: needsVerification flag を frontend に返して EmailVerificationWaiting に誘導
+    // F-2 fix: HTTP status を auth.ts:190 (403) に統一 (frontend は flag-based 判定で影響なし)
     if (!user.email_verified) {
-      return errorJson(c, 'auth.emailNotVerified', 401, { needsVerification: true });
+      return errorJson(c, 'auth.emailNotVerified', 403, { needsVerification: true });
     }
 
     // パスワード検証

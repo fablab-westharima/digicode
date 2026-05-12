@@ -98,6 +98,8 @@ app.use('/api/classes/*', rateLimitPresets.standard);
 app.use('/api/submissions/*', rateLimitPresets.standard);
 app.use('/api/feedback/*', rateLimitPresets.standard);
 app.use('/api/health/*', rateLimitPresets.standard);
+// F-19 fix: 管理者API + admin-feedback 両方カバー、admin route の brute-force defense
+app.use('/api/admin/*', rateLimitPresets.standard);
 
 // Webhook（制限緩め: 1000リクエスト/分）
 app.use('/api/webhooks/*', rateLimitPresets.webhook);

@@ -98,12 +98,18 @@ recoveryCodes.post('/verify', async (c) => {
 
     // ユーザー取得
     const user = await c.env.DB.prepare(
-      'SELECT id, email FROM users WHERE email = ?'
-    ).bind(email).first<{ id: number; email: string }>();
+      'SELECT id, email, email_verified FROM users WHERE email = ?'
+    ).bind(email).first<{ id: number; email: string; email_verified: number }>();
 
     if (!user) {
       console.log('[Recovery Code Verify] User not found');
       return errorJson(c, 'auth.emailOrRecoveryCodeInvalid', 401);
+    }
+
+    // F-9 fix: メール未確認 user の recovery code login を reject
+    // (BUG-083 / auth.ts:188-194 / 2fa.ts:101 と同 pattern)
+    if (!user.email_verified) {
+      return errorJson(c, 'auth.emailNotVerified', 403, { needsVerification: true });
     }
 
     console.log('[Recovery Code Verify] User found:', user.id);

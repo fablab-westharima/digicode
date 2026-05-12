@@ -155,13 +155,20 @@ admin.delete('/users/:id', authMiddleware, adminMiddleware, async (c) => {
       return errorJson(c, 'auth.userNotFound', 404);
     }
 
-    // 関連データ削除（auth.tsのアカウント削除ロジックと同じ順序）
+    // 関連データ削除（auth.ts のアカウント削除ロジックと同じ順序）
+    // F-15 fix: 削除漏れていた 6 tables を追加
     const tables = [
       'authenticators',
       'refresh_tokens',
       'password_reset_tokens',
       'email_verification_tokens',
       'recovery_tokens',
+      'class_members',       // F-15 新規
+      'login_otp_codes',     // F-15 新規
+      'trusted_devices',     // F-15 新規
+      'user_2fa_settings',   // F-15 新規
+      'recovery_codes',      // F-15 新規
+      'feedback',            // F-15 新規
       'projects',
       'compile_usage',
       'subscriptions',
