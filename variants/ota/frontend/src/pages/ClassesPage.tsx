@@ -99,7 +99,7 @@ export function ClassesPage() {
             </button>
             <h1 className="text-xl font-bold">
               {t('classes.title')}
-              <span className="ml-2 text-xs text-amber-400 font-normal align-middle">β</span>
+              <span className="ml-2 text-xs text-amber-400 font-normal align-middle">{t('common.beta', { defaultValue: 'ベータ版' })}</span>
             </h1>
           </div>
           <button

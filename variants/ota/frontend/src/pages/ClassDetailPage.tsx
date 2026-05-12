@@ -456,7 +456,7 @@ export function ClassDetailPage() {
           </button>
           <h1 className="text-xl font-bold">
             {classInfo.name}
-            <span className="ml-2 text-xs text-amber-400 font-normal align-middle">β</span>
+            <span className="ml-2 text-xs text-amber-400 font-normal align-middle">{t('common.beta', { defaultValue: 'ベータ版' })}</span>
           </h1>
           <span className="text-xs px-2 py-1 rounded bg-primary/10 text-primary">
             {classInfo.status}

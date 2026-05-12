@@ -1,5 +1,6 @@
 {
   "common": {
+    "beta": "測試版",
     "save": "保存",
     "cancel": "取消",
     "close": "關閉",

@@ -1,5 +1,6 @@
 {
   "common": {
+    "beta": "Beta",
     "save": "Salvar",
     "cancel": "Cancelar",
     "close": "Fechar",

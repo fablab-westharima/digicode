@@ -1,5 +1,6 @@
 {
   "common": {
+    "beta": "Beta",
     "save": "Save",
     "cancel": "Cancel",
     "close": "Close",

@@ -665,7 +665,7 @@ export function Sidebar({
                           <span className="text-[10px] text-red-400 ml-1">{item.disabledLabel}</span>
                         )}
                         {shouldShowFull && !item.disabled && item.beta && (
-                          <span className="text-[10px] text-amber-400 ml-1">β</span>
+                          <span className="text-[10px] text-amber-400 ml-1">{t('common.beta', { defaultValue: 'ベータ版' })}</span>
                         )}
                         {shouldShowFull && !item.disabled && item.premium && !isPinAssignAvailable && (
                           <span className="text-[10px] text-purple-400 ml-1">ENT</span>
