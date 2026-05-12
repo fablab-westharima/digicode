@@ -85,13 +85,18 @@ export async function registerPasskey(deviceName?: string): Promise<number> {
 /**
  * パスキーで認証
  * @param email メールアドレス
- * @returns アクセストークン等
+ * @returns アクセストークン等、または email 未認証時は { needsVerification: true }
+ *
+ * F-6: backend が email_verified=0 user に 403 + needsVerification を返した場合は
+ * throw せず success-but-needs-verify path で resolve (sendOtp と同 pattern)、
+ * 呼び出し元で EmailVerificationWaiting に誘導する。
  */
 export async function authenticateWithPasskey(email: string): Promise<{
-  accessToken: string;
-  refreshToken: string;
-  expiresIn: number;
-  user: { id: number; email: string };
+  accessToken?: string;
+  refreshToken?: string;
+  expiresIn?: number;
+  user?: { id: number; email: string };
+  needsVerification?: boolean;
 }> {
   // Step 1: 認証オプションを取得
   const optionsResponse = await fetch(`${API_BASE_URL}/api/auth/passkey/login/options`, {
@@ -136,6 +141,10 @@ export async function authenticateWithPasskey(email: string): Promise<{
 
   if (!verifyResponse.ok) {
     const error = await verifyResponse.json();
+    // F-6: email 未認証時は EmailVerificationWaiting に誘導するため throw せず resolve
+    if (error.needsVerification) {
+      return { needsVerification: true };
+    }
     throw new Error(error.error || i18n.t('errors.passkey.authFailed', { defaultValue: 'パスキー認証に失敗しました' }));
   }
 

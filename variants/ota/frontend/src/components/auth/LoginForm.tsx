@@ -177,6 +177,7 @@ export function LoginForm({ isLoading, error, onNeedsVerification }: LoginFormPr
       <PasskeyLoginButton
         onSuccess={handlePasskeySuccess}
         onError={handlePasskeyError}
+        onNeedsVerification={onNeedsVerification}
       />
 
       {/* 2FA OTP入力ダイアログ */}

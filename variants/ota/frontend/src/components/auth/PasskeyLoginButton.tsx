@@ -14,9 +14,11 @@ interface PasskeyLoginButtonProps {
     user: { id: number; email: string };
   }) => void;
   onError: (error: string) => void;
+  // F-6: email 未認証 (email_verified=0) 時に EmailVerificationWaiting に切替するための callback
+  onNeedsVerification?: (email: string) => void;
 }
 
-export function PasskeyLoginButton({ onSuccess, onError }: PasskeyLoginButtonProps) {
+export function PasskeyLoginButton({ onSuccess, onError, onNeedsVerification }: PasskeyLoginButtonProps) {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [showEmailInput, setShowEmailInput] = useState(false);
@@ -38,7 +40,20 @@ export function PasskeyLoginButton({ onSuccess, onError }: PasskeyLoginButtonPro
     setIsLoading(true);
     try {
       const result = await authenticateWithPasskey(email);
-      onSuccess(result);
+      // F-6: email 未認証時は EmailVerificationWaiting に誘導 (admin 介入なし自己解決経路)
+      if (result.needsVerification) {
+        onNeedsVerification?.(email);
+        return;
+      }
+      // 通常 path = 全 field 存在保証 (type narrow)
+      if (result.accessToken && result.refreshToken && result.user) {
+        onSuccess({
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+          expiresIn: result.expiresIn ?? 3600,
+          user: result.user,
+        });
+      }
     } catch (error) {
       onError(error instanceof Error ? error.message : t('auth.passkeyLoginFailed', { defaultValue: 'パスキーログインに失敗しました' }));
     } finally {
