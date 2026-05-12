@@ -450,6 +450,7 @@ Blockly.Blocks['azure_iot_hub_publish_d2c'] = {
     this.appendDummyInput()
         .appendField('☁️ ' + (Blockly.Msg.BLOCKS_AZURE_IOT_HUB_PUBLISH_D2C || 'Azure IoT Hub にテレメトリ送信'));
     this.appendValueInput('PAYLOAD')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_AZURE_IOT_PAYLOAD || 'ペイロード');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -572,6 +573,7 @@ Blockly.Blocks['azure_iot_central_publish'] = {
         .setCheck('String')
         .appendField(Blockly.Msg.BLOCKS_AZURE_IOT_KEY || 'キー');
     this.appendValueInput('VALUE')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_AZURE_IOT_VALUE || '値');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -638,6 +640,7 @@ Blockly.Blocks['azure_iot_update_device_twin'] = {
         .setCheck('String')
         .appendField(Blockly.Msg.BLOCKS_AZURE_IOT_KEY || 'キー');
     this.appendValueInput('VALUE')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_AZURE_IOT_VALUE || '値');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

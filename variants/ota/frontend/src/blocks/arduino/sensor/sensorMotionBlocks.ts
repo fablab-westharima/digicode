@@ -215,6 +215,7 @@ Blockly.Blocks['mpu6050_calibrate'] = {
     this.appendDummyInput()
         .appendField('🎯 ' + (Blockly.Msg.BLOCKS_MPU6050_CALIBRATE || 'MPU6050 Calibrate'));
     this.appendValueInput('SAMPLES')
+        .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_MPU6050_SAMPLES || 'samples');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);

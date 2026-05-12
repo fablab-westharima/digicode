@@ -93,8 +93,10 @@ Blockly.Blocks['google_sheets_format_row'] = {
     this.appendDummyInput()
         .appendField('📊 ' + (Blockly.Msg.BLOCKS_GOOGLE_SHEETS_FORMAT_ROW || 'スプレッドシート行形式'));
     this.appendValueInput('TS')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_GOOGLE_SHEETS_TS || 'タイムスタンプ');
     this.appendValueInput('VAL')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_GOOGLE_SHEETS_VAL || '値');
     this.setOutput(true, 'String');
     this.setColour(GOOGLE_COLOR);

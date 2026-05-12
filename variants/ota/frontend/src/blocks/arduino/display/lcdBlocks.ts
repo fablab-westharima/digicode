@@ -88,9 +88,10 @@ Blockly.Blocks['lcd_print_at'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('📟 ' + (Blockly.Msg.BLOCKS_LCD_PRINTAT || 'LCD Print At'));
-    this.appendValueInput('X').appendField(Blockly.Msg.BLOCKS_LCD_COL || 'col');
-    this.appendValueInput('Y').appendField(Blockly.Msg.BLOCKS_LCD_ROW || 'row');
+    this.appendValueInput('X').setCheck('Number').appendField(Blockly.Msg.BLOCKS_LCD_COL || 'col');
+    this.appendValueInput('Y').setCheck('Number').appendField(Blockly.Msg.BLOCKS_LCD_ROW || 'row');
     this.appendValueInput('TEXT')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_LCD_TEXT || 'text');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);

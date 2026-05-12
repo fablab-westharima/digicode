@@ -237,6 +237,7 @@ Blockly.Blocks['iot_cloud_publish'] = {
     this.appendDummyInput()
         .appendField('☁️ ' + (Blockly.Msg.BLOCKS_IOT_CLOUD_PUBLISH || 'IoT クラウドに送信'));
     this.appendValueInput('PAYLOAD')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_IOT_CLOUD_PAYLOAD || 'ペイロード');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

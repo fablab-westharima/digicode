@@ -154,6 +154,7 @@ Blockly.Blocks['stepper_move'] = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_MOVE || 'Stepper Move');
     this.appendValueInput('STEPS')
+        .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_STEPS || 'Steps');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_SPEED || 'Speed')
@@ -192,6 +193,7 @@ Blockly.Blocks['stepper_rotate'] = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_ROTATE || 'Stepper Rotate');
     this.appendValueInput('ANGLE')
+        .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_ANGLE || 'Angle');
     this.appendDummyInput()
         .appendField('°')

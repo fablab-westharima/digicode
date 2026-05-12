@@ -221,6 +221,7 @@ Blockly.Blocks['array_set'] = {
     this.appendDummyInput('CLOSE0')
       .appendField(']');
     this.appendValueInput('VALUE')
+      .setCheck(['Number', 'String', 'Boolean'])
       .appendField('=');
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SET || 'Set');
@@ -257,6 +258,7 @@ Blockly.Blocks['array_set'] = {
     }
 
     this.appendValueInput('VALUE')
+      .setCheck(['Number', 'String', 'Boolean'])
       .appendField('=');
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SET || 'Set');

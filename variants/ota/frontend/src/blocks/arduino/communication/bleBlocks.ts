@@ -350,8 +350,8 @@ Blockly.Blocks['ble_beacon_broadcast'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('📡 ' + (Blockly.Msg.BLOCKS_BLE_BEACON || 'iBeacon Broadcast'));
-    this.appendValueInput('MAJOR').appendField(Blockly.Msg.BLOCKS_BLE_MAJOR || 'major');
-    this.appendValueInput('MINOR').appendField(Blockly.Msg.BLOCKS_BLE_MINOR || 'minor');
+    this.appendValueInput('MAJOR').setCheck('Number').appendField(Blockly.Msg.BLOCKS_BLE_MAJOR || 'major');
+    this.appendValueInput('MINOR').setCheck('Number').appendField(Blockly.Msg.BLOCKS_BLE_MINOR || 'minor');
     this.appendDummyInput()
         .appendField('UUID')
         .appendField(new Blockly.FieldTextInput('FDA50693-A4E2-4FB1-AFCF-C6EB07647825'), 'UUID');
@@ -411,6 +411,7 @@ Blockly.Blocks['ble_scan_start'] = {
     this.appendDummyInput()
         .appendField('📡 ' + (Blockly.Msg.BLOCKS_BLE_SCANSTART || 'BLE Scan Start'));
     this.appendValueInput('DURATION')
+        .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_BLE_DURATION || 'duration (sec)');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);

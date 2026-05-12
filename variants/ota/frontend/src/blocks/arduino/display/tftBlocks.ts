@@ -124,8 +124,8 @@ Blockly.Blocks['tft_draw_pixel'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_PIXEL || 'TFT Pixel'));
-    this.appendValueInput('X').appendField('X');
-    this.appendValueInput('Y').appendField('Y');
+    this.appendValueInput('X').setCheck('Number').appendField('X');
+    this.appendValueInput('Y').setCheck('Number').appendField('Y');
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR');
     this.setInputsInline(true);
@@ -151,10 +151,10 @@ Blockly.Blocks['tft_draw_line'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_LINE || 'TFT Line'));
-    this.appendValueInput('X1').appendField('X1');
-    this.appendValueInput('Y1').appendField('Y1');
-    this.appendValueInput('X2').appendField('X2');
-    this.appendValueInput('Y2').appendField('Y2');
+    this.appendValueInput('X1').setCheck('Number').appendField('X1');
+    this.appendValueInput('Y1').setCheck('Number').appendField('Y1');
+    this.appendValueInput('X2').setCheck('Number').appendField('X2');
+    this.appendValueInput('Y2').setCheck('Number').appendField('Y2');
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR');
     this.setInputsInline(true);
@@ -182,10 +182,10 @@ Blockly.Blocks['tft_draw_rect'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_RECT || 'TFT Rect'));
-    this.appendValueInput('X').appendField('X');
-    this.appendValueInput('Y').appendField('Y');
-    this.appendValueInput('W').appendField('W');
-    this.appendValueInput('H').appendField('H');
+    this.appendValueInput('X').setCheck('Number').appendField('X');
+    this.appendValueInput('Y').setCheck('Number').appendField('Y');
+    this.appendValueInput('W').setCheck('Number').appendField('W');
+    this.appendValueInput('H').setCheck('Number').appendField('H');
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR')
         .appendField(Blockly.Msg.BLOCKS_TFT_FILL || 'fill')
@@ -217,9 +217,9 @@ Blockly.Blocks['tft_draw_circle'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_CIRCLE || 'TFT Circle'));
-    this.appendValueInput('X').appendField('X');
-    this.appendValueInput('Y').appendField('Y');
-    this.appendValueInput('R').appendField('R');
+    this.appendValueInput('X').setCheck('Number').appendField('X');
+    this.appendValueInput('Y').setCheck('Number').appendField('Y');
+    this.appendValueInput('R').setCheck('Number').appendField('R');
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR')
         .appendField(Blockly.Msg.BLOCKS_TFT_FILL || 'fill')
@@ -250,9 +250,9 @@ Blockly.Blocks['tft_set_cursor'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_SETCURSOR || 'TFT Set Cursor'));
-    this.appendValueInput('X').appendField('X');
-    this.appendValueInput('Y').appendField('Y');
-    this.appendValueInput('SIZE').appendField(Blockly.Msg.BLOCKS_TFT_SIZE || 'size');
+    this.appendValueInput('X').setCheck('Number').appendField('X');
+    this.appendValueInput('Y').setCheck('Number').appendField('Y');
+    this.appendValueInput('SIZE').setCheck('Number').appendField(Blockly.Msg.BLOCKS_TFT_SIZE || 'size');
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(TFT_COLOR_DROPDOWN), 'COLOR');
     this.setInputsInline(true);
@@ -300,9 +300,9 @@ Blockly.Blocks['tft_color_rgb'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_COLORRGB || 'TFT Color RGB'));
-    this.appendValueInput('R').appendField('R');
-    this.appendValueInput('G').appendField('G');
-    this.appendValueInput('B').appendField('B');
+    this.appendValueInput('R').setCheck('Number').appendField('R');
+    this.appendValueInput('G').setCheck('Number').appendField('G');
+    this.appendValueInput('B').setCheck('Number').appendField('B');
     this.setInputsInline(true);
     this.setOutput(true, 'Number');
     this.setColour(TFT_COLOR);

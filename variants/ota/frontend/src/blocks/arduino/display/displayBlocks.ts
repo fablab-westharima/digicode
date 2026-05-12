@@ -98,10 +98,11 @@ oled.show()
 Blockly.Blocks['display_text'] = {
   init: function() {
     this.appendValueInput('TEXT')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('📝 ' + (Blockly.Msg.BLOCKS_DISPLAY_OLEDTEXT || 'OLED Text'))
         .appendField(Blockly.Msg.BLOCKS_DISPLAY_TEXT || 'Text');
-    this.appendValueInput('X').appendField('X:');
-    this.appendValueInput('Y').appendField('Y:');
+    this.appendValueInput('X').setCheck('Number').appendField('X:');
+    this.appendValueInput('Y').setCheck('Number').appendField('Y:');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_DISPLAY_SIZE || 'Size')
         .appendField(new Blockly.FieldDropdown([

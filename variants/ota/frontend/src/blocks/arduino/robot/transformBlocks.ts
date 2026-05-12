@@ -179,7 +179,8 @@ Blockly.Blocks['transform_roll_rotate'] = {
           [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', 'left'],
           [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', 'right']
         ]), 'DIRECTION');
-    this.appendValueInput('POWER');
+    this.appendValueInput('POWER')
+        .setCheck('Number');
     this.appendDummyInput()
         .appendField('%');
     this.setInputsInline(true);
@@ -206,7 +207,8 @@ Blockly.Blocks['transform_turn'] = {
           [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', 'left'],
           [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', 'right']
         ]), 'DIRECTION');
-    this.appendValueInput('STEPS');
+    this.appendValueInput('STEPS')
+        .setCheck('Number');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
     this.setInputsInline(true);

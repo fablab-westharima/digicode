@@ -259,6 +259,7 @@ Blockly.Blocks['line_sensor_calibrate'] = {
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_CALIBRATE || 'Calibrate Line Sensors');
     this.appendValueInput('DURATION')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_DURATION || 'Duration (ms)');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -336,6 +337,7 @@ Blockly.Blocks['line_sensor_detected'] = {
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_DETECTED || 'Line Detected');
     this.appendValueInput('THRESHOLD')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_SENSOR_LINESENSOR_THRESHOLD || 'Threshold');
     this.setOutput(true, 'Boolean');
     this.setColour('#E91E63');

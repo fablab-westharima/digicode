@@ -184,8 +184,10 @@ Blockly.Blocks['diff_drive_set_speed'] = {
     this.appendDummyInput()
       .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_SETSPEED || 'Set Speed'));
     this.appendValueInput('LEFT')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_LEFT || 'Left');
     this.appendValueInput('RIGHT')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_RIGHT || 'Right');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -211,6 +213,7 @@ Blockly.Blocks['diff_drive_forward'] = {
     this.appendDummyInput()
       .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_FORWARD || 'Forward'));
     this.appendValueInput('SPEED')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -234,6 +237,7 @@ Blockly.Blocks['diff_drive_backward'] = {
     this.appendDummyInput()
       .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_BACKWARD || 'Backward'));
     this.appendValueInput('SPEED')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -284,6 +288,7 @@ Blockly.Blocks['diff_drive_spin'] = {
         [Blockly.Msg.BLOCKS_DIFFDRIVE_LEFT || 'Left', 'LEFT']
       ]), 'DIRECTION');
     this.appendValueInput('SPEED')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -316,8 +321,10 @@ Blockly.Blocks['diff_drive_curve'] = {
         [Blockly.Msg.BLOCKS_DIFFDRIVE_LEFT || 'Left', 'LEFT']
       ]), 'DIRECTION');
     this.appendValueInput('SPEED')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.appendValueInput('RATIO')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_CURVATURE || 'Curvature(0-100%)');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -356,8 +363,10 @@ Blockly.Blocks['diff_drive_forward_distance'] = {
     this.appendDummyInput()
       .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_FORWARDDISTANCE || 'Forward Distance'));
     this.appendValueInput('DISTANCE')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_DISTANCE || 'Distance(mm)');
     this.appendValueInput('SPEED')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -396,8 +405,10 @@ Blockly.Blocks['diff_drive_rotate_angle'] = {
     this.appendDummyInput()
       .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_ROTATEANGLE || 'Rotate'));
     this.appendValueInput('ANGLE')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_ANGLE || 'Angle(degrees)');
     this.appendValueInput('SPEED')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_SPEED || 'Speed');
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_DIRECTION || 'Direction')
@@ -449,10 +460,13 @@ Blockly.Blocks['diff_drive_line_trace'] = {
     this.appendDummyInput()
       .appendField('🚗 ' + (Blockly.Msg.BLOCKS_DIFFDRIVE_LINETRACE || 'Line Trace'));
     this.appendValueInput('BASE_SPEED')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_BASESPEED || 'Base Speed');
     this.appendValueInput('ERROR')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_ERROR || 'Error');
     this.appendValueInput('CORRECTION')
+      .setCheck('Number')
       .appendField(Blockly.Msg.BLOCKS_DIFFDRIVE_PIDCORRECTION || 'PID Correction');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);

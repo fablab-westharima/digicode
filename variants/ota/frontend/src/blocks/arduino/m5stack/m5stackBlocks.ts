@@ -171,6 +171,7 @@ Blockly.Blocks['m5stack_lcd_print'] = {
     this.appendDummyInput()
         .appendField('📱 ' + (Blockly.Msg.BLOCKS_M5STACK_LCD_PRINT || 'M5 LCD に表示'));
     this.appendValueInput('TEXT')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_M5STACK_LCD_TEXT || 'テキスト');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -190,6 +191,7 @@ Blockly.Blocks['m5stack_lcd_print_at'] = {
     this.appendDummyInput()
         .appendField('📱 ' + (Blockly.Msg.BLOCKS_M5STACK_LCD_PRINT_AT || 'M5 LCD 座標指定表示'));
     this.appendValueInput('TEXT')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_M5STACK_LCD_TEXT || 'テキスト');
     this.appendValueInput('X')
         .setCheck('Number')

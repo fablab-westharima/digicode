@@ -93,6 +93,7 @@ Blockly.Blocks['oled_ssd1306_print'] = {
     this.appendDummyInput()
         .appendField('🖥️ ' + (Blockly.Msg.BLOCKS_OLED_SSD1306_PRINT || 'OLED に表示'));
     this.appendValueInput('TEXT')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_OLED_SSD1306_TEXT || 'テキスト');
     this.appendValueInput('X')
         .setCheck('Number')

@@ -79,7 +79,8 @@ Blockly.Blocks['humanoid_walk'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🚶 ' + (Blockly.Msg.BLOCKS_HUMANOID_WALK_LABEL || 'Humanoid Walk'));
-    this.appendValueInput('STEPS');
+    this.appendValueInput('STEPS')
+        .setCheck('Number');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_STEPS || 'steps')
         .appendField(new Blockly.FieldDropdown([
@@ -114,7 +115,8 @@ Blockly.Blocks['humanoid_turn'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('↻ ' + (Blockly.Msg.BLOCKS_HUMANOID_TURN_LABEL || 'Humanoid Turn'));
-    this.appendValueInput('STEPS');
+    this.appendValueInput('STEPS')
+        .setCheck('Number');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times')
         .appendField(new Blockly.FieldDropdown([
@@ -149,7 +151,8 @@ Blockly.Blocks['humanoid_jump'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('⬆️ ' + (Blockly.Msg.BLOCKS_HUMANOID_JUMP_LABEL || 'Humanoid Jump'));
-    this.appendValueInput('STEPS');
+    this.appendValueInput('STEPS')
+        .setCheck('Number');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
     this.setInputsInline(true);
@@ -171,7 +174,8 @@ Blockly.Blocks['humanoid_dance'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('💃 ' + (Blockly.Msg.BLOCKS_HUMANOID_DANCE_LABEL || 'Humanoid Dance'));
-    this.appendValueInput('STEPS');
+    this.appendValueInput('STEPS')
+        .setCheck('Number');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
     this.setInputsInline(true);
@@ -193,7 +197,8 @@ Blockly.Blocks['humanoid_swing'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('〜 ' + (Blockly.Msg.BLOCKS_HUMANOID_SWING_LABEL || 'Humanoid Swing'));
-    this.appendValueInput('STEPS');
+    this.appendValueInput('STEPS')
+        .setCheck('Number');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
     this.setInputsInline(true);
@@ -219,7 +224,8 @@ Blockly.Blocks['humanoid_bend'] = {
           [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', 'left'],
           [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', 'right']
         ]), 'DIRECTION');
-    this.appendValueInput('STEPS');
+    this.appendValueInput('STEPS')
+        .setCheck('Number');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
     this.setInputsInline(true);
@@ -247,7 +253,8 @@ Blockly.Blocks['humanoid_moonwalk'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('🕺 ' + (Blockly.Msg.BLOCKS_HUMANOID_MOONWALK_LABEL || 'Humanoid Moonwalk'));
-    this.appendValueInput('STEPS');
+    this.appendValueInput('STEPS')
+        .setCheck('Number');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_COMMON_STEPS || 'steps')
         .appendField(new Blockly.FieldDropdown([

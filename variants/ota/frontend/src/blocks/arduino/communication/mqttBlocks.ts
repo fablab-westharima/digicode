@@ -39,6 +39,7 @@ Blockly.Blocks['mqtt_setup'] = {
         .appendField(Blockly.Msg.BLOCKS_MQTT_BROKER || 'MQTT Broker')
         .appendField(new Blockly.FieldTextInput('192.168.1.100'), 'BROKER');
     this.appendValueInput('PORT')
+        .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_MQTT_PORT || 'Port');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_MQTT_CLIENTID || 'Client ID')
@@ -469,7 +470,8 @@ Blockly.Blocks['mqtt_set_buffer_size'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('📦 ' + (Blockly.Msg.BLOCKS_MQTT_BUFFERSIZE || 'MQTT Buffer Size'));
-    this.appendValueInput('SIZE');
+    this.appendValueInput('SIZE')
+        .setCheck('Number');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_MQTT_BYTES || 'bytes');
     this.setInputsInline(true);
@@ -493,7 +495,8 @@ Blockly.Blocks['mqtt_set_keepalive'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('⏱️ ' + (Blockly.Msg.BLOCKS_MQTT_KEEPALIVE || 'MQTT Keep Alive'));
-    this.appendValueInput('SECONDS');
+    this.appendValueInput('SECONDS')
+        .setCheck('Number');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_MQTT_SECONDS || 'seconds');
     this.setInputsInline(true);

@@ -1519,9 +1519,9 @@ Blockly.Blocks['ha_number_create'] = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_HA_DISPLAYNAME || 'Display Name (HA UI)')
         .appendField(new Blockly.FieldTextInput('Servo Angle'), 'NAME');
-    this.appendValueInput('MIN').appendField(Blockly.Msg.BLOCKS_MIN || 'Min');
-    this.appendValueInput('MAX').appendField(Blockly.Msg.BLOCKS_MAX || 'Max');
-    this.appendValueInput('STEP').appendField(Blockly.Msg.BLOCKS_STEP || 'Step');
+    this.appendValueInput('MIN').setCheck('Number').appendField(Blockly.Msg.BLOCKS_MIN || 'Min');
+    this.appendValueInput('MAX').setCheck('Number').appendField(Blockly.Msg.BLOCKS_MAX || 'Max');
+    this.appendValueInput('STEP').setCheck('Number').appendField(Blockly.Msg.BLOCKS_STEP || 'Step');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_UNIT || 'Unit')
         .appendField(new Blockly.FieldTextInput('°'), 'UNIT');
