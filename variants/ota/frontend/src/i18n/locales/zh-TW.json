@@ -3327,8 +3327,6 @@
     "pidTuning": "PID調整",
     "usbDriver": "USB驅動程式",
     "document": "文件",
-    "bleController": "BLE UI 生成",
-    "wifiController": "WiFi UI 生成",
     "bleOta": "BLE OTA",
     "bleFirmwareWrite": "透過 BLE 寫入韌體",
     "bleDeviceName": "設定 BLE 裝置名稱",

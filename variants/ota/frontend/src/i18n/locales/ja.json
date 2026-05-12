@@ -1044,8 +1044,6 @@
     "pidTuning": "PIDチューニング",
     "usbDriver": "USBドライバー",
     "document": "ドキュメント",
-    "bleController": "BLE UI 生成",
-    "wifiController": "WiFi UI 生成",
     "bleOta": "BLE OTA",
     "bleFirmwareWrite": "BLEファームウェア書き込み",
     "bleDeviceName": "BLEデバイス名設定",

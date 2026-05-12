@@ -3327,8 +3327,6 @@
     "pidTuning": "Ajuste PID",
     "usbDriver": "Driver USB",
     "document": "Documentação",
-    "bleController": "Gerador UI BLE",
-    "wifiController": "Gerador UI WiFi",
     "bleOta": "BLE OTA",
     "bleFirmwareWrite": "Gravar firmware via BLE",
     "bleDeviceName": "Definir nome BLE",

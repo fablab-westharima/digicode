@@ -1316,8 +1316,6 @@ export function EditorPage() {
           onAiClearWorkspace={() => blocklyEditorRef.current?.loadXml('<xml xmlns="https://developers.google.com/blockly/xml"></xml>')}
           workspaceXml={workspaceXml}
           onOpenAiSettings={() => setAiSettingsDialogOpen(true)}
-          onShowBleController={() => setShowBleController(true)}
-          onShowWifiController={() => setShowWifiController(true)}
           onOpenFeedback={() => setIsFeedbackDialogOpen(true)}
         />
 

@@ -21,7 +21,6 @@ import {
   ExternalLink,
   Pencil,
   Bluetooth,
-  Wifi,
   Download,
   LogIn,
   Settings,
@@ -68,8 +67,6 @@ interface SidebarProps {
   onAiClearWorkspace?: () => void;
   workspaceXml?: string;
   onOpenAiSettings?: () => void;
-  onShowBleController?: () => void;
-  onShowWifiController?: () => void;
   // 第102回 C3: ヘッダー Feedback button と state 共有、EditorPage が mount を保持
   onOpenFeedback?: () => void;
 }
@@ -125,8 +122,6 @@ export function Sidebar({
   onAiClearWorkspace,
   workspaceXml,
   onOpenAiSettings,
-  onShowBleController,
-  onShowWifiController,
   onOpenFeedback,
 }: SidebarProps) {
   const { t } = useTranslation();
@@ -320,21 +315,9 @@ export function Sidebar({
       category: 'advanced',
       premium: true,
     },
-    // BLE / WiFi コントローラ (47.md Phase 2 commit #5、LinearToolbar peer pair の Sidebar 展開)
-    {
-      id: 'ble-controller',
-      label: t('sidebar.bleController', { defaultValue: 'BLE UI 生成' }),
-      icon: <Bluetooth className="w-4 h-4" />,
-      action: onShowBleController || (() => {}),
-      category: 'advanced',
-    },
-    {
-      id: 'wifi-controller',
-      label: t('sidebar.wifiController', { defaultValue: 'WiFi UI 生成' }),
-      icon: <Wifi className="w-4 h-4" />,
-      action: onShowWifiController || (() => {}),
-      category: 'advanced',
-    },
+    // 第107回 follow-up: BLE UI 生成 / WiFi UI 生成 menu を Sidebar から削除
+    // (Header LinearToolbar の「UI 生成 ▼」 dropdown と完全重複していたため、
+    // `memory:ui_placement_implies_relation` 適用)
     // 課題（生徒のみ）
     ...(user?.accountType === 'student' ? [
       {
