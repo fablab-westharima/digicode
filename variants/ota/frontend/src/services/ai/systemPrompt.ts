@@ -234,6 +234,11 @@ export function buildHelpBotSystemPrompt(ctx: HelpBotSystemPromptContext): strin
   const sections = [
     `# Role\n${templates.role}`,
     `# Response Style\n${templates.style}`,
+    // 第107回 Task 4: DigiCode 独自 UX 機能 (調整 menu / UI 生成 dropdown / Docker
+    // ローカルサーバー設定 button) の awareness。block-level の修正だけで解決しない
+    // 問題 (servo 個体差・コントローラ UI 要望・ローカル compile setup 困った) を
+    // HelpBot が UX 機能で案内できるよう注入。
+    `# DigiCode Features (sidebar menus / header dropdowns / dialog buttons)\n${templates.digiCodeFeatures}`,
     ...(contextLines.length > 0 ? [`# Current Context\n${contextLines.join('\n')}`] : []),
   ];
 
