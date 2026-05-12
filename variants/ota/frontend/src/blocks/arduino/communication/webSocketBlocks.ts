@@ -88,7 +88,7 @@ generator.forBlock['websocket_connect'] = function(block: Blockly.Block) {
 Blockly.Blocks['websocket_send'] = {
   init: function() {
     this.appendValueInput('TEXT')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('🔌 ' + (Blockly.Msg.BLOCKS_WS_SEND || 'WebSocket Send'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -556,7 +556,7 @@ Blockly.Blocks['websocket_server_send'] = {
         .appendField(Blockly.Msg.BLOCKS_WS_SERVER_CHANNELID || 'channel')
         .appendField(new Blockly.FieldTextInput('channel1'), 'CHANNEL_ID');
     this.appendValueInput('VALUE')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_BLE_VALUE || 'value');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

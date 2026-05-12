@@ -221,7 +221,7 @@ class BleRxCallbacks : public NimBLECharacteristicCallbacks {
 Blockly.Blocks['ble_uart_write'] = {
   init: function() {
     this.appendValueInput('TEXT')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('📶 ' + (Blockly.Msg.BLOCKS_BLE_UARTWRITE || 'BLE Send'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -846,7 +846,7 @@ Blockly.Blocks['ble_notify'] = {
         .appendField(Blockly.Msg.BLOCKS_BLE_CHARUUID || 'char UUID')
         .appendField(new Blockly.FieldTextInput('00001111-1234-1234-1234-123456789ABC'), 'CHAR_UUID');
     this.appendValueInput('VALUE')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_BLE_VALUE || 'value');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

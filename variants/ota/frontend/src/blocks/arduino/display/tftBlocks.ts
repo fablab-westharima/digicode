@@ -278,7 +278,7 @@ generator.forBlock['tft_set_cursor'] = function(block: Blockly.Block) {
 Blockly.Blocks['tft_print'] = {
   init: function() {
     this.appendValueInput('TEXT')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('🖼️ ' + (Blockly.Msg.BLOCKS_TFT_PRINT || 'TFT Print'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

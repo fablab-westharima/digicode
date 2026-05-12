@@ -66,7 +66,7 @@ generator.forBlock['lcd_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['lcd_print'] = {
   init: function() {
     this.appendValueInput('TEXT')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('📟 ' + (Blockly.Msg.BLOCKS_LCD_PRINT || 'LCD Print'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

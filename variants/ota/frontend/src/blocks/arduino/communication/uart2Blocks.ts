@@ -73,7 +73,7 @@ generator.forBlock['serial2_begin'] = function(block: Blockly.Block) {
 Blockly.Blocks['serial2_print'] = {
   init: function() {
     this.appendValueInput('TEXT')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('📠 ' + (Blockly.Msg.BLOCKS_UART2_PRINT || 'Serial2 Print'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -94,7 +94,7 @@ generator.forBlock['serial2_print'] = function(block: Blockly.Block) {
 Blockly.Blocks['serial2_println'] = {
   init: function() {
     this.appendValueInput('TEXT')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('📠 ' + (Blockly.Msg.BLOCKS_UART2_PRINTLN || 'Serial2 Println'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

@@ -96,7 +96,7 @@ Blockly.Blocks['preferences_put'] = {
         .appendField(Blockly.Msg.BLOCKS_PREFERENCES_KEY || 'key')
         .appendField(new Blockly.FieldTextInput('myKey'), 'KEY');
     this.appendValueInput('VALUE')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_PREFERENCES_VALUE || 'value');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -128,7 +128,7 @@ Blockly.Blocks['preferences_get'] = {
         .appendField(Blockly.Msg.BLOCKS_PREFERENCES_KEY || 'key')
         .appendField(new Blockly.FieldTextInput('myKey'), 'KEY');
     this.appendValueInput('DEFAULT')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_PREFERENCES_DEFAULT || 'default');
     this.setOutput(true, null);
     this.setColour(NVS_COLOR);

@@ -171,6 +171,7 @@ Blockly.Blocks['espnow_send'] = {
         .setCheck('String')
         .appendField(Blockly.Msg.BLOCKS_ESPNOW_DEST_MAC || '宛先 MAC');
     this.appendValueInput('DATA')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_ESPNOW_DATA || 'データ');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -191,6 +192,7 @@ Blockly.Blocks['espnow_broadcast'] = {
     this.appendDummyInput()
         .appendField('📡 ' + (Blockly.Msg.BLOCKS_ESPNOW_BROADCAST || 'ESP-NOW ブロードキャスト'));
     this.appendValueInput('DATA')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_ESPNOW_DATA || 'データ');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

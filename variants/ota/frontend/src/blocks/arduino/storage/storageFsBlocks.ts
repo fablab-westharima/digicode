@@ -63,7 +63,7 @@ Blockly.Blocks['sd_write'] = {
         .setCheck('String')
         .appendField(Blockly.Msg.BLOCKS_SD_FILENAME || 'file');
     this.appendValueInput('CONTENT')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_SD_CONTENT || 'content');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -159,13 +159,13 @@ Blockly.Blocks['sd_csv_append'] = {
         .setCheck('String')
         .appendField(Blockly.Msg.BLOCKS_SD_FILENAME || 'file');
     this.appendValueInput('COL1')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_SD_COL1 || 'col1');
     this.appendValueInput('COL2')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_SD_COL2 || 'col2');
     this.appendValueInput('COL3')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_SD_COL3 || 'col3');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -219,7 +219,7 @@ Blockly.Blocks['fs_write'] = {
         .setCheck('String')
         .appendField(Blockly.Msg.BLOCKS_SD_FILENAME || 'file');
     this.appendValueInput('CONTENT')
-        .setCheck(null)
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_SD_CONTENT || 'content');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
