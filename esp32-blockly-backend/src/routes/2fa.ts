@@ -135,6 +135,11 @@ twoFactor.post('/send-otp', async (c) => {
         'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
       ).bind(user.id, tokenHash, expiresAt).run();
 
+      // BUG-084: AdminPage inactive user 判定のため login 成功時に last_login_at 更新
+      await c.env.DB.prepare(
+        "UPDATE users SET last_login_at = datetime('now') WHERE id = ?"
+      ).bind(user.id).run();
+
       return c.json({
         success: true,
         twoFactorRequired: false,
@@ -179,6 +184,11 @@ twoFactor.post('/send-otp', async (c) => {
         await c.env.DB.prepare(
           'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
         ).bind(user.id, rtHash, expiresAt).run();
+
+        // BUG-084: AdminPage inactive user 判定のため login 成功時に last_login_at 更新
+        await c.env.DB.prepare(
+          "UPDATE users SET last_login_at = datetime('now') WHERE id = ?"
+        ).bind(user.id).run();
 
         return c.json({
           success: true,
@@ -316,6 +326,11 @@ twoFactor.post('/verify-otp', async (c) => {
     await c.env.DB.prepare(
       'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
     ).bind(user.id, tokenHash, rtExpiresAt).run();
+
+    // BUG-084: AdminPage inactive user 判定のため login 成功時に last_login_at 更新
+    await c.env.DB.prepare(
+      "UPDATE users SET last_login_at = datetime('now') WHERE id = ?"
+    ).bind(user.id).run();
 
     // Phase 2: 信頼済みデバイスの登録
     if (trustDevice) {
