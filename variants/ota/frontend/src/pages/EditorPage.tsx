@@ -1285,7 +1285,6 @@ export function EditorPage() {
         {/* サイドバー */}
         <Sidebar
           isAuthenticated={isAuthenticated}
-          onProjectOpen={handleOpen}
           onBleFirmwareWrite={handleBleFirmwareWrite}
           onWifiPrerequisites={() => setWifiPrerequisitesDialogOpen(true)}
           onWifiFirmwareWrite={handleWifiFirmwareWrite}

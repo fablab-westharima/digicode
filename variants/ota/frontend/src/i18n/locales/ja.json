@@ -1031,7 +1031,6 @@
     "dark": "ダーク"
   },
   "sidebar": {
-    "projects": "プロジェクト",
     "firmwareWrite": "OTAセットアップ",
     "compileServerSelect": "コンパイルサーバ設定",
     "compileSettings": "コンパイル設定",
@@ -1073,7 +1072,6 @@
     "requiresEnterprise": "Enterprise プランで利用可能です",
     "freeOpenNow": "無料開放中",
     "category": {
-      "project": "プロジェクト",
       "deviceSetup": "デバイス準備",
       "otaSetup": "OTAセットアップ",
       "usbDriver": "USBドライバー",

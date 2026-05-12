@@ -3314,7 +3314,6 @@
     }
   },
   "sidebar": {
-    "projects": "專案",
     "firmwareWrite": "OTA設定",
     "compileServerSelect": "編譯伺服器設定",
     "compileSettings": "編譯設定",
@@ -3356,7 +3355,6 @@
     "requiresEnterprise": "需要 Enterprise 方案",
     "freeOpenNow": "免費試用中",
     "category": {
-      "project": "專案",
       "deviceSetup": "裝置準備",
       "otaSetup": "OTA 設定",
       "usbDriver": "USB 驅動程式",

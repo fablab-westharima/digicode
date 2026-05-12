@@ -1031,7 +1031,6 @@
     "dark": "Dark"
   },
   "sidebar": {
-    "projects": "Projects",
     "firmwareWrite": "OTA Setup",
     "compileServerSelect": "Compile Server Settings",
     "compileSettings": "Compile Settings",
@@ -1073,7 +1072,6 @@
     "requiresEnterprise": "Available with Enterprise plan",
     "freeOpenNow": "Free trial",
     "category": {
-      "project": "Projects",
       "deviceSetup": "Device Setup",
       "otaSetup": "OTA Setup",
       "usbDriver": "USB Drivers",

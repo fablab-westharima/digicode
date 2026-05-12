@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { AIAssistantPanel } from './AIAssistantPanel';
 import { AIAssistantDialog } from './AIAssistantDialog';
 import {
-  FolderOpen,
   Zap,
   BookOpen,
   Pin as PinIcon,
@@ -43,7 +42,6 @@ import { useClassServerHealthStore } from '@/stores/classServerHealthStore';
 
 interface SidebarProps {
   isAuthenticated?: boolean;
-  onProjectOpen?: () => void;
   onBleFirmwareWrite?: () => void;
   onWifiPrerequisites?: () => void;
   onWifiFirmwareWrite?: () => void;
@@ -102,7 +100,6 @@ interface NavItem {
 
 export function Sidebar({
   isAuthenticated = false,
-  onProjectOpen,
   onBleFirmwareWrite,
   onWifiPrerequisites,
   onWifiFirmwareWrite,
@@ -144,7 +141,9 @@ export function Sidebar({
   const isClassServerDown = useClassServerHealthStore((s) => s.status === 'down');
   const [isPinned, setIsPinned] = useState(true); // デフォルトでピン留め
   const [isHovered, setIsHovered] = useState(false);
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['project'])); // デフォルトでprojectを開く
+  // 第107回 follow-up: Sidebar 「プロジェクト」 category 削除 (Header LinearToolbar の
+  // プロジェクト選択 button から開けるため重複)。default 展開 category なし。
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set()); // サブメニュー展開状態
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
 
@@ -189,14 +188,8 @@ export function Sidebar({
   };
 
   const navItems: NavItem[] = [
-    // プロジェクト
-    {
-      id: 'projects',
-      label: t('sidebar.projects', { defaultValue: 'プロジェクト' }),
-      icon: <FolderOpen className="w-4 h-4" />,
-      action: onProjectOpen || (() => {}),
-      category: 'project'
-    },
+    // 第107回 follow-up: Sidebar 「プロジェクト」 menu 削除 (Header LinearToolbar に
+    // プロジェクト選択 button が既に存在し重複していたため)。
     // OTAセットアップ - BLE OTA
     {
       id: 'ble-ota',
@@ -481,8 +474,6 @@ export function Sidebar({
 
   const getCategoryLabel = (category: string) => {
     switch (category) {
-      case 'project':
-        return t('sidebar.category.project', { defaultValue: 'プロジェクト' });
       case 'otaSetup':
         return t('sidebar.category.otaSetup', { defaultValue: 'OTAセットアップ' });
       case 'usbDriver':
@@ -511,7 +502,7 @@ export function Sidebar({
   }, {} as Record<string, NavItem[]>);
 
   // カテゴリの表示順序を定義
-  const categoryOrder = ['account', 'project', 'assignment', 'otaSetup', 'usbDriver', 'tuning', 'advanced', 'help'];
+  const categoryOrder = ['account', 'assignment', 'otaSetup', 'usbDriver', 'tuning', 'advanced', 'help'];
   const orderedCategories = categoryOrder.filter(cat => groupedItems[cat]);
 
   // 表示状態を計算

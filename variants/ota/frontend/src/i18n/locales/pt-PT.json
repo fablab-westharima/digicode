@@ -3314,7 +3314,6 @@
     }
   },
   "sidebar": {
-    "projects": "Projetos",
     "firmwareWrite": "Configuração OTA",
     "compileServerSelect": "Configuração do servidor de compilação",
     "compileSettings": "Configurações de compilação",
@@ -3356,7 +3355,6 @@
     "requiresEnterprise": "Disponível com plano Enterprise",
     "freeOpenNow": "Teste gratuito",
     "category": {
-      "project": "Projetos",
       "deviceSetup": "Preparação do dispositivo",
       "otaSetup": "Configuração OTA",
       "usbDriver": "Drivers USB",
