@@ -8,6 +8,7 @@ import { adminMiddleware } from '../middleware/admin';
 import { errorJson } from '../utils/errorJson';
 import { computeIsFreeNow } from '../utils/featureFlag';
 import { auditCrossDbIntegrity } from '../utils/auditCrossDb';
+import { deleteClassCascade } from './classes';
 import type { Bindings, Variables } from '../types/env';
 
 const admin = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -153,6 +154,25 @@ admin.delete('/users/:id', authMiddleware, adminMiddleware, async (c) => {
 
     if (!targetUser) {
       return errorJson(c, 'auth.userNotFound', 404);
+    }
+
+    // F-21 fix: owner クラスを deleteClassCascade で削除 (ML30 assignments/submissions + D1 classes + 孤児 student)
+    // adminUserId を audit trail に伝播 = 誰が削除を実行したか ML30 ログで追跡可能
+    const ownerClasses = await c.env.DB.prepare(
+      'SELECT id FROM classes WHERE owner_id = ?'
+    ).bind(targetUserId).all<{ id: number }>();
+    for (const cls of ownerClasses.results ?? []) {
+      const result = await deleteClassCascade(c.env, cls.id, adminUserId);
+      if (!result.ok) {
+        console.error(JSON.stringify({
+          event: 'cross_db_orphan_on_admin_user_delete',
+          admin_user_id: adminUserId,
+          target_user_id: targetUserId,
+          class_id: cls.id,
+          error: result.error,
+        }));
+        // 削除続行: ML30 失敗で全 abort しない、orphan は cross-DB audit cron で回収
+      }
     }
 
     // 関連データ削除（auth.ts のアカウント削除ロジックと同じ順序）

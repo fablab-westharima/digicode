@@ -9,6 +9,7 @@ import {
   sendVerificationEmail,
   sendRecoveryEmail,
 } from '../services/emailService';
+import { deleteClassCascade } from './classes';
 
 // リフレッシュトークンのハッシュ化（SHA-256）
 async function hashRefreshToken(token: string): Promise<string> {
@@ -991,6 +992,25 @@ auth.delete('/account', authMiddleware, async (c) => {
     await c.env.DB.prepare(
       'DELETE FROM recovery_tokens WHERE user_id = ?'
     ).bind(userId).run();
+
+    // F-20 fix: owner クラスを deleteClassCascade で削除 (ML30 assignments/submissions + D1 classes + 孤児 student)
+    // F-15 の class_members 削除より前に実行することで、deleteClassCascade 内の孤児 student 削除 loop が機能する。
+    // ML30 通信失敗時は orphan 残置 → cross-DB audit cron で構造化ログに乗り、admin curl で回収。
+    const ownerClasses = await c.env.DB.prepare(
+      'SELECT id FROM classes WHERE owner_id = ?'
+    ).bind(userId).all<{ id: number }>();
+    for (const cls of ownerClasses.results ?? []) {
+      const result = await deleteClassCascade(c.env, cls.id, userId);
+      if (!result.ok) {
+        console.error(JSON.stringify({
+          event: 'cross_db_orphan_on_user_delete',
+          user_id: userId,
+          class_id: cls.id,
+          error: result.error,
+        }));
+        // 削除続行: user delete は他テーブルも触る、ML30 失敗で全 abort しない
+      }
+    }
 
     // F-15 fix: 削除漏れていた 6 tables を追加 (auth.ts と admin.ts cascade を同期)
     // 6. クラス所属を削除

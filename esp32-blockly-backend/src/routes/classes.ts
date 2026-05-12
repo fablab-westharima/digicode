@@ -1024,8 +1024,14 @@ classes.post('/:classId/duplicate', async (c) => {
 
 /**
  * 単一クラスのカスケード削除（ML30 → D1 classes → 孤児 student）
- * Workers の scheduled handler と DELETE /api/classes/:id の両方から呼ばれる
+ * Workers の scheduled handler / DELETE /api/classes/:id / user 削除 (F-20/F-21) の 3 経路から呼ばれる
  * 認可チェックは呼び出し元で実施済みの前提
+ *
+ * @param userId ML30 audit trail に伝播する呼出元 userId。
+ *   - scheduled handler: 0 (system 固定、default)
+ *   - DELETE /api/classes/:id: class owner の userId
+ *   - user 削除経路 (F-20): user 自身の userId
+ *   - admin user 削除経路 (F-21): adminUserId (誰が削除を実行したかの audit trail)
  */
 export async function deleteClassCascade(
   env: {
@@ -1033,7 +1039,8 @@ export async function deleteClassCascade(
     CLASS_API_URL: string;
     CLASS_API_SECRET: string;
   },
-  classId: number
+  classId: number,
+  userId: number = 0
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   // 削除前に所属 student を取得
   const students = await env.DB.prepare(
@@ -1050,7 +1057,7 @@ export async function deleteClassCascade(
   const ml30Result = await proxyClassApi(ml30Env, {
     method: 'DELETE',
     path: `/assignments/by-class/${classId}`,
-    userId: 0, // scheduled からの呼び出しでは userId はシステム固定値
+    userId, // F-20/F-21: 呼出元 userId を ML30 audit trail に伝播 (default 0 = scheduled handler)
   });
 
   if (!ml30Result.ok && ml30Result.status !== 404) {
