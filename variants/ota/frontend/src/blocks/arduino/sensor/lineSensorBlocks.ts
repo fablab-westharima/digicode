@@ -203,50 +203,61 @@ javascriptGenerator.forBlock['line_sensor_init_simple_2'] = function(block: Bloc
   const pin1 = block.getFieldValue('PIN1');
   const pin2 = block.getFieldValue('PIN2');
 
-  javascriptGenerator.definitions_['line_sensor_vars'] =
-    `// ラインセンサー変数\n` +
-    `#define LINE_SENSOR_COUNT 2\n` +
-    `int lineSensorPins[LINE_SENSOR_COUNT] = {${pin1}, ${pin2}};\n` +
-    `int lineSensorValues[LINE_SENSOR_COUNT];\n` +
-    `int lineSensorMin[LINE_SENSOR_COUNT];\n` +
-    `int lineSensorMax[LINE_SENSOR_COUNT];\n` +
-    `bool lineSensorCalibrated = false;\n`;
+  // case 19 cluster R2-B 第113回: line_sensor_init (動的 count) と同 key
+  // `line_sensor_vars` を unconditional 上書き合戦していた → singleton-guard で
+  // line_sensor_init が既に emit 済なら本 block は no-op、user 指定 count を保護。
+  // mqtt_setup / encoderBlocks の default+override pattern と同 protocol
+  // (rules/digicode/03-block-workflow.md "Init block protocol")。
+  if (!javascriptGenerator.definitions_['line_sensor_vars']) {
+    javascriptGenerator.definitions_['line_sensor_vars'] =
+      `// ラインセンサー変数\n` +
+      `#define LINE_SENSOR_COUNT 2\n` +
+      `int lineSensorPins[LINE_SENSOR_COUNT] = {${pin1}, ${pin2}};\n` +
+      `int lineSensorValues[LINE_SENSOR_COUNT];\n` +
+      `int lineSensorMin[LINE_SENSOR_COUNT];\n` +
+      `int lineSensorMax[LINE_SENSOR_COUNT];\n` +
+      `bool lineSensorCalibrated = false;\n`;
+  }
 
-  javascriptGenerator.definitions_['line_sensor_funcs'] =
-    `// ラインセンサー読み取り関数\n` +
-    `void readLineSensors() {\n` +
-    `  for (int i = 0; i < LINE_SENSOR_COUNT; i++) {\n` +
-    `    lineSensorValues[i] = analogRead(lineSensorPins[i]);\n` +
-    `  }\n` +
-    `}\n\n` +
-    `// キャリブレーション済み値取得 (0-1000)\n` +
-    `int getLineSensorCalibrated(int index) {\n` +
-    `  if (!lineSensorCalibrated || index >= LINE_SENSOR_COUNT) return 0;\n` +
-    `  int range = lineSensorMax[index] - lineSensorMin[index];\n` +
-    `  if (range == 0) return 500;\n` +
-    `  return constrain(map(lineSensorValues[index], lineSensorMin[index], lineSensorMax[index], 0, 1000), 0, 1000);\n` +
-    `}\n\n` +
-    `// ライン位置計算 (-1000=左端, 0=中央, 1000=右端)\n` +
-    `int getLinePosition() {\n` +
-    `  readLineSensors();\n` +
-    `  long weightedSum = 0;\n` +
-    `  long sum = 0;\n` +
-    `  for (int i = 0; i < LINE_SENSOR_COUNT; i++) {\n` +
-    `    int value = getLineSensorCalibrated(i);\n` +
-    `    weightedSum += (long)value * (i * 1000);\n` +
-    `    sum += value;\n` +
-    `  }\n` +
-    `  if (sum == 0) return 0;\n` +
-    `  return (weightedSum / sum) - ((LINE_SENSOR_COUNT - 1) * 500);\n` +
-    `}\n`;
+  if (!javascriptGenerator.definitions_['line_sensor_funcs']) {
+    javascriptGenerator.definitions_['line_sensor_funcs'] =
+      `// ラインセンサー読み取り関数\n` +
+      `void readLineSensors() {\n` +
+      `  for (int i = 0; i < LINE_SENSOR_COUNT; i++) {\n` +
+      `    lineSensorValues[i] = analogRead(lineSensorPins[i]);\n` +
+      `  }\n` +
+      `}\n\n` +
+      `// キャリブレーション済み値取得 (0-1000)\n` +
+      `int getLineSensorCalibrated(int index) {\n` +
+      `  if (!lineSensorCalibrated || index >= LINE_SENSOR_COUNT) return 0;\n` +
+      `  int range = lineSensorMax[index] - lineSensorMin[index];\n` +
+      `  if (range == 0) return 500;\n` +
+      `  return constrain(map(lineSensorValues[index], lineSensorMin[index], lineSensorMax[index], 0, 1000), 0, 1000);\n` +
+      `}\n\n` +
+      `// ライン位置計算 (-1000=左端, 0=中央, 1000=右端)\n` +
+      `int getLinePosition() {\n` +
+      `  readLineSensors();\n` +
+      `  long weightedSum = 0;\n` +
+      `  long sum = 0;\n` +
+      `  for (int i = 0; i < LINE_SENSOR_COUNT; i++) {\n` +
+      `    int value = getLineSensorCalibrated(i);\n` +
+      `    weightedSum += (long)value * (i * 1000);\n` +
+      `    sum += value;\n` +
+      `  }\n` +
+      `  if (sum == 0) return 0;\n` +
+      `  return (weightedSum / sum) - ((LINE_SENSOR_COUNT - 1) * 500);\n` +
+      `}\n`;
+  }
 
-  javascriptGenerator.setups_['line_sensor_setup'] =
-    `// ラインセンサー初期化\n` +
-    `for (int i = 0; i < LINE_SENSOR_COUNT; i++) {\n` +
-    `  pinMode(lineSensorPins[i], INPUT);\n` +
-    `  lineSensorMin[i] = 4095;\n` +
-    `  lineSensorMax[i] = 0;\n` +
-    `}\n`;
+  if (!javascriptGenerator.setups_['line_sensor_setup']) {
+    javascriptGenerator.setups_['line_sensor_setup'] =
+      `// ラインセンサー初期化\n` +
+      `for (int i = 0; i < LINE_SENSOR_COUNT; i++) {\n` +
+      `  pinMode(lineSensorPins[i], INPUT);\n` +
+      `  lineSensorMin[i] = 4095;\n` +
+      `  lineSensorMax[i] = 0;\n` +
+      `}\n`;
+  }
 
   return '';
 };
