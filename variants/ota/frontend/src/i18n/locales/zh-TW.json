@@ -4432,7 +4432,14 @@
       "provider": "提供商",
       "generatedResult": "積木生成結果"
     },
-    "localLlmHelp": "關於本地 LLM"
+    "localLlmHelp": "關於本地 LLM",
+    "apiKeyExplanation": {
+      "heading": "💡 關於 API 金鑰",
+      "point1": "API 金鑰是用於各供應商的開發者服務，與 ChatGPT Plus、Claude Pro 等月費方案是分開計費的。",
+      "point2": "充值數千日圓的額度，通常可使用數月的日常區塊生成。",
+      "point3": "若不想付費，請改選「本地 LLM」。"
+    },
+    "apiKeysHelp": "如何取得 API 金鑰（詳細指南）"
   },
   "admin": {
     "title": "DigiCode Admin",
@@ -4703,6 +4710,45 @@
         "oldPc": "建議使用 2020 年以後的 PC。較舊的 PC 建議改用雲端 API (Gemini / GPT / Claude)。",
         "fallback": "若遇到問題，請改用雲端 API。",
         "disclaimer": "此處列出的工具與模型僅為本地 LLM 設定範例，並非 DigiCode 對其相容性或可用性的背書或保證。"
+      }
+    },
+    "apiKeys": {
+      "title": "如何取得 API 金鑰",
+      "intro": {
+        "heading": "什麼是 API 金鑰？",
+        "point1": "API 金鑰是用於存取各 AI 供應商（Google / OpenAI / Anthropic）開發者服務的認證資訊。",
+        "point2": "這些開發者服務與月費方案（ChatGPT Plus / Claude Pro / Gemini Advanced）是不同服務，分開計費。即使有月費方案，API 使用仍需另外付費。",
+        "point3": "API 使用為依用量計費（按使用付費）。對於 DigiCode 的日常區塊生成，充值數千日圓的額度通常可使用數月至數年（詳情請參閱各供應商的價格頁面）。"
+      },
+      "providers": {
+        "heading": "各供應商的取得步驟",
+        "pricingLink": "費用詳情",
+        "gemini": {
+          "name": "Gemini (Google)",
+          "urlLabel": "Google AI Studio",
+          "steps": "登入 Google AI Studio → 左側選單「API keys」→「Create API key」→ 選擇專案 → 複製產生的金鑰。"
+        },
+        "openai": {
+          "name": "OpenAI",
+          "urlLabel": "OpenAI Platform",
+          "steps": "登入 OpenAI Platform → 右上角帳戶選單 →「API keys」→「Create new secret key」→ 複製產生的金鑰（僅顯示一次，請特別注意）。"
+        },
+        "anthropic": {
+          "name": "Claude (Anthropic)",
+          "urlLabel": "Anthropic Console",
+          "steps": "登入 Anthropic Console → 左側選單「API Keys」→「Create Key」→ 輸入金鑰名稱 → 複製產生的金鑰。"
+        }
+      },
+      "alternative": {
+        "heading": "若不想付費",
+        "body": "您可以使用不需 API 計費的「本地 LLM」。AI 模型在您的電腦上運作，資料也不會傳送到外部。",
+        "link": "關於本地 LLM"
+      },
+      "notes": {
+        "heading": "備註",
+        "localStorage": "API 金鑰會以純文字形式儲存於瀏覽器的本機儲存區。建議在共用電腦上使用後將其刪除。",
+        "byok": "DigiCode 不會將您的 API 金鑰傳送至本站伺服器。AI 呼叫會由瀏覽器直接傳送至各供應商（BYOK 方式）。",
+        "pricing": "各供應商的價格可能隨時變動。請查閱各供應商的官方價格頁面以了解最新費率。"
       }
     }
   }

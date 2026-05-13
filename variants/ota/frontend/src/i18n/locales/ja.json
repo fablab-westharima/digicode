@@ -4438,7 +4438,14 @@
       "provider": "プロバイダー",
       "generatedResult": "ブロック生成結果"
     },
-    "localLlmHelp": "ローカルLLM について"
+    "localLlmHelp": "ローカルLLM について",
+    "apiKeyExplanation": {
+      "heading": "💡 API キーについて",
+      "point1": "API キーは各プロバイダーの開発者向けサービス用で、ChatGPT Plus / Claude Pro 等の月額プランとは別料金です。",
+      "point2": "最低数千円程度の課金で、日常的なブロック生成なら数ヶ月利用できます。",
+      "point3": "課金なしで利用したい場合は「ローカルLLM」を選択してください。"
+    },
+    "apiKeysHelp": "API キーの取得方法（詳細ガイド）"
   },
   "admin": {
     "title": "DigiCode Admin",
@@ -4709,6 +4716,45 @@
         "oldPc": "2020 年以降の PC を推奨します。それ以前の古い PC ではクラウド API (Gemini / GPT / Claude) の利用を推奨します。",
         "fallback": "動作に問題がある場合はクラウド API をご利用ください。",
         "disclaimer": "ここで紹介しているツール・モデルはローカル LLM 環境の例示であり、DigiCode 上での動作保証や推奨を行うものではありません。"
+      }
+    },
+    "apiKeys": {
+      "title": "API キーの取得方法",
+      "intro": {
+        "heading": "API キーとは",
+        "point1": "API キーは各 AI プロバイダー（Google / OpenAI / Anthropic）が提供する開発者向けサービスにアクセスするための認証情報です。",
+        "point2": "月額プラン（ChatGPT Plus / Claude Pro / Gemini Advanced）とは別のサービスで、料金体系も別です。月額プランに加入していても、API 利用には別途課金が必要です。",
+        "point3": "料金は使用量に応じた従量課金です。DigiCode のブロック生成なら、最低数千円程度のチャージで数ヶ月〜数年利用できます（詳細は各公式ページ参照）。"
+      },
+      "providers": {
+        "heading": "プロバイダー別取得手順",
+        "pricingLink": "料金詳細",
+        "gemini": {
+          "name": "Gemini (Google)",
+          "urlLabel": "Google AI Studio",
+          "steps": "Google AI Studio にログイン → 左メニュー「API keys」→「Create API key」→ プロジェクト選択 → 生成された API キーをコピー。"
+        },
+        "openai": {
+          "name": "OpenAI",
+          "urlLabel": "OpenAI Platform",
+          "steps": "OpenAI Platform にログイン → 右上のアカウントメニュー →「API keys」→「Create new secret key」→ 生成された API キーをコピー（一度しか表示されないので注意）。"
+        },
+        "anthropic": {
+          "name": "Claude (Anthropic)",
+          "urlLabel": "Anthropic Console",
+          "steps": "Anthropic Console にログイン → 左メニュー「API Keys」→「Create Key」→ キー名を入力 → 生成された API キーをコピー。"
+        }
+      },
+      "alternative": {
+        "heading": "課金なしで利用したい場合",
+        "body": "API 課金が不要な「ローカル LLM」を利用できます。お手元の PC で AI モデルを動かす方式で、データも外部に送信されません。",
+        "link": "ローカル LLM について"
+      },
+      "notes": {
+        "heading": "注記",
+        "localStorage": "API キーはブラウザのローカルストレージに平文で保存されます。共有 PC では使用後に削除をおすすめします。",
+        "byok": "DigiCode は API キーを当方サーバーには送信しません。AI 呼び出しはブラウザから各プロバイダーへ直接実行されます（BYOK 方式）。",
+        "pricing": "各プロバイダーの料金体系は変更される可能性があります。最新情報は公式の料金ページをご確認ください。"
       }
     }
   }

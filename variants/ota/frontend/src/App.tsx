@@ -24,6 +24,7 @@ import { RecoveryPage } from '@/pages/RecoveryPage';
 import { AdminPage } from '@/pages/AdminPage';
 import { AboutPage } from '@/pages/AboutPage';
 import { HelpLocalLLMPage } from '@/pages/HelpLocalLLMPage';
+import { HelpAPIKeysPage } from '@/pages/HelpAPIKeysPage';
 import { ClassesPage } from '@/pages/ClassesPage';
 import { ClassDetailPage } from '@/pages/ClassDetailPage';
 import { AssignmentSubmissionsPage } from '@/pages/AssignmentSubmissionsPage';
@@ -155,6 +156,7 @@ function App() {
         <Route path="/recovery/:token" element={<RecoveryPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/help/local-llm" element={<HelpLocalLLMPage />} />
+        <Route path="/help/api-keys" element={<HelpAPIKeysPage />} />
         <Route path="/firmware" element={<FirmwareInstaller />} />
         <Route path="/admin" element={
           <ProtectedRoute>

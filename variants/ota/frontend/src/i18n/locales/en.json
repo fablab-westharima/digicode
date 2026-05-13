@@ -4432,7 +4432,14 @@
       "provider": "Provider",
       "generatedResult": "Block Generation Result"
     },
-    "localLlmHelp": "About Local LLM"
+    "localLlmHelp": "About Local LLM",
+    "apiKeyExplanation": {
+      "heading": "💡 About API keys",
+      "point1": "API keys are for each provider's developer service, billed separately from monthly subscriptions like ChatGPT Plus or Claude Pro.",
+      "point2": "A few thousand yen worth of credit typically lasts months of everyday block generation.",
+      "point3": "If you'd rather not pay, choose Local LLM instead."
+    },
+    "apiKeysHelp": "How to get an API key (detailed guide)"
   },
   "admin": {
     "title": "DigiCode Admin",
@@ -4703,6 +4710,45 @@
         "oldPc": "A PC from 2020 or later is recommended. For older PCs, prefer cloud APIs (Gemini / GPT / Claude).",
         "fallback": "If you run into issues, fall back to a cloud API.",
         "disclaimer": "The tools and models listed here are examples of local LLM setups, not endorsements or compatibility guarantees for DigiCode."
+      }
+    },
+    "apiKeys": {
+      "title": "How to get an API key",
+      "intro": {
+        "heading": "What is an API key?",
+        "point1": "An API key is the credential that lets you access each AI provider's (Google / OpenAI / Anthropic) developer service.",
+        "point2": "These developer services are separate from monthly subscriptions (ChatGPT Plus / Claude Pro / Gemini Advanced) and billed separately. Holding a subscription does not include API usage.",
+        "point3": "API usage is metered (pay-as-you-go). For everyday DigiCode block generation, a few thousand yen of credit typically lasts months to years (see each provider's pricing page for details)."
+      },
+      "providers": {
+        "heading": "How to obtain a key, per provider",
+        "pricingLink": "Pricing details",
+        "gemini": {
+          "name": "Gemini (Google)",
+          "urlLabel": "Google AI Studio",
+          "steps": "Sign in to Google AI Studio → side menu \"API keys\" → \"Create API key\" → select a project → copy the generated key."
+        },
+        "openai": {
+          "name": "OpenAI",
+          "urlLabel": "OpenAI Platform",
+          "steps": "Sign in to OpenAI Platform → account menu (top right) → \"API keys\" → \"Create new secret key\" → copy the generated key (only shown once)."
+        },
+        "anthropic": {
+          "name": "Claude (Anthropic)",
+          "urlLabel": "Anthropic Console",
+          "steps": "Sign in to Anthropic Console → side menu \"API Keys\" → \"Create Key\" → enter a key name → copy the generated key."
+        }
+      },
+      "alternative": {
+        "heading": "If you'd rather not pay",
+        "body": "You can use Local LLM, which requires no API billing. AI models run on your own PC and your data is never sent externally.",
+        "link": "About Local LLM"
+      },
+      "notes": {
+        "heading": "Notes",
+        "localStorage": "API keys are stored in your browser's local storage as plain text. We recommend deleting them after use on shared computers.",
+        "byok": "DigiCode does not transmit your API keys to our servers. AI calls go directly from your browser to each provider (BYOK).",
+        "pricing": "Provider pricing may change at any time. Please refer to each provider's official pricing page for current rates."
       }
     }
   }

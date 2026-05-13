@@ -4432,7 +4432,14 @@
       "provider": "Proveedor",
       "generatedResult": "Resultado de Generación de Bloques"
     },
-    "localLlmHelp": "Acerca de LLM local"
+    "localLlmHelp": "Acerca de LLM local",
+    "apiKeyExplanation": {
+      "heading": "💡 Sobre las claves de API",
+      "point1": "Las claves de API son para los servicios de desarrollador de cada proveedor, con facturación independiente de las suscripciones mensuales como ChatGPT Plus o Claude Pro.",
+      "point2": "Unos pocos miles de yenes de crédito suelen durar meses de generación cotidiana de bloques.",
+      "point3": "Si prefieres no pagar, elige LLM local en su lugar."
+    },
+    "apiKeysHelp": "Cómo obtener una clave de API (guía detallada)"
   },
   "admin": {
     "title": "DigiCode Admin",
@@ -4703,6 +4710,45 @@
         "oldPc": "Recomendamos un PC de 2020 o posterior. En equipos más antiguos, conviene usar APIs en la nube (Gemini / GPT / Claude).",
         "fallback": "Si encuentras problemas, vuelve a usar una API en la nube.",
         "disclaimer": "Las herramientas y modelos listados son ejemplos de configuraciones de LLM locales, no respaldos ni garantías de compatibilidad con DigiCode."
+      }
+    },
+    "apiKeys": {
+      "title": "Cómo obtener una clave de API",
+      "intro": {
+        "heading": "¿Qué es una clave de API?",
+        "point1": "Una clave de API es la credencial que te permite acceder al servicio de desarrollador de cada proveedor de IA (Google / OpenAI / Anthropic).",
+        "point2": "Estos servicios de desarrollador son independientes de las suscripciones mensuales (ChatGPT Plus / Claude Pro / Gemini Advanced) y se facturan por separado. Tener una suscripción no incluye el uso de la API.",
+        "point3": "El uso de la API se cobra por consumo (pago por uso). Para la generación cotidiana de bloques en DigiCode, unos pocos miles de yenes de crédito suelen durar meses o años (consulta la página de precios de cada proveedor para más detalles)."
+      },
+      "providers": {
+        "heading": "Cómo obtener una clave, por proveedor",
+        "pricingLink": "Detalles de precios",
+        "gemini": {
+          "name": "Gemini (Google)",
+          "urlLabel": "Google AI Studio",
+          "steps": "Inicia sesión en Google AI Studio → menú lateral \"API keys\" → \"Create API key\" → selecciona un proyecto → copia la clave generada."
+        },
+        "openai": {
+          "name": "OpenAI",
+          "urlLabel": "OpenAI Platform",
+          "steps": "Inicia sesión en OpenAI Platform → menú de cuenta (arriba a la derecha) → \"API keys\" → \"Create new secret key\" → copia la clave generada (solo se muestra una vez)."
+        },
+        "anthropic": {
+          "name": "Claude (Anthropic)",
+          "urlLabel": "Anthropic Console",
+          "steps": "Inicia sesión en Anthropic Console → menú lateral \"API Keys\" → \"Create Key\" → introduce un nombre de clave → copia la clave generada."
+        }
+      },
+      "alternative": {
+        "heading": "Si prefieres no pagar",
+        "body": "Puedes usar LLM local, que no requiere facturación de API. Los modelos de IA se ejecutan en tu propio PC y tus datos nunca se envían al exterior.",
+        "link": "Acerca del LLM local"
+      },
+      "notes": {
+        "heading": "Notas",
+        "localStorage": "Las claves de API se almacenan en el almacenamiento local de tu navegador como texto sin formato. Recomendamos eliminarlas después de usarlas en equipos compartidos.",
+        "byok": "DigiCode no transmite tus claves de API a nuestros servidores. Las llamadas a la IA van directamente desde tu navegador a cada proveedor (BYOK).",
+        "pricing": "Los precios de los proveedores pueden cambiar en cualquier momento. Consulta la página oficial de precios de cada proveedor para conocer las tarifas actuales."
       }
     }
   }

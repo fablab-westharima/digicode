@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, Check, ExternalLink } from 'lucide-react';
+import { AlertTriangle, Check, ExternalLink, Info } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -93,6 +93,28 @@ export function AIProviderSettingsDialog({ open, onOpenChange }: Props) {
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* API キーについての説明（プロバイダー選択の直上） */}
+          <div className="rounded-md bg-muted/50 border border-border p-3 text-xs space-y-2">
+            <p className="font-medium text-foreground flex items-start gap-1.5">
+              <Info className="w-3.5 h-3.5 mt-0.5 shrink-0 text-blue-400" />
+              {t('ai.apiKeyExplanation.heading')}
+            </p>
+            <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+              <li>{t('ai.apiKeyExplanation.point1')}</li>
+              <li>{t('ai.apiKeyExplanation.point2')}</li>
+              <li>{t('ai.apiKeyExplanation.point3')}</li>
+            </ul>
+            <a
+              href="/help/api-keys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-primary hover:underline"
+            >
+              {t('ai.apiKeysHelp')}
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+
           {/* プロバイダー選択 */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-1">
