@@ -2082,8 +2082,6 @@
       "param1Value": "Value"
     },
     "json": {
-      "parse": "JSON Parse",
-      "parseTooltip": "Parse a JSON string to extract values with json_get_* blocks",
       "parseSize": "JSON Parse (with size)",
       "parseSizeTooltip": "Increase buffer size for parsing large JSON",
       "buffer": "Buffer",

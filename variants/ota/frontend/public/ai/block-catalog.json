@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-11T13:38:52.618Z",
+  "generatedAt": "2026-05-13T02:22:43.006Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -1119,7 +1119,7 @@
       "valueInputs": [
         {
           "name": "SAMPLES",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -2257,7 +2257,7 @@
       "valueInputs": [
         {
           "name": "DURATION",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -2296,7 +2296,7 @@
       "valueInputs": [
         {
           "name": "THRESHOLD",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -2542,7 +2542,7 @@
       "valueInputs": [
         {
           "name": "SAMPLES",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -2564,7 +2564,7 @@
       "valueInputs": [
         {
           "name": "DURATION",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -2655,7 +2655,7 @@
       "valueInputs": [
         {
           "name": "THRESHOLD",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -4080,11 +4080,11 @@
         },
         {
           "name": "X",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "Y",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -4202,11 +4202,11 @@
       "valueInputs": [
         {
           "name": "X",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "Y",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "TEXT",
@@ -4627,11 +4627,11 @@
       "valueInputs": [
         {
           "name": "X",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "Y",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -4660,19 +4660,19 @@
       "valueInputs": [
         {
           "name": "X1",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "Y1",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "X2",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "Y2",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -4706,19 +4706,19 @@
       "valueInputs": [
         {
           "name": "X",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "Y",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "W",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "H",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -4752,15 +4752,15 @@
       "valueInputs": [
         {
           "name": "X",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "Y",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "R",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -4789,15 +4789,15 @@
       "valueInputs": [
         {
           "name": "X",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "Y",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "SIZE",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -4841,15 +4841,15 @@
       "valueInputs": [
         {
           "name": "R",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "G",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "B",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -5737,7 +5737,7 @@
       "valueInputs": [
         {
           "name": "TRACK",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -5810,7 +5810,7 @@
       "valueInputs": [
         {
           "name": "VOL",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -5891,7 +5891,7 @@
       "valueInputs": [
         {
           "name": "SPEED",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -5923,7 +5923,7 @@
       "valueInputs": [
         {
           "name": "SPEED",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -6008,7 +6008,7 @@
       "valueInputs": [
         {
           "name": "ANGLE",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -6039,15 +6039,15 @@
       "valueInputs": [
         {
           "name": "START",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "END",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "SPEED",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -6153,7 +6153,7 @@
       "valueInputs": [
         {
           "name": "STEPS",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -6186,7 +6186,7 @@
       "valueInputs": [
         {
           "name": "ANGLE",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -6609,7 +6609,7 @@
       "valueInputs": [
         {
           "name": "STEPS",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -6649,7 +6649,7 @@
       "valueInputs": [
         {
           "name": "STEPS",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -6671,7 +6671,7 @@
       "valueInputs": [
         {
           "name": "STEPS",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -6702,7 +6702,7 @@
       "valueInputs": [
         {
           "name": "STEPS",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -6724,7 +6724,7 @@
       "valueInputs": [
         {
           "name": "STEPS",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -6746,7 +6746,7 @@
       "valueInputs": [
         {
           "name": "STEPS",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -6777,7 +6777,7 @@
       "valueInputs": [
         {
           "name": "STEPS",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -7209,7 +7209,7 @@
       "valueInputs": [
         {
           "name": "STEPS",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -7301,7 +7301,7 @@
       "valueInputs": [
         {
           "name": "POWER",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -7424,7 +7424,7 @@
       "valueInputs": [
         {
           "name": "SPEED",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -7446,7 +7446,7 @@
       "valueInputs": [
         {
           "name": "SPEED",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -7477,7 +7477,7 @@
       "valueInputs": [
         {
           "name": "SPEED",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -7508,11 +7508,11 @@
       "valueInputs": [
         {
           "name": "SPEED",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "RATIO",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -7560,11 +7560,11 @@
       "valueInputs": [
         {
           "name": "DISTANCE",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "SPEED",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -7595,11 +7595,11 @@
       "valueInputs": [
         {
           "name": "ANGLE",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "SPEED",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -7621,11 +7621,11 @@
       "valueInputs": [
         {
           "name": "LEFT",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "RIGHT",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -7647,15 +7647,15 @@
       "valueInputs": [
         {
           "name": "BASE_SPEED",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "ERROR",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "CORRECTION",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -8197,7 +8197,7 @@
       "valueInputs": [
         {
           "name": "PORT",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -8219,7 +8219,7 @@
       "valueInputs": [
         {
           "name": "SIZE",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -8241,7 +8241,7 @@
       "valueInputs": [
         {
           "name": "SECONDS",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -9306,11 +9306,11 @@
       "valueInputs": [
         {
           "name": "MAJOR",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "MINOR",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -9332,7 +9332,7 @@
       "valueInputs": [
         {
           "name": "DURATION",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -10561,28 +10561,6 @@
       "statementInputs": []
     },
     {
-      "type": "json_parse",
-      "category": "json",
-      "tooltip": "Parse JSON string to access values with json_get_* blocks",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "network",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [
-        {
-          "name": "JSON",
-          "check": "String"
-        }
-      ],
-      "statementInputs": []
-    },
-    {
       "type": "json_parse_size",
       "category": "json",
       "tooltip": "Increase buffer size for large JSON",
@@ -11035,7 +11013,7 @@
         {
           "name": "DEVICE_NAME",
           "fieldType": "text",
-          "default": "ESP32センサー"
+          "default": "ESP32 Sensor"
         },
         {
           "name": "DEVICE_ID",
@@ -11130,7 +11108,7 @@
         {
           "name": "DEVICE_NAME",
           "fieldType": "text",
-          "default": "ESP32センサー"
+          "default": "ESP32 Sensor"
         },
         {
           "name": "DEVICE_ID",
@@ -11225,7 +11203,7 @@
         {
           "name": "NAME",
           "fieldType": "text",
-          "default": "温度"
+          "default": "Temperature"
         },
         {
           "name": "UNIT",
@@ -11317,7 +11295,7 @@
         {
           "name": "NAME",
           "fieldType": "text",
-          "default": "人感センサー"
+          "default": "Motion Sensor"
         }
       ],
       "valueInputs": [],
@@ -11384,7 +11362,7 @@
         {
           "name": "NAME",
           "fieldType": "text",
-          "default": "リレー"
+          "default": "Relay"
         }
       ],
       "valueInputs": [],
@@ -11747,7 +11725,7 @@
         {
           "name": "NAME",
           "fieldType": "text",
-          "default": "サーボ角度"
+          "default": "Servo Angle"
         },
         {
           "name": "UNIT",
@@ -11758,15 +11736,15 @@
       "valueInputs": [
         {
           "name": "MIN",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "MAX",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "STEP",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -11865,7 +11843,7 @@
         {
           "name": "NAME",
           "fieldType": "text",
-          "default": "換気扇"
+          "default": "Fan"
         },
         {
           "name": "SPEEDS",
@@ -12003,7 +11981,7 @@
         {
           "name": "NAME",
           "fieldType": "text",
-          "default": "シャッター"
+          "default": "Cover"
         }
       ],
       "valueInputs": [],
@@ -12108,7 +12086,7 @@
         {
           "name": "NAME",
           "fieldType": "text",
-          "default": "再起動"
+          "default": "Restart"
         }
       ],
       "valueInputs": [],
@@ -12223,7 +12201,7 @@
         {
           "name": "NAME",
           "fieldType": "text",
-          "default": "ナイトモード"
+          "default": "Night Mode"
         }
       ],
       "valueInputs": [],
@@ -12278,7 +12256,7 @@
         {
           "name": "NAME",
           "fieldType": "text",
-          "default": "NFCリーダー"
+          "default": "Tag Scanner"
         }
       ],
       "valueInputs": [],
@@ -12439,7 +12417,7 @@
         {
           "name": "NAME",
           "fieldType": "text",
-          "default": "ファームウェア更新"
+          "default": "Firmware Update"
         },
         {
           "name": "FIRMWARE_URL",
@@ -13518,7 +13496,7 @@
       "valueInputs": [
         {
           "name": "INTERVAL_MS",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": [
@@ -13595,11 +13573,11 @@
       "valueInputs": [
         {
           "name": "ADDR",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "DATA",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -13647,15 +13625,15 @@
       "valueInputs": [
         {
           "name": "ADDR",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "REG",
-          "check": null
+          "check": "Number"
         },
         {
           "name": "VALUE",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []
@@ -13736,7 +13714,7 @@
       "valueInputs": [
         {
           "name": "DATA",
-          "check": null
+          "check": "Number"
         }
       ],
       "statementInputs": []

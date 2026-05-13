@@ -22,34 +22,11 @@ const generator = javascriptGenerator as any;
 // ===== JSONパース =====
 
 /**
- * json_parse - JSON文字列をパース
- */
-Blockly.Blocks['json_parse'] = {
-  init: function() {
-    this.appendValueInput('JSON')
-        .setCheck('String')
-        .appendField('📋 ' + (Blockly.Msg.BLOCKS_JSON_PARSE || 'JSON Parse'));
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour('#FF5722');
-    this.setTooltip(Blockly.Msg.BLOCKS_JSON_PARSETOOLTIP || 'Parse JSON string to access values with json_get_* blocks');
-  }
-};
-
-javascriptGenerator.forBlock['json_parse'] = function(block: Blockly.Block) {
-  const json = javascriptGenerator.valueToCode(block, 'JSON', Order.ATOMIC) || '"{}"';
-
-  generator.definitions_['include_arduinojson'] = '#include <ArduinoJson.h>';
-  generator.definitions_['json_doc'] = 'StaticJsonDocument<2048> _jsonDoc;';
-
-  return `  // JSON Parse
-  _jsonDoc.clear();
-  deserializeJson(_jsonDoc, ${json});
-`;
-};
-
-/**
- * json_parse_size - バッファサイズ指定でJSONパース
+ * json_parse_size - バッファサイズ指定でJSONパース (case 19 cluster R2-A 第113回:
+ * 旧 json_parse 削除統合。両 block は同 key `json_doc` を unconditional 上書き合戦
+ * = 後勝ちで silent buffer-size mismatch (user 4096 指定が json_parse 後発で 2048
+ * に縮小されると ArduinoJson が無音 overflow)。json_parse_size が完全 superset
+ * (size dropdown に 2048 default 含む) で代替可、json_parse 削除で穴塞ぎ。)
  */
 Blockly.Blocks['json_parse_size'] = {
   init: function() {

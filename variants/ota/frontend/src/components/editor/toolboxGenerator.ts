@@ -1018,7 +1018,6 @@ const getToolboxCategories = (): Record<string, string> => ({
   json: `
   <category id="json" name="${cat('json')}" colour="#FF5722">
     <label text="${label('parse')}"></label>
-    <block type="json_parse"></block>
     <block type="json_parse_size"></block>
     <sep></sep>
     <label text="${label('getValue')}"></label>

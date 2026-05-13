@@ -127,9 +127,10 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     ],
   },
   {
-    // json_parse / json_parse_size が `StaticJsonDocument _jsonDoc;` を declares、
-    // 全 json read ops (get_*/has_key/array_*) が _jsonDoc 参照 (第64回 split)。
-    init: 'json_parse',
+    // json_parse_size が `StaticJsonDocument _jsonDoc;` を declares、全 json read
+    // ops (get_*/has_key/array_*) が _jsonDoc 参照 (第64回 split)。case 19 cluster
+    // R2-A 第113回: 旧 json_parse 削除統合 (key drift 解消)、json_parse_size 単独 init。
+    init: 'json_parse_size',
     label: 'json-read',
     operations: [
       'json_get_string', 'json_get_number', 'json_get_int', 'json_get_bool',

@@ -1874,8 +1874,6 @@
       "param1Value": "值"
     },
     "json": {
-      "parse": "JSON 解析",
-      "parseTooltip": "解析 JSON 字串以搭配 json_get_* 區塊取值",
       "parseSize": "JSON 解析 (含大小)",
       "parseSizeTooltip": "增加緩衝區大小以解析大型 JSON",
       "buffer": "緩衝區",

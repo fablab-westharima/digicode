@@ -1874,8 +1874,6 @@
       "param1Value": "Valor"
     },
     "json": {
-      "parse": "Analizar JSON",
-      "parseTooltip": "Analizar una cadena JSON para extraer valores con bloques json_get_*",
       "parseSize": "Analizar JSON (con tamaño)",
       "parseSizeTooltip": "Aumentar tamaño del búfer para analizar JSON grandes",
       "buffer": "Búfer",

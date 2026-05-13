@@ -2082,8 +2082,6 @@
       "param1Value": "値"
     },
     "json": {
-      "parse": "JSONパース",
-      "parseTooltip": "JSON文字列をパースして、json_get_*ブロックで値を取得できるようにします",
       "parseSize": "JSONパース（サイズ指定）",
       "parseSizeTooltip": "大きなJSONをパースする場合はバッファサイズを増やしてください",
       "buffer": "バッファ",

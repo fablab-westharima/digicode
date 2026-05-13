@@ -86,10 +86,10 @@ describe('OPERATION_TO_INIT_MAP (derived)', () => {
     );
   });
 
-  it('maps json read ops → json_parse (_jsonDoc, 第64回 split)', () => {
-    expect(OPERATION_TO_INIT_MAP.get('json_get_string')).toBe('json_parse');
-    expect(OPERATION_TO_INIT_MAP.get('json_array_get')).toBe('json_parse');
-    expect(OPERATION_TO_INIT_MAP.get('json_has_key')).toBe('json_parse');
+  it('maps json read ops → json_parse_size (_jsonDoc, 第64回 split / R2-A 第113回統合)', () => {
+    expect(OPERATION_TO_INIT_MAP.get('json_get_string')).toBe('json_parse_size');
+    expect(OPERATION_TO_INIT_MAP.get('json_array_get')).toBe('json_parse_size');
+    expect(OPERATION_TO_INIT_MAP.get('json_has_key')).toBe('json_parse_size');
   });
 
   it('maps json write ops → json_create_object (_jsonOutDoc)', () => {
