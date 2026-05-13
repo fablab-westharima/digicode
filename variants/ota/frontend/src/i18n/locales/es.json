@@ -1049,10 +1049,6 @@
     "next": "Siguiente"
   },
   "blocks": {
-    "basic": "Básico",
-    "logic": "Lógica",
-    "loops": "Bucles",
-    "math": "Matemáticas",
     "i2c": {
       "scan": "🔍 Escanear I2C",
       "scanTooltip": "Escanea dispositivos I2C conectados e imprime direcciones en Serial",
@@ -1124,7 +1120,6 @@
       "receiverDecode": "Recibir Código IR",
       "receiverDecodeTooltip": "Lee el código IR recibido como cadena hex. Devuelve \"0\" si no hay señal. Coloque en el bloque loop.",
       "senderInit": "Inicializar Emisor IR",
-      "senderInitTooltip": "Inicializa el LED emisor IR en el pin especificado. Llame en el bloque setup.",
       "send": "Enviar IR",
       "code": "código (hex)",
       "sendTooltip": "Envía una señal IR con el protocolo y código especificados.",
@@ -1155,8 +1150,6 @@
     "rfid": {
       "initM5": "Inicializar RFID (M5Stack)",
       "initM5Tooltip": "Inicializa M5Stack RFID 2 Unit (WS1850S) via I2C. Dirección 0x28, sin CS/RST. Certificado para uso en Japón (技適).",
-      "initGeneric": "⚠️ Inicializar RFID (Genérico)",
-      "initGenericTooltip": "⚠️ Inicializa MFRC522 genérico via SPI.\n\nNOTA: En Japón, los dispositivos que emiten a 13.56 MHz requieren certificación 技適. Use rfid_init_m5stack para Japón.\n\nFuera de Japón: verifique las regulaciones de radio locales.",
       "isPresent": "¿RFID Detectado?",
       "isPresentTooltip": "Devuelve true si se detecta una tarjeta/etiqueta RFID. Coloque en el bloque loop.",
       "readUid": "Leer UID RFID",
@@ -1218,23 +1211,6 @@
       "readUntilTooltip": "Lee de Serial2 hasta el carácter terminador. Devuelve la cadena recibida.",
       "available": "Serial2 Disponible",
       "availableTooltip": "Devuelve el número de bytes disponibles para leer de Serial2."
-    },
-    "dfplayer": {
-      "init": "Inicializar DFPlayer",
-      "rx": "pin RX",
-      "tx": "pin TX",
-      "initTooltip": "Inicializa DFPlayer Mini via SoftwareSerial. Conecte TX del DFPlayer al RX del ESP32, y RX del DFPlayer (con resistencia 1kΩ) al TX del ESP32.",
-      "play": "DFPlayer Reproducir",
-      "track": "pista",
-      "playTooltip": "Reproduce la pista especificada (1-999) de la tarjeta SD.",
-      "pause": "DFPlayer Pausa",
-      "pauseTooltip": "Pausa la reproducción actual.",
-      "resume": "DFPlayer Reanudar",
-      "resumeTooltip": "Reanuda la reproducción pausada.",
-      "stop": "DFPlayer Detener",
-      "stopTooltip": "Detiene la reproducción.",
-      "volume": "DFPlayer Volumen",
-      "volumeTooltip": "Establece el volumen (0=silencio, 30=máximo)."
     },
     "lcd": {
       "init": "Inicializar LCD",
@@ -1314,7 +1290,6 @@
       "divider": "ratio divisor",
       "voltageTooltip": "Mide voltaje de batería via ADC con divisor resistivo. Configure el ratio (ej. 2.0 para resistencias iguales).",
       "percentage": "% Batería",
-      "voltageInput": "voltaje (V)",
       "minV": "V mín",
       "maxV": "V máx",
       "percentageTooltip": "Convierte voltaje de batería a porcentaje (0-100%). Configure min/max para su tipo (Li-ion: 3.0-4.2V).",
@@ -1493,55 +1468,7 @@
     "math_mapfrom": "de",
     "math_mapto": "a",
     "math_maptooltip": "Convierte un valor de un rango a otro (función map de Arduino)",
-    "text": "Texto",
-    "variables": "Variables",
-    "functions": "Funciones",
-    "io": "I/O",
-    "motor": "Motor",
-    "servo": "Servo",
     "sensor": {
-      "ultrasonic": {
-        "init": "📏 HC-SR04 Inicializar",
-        "trigPin": "Pin Trig",
-        "echoPin": "Pin Echo",
-        "distance": "📏 Distancia Ultrasónica (cm)",
-        "initTooltip": "Inicializa el sensor ultrasónico HC-SR04",
-        "distanceTooltip": "Mide distancia con HC-SR04 (requiere inicialización)"
-      },
-      "dht": {
-        "init": "🌡️ DHT Inicializar",
-        "pin": "Pin",
-        "temperature": "🌡️ Temperatura DHT (°C)",
-        "humidity": "💧 Humedad DHT (%)",
-        "initTooltip": "Inicializa sensor DHT11/DHT22 de temperatura y humedad",
-        "temperatureTooltip": "Lee temperatura DHT en Celsius",
-        "humidityTooltip": "Lee humedad DHT en porcentaje"
-      },
-      "rus04": {
-        "init": "👀 RUS-04 Inicializar",
-        "rgbPin": "Pin RGB",
-        "numLeds": "Nº LEDs",
-        "distance": "📏 Distancia RUS-04 (cm)",
-        "rgbBoth": "🌈 RUS-04 RGB Ambos Ojos",
-        "off": "⬛ RUS-04 RGB Apagar",
-        "left": "Izquierda",
-        "right": "Derecha",
-        "initTooltip": "Inicializa sensor ultrasónico RUS-04 (RGB integrado)",
-        "distanceTooltip": "Mide distancia con RUS-04 (requiere inicialización)",
-        "rgbTooltip": "Configura colores RGB de ojos izquierdo y derecho",
-        "offTooltip": "Apaga ambos ojos",
-        "bothSimpleTooltip": "Configura color de ambos ojos"
-      },
-      "color": {
-        "red": "Rojo",
-        "green": "Verde",
-        "blue": "Azul",
-        "yellow": "Amarillo",
-        "purple": "Morado",
-        "cyan": "Cian",
-        "white": "Blanco",
-        "off": "Apagado"
-      },
       "analogread_label": "Pin de lectura analógica",
       "analogread_tooltip": "Lee el valor de un pin analógico (0-4095)",
       "button_label": "Pin del botón",
@@ -1771,13 +1698,9 @@
       "oledInitTooltip": "Inicializar pantalla OLED I2C (SSD1306)",
       "width": "Ancho",
       "height": "Altura",
-      "sda": "SDA:",
-      "scl": "SCL:",
       "oledText": "Texto OLED",
       "oledTextTooltip": "Mostrar texto en OLED",
       "text": "Texto",
-      "x": "X:",
-      "y": "Y:",
       "size": "Tamaño",
       "sizeSmall": "Pequeño",
       "sizeMedium": "Medio",
@@ -1785,11 +1708,7 @@
       "oledClear": "Borrar OLED",
       "oledClearTooltip": "Borrar la pantalla OLED",
       "oledShow": "Actualizar OLED",
-      "oledShowTooltip": "Refrescar la pantalla OLED",
-      "startY": "Y:",
-      "endY": "Y:",
-      "widthLabel": "Ancho:",
-      "heightLabel": "Altura:"
+      "oledShowTooltip": "Refrescar la pantalla OLED"
     },
     "audio": {
       "buzzerTone": "Tono del zumbador",
@@ -1815,8 +1734,6 @@
       "error": "Error",
       "complete": "Completado"
     },
-    "communication": "Comunicación",
-    "robot": "Robot",
     "arduino": {
       "setup": {
         "label": "Configuración",
@@ -1943,8 +1860,6 @@
         "angle": "ángulo",
         "write": "Ángulo de servo",
         "writeTooltip": "Mover servo al ángulo especificado (0-180°)",
-        "writeValue": "Ángulo de servo",
-        "writeValueTooltip": "Mover servo a ángulo desde variable",
         "detach": "Desconectar servo",
         "detachTooltip": "Desconectar servo (ahorro de energía)",
         "sweep": "Barrido de servo",
@@ -1958,20 +1873,13 @@
       "init": "Inicializar anillo NeoPixel",
       "initTooltip": "Inicializar anillo NeoPixel",
       "pin": "Pin",
-      "numLeds": "Número de LEDs",
       "setColor": "LED",
       "setColorTooltip": "Establecer color de LED (0-255)",
       "index": "",
-      "r": "R",
-      "g": "G",
-      "b": "B",
-      "setAll": "Establecer todos los LEDs",
-      "setAllTooltip": "Establecer color para todos los LEDs",
       "show": "Actualizar NeoPixel",
       "showTooltip": "Aplicar configuración de color a los LED",
       "clear": "Borrar todos los NeoPixels",
       "clearTooltip": "Apagar todos los LEDs",
-      "range": "(0-255)",
       "rainbow": "Efecto arco iris",
       "rainbowTooltip": "Mostrar efecto arco iris",
       "speedNormal": "Normal",
@@ -1980,7 +1888,6 @@
       "colorRed": "Rojo",
       "colorOrange": "Naranja",
       "colorYellow": "Amarillo",
-      "colorYellowGreen": "Amarillo verdoso",
       "colorGreen": "Verde",
       "colorCyan": "Cian",
       "colorBlue": "Azul",
@@ -1988,9 +1895,6 @@
       "colorPink": "Rosa",
       "colorWhite": "Blanco",
       "colorOff": "Apagado",
-      "colorSimple": "Color de todos los LED",
-      "colorSimpleTooltip": "Establecer todos los LEDs al color especificado",
-      "lightSimple": "LED #",
       "allledcolor": "Color de todos los LED",
       "allledcolortooltip": "Establece todos los LED al color especificado",
       "colorlime": "Lima",
@@ -2107,13 +2011,10 @@
       "buildUrl": "Crear URL base",
       "buildUrlTooltip": "Agregar parámetros de consulta a una URL base",
       "param1Name": "Nombre de param 1",
-      "param1Value": "Valor",
       "baseurl": "Base",
       "value": "Valor"
     },
     "json": {
-      "parseSize": "Analizar JSON (con tamaño)",
-      "parseSizeTooltip": "Aumentar tamaño del búfer para analizar JSON grandes",
       "buffer": "Búfer",
       "bytes": "bytes",
       "getString": "Obtener cadena JSON",
@@ -2133,21 +2034,12 @@
       "typeInt": "Int",
       "typeBool": "Booleano",
       "hasKey": "JSON tiene clave",
-      "hasKeyExists": "existe",
       "hasKeyTooltip": "Comprobar si la clave existe en JSON",
       "arraySize": "Tamaño de matriz JSON",
       "arraySizeTooltip": "Obtener el tamaño de una matriz JSON",
-      "arrayGet": "Matriz JSON",
-      "arrayGetIndex": "en índice",
-      "arrayGetAs": "como",
       "arrayGetTooltip": "Obtener un elemento de una matriz JSON en el índice especificado",
-      "createObject": "Iniciar creación de JSON",
-      "createObjectTooltip": "Iniciar creación de un nuevo objeto JSON",
-      "setString": "Establecer JSON",
       "setStringTooltip": "Establecer un valor de cadena en JSON",
-      "setNumber": "Establecer JSON",
       "setNumberTooltip": "Establecer un valor numérico en JSON",
-      "setBool": "Establecer JSON",
       "setBoolTooltip": "Establecer un valor booleano en JSON",
       "toString": "JSON a cadena",
       "toStringTooltip": "Convertir el objeto JSON creado a una cadena",
@@ -2172,8 +2064,6 @@
     "mqtt": {
       "setup": "Configurar MQTT",
       "setupTooltip": "Configurar conexión WiFi y broker MQTT",
-      "wifiSsid": "SSID de WiFi",
-      "wifiPassword": "Contraseña WiFi",
       "broker": "Broker MQTT",
       "port": "Puerto",
       "clientId": "ID de cliente",
@@ -2181,38 +2071,22 @@
       "connectTooltip": "Conectar al broker MQTT (con o sin auth)",
       "username": "Nombre de usuario",
       "password": "Contraseña",
-      "noAuthHint": "(vacío si no hay autenticación)",
       "publish": "Tema de publicación MQTT",
-      "publishMessage": "Mensaje",
-      "publishRetain": "Retener",
       "publishTooltip": "Publicar un mensaje en el tema especificado",
       "subscribe": "Tema de suscripción MQTT",
       "subscribeTooltip": "Suscribirse al tema especificado (se admiten comodines # y +)",
       "onMessage": "MQTT al recibir mensaje",
-      "onMessageProcess": "Proceso",
       "onMessageTooltip": "Ejecutar cuando se recibe mensaje MQTT. Las variables mqtt_topic y mqtt_message están disponibles.",
       "loop": "Bucle MQTT",
       "loopTooltip": "Procesar comunicación MQTT. Llamar en loop().",
-      "topicValue": "Tema recibido",
-      "topicValueTooltip": "Obtener el nombre del tema del mensaje recibido",
-      "messageValue": "Mensaje recibido",
-      "messageValueTooltip": "Obtener el contenido del mensaje recibido",
       "isConnected": "MQTT está conectado",
       "isConnectedTooltip": "Comprobar si está conectado al broker MQTT",
       "disconnect": "Desconectar MQTT",
       "disconnectTooltip": "Desconectar del broker MQTT",
       "unsubscribe": "Cancelar suscripción MQTT",
       "unsubscribeTooltip": "Cancelar suscripción del tema especificado",
-      "setBufferSize": "Tamaño del búfer MQTT",
-      "setBufferSizeTooltip": "Establecer el tamaño máximo de mensaje MQTT (predeterminado 256 bytes)",
-      "setKeepalive": "Keepalive MQTT",
-      "setKeepaliveTooltip": "Establecer intervalo keepalive de MQTT (predeterminado 15 segundos)",
       "seconds": "segundos",
       "lastWill": "Última voluntad MQTT",
-      "lastWillTopic": "Tema",
-      "lastWillMessage": "Mensaje",
-      "lastWillRetain": "Retener",
-      "lastWillQos": "QoS",
       "lastWillTooltip": "Establecer el mensaje que el broker envía cuando el cliente se desconecta inesperadamente",
       "qos0": "0 (como máximo una vez)",
       "qos1": "1 (al menos una vez)",
@@ -2257,8 +2131,6 @@
       "setup": "Configurar OTA",
       "setupTooltip": "Habilitar actualizaciones de firmware por WiFi (OTA)",
       "hostname": "Nombre de host",
-      "otaPassword": "Contraseña OTA",
-      "noAuthHint": "(vacío si no hay autenticación)",
       "setupSimple": "Configurar OTA simple",
       "setupSimpleTooltip": "Habilitar OTA cuando ya esté conectado a WiFi (usar tras mqtt_setup o ha_device_init)",
       "loop": "Bucle OTA",
@@ -2275,7 +2147,6 @@
       "deepSleepTooltip": "Entrar en sueño profundo durante los segundos especificados (modo ahorro de energía)",
       "lightSleep": "Sueño ligero",
       "lightSleepTooltip": "Entrar en sueño ligero durante los segundos especificados (reanuda después)",
-      "seconds": "segundos",
       "getFreeHeap": "Memoria libre (bytes)",
       "getFreeHeapTooltip": "Obtener memoria heap libre en bytes",
       "getChipId": "ID de chip ESP",
@@ -2301,192 +2172,78 @@
       "deviceInitAuthTooltip": "Inicializa un dispositivo HA con autenticación MQTT. Manufacturer / Model / Software Version aparecen en la página HA Devices. Auto deviceId (MAC) evita colisiones entre varios ESP32. Availability (LWT) marca el dispositivo como Unavailable en HA UI al desconectarse.",
       "deviceName": "Nombre del dispositivo",
       "deviceId": "ID de dispositivo",
-      "mqttUser": "Usuario MQTT",
-      "mqttPassword": "Contraseña MQTT",
       "sensorCreate": "Crear sensor HA",
       "sensorCreateTooltip": "Crea un sensor para registrar en Home Assistant. Object ID = entity_id (ASCII snake_case). Display Name = etiqueta HA UI (cualquier idioma). Icon sobrescribe el icono de HA UI.",
       "sensorUpdate": "Actualizar sensor HA",
       "sensorUpdateTooltip": "Enviar valor de sensor a Home Assistant",
-      "name": "Nombre",
       "deviceClass": "Clase de dispositivo",
-      "unit": "Unidad",
-      "value": "Valor",
-      "temperature": "Temperatura",
-      "humidity": "Humedad",
-      "pressure": "Presión",
-      "illuminance": "Iluminación",
-      "voltage": "Voltaje",
-      "current": "Actual",
-      "power": "Potencia",
-      "energy": "Energía",
-      "battery": "Batería",
-      "co2": "CO2",
-      "pm25": "PM2.5",
-      "distance": "Distancia",
-      "none": "Ninguno",
       "binarySensorCreate": "Crear sensor binario HA",
       "binarySensorCreateTooltip": "Crea un sensor binario ON/OFF. Object ID = entity_id (ASCII snake_case). Display Name = etiqueta HA UI (cualquier idioma). Icon sobrescribe el icono de HA UI.",
       "binarySensorUpdate": "Actualizar sensor binario HA",
       "binarySensorUpdateTooltip": "Enviar estado de sensor binario a Home Assistant",
-      "state": "Estado",
-      "motion": "Movimiento",
-      "door": "Puerta",
-      "window": "Ventana",
-      "smoke": "Humo",
-      "moisture": "Humedad",
-      "vibration": "Vibración",
-      "occupancy": "Ocupación",
-      "gas": "Gas",
-      "problem": "Problema",
-      "connectivity": "Conectividad",
       "switchCreate": "Crear interruptor HA",
       "switchCreateTooltip": "Crea un interruptor controlable desde Home Assistant. Object ID = entity_id (ASCII snake_case). Display Name = etiqueta HA UI (cualquier idioma).",
-      "switchOnCommand": "HA al recibir comando de interruptor",
       "switchOnCommandTooltip": "Ejecutar cuando se recibe comando de interruptor desde Home Assistant",
-      "onWhen": "Al ENCENDER",
-      "offWhen": "Al APAGAR",
-      "switchSetState": "Establecer estado de interruptor HA",
       "switchSetStateTooltip": "Enviar estado de interruptor a Home Assistant",
-      "icon": "Icono",
-      "iconPower": "Encendido (mdi:power)",
-      "iconLightbulb": "Bombilla (mdi:lightbulb)",
-      "iconFan": "Ventilador (mdi:fan)",
-      "iconPowerPlug": "Enchufe (mdi:power-plug)",
-      "iconToggleSwitch": "Interruptor (mdi:toggle-switch)",
       "lightCreate": "Crear luz HA",
       "lightCreateTooltip": "Crea una luz controlable desde Home Assistant. Object ID = entity_id (ASCII snake_case). Display Name = etiqueta HA UI (cualquier idioma).",
-      "lightOnCommand": "HA al cambiar estado de luz",
       "lightOnCommandTooltip": "Ejecutar cuando se recibe comando de luz. ha_light_state y ha_light_brightness están disponibles.",
       "brightness": "Brillo",
-      "process": "Proceso",
       "lightState": "Estado de luz HA",
       "lightStateTooltip": "Obtener el estado ENCENDIDO/APAGADO de la luz recibido",
       "lightBrightness": "Brillo de luz HA",
       "lightBrightnessTooltip": "Obtener el brillo de luz recibido (0-255)",
-      "lightSetState": "Informar estado de luz HA",
       "lightSetStateTooltip": "Informar estado de luz a Home Assistant",
-      "onOff": "ENCENDIDO/APAGADO",
       "buttonCreate": "Crear botón HA",
       "buttonCreateTooltip": "Crea un botón pulsable desde Home Assistant. Object ID = entity_id (ASCII snake_case). Display Name = etiqueta HA UI (cualquier idioma).",
-      "buttonOnPress": "HA al pulsar botón",
       "buttonOnPressTooltip": "Ejecutar cuando se pulsa el botón desde Home Assistant",
-      "iconRestart": "Reiniciar (mdi:restart)",
-      "iconUpdate": "Actualizar (mdi:update)",
-      "iconPlay": "Reproducir (mdi:play)",
-      "iconStop": "Detener (mdi:stop)",
       "loop": "Bucle HA",
       "loopTooltip": "Mantener comunicación con Home Assistant y reconectar WiFi automáticamente cada 5 s si se desconecta. Llamar dentro de loop().",
       "isConnected": "HA está conectado",
       "isConnectedTooltip": "Comprobar si está conectado a Home Assistant",
       "numberCreate": "Crear número HA",
       "numberCreateTooltip": "Crea una entidad que acepta entrada numérica desde Home Assistant. Object ID = entity_id (ASCII snake_case). Display Name = etiqueta HA UI (cualquier idioma).",
-      "min": "Min",
-      "max": "Max",
-      "step": "Paso",
-      "mode": "Modo",
-      "modeAuto": "Deslizador (auto)",
-      "modeBox": "Caja",
-      "modeSlider": "Deslizador",
-      "numberOnCommand": "HA al cambiar número",
       "numberOnCommandTooltip": "Ejecutar cuando se cambia el número desde Home Assistant. ha_number_value está disponible.",
       "numberValue": "Número recibido de HA",
       "numberValueTooltip": "Obtener el número recibido",
-      "numberSetState": "Establecer número HA",
       "numberSetStateTooltip": "Informar estado numérico a Home Assistant",
       "fanCreate": "Crear ventilador HA",
       "fanCreateTooltip": "Crea un ventilador controlable desde Home Assistant. Object ID = entity_id (ASCII snake_case). Display Name = etiqueta HA UI (cualquier idioma).",
-      "fanOnCommand": "HA al cambiar estado de ventilador",
       "fanOnCommandTooltip": "Ejecutar cuando se recibe comando de ventilador. ha_fan_state y ha_fan_speed están disponibles.",
       "speedControl": "Control de velocidad",
       "fanState": "Estado de ventilador HA",
       "fanStateTooltip": "Obtener el estado ENCENDIDO/APAGADO del ventilador recibido",
       "fanSpeed": "Velocidad de ventilador HA",
       "fanSpeedTooltip": "Obtener la velocidad del ventilador recibida (0-100)",
-      "fanSetState": "Ventilador HA ENCENDIDO/APAGADO",
       "fanSetStateTooltip": "Informar estado de ventilador a Home Assistant",
       "speed": "Velocidad",
       "coverCreate": "Crear cubierta HA",
       "coverCreateTooltip": "Crea una cubierta (persiana, etc.) controlable desde Home Assistant. Object ID = entity_id (ASCII snake_case). Display Name = etiqueta HA UI (cualquier idioma).",
-      "coverOnCommand": "HA al recibir comando de cubierta",
       "coverOnCommandTooltip": "Ejecutar cuando se recibe comando de cubierta desde Home Assistant",
-      "openWhen": "Al abrir",
-      "closeWhen": "Al cerrar",
-      "stopWhen": "Al detener",
-      "coverSetState": "Establecer estado de cubierta HA",
       "coverSetStateTooltip": "Informar estado de cubierta a Home Assistant",
-      "shutter": "Persiana",
-      "blind": "Persiana",
-      "curtain": "Cortina",
-      "garage": "Garaje",
-      "gate": "Portón",
-      "stateOpen": "Abrir",
-      "stateClosed": "Cerrado",
-      "stateOpening": "Abriendo",
-      "stateClosing": "Cerrando",
-      "stateStopped": "Detenido",
       "lightCreateRgb": "Crear luz HA (RGB)",
       "lightCreateRgbTooltip": "Crea una luz con control de color RGB. Object ID = entity_id (ASCII snake_case). Display Name = etiqueta HA UI (cualquier idioma).",
-      "lightOnRgbCommand": "HA al cambiar RGB",
       "lightOnRgbCommandTooltip": "Ejecutar cuando se cambia color RGB desde Home Assistant. ha_light_r/g/b están disponibles.",
-      "lightRgbR": "Valor rojo RGB de HA",
-      "lightRgbRTooltip": "Obtener el componente rojo RGB recibido (0-255)",
-      "lightRgbG": "Valor verde RGB de HA",
-      "lightRgbGTooltip": "Obtener el componente verde RGB recibido (0-255)",
-      "lightRgbB": "Valor azul RGB de HA",
-      "lightRgbBTooltip": "Obtener el componente azul RGB recibido (0-255)",
-      "lightSetRgb": "Informar RGB de luz HA",
       "lightSetRgbTooltip": "Informar color RGB a Home Assistant",
       "triggerCreate": "Crear trigger HA",
       "triggerCreateTooltip": "Registrar un evento que pueda usarse como trigger de automatización en HA",
-      "triggerType": "Tipo",
-      "triggerSubtype": "Subtipo",
-      "triggerButton": "Botón",
-      "triggerRemote": "Remoto",
-      "triggerSensor": "Sensor",
       "triggerFire": "Disparar trigger HA",
       "triggerFireTooltip": "Disparar un trigger de automatización HA",
       "sceneCreate": "Crear escena HA",
       "sceneCreateTooltip": "Crea una escena ejecutable desde HA. Object ID = entity_id (ASCII snake_case). Display Name = etiqueta HA UI (cualquier idioma).",
-      "sceneOnCommand": "HA al ejecutar escena",
       "sceneOnCommandTooltip": "Ejecutar cuando se activa la escena desde Home Assistant",
       "tagScannerCreate": "Crear escáner de etiquetas HA",
       "tagScannerCreateTooltip": "Registra un escáner de etiquetas NFC, etc. Object ID = entity_id (ASCII snake_case). Display Name = etiqueta HA UI (cualquier idioma).",
-      "tagScannerScanned": "Escaneo de etiqueta HA",
-      "tagScannerScannedTooltip": "Informar ID de etiqueta escaneada a HA",
       "tagId": "ID de etiqueta",
       "reportInterval": "Intervalo de informe HA",
       "reportIntervalTooltip": "Ejecutar informes HA en los intervalos especificados (usar en loop)",
-      "secondsEvery": "segundos, ejecutar",
-      "execute": "Ejecutar",
       "manufacturer": "Fabricante",
-      "manufacturerTooltip": "Fabricante mostrado en la página HA Devices. HASerializer solo mantiene la referencia: usa un literal de cadena.",
       "model": "Modelo",
-      "modelTooltip": "Modelo mostrado en la página HA Devices.",
       "softwareVersion": "Versión de Software",
-      "softwareVersionTooltip": "Versión de software mostrada en la página HA Devices.",
       "autoUniqueId": "deviceId automático (MAC)",
-      "autoUniqueIdTooltip": "Si está ON, la MAC al arrancar se usa como deviceId — evita colisiones entre varios ESP32 o flotas del mismo modelo.",
       "availability": "Disponibilidad (LWT)",
-      "availabilityTooltip": "Si está ON, habilita MQTT LWT (Last Will) y shared availability — HA UI muestra Unavailable al desconectarse.",
       "objectId": "Object ID (entity_id)",
-      "objectIdTooltip": "entity_id interno de HA. Requiere ASCII snake_case — referenciado por Lovelace y automatizaciones.",
       "displayName": "Nombre Visible (HA UI)",
-      "displayNameTooltip": "Nombre mostrado en la HA UI. Cualquier idioma, manténlo breve. Distinto de Object ID.",
-      "iconThermometer": "Termómetro (mdi:thermometer)",
-      "iconWater": "Agua (mdi:water-percent)",
-      "iconGauge": "Indicador (mdi:gauge)",
-      "iconLightning": "Rayo (mdi:lightning-bolt)",
-      "iconBattery": "Batería (mdi:battery)",
-      "iconGasCylinder": "Gas (mdi:gas-cylinder)",
-      "iconBrightness": "Brillo (mdi:brightness-5)",
-      "iconMotionSensor": "Movimiento (mdi:motion-sensor)",
-      "iconDoorBin": "Puerta (mdi:door)",
-      "iconWaterAlert": "Fuga (mdi:water-alert)",
-      "iconSmokeDetector": "Humo (mdi:smoke-detector)",
-      "iconWindowOpen": "Ventana (mdi:window-open)",
-      "iconVibrate": "Vibración (mdi:vibrate)",
-      "iconAccount": "Ocupación (mdi:account)",
-      "iconWifi": "Conectividad (mdi:wifi)",
       "diagnosticsAuto": "🩺 Diagnóstico automático HA",
       "diagnosticsAutoTooltip": "Publica automáticamente RSSI / Tiempo activo / Memoria libre / Motivo de reinicio en Home Assistant en el intervalo especificado (por defecto 60 s). Funciona con un temporizador millis() independiente (separado de ha_report_interval). entity_category=diagnostic se aplica mediante la sobrescritura retain de ha_loop, por lo que las entidades aparecen en la sección Diagnóstico de la interfaz de HA. Colócalo dentro de arduino_setup; debe estar activado al menos un elemento.",
       "diagnosticReportInterval": "Intervalo de informe (s)",
@@ -2499,7 +2256,6 @@
       "onDisconnected": "HA Desconectado",
       "onDisconnectedTooltip": "Se activa cuando se pierde la conexión MQTT con el broker HA. Coloca un solo bloque por proyecto: HAMqtt solo guarda un callback, por lo que múltiples colocaciones se sobrescriben silenciosamente.",
       "viaDevice": "Dispositivo padre (via_device)",
-      "viaDeviceTooltip": "Define un nombre de dispositivo padre para agrupar varios módulos ESP32 bajo un mismo dispositivo HA (decisión 3 de Takeda — escenarios de mecanismos múltiples). Déjalo en blanco para registrar como dispositivo de nivel superior — totalmente compatible con proyectos existentes. ArduinoHA no expone setViaDevice, así que ha_loop sobrescribe el payload retenido de MQTT Discovery para inyectar via_device (cambiar a la API oficial es una tarea de pulido tras el merge del PR upstream).",
       "otaSetup": "🔄 Configuración OTA de Home Assistant",
       "otaFirmwareUrl": "URL del firmware (.bin)",
       "otaSetupTooltip": "Registra una entidad Update de Home Assistant para que el ESP32 obtenga el nuevo firmware por sí mismo cuando pulses Instalar en HA. Object ID es el entity_id de HA (ASCII), Display Name es la etiqueta en la UI de HA, Firmware URL es la ruta del .bin alcanzable desde el ESP32 (HA add-on local/<archivo>.bin o cualquier servidor HTTP). Coloca dentro de arduino_setup, después de ha_device_init. La versión de software se comparte con el campo de ha_device_init. Flujo: compila en DigiCode → pulsa Descargar .bin en el diálogo de compilación → sube el .bin a esa URL → pulsa Instalar en la UI de HA. La distribución automática y la verificación de firmas son tareas de pulido futuras.",
@@ -2602,7 +2358,6 @@
       "steps": "pasos",
       "times": "veces",
       "speed": "velocidad",
-      "direction": "dirección",
       "speedNormal": "normal",
       "speedFast": "rápido",
       "speedSlow": "lento",
@@ -2610,14 +2365,10 @@
       "backward": "atrás",
       "left": "izquierda",
       "right": "derecha",
-      "leftFoot": "pie izquierdo",
-      "rightFoot": "pie derecho",
       "leftLeg": "pin de la pierna izquierda",
       "rightLeg": "pin de la pierna derecha",
       "leftAnkle": "pin del tobillo izquierdo",
-      "rightAnkle": "pin del tobillo derecho",
-      "front": "frente",
-      "back": "atrás"
+      "rightAnkle": "pin del tobillo derecho"
     },
     "humanoid": {
       "init": {
@@ -2745,408 +2496,6 @@
         "tooltip": "Baile"
       }
     },
-    "micropython": {
-      "common": {
-        "frequency": "Frecuencia",
-        "baudRate": "Velocidad en baudios",
-        "bytes": "Bytes",
-        "milliseconds": "milisegundos",
-        "seconds": "segundos",
-        "high": "HIGH",
-        "low": "LOW",
-        "pullUp": "Pull Up",
-        "pullDown": "Pull Down",
-        "none": "Ninguno",
-        "scl": "SCL",
-        "sda": "SDA",
-        "tx": "TX",
-        "rx": "RX",
-        "pin": "Pin",
-        "raw": "Raw(0-4095)",
-        "voltage": "Voltaje(0-3.3V)",
-        "percent": "Porcentaje(0-100)",
-        "angle": "Ángulo(0-270)"
-      },
-      "machine": {
-        "pinOutput": {
-          "label": "Pin salida",
-          "tooltip": "Establecer salida digital"
-        },
-        "pinInput": {
-          "label": "Pin entrada",
-          "tooltip": "Leer entrada digital"
-        },
-        "pinToggle": {
-          "label": "Alternar pin",
-          "tooltip": "Alternar salida de pin"
-        },
-        "pwmInit": {
-          "label": "Iniciar PWM",
-          "tooltip": "Inicializar PWM"
-        },
-        "pwmDuty": {
-          "label": "PWM",
-          "duty": "Duty",
-          "modePercent": "% (0-100)",
-          "modeRaw": "Valor(0-1023)",
-          "tooltip": "Establecer ciclo de trabajo PWM"
-        },
-        "adcRead": {
-          "label": "Lectura ADC",
-          "modeRaw": "Raw(0-4095)",
-          "modeVoltage": "Voltaje(0-3.3V)",
-          "modePercent": "Porcentaje(0-100)",
-          "tooltip": "Leer valor analógico"
-        },
-        "i2cInit": {
-          "label": "Iniciar I2C",
-          "freq100k": "100 kHz",
-          "freq400k": "400 kHz",
-          "tooltip": "Inicializar bus I2C"
-        },
-        "i2cScan": {
-          "label": "Escanear I2C",
-          "tooltip": "Escanear dispositivos en bus I2C"
-        },
-        "uartInit": {
-          "label": "Iniciar UART",
-          "tooltip": "Inicializar UART"
-        },
-        "uartWrite": {
-          "label": "Escribir UART",
-          "tooltip": "Enviar datos por UART"
-        },
-        "uartRead": {
-          "label": "Leer UART",
-          "tooltip": "Recibir datos de UART"
-        },
-        "sleepMs": {
-          "label": "Esperar",
-          "tooltip": "Esperar los milisegundos especificados"
-        },
-        "sleep": {
-          "label": "Esperar",
-          "tooltip": "Esperar los segundos especificados"
-        },
-        "ticksMs": {
-          "label": "Tiempo transcurrido(ms)",
-          "tooltip": "Obtener tiempo transcurrido en milisegundos desde el arranque"
-        }
-      },
-      "list": {
-        "createEmpty": {
-          "label": "Crear lista vacía",
-          "tooltip": "Crear una lista vacía"
-        },
-        "createWith": {
-          "label": "Crear lista",
-          "elements": "Elementos",
-          "tooltip": "Crear una lista con elementos"
-        },
-        "append": {
-          "label": "Lista",
-          "to": "añadir",
-          "tooltip": "Agregar elemento al final de la lista"
-        },
-        "insert": {
-          "label": "Lista",
-          "atIndex": "en índice",
-          "insert": "insertar",
-          "tooltip": "Insertar elemento en la posición especificada de la lista"
-        },
-        "removeIndex": {
-          "label": "Lista",
-          "atIndex": "en índice",
-          "remove": "eliminar",
-          "tooltip": "Eliminar elemento en la posición especificada de la lista"
-        },
-        "removeValue": {
-          "label": "Lista",
-          "from": "eliminar valor",
-          "remove": "de lista",
-          "tooltip": "Eliminar el valor especificado de la lista"
-        },
-        "get": {
-          "label": "Lista",
-          "tooltip": "Obtener elemento en la posición especificada de la lista"
-        },
-        "set": {
-          "label": "Lista",
-          "tooltip": "Establecer valor en la posición especificada de la lista"
-        },
-        "length": {
-          "label": "Lista",
-          "lengthOf": "longitud de",
-          "tooltip": "Devolver el número de elementos de la lista"
-        },
-        "contains": {
-          "label": "Lista",
-          "in": "contiene",
-          "contains": "?",
-          "tooltip": "Comprobar si la lista contiene el valor"
-        },
-        "index": {
-          "label": "Lista",
-          "of": "índice de",
-          "position": "en lista",
-          "tooltip": "Devolver la posición del valor en la lista (-1 si no se encuentra)"
-        },
-        "clear": {
-          "label": "Lista",
-          "clear": "limpiar",
-          "tooltip": "Eliminar todos los elementos de la lista"
-        },
-        "reverse": {
-          "label": "Lista",
-          "reverse": "invertir",
-          "tooltip": "Invertir orden de la lista"
-        },
-        "sort": {
-          "label": "Lista",
-          "sort": "ordenar",
-          "ascending": "Ascendente",
-          "descending": "Descendente",
-          "tooltip": "Ordenar lista"
-        }
-      },
-      "sensor": {
-        "ultrasonicInit": {
-          "label": "Iniciar sensor ultrasónico",
-          "trig": "Trig",
-          "echo": "Echo",
-          "tooltip": "Inicializar sensor ultrasónico HC-SR04"
-        },
-        "ultrasonicDistance": {
-          "label": "Distancia ultrasónica",
-          "cm": "cm",
-          "tooltip": "Obtener medición de distancia del sensor ultrasónico"
-        },
-        "dhtInit": {
-          "label": "Iniciar sensor DHT",
-          "type": "Tipo",
-          "dht11": "DHT11",
-          "dht22": "DHT22",
-          "tooltip": "Inicializar sensor de temperatura/humedad DHT",
-          "pin": "Pin"
-        },
-        "dhtTemperature": {
-          "label": "Temperatura DHT",
-          "celsius": "°C",
-          "tooltip": "Obtener temperatura del sensor DHT"
-        },
-        "dhtHumidity": {
-          "label": "Humedad DHT",
-          "percent": "%",
-          "tooltip": "Obtener humedad del sensor DHT"
-        },
-        "digitalSensor": {
-          "label": "Sensor digital",
-          "state": "",
-          "tooltip": "Leer estado de sensor digital (0 o 1)"
-        },
-        "buttonSensor": {
-          "label": "Botón",
-          "state": "es",
-          "pressed": "pulsado",
-          "released": "liberado",
-          "tooltip": "Comprobar estado de botón (usando resistencia pull-up)"
-        },
-        "pirSensor": {
-          "label": "Sensor de movimiento PIR",
-          "state": "¿movimiento detectado?",
-          "tooltip": "Detectar movimiento usando sensor PIR"
-        },
-        "analogSensor": {
-          "label": "Sensor analógico",
-          "value": "valor",
-          "tooltip": "Leer valor de sensor analógico (0-4095)"
-        },
-        "ldrSensor": {
-          "label": "Sensor de luz LDR",
-          "brightness": "brillo",
-          "tooltip": "Medir brillo usando LDR (resistencia dependiente de la luz)"
-        },
-        "soilSensor": {
-          "label": "Sensor de humedad del suelo",
-          "moisture": "humedad",
-          "tooltip": "Medir nivel de humedad del suelo"
-        },
-        "potentiometer": {
-          "label": "Potenciómetro",
-          "value": "valor",
-          "tooltip": "Leer valor de potenciómetro (0-4095)",
-          "angle": "Ángulo (0-270)"
-        }
-      },
-      "transform": {
-        "init": {
-          "label": "Transform Init",
-          "leftLeg": "Left Leg",
-          "rightLeg": "Right Leg",
-          "leftFoot": "Left Foot",
-          "rightFoot": "Right Foot",
-          "tooltip": "Initialize Transform robot (walk/roll transformation)"
-        },
-        "mode": {
-          "label": "Ninja Mode",
-          "walkMode": "Walk Mode",
-          "rollMode": "Roll Mode",
-          "tooltip": "Switch Ninja operation mode"
-        },
-        "transform": {
-          "label": "Ninja Transform",
-          "walkForm": "Walk Form",
-          "rollForm": "Roll Form",
-          "tooltip": "Transform Ninja"
-        },
-        "align": {
-          "label": "Ninja Align (90°)",
-          "tooltip": "Set all servos to 90 degrees (for calibration)"
-        },
-        "home": {
-          "label": "Ninja Home",
-          "tooltip": "Return to home position"
-        },
-        "walk": {
-          "label": "Ninja Walk",
-          "steps": "steps",
-          "forward": "Adelante",
-          "backward": "Backward",
-          "tooltip": "Walk in walk mode"
-        },
-        "turn": {
-          "label": "Ninja Turn",
-          "times": "times",
-          "left": "Left",
-          "right": "Right",
-          "tooltip": "Turn in walk mode"
-        },
-        "trot": {
-          "label": "Ninja Trot",
-          "steps": "steps",
-          "tooltip": "Trot gait (diagonal walk)"
-        },
-        "stop": {
-          "label": "Ninja Stop",
-          "tooltip": "Stop and return to home position"
-        },
-        "roll": {
-          "label": "Ninja Roll",
-          "speed": "Velocidad",
-          "verySlow": "Very Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "fastest": "Fastest",
-          "forward": "Adelante",
-          "backward": "Backward",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Move in roll mode"
-        },
-        "rollRotate": {
-          "label": "Ninja Roll Rotate",
-          "speed": "Velocidad",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "left": "Left",
-          "right": "Right",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Rotate in roll mode"
-        },
-        "pushup": {
-          "label": "Ninja Pushup",
-          "times": "times",
-          "tooltip": "Perform pushup-like motion"
-        },
-        "dance": {
-          "label": "Ninja Dance",
-          "times": "times",
-          "tooltip": "Make Ninja dance"
-        }
-      },
-      "wheelRobot": {
-        "init": {
-          "label": "Wheel Init",
-          "leftWheel": "Left Wheel",
-          "rightWheel": "Right Wheel",
-          "tooltip": "Initialize Wheel robot (continuous rotation servo)"
-        },
-        "forward": {
-          "label": "Adelante",
-          "speed": "Velocidad",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "fastest": "Fastest",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Move forward"
-        },
-        "backward": {
-          "label": "Backward",
-          "speed": "Velocidad",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "fastest": "Fastest",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Move backward"
-        },
-        "turnLeft": {
-          "label": "Turn Left",
-          "speed": "Velocidad",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Turn left"
-        },
-        "turnRight": {
-          "label": "Turn Right",
-          "speed": "Velocidad",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Turn right"
-        },
-        "spinLeft": {
-          "label": "Spin Left",
-          "speed": "Velocidad",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Spin left in place"
-        },
-        "spinRight": {
-          "label": "Spin Right",
-          "speed": "Velocidad",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Spin right in place"
-        },
-        "stop": {
-          "label": "Detener",
-          "tooltip": "Detener"
-        },
-        "motors": {
-          "label": "Motor Control",
-          "left": "Left",
-          "right": "Right",
-          "tooltip": "Set left and right motor speeds directly (-100 to 100)"
-        }
-      }
-    },
     "a4988": {
       "dir": "DIR",
       "en": "EN",
@@ -3161,7 +2510,6 @@
       "step_tooltip": "Ejecuta el A4988 con el número de pasos especificado (factor de micropaso incluido). Bloquea hasta completar mediante runToNewPosition."
     },
     "array": {
-      "_value": "Array",
       "1d": "1D",
       "2d": "2D",
       "3d": "3D",
@@ -3176,8 +2524,7 @@
       "itemcount": "Elementos",
       "settooltip": "Establece el valor en la posición especificada del arreglo.",
       "size": "Tamaño",
-      "sizetooltip": "Obtiene el número de elementos del arreglo.",
-      "label": "Arreglo"
+      "sizetooltip": "Obtiene el número de elementos del arreglo."
     },
     "azure": {
       "iot_device_id": "ID del dispositivo",
@@ -3397,9 +2744,7 @@
     "step": "Paso",
     "type": "Tipo",
     "unit": {
-      "_value": "Unit",
-      "seconds": "segundos",
-      "label": "Unidad"
+      "seconds": "segundos"
     },
     "value": "Valor",
     "acs712": {

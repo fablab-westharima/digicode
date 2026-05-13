@@ -1049,10 +1049,6 @@
     "next": "下一步"
   },
   "blocks": {
-    "basic": "基本",
-    "logic": "邏輯",
-    "loops": "迴圈",
-    "math": "數學",
     "i2c": {
       "scan": "🔍 I2C 掃描",
       "scanTooltip": "掃描已連接的 I2C 裝置並在序列埠輸出位址",
@@ -1124,7 +1120,6 @@
       "receiverDecode": "IR 接收碼",
       "receiverDecodeTooltip": "以十六進位字串讀取接收到的IR碼。無訊號時回傳\"0\"。請放在loop區塊中並與已知碼比較。",
       "senderInit": "IR 發射器初始化",
-      "senderInitTooltip": "在指定腳位初始化IR發射LED。請在setup區塊中呼叫。",
       "send": "IR 發送",
       "code": "碼（十六進位）",
       "sendTooltip": "以指定協定和碼發送IR訊號。使用ir_receiver_decode取得的碼。",
@@ -1155,8 +1150,6 @@
     "rfid": {
       "initM5": "RFID 初始化（M5Stack）",
       "initM5Tooltip": "透過I2C初始化M5Stack RFID 2 Unit（WS1850S）。位址0x28，不需CS/RST。此裝置已取得日本技適認證。",
-      "initGeneric": "⚠️ RFID 初始化（通用）",
-      "initGenericTooltip": "⚠️ 透過SPI初始化通用MFRC522。\n\n注意：在日本，發射13.56MHz無線電波的裝置需要技適認證。在日本使用未認證的MFRC522模組可能違反電波法。在日本請使用rfid_init_m5stack。\n\n在日本以外地區使用時，請遵守當地的無線電規定。",
       "isPresent": "RFID 卡片偵測?",
       "isPresentTooltip": "偵測到RFID卡片/標籤時回傳true。請放在loop區塊中持續偵測。",
       "readUid": "RFID 讀取UID",
@@ -1218,23 +1211,6 @@
       "readUntilTooltip": "從Serial2讀取直到終止字元。回傳接收到的字串。",
       "available": "Serial2 可用位元組",
       "availableTooltip": "回傳Serial2接收緩衝區中可讀取的位元組數。"
-    },
-    "dfplayer": {
-      "init": "DFPlayer 初始化",
-      "rx": "RX腳位",
-      "tx": "TX腳位",
-      "initTooltip": "透過SoftwareSerial初始化DFPlayer Mini。DFPlayer TX→ESP32 RX，DFPlayer RX（加1kΩ電阻）→ESP32 TX。",
-      "play": "DFPlayer 播放",
-      "track": "曲目",
-      "playTooltip": "播放SD卡中指定曲目（1-999）的MP3檔案。",
-      "pause": "DFPlayer 暫停",
-      "pauseTooltip": "暫停目前播放。",
-      "resume": "DFPlayer 繼續",
-      "resumeTooltip": "繼續暫停的播放。",
-      "stop": "DFPlayer 停止",
-      "stopTooltip": "停止播放。",
-      "volume": "DFPlayer 音量",
-      "volumeTooltip": "設定音量（0=靜音，30=最大）。"
     },
     "lcd": {
       "init": "LCD 初始化",
@@ -1314,7 +1290,6 @@
       "divider": "分壓比",
       "voltageTooltip": "透過分壓電阻由ADC量測電池電壓。設定分壓比（等值電阻為2.0）。以V為單位回傳。",
       "percentage": "電池電量 (%)",
-      "voltageInput": "電壓 (V)",
       "minV": "最小V",
       "maxV": "最大V",
       "percentageTooltip": "將電池電壓換算為電量百分比（0-100%）。依電池類型設定最小/最大電壓（鋰離子：3.0-4.2V）。",
@@ -1493,55 +1468,7 @@
     "math_mapfrom": "從",
     "math_mapto": "到",
     "math_maptooltip": "將數值從一個範圍映射到另一個範圍（Arduino map 函數）",
-    "text": "文字",
-    "variables": "變數",
-    "functions": "函式",
-    "io": "I/O",
-    "motor": "馬達",
-    "servo": "伺服馬達",
     "sensor": {
-      "ultrasonic": {
-        "init": "📏 HC-SR04 初始化",
-        "trigPin": "Trig腳位",
-        "echoPin": "Echo腳位",
-        "distance": "📏 超音波距離(cm)",
-        "initTooltip": "初始化 HC-SR04 超音波感測器",
-        "distanceTooltip": "使用 HC-SR04 測量距離（需要初始化）"
-      },
-      "dht": {
-        "init": "🌡️ DHT 初始化",
-        "pin": "腳位",
-        "temperature": "🌡️ DHT 溫度 (°C)",
-        "humidity": "💧 DHT 濕度 (%)",
-        "initTooltip": "初始化 DHT11/DHT22 溫濕度感測器",
-        "temperatureTooltip": "讀取 DHT 攝氏溫度",
-        "humidityTooltip": "讀取 DHT 濕度百分比"
-      },
-      "rus04": {
-        "init": "👀 RUS-04 初始化",
-        "rgbPin": "RGB腳位",
-        "numLeds": "LED數量",
-        "distance": "📏 RUS-04 距離(cm)",
-        "rgbBoth": "🌈 RUS-04 RGB 雙眼",
-        "off": "⬛ RUS-04 RGB 關閉",
-        "left": "左",
-        "right": "右",
-        "initTooltip": "初始化 RUS-04 超音波感測器（內建RGB）",
-        "distanceTooltip": "使用 RUS-04 測量距離（需要初始化）",
-        "rgbTooltip": "分別設置 RUS-04 左右眼 RGB LED 顏色",
-        "offTooltip": "關閉雙眼",
-        "bothSimpleTooltip": "透過下拉選單設置雙眼顏色"
-      },
-      "color": {
-        "red": "紅",
-        "green": "綠",
-        "blue": "藍",
-        "yellow": "黃",
-        "purple": "紫",
-        "cyan": "青",
-        "white": "白",
-        "off": "關閉"
-      },
       "analogread_label": "類比讀取腳位",
       "analogread_tooltip": "讀取類比腳位的值 (0-4095)",
       "button_label": "按鈕腳位",
@@ -1771,13 +1698,9 @@
       "oledInitTooltip": "初始化 I2C OLED 顯示器 (SSD1306)",
       "width": "寬度",
       "height": "高度",
-      "sda": "SDA:",
-      "scl": "SCL:",
       "oledText": "OLED 文字",
       "oledTextTooltip": "在 OLED 上顯示文字",
       "text": "文字",
-      "x": "X:",
-      "y": "Y:",
       "size": "大小",
       "sizeSmall": "小",
       "sizeMedium": "中",
@@ -1785,11 +1708,7 @@
       "oledClear": "清除 OLED",
       "oledClearTooltip": "清除 OLED 顯示",
       "oledShow": "更新 OLED",
-      "oledShowTooltip": "更新 OLED 顯示",
-      "startY": "Y:",
-      "endY": "Y:",
-      "widthLabel": "寬度:",
-      "heightLabel": "高度:"
+      "oledShowTooltip": "更新 OLED 顯示"
     },
     "audio": {
       "buzzerTone": "蜂鳴器音調",
@@ -1815,8 +1734,6 @@
       "error": "錯誤",
       "complete": "完成"
     },
-    "communication": "通訊",
-    "robot": "機器人",
     "arduino": {
       "setup": {
         "label": "設定",
@@ -1943,8 +1860,6 @@
         "angle": "角度",
         "write": "伺服角度",
         "writeTooltip": "將伺服移動到指定角度 (0-180°)",
-        "writeValue": "伺服角度",
-        "writeValueTooltip": "將伺服移動到變數指定的角度",
         "detach": "斷開伺服",
         "detachTooltip": "斷開伺服（節能）",
         "sweep": "伺服掃掠",
@@ -1958,20 +1873,13 @@
       "init": "初始化 NeoPixel 環",
       "initTooltip": "初始化 NeoPixel 環",
       "pin": "腳位",
-      "numLeds": "LED 數量",
       "setColor": "LED",
       "setColorTooltip": "設定 LED 顏色 (0-255)",
       "index": "",
-      "r": "R",
-      "g": "G",
-      "b": "B",
-      "setAll": "設定所有 LED",
-      "setAllTooltip": "為所有 LED 設定顏色",
       "show": "更新 NeoPixel",
       "showTooltip": "將色彩設定套用到 LED",
       "clear": "清除所有 NeoPixel",
       "clearTooltip": "關閉所有 LED",
-      "range": "(0-255)",
       "rainbow": "彩虹效果",
       "rainbowTooltip": "顯示彩虹效果",
       "speedNormal": "正常",
@@ -1980,7 +1888,6 @@
       "colorRed": "紅色",
       "colorOrange": "橙色",
       "colorYellow": "黃色",
-      "colorYellowGreen": "黃綠色",
       "colorGreen": "綠色",
       "colorCyan": "青色",
       "colorBlue": "藍色",
@@ -1988,9 +1895,6 @@
       "colorPink": "粉紅色",
       "colorWhite": "白色",
       "colorOff": "關閉",
-      "colorSimple": "所有 LED 顏色",
-      "colorSimpleTooltip": "將所有 LED 設為指定顏色",
-      "lightSimple": "LED #",
       "allledcolor": "所有 LED 顏色",
       "allledcolortooltip": "將所有 LED 設為指定顏色",
       "colorlime": "萊姆綠",
@@ -2107,13 +2011,10 @@
       "buildUrl": "建立 URL 基底",
       "buildUrlTooltip": "將查詢參數新增到基本 URL",
       "param1Name": "參數 1 名稱",
-      "param1Value": "值",
       "baseurl": "基底",
       "value": "值"
     },
     "json": {
-      "parseSize": "JSON 解析 (含大小)",
-      "parseSizeTooltip": "增加緩衝區大小以解析大型 JSON",
       "buffer": "緩衝區",
       "bytes": "位元組",
       "getString": "JSON 取得字串",
@@ -2133,21 +2034,12 @@
       "typeInt": "整數",
       "typeBool": "布林值",
       "hasKey": "JSON 包含鍵",
-      "hasKeyExists": "存在",
       "hasKeyTooltip": "檢查該鍵是否存在於 JSON 中",
       "arraySize": "JSON 陣列大小",
       "arraySizeTooltip": "取得 JSON 陣列的大小",
-      "arrayGet": "JSON 陣列",
-      "arrayGetIndex": "於索引",
-      "arrayGetAs": "作為",
       "arrayGetTooltip": "從 JSON 陣列取得指定索引的元素",
-      "createObject": "開始建立 JSON",
-      "createObjectTooltip": "開始建立新的 JSON 物件",
-      "setString": "JSON 設定",
       "setStringTooltip": "在 JSON 設定字串值",
-      "setNumber": "JSON 設定",
       "setNumberTooltip": "在 JSON 設定數值",
-      "setBool": "JSON 設定",
       "setBoolTooltip": "在 JSON 設定布林值",
       "toString": "JSON 轉字串",
       "toStringTooltip": "將建立的 JSON 物件轉為字串",
@@ -2172,8 +2064,6 @@
     "mqtt": {
       "setup": "MQTT 設定",
       "setupTooltip": "設定 WiFi 和 MQTT broker 連線",
-      "wifiSsid": "WiFi SSID",
-      "wifiPassword": "WiFi 密碼",
       "broker": "MQTT 代理",
       "port": "連接埠",
       "clientId": "用戶端 ID",
@@ -2181,38 +2071,22 @@
       "connectTooltip": "連接 MQTT broker（有無認證皆可）",
       "username": "使用者名稱",
       "password": "密碼",
-      "noAuthHint": "(無認證則空白)",
       "publish": "MQTT 發布主題",
-      "publishMessage": "訊息",
-      "publishRetain": "保留",
       "publishTooltip": "將訊息發布到指定主題",
       "subscribe": "MQTT 訂閱主題",
       "subscribeTooltip": "訂閱指定的主題（支援萬用字元 # 和 +）",
       "onMessage": "MQTT 收到訊息時",
-      "onMessageProcess": "處理",
       "onMessageTooltip": "收到 MQTT 訊息時執行。可用變數 mqtt_topic 和 mqtt_message。",
       "loop": "MQTT 迴圈",
       "loopTooltip": "處理 MQTT 通訊。在 loop() 中呼叫。",
-      "topicValue": "收到的主題",
-      "topicValueTooltip": "取得收到訊息的主題名稱",
-      "messageValue": "收到的訊息",
-      "messageValueTooltip": "取得收到的訊息內容",
       "isConnected": "MQTT 已連接",
       "isConnectedTooltip": "檢查是否已連接 MQTT broker",
       "disconnect": "MQTT 斷線",
       "disconnectTooltip": "從 MQTT broker 中斷連接",
       "unsubscribe": "MQTT 取消訂閱主題",
       "unsubscribeTooltip": "取消訂閱指定主題",
-      "setBufferSize": "MQTT 緩衝區大小",
-      "setBufferSizeTooltip": "設定 MQTT 訊息最大大小（預設 256 bytes）",
-      "setKeepalive": "MQTT Keepalive",
-      "setKeepaliveTooltip": "設定 MQTT keepalive 間隔（預設 15 秒）",
       "seconds": "秒",
       "lastWill": "MQTT 遺囑訊息",
-      "lastWillTopic": "主題",
-      "lastWillMessage": "訊息",
-      "lastWillRetain": "保留",
-      "lastWillQos": "QoS",
       "lastWillTooltip": "設定當用戶端意外斷線時 broker 傳送的訊息",
       "qos0": "0 (最多一次)",
       "qos1": "1 (至少一次)",
@@ -2257,8 +2131,6 @@
       "setup": "OTA 設定",
       "setupTooltip": "啟用透過 WiFi 的韌體更新 (OTA)",
       "hostname": "主機名稱",
-      "otaPassword": "OTA 密碼",
-      "noAuthHint": "(無認證則空白)",
       "setupSimple": "簡易 OTA 設定",
       "setupSimpleTooltip": "在已連接 WiFi 時啟用 OTA（在 mqtt_setup 或 ha_device_init 之後使用）",
       "loop": "OTA 迴圈",
@@ -2275,7 +2147,6 @@
       "deepSleepTooltip": "進入指定秒數的深度睡眠（省電模式）",
       "lightSleep": "輕度睡眠",
       "lightSleepTooltip": "進入指定秒數的輕度睡眠（之後恢復）",
-      "seconds": "秒",
       "getFreeHeap": "可用記憶體 (bytes)",
       "getFreeHeapTooltip": "取得可用 heap 記憶體 (bytes)",
       "getChipId": "ESP 晶片 ID",
@@ -2301,192 +2172,78 @@
       "deviceInitAuthTooltip": "使用 MQTT 認證初始化 HA 裝置。Manufacturer / Model / Software Version 會顯示在 HA Devices 頁。Auto deviceId (MAC) 可避免多個 ESP32 的衝突。Availability (LWT) 在斷線時於 HA UI 顯示 Unavailable。",
       "deviceName": "裝置名稱",
       "deviceId": "裝置 ID",
-      "mqttUser": "MQTT 使用者",
-      "mqttPassword": "MQTT 密碼",
       "sensorCreate": "建立 HA 感測器",
       "sensorCreateTooltip": "建立要註冊到 Home Assistant 的感測器。Object ID = entity_id (ASCII snake_case)。Display Name = HA UI 顯示名稱(任何語言)。Icon 可覆寫 HA UI 圖示。",
       "sensorUpdate": "更新 HA 感測器",
       "sensorUpdateTooltip": "向 Home Assistant 傳送感測器值",
-      "name": "名稱",
       "deviceClass": "裝置類別",
-      "unit": "單位",
-      "value": "值",
-      "temperature": "溫度",
-      "humidity": "濕度",
-      "pressure": "壓力",
-      "illuminance": "照度",
-      "voltage": "電壓",
-      "current": "目前",
-      "power": "電源",
-      "energy": "能量",
-      "battery": "電池",
-      "co2": "CO2",
-      "pm25": "PM2.5",
-      "distance": "距離",
-      "none": "無",
       "binarySensorCreate": "建立 HA 二元感測器",
       "binarySensorCreateTooltip": "建立 ON/OFF 二元感測器。Object ID = entity_id (ASCII snake_case)。Display Name = HA UI 顯示名稱。Icon 可覆寫 HA UI 圖示。",
       "binarySensorUpdate": "更新 HA 二元感測器",
       "binarySensorUpdateTooltip": "向 Home Assistant 傳送二元感測器狀態",
-      "state": "狀態",
-      "motion": "動作",
-      "door": "門",
-      "window": "窗戶",
-      "smoke": "煙霧",
-      "moisture": "濕度",
-      "vibration": "震動",
-      "occupancy": "佔用",
-      "gas": "氣體",
-      "problem": "問題",
-      "connectivity": "連線",
       "switchCreate": "建立 HA 開關",
       "switchCreateTooltip": "建立可由 Home Assistant 控制的開關。Object ID = entity_id (ASCII snake_case)。Display Name = HA UI 顯示名稱。",
-      "switchOnCommand": "HA 開關指令時",
       "switchOnCommandTooltip": "收到來自 Home Assistant 的開關指令時執行",
-      "onWhen": "開啟時",
-      "offWhen": "關閉時",
-      "switchSetState": "HA 開關設定狀態",
       "switchSetStateTooltip": "向 Home Assistant 傳送開關狀態",
-      "icon": "圖示",
-      "iconPower": "電源 (mdi:power)",
-      "iconLightbulb": "燈泡 (mdi:lightbulb)",
-      "iconFan": "風扇 (mdi:fan)",
-      "iconPowerPlug": "插頭 (mdi:power-plug)",
-      "iconToggleSwitch": "開關 (mdi:toggle-switch)",
       "lightCreate": "建立 HA 燈光",
       "lightCreateTooltip": "建立可由 Home Assistant 控制的燈。Object ID = entity_id (ASCII snake_case)。Display Name = HA UI 顯示名稱。",
-      "lightOnCommand": "HA 燈光狀態變更時",
       "lightOnCommandTooltip": "收到燈光指令時執行。可用 ha_light_state 和 ha_light_brightness。",
       "brightness": "亮度",
-      "process": "處理",
       "lightState": "HA 燈光狀態",
       "lightStateTooltip": "取得收到的燈光 ON/OFF 狀態",
       "lightBrightness": "HA 燈光亮度",
       "lightBrightnessTooltip": "取得收到的燈光亮度 (0-255)",
-      "lightSetState": "HA 回報燈光狀態",
       "lightSetStateTooltip": "向 Home Assistant 回報燈光狀態",
-      "onOff": "開啟/關閉",
       "buttonCreate": "建立 HA 按鈕",
       "buttonCreateTooltip": "建立可由 Home Assistant 按下的按鈕。Object ID = entity_id (ASCII snake_case)。Display Name = HA UI 顯示名稱。",
-      "buttonOnPress": "按下 HA 按鈕時",
       "buttonOnPressTooltip": "當從 Home Assistant 按下按鈕時執行",
-      "iconRestart": "重新啟動 (mdi:restart)",
-      "iconUpdate": "更新 (mdi:update)",
-      "iconPlay": "播放 (mdi:play)",
-      "iconStop": "停止 (mdi:stop)",
       "loop": "HA 迴圈",
       "loopTooltip": "維持與 Home Assistant 的通訊，並在 WiFi 中斷時每 5 秒嘗試自動重連。請在 loop() 中呼叫。",
       "isConnected": "HA 已連接",
       "isConnectedTooltip": "檢查是否已連接 Home Assistant",
       "numberCreate": "建立 HA 數字",
       "numberCreateTooltip": "建立可接收 Home Assistant 數值輸入的實體。Object ID = entity_id (ASCII snake_case)。Display Name = HA UI 顯示名稱。",
-      "min": "Min",
-      "max": "Max",
-      "step": "步進",
-      "mode": "模式",
-      "modeAuto": "滑桿 (自動)",
-      "modeBox": "方框",
-      "modeSlider": "滑桿",
-      "numberOnCommand": "HA 數字變更時",
       "numberOnCommandTooltip": "當 Home Assistant 變更數字時執行。ha_number_value 可用。",
       "numberValue": "HA 收到的數字",
       "numberValueTooltip": "取得收到的數字",
-      "numberSetState": "HA 設定數字",
       "numberSetStateTooltip": "向 Home Assistant 回報數字狀態",
       "fanCreate": "建立 HA 風扇",
       "fanCreateTooltip": "建立可由 Home Assistant 控制的風扇。Object ID = entity_id (ASCII snake_case)。Display Name = HA UI 顯示名稱。",
-      "fanOnCommand": "HA 風扇狀態變更時",
       "fanOnCommandTooltip": "收到風扇指令時執行。可用 ha_fan_state 和 ha_fan_speed。",
       "speedControl": "速度控制",
       "fanState": "HA 風扇狀態",
       "fanStateTooltip": "取得收到的風扇 ON/OFF 狀態",
       "fanSpeed": "HA 風扇速度",
       "fanSpeedTooltip": "取得收到的風扇速度 (0-100)",
-      "fanSetState": "HA 風扇開/關",
       "fanSetStateTooltip": "向 Home Assistant 回報風扇狀態",
       "speed": "速度",
       "coverCreate": "建立 HA 遮蔽",
       "coverCreateTooltip": "建立可由 Home Assistant 控制的覆蓋(百葉窗等)。Object ID = entity_id (ASCII snake_case)。Display Name = HA UI 顯示名稱。",
-      "coverOnCommand": "HA 遮蔽指令時",
       "coverOnCommandTooltip": "收到來自 Home Assistant 的遮蔽指令時執行",
-      "openWhen": "開啟時",
-      "closeWhen": "關閉時",
-      "stopWhen": "停止時",
-      "coverSetState": "HA 遮蔽設定狀態",
       "coverSetStateTooltip": "向 Home Assistant 回報遮蔽狀態",
-      "shutter": "捲門",
-      "blind": "百葉窗",
-      "curtain": "窗簾",
-      "garage": "車庫",
-      "gate": "大門",
-      "stateOpen": "開啟",
-      "stateClosed": "關閉",
-      "stateOpening": "開啟中",
-      "stateClosing": "關閉中",
-      "stateStopped": "已停止",
       "lightCreateRgb": "建立 HA 燈光 (RGB)",
       "lightCreateRgbTooltip": "建立可控 RGB 顏色的燈。Object ID = entity_id (ASCII snake_case)。Display Name = HA UI 顯示名稱。",
-      "lightOnRgbCommand": "HA RGB 變更時",
       "lightOnRgbCommandTooltip": "當 Home Assistant 變更 RGB 顏色時執行。可用 ha_light_r/g/b。",
-      "lightRgbR": "HA RGB R 值",
-      "lightRgbRTooltip": "取得收到的 RGB 紅色分量 (0-255)",
-      "lightRgbG": "HA RGB G 值",
-      "lightRgbGTooltip": "取得收到的 RGB 綠色分量 (0-255)",
-      "lightRgbB": "HA RGB B 值",
-      "lightRgbBTooltip": "取得收到的 RGB 藍色分量 (0-255)",
-      "lightSetRgb": "HA 回報 RGB",
       "lightSetRgbTooltip": "向 Home Assistant 回報 RGB 顏色",
       "triggerCreate": "建立 HA 觸發器",
       "triggerCreateTooltip": "註冊可作為 HA 自動化觸發器使用的事件",
-      "triggerType": "類型",
-      "triggerSubtype": "子類型",
-      "triggerButton": "按鈕",
-      "triggerRemote": "遙控",
-      "triggerSensor": "感測器",
       "triggerFire": "觸發 HA 觸發器",
       "triggerFireTooltip": "觸發 HA 自動化觸發器",
       "sceneCreate": "建立 HA 場景",
       "sceneCreateTooltip": "建立可由 HA 執行的情境。Object ID = entity_id (ASCII snake_case)。Display Name = HA UI 顯示名稱。",
-      "sceneOnCommand": "HA 場景執行時",
       "sceneOnCommandTooltip": "從 Home Assistant 觸發場景時執行",
       "tagScannerCreate": "建立 HA 標籤掃描器",
       "tagScannerCreateTooltip": "註冊 NFC 標籤掃描器等。Object ID = entity_id (ASCII snake_case)。Display Name = HA UI 顯示名稱。",
-      "tagScannerScanned": "HA 標籤掃描",
-      "tagScannerScannedTooltip": "向 HA 回報掃描到的標籤 ID",
       "tagId": "標籤 ID",
       "reportInterval": "HA 回報間隔",
       "reportIntervalTooltip": "以指定間隔執行 HA 回報（在 loop 中使用）",
-      "secondsEvery": "秒，執行",
-      "execute": "執行",
       "manufacturer": "製造商",
-      "manufacturerTooltip": "在 HA Devices 頁顯示的製造商名稱。HASerializer 只保留引用,請使用字串字面值。",
       "model": "型號",
-      "modelTooltip": "在 HA Devices 頁顯示的型號。",
       "softwareVersion": "軟體版本",
-      "softwareVersionTooltip": "在 HA Devices 頁顯示的軟體版本。",
       "autoUniqueId": "自動 deviceId (MAC)",
-      "autoUniqueIdTooltip": "開啟時,啟動時的 MAC 自動作為 deviceId — 避免多個 ESP32 或同型批量裝置的衝突。",
       "availability": "可用性 (LWT)",
-      "availabilityTooltip": "開啟時啟用 MQTT LWT (Last Will) 與 shared availability — 斷線時 HA UI 顯示 Unavailable。",
       "objectId": "Object ID (entity_id)",
-      "objectIdTooltip": "HA 內部 entity_id。必須為 ASCII snake_case — Lovelace 儀表板與自動化會引用。",
       "displayName": "顯示名稱 (HA UI)",
-      "displayNameTooltip": "HA UI 顯示的名稱。可使用任何語言,簡短為佳。與 Object ID 不同概念。",
-      "iconThermometer": "溫度計 (mdi:thermometer)",
-      "iconWater": "水 (mdi:water-percent)",
-      "iconGauge": "量表 (mdi:gauge)",
-      "iconLightning": "閃電 (mdi:lightning-bolt)",
-      "iconBattery": "電池 (mdi:battery)",
-      "iconGasCylinder": "氣體 (mdi:gas-cylinder)",
-      "iconBrightness": "亮度 (mdi:brightness-5)",
-      "iconMotionSensor": "動作 (mdi:motion-sensor)",
-      "iconDoorBin": "門 (mdi:door)",
-      "iconWaterAlert": "漏水 (mdi:water-alert)",
-      "iconSmokeDetector": "煙霧 (mdi:smoke-detector)",
-      "iconWindowOpen": "窗戶 (mdi:window-open)",
-      "iconVibrate": "震動 (mdi:vibrate)",
-      "iconAccount": "佔用 (mdi:account)",
-      "iconWifi": "連線 (mdi:wifi)",
       "diagnosticsAuto": "🩺 HA 自動診斷",
       "diagnosticsAutoTooltip": "依指定間隔自動將 RSSI / 運轉時間 / 可用記憶體 / 重啟原因發布至 Home Assistant（預設 60 秒）。使用獨立的 millis() 計時器運作（與 ha_report_interval 分離）。entity_category=diagnostic 透過 ha_loop 的 retain 覆寫機制套用，實體會顯示於 HA UI 的 Diagnostics 區段。請放置於 arduino_setup 中，至少需啟用一個項目。",
       "diagnosticReportInterval": "報告間隔（秒）",
@@ -2499,7 +2256,6 @@
       "onDisconnected": "HA 已斷線",
       "onDisconnectedTooltip": "當與 HA broker 的 MQTT 連線中斷時觸發。每個專案放置一個區塊即可，HAMqtt 只保存單一回呼，多次放置會以靜默方式互相覆蓋。",
       "viaDevice": "上層裝置 (via_device)",
-      "viaDeviceTooltip": "指定父裝置名稱可將多個 ESP32 模組歸屬於同一個 HA 裝置（Takeda 判斷 3 — 多機構裝置情境）。留空則註冊為頂層裝置，與既有專案完全相容。ArduinoHA 並未提供 setViaDevice API，因此 ha_loop 會 retain 覆寫 MQTT Discovery payload 來注入 via_device（待 upstream PR 合併後改用官方 API 屬於 polish 階段任務）。",
       "otaSetup": "🔄 Home Assistant OTA 設定",
       "otaFirmwareUrl": "韌體 URL (.bin)",
       "otaSetupTooltip": "註冊 Home Assistant 的 Update 實體，當您在 HA UI 點選「安裝」時，ESP32 會自行下載新韌體並寫入後重啟。Object ID 為 HA 的 entity_id（ASCII），Display Name 為 HA UI 顯示名稱，Firmware URL 為 ESP32 可存取的 .bin 位置（HA add-on 的 local/<檔案>.bin 或任何 HTTP 伺服器）。請放在 arduino_setup 內、ha_device_init 之後。軟體版本與 ha_device_init 的 Software Version field 共用。流程：在 DigiCode 中建置 → 於編譯完成對話框點選「下載 .bin」→ 將 .bin 上傳到該 URL → 於 HA UI 點選「安裝」。自動派發 / 簽章驗證屬於後續 polish 階段工作。",
@@ -2602,7 +2358,6 @@
       "steps": "步數",
       "times": "次",
       "speed": "速度",
-      "direction": "方向",
       "speedNormal": "正常",
       "speedFast": "快",
       "speedSlow": "慢",
@@ -2610,14 +2365,10 @@
       "backward": "後退",
       "left": "左",
       "right": "右",
-      "leftFoot": "左腳",
-      "rightFoot": "右腳",
       "leftLeg": "左腿腳位",
       "rightLeg": "右腿腳位",
       "leftAnkle": "左腳踝腳位",
-      "rightAnkle": "右腳踝腳位",
-      "front": "前",
-      "back": "後"
+      "rightAnkle": "右腳踝腳位"
     },
     "humanoid": {
       "init": {
@@ -2745,408 +2496,6 @@
         "tooltip": "跳舞"
       }
     },
-    "micropython": {
-      "common": {
-        "frequency": "頻率",
-        "baudRate": "鮑率",
-        "bytes": "位元組",
-        "milliseconds": "毫秒",
-        "seconds": "秒",
-        "high": "HIGH",
-        "low": "LOW",
-        "pullUp": "上拉",
-        "pullDown": "下拉",
-        "none": "無",
-        "scl": "SCL",
-        "sda": "SDA",
-        "tx": "TX",
-        "rx": "RX",
-        "pin": "Pin",
-        "raw": "原始值(0-4095)",
-        "voltage": "電壓(0-3.3V)",
-        "percent": "百分比(0-100)",
-        "angle": "角度(0-270)"
-      },
-      "machine": {
-        "pinOutput": {
-          "label": "腳位輸出",
-          "tooltip": "設定數位輸出"
-        },
-        "pinInput": {
-          "label": "腳位輸入",
-          "tooltip": "讀取數位輸入"
-        },
-        "pinToggle": {
-          "label": "切換腳位",
-          "tooltip": "切換腳位輸出"
-        },
-        "pwmInit": {
-          "label": "PWM 初始化",
-          "tooltip": "初始化 PWM"
-        },
-        "pwmDuty": {
-          "label": "PWM",
-          "duty": "工作週期",
-          "modePercent": "% (0-100)",
-          "modeRaw": "數值(0-1023)",
-          "tooltip": "設定 PWM 工作週期"
-        },
-        "adcRead": {
-          "label": "ADC 讀取",
-          "modeRaw": "原始值(0-4095)",
-          "modeVoltage": "電壓(0-3.3V)",
-          "modePercent": "百分比(0-100)",
-          "tooltip": "讀取類比數值"
-        },
-        "i2cInit": {
-          "label": "I2C 初始化",
-          "freq100k": "100 kHz",
-          "freq400k": "400 kHz",
-          "tooltip": "初始化 I2C 匯流排"
-        },
-        "i2cScan": {
-          "label": "I2C 掃描",
-          "tooltip": "掃描 I2C 匯流排上的裝置"
-        },
-        "uartInit": {
-          "label": "UART 初始化",
-          "tooltip": "初始化 UART"
-        },
-        "uartWrite": {
-          "label": "UART 寫入",
-          "tooltip": "透過 UART 傳送資料"
-        },
-        "uartRead": {
-          "label": "UART 讀取",
-          "tooltip": "從 UART 接收資料"
-        },
-        "sleepMs": {
-          "label": "等待",
-          "tooltip": "等待指定的毫秒"
-        },
-        "sleep": {
-          "label": "等待",
-          "tooltip": "等待指定的秒數"
-        },
-        "ticksMs": {
-          "label": "經過時間(ms)",
-          "tooltip": "取得自啟動以來的經過時間（毫秒）"
-        }
-      },
-      "list": {
-        "createEmpty": {
-          "label": "建立空清單",
-          "tooltip": "建立空清單"
-        },
-        "createWith": {
-          "label": "建立清單",
-          "elements": "元素",
-          "tooltip": "建立含元素的清單"
-        },
-        "append": {
-          "label": "清單",
-          "to": "附加",
-          "tooltip": "將元素附加到清單末尾"
-        },
-        "insert": {
-          "label": "清單",
-          "atIndex": "於索引",
-          "insert": "插入",
-          "tooltip": "在清單指定位置插入元素"
-        },
-        "removeIndex": {
-          "label": "清單",
-          "atIndex": "於索引",
-          "remove": "移除",
-          "tooltip": "從清單移除指定位置的元素"
-        },
-        "removeValue": {
-          "label": "清單",
-          "from": "移除值",
-          "remove": "從清單",
-          "tooltip": "從清單移除指定的值"
-        },
-        "get": {
-          "label": "清單",
-          "tooltip": "取得清單中指定位置的元素"
-        },
-        "set": {
-          "label": "清單",
-          "tooltip": "設定清單中指定位置的值"
-        },
-        "length": {
-          "label": "清單",
-          "lengthOf": "長度",
-          "tooltip": "回傳清單的元素數量"
-        },
-        "contains": {
-          "label": "清單",
-          "in": "包含",
-          "contains": "?",
-          "tooltip": "檢查清單是否包含該值"
-        },
-        "index": {
-          "label": "清單",
-          "of": "索引",
-          "position": "在清單中",
-          "tooltip": "回傳值在清單中的位置（找不到時為 -1）"
-        },
-        "clear": {
-          "label": "清單",
-          "clear": "清除",
-          "tooltip": "從清單移除所有元素"
-        },
-        "reverse": {
-          "label": "清單",
-          "reverse": "反轉",
-          "tooltip": "反轉清單順序"
-        },
-        "sort": {
-          "label": "清單",
-          "sort": "排序",
-          "ascending": "遞增",
-          "descending": "下降",
-          "tooltip": "排序清單"
-        }
-      },
-      "sensor": {
-        "ultrasonicInit": {
-          "label": "超音波感測器初始化",
-          "trig": "Trig",
-          "echo": "Echo",
-          "tooltip": "初始化 HC-SR04 超音波感測器"
-        },
-        "ultrasonicDistance": {
-          "label": "超音波距離",
-          "cm": "cm",
-          "tooltip": "從超音波感測器取得距離量測"
-        },
-        "dhtInit": {
-          "label": "DHT 感測器初始化",
-          "type": "類型",
-          "dht11": "DHT11",
-          "dht22": "DHT22",
-          "tooltip": "初始化 DHT 溫度/濕度感測器",
-          "pin": "引腳"
-        },
-        "dhtTemperature": {
-          "label": "DHT 溫度",
-          "celsius": "°C",
-          "tooltip": "從 DHT 感測器取得溫度"
-        },
-        "dhtHumidity": {
-          "label": "DHT 濕度",
-          "percent": "%",
-          "tooltip": "從 DHT 感測器取得濕度"
-        },
-        "digitalSensor": {
-          "label": "數位感測器",
-          "state": "",
-          "tooltip": "讀取數位感測器狀態 (0 或 1)"
-        },
-        "buttonSensor": {
-          "label": "按鈕",
-          "state": "是",
-          "pressed": "按下",
-          "released": "放開",
-          "tooltip": "檢查按鈕狀態（使用上拉電阻）"
-        },
-        "pirSensor": {
-          "label": "PIR 動作感測器",
-          "state": "偵測到動作？",
-          "tooltip": "使用 PIR 感測器偵測動作"
-        },
-        "analogSensor": {
-          "label": "類比感測器",
-          "value": "值",
-          "tooltip": "讀取類比感測器數值 (0-4095)"
-        },
-        "ldrSensor": {
-          "label": "LDR 光感測器",
-          "brightness": "亮度",
-          "tooltip": "使用 LDR（光敏電阻）量測亮度"
-        },
-        "soilSensor": {
-          "label": "土壤濕度感測器",
-          "moisture": "濕度",
-          "tooltip": "量測土壤濕度"
-        },
-        "potentiometer": {
-          "label": "電位器",
-          "value": "值",
-          "tooltip": "讀取電位器數值 (0-4095)",
-          "angle": "角度 (0-270)"
-        }
-      },
-      "transform": {
-        "init": {
-          "label": "Transform Init",
-          "leftLeg": "Left Leg",
-          "rightLeg": "Right Leg",
-          "leftFoot": "Left Foot",
-          "rightFoot": "Right Foot",
-          "tooltip": "Initialize Transform robot (walk/roll transformation)"
-        },
-        "mode": {
-          "label": "Ninja Mode",
-          "walkMode": "Walk Mode",
-          "rollMode": "Roll Mode",
-          "tooltip": "Switch Ninja operation mode"
-        },
-        "transform": {
-          "label": "Ninja Transform",
-          "walkForm": "Walk Form",
-          "rollForm": "Roll Form",
-          "tooltip": "Transform Ninja"
-        },
-        "align": {
-          "label": "Ninja Align (90°)",
-          "tooltip": "Set all servos to 90 degrees (for calibration)"
-        },
-        "home": {
-          "label": "Ninja Home",
-          "tooltip": "Return to home position"
-        },
-        "walk": {
-          "label": "Ninja Walk",
-          "steps": "steps",
-          "forward": "向前",
-          "backward": "Backward",
-          "tooltip": "Walk in walk mode"
-        },
-        "turn": {
-          "label": "Ninja Turn",
-          "times": "times",
-          "left": "Left",
-          "right": "Right",
-          "tooltip": "Turn in walk mode"
-        },
-        "trot": {
-          "label": "Ninja Trot",
-          "steps": "steps",
-          "tooltip": "Trot gait (diagonal walk)"
-        },
-        "stop": {
-          "label": "Ninja Stop",
-          "tooltip": "Stop and return to home position"
-        },
-        "roll": {
-          "label": "Ninja Roll",
-          "speed": "速度",
-          "verySlow": "Very Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "fastest": "Fastest",
-          "forward": "向前",
-          "backward": "Backward",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Move in roll mode"
-        },
-        "rollRotate": {
-          "label": "Ninja Roll Rotate",
-          "speed": "速度",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "left": "Left",
-          "right": "Right",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Rotate in roll mode"
-        },
-        "pushup": {
-          "label": "Ninja Pushup",
-          "times": "times",
-          "tooltip": "Perform pushup-like motion"
-        },
-        "dance": {
-          "label": "Ninja Dance",
-          "times": "times",
-          "tooltip": "Make Ninja dance"
-        }
-      },
-      "wheelRobot": {
-        "init": {
-          "label": "Wheel Init",
-          "leftWheel": "Left Wheel",
-          "rightWheel": "Right Wheel",
-          "tooltip": "Initialize Wheel robot (continuous rotation servo)"
-        },
-        "forward": {
-          "label": "向前",
-          "speed": "速度",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "fastest": "Fastest",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Move forward"
-        },
-        "backward": {
-          "label": "Backward",
-          "speed": "速度",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "fastest": "Fastest",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Move backward"
-        },
-        "turnLeft": {
-          "label": "Turn Left",
-          "speed": "速度",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Turn left"
-        },
-        "turnRight": {
-          "label": "Turn Right",
-          "speed": "速度",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Turn right"
-        },
-        "spinLeft": {
-          "label": "Spin Left",
-          "speed": "速度",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Spin left in place"
-        },
-        "spinRight": {
-          "label": "Spin Right",
-          "speed": "速度",
-          "slow": "Slow",
-          "normal": "Normal",
-          "fast": "Fast",
-          "time": "Time",
-          "ms": "ms",
-          "tooltip": "Spin right in place"
-        },
-        "stop": {
-          "label": "停止",
-          "tooltip": "停止"
-        },
-        "motors": {
-          "label": "Motor Control",
-          "left": "Left",
-          "right": "Right",
-          "tooltip": "Set left and right motor speeds directly (-100 to 100)"
-        }
-      }
-    },
     "a4988": {
       "dir": "DIR",
       "en": "EN",
@@ -3161,7 +2510,6 @@
       "step_tooltip": "以指定步數 (含微步倍率) 運轉 A4988。透過 runToNewPosition 阻塞直到完成。"
     },
     "array": {
-      "_value": "Array",
       "1d": "1D",
       "2d": "2D",
       "3d": "3D",
@@ -3176,8 +2524,7 @@
       "itemcount": "元素數",
       "settooltip": "設定陣列指定位置的值。",
       "size": "大小",
-      "sizetooltip": "取得陣列的元素數。",
-      "label": "陣列"
+      "sizetooltip": "取得陣列的元素數。"
     },
     "azure": {
       "iot_device_id": "裝置 ID",
@@ -3397,9 +2744,7 @@
     "step": "步",
     "type": "類型",
     "unit": {
-      "_value": "Unit",
-      "seconds": "秒",
-      "label": "單位"
+      "seconds": "秒"
     },
     "value": "值",
     "acs712": {

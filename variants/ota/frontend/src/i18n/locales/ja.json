@@ -1257,10 +1257,6 @@
     "next": "次へ"
   },
   "blocks": {
-    "basic": "基本",
-    "logic": "ロジック",
-    "loops": "ループ",
-    "math": "数学",
     "i2c": {
       "scan": "🔍 I2Cスキャン",
       "scanTooltip": "接続されているI2Cデバイスのアドレスをシリアルに出力します",
@@ -1332,7 +1328,6 @@
       "receiverDecode": "IR 受信コード",
       "receiverDecodeTooltip": "受信したIRコードをhex文字列で返します。信号なし時は\"0\"を返します。loopブロックで呼び、既知のコードと比較してください。",
       "senderInit": "IR 送信器 初期化",
-      "senderInitTooltip": "指定ピンにIR送信用LEDを初期化します。setupブロックで呼んでください。",
       "send": "IR 送信",
       "code": "コード (hex)",
       "sendTooltip": "指定プロトコル・コードでIR信号を送信します。ir_receiver_decodeで取得したコードを使ってください。",
@@ -1363,8 +1358,6 @@
     "rfid": {
       "initM5": "RFID 初期化（M5Stack）",
       "initM5Tooltip": "M5Stack RFID 2 Unit (WS1850S) をI2C経由で初期化します。I2Cアドレス0x28、CS/RSTピン不要。このデバイスは日本の技適認証を取得しています。",
-      "initGeneric": "⚠️ RFID 初期化（汎用）",
-      "initGenericTooltip": "⚠️ 汎用MFRC522をSPI経由で初期化します。\n\n【電波法に関する重要な注意】\n日本国内では13.56MHzの電波を発射する機器は技適（技術基準適合証明）が必要です。技適未取得のMFRC522モジュールを日本国内で使用することは電波法違反となる場合があります。\n\n日本国内での使用には「M5Stack RFID 2 Unit」(技適取得済み)の使用を推奨します。\n\n日本国外でご使用の場合は、お使いの国・地域の無線規制に従ってください。",
       "isPresent": "RFID カード検出?",
       "isPresentTooltip": "RFIDカード/タグが検出されればtrueを返します。loopブロックで繰り返し呼んでカード検出を確認してください。",
       "readUid": "RFID UID 読み取り",
@@ -1426,23 +1419,6 @@
       "readUntilTooltip": "指定した終端文字までSerial2から読み取ります。終端文字なしの文字列を返します。",
       "available": "Serial2 受信バイト数",
       "availableTooltip": "Serial2 の受信バッファにある読み取り可能なバイト数を返します。"
-    },
-    "dfplayer": {
-      "init": "DFPlayer 初期化",
-      "rx": "RXピン",
-      "tx": "TXピン",
-      "initTooltip": "SoftwareSerial経由でDFPlayer Miniを初期化します。DFPlayerのTX→ESP32 RX、DFPlayerのRX(1kΩ抵抗経由)→ESP32 TX に接続してください。",
-      "play": "DFPlayer 再生",
-      "track": "トラック番号",
-      "playTooltip": "指定したトラック番号（1〜999）のMP3ファイルを再生します。",
-      "pause": "DFPlayer 一時停止",
-      "pauseTooltip": "再生中の曲を一時停止します。",
-      "resume": "DFPlayer 再開",
-      "resumeTooltip": "一時停止中の再生を再開します。",
-      "stop": "DFPlayer 停止",
-      "stopTooltip": "再生を停止します。",
-      "volume": "DFPlayer 音量",
-      "volumeTooltip": "音量を設定します（0=無音、30=最大）。"
     },
     "lcd": {
       "init": "LCD 初期化",
@@ -1522,7 +1498,6 @@
       "divider": "分圧比",
       "voltageTooltip": "分圧抵抗経由でADCから電池電圧を計測します。分圧比を設定（等分抵抗は2.0）。V単位で返します。",
       "percentage": "電池残量 (%)",
-      "voltageInput": "電圧 (V)",
       "minV": "最小V",
       "maxV": "最大V",
       "percentageTooltip": "電池電圧を残量（0-100%）に変換します。電池種別に合わせた最小・最大電圧を設定してください（Li-ion: 3.0-4.2V）。",
@@ -1701,55 +1676,7 @@
     "math_mapfrom": "入力",
     "math_mapto": "出力",
     "math_maptooltip": "値を一つの範囲から別の範囲に変換します（Arduino map 関数）",
-    "text": "テキスト",
-    "variables": "変数",
-    "functions": "関数",
-    "io": "入出力",
-    "motor": "モーター",
-    "servo": "サーボ",
     "sensor": {
-      "ultrasonic": {
-        "init": "📏 HC-SR04初期化",
-        "trigPin": "Trigピン",
-        "echoPin": "Echoピン",
-        "distance": "📏 超音波距離(cm)",
-        "initTooltip": "HC-SR04超音波センサーを初期化します（HP Robot ESP32: Trig=GPIO18, Echo=GPIO19 #1）",
-        "distanceTooltip": "HC-SR04超音波センサーで距離を測定します（初期化が必要）"
-      },
-      "dht": {
-        "init": "🌡️ DHT初期化",
-        "pin": "ピン",
-        "temperature": "🌡️ DHT温度(℃)",
-        "humidity": "💧 DHT湿度(%)",
-        "initTooltip": "DHT11/DHT22温湿度センサーを初期化します",
-        "temperatureTooltip": "DHT温度を摂氏で読み取ります",
-        "humidityTooltip": "DHT湿度をパーセントで読み取ります"
-      },
-      "rus04": {
-        "init": "👀 RUS-04初期化",
-        "rgbPin": "RGBピン",
-        "numLeds": "LED数",
-        "distance": "📏 RUS-04距離(cm)",
-        "rgbBoth": "🌈 RUS-04 RGB両目",
-        "off": "⬛ RUS-04 RGB 消灯",
-        "left": "左",
-        "right": "右",
-        "initTooltip": "RUS-04超音波センサー(RGB内蔵)を初期化します。HC-SR04互換+WS2812B LED×6",
-        "distanceTooltip": "RUS-04超音波センサーで距離を測定します（初期化が必要）",
-        "rgbTooltip": "RUS-04の目(RGB LED)の色を左右個別に設定します",
-        "offTooltip": "両目を消灯します",
-        "bothSimpleTooltip": "両目の色をドロップダウンで設定"
-      },
-      "color": {
-        "red": "赤",
-        "green": "緑",
-        "blue": "青",
-        "yellow": "黄",
-        "purple": "紫",
-        "cyan": "水色",
-        "white": "白",
-        "off": "消灯"
-      },
       "analogread_label": "アナログ読み取りピン",
       "analogread_tooltip": "アナログピンの値を読み取ります (0〜4095)。",
       "button_label": "ボタンピン",
@@ -1979,13 +1906,9 @@
       "oledInitTooltip": "I2C OLEDディスプレイを初期化します（SSD1306）",
       "width": "幅",
       "height": "高さ",
-      "sda": "SDA:",
-      "scl": "SCL:",
       "oledText": "OLED表示",
       "oledTextTooltip": "OLEDにテキストを表示します",
       "text": "テキスト",
-      "x": "X:",
-      "y": "Y:",
       "size": "サイズ",
       "sizeSmall": "小",
       "sizeMedium": "中",
@@ -1993,11 +1916,7 @@
       "oledClear": "OLED消去",
       "oledClearTooltip": "OLEDの表示内容を消去します",
       "oledShow": "OLED更新",
-      "oledShowTooltip": "OLEDの描画内容を画面に反映します",
-      "startY": "Y:",
-      "endY": "Y:",
-      "widthLabel": "幅:",
-      "heightLabel": "高さ:"
+      "oledShowTooltip": "OLEDの描画内容を画面に反映します"
     },
     "audio": {
       "buzzerTone": "ブザー音",
@@ -2023,8 +1942,6 @@
       "error": "エラー音",
       "complete": "完了音"
     },
-    "communication": "通信",
-    "robot": "ロボット",
     "arduino": {
       "setup": {
         "label": "セットアップ",
@@ -2151,8 +2068,6 @@
         "angle": "角度",
         "write": "サーボ角度",
         "writeTooltip": "サーボを指定角度に動かします（0-180°）",
-        "writeValue": "サーボ角度",
-        "writeValueTooltip": "サーボを変数で指定した角度に動かします",
         "detach": "サーボ切断",
         "detachTooltip": "サーボを切断します（電力節約）",
         "sweep": "サーボスイープ",
@@ -2166,20 +2081,13 @@
       "init": "NeoPixelリング初期化",
       "initTooltip": "NeoPixelリングを初期化します",
       "pin": "ピン",
-      "numLeds": "LED数",
       "setColor": "LED",
       "setColorTooltip": "指定したLEDの色を設定します（0-255）",
       "index": "番",
-      "r": "R",
-      "g": "G",
-      "b": "B",
-      "setAll": "全LED色設定",
-      "setAllTooltip": "全てのLEDの色を設定します",
       "show": "NeoPixel表示更新",
       "showTooltip": "設定した色をLEDに反映します",
       "clear": "NeoPixel全消灯",
       "clearTooltip": "全てのLEDを消灯します",
-      "range": "(0-255)",
       "rainbow": "レインボーエフェクト",
       "rainbowTooltip": "虹色エフェクトを表示します",
       "speedNormal": "普通",
@@ -2188,7 +2096,6 @@
       "colorRed": "赤",
       "colorOrange": "オレンジ",
       "colorYellow": "黄",
-      "colorYellowGreen": "黄緑",
       "colorGreen": "緑",
       "colorCyan": "水色",
       "colorBlue": "青",
@@ -2196,9 +2103,6 @@
       "colorPink": "ピンク",
       "colorWhite": "白",
       "colorOff": "消灯",
-      "colorSimple": "全LED色",
-      "colorSimpleTooltip": "全LEDを指定色に設定",
-      "lightSimple": "LED #",
       "allledcolor": "全 LED の色",
       "allledcolortooltip": "すべての LED を指定色に設定します。",
       "colorlime": "ライム",
@@ -2315,13 +2219,10 @@
       "buildUrl": "URL構築 ベース",
       "buildUrlTooltip": "ベースURLにクエリパラメータを追加します",
       "param1Name": "パラメータ1 名前",
-      "param1Value": "値",
       "baseurl": "ベース",
       "value": "値"
     },
     "json": {
-      "parseSize": "JSONパース（サイズ指定）",
-      "parseSizeTooltip": "大きなJSONをパースする場合はバッファサイズを増やしてください",
       "buffer": "バッファ",
       "bytes": "バイト",
       "getString": "JSON文字列取得",
@@ -2341,21 +2242,12 @@
       "typeInt": "整数",
       "typeBool": "真偽値",
       "hasKey": "JSONにキー",
-      "hasKeyExists": "が存在",
       "hasKeyTooltip": "JSONに指定したキーが存在するかどうかを判定します",
       "arraySize": "JSON配列サイズ",
       "arraySizeTooltip": "JSON配列の要素数を取得します",
-      "arrayGet": "JSON配列",
-      "arrayGetIndex": "番目を",
-      "arrayGetAs": "で取得",
       "arrayGetTooltip": "JSON配列の指定したインデックスの要素を取得します",
-      "createObject": "JSON作成開始",
-      "createObjectTooltip": "新しいJSONオブジェクトの作成を開始します",
-      "setString": "JSON設定",
       "setStringTooltip": "JSONに文字列値を設定します",
-      "setNumber": "JSON設定",
       "setNumberTooltip": "JSONに数値を設定します",
-      "setBool": "JSON設定",
       "setBoolTooltip": "JSONに真偽値を設定します",
       "toString": "JSONを文字列に",
       "toStringTooltip": "作成したJSONオブジェクトを文字列に変換します",
@@ -2380,8 +2272,6 @@
     "mqtt": {
       "setup": "MQTT設定",
       "setupTooltip": "WiFiとMQTTブローカーの接続設定を行います",
-      "wifiSsid": "WiFi SSID",
-      "wifiPassword": "WiFi パスワード",
       "broker": "MQTTブローカー",
       "port": "ポート",
       "clientId": "クライアントID",
@@ -2389,38 +2279,22 @@
       "connectTooltip": "MQTTブローカーに接続します（認証あり/なし）",
       "username": "ユーザー名",
       "password": "パスワード",
-      "noAuthHint": "（空欄で認証なし）",
       "publish": "MQTT送信 トピック",
-      "publishMessage": "メッセージ",
-      "publishRetain": "保持",
       "publishTooltip": "指定したトピックにメッセージを送信します",
       "subscribe": "MQTT購読 トピック",
       "subscribeTooltip": "指定したトピックを購読します（ワイルドカード # や + も使用可能）",
       "onMessage": "MQTTメッセージ受信時",
-      "onMessageProcess": "処理",
       "onMessageTooltip": "MQTTメッセージを受信した時に実行する処理を設定します。mqtt_topic と mqtt_message 変数が使えます。",
       "loop": "MQTTループ処理",
       "loopTooltip": "MQTTの通信処理を実行します。loop()内で呼び出してください。",
-      "topicValue": "受信トピック名",
-      "topicValueTooltip": "受信したメッセージのトピック名を取得します",
-      "messageValue": "受信メッセージ",
-      "messageValueTooltip": "受信したメッセージの内容を取得します",
       "isConnected": "MQTTが接続中",
       "isConnectedTooltip": "MQTTブローカーに接続中かどうかを返します",
       "disconnect": "MQTT切断",
       "disconnectTooltip": "MQTTブローカーから切断します",
       "unsubscribe": "MQTT購読解除 トピック",
       "unsubscribeTooltip": "指定したトピックの購読を解除します",
-      "setBufferSize": "MQTTバッファサイズ",
-      "setBufferSizeTooltip": "MQTTメッセージの最大サイズを設定します（デフォルト256バイト）",
-      "setKeepalive": "MQTTキープアライブ",
-      "setKeepaliveTooltip": "MQTT接続のキープアライブ間隔を設定します（デフォルト15秒）",
       "seconds": "秒",
       "lastWill": "MQTT遺言設定",
-      "lastWillTopic": "トピック",
-      "lastWillMessage": "メッセージ",
-      "lastWillRetain": "保持",
-      "lastWillQos": "QoS",
       "lastWillTooltip": "クライアントが予期せず切断された時にブローカーが送信するメッセージを設定します",
       "qos0": "0 (最大1回)",
       "qos1": "1 (最低1回)",
@@ -2465,8 +2339,6 @@
       "setup": "OTA設定",
       "setupTooltip": "WiFi経由でファームウェアを更新できるようにOTAを設定します",
       "hostname": "ホスト名",
-      "otaPassword": "OTAパスワード",
-      "noAuthHint": "（空欄で認証なし）",
       "setupSimple": "簡易OTA設定",
       "setupSimpleTooltip": "WiFi接続済みの状態でOTAを有効化します（mqtt_setupやha_device_initの後に使用）",
       "loop": "OTAループ処理",
@@ -2483,7 +2355,6 @@
       "deepSleepTooltip": "指定した秒数ディープスリープに入ります（省電力モード）",
       "lightSleep": "ライトスリープ",
       "lightSleepTooltip": "指定した秒数ライトスリープに入ります（復帰後に続きを実行）",
-      "seconds": "秒",
       "getFreeHeap": "空きメモリ（バイト）",
       "getFreeHeapTooltip": "空きヒープメモリをバイト単位で取得します",
       "getChipId": "ESPチップID",
@@ -2509,192 +2380,78 @@
       "deviceInitAuthTooltip": "MQTT認証付きでHome Assistantデバイスを初期化します。Manufacturer / Model / Software Version は HA Devices ページに表示されます。Auto deviceId (MAC) は複数機構機器での衝突回避に推奨。Availability (LWT) で切断時に HA UI が Unavailable に切替。",
       "deviceName": "デバイス名",
       "deviceId": "デバイスID",
-      "mqttUser": "MQTTユーザー",
-      "mqttPassword": "MQTTパスワード",
       "sensorCreate": "HAセンサー登録",
       "sensorCreateTooltip": "Home Assistantに登録するセンサーを作成します。Object ID = entity_id (ASCII snake_case)、Display Name = HA UI 表示名 (どの言語でも可)。Icon で HA UI のアイコンを上書き可。",
       "sensorUpdate": "HAセンサー更新",
       "sensorUpdateTooltip": "センサーの値をHome Assistantに送信します",
-      "name": "名前",
       "deviceClass": "デバイスクラス",
-      "unit": "単位",
-      "value": "値",
-      "temperature": "温度 (temperature)",
-      "humidity": "湿度 (humidity)",
-      "pressure": "気圧 (pressure)",
-      "illuminance": "照度 (illuminance)",
-      "voltage": "電圧 (voltage)",
-      "current": "電流 (current)",
-      "power": "電力 (power)",
-      "energy": "エネルギー (energy)",
-      "battery": "バッテリー (battery)",
-      "co2": "CO2 (carbon_dioxide)",
-      "pm25": "PM2.5 (pm25)",
-      "distance": "距離 (distance)",
-      "none": "なし",
       "binarySensorCreate": "HAバイナリセンサー登録",
       "binarySensorCreateTooltip": "ON/OFFのバイナリセンサーを作成します。Object ID = entity_id (ASCII snake_case)、Display Name = HA UI 表示名。Icon で HA UI のアイコンを上書き可。",
       "binarySensorUpdate": "HAバイナリセンサー更新",
       "binarySensorUpdateTooltip": "バイナリセンサーの状態をHome Assistantに送信します",
-      "state": "状態",
-      "motion": "動き検知 (motion)",
-      "door": "ドア (door)",
-      "window": "窓 (window)",
-      "smoke": "煙 (smoke)",
-      "moisture": "水漏れ (moisture)",
-      "vibration": "振動 (vibration)",
-      "occupancy": "存在 (occupancy)",
-      "gas": "ガス (gas)",
-      "problem": "問題 (problem)",
-      "connectivity": "接続 (connectivity)",
       "switchCreate": "HAスイッチ登録",
       "switchCreateTooltip": "Home Assistantから制御できるスイッチを作成します。Object ID = entity_id (ASCII snake_case)、Display Name = HA UI 表示名。",
-      "switchOnCommand": "HAスイッチ コマンド受信時",
       "switchOnCommandTooltip": "Home Assistantからスイッチ操作を受信した時の処理",
-      "onWhen": "ONの時",
-      "offWhen": "OFFの時",
-      "switchSetState": "HAスイッチ 状態を",
       "switchSetStateTooltip": "スイッチの状態をHome Assistantに送信します",
-      "icon": "アイコン",
-      "iconPower": "電源 (mdi:power)",
-      "iconLightbulb": "電球 (mdi:lightbulb)",
-      "iconFan": "ファン (mdi:fan)",
-      "iconPowerPlug": "コンセント (mdi:power-plug)",
-      "iconToggleSwitch": "スイッチ (mdi:toggle-switch)",
       "lightCreate": "HAライト登録",
       "lightCreateTooltip": "Home Assistantから制御できるライトを作成します。Object ID = entity_id (ASCII snake_case)、Display Name = HA UI 表示名。",
-      "lightOnCommand": "HAライト 状態変更時",
       "lightOnCommandTooltip": "Home Assistantからライト操作を受信した時の処理。ha_light_stateとha_light_brightnessが使えます。",
       "brightness": "調光",
-      "process": "処理",
       "lightState": "HAライト状態",
       "lightStateTooltip": "受信したライトのON/OFF状態",
       "lightBrightness": "HAライト明るさ",
       "lightBrightnessTooltip": "受信したライトの明るさ（0-255）",
-      "lightSetState": "HAライト 状態を報告",
       "lightSetStateTooltip": "ライトの状態をHome Assistantに報告します",
-      "onOff": "ON/OFF",
       "buttonCreate": "HAボタン登録",
       "buttonCreateTooltip": "Home Assistantから押せるボタンを作成します。Object ID = entity_id (ASCII snake_case)、Display Name = HA UI 表示名。",
-      "buttonOnPress": "HAボタン 押下時",
       "buttonOnPressTooltip": "Home Assistantからボタンが押された時の処理",
-      "iconRestart": "再起動 (mdi:restart)",
-      "iconUpdate": "更新 (mdi:update)",
-      "iconPlay": "再生 (mdi:play)",
-      "iconStop": "停止 (mdi:stop)",
       "loop": "HAループ処理",
       "loopTooltip": "Home Assistantとの通信を維持します。WiFi 切断時は 5 秒間隔で自動再接続を試みます。loop() 内で呼び出してください。",
       "isConnected": "HAに接続中",
       "isConnectedTooltip": "Home Assistantに接続中かどうかを返します",
       "numberCreate": "HA数値登録",
       "numberCreateTooltip": "Home Assistantから数値入力を受け付けるエンティティを作成します。Object ID = entity_id (ASCII snake_case)、Display Name = HA UI 表示名。",
-      "min": "最小",
-      "max": "最大",
-      "step": "ステップ",
-      "mode": "モード",
-      "modeAuto": "スライダー (auto)",
-      "modeBox": "ボックス (box)",
-      "modeSlider": "スライダー (slider)",
-      "numberOnCommand": "HA数値 変更時",
       "numberOnCommandTooltip": "Home Assistantから数値が変更された時の処理。ha_number_valueが使えます。",
       "numberValue": "HA受信数値",
       "numberValueTooltip": "受信した数値",
-      "numberSetState": "HA数値 を",
       "numberSetStateTooltip": "数値の状態をHome Assistantに報告します",
       "fanCreate": "HAファン登録",
       "fanCreateTooltip": "Home Assistantから制御できるファンを作成します。Object ID = entity_id (ASCII snake_case)、Display Name = HA UI 表示名。",
-      "fanOnCommand": "HAファン 状態変更時",
       "fanOnCommandTooltip": "Home Assistantからファン操作を受信した時の処理。ha_fan_stateとha_fan_speedが使えます。",
       "speedControl": "速度制御",
       "fanState": "HAファン状態",
       "fanStateTooltip": "受信したファンのON/OFF状態",
       "fanSpeed": "HAファン速度",
       "fanSpeedTooltip": "受信したファンの速度（0-100）",
-      "fanSetState": "HAファン ON/OFF",
       "fanSetStateTooltip": "ファンの状態をHome Assistantに報告します",
       "speed": "速度",
       "coverCreate": "HAカバー登録",
       "coverCreateTooltip": "Home Assistantから制御できるカバー（シャッター等）を作成します。Object ID = entity_id (ASCII snake_case)、Display Name = HA UI 表示名。",
-      "coverOnCommand": "HAカバー コマンド受信時",
       "coverOnCommandTooltip": "Home Assistantからカバー操作を受信した時の処理",
-      "openWhen": "開く時",
-      "closeWhen": "閉じる時",
-      "stopWhen": "停止時",
-      "coverSetState": "HAカバー 状態を",
       "coverSetStateTooltip": "カバーの状態をHome Assistantに報告します",
-      "shutter": "シャッター (shutter)",
-      "blind": "ブラインド (blind)",
-      "curtain": "カーテン (curtain)",
-      "garage": "ガレージ (garage)",
-      "gate": "ゲート (gate)",
-      "stateOpen": "開 (open)",
-      "stateClosed": "閉 (closed)",
-      "stateOpening": "開中 (opening)",
-      "stateClosing": "閉中 (closing)",
-      "stateStopped": "停止 (stopped)",
       "lightCreateRgb": "HAライト登録（RGB）",
       "lightCreateRgbTooltip": "RGB色制御対応のライトを作成します。Object ID = entity_id (ASCII snake_case)、Display Name = HA UI 表示名。",
-      "lightOnRgbCommand": "HAライト RGB変更時",
       "lightOnRgbCommandTooltip": "Home AssistantからRGB色が変更された時の処理。ha_light_r/g/bが使えます。",
-      "lightRgbR": "HA RGB R値",
-      "lightRgbRTooltip": "受信したRGB色の赤成分（0-255）",
-      "lightRgbG": "HA RGB G値",
-      "lightRgbGTooltip": "受信したRGB色の緑成分（0-255）",
-      "lightRgbB": "HA RGB B値",
-      "lightRgbBTooltip": "受信したRGB色の青成分（0-255）",
-      "lightSetRgb": "HAライト RGB報告",
       "lightSetRgbTooltip": "RGB色をHome Assistantに報告します",
       "triggerCreate": "HAトリガー登録",
       "triggerCreateTooltip": "HA自動化のトリガーとして使えるイベントを登録します",
-      "triggerType": "タイプ",
-      "triggerSubtype": "サブタイプ",
-      "triggerButton": "ボタン (button)",
-      "triggerRemote": "リモコン (remote)",
-      "triggerSensor": "センサー (sensor)",
       "triggerFire": "HAトリガー発火",
       "triggerFireTooltip": "HA自動化をトリガーします",
       "sceneCreate": "HAシーン登録",
       "sceneCreateTooltip": "HAから実行できるシーンを作成します。Object ID = entity_id (ASCII snake_case)、Display Name = HA UI 表示名。",
-      "sceneOnCommand": "HAシーン 実行時",
       "sceneOnCommandTooltip": "Home Assistantからシーンが実行された時の処理",
       "tagScannerCreate": "HAタグスキャナー登録",
       "tagScannerCreateTooltip": "NFCタグ等のスキャナーを登録します。Object ID = entity_id (ASCII snake_case)、Display Name = HA UI 表示名。",
-      "tagScannerScanned": "HAタグスキャン",
-      "tagScannerScannedTooltip": "スキャンしたタグIDをHAに報告します",
       "tagId": "タグID",
       "reportInterval": "HA報告間隔",
       "reportIntervalTooltip": "指定間隔でHA報告処理を実行します（loop内で使用）",
-      "secondsEvery": "秒ごとに",
-      "execute": "実行",
       "manufacturer": "メーカー",
-      "manufacturerTooltip": "HA Devicesページに表示されるメーカー名。HASerializerは参照を保持するため文字列リテラルを推奨。",
       "model": "モデル",
-      "modelTooltip": "HA Devicesページに表示されるモデル名。",
       "softwareVersion": "ソフトウェアバージョン",
-      "softwareVersionTooltip": "HA Devicesページに表示されるソフトウェアバージョン。",
       "autoUniqueId": "自動 deviceId (MAC)",
-      "autoUniqueIdTooltip": "ON で起動時 MAC を自動 deviceId 化、複数 ESP32 や同型多数台での衝突を回避。",
       "availability": "利用可能性 (LWT)",
-      "availabilityTooltip": "ON で MQTT LWT (Last Will) と shared availability を有効化、切断時に HA UI が Unavailable に切替。",
       "objectId": "ID (entity_id)",
-      "objectIdTooltip": "HA 内部 entity_id。ASCII snake_case 必須、Lovelace dashboard / automation で参照される。",
       "displayName": "表示名 (HA UI)",
-      "displayNameTooltip": "HA UI に表示される名前。日本語可、短く。Object ID と別概念。",
-      "iconThermometer": "温度計 (mdi:thermometer)",
-      "iconWater": "水 (mdi:water-percent)",
-      "iconGauge": "ゲージ (mdi:gauge)",
-      "iconLightning": "雷 (mdi:lightning-bolt)",
-      "iconBattery": "電池 (mdi:battery)",
-      "iconGasCylinder": "ガス (mdi:gas-cylinder)",
-      "iconBrightness": "明るさ (mdi:brightness-5)",
-      "iconMotionSensor": "動き (mdi:motion-sensor)",
-      "iconDoorBin": "ドア (mdi:door)",
-      "iconWaterAlert": "漏水 (mdi:water-alert)",
-      "iconSmokeDetector": "煙 (mdi:smoke-detector)",
-      "iconWindowOpen": "窓 (mdi:window-open)",
-      "iconVibrate": "振動 (mdi:vibrate)",
-      "iconAccount": "在室 (mdi:account)",
-      "iconWifi": "接続 (mdi:wifi)",
       "diagnosticsAuto": "🩺 HA自動診断",
       "diagnosticsAutoTooltip": "RSSI / 稼働時間 / 空きメモリ / リセット理由を Home Assistant に自動報告します。指定間隔で更新（既定 60 秒）、ha_report_interval とは独立した内部タイマーで動作します。entity_category=diagnostic を ha_loop の retain 上書き経由で付与、HA UI で Diagnostics セクションに分類表示されます。arduino_setup 内に配置し、最低 1 つの項目を ON にしてください。",
       "diagnosticReportInterval": "報告間隔 (秒)",
@@ -2707,7 +2464,6 @@
       "onDisconnected": "HA 切断時",
       "onDisconnectedTooltip": "HA broker との MQTT 接続切断時に発火。1 block per project 推奨、HAMqtt は単一 callback のみ保持するため複数配置時は最後のみ動作 (silent override)。",
       "viaDevice": "親デバイス (via_device)",
-      "viaDeviceTooltip": "親デバイス名を指定すると、複数の ESP32 を 1 つの HA デバイス配下にまとめて表示できます (Takeda 判断 3 — 複数機構機器のシナリオ向け)。空欄の場合は最上位デバイスとして登録され、既存プロジェクトの挙動と完全互換です。ArduinoHA の setViaDevice API 不在のため、ha_loop で MQTT Discovery payload を retain 上書きして via_device を付与します (upstream PR merge 後の正式 API 切替は polish phase)。",
       "otaSetup": "🔄 Home Assistant OTA セットアップ",
       "otaFirmwareUrl": "ファームウェア URL (.bin)",
       "otaSetupTooltip": "Home Assistant の Update entity を登録し、HA UI の「インストール」ボタンから ESP32 が自分でファームウェアを取得・書き換え・再起動する経路を設定します。Object ID は HA 上の entity_id (ASCII)、Display Name は HA UI の表示名、Firmware URL は ESP32 から到達可能な .bin の HTTP URL (例: HA add-on の local/<file>.bin、または任意の web サーバー)。arduino_setup 内、ha_device_init の後に配置してください。バージョン番号は ha_device_init の Software Version field を共有します。手順: DigiCode でビルド → コンパイル完了ダイアログから「.bin ダウンロード」→ 上記 URL に .bin をアップロード → HA UI で「インストール」をクリック。完了自動配信・署名検証は将来 polish phase 対応。",
@@ -2810,7 +2566,6 @@
       "steps": "歩",
       "times": "回",
       "speed": "速度",
-      "direction": "方向",
       "speedNormal": "普通",
       "speedFast": "速い",
       "speedSlow": "遅い",
@@ -2818,14 +2573,10 @@
       "backward": "後退",
       "left": "左",
       "right": "右",
-      "leftFoot": "左足",
-      "rightFoot": "右足",
       "leftLeg": "左足ピン",
       "rightLeg": "右足ピン",
       "leftAnkle": "左足首ピン",
-      "rightAnkle": "右足首ピン",
-      "front": "前",
-      "back": "後"
+      "rightAnkle": "右足首ピン"
     },
     "humanoid": {
       "init": {
@@ -2953,230 +2704,6 @@
         "tooltip": "ダンスします"
       }
     },
-    "micropython": {
-      "common": {
-        "frequency": "周波数",
-        "baudRate": "ボーレート",
-        "bytes": "バイト数",
-        "milliseconds": "ミリ秒",
-        "seconds": "秒",
-        "high": "HIGH",
-        "low": "LOW",
-        "pullUp": "プルアップ",
-        "pullDown": "プルダウン",
-        "none": "なし",
-        "scl": "SCL",
-        "sda": "SDA",
-        "tx": "TX",
-        "rx": "RX",
-        "pin": "ピン",
-        "raw": "生値(0-4095)",
-        "voltage": "電圧(0-3.3V)",
-        "percent": "パーセント(0-100)",
-        "angle": "角度(0-270)"
-      },
-      "machine": {
-        "pinOutput": {
-          "label": "Pin出力",
-          "tooltip": "デジタル出力を設定します"
-        },
-        "pinInput": {
-          "label": "Pin入力",
-          "tooltip": "デジタル入力を読み取ります"
-        },
-        "pinToggle": {
-          "label": "Pin反転",
-          "tooltip": "ピンの出力を反転します"
-        },
-        "pwmInit": {
-          "label": "PWM初期化",
-          "tooltip": "PWMを初期化します"
-        },
-        "pwmDuty": {
-          "label": "PWM",
-          "duty": "デューティ",
-          "modePercent": "%(0-100)",
-          "modeRaw": "値(0-1023)",
-          "tooltip": "PWMデューティ比を設定します"
-        },
-        "adcRead": {
-          "label": "ADC読み取り",
-          "modeRaw": "生値(0-4095)",
-          "modeVoltage": "電圧(0-3.3V)",
-          "modePercent": "パーセント(0-100)",
-          "tooltip": "アナログ値を読み取ります"
-        },
-        "i2cInit": {
-          "label": "I2C初期化",
-          "freq100k": "100kHz",
-          "freq400k": "400kHz",
-          "tooltip": "I2Cバスを初期化します"
-        },
-        "i2cScan": {
-          "label": "I2Cスキャン",
-          "tooltip": "I2Cバス上のデバイスをスキャンします"
-        },
-        "uartInit": {
-          "label": "UART初期化",
-          "tooltip": "UARTを初期化します"
-        },
-        "uartWrite": {
-          "label": "UART送信",
-          "tooltip": "UARTでデータを送信します"
-        },
-        "uartRead": {
-          "label": "UART受信",
-          "tooltip": "UARTからデータを受信します"
-        },
-        "sleepMs": {
-          "label": "待機",
-          "tooltip": "指定ミリ秒間待機します"
-        },
-        "sleep": {
-          "label": "待機",
-          "tooltip": "指定秒間待機します"
-        },
-        "ticksMs": {
-          "label": "経過時間(ms)",
-          "tooltip": "起動からの経過時間をミリ秒で取得します"
-        }
-      },
-      "list": {
-        "createEmpty": {
-          "label": "空のリストを作成",
-          "tooltip": "空のリストを作成します"
-        },
-        "createWith": {
-          "label": "リスト作成",
-          "elements": "要素数",
-          "tooltip": "要素を含むリストを作成します"
-        },
-        "append": {
-          "label": "リスト",
-          "to": "に追加",
-          "tooltip": "リストの末尾に要素を追加します"
-        },
-        "insert": {
-          "label": "リスト",
-          "atIndex": "の位置",
-          "insert": "に挿入",
-          "tooltip": "リストの指定位置に要素を挿入します"
-        },
-        "removeIndex": {
-          "label": "リスト",
-          "atIndex": "の位置",
-          "remove": "を削除",
-          "tooltip": "リストの指定位置の要素を削除します"
-        },
-        "removeValue": {
-          "label": "リスト",
-          "from": "から値",
-          "remove": "を削除",
-          "tooltip": "リストから指定した値を削除します"
-        },
-        "get": {
-          "label": "リスト",
-          "tooltip": "リストの指定位置の要素を取得します"
-        },
-        "set": {
-          "label": "リスト",
-          "tooltip": "リストの指定位置に値を設定します"
-        },
-        "length": {
-          "label": "リスト",
-          "lengthOf": "の長さ",
-          "tooltip": "リストの要素数を返します"
-        },
-        "contains": {
-          "label": "リスト",
-          "in": "に",
-          "contains": "が含まれる？",
-          "tooltip": "リストに値が含まれているか確認します"
-        },
-        "index": {
-          "label": "リスト",
-          "of": "内の",
-          "position": "の位置",
-          "tooltip": "リスト内の値の位置を返します（見つからない場合-1）"
-        },
-        "clear": {
-          "label": "リスト",
-          "clear": "をクリア",
-          "tooltip": "リストの全要素を削除します"
-        },
-        "reverse": {
-          "label": "リスト",
-          "reverse": "を逆順に",
-          "tooltip": "リストを逆順に並び替えます"
-        },
-        "sort": {
-          "label": "リスト",
-          "sort": "にソート",
-          "ascending": "昇順",
-          "descending": "降順",
-          "tooltip": "リストをソートします"
-        }
-      },
-      "sensor": {
-        "ultrasonicInit": {
-          "label": "超音波センサー初期化",
-          "trig": "Trig",
-          "echo": "Echo",
-          "tooltip": "HC-SR04超音波センサーを初期化します"
-        },
-        "ultrasonicDistance": {
-          "label": "超音波距離 (cm)",
-          "tooltip": "超音波センサーで距離を測定します（cm）"
-        },
-        "dhtInit": {
-          "label": "DHT初期化",
-          "pin": "ピン",
-          "tooltip": "DHT温湿度センサーを初期化します"
-        },
-        "dhtTemperature": {
-          "label": "DHT温度 (℃)",
-          "tooltip": "DHTセンサーから温度を取得します"
-        },
-        "dhtHumidity": {
-          "label": "DHT湿度 (%)",
-          "tooltip": "DHTセンサーから湿度を取得します"
-        },
-        "digitalSensor": {
-          "label": "デジタル入力",
-          "tooltip": "デジタルピンの値を読み取ります（0または1）"
-        },
-        "buttonSensor": {
-          "label": "ボタン",
-          "state": "が",
-          "pressed": "押された",
-          "released": "離された",
-          "tooltip": "ボタンの状態を確認します（プルアップ抵抗使用）"
-        },
-        "pirSensor": {
-          "label": "PIRセンサー",
-          "state": "動体検出？",
-          "tooltip": "PIRセンサーで動きを検出します"
-        },
-        "analogSensor": {
-          "label": "アナログ入力",
-          "tooltip": "アナログピンの値を読み取ります"
-        },
-        "ldrSensor": {
-          "label": "光センサー",
-          "tooltip": "光センサー（CdS/LDR）の値を読み取ります"
-        },
-        "soilSensor": {
-          "label": "土壌水分",
-          "moisture": "湿度%(0-100)",
-          "tooltip": "土壌水分センサーの値を読み取ります"
-        },
-        "potentiometer": {
-          "label": "ポテンショメータ",
-          "angle": "角度(0-270)",
-          "tooltip": "ポテンショメータ（可変抵抗）の値を読み取ります"
-        }
-      }
-    },
     "a4988": {
       "dir": "DIR",
       "direction": "A4988 方向",
@@ -3219,7 +2746,6 @@
       "read_proximity_tooltip": "APDS9960 の近接値 (0-255、近いほど大きい) を返します。"
     },
     "array": {
-      "_value": "Array",
       "1d": "1D",
       "2d": "2D",
       "3d": "3D",
@@ -3234,8 +2760,7 @@
       "itemcount": "要素数",
       "settooltip": "配列の指定位置に値を設定します。",
       "size": "サイズ",
-      "sizetooltip": "配列の要素数を取得します。",
-      "label": "配列"
+      "sizetooltip": "配列の要素数を取得します。"
     },
     "azure": {
       "iot_central_connect": "Azure IoT Central に接続",
@@ -3682,9 +3207,7 @@
       "step_tooltip": "ULN2003 + 28BYJ-48 を指定ステップ・速度で動作させます (28BYJ-48 1 回転 = 4096 ステップ in half-step)。"
     },
     "unit": {
-      "_value": "Unit",
-      "seconds": "秒",
-      "label": "単位"
+      "seconds": "秒"
     },
     "value": "値"
   },
