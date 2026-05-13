@@ -856,7 +856,7 @@ Blockly.Blocks['ha_sensor_create'] = {
           [(Blockly.Msg.BLOCKS_NONE || 'None'), 'None']
         ]), 'DEVICE_CLASS');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_UNIT || 'Unit')
+        .appendField(Blockly.Msg.BLOCKS_UNIT_LABEL || 'Unit')
         .appendField(new Blockly.FieldTextInput('°C'), 'UNIT');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_ICON || 'Icon')
@@ -1523,7 +1523,7 @@ Blockly.Blocks['ha_number_create'] = {
     this.appendValueInput('MAX').setCheck('Number').appendField(Blockly.Msg.BLOCKS_MAX || 'Max');
     this.appendValueInput('STEP').setCheck('Number').appendField(Blockly.Msg.BLOCKS_STEP || 'Step');
     this.appendDummyInput()
-        .appendField(Blockly.Msg.BLOCKS_UNIT || 'Unit')
+        .appendField(Blockly.Msg.BLOCKS_UNIT_LABEL || 'Unit')
         .appendField(new Blockly.FieldTextInput('°'), 'UNIT');
     this.setInputsInline(true);
     this.appendDummyInput()

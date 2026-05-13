@@ -1336,7 +1336,7 @@
       "send": "IR Send",
       "code": "code (hex)",
       "sendTooltip": "Send an IR signal with the specified protocol and code. Use code captured by ir_receiver_decode.",
-      "senderinit_tooltip": "Initialize IR sender (LED) on the specified pin. Call in setup block."
+      "senderinit_tooltip": "Initialize IR sender LED on the specified pin. Call in setup block."
     },
     "tft": {
       "init": "TFT Init",
@@ -2768,8 +2768,8 @@
       "icon_window_open": "Window (mdi:window-open)",
       "light": "HA Light",
       "mode_auto": "Slider (auto)",
-      "mode_box": "Box (box)",
-      "mode_slider": "Slider (slider)",
+      "mode_box": "Box",
+      "mode_slider": "Slider",
       "number": "HA Number",
       "onchange": "On Change",
       "oncommand": "On Command",
@@ -3216,7 +3216,8 @@
       "itemcount": "Items",
       "settooltip": "Set value at specified position in array.",
       "size": "Size",
-      "sizetooltip": "Get the number of elements in the array."
+      "sizetooltip": "Get the number of elements in the array.",
+      "label": "Array"
     },
     "azure": {
       "iot_device_id": "Device ID",
@@ -3437,7 +3438,8 @@
     "type": "Type",
     "unit": {
       "_value": "Unit",
-      "seconds": "seconds"
+      "seconds": "seconds",
+      "label": "Unit"
     },
     "value": "Value",
     "acs712": {

@@ -204,7 +204,7 @@ javascriptGenerator.forBlock['array_create'] = function(block: Blockly.Block) {
 Blockly.Blocks['array_set'] = {
   init: function(this: ArrayMutatorBlock) {
     this.appendDummyInput()
-      .appendField('📦 ' + (Blockly.Msg.BLOCKS_ARRAY || 'Array'))
+      .appendField('📦 ' + (Blockly.Msg.BLOCKS_ARRAY_LABEL || 'Array'))
       .appendField(new Blockly.FieldTextInput('myArray'), 'VAR');
     this.appendDummyInput('DIM_INPUT')
       .appendField(Blockly.Msg.BLOCKS_ARRAY_DIMENSION || 'Dimension')
@@ -302,7 +302,7 @@ javascriptGenerator.forBlock['array_set'] = function(block: Blockly.Block) {
 Blockly.Blocks['array_get'] = {
   init: function(this: ArrayMutatorBlock) {
     this.appendDummyInput()
-      .appendField('📦 ' + (Blockly.Msg.BLOCKS_ARRAY || 'Array'))
+      .appendField('📦 ' + (Blockly.Msg.BLOCKS_ARRAY_LABEL || 'Array'))
       .appendField(new Blockly.FieldTextInput('myArray'), 'VAR')
       .appendField(Blockly.Msg.BLOCKS_ARRAY_DIMENSION || 'Dimension')
       .appendField(new Blockly.FieldDropdown([
@@ -382,7 +382,7 @@ javascriptGenerator.forBlock['array_get'] = function(block: Blockly.Block) {
 Blockly.Blocks['array_size'] = {
   init: function(this: ArrayMutatorBlock) {
     this.appendDummyInput()
-      .appendField('📦 ' + (Blockly.Msg.BLOCKS_ARRAY || 'Array'))
+      .appendField('📦 ' + (Blockly.Msg.BLOCKS_ARRAY_LABEL || 'Array'))
       .appendField(new Blockly.FieldTextInput('myArray'), 'VAR')
       .appendField(Blockly.Msg.BLOCKS_ARRAY_SIZE || 'Size');
 
