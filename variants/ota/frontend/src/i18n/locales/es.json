@@ -4751,5 +4751,12 @@
         "pricing": "Los precios de los proveedores pueden cambiar en cualquier momento. Consulta la página oficial de precios de cada proveedor para conocer las tarifas actuales."
       }
     }
+  },
+  "footer": {
+    "copyright": "© Digico LLC",
+    "terms": "Términos del Servicio",
+    "privacy": "Política de Privacidad",
+    "tokutei": "Ley de Transacciones Comerciales Especificadas",
+    "refund": "Política de Reembolsos"
   }
 }

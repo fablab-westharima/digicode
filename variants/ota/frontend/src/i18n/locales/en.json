@@ -4751,5 +4751,12 @@
         "pricing": "Provider pricing may change at any time. Please refer to each provider's official pricing page for current rates."
       }
     }
+  },
+  "footer": {
+    "copyright": "© Digico LLC",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "tokutei": "Specified Commercial Transactions Act",
+    "refund": "Refund Policy"
   }
 }

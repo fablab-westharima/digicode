@@ -8,6 +8,7 @@
 
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AppFooter } from './components/common/AppFooter';
 import { useAuthStore } from '@/stores/authStore';
 import { useClassServerHealthStore } from '@/stores/classServerHealthStore';
 import { AuthPage } from '@/components/auth/AuthPage';
@@ -222,6 +223,7 @@ function App() {
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <AppFooter />
       <ToastContainer />
     </BrowserRouter>
   );
