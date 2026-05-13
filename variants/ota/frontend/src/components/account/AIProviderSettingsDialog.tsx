@@ -146,6 +146,15 @@ export function AIProviderSettingsDialog({ open, onOpenChange }: Props) {
                 placeholder="http://localhost:11434/v1"
                 className="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
+              <a
+                href="/help/local-llm"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 mt-2 text-xs text-primary hover:underline"
+              >
+                {t('ai.localLlmHelp')}
+                <ExternalLink className="w-3 h-3" />
+              </a>
             </div>
           )}
 

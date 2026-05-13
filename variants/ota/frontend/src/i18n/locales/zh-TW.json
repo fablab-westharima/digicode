@@ -4431,7 +4431,8 @@
       "mode": "模式",
       "provider": "提供商",
       "generatedResult": "積木生成結果"
-    }
+    },
+    "localLlmHelp": "關於本地 LLM"
   },
   "admin": {
     "title": "DigiCode Admin",
@@ -4647,6 +4648,62 @@
     },
     "status": {
       "endsInDays": "剩 {{count}} 天"
+    }
+  },
+  "help": {
+    "localLlm": {
+      "title": "關於本地 LLM",
+      "intro": {
+        "heading": "什麼是本地 LLM",
+        "point1": "在自己的 PC 上執行的 AI 模型。無需 API 費用，可離線運作。",
+        "point2": "可用於 DigiCode 的 AI 區塊生成、輔助機器人與 UI 客製化。"
+      },
+      "tools": {
+        "heading": "常見工具",
+        "ollama": "指令列為主，簡潔",
+        "lmStudio": "具備 GUI，適合初學者"
+      },
+      "spec": {
+        "heading": "依 PC 規格選擇模型",
+        "col": {
+          "tier": "PC 規格",
+          "ram": "RAM / VRAM 參考",
+          "models": "代表模型"
+        },
+        "entry": {
+          "tier": "入門",
+          "ram": "8 GB RAM",
+          "models": "Llama 3.3 8B / Qwen 2.5 7B / Gemma 3 4B / LFM2.5 1.2B"
+        },
+        "middle": {
+          "tier": "中階",
+          "ram": "16 GB RAM",
+          "models": "Qwen 2.5-Coder 14B / Phi-4 14B / Qwen3.6 9B"
+        },
+        "highGpu": {
+          "tier": "高階 GPU",
+          "ram": "24 GB VRAM (RTX 4090 等)",
+          "models": "Qwen 2.5-Coder 32B / DeepSeek-Coder V2 16B / DeepSeek-R1 32B"
+        },
+        "appleSi": {
+          "tier": "Apple Silicon",
+          "ram": "32 GB+ 統一記憶體 (M3 Pro/Max 以上)",
+          "models": "Qwen 2.5-Coder 32B / Llama 3.3 70B (Q4)"
+        },
+        "ultra": {
+          "tier": "頂級",
+          "ram": "64 GB+ RAM (M4 Max / 2×GPU)",
+          "models": "Gemma 4 26B / Qwen3.5 122B / Llama 3.3 70B"
+        }
+      },
+      "notes": {
+        "heading": "備註",
+        "env": "在 DigiCode 上的實際表現會依環境與模型而異。",
+        "quality": "區塊生成的品質取決於模型能力。建議複雜組合使用 14B 以上的模型。",
+        "oldPc": "建議使用 2020 年以後的 PC。較舊的 PC 建議改用雲端 API (Gemini / GPT / Claude)。",
+        "fallback": "若遇到問題，請改用雲端 API。",
+        "disclaimer": "此處列出的工具與模型僅為本地 LLM 設定範例，並非 DigiCode 對其相容性或可用性的背書或保證。"
+      }
     }
   }
 }

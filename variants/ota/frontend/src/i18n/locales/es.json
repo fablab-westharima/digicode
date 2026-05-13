@@ -4431,7 +4431,8 @@
       "mode": "Modo",
       "provider": "Proveedor",
       "generatedResult": "Resultado de Generación de Bloques"
-    }
+    },
+    "localLlmHelp": "Acerca de LLM local"
   },
   "admin": {
     "title": "DigiCode Admin",
@@ -4647,6 +4648,62 @@
     },
     "status": {
       "endsInDays": "Quedan {{count}} días"
+    }
+  },
+  "help": {
+    "localLlm": {
+      "title": "Acerca de LLM local",
+      "intro": {
+        "heading": "¿Qué es un LLM local?",
+        "point1": "Modelos de IA que se ejecutan en tu propio PC. Sin costes de API, funcionan sin conexión.",
+        "point2": "Compatible con la generación de bloques con IA, el bot de ayuda y la personalización de UI de DigiCode."
+      },
+      "tools": {
+        "heading": "Herramientas comunes",
+        "ollama": "Línea de comandos, sencilla",
+        "lmStudio": "Con GUI, apta para principiantes"
+      },
+      "spec": {
+        "heading": "Modelos por nivel de PC",
+        "col": {
+          "tier": "Nivel de PC",
+          "ram": "Guía RAM / VRAM",
+          "models": "Modelos representativos"
+        },
+        "entry": {
+          "tier": "Inicial",
+          "ram": "8 GB de RAM",
+          "models": "Llama 3.3 8B / Qwen 2.5 7B / Gemma 3 4B / LFM2.5 1.2B"
+        },
+        "middle": {
+          "tier": "Medio",
+          "ram": "16 GB de RAM",
+          "models": "Qwen 2.5-Coder 14B / Phi-4 14B / Qwen3.6 9B"
+        },
+        "highGpu": {
+          "tier": "GPU de gama alta",
+          "ram": "24 GB de VRAM (RTX 4090, etc.)",
+          "models": "Qwen 2.5-Coder 32B / DeepSeek-Coder V2 16B / DeepSeek-R1 32B"
+        },
+        "appleSi": {
+          "tier": "Apple Silicon",
+          "ram": "32 GB+ de memoria unificada (M3 Pro/Max o superior)",
+          "models": "Qwen 2.5-Coder 32B / Llama 3.3 70B (Q4)"
+        },
+        "ultra": {
+          "tier": "Ultra",
+          "ram": "64 GB+ de RAM (M4 Max / 2×GPU)",
+          "models": "Gemma 4 26B / Qwen3.5 122B / Llama 3.3 70B"
+        }
+      },
+      "notes": {
+        "heading": "Notas",
+        "env": "El comportamiento real en DigiCode varía según el entorno y el modelo.",
+        "quality": "La calidad de la generación de bloques depende de la capacidad del modelo. Para composiciones complejas recomendamos modelos de 14B o superiores.",
+        "oldPc": "Recomendamos un PC de 2020 o posterior. En equipos más antiguos, conviene usar APIs en la nube (Gemini / GPT / Claude).",
+        "fallback": "Si encuentras problemas, vuelve a usar una API en la nube.",
+        "disclaimer": "Las herramientas y modelos listados son ejemplos de configuraciones de LLM locales, no respaldos ni garantías de compatibilidad con DigiCode."
+      }
     }
   }
 }

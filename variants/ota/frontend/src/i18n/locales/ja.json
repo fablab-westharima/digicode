@@ -4437,7 +4437,8 @@
       "mode": "モード",
       "provider": "プロバイダー",
       "generatedResult": "ブロック生成結果"
-    }
+    },
+    "localLlmHelp": "ローカルLLM について"
   },
   "admin": {
     "title": "DigiCode Admin",
@@ -4653,6 +4654,62 @@
     },
     "status": {
       "endsInDays": "残り {{count}} 日"
+    }
+  },
+  "help": {
+    "localLlm": {
+      "title": "ローカル LLM について",
+      "intro": {
+        "heading": "ローカル LLM とは",
+        "point1": "自分の PC で動かす AI モデル。API 課金不要、オフライン動作可能。",
+        "point2": "DigiCode の AI ブロック生成・ヘルプ Bot・UI カスタマイズで利用可能。"
+      },
+      "tools": {
+        "heading": "代表的なツール",
+        "ollama": "コマンドライン中心、シンプル",
+        "lmStudio": "GUI 付き、初心者向け"
+      },
+      "spec": {
+        "heading": "PC スペック別モデル一覧",
+        "col": {
+          "tier": "PC スペック",
+          "ram": "RAM / VRAM 目安",
+          "models": "代表的なモデル"
+        },
+        "entry": {
+          "tier": "エントリー",
+          "ram": "RAM 8GB",
+          "models": "Llama 3.3 8B / Qwen 2.5 7B / Gemma 3 4B / LFM2.5 1.2B"
+        },
+        "middle": {
+          "tier": "ミドル",
+          "ram": "RAM 16GB",
+          "models": "Qwen 2.5-Coder 14B / Phi-4 14B / Qwen3.6 9B"
+        },
+        "highGpu": {
+          "tier": "ハイエンド GPU",
+          "ram": "VRAM 24GB (RTX 4090 等)",
+          "models": "Qwen 2.5-Coder 32B / DeepSeek-Coder V2 16B / DeepSeek-R1 32B"
+        },
+        "appleSi": {
+          "tier": "Apple Silicon",
+          "ram": "統合メモリ 32GB+ (M3 Pro/Max 以上)",
+          "models": "Qwen 2.5-Coder 32B / Llama 3.3 70B (Q4)"
+        },
+        "ultra": {
+          "tier": "ウルトラ",
+          "ram": "RAM 64GB+ (M4 Max / 2×GPU)",
+          "models": "Gemma 4 26B / Qwen3.5 122B / Llama 3.3 70B"
+        }
+      },
+      "notes": {
+        "heading": "注記",
+        "env": "DigiCode での動作は環境やモデルにより異なります。",
+        "quality": "ブロック生成の品質はモデルの性能に依存します。複雑な構成の生成には 14B 以上のモデルを推奨します。",
+        "oldPc": "2020 年以降の PC を推奨します。それ以前の古い PC ではクラウド API (Gemini / GPT / Claude) の利用を推奨します。",
+        "fallback": "動作に問題がある場合はクラウド API をご利用ください。",
+        "disclaimer": "ここで紹介しているツール・モデルはローカル LLM 環境の例示であり、DigiCode 上での動作保証や推奨を行うものではありません。"
+      }
     }
   }
 }
