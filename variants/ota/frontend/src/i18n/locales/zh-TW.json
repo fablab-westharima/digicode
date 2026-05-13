@@ -2242,7 +2242,7 @@
       "softwareVersion": "軟體版本",
       "autoUniqueId": "自動 deviceId (MAC)",
       "availability": "可用性 (LWT)",
-      "objectId": "Object ID (entity_id)",
+      "objectId": "ID (entity_id)",
       "displayName": "顯示名稱 (HA UI)",
       "diagnosticsAuto": "🩺 HA 自動診斷",
       "diagnosticsAutoTooltip": "依指定間隔自動將 RSSI / 運轉時間 / 可用記憶體 / 重啟原因發布至 Home Assistant（預設 60 秒）。使用獨立的 millis() 計時器運作（與 ha_report_interval 分離）。entity_category=diagnostic 透過 ha_loop 的 retain 覆寫機制套用，實體會顯示於 HA UI 的 Diagnostics 區段。請放置於 arduino_setup 中，至少需啟用一個項目。",

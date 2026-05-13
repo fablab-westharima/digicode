@@ -1899,7 +1899,13 @@
       "waterlevel_label": "水位センサーピン",
       "waterlevel_percent": "パーセント (0〜100)",
       "waterlevel_raw": "生値 (0〜4095)",
-      "waterlevel_tooltip": "水位を計測します。"
+      "waterlevel_tooltip": "水位を計測します。",
+      "lm35": {
+        "unit": "温度 (°C)"
+      },
+      "thermistor": {
+        "unit": "温度 (°C)"
+      }
     },
     "display": {
       "oledInit": "OLED初期化",
@@ -2793,7 +2799,7 @@
     "content": "内容",
     "dfp": {
       "init": "DFPlayer 初期化",
-      "inittooltip": "Initialize DFPlayer Mini via SoftwareSerial. Returns true if found. Connect DFPlayer TX to ESP32 RX pin, and DFPlayer RX (via 1kΩ resistor) to ESP32 TX pin.",
+      "inittooltip": "SoftwareSerial 経由で DFPlayer Mini を初期化します。検出されると true を返します。DFPlayer の TX を ESP32 の RX ピンに、DFPlayer の RX を (1kΩ 抵抗経由で) ESP32 の TX ピンに接続してください。",
       "pause": "DFPlayer 一時停止",
       "pausetooltip": "現在の再生を一時停止します。",
       "play": "DFPlayer 再生",

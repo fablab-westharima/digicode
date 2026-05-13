@@ -9,7 +9,7 @@
     "generate:ai-catalog": "npx tsx scripts/generate-ai-block-catalog.ts",
     "build:wifi-controller-bundle": "npx tsx scripts/build-wifi-controller-bundle.ts",
     "build:unified-controller-bundle": "npx tsx scripts/build-unified-controller-bundle.ts",
-    "prebuild": "npm run build:wifi-controller-bundle && npm run build:unified-controller-bundle && npm run generate:ai-catalog && npx tsx scripts/audit-ai-catalog.ts && npx tsx scripts/audit-data-consistency.ts && npx tsx scripts/audit-ble-controller.ts",
+    "prebuild": "npm run build:wifi-controller-bundle && npm run build:unified-controller-bundle && npm run generate:ai-catalog && npx tsx scripts/audit-ai-catalog.ts && npx tsx scripts/audit-data-consistency.ts && npx tsx scripts/audit-ble-controller.ts && npx tsx scripts/audit-i18n-block-coverage.ts",
     "build": "vite build",
     "typecheck": "tsc -b",
     "lint": "eslint .",
