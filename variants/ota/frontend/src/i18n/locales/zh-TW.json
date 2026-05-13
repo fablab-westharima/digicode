@@ -4402,7 +4402,7 @@
       "openai": "OpenAI",
       "anthropic": "Claude (Anthropic)",
       "gemini": "Gemini (Google)",
-      "custom": "自訂端點"
+      "custom": "本地 LLM"
     },
     "apiKey": "API 金鑰",
     "apiKeyDisclaimer": "API 金鑰將以明文儲存於瀏覽器的本機存儲中",

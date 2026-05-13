@@ -4402,7 +4402,7 @@
       "openai": "OpenAI",
       "anthropic": "Claude (Anthropic)",
       "gemini": "Gemini (Google)",
-      "custom": "Endpoint personalizado"
+      "custom": "LLM local"
     },
     "apiKey": "Chave API",
     "apiKeyDisclaimer": "A chave API é armazenada em texto simples no armazenamento local do navegador",

@@ -20,9 +20,9 @@ const MODEL_DOC_LINKS: Partial<Record<AiProvider, string>> = {
 };
 
 const MODEL_PLACEHOLDERS: Record<AiProvider, string> = {
-  openai:    'gpt-4o-mini',
+  openai:    'gpt-4.1-mini',
   anthropic: 'claude-haiku-4-5',
-  gemini:    'gemini-2.0-flash-lite',
+  gemini:    'gemini-2.5-flash',
   custom:    '',
 };
 

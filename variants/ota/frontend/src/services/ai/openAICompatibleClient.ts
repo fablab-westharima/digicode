@@ -16,9 +16,9 @@ const ENDPOINTS: Record<string, string> = {
 };
 
 const DEFAULT_MODELS: Record<string, string> = {
-  openai:  'gpt-4o-mini',
-  gemini:  'gemini-2.0-flash-lite',
-  custom:  'gpt-4o-mini',
+  openai:  'gpt-4.1-mini',
+  gemini:  'gemini-2.5-flash',
+  custom:  'gpt-4.1-mini',
 };
 
 type ApiMessage = { role: string; content: string };

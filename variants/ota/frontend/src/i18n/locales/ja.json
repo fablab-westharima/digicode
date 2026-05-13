@@ -4408,7 +4408,7 @@
       "openai": "OpenAI",
       "anthropic": "Claude (Anthropic)",
       "gemini": "Gemini (Google)",
-      "custom": "カスタムエンドポイント"
+      "custom": "ローカルLLM"
     },
     "apiKey": "APIキー",
     "apiKeyDisclaimer": "APIキーはブラウザのローカルストレージに平文で保存されます",
