@@ -24,6 +24,7 @@ import submissionsRoute from './routes/submissions';
 import publicFeatureFlags from './routes/public-feature-flags';
 import { rateLimitPresets } from './middleware/rateLimit';
 import { localeMiddleware } from './middleware/locale';
+import { securityHeaders } from './middleware/securityHeaders';
 import { auditCrossDbIntegrity } from './utils/auditCrossDb';
 import type { Bindings } from './types/env';
 
@@ -81,6 +82,10 @@ app.use('*', cors({
 
 // i18n locale middleware: Accept-Language → c.set('locale', ...) — 全ルート前に適用
 app.use('*', localeMiddleware);
+
+// T13 (Session 119): security headers (nosniff / X-Frame-Options DENY / HSTS 1y /
+// Referrer-Policy) を全 response に適用。CSP は API JSON only のため不要。
+app.use('*', securityHeaders);
 
 // ヘルスチェック
 app.get('/health', (c) => {
