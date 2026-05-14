@@ -117,6 +117,25 @@ webhooks.post('/stripe', async (c) => {
 
   console.log(`[webhook] ${event.type} id=${event.id}`);
 
+  // F-8 (Session 123): Stripe webhook idempotency check.
+  // Stripe は failed delivery を 3 日間 retry し、同じ event.id が複数回到着する。
+  // 旧コードは event.id 重複 check なしで全 handler を再実行 → 例えば
+  // handleSubscriptionDeleted の enterprise grace path で gracePeriod = now+1month を
+  // 各 retry ごとに UPDATE = cancellation deadline が無限延長される脆弱性 (F-10)。
+  // 本 fix で processed_webhooks に INSERT OR IGNORE、重複なら 200 早期 return。
+  // checkout.session.completed は ON CONFLICT DO UPDATE で idempotent だが、
+  // handler 全体での重複処理 (stripe API 再 fetch / users.plan UPDATE 等) を防ぐ。
+  const insertResult = await db.prepare(
+    'INSERT OR IGNORE INTO processed_webhooks (event_id, event_type) VALUES (?, ?)'
+  ).bind(event.id, event.type).run();
+
+  if (insertResult.meta.changes === 0) {
+    // 重複 event = Stripe の retry を ack して early return。
+    // 200 を返すことで Stripe 側の retry 停止 (Stripe spec)。
+    console.log(`[webhook] duplicate event ignored: ${event.type} id=${event.id}`);
+    return c.json({ received: true, duplicate: true });
+  }
+
   switch (event.type) {
     case 'checkout.session.completed':
       await handleCheckoutCompleted(db, stripe, event.data.object as Stripe.Checkout.Session);
@@ -242,10 +261,15 @@ async function handleSubscriptionDeleted(
     const gracePeriod = new Date();
     gracePeriod.setMonth(gracePeriod.getMonth() + 1);
 
+    // F-10 (Session 123): defense-in-depth filter `expires_at IS NULL`。
+    // 旧コードは event.id idempotency 不在 (F-8) + grace UPDATE unconditional =
+    // Stripe retry storm で gracePeriod が無限延長される脆弱性。F-8 で event.id
+    // 重複 check 実装済だが、本 filter で double-defense (status='canceling'
+    // already-set rows への重複 grace 延長を block)。
     await db.prepare(`
       UPDATE subscriptions
       SET status = 'canceling', expires_at = ?, updated_at = datetime('now')
-      WHERE stripe_subscription_id = ?
+      WHERE stripe_subscription_id = ? AND expires_at IS NULL
     `).bind(gracePeriod.toISOString(), subscriptionId).run();
 
     console.log(`[webhook] enterprise canceling: user=${sub.user_id} grace until ${gracePeriod.toISOString()}`);
