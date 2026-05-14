@@ -1,5 +1,7 @@
 // JWT ユーティリティ（Web Crypto API使用）
 
+import { constantTimeEqual } from './crypto';
+
 interface JWTPayload {
   userId: number;
   email: string;
@@ -37,19 +39,8 @@ async function createSignature(data: string, secret: string): Promise<string> {
   return base64UrlEncode(new Uint8Array(signature).reduce((s, b) => s + String.fromCharCode(b), ''));
 }
 
-// 固定時間文字列比較 (F-F2 Session 118): 早期 short-circuit を避けて
-// byte-by-byte timing attack を抑制。length 不一致は即 false (signature の長さは
-// 固定なので length 自体は機密ではない)、length 一致時のみ char code XOR loop。
-function constantTimeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let result = 0;
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  return result === 0;
-}
-
 // HMAC-SHA256 署名検証
+// 固定時間文字列比較は ./crypto.ts に集約 (NEW-9 Session 121、F-F2 Session 118 由来)
 async function verifySignature(data: string, signature: string, secret: string): Promise<boolean> {
   const expectedSignature = await createSignature(data, secret);
   return constantTimeEqual(signature, expectedSignature);
