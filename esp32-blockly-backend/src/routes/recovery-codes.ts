@@ -104,19 +104,19 @@ recoveryCodes.post('/verify', async (c) => {
       'SELECT id, email, email_verified, account_type FROM users WHERE email = ?'
     ).bind(email).first<{ id: number; email: string; email_verified: number; account_type: string | null }>();
 
+    // D-3 (Session 120): debug console.log 6 行を削除。
+    // 旧コードは user_id, recovery_codes count, valid code id 等を log していたが、
+    // Workers Logs に attempt sequence + 数値が残るのは credential-replay attack
+    // planning の補助材料。本 fix で全削除、error path は console.error のみ保持。
+
     if (!user) {
-      console.log('[Recovery Code Verify] User not found');
       return errorJson(c, 'auth.emailOrRecoveryCodeInvalid', 401);
     }
-
-    console.log('[Recovery Code Verify] User found:', user.id);
 
     // 未使用のリカバリーコードを全て取得
     const recoveryCodes = await c.env.DB.prepare(
       'SELECT id, code_hash FROM recovery_codes WHERE user_id = ? AND used = 0'
     ).bind(user.id).all<{ id: number; code_hash: string }>();
-
-    console.log('[Recovery Code Verify] Recovery codes count:', recoveryCodes.results?.length || 0);
 
     // F-A1 (Session 118 anti-enum cluster scope-rectification):
     // 旧コードは「該当 user が recovery_codes 未設定」case を 401 recovery.noCodes で
@@ -124,7 +124,6 @@ recoveryCodes.post('/verify', async (c) => {
     // 異なるため state leak。401 auth.emailOrRecoveryCodeInvalid に統一して
     // 「user 存在 AND recovery code 未設定」path を識別不能化。
     if (!recoveryCodes.results || recoveryCodes.results.length === 0) {
-      console.log('[Recovery Code Verify] No recovery codes found');
       return errorJson(c, 'auth.emailOrRecoveryCodeInvalid', 401);
     }
 
@@ -139,11 +138,8 @@ recoveryCodes.post('/verify', async (c) => {
     }
 
     if (!validCodeId) {
-      console.log('[Recovery Code Verify] No valid code found');
       return errorJson(c, 'auth.emailOrRecoveryCodeInvalid', 401);
     }
-
-    console.log('[Recovery Code Verify] Valid code ID:', validCodeId);
 
     // F-A1 (Session 118 anti-enum cluster scope-rectification):
     // F-9 gate (旧 line 108-110) は code verification 前にあり、未登録 user (401) vs
