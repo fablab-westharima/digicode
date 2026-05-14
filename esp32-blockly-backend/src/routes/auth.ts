@@ -186,23 +186,9 @@ auth.post('/login', async (c) => {
       return errorJson(c, 'auth.emailOrPasswordIncorrect', 401);
     }
 
-    // メール確認チェック（student は代理作成時に email_verified=1 済み）
-    if (!user.email_verified) {
-      return c.json({
-        error: 'メールアドレスが確認されていません。確認メールをご確認ください。',
-        needsVerification: true
-      }, 403);
-    }
-
-    // パスキーのみモードチェック
-    if (user.passkey_only) {
-      return c.json({
-        error: 'このアカウントはパスキーのみでログイン可能です。パスキーでログインしてください。',
-        passkeyOnly: true
-      }, 403);
-    }
-
-    // パスワード検証
+    // パスワード検証を先行 (RB-4 / Session 117 anti-enum cluster):
+    // email_verified / passkey_only の状態 leak を防ぐため password verify を最前段に移動。
+    // BUG-083 で導入された needsVerification UX 救済 path はパスワード正解時のみ返却する形で維持。
     const { valid, needsRehash } = await verifyPassword(password, user.password_hash);
 
     if (!valid) {
@@ -215,6 +201,22 @@ auth.post('/login', async (c) => {
       await c.env.DB.prepare(
         "UPDATE users SET password_hash = ?, updated_at = datetime('now') WHERE id = ?"
       ).bind(newHash, user.id).run();
+    }
+
+    // パスキーのみモードチェック (パスワード正解後のみ判定 = passkey_only 状態 leak 防止)
+    if (user.passkey_only) {
+      return c.json({
+        error: 'このアカウントはパスキーのみでログイン可能です。パスキーでログインしてください。',
+        passkeyOnly: true
+      }, 403);
+    }
+
+    // メール未確認チェック (パスワード正解後のみ判定 = UX 救済 path 維持 + email_verified 状態 leak 防止)
+    if (!user.email_verified) {
+      return c.json({
+        error: 'メールアドレスが確認されていません。確認メールをご確認ください。',
+        needsVerification: true
+      }, 403);
     }
 
     // 生徒ログイン制限: student かつクラス未所属ならログイン不可

@@ -91,19 +91,9 @@ twoFactor.post('/send-otp', async (c) => {
       return errorJson(c, 'auth.emailOrPasswordIncorrect', 401);
     }
 
-    // パスキー専用モードのチェック
-    if (user.passkey_only) {
-      return errorJson(c, 'auth.passkeyOnly', 401);
-    }
-
-    // メール未確認チェック
-    // BUG-083: needsVerification flag を frontend に返して EmailVerificationWaiting に誘導
-    // F-2 fix: HTTP status を auth.ts:190 (403) に統一 (frontend は flag-based 判定で影響なし)
-    if (!user.email_verified) {
-      return errorJson(c, 'auth.emailNotVerified', 403, { needsVerification: true });
-    }
-
-    // パスワード検証
+    // パスワード検証を先行 (RB-4 / Session 117 anti-enum cluster):
+    // email_verified / passkey_only の状態 leak を防ぐため password verify を最前段に移動。
+    // BUG-083 で導入された needsVerification UX 救済 path はパスワード正解時のみ返却する形で維持。
     const { valid: isValidPassword, needsRehash } = await verifyPassword(password, user.password_hash);
     if (!isValidPassword) {
       return errorJson(c, 'auth.emailOrPasswordIncorrect', 401);
@@ -115,6 +105,17 @@ twoFactor.post('/send-otp', async (c) => {
       await c.env.DB.prepare(
         "UPDATE users SET password_hash = ?, updated_at = datetime('now') WHERE id = ?"
       ).bind(newHash, user.id).run();
+    }
+
+    // パスキー専用モードのチェック (パスワード正解後のみ判定 = passkey_only 状態 leak 防止)
+    if (user.passkey_only) {
+      return errorJson(c, 'auth.passkeyOnly', 401);
+    }
+
+    // メール未確認チェック (パスワード正解後のみ判定 = UX 救済 path 維持 + email_verified 状態 leak 防止)
+    // BUG-083: needsVerification flag を frontend に返して EmailVerificationWaiting に誘導
+    if (!user.email_verified) {
+      return errorJson(c, 'auth.emailNotVerified', 403, { needsVerification: true });
     }
 
     // 生徒ログイン制限: student かつクラス未所属ならログイン不可
