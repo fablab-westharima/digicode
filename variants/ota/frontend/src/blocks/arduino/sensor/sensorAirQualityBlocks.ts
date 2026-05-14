@@ -139,8 +139,11 @@ generator.forBlock['pms5003_init'] = function(block: Blockly.Block) {
   const tx = block.getFieldValue('TX');
   generator.definitions_['include_pms5003'] = PMS5003_INCLUDE;
   if (!generator.setups_) generator.setups_ = {};
-  generator.setups_['pms5003_init'] = `if (!pms5003Sensor) pms5003Sensor = new SerialPM(PMSx003, ${rx}, ${tx});
+  // case 19 axis 2 (Session 120): first-wins guard for PMS5003 RX/TX pins.
+  if (!generator.setups_['pms5003_init']) {
+    generator.setups_['pms5003_init'] = `if (!pms5003Sensor) pms5003Sensor = new SerialPM(PMSx003, ${rx}, ${tx});
   pms5003Sensor->init();`;
+  }
   return '';
 };
 

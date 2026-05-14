@@ -196,7 +196,11 @@ generator.forBlock['camera_stream_start'] = function(block: Blockly.Block) {
   const port = block.getFieldValue('PORT');
   generator.definitions_['include_camera'] = CAM_GLOBALS;
   generator.definitions_['include_webserver'] = '#include <WebServer.h>';
-  generator.definitions_['cam_stream_server'] = `WebServer camStreamServer(${port});`;
+  // case 19 axis 2 (Session 120): first-wins guard for streaming server port.
+  // 2 個目の camera_stream_start (異 port) で silent overwrite を防ぐ。
+  if (!generator.definitions_['cam_stream_server']) {
+    generator.definitions_['cam_stream_server'] = `WebServer camStreamServer(${port});`;
+  }
   // post-Phase 4-4 commit 12 fix (case_0500):
   // 旧実装は JS template literal で `\r\n` をそのまま記述、JS が \r/\n を
   // 実改行に展開して C++ 出力に literal newline 混入 → C++ string literal

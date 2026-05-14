@@ -173,12 +173,16 @@ javascriptGenerator.forBlock['ticker_attach'] = function(block: Blockly.Block) {
 void tickerISR() {
   tickerFlag = true;
 }`;
-  generator.definitions_['ticker_handler'] = `
+  // case 19 axis 2 (Session 120): first-wins guard for ticker handler body.
+  // 2 個目の timer_attach で別 callback body が silent overwrite される race を閉鎖。
+  if (!generator.definitions_['ticker_handler']) {
+    generator.definitions_['ticker_handler'] = `
 void tickerHandler() {
   if (tickerFlag) {
     tickerFlag = false;
 ${callback}  }
 }`;
+  }
 
   // String().toInt() wrap so any input type compiles (BLE String, variable,
   // numeric literal). Ticker.attach() expects seconds (float) — divide by

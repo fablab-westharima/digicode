@@ -272,10 +272,13 @@ Blockly.Blocks['iot_cloud_on_message'] = {
 generator.forBlock['iot_cloud_on_message'] = function(block: Blockly.Block) {
   const handler = javascriptGenerator.statementToCode(block, 'HANDLER');
   emitIotCloudCommonDefs();
-  generator.definitions_['iot_cloud_handler_func'] = `
+  // case 19 axis 2 (Session 120): first-wins guard for IoT Cloud message handler body.
+  if (!generator.definitions_['iot_cloud_handler_func']) {
+    generator.definitions_['iot_cloud_handler_func'] = `
 void iotCloudHandleMessage() {
 ${handler}}
 static _IotCloudReg _iotCloudReg(iotCloudHandleMessage);`;
+  }
   if (!generator.loopPre_) generator.loopPre_ = {};
   generator.loopPre_['iot_cloud_check_message'] = '  iotCloudCheckMessage();';
   return '';

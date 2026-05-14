@@ -278,13 +278,16 @@ generator.forBlock['ble_uart_on_receive'] = function(block: Blockly.Block) {
   // slider symptom (writes accepted, handlers never fired). The NUS
   // BleRxCallbacks now explicitly sets bleWriteCharUuid="" to mark its
   // own messages as NUS-origin.
-  generator.definitions_['ble_receive_func'] = `
+  // case 19 axis 2 (Session 120): first-wins guard for BLE receive handler body.
+  if (!generator.definitions_['ble_receive_func']) {
+    generator.definitions_['ble_receive_func'] = `
 void bleCheckReceive() {
   if (bleMessage.length() > 0 && bleWriteCharUuid.length() == 0) {
 ${handler}    bleMessage = "";
   }
 }
 static _BleLoopRegister _reg_bleCheckReceive(bleCheckReceive);`;
+  }
   // Post-U5 cleanup (2026-05-03): emit `bleLoopTick();` exactly once via
   // loopPre_ (dedupe by key), regardless of how many BLE handler blocks the
   // user has. Previous behavior (each handler returning its own inline
@@ -482,13 +485,16 @@ int bleFoundRssi = 0;`;
   // does not strand the call. Tick call is injected into loop() once via
   // loopPre_ (post-U5 cleanup), no matter how many BLE handler blocks exist.
   generator.definitions_['ble_loop_tick_globals'] = BLE_LOOP_TICK_GLOBALS;
-  generator.definitions_['ble_device_found_func'] = `
+  // case 19 axis 2 (Session 120): first-wins guard for BLE device-found handler body.
+  if (!generator.definitions_['ble_device_found_func']) {
+    generator.definitions_['ble_device_found_func'] = `
 void bleCheckDeviceFound() {
   if (bleDeviceFound) {
     bleDeviceFound = false;
 ${handler}  }
 }
 static _BleLoopRegister _reg_bleCheckDeviceFound(bleCheckDeviceFound);`;
+  }
   if (!generator.loopPre_) generator.loopPre_ = {};
   generator.loopPre_['ble_loop_tick'] = '  bleLoopTick();';
   return '';

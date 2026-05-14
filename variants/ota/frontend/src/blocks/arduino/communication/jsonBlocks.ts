@@ -54,7 +54,15 @@ javascriptGenerator.forBlock['json_parse_size'] = function(block: Blockly.Block)
   const size = block.getFieldValue('SIZE');
 
   generator.definitions_['include_arduinojson'] = '#include <ArduinoJson.h>';
-  generator.definitions_['json_doc'] = `StaticJsonDocument<${size}> _jsonDoc;`;
+  // RB-5 (Session 120 case 19 axis 2): first-wins guard for json_doc size.
+  // 旧コード comment (L24-29) で旧 `json_parse` 削除理由として「同 key を field-dep
+  // value で上書き合戦 = 後勝ちで silent buffer-size mismatch (4096 指定が 2048 で
+  // 縮小されると ArduinoJson 無音 overflow)」を明記しているが、`json_parse_size`
+  // 自身も 2 個配置で同 vulnerability。本 fix で first-wins guard 適用、最初の
+  // 配置の size を維持。
+  if (!generator.definitions_['json_doc']) {
+    generator.definitions_['json_doc'] = `StaticJsonDocument<${size}> _jsonDoc;`;
+  }
 
   return `  // JSON Parse
   _jsonDoc.clear();

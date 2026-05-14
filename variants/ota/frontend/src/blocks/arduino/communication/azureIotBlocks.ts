@@ -493,10 +493,13 @@ generator.forBlock['azure_iot_hub_on_c2d'] = function(block: Blockly.Block) {
   generator.definitions_['azure_iot_globals_cb'] = AZURE_IOT_GLOBALS_CB;
   generator.definitions_['azure_iot_helpers'] = AZURE_IOT_HELPERS;
   // handler 関数 + static-init register (dedupe via key)
-  generator.definitions_['azure_iot_c2d_handler_func'] = `
+  // case 19 axis 2 (Session 120): first-wins guard for Azure IoT C2D handler body.
+  if (!generator.definitions_['azure_iot_c2d_handler_func']) {
+    generator.definitions_['azure_iot_c2d_handler_func'] = `
 void azureIotHandleC2D() {
 ${handler}}
 static _AzureIoTC2DReg _azureIotC2DReg(azureIotHandleC2D);`;
+  }
   // loopPre_ で 1 回だけ tick (N handler でも 1 回、placement 不要)
   if (!generator.loopPre_) generator.loopPre_ = {};
   generator.loopPre_['azure_iot_check_c2d'] = '  azureIotCheckC2D();';
@@ -616,10 +619,13 @@ generator.forBlock['azure_iot_subscribe_direct_method'] = function(block: Blockl
   generator.definitions_['azure_iot_globals'] = AZURE_IOT_GLOBALS;
   generator.definitions_['azure_iot_globals_cb'] = AZURE_IOT_GLOBALS_CB;
   generator.definitions_['azure_iot_helpers'] = AZURE_IOT_HELPERS;
-  generator.definitions_['azure_iot_direct_method_handler'] = `
+  // case 19 axis 2 (Session 120): first-wins guard for Azure IoT direct-method handler.
+  if (!generator.definitions_['azure_iot_direct_method_handler']) {
+    generator.definitions_['azure_iot_direct_method_handler'] = `
 void azureIotHandleDirectMethod() {
 ${handler}}
 static _AzureIoTDirectMethodReg _azureIotDirectMethodReg(azureIotHandleDirectMethod);`;
+  }
   // Subscribe at setup time (idempotent on reconnect via callback); also
   // ensure C2D loop tick is registered so MQTT loop runs.
   if (!generator.setups_) generator.setups_ = {};

@@ -54,7 +54,10 @@ generator.forBlock['hx711_init'] = function(block: Blockly.Block) {
   const sck = block.getFieldValue('SCK');
   generator.definitions_['include_hx711'] = HX711_INCLUDE;
   if (!generator.setups_) generator.setups_ = {};
-  generator.setups_['hx711_begin'] = `hx711Scale.begin(${dout}, ${sck});`;
+  // case 19 axis 2 (Session 120): first-wins guard for HX711 DOUT/SCK pins.
+  if (!generator.setups_['hx711_begin']) {
+    generator.setups_['hx711_begin'] = `hx711Scale.begin(${dout}, ${sck});`;
+  }
   return '';
 };
 

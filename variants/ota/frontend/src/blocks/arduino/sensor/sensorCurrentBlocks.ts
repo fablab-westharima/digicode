@@ -159,12 +159,15 @@ generator.forBlock['ina219_init'] = function(block: Blockly.Block) {
   const addr = block.getFieldValue('ADDR');
   generator.definitions_['include_ina219'] = INA219_INCLUDE;
   if (!generator.setups_) generator.setups_ = {};
-  generator.setups_['ina219_init'] = `Wire.begin();
+  // case 19 axis 2 (Session 120): first-wins guard for INA219 I2C address.
+  if (!generator.setups_['ina219_init']) {
+    generator.setups_['ina219_init'] = `Wire.begin();
   ina219Sensor = INA219((uint8_t)${addr});
   if (ina219Sensor.begin()) {
     ina219Sensor.setMaxCurrentShunt(2.0f, 0.1f);  // 2A range, 0.1Ω shunt (default)
     _ina219Inited = true;
   }`;
+  }
   return '';
 };
 
@@ -245,8 +248,11 @@ generator.forBlock['acs712_init'] = function(block: Blockly.Block) {
   if (!generator.setups_) generator.setups_ = {};
   // ESP32 ADC: 12-bit (4096 counts)、3.3V Vcc 想定。ACS712 自体は 5V センサだが
   // level shifter or voltage divider 経由 ESP32 ADC に接続する前提。
-  generator.setups_['acs712_init'] = `if (!acs712Sensor) acs712Sensor = new ACS712(${pin}, 3.3f, 4095, ${model});
+  // case 19 axis 2 (Session 120): first-wins guard for ACS712 pin/model.
+  if (!generator.setups_['acs712_init']) {
+    generator.setups_['acs712_init'] = `if (!acs712Sensor) acs712Sensor = new ACS712(${pin}, 3.3f, 4095, ${model});
   acs712Sensor->autoMidPoint(50);  // 50 サンプルで自動ゼロ点 (無負荷状態で実行推奨)`;
+  }
   return '';
 };
 

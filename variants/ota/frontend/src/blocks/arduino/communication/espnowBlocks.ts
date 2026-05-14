@@ -224,10 +224,13 @@ Blockly.Blocks['espnow_on_receive'] = {
 generator.forBlock['espnow_on_receive'] = function(block: Blockly.Block) {
   const handler = javascriptGenerator.statementToCode(block, 'HANDLER');
   emitEspnowDefs();
-  generator.definitions_['espnow_handler_func'] = `
+  // case 19 axis 2 (Session 120): first-wins guard for ESP-NOW handler body.
+  if (!generator.definitions_['espnow_handler_func']) {
+    generator.definitions_['espnow_handler_func'] = `
 void espnowHandleRecv() {
 ${handler}}
 static _EspNowRecvReg _espnowRecvReg(espnowHandleRecv);`;
+  }
   if (!generator.loopPre_) generator.loopPre_ = {};
   generator.loopPre_['espnow_check_recv'] = '  espnowCheckRecv();';
   return '';

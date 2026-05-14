@@ -66,10 +66,15 @@ javascriptGenerator.forBlock['ultrasonic_init'] = function(block: Blockly.Block)
   const trigPin = block.getFieldValue('TRIG_PIN');
   const echoPin = block.getFieldValue('ECHO_PIN');
 
-  generator.definitions_['ultrasonic_pins'] =
-    `// Ultrasonic sensor pins\n` +
-    `#define ULTRASONIC_TRIG ${trigPin}\n` +
-    `#define ULTRASONIC_ECHO ${echoPin}`;
+  // case 19 axis 2 (Session 120 mechanical sweep): first-wins guard for field-dep
+  // value (TRIG/ECHO pins). 2 個目の ultrasonic_init 配置で別 pin 設定が silent
+  // overwrite される race を閉鎖、最初の配置の値を維持。
+  if (!generator.definitions_['ultrasonic_pins']) {
+    generator.definitions_['ultrasonic_pins'] =
+      `// Ultrasonic sensor pins\n` +
+      `#define ULTRASONIC_TRIG ${trigPin}\n` +
+      `#define ULTRASONIC_ECHO ${echoPin}`;
+  }
 
   generator.definitions_['ultrasonic_function'] =
     `// Measure distance with ultrasonic sensor\n` +
@@ -174,11 +179,14 @@ javascriptGenerator.forBlock['dht_init'] = function(block: Blockly.Block) {
   const pin = block.getFieldValue('PIN');
 
   generator.definitions_['include_dht'] = '#include <DHT.h>';
-  generator.definitions_['dht_instance'] =
-    `// DHT sensor\n` +
-    `#define DHT_PIN ${pin}\n` +
-    `#define DHT_TYPE ${type}\n` +
-    `DHT dht(DHT_PIN, DHT_TYPE);`;
+  // case 19 axis 2 (Session 120): first-wins guard for DHT pin/type.
+  if (!generator.definitions_['dht_instance']) {
+    generator.definitions_['dht_instance'] =
+      `// DHT sensor\n` +
+      `#define DHT_PIN ${pin}\n` +
+      `#define DHT_TYPE ${type}\n` +
+      `DHT dht(DHT_PIN, DHT_TYPE);`;
+  }
 
   generator.setups_['dht_begin'] = `  dht.begin();`;
 
@@ -296,10 +304,13 @@ javascriptGenerator.forBlock['rus04_init'] = function(block: Blockly.Block) {
   const numLeds = block.getFieldValue('NUM_LEDS');
 
   // Ultrasonic pins
-  generator.definitions_['rus04_ultrasonic_pins'] =
-    `// RUS-04 Ultrasonic sensor pins\n` +
-    `#define RUS04_TRIG ${trigPin}\n` +
-    `#define RUS04_ECHO ${echoPin}`;
+  // case 19 axis 2 (Session 120): first-wins guard for RUS-04 ultrasonic pins.
+  if (!generator.definitions_['rus04_ultrasonic_pins']) {
+    generator.definitions_['rus04_ultrasonic_pins'] =
+      `// RUS-04 Ultrasonic sensor pins\n` +
+      `#define RUS04_TRIG ${trigPin}\n` +
+      `#define RUS04_ECHO ${echoPin}`;
+  }
 
   generator.definitions_['rus04_ultrasonic_function'] =
     `// Measure distance with RUS-04\n` +
@@ -318,11 +329,14 @@ javascriptGenerator.forBlock['rus04_init'] = function(block: Blockly.Block) {
 
   // RGB LED (NeoPixel)
   generator.definitions_['include_neopixel'] = '#include <Adafruit_NeoPixel.h>';
-  generator.definitions_['rus04_rgb_instance'] =
-    `// RUS-04 RGB LEDs (WS2812B)\n` +
-    `#define RUS04_RGB_PIN ${rgbPin}\n` +
-    `#define RUS04_NUM_LEDS ${numLeds}\n` +
-    `Adafruit_NeoPixel rus04Eyes(RUS04_NUM_LEDS, RUS04_RGB_PIN, NEO_GRB + NEO_KHZ800);`;
+  // case 19 axis 2 (Session 120): first-wins guard for RUS-04 RGB pin/count.
+  if (!generator.definitions_['rus04_rgb_instance']) {
+    generator.definitions_['rus04_rgb_instance'] =
+      `// RUS-04 RGB LEDs (WS2812B)\n` +
+      `#define RUS04_RGB_PIN ${rgbPin}\n` +
+      `#define RUS04_NUM_LEDS ${numLeds}\n` +
+      `Adafruit_NeoPixel rus04Eyes(RUS04_NUM_LEDS, RUS04_RGB_PIN, NEO_GRB + NEO_KHZ800);`;
+  }
 
   return `  pinMode(RUS04_TRIG, OUTPUT);\n` +
          `  pinMode(RUS04_ECHO, INPUT);\n` +

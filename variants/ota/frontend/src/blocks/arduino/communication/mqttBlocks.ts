@@ -194,8 +194,15 @@ javascriptGenerator.forBlock['mqtt_connect'] = function(block: Blockly.Block) {
   const hasAuth = username && username.length > 0;
 
   if (hasAuth) {
-    generator.definitions_['mqtt_username'] = `const char* mqtt_username = "${username}";`;
-    generator.definitions_['mqtt_password'] = `const char* mqtt_password = "${password}";`;
+    // case 19 axis 2 (Session 120): first-wins guard for MQTT credentials.
+    // mqtt_setup と mqtt_setup_lwt の両 block で同 key emit、別 credential で配置
+    // 時の silent overwrite を防ぐ。最初の配置の credential が勝つ。
+    if (!generator.definitions_['mqtt_username']) {
+      generator.definitions_['mqtt_username'] = `const char* mqtt_username = "${username}";`;
+    }
+    if (!generator.definitions_['mqtt_password']) {
+      generator.definitions_['mqtt_password'] = `const char* mqtt_password = "${password}";`;
+    }
     generator.definitions_['mqtt_reconnect_func'] = `
 void mqttReconnect() {
   while (!mqttClient.connected()) {
@@ -320,7 +327,10 @@ javascriptGenerator.forBlock['mqtt_on_message'] = function(block: Blockly.Block)
   generator.definitions_['mqtt_message_var'] = 'String mqtt_message = "";';
 
   // コールバック関数
-  generator.definitions_['mqtt_callback_func'] = `
+  // case 19 axis 2 (Session 120): first-wins guard for MQTT message callback body.
+  // 2 個目の mqtt_on_message で別 statement body が silent overwrite を防ぐ。
+  if (!generator.definitions_['mqtt_callback_func']) {
+    generator.definitions_['mqtt_callback_func'] = `
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
   mqtt_topic = String(topic);
   mqtt_message = "";
@@ -332,6 +342,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
   Serial.print("]: ");
   Serial.println(mqtt_message);
 ${statements}}`;
+  }
 
   // setupでコールバックを設定
   generator.setups_['mqtt_set_callback'] = '  mqttClient.setCallback(mqttCallback);';
@@ -562,10 +573,20 @@ javascriptGenerator.forBlock['mqtt_last_will'] = function(block: Blockly.Block) 
   const qos = block.getFieldValue('QOS');
 
   // グローバル変数として保存（connect時に使用）
-  generator.definitions_['mqtt_lwt_topic'] = `const char* mqtt_lwt_topic = "${topic}";`;
-  generator.definitions_['mqtt_lwt_message'] = `const char* mqtt_lwt_message = "${message}";`;
-  generator.definitions_['mqtt_lwt_retain'] = `const bool mqtt_lwt_retain = ${retain};`;
-  generator.definitions_['mqtt_lwt_qos'] = `const int mqtt_lwt_qos = ${qos};`;
+  // case 19 axis 2 (Session 120): first-wins guard for MQTT Last Will fields.
+  // 2 個目の mqtt_last_will (異 topic/message/retain/qos) で silent overwrite を防ぐ。
+  if (!generator.definitions_['mqtt_lwt_topic']) {
+    generator.definitions_['mqtt_lwt_topic'] = `const char* mqtt_lwt_topic = "${topic}";`;
+  }
+  if (!generator.definitions_['mqtt_lwt_message']) {
+    generator.definitions_['mqtt_lwt_message'] = `const char* mqtt_lwt_message = "${message}";`;
+  }
+  if (!generator.definitions_['mqtt_lwt_retain']) {
+    generator.definitions_['mqtt_lwt_retain'] = `const bool mqtt_lwt_retain = ${retain};`;
+  }
+  if (!generator.definitions_['mqtt_lwt_qos']) {
+    generator.definitions_['mqtt_lwt_qos'] = `const int mqtt_lwt_qos = ${qos};`;
+  }
 
   return `  // Last Will設定済み - connect時に適用されます
 `;
@@ -598,8 +619,14 @@ javascriptGenerator.forBlock['mqtt_connect_with_lwt'] = function(block: Blockly.
   const hasAuth = username && username.length > 0;
 
   if (hasAuth) {
-    generator.definitions_['mqtt_username'] = `const char* mqtt_username = "${username}";`;
-    generator.definitions_['mqtt_password'] = `const char* mqtt_password = "${password}";`;
+    // case 19 axis 2 (Session 120): first-wins guard (mqtt_setup と同 key emit、
+    // 異 credential での silent overwrite を防ぐ)。
+    if (!generator.definitions_['mqtt_username']) {
+      generator.definitions_['mqtt_username'] = `const char* mqtt_username = "${username}";`;
+    }
+    if (!generator.definitions_['mqtt_password']) {
+      generator.definitions_['mqtt_password'] = `const char* mqtt_password = "${password}";`;
+    }
     generator.definitions_['mqtt_reconnect_lwt_func'] = `
 // requires: mqtt_lwt_topic, mqtt_lwt_message, mqtt_lwt_qos, mqtt_lwt_retain — declared by mqtt_setup default or mqtt_last_will
 void mqttReconnectLWT() {

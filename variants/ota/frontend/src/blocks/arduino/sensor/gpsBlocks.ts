@@ -60,7 +60,10 @@ generator.forBlock['gps_init'] = function(block: Blockly.Block) {
   const baud = block.getFieldValue('BAUD');
   generator.definitions_['include_gps'] = GPS_INCLUDE;
   if (!generator.setups_) generator.setups_ = {};
-  generator.setups_['gps_init'] = `gpsSerial.begin(${baud}, SERIAL_8N1, ${rx}, ${tx});`;
+  // case 19 axis 2 (Session 120): first-wins guard for GPS baud/rx/tx.
+  if (!generator.setups_['gps_init']) {
+    generator.setups_['gps_init'] = `gpsSerial.begin(${baud}, SERIAL_8N1, ${rx}, ${tx});`;
+  }
   if (!generator.loopPre_) generator.loopPre_ = {};
   generator.loopPre_['gps_feed'] = `
   while (gpsSerial.available() > 0) {

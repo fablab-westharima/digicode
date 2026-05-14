@@ -69,7 +69,9 @@ generator.forBlock['neomatrix_init'] = function(block: Blockly.Block) {
   const h = block.getFieldValue('H');
   generator.definitions_['include_neomatrix'] = NEOMATRIX_INCLUDE;
   if (!generator.setups_) generator.setups_ = {};
-  generator.setups_['neomatrix_init'] = `if (!nmDisplay) {
+  // case 19 axis 2 (Session 120): first-wins guard for NeoMatrix w/h/pin.
+  if (!generator.setups_['neomatrix_init']) {
+    generator.setups_['neomatrix_init'] = `if (!nmDisplay) {
     nmDisplay = new Adafruit_NeoMatrix(${w}, ${h}, ${pin},
       NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
       NEO_GRB + NEO_KHZ800);
@@ -78,6 +80,7 @@ generator.forBlock['neomatrix_init'] = function(block: Blockly.Block) {
     nmDisplay->fillScreen(0);
     nmDisplay->show();
   }`;
+  }
   return '';
 };
 

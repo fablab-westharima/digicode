@@ -151,9 +151,12 @@ Blockly.Blocks['lora_on_receive'] = {
 generator.forBlock['lora_on_receive'] = function(block: Blockly.Block) {
   const handler = generator.statementToCode(block, 'HANDLER');
   generator.definitions_['include_lora'] = generator.definitions_['include_lora'] || LORA_INCLUDE;
-  generator.definitions_['lora_handler'] = `
+  // case 19 axis 2 (Session 120): first-wins guard for LoRa receive handler body.
+  if (!generator.definitions_['lora_handler']) {
+    generator.definitions_['lora_handler'] = `
 void onLoraReceive() {
 ${handler}}`;
+  }
   if (!generator.loopPre_) generator.loopPre_ = {};
   generator.loopPre_['lora_check_recv'] = `
   int _loraPacketSize = LoRa.parsePacket();

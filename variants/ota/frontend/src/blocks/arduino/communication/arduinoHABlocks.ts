@@ -2433,11 +2433,15 @@ javascriptGenerator.forBlock['ha_on_connected'] = function(block: Blockly.Block)
   ensureArduinoHAInclude();
   const callback = javascriptGenerator.statementToCode(block, 'CALLBACK');
 
-  // Fixed function name (D-4.1) + setups_/definitions_ key dedupe = last-wins
-  // when multiple ha_on_connected blocks are placed (D-4.2).
-  generator.definitions_['ha_on_connected_func'] = `
+  // case 19 axis 2 (Session 120): first-wins guard.
+  // 旧コードは intentional last-wins (D-4.2 comment) だったが、cluster の
+  // silent overwrite 見えにくさは intent に関係なく retain risk として残存。
+  // Session 120 で「全件 first-wins guard 適用」 user 確定、明示的にする。
+  if (!generator.definitions_['ha_on_connected_func']) {
+    generator.definitions_['ha_on_connected_func'] = `
 void onHaConnected() {
 ${callback}}`;
+  }
   generator.setups_['ha_on_connected_register'] = '  haMqtt.onConnected(onHaConnected);';
 
   return '';
@@ -2465,9 +2469,12 @@ javascriptGenerator.forBlock['ha_on_disconnected'] = function(block: Blockly.Blo
   ensureArduinoHAInclude();
   const callback = javascriptGenerator.statementToCode(block, 'CALLBACK');
 
-  generator.definitions_['ha_on_disconnected_func'] = `
+  // case 19 axis 2 (Session 120): first-wins guard (ha_on_connected と同 protocol)。
+  if (!generator.definitions_['ha_on_disconnected_func']) {
+    generator.definitions_['ha_on_disconnected_func'] = `
 void onHaDisconnected() {
 ${callback}}`;
+  }
   generator.setups_['ha_on_disconnected_register'] = '  haMqtt.onDisconnected(onHaDisconnected);';
 
   return '';
@@ -2576,8 +2583,11 @@ const char* _haDiagResetReasonStr() {
 
   // Independent millis() timer (D-3.6) — variable names distinct from
   // ha_report_interval's _lastHAReport / _haReportInterval.
-  generator.definitions_['ha_diag_timer_vars'] = `unsigned long _lastHaDiagReport = 0;
+  // case 19 axis 2 (Session 120): first-wins guard for HA diag report interval.
+  if (!generator.definitions_['ha_diag_timer_vars']) {
+    generator.definitions_['ha_diag_timer_vars'] = `unsigned long _lastHaDiagReport = 0;
 unsigned long _haDiagInterval = ${interval * 1000}UL;`;
+  }
 
   // Setup body (runs once when block placed inside arduino_setup) — entity
   // metadata: setName / setDeviceClass / setUnitOfMeasurement / setIcon.

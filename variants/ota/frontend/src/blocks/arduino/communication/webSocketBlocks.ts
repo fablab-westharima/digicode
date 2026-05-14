@@ -143,7 +143,9 @@ generator.forBlock['websocket_on_message'] = function(block: Blockly.Block) {
   const handler = javascriptGenerator.statementToCode(block, 'HANDLER');
   generator.definitions_['include_ws'] = WS_INCLUDE;
   generator.definitions_['ws_loop_tick_globals'] = WS_LOOP_TICK_GLOBALS;
-  generator.definitions_['ws_msg_check_func'] = `
+  // case 19 axis 2 (Session 120): first-wins guard for WebSocket message handler body.
+  if (!generator.definitions_['ws_msg_check_func']) {
+    generator.definitions_['ws_msg_check_func'] = `
 void wsCheckMessage() {
   wsClient.poll();
   if (wsMessage.length() > 0) {
@@ -152,6 +154,7 @@ void wsCheckMessage() {
 ${handler}  }
 }
 static _WsLoopRegister _reg_wsCheckMessage(wsCheckMessage);`;
+  }
   // Post-U5 cleanup (2026-05-03): tick injected into loop() once via
   // loopPre_ (mirror of bleLoopTick approach). Multiple websocket_on_message
   // blocks no longer emit redundant `wsLoopTick();` lines in loop body.

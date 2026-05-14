@@ -57,7 +57,10 @@ Blockly.Blocks['ntp_sync'] = {
 generator.forBlock['ntp_sync'] = function(block: Blockly.Block) {
   const server = block.getFieldValue('SERVER');
   const tzOffset = block.getFieldValue('TZ_OFFSET');
-  generator.definitions_['include_ntp'] = `
+  // case 19 axis 2 (Session 120): first-wins guard for NTP server/tzOffset.
+  // 2 個目の ntp_sync (異 server / tz) で silent overwrite を防ぐ。
+  if (!generator.definitions_['include_ntp']) {
+    generator.definitions_['include_ntp'] = `
 #if defined(ESP32)
 #include <time.h>
 #else
@@ -66,6 +69,7 @@ generator.forBlock['ntp_sync'] = function(block: Blockly.Block) {
 WiFiUDP ntpUDP;
 NTPClient ntpClient(ntpUDP, "${server}", ${tzOffset}, 60000);
 #endif`;
+  }
   return `#if defined(ESP32)\n  configTime(${tzOffset}, 0, "${server}");\n#else\n  ntpClient.begin();\n  ntpClient.update();\n#endif\n`;
 };
 
