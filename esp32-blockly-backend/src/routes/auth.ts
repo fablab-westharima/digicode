@@ -8,6 +8,7 @@ import {
   sendPasswordResetEmail,
   sendVerificationEmail,
   sendRecoveryEmail,
+  sendAccountAlreadyExistsEmail,
 } from '../services/emailService';
 import { deleteClassCascade } from './classes';
 
@@ -76,80 +77,127 @@ auth.post('/register', async (c) => {
       return c.json({ error: passwordValidation.message }, 400);
     }
 
-    // メールアドレス重複チェック
+    // RB-5 (Session 117 anti-enum cluster):
+    // 既存 email の存在を 409 で明示すると enum 経路になるため、
+    // 新規 / 既存 unverified / 既存 verified の 3 path 全てで 201 + 同形 response を返却。
+    // mail content のみ分岐 (HIBP / Slack signup pattern):
+    //   - 新規: verification mail (現状維持)
+    //   - 既存 unverified: verification mail を新 token で再送 (UX 救済)
+    //   - 既存 verified: 「アカウント登録試行のお知らせ」mail を送信 (login 誘導)
     const existingUser = await c.env.DB.prepare(
-      'SELECT id FROM users WHERE email = ?'
-    ).bind(email).first();
-
-    if (existingUser) {
-      return errorJson(c, 'auth.emailAlreadyRegistered', 409);
-    }
-
-    // パスワードハッシュ化
-    const passwordHash = await hashPassword(password);
-
-    // ユーザー作成
-    const userResult = await c.env.DB.prepare(
-      'INSERT INTO users (email, password_hash) VALUES (?, ?) RETURNING id, email, created_at'
-    ).bind(email, passwordHash).first<{ id: number; email: string; created_at: string }>();
-
-    if (!userResult) {
-      return errorJson(c, 'admin.userCreateFailed', 500);
-    }
-
-    // サブスクリプション作成（無料プラン）
-    await c.env.DB.prepare(
-      'INSERT INTO subscriptions (user_id, status, plan_type) VALUES (?, ?, ?)'
-    ).bind(userResult.id, 'free', 'free').run();
-
-    // メール確認トークン生成
-    const verificationToken = generateResetToken(); // 同じ関数を再利用
-    const tokenHash = await hashResetToken(verificationToken);
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24時間有効
-
-    // トークンをDBに保存
-    await c.env.DB.prepare(
-      'INSERT INTO email_verification_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
-    ).bind(userResult.id, tokenHash, expiresAt).run();
+      'SELECT id, email_verified FROM users WHERE email = ?'
+    ).bind(email).first<{ id: number; email_verified: number }>();
 
     // 環境判定
     const isDev = c.req.header('host')?.includes('localhost') ||
                   c.req.header('host')?.includes('127.0.0.1');
 
-    // メール送信
-    if (c.env.RESEND_API_KEY) {
-      const emailResult = await sendVerificationEmail(
-        c.env.RESEND_API_KEY,
-        userResult.email,
-        verificationToken,
-        isDev
-      );
+    let respondUserId: number;
+    let devVerificationToken: string | null = null;
 
-      if (!emailResult.success) {
-        console.error('Failed to send verification email:', emailResult.error);
+    if (existingUser) {
+      respondUserId = existingUser.id;
+
+      if (existingUser.email_verified) {
+        // 既に verified user — login 誘導 mail を送信、token 発行なし
+        if (c.env.RESEND_API_KEY) {
+          const emailResult = await sendAccountAlreadyExistsEmail(
+            c.env.RESEND_API_KEY,
+            email,
+            isDev
+          );
+          if (!emailResult.success) {
+            console.error('Failed to send account-exists email:', emailResult.error);
+          }
+        }
+      } else {
+        // 既に unverified user — verification mail を新 token で再送 (UX 救済)
+        const verificationToken = generateResetToken();
+        const tokenHash = await hashResetToken(verificationToken);
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+        await c.env.DB.prepare(
+          'INSERT INTO email_verification_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
+        ).bind(existingUser.id, tokenHash, expiresAt).run();
+
+        if (c.env.RESEND_API_KEY) {
+          const emailResult = await sendVerificationEmail(
+            c.env.RESEND_API_KEY,
+            email,
+            verificationToken,
+            isDev
+          );
+          if (!emailResult.success) {
+            console.error('Failed to resend verification email:', emailResult.error);
+          }
+        } else {
+          console.log(`[DEV] Verification token for ${email} (re-register): ${verificationToken}`);
+        }
+        devVerificationToken = verificationToken;
       }
     } else {
-      console.log(`[DEV] Verification token for ${email}: ${verificationToken}`);
+      // 新規 user 作成
+      const passwordHash = await hashPassword(password);
+
+      const userResult = await c.env.DB.prepare(
+        'INSERT INTO users (email, password_hash) VALUES (?, ?) RETURNING id, email, created_at'
+      ).bind(email, passwordHash).first<{ id: number; email: string; created_at: string }>();
+
+      if (!userResult) {
+        return errorJson(c, 'admin.userCreateFailed', 500);
+      }
+      respondUserId = userResult.id;
+
+      // サブスクリプション作成（無料プラン）
+      await c.env.DB.prepare(
+        'INSERT INTO subscriptions (user_id, status, plan_type) VALUES (?, ?, ?)'
+      ).bind(userResult.id, 'free', 'free').run();
+
+      // メール確認トークン生成
+      const verificationToken = generateResetToken();
+      const tokenHash = await hashResetToken(verificationToken);
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+      await c.env.DB.prepare(
+        'INSERT INTO email_verification_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
+      ).bind(userResult.id, tokenHash, expiresAt).run();
+
+      if (c.env.RESEND_API_KEY) {
+        const emailResult = await sendVerificationEmail(
+          c.env.RESEND_API_KEY,
+          userResult.email,
+          verificationToken,
+          isDev
+        );
+        if (!emailResult.success) {
+          console.error('Failed to send verification email:', emailResult.error);
+        }
+      } else {
+        console.log(`[DEV] Verification token for ${email}: ${verificationToken}`);
+      }
+      devVerificationToken = verificationToken;
     }
 
     // 開発モードかつAPIキーがない場合のみ、レスポンスにトークンを含める
-    if (isDev && !c.env.RESEND_API_KEY) {
+    // (既存 verified path では devVerificationToken=null なので token field は省略)
+    if (isDev && !c.env.RESEND_API_KEY && devVerificationToken) {
       return c.json({
         message: 'アカウントを作成しました。メールアドレスを確認してください。',
-        verificationToken,
-        verificationUrl: `http://localhost:5173/verify-email/${verificationToken}`,
+        verificationToken: devVerificationToken,
+        verificationUrl: `http://localhost:5173/verify-email/${devVerificationToken}`,
         user: {
-          id: userResult.id,
-          email: userResult.email,
+          id: respondUserId,
+          email,
         },
       }, 201);
     }
 
+    // 通常 response: 新規 / 既存 unverified / 既存 verified 全てで identical shape
     return c.json({
       message: 'アカウントを作成しました。確認メールを送信しましたので、メールアドレスを確認してください。',
       user: {
-        id: userResult.id,
-        email: userResult.email,
+        id: respondUserId,
+        email,
       },
     }, 201);
   } catch (error) {
