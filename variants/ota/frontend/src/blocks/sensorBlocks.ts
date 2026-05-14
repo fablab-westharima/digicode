@@ -17,7 +17,6 @@ import * as Blockly from 'blockly';
 import { javascriptGenerator, Order } from 'blockly/javascript';
 import { pythonGenerator } from 'blockly/python';
 import { getSensorPins } from '../utils/pinHelper';
-import { t } from '../utils/blocklyI18n';
 
 // 型アサーション用のヘルパー（definitions_やsetups_はprotectedまたは存在しないため）
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,16 +28,19 @@ const pyGen = pythonGenerator as any;
 const SENSOR_COLOR_ULTRASONIC = '#3b82f6';  // Blue - 超音波センサー
 const SENSOR_COLOR_DHT = '#06b6d4';         // Cyan - 温湿度センサー
 
+// RB-1 (Session 117): Blockly.Msg pattern に統一 (他 71 block file と整合)。
+// 旧 `t('blocks.sensor.X.Y')` 経路は missing key で literal key 露出していたため migration。
+
 // Helper function to get translated color dropdown options
 const getColorOptions = (): [string, string][] => [
-  [t('blocks.sensor.color.red'), 'ff0000'],
-  [t('blocks.sensor.color.green'), '00ff00'],
-  [t('blocks.sensor.color.blue'), '0000ff'],
-  [t('blocks.sensor.color.yellow'), 'ffff00'],
-  [t('blocks.sensor.color.purple'), 'ff00ff'],
-  [t('blocks.sensor.color.cyan'), '00ffff'],
-  [t('blocks.sensor.color.white'), 'ffffff'],
-  [t('blocks.sensor.color.off'), '000000'],
+  [Blockly.Msg.BLOCKS_SENSOR_COLOR_RED || '赤', 'ff0000'],
+  [Blockly.Msg.BLOCKS_SENSOR_COLOR_GREEN || '緑', '00ff00'],
+  [Blockly.Msg.BLOCKS_SENSOR_COLOR_BLUE || '青', '0000ff'],
+  [Blockly.Msg.BLOCKS_SENSOR_COLOR_YELLOW || '黄', 'ffff00'],
+  [Blockly.Msg.BLOCKS_SENSOR_COLOR_PURPLE || '紫', 'ff00ff'],
+  [Blockly.Msg.BLOCKS_SENSOR_COLOR_CYAN || '水色', '00ffff'],
+  [Blockly.Msg.BLOCKS_SENSOR_COLOR_WHITE || '白', 'ffffff'],
+  [Blockly.Msg.BLOCKS_SENSOR_COLOR_OFF || '消灯', '000000'],
 ];
 
 // ===== Ultrasonic Sensor (HC-SR04) =====
@@ -48,15 +50,15 @@ Blockly.Blocks['ultrasonic_init'] = {
   init: function() {
     const pins = getSensorPins();
     this.appendDummyInput()
-        .appendField(t('blocks.sensor.ultrasonic.init'))
-        .appendField(t('blocks.sensor.ultrasonic.trigPin'))
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_ULTRASONIC_INIT || '超音波センサーを初期化')
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_ULTRASONIC_TRIGPIN || 'Trigピン')
         .appendField(new Blockly.FieldNumber(pins.ultrasonicTrig, 0, 39), 'TRIG_PIN')
-        .appendField(t('blocks.sensor.ultrasonic.echoPin'))
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_ULTRASONIC_ECHOPIN || 'Echoピン')
         .appendField(new Blockly.FieldNumber(pins.ultrasonicEcho, 0, 39), 'ECHO_PIN');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SENSOR_COLOR_ULTRASONIC);
-    this.setTooltip(t('blocks.sensor.ultrasonic.initTooltip'));
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_ULTRASONIC_INITTOOLTIP || '超音波センサー (HC-SR04) を初期化します');
   }
 };
 
@@ -130,10 +132,10 @@ pythonGenerator.forBlock['ultrasonic_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['ultrasonic_distance'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(t('blocks.sensor.ultrasonic.distance'));
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_ULTRASONIC_DISTANCE || '距離(cm)');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR_ULTRASONIC);
-    this.setTooltip(t('blocks.sensor.ultrasonic.distanceTooltip'));
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_ULTRASONIC_DISTANCETOOLTIP || '超音波センサーで距離を測定します (cm)');
   }
 };
 
@@ -153,17 +155,17 @@ Blockly.Blocks['dht_init'] = {
   init: function() {
     const pins = getSensorPins();
     this.appendDummyInput()
-        .appendField(t('blocks.sensor.dht.init'))
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_DHT_INIT || '温湿度センサーを初期化')
         .appendField(new Blockly.FieldDropdown([
           ['DHT11', 'DHT11'],
           ['DHT22', 'DHT22']
         ]), 'TYPE')
-        .appendField(t('blocks.sensor.dht.pin'))
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_DHT_PIN || 'ピン')
         .appendField(new Blockly.FieldNumber(pins.dht, 0, 39), 'PIN');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SENSOR_COLOR_DHT);
-    this.setTooltip(t('blocks.sensor.dht.initTooltip'));
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_DHT_INITTOOLTIP || 'DHT温湿度センサーを初期化します');
   }
 };
 
@@ -202,10 +204,10 @@ pythonGenerator.forBlock['dht_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['dht_temperature'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(t('blocks.sensor.dht.temperature'));
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_DHT_TEMPERATURE || '温度(℃)');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR_DHT);
-    this.setTooltip(t('blocks.sensor.dht.temperatureTooltip'));
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_DHT_TEMPERATURETOOLTIP || 'DHTセンサーから温度を読み取ります (℃)');
   }
 };
 
@@ -236,10 +238,10 @@ pythonGenerator.forBlock['dht_temperature'] = function() {
 Blockly.Blocks['dht_humidity'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(t('blocks.sensor.dht.humidity'));
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_DHT_HUMIDITY || '湿度(%)');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR_DHT);
-    this.setTooltip(t('blocks.sensor.dht.humidityTooltip'));
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_DHT_HUMIDITYTOOLTIP || 'DHTセンサーから湿度を読み取ります (%)');
   }
 };
 
@@ -270,20 +272,20 @@ Blockly.Blocks['rus04_init'] = {
   init: function() {
     const pins = getSensorPins();
     this.appendDummyInput()
-        .appendField(t('blocks.sensor.rus04.init'))
-        .appendField(t('blocks.sensor.ultrasonic.trigPin'))
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_RUS04_INIT || 'RUS-04 を初期化')
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_ULTRASONIC_TRIGPIN || 'Trigピン')
         .appendField(new Blockly.FieldNumber(pins.ultrasonicTrig, 0, 39), 'TRIG_PIN')
-        .appendField(t('blocks.sensor.ultrasonic.echoPin'))
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_ULTRASONIC_ECHOPIN || 'Echoピン')
         .appendField(new Blockly.FieldNumber(pins.ultrasonicEcho, 0, 39), 'ECHO_PIN');
     this.appendDummyInput()
-        .appendField(t('blocks.sensor.rus04.rgbPin'))
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_RUS04_RGBPIN || 'RGB LEDピン')
         .appendField(new Blockly.FieldNumber(pins.ultrasonicRgb, 0, 39), 'RGB_PIN')
-        .appendField(t('blocks.sensor.rus04.numLeds'))
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_RUS04_NUMLEDS || 'LED数')
         .appendField(new Blockly.FieldNumber(6, 1, 256), 'NUM_LEDS');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SENSOR_COLOR_ULTRASONIC);
-    this.setTooltip(t('blocks.sensor.rus04.initTooltip'));
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_RUS04_INITTOOLTIP || 'RUS-04 (超音波 + RGB) を初期化します');
   }
 };
 
@@ -376,10 +378,10 @@ pythonGenerator.forBlock['rus04_init'] = function(block: Blockly.Block) {
 Blockly.Blocks['rus04_distance'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(t('blocks.sensor.rus04.distance'));
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_RUS04_DISTANCE || 'RUS-04 距離(cm)');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR_ULTRASONIC);
-    this.setTooltip(t('blocks.sensor.rus04.distanceTooltip'));
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_RUS04_DISTANCETOOLTIP || 'RUS-04 で距離を測定します (cm)');
   }
 };
 
@@ -398,15 +400,15 @@ pythonGenerator.forBlock['rus04_distance'] = function() {
 Blockly.Blocks['rus04_rgb'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(t('blocks.sensor.rus04.rgbBoth'))
-        .appendField(t('blocks.sensor.rus04.left'))
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_RUS04_RGBBOTH || '両目の色を設定')
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_RUS04_LEFT || '左目')
         .appendField(new Blockly.FieldDropdown(getColorOptions), 'LEFT_COLOR')
-        .appendField(t('blocks.sensor.rus04.right'))
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_RUS04_RIGHT || '右目')
         .appendField(new Blockly.FieldDropdown(getColorOptions), 'RIGHT_COLOR');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SENSOR_COLOR_ULTRASONIC);
-    this.setTooltip(t('blocks.sensor.rus04.rgbTooltip'));
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_RUS04_RGBTOOLTIP || 'RUS-04 の両目に色を設定します');
   }
 };
 
@@ -459,15 +461,15 @@ pythonGenerator.forBlock['rus04_rgb'] = function(block: Blockly.Block) {
 Blockly.Blocks['rus04_both_simple'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(t('blocks.sensor.rus04.rgbBoth'))
-        .appendField(t('blocks.sensor.rus04.left'))
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_RUS04_RGBBOTH || '両目の色を設定')
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_RUS04_LEFT || '左目')
         .appendField(new Blockly.FieldDropdown(getColorOptions), 'LEFT_COLOR')
-        .appendField(t('blocks.sensor.rus04.right'))
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_RUS04_RIGHT || '右目')
         .appendField(new Blockly.FieldDropdown(getColorOptions), 'RIGHT_COLOR');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SENSOR_COLOR_ULTRASONIC);
-    this.setTooltip(t('blocks.sensor.rus04.bothSimpleTooltip'));
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_RUS04_BOTHSIMPLETOOLTIP || 'RUS-04 の両目の色を設定します');
   }
 };
 
@@ -520,11 +522,11 @@ pythonGenerator.forBlock['rus04_both_simple'] = function(block: Blockly.Block) {
 Blockly.Blocks['rus04_off'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(t('blocks.sensor.rus04.off'));
+        .appendField(Blockly.Msg.BLOCKS_SENSOR_RUS04_OFF || 'RUS-04 RGB 消灯');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(SENSOR_COLOR_ULTRASONIC);
-    this.setTooltip(t('blocks.sensor.rus04.offTooltip'));
+    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_RUS04_OFFTOOLTIP || 'RUS-04 の RGB LED を全て消灯します');
   }
 };
 

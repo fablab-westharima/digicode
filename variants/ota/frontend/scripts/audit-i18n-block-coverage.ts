@@ -1,9 +1,18 @@
 /**
- * audit-i18n-block-coverage.ts (Session 114 Task 1 commit 3)
+ * audit-i18n-block-coverage.ts (Session 114 Task 1 commit 3 + Session 117 RB-1 t() pattern extension)
  *
- * Detects Pattern A regression: src/blocks/ references `Blockly.Msg.X || 'English fallback'`
- * but the i18n value at the corresponding flattened path equals the English fallback
- * for non-technical translatable strings — i.e., the user sees English in JA / Spanish / etc.
+ * Two-mode audit for src/blocks/ i18n coverage:
+ *
+ * Mode A (Pattern A regression — original Session 114 scope):
+ *   Detects when `Blockly.Msg.X || 'English fallback'` resolves to the English fallback
+ *   in non-English UI (ja / zh-TW) for non-technical translatable strings.
+ *
+ * Mode B (literal-key leak detection — Session 117 RB-1 extension):
+ *   Detects `t('blocks.X.Y')` calls (i18next direct lookup pattern used by some legacy
+ *   blocks) whose dotted path does not resolve to a string in ja.json. Missing keys cause
+ *   i18next to return the key string verbatim, leaking `"blocks.sensor.ultrasonic.init"`
+ *   into the UI. This was Session 117 RB-1's root cause for sensorBlocks.ts before its
+ *   migration to the Blockly.Msg pattern.
  *
  * Background: in Session 113 the H-1 fill protocol's "ASCII-only → 5 lang verbatim port"
  * classifier copied English fallback strings verbatim into all 5 locales, leaving 375
@@ -12,11 +21,15 @@
  * regression by failing the build whenever a non-technical English fallback is also the
  * Japanese / Chinese value verbatim.
  *
- * Detection: for each `Blockly.Msg.KEY || 'fallback'` reference in src/blocks/:
+ * Mode A detection: for each `Blockly.Msg.KEY || 'fallback'` reference in src/blocks/:
  *   - if KEY is absent in {ja,en,es,pt-PT,zh-TW}.json → existing audit-data-consistency
  *     handles the missing-key class, this audit skips
  *   - if ja value === en fallback AND the value is "translatable" (not a short technical
  *     identifier) → fail
+ *
+ * Mode B detection: for each `t('blocks.X.Y[...]')` reference in src/blocks/:
+ *   - if the dotted path does not resolve to a string in ja.json → fail (would leak the
+ *     literal key into the UI)
  *
  * Allowlist (legit technical labels that intentionally stay English in JA UI):
  *   - Short tokens: 1-3 chars (DIR, EN, IN1, Hz, ms)
@@ -157,6 +170,50 @@ function isLegitTechnical(v: string): boolean {
   return false;
 }
 
+// ============ Step 3b (Mode B): scan t('blocks.X.Y') refs ============
+
+interface TRef {
+  i18nPath: string; // 'blocks.sensor.ultrasonic.init'
+  file: string;
+  line: number;
+}
+
+// Match t('blocks.X.Y[.Z...]') or t("blocks.X.Y[.Z...]")
+// Only matches dotted i18n keys whose first segment is 'blocks.' to scope the audit to
+// block-related callers (other namespaces are exercised by other audits).
+const tRefPattern = /\bt\(\s*(['"])(blocks\.[a-zA-Z0-9_.]+)\1/g;
+
+function extractTRefs(): TRef[] {
+  const out: TRef[] = [];
+  for (const file of walkFiles(BLOCKS_DIR)) {
+    const text = fs.readFileSync(file, 'utf-8');
+    const lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      // Skip pure single-line comments (// at start of trimmed line).
+      // Block / inline comments still get scanned — that's intentional, comment matches are rare
+      // and a stale t('...') reference in a comment is a smell worth surfacing once.
+      if (line.trim().startsWith('//')) continue;
+      let m: RegExpExecArray | null;
+      tRefPattern.lastIndex = 0;
+      while ((m = tRefPattern.exec(line)) !== null) {
+        out.push({ i18nPath: m[2], file: path.relative(REPO_ROOT, file), line: i + 1 });
+      }
+    }
+  }
+  return out;
+}
+
+function resolveNestedPath(root: unknown, dotPath: string): unknown {
+  const parts = dotPath.split('.');
+  let cur: unknown = root;
+  for (const p of parts) {
+    if (cur == null || typeof cur !== 'object') return undefined;
+    cur = (cur as Record<string, unknown>)[p];
+  }
+  return cur;
+}
+
 // ============ Step 4: run detection ============
 
 interface Failure {
@@ -189,35 +246,77 @@ for (const [key, ref] of uniqueRefs) {
   }
 }
 
+// ============ Step 4b: Mode B detection — t('blocks.X.Y') unresolved paths ============
+
+interface TFailure {
+  i18nPath: string;
+  refFile: string;
+  refLine: number;
+}
+
+const tRefs = extractTRefs();
+const uniqueTRefs = new Map<string, TRef>();
+for (const r of tRefs) {
+  if (!uniqueTRefs.has(r.i18nPath)) uniqueTRefs.set(r.i18nPath, r);
+}
+
+const jaJsonRaw = JSON.parse(
+  fs.readFileSync(path.join(LOCALES_DIR, 'ja.json'), 'utf-8')
+) as Record<string, unknown>;
+
+const tFailures: TFailure[] = [];
+for (const [i18nPath, ref] of uniqueTRefs) {
+  const value = resolveNestedPath(jaJsonRaw, i18nPath);
+  if (typeof value !== 'string') {
+    tFailures.push({ i18nPath, refFile: ref.file, refLine: ref.line });
+  }
+}
+
 // ============ Step 5: report ============
 
-console.log('🔍 Auditing i18n block label coverage (Pattern A regression detector)…');
-console.log(`   Refs scanned: ${uniqueRefs.size} unique Blockly.Msg.BLOCKS_* keys`);
-console.log(`   Locales checked for translation: ${TRANSLATE_LANGS.join(', ')}`);
+console.log('🔍 Auditing i18n block label coverage (Pattern A + t() path resolution)…');
+console.log(`   Mode A: ${uniqueRefs.size} unique Blockly.Msg.BLOCKS_* keys (locales: ${TRANSLATE_LANGS.join(', ')})`);
+console.log(`   Mode B: ${uniqueTRefs.size} unique t('blocks.*') paths (ja.json resolution)`);
 
-if (failures.length === 0) {
+if (failures.length === 0 && tFailures.length === 0) {
   console.log('✅ All audits passed (0 warning(s))');
   process.exit(0);
 }
 
-const byLang: Record<string, Failure[]> = {};
-for (const f of failures) {
-  if (!byLang[f.lang]) byLang[f.lang] = [];
-  byLang[f.lang].push(f);
+if (failures.length > 0) {
+  const byLang: Record<string, Failure[]> = {};
+  for (const f of failures) {
+    if (!byLang[f.lang]) byLang[f.lang] = [];
+    byLang[f.lang].push(f);
+  }
+
+  console.error(`❌ Mode A (Pattern A regression) detected: ${failures.length} block label(s) show English in non-English UI`);
+  for (const lang of Object.keys(byLang)) {
+    console.error(`\n  ${lang}: ${byLang[lang].length} key(s) untranslated`);
+    for (const f of byLang[lang].slice(0, 20)) {
+      console.error(`    ${f.key.padEnd(45)} = ${JSON.stringify(f.value)}`);
+      console.error(`      referenced from ${f.refFile}:${f.refLine}`);
+    }
+    if (byLang[lang].length > 20) {
+      console.error(`    ... and ${byLang[lang].length - 20} more`);
+    }
+  }
+  console.error('\n  Fix: translate the value in src/i18n/locales/<lang>.json at the corresponding nested path.');
+  console.error('  If the value is a legitimate technical identifier that should stay English in all langs,');
+  console.error('  add the pattern to isLegitTechnical() in scripts/audit-i18n-block-coverage.ts.');
 }
 
-console.error(`❌ Pattern A regression detected: ${failures.length} block label(s) show English in non-English UI`);
-for (const lang of Object.keys(byLang)) {
-  console.error(`\n  ${lang}: ${byLang[lang].length} key(s) untranslated`);
-  for (const f of byLang[lang].slice(0, 20)) {
-    console.error(`    ${f.key.padEnd(45)} = ${JSON.stringify(f.value)}`);
-    console.error(`      referenced from ${f.refFile}:${f.refLine}`);
+if (tFailures.length > 0) {
+  console.error(`\n❌ Mode B (t() literal-key leak) detected: ${tFailures.length} path(s) unresolved in ja.json`);
+  for (const f of tFailures.slice(0, 30)) {
+    console.error(`    ${f.i18nPath.padEnd(55)} from ${f.refFile}:${f.refLine}`);
   }
-  if (byLang[lang].length > 20) {
-    console.error(`    ... and ${byLang[lang].length - 20} more`);
+  if (tFailures.length > 30) {
+    console.error(`    ... and ${tFailures.length - 30} more`);
   }
+  console.error('\n  Fix (preferred): migrate t(\'blocks.X.Y\') to `Blockly.Msg.BLOCKS_X_Y || \'fallback\'`');
+  console.error('  pattern + add the key to all 5 locales under blocks.X.Y. See sensorBlocks.ts (Session 117 RB-1).');
+  console.error('  Fix (alternative): add the nested path to ja.json (and other locales for translation parity).');
 }
-console.error('\n  Fix: translate the value in src/i18n/locales/<lang>.json at the corresponding nested path.');
-console.error('  If the value is a legitimate technical identifier that should stay English in all langs,');
-console.error('  add the pattern to isLegitTechnical() in scripts/audit-i18n-block-coverage.ts.');
+
 process.exit(1);
