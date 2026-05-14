@@ -251,11 +251,16 @@ auth.post('/login', async (c) => {
     }
 
     // パスキーのみモードチェック (パスワード正解後のみ判定 = passkey_only 状態 leak 防止)
+    //
+    // RB-1 (Session 120 zero-base re-audit):
+    // 旧コードは 403 + { error, passkeyOnly: true } を返却していたが、2fa.ts:111-113
+    // の /send-otp は 401 errorJson('auth.passkeyOnly') を返却していたため、attacker が
+    // 同 email + password を 2 endpoint に投げると status code 差 (403 vs 401) + extra
+    // passkeyOnly:true field の有無 で passkey_only=1 user を識別可能 = cross-endpoint
+    // anti-enum shape divergence。本 fix で 2fa.ts と同形 401 'auth.passkeyOnly' に統一。
+    // frontend の passkeyOnly hint は response の errorCode で判定する形に変更。
     if (user.passkey_only) {
-      return c.json({
-        error: 'このアカウントはパスキーのみでログイン可能です。パスキーでログインしてください。',
-        passkeyOnly: true
-      }, 403);
+      return errorJson(c, 'auth.passkeyOnly', 401);
     }
 
     // メール未確認チェック (パスワード正解後のみ判定 = UX 救済 path 維持 + email_verified 状態 leak 防止)
@@ -317,28 +322,25 @@ auth.post('/login', async (c) => {
 });
 
 // パスキーのみモード確認（ログイン前にチェック）
+//
+// RB-2 (Session 120 zero-base re-audit):
+// 旧コードは email を引いて user 存在時のみ実 `passkey_only` 値を返却、不在 user は
+// `{ passkeyOnly: false }` を返却していた。これは attacker が email 列挙時に
+// `passkeyOnly: true` を観測することで「email exists AND passkey_only=1」の 1-bit
+// oracle を得られる anti-enum leak。本 fix で **常に `{ passkeyOnly: false }` を返却**
+// (DB lookup も削除) して oracle を完全閉鎖。
+//
+// UX trade-off: LoginForm.tsx の email 入力後 debounce polling で「パスキー専用 user
+// 用 password field 非表示」UI を出していたが、これは失われる。代替として
+// 2fa.ts /send-otp が passkey_only user に 401 'auth.passkeyOnly' を返却するため、
+// frontend は handleSubmit の catch で error message を表示してパスキー誘導する形に
+// degrade。anti-enum 優先で受容 (Session 120 案 A user 確定)。
 auth.get('/check-passkey-mode', async (c) => {
-  try {
-    const email = c.req.query('email');
-
-    if (!email) {
-      return errorJson(c, 'auth.emailRequired', 400);
-    }
-
-    const user = await c.env.DB.prepare(
-      'SELECT passkey_only FROM users WHERE email = ?'
-    ).bind(email).first<{ passkey_only: number }>();
-
-    if (!user) {
-      // セキュリティ: ユーザー存在有無を隠す
-      return c.json({ passkeyOnly: false });
-    }
-
-    return c.json({ passkeyOnly: user.passkey_only === 1 });
-  } catch (error) {
-    console.error('Check passkey mode error:', error);
-    return errorJson(c, 'passkey.onlyModeCheckFailed', 500);
+  const email = c.req.query('email');
+  if (!email) {
+    return errorJson(c, 'auth.emailRequired', 400);
   }
+  return c.json({ passkeyOnly: false });
 });
 
 // 認証ユーザー情報取得
