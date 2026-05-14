@@ -288,6 +288,44 @@ app.post('/login/options', async (c) => {
       kvKey = `anonymous:${emailHash}:login`;
     }
 
+    // F-24 (Session 123): allowCredentials.length 1-bit anti-enum leak closure。
+    // 旧コードは存在 user で N 件 / 不在 user で 0 件 = attacker が array
+    // length で「passkey-registered email 集合」を enumerate 可能 (registered
+    // email + N passkey vs unregistered or no-passkey email を distinguish)。
+    // 本 fix で allowCredentials.length === 0 case は deterministic fake
+    // credential を 1 件追加 (HMAC over email + JWT_SECRET、同 email で同 fake
+    // ID 安定 = 後続 retry でも shape uniform、verify 段階で credential 不在で
+    // silent reject される)。
+    //
+    // 注: 既存 passkey 登録 user で N=1 と fake N=1 は length 同じ。N>=2 user は
+    // length divergence 残存だが、これは「同 email で複数 passkey 登録」 = user
+    // 自身しか知らない情報、anti-enum scope 外。
+    if (allowCredentials.length === 0) {
+      const fakeKey = await crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(c.env.JWT_SECRET),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+      const fakeSig = await crypto.subtle.sign(
+        'HMAC',
+        fakeKey,
+        new TextEncoder().encode(`passkey-fake:${email}`)
+      );
+      // Base64URL encoding (WebAuthn credential ID format)
+      const fakeIdBytes = new Uint8Array(fakeSig);
+      const fakeIdBase64 = btoa(String.fromCharCode(...fakeIdBytes))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+      allowCredentials = [{
+        id: fakeIdBase64,
+        type: 'public-key' as const,
+        transports: undefined,
+      }];
+    }
+
     const options = await generateAuthenticationOptions({
       rpID: rpId,
       allowCredentials,
