@@ -1115,6 +1115,16 @@ auth.post('/change-password', authMiddleware, async (c) => {
       "UPDATE users SET password_hash = ?, plain_password = NULL, updated_at = datetime('now') WHERE id = ?"
     ).bind(newHash, userId).run();
 
+    // F-9 (Session 123): 旧コードは password_hash UPDATE のみで refresh_tokens
+    // revoke 不在 = session hijack persistence。/reset-password (L698-701) は
+    // 全 token revoke 済だが /change-password は sweep 漏れ。User が compromise
+    // 疑いで password 変更しても 旧 refresh token は 7 日間有効でいるため、
+    // attacker が refresh token を steal していれば session 継続可能。
+    // 本 fix で全 refresh_tokens を revoke、攻撃 session を全 terminate。
+    await c.env.DB.prepare(
+      "UPDATE refresh_tokens SET revoked_at = datetime('now') WHERE user_id = ? AND revoked_at IS NULL"
+    ).bind(userId).run();
+
     return c.json({ success: true });
   } catch (error) {
     console.error('Change password error:', error);
