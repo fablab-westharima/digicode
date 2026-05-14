@@ -155,15 +155,15 @@ recoveryCodes.post('/verify', async (c) => {
     // case 19 cluster (BE-1) 第112回: auth.ts:221 / passkey.ts:337 / 2fa.ts (本 commit) と同 pattern。
     // recovery code 消費前 (使用済みマークしない) で reject、student が gate に引っかかった場合
     // recovery code は次回も使用可能。
+    // F-3 (Session 123): inline c.json + JA hardcoded を errorJson + 5 lang i18n 化、
+    // cross-endpoint shape uniformity 達成 (auth.studentNotInClass)
     if (user.account_type === 'student') {
       const membership = await c.env.DB.prepare(
         'SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?'
       ).bind(user.id).first<{ n: number }>();
 
       if (!membership || membership.n === 0) {
-        return c.json({
-          error: 'クラスに所属していないため、ログインできません。管理者にお問い合わせください。',
-        }, 403);
+        return errorJson(c, 'auth.studentNotInClass', 403);
       }
     }
 

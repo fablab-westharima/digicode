@@ -399,15 +399,15 @@ app.post('/login/verify', async (c) => {
 
     // 生徒ログイン制限: student かつクラス未所属ならログイン不可 (検証成功後)
     // F-5 fix: auth.ts:220-230 pattern を passkey login にも適用
+    // F-3 (Session 123): inline c.json + JA hardcoded を errorJson + 5 lang i18n 化、
+    // cross-endpoint shape uniformity 達成 (auth.studentNotInClass)
     if (accountType === 'student') {
       const membership = await c.env.DB.prepare(
         'SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?'
       ).bind(userId).first<{ n: number }>();
 
       if (!membership || membership.n === 0) {
-        return c.json({
-          error: 'クラスに所属していないため、ログインできません。管理者にお問い合わせください。',
-        }, 403);
+        return errorJson(c, 'auth.studentNotInClass', 403);
       }
     }
 

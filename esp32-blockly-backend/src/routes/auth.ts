@@ -280,15 +280,19 @@ auth.post('/login', async (c) => {
     }
 
     // 生徒ログイン制限: student かつクラス未所属ならログイン不可
+    // F-3 (Session 123): 旧コードは inline c.json with JA hardcoded (`{error: 'クラスに...'}`)
+    // で 5 endpoint (auth.ts /login + 2fa.ts /send-otp + /verify-otp + recovery-codes.ts
+    // /verify + passkey.ts /login/verify) shape divergence + 5 lang i18n 違反。
+    // Session 121 NEW-1 (email_verified=0) と同 cluster の sweep 漏れ、本 fix で
+    // errorJson + auth.studentNotInClass 5 lang 統一。anti-enum cross-endpoint shape
+    // uniformity を student-not-in-class state 軸でも達成。
     if (user.account_type === 'student') {
       const membership = await c.env.DB.prepare(
         'SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?'
       ).bind(user.id).first<{ n: number }>();
 
       if (!membership || membership.n === 0) {
-        return c.json({
-          error: 'クラスに所属していないため、ログインできません。管理者にお問い合わせください。',
-        }, 403);
+        return errorJson(c, 'auth.studentNotInClass', 403);
       }
     }
 

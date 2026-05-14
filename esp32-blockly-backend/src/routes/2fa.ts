@@ -125,15 +125,15 @@ twoFactor.post('/send-otp', async (c) => {
     // case 19 cluster (BE-1) 第112回: auth.ts:221 / passkey.ts:337 (F-5 第109回) と同 pattern。
     // /send-otp は frontend LoginForm の primary login path (authService.sendOtp 経由)、
     // 2FA disabled / trusted device / 2FA enabled の 3 sub-path 全てを覆う位置に配置。
+    // F-3 (Session 123): inline c.json + JA hardcoded を errorJson + 5 lang i18n 化、
+    // cross-endpoint shape uniformity 達成 (auth.studentNotInClass)
     if (user.account_type === 'student') {
       const membership = await c.env.DB.prepare(
         'SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?'
       ).bind(user.id).first<{ n: number }>();
 
       if (!membership || membership.n === 0) {
-        return c.json({
-          error: 'クラスに所属していないため、ログインできません。管理者にお問い合わせください。',
-        }, 403);
+        return errorJson(c, 'auth.studentNotInClass', 403);
       }
     }
 
@@ -348,15 +348,15 @@ twoFactor.post('/verify-otp', async (c) => {
     // case 19 cluster (BE-1) 第112回: defense in depth、/send-otp gate を bypass する race
     // / migration / 既発行 OTP 経路を防御。OTP 消費前 (使用済みマークしない) で reject、
     // student が gate に引っかかった場合 OTP は次回も使用可能。
+    // F-3 (Session 123): inline c.json + JA hardcoded を errorJson + 5 lang i18n 化、
+    // cross-endpoint shape uniformity 達成 (auth.studentNotInClass)
     if (user.account_type === 'student') {
       const membership = await c.env.DB.prepare(
         'SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?'
       ).bind(user.id).first<{ n: number }>();
 
       if (!membership || membership.n === 0) {
-        return c.json({
-          error: 'クラスに所属していないため、ログインできません。管理者にお問い合わせください。',
-        }, 403);
+        return errorJson(c, 'auth.studentNotInClass', 403);
       }
     }
 
