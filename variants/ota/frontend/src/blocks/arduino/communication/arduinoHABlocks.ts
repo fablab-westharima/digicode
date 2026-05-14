@@ -1243,10 +1243,19 @@ javascriptGenerator.forBlock['ha_light_create'] = function(block: Blockly.Block)
 
   const varName = `haLight_${lightId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
-  if (hasBrightness) {
-    generator.definitions_[`ha_light_${lightId}`] = `HALight ${varName}("${lightId}", HALight::BrightnessFeature);`;
-  } else {
-    generator.definitions_[`ha_light_${lightId}`] = `HALight ${varName}("${lightId}");`;
+  // F-21 (Session 123): ha_light_create と ha_light_create_rgb (L2060) が同
+  // key `ha_light_${lightId}` で body-divergent collision = 同 lightId で 2
+  // block 配置時、後の block が前を上書き → HA Discovery payload と実 entity
+  // class が divergence。case 19 axis 2 first-wins guard pattern を適用、最初
+  // の define が勝つ idempotent semantics。HA 仕様上「1 entity / 1 lightId」
+  // 前提なので、user の illegal 2-block 配置は silent first-wins で fail-safe
+  // (build-time error 化は polish defer)。
+  if (!generator.definitions_[`ha_light_${lightId}`]) {
+    if (hasBrightness) {
+      generator.definitions_[`ha_light_${lightId}`] = `HALight ${varName}("${lightId}", HALight::BrightnessFeature);`;
+    } else {
+      generator.definitions_[`ha_light_${lightId}`] = `HALight ${varName}("${lightId}");`;
+    }
   }
 
   // commit 6: register for via_device override
@@ -2057,7 +2066,12 @@ javascriptGenerator.forBlock['ha_light_create_rgb'] = function(block: Blockly.Bl
 
   const varName = `haLight_${lightId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
-  generator.definitions_[`ha_light_${lightId}`] = `HALight ${varName}("${lightId}", HALight::BrightnessFeature | HALight::RGBFeature);`;
+  // F-21 (Session 123): ha_light_create_rgb と ha_light_create (L1247-1249) が
+  // 同 key `ha_light_${lightId}` で body-divergent collision = case 19 axis 2
+  // first-wins guard pattern 適用、最初の define が勝つ idempotent。
+  if (!generator.definitions_[`ha_light_${lightId}`]) {
+    generator.definitions_[`ha_light_${lightId}`] = `HALight ${varName}("${lightId}", HALight::BrightnessFeature | HALight::RGBFeature);`;
+  }
 
   // commit 6: register for via_device override (Brightness + RGB topics)
   return `  // HA RGB Light: ${name}\n  ${varName}.setName("${name}");\n  _haEntityRegister({HAEK_NORMAL, "light", "${lightId}", "${name}", nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, 0, 0, 0, (uint16_t)(HAOFLAG_STATE | HAOFLAG_COMMAND | HAOFLAG_BRIGHTNESS | HAOFLAG_RGB)});\n`;

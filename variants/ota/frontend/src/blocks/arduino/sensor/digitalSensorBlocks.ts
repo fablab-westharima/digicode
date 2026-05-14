@@ -262,8 +262,13 @@ Blockly.Blocks['gas_sensor_digital'] = {
 javascriptGenerator.forBlock['gas_sensor_digital'] = function(block: Blockly.Block) {
   const pin = block.getFieldValue('PIN');
 
-  generator.definitions_[`gas_pin_${pin}`] = `#define GAS_PIN_${pin} ${pin}`;
-  generator.setups_[`gas_setup_${pin}`] = `  pinMode(GAS_PIN_${pin}, INPUT);`;
+  // F-20 (Session 123): 旧コード key `gas_pin_${pin}` は analogSensorBlocks.ts
+  // の gas_sensor_analog generator (`#define GAS_APIN_X X`) と body-divergent
+  // collision。同 pin で 2 block 配置時、後の block が前の `#define` を上書き
+  // → もう一方の block の compile-time reference が undefined macro で fail。
+  // 本 fix で `digital_gas_pin_${pin}` に namespace 分離、collision 構造的回避。
+  generator.definitions_[`digital_gas_pin_${pin}`] = `#define GAS_PIN_${pin} ${pin}`;
+  generator.setups_[`digital_gas_setup_${pin}`] = `  pinMode(GAS_PIN_${pin}, INPUT);`;
 
   const code = `(digitalRead(GAS_PIN_${pin}) == LOW)`;
   return [code, Order.RELATIONAL];

@@ -167,7 +167,10 @@ javascriptGenerator.forBlock['gas_sensor_analog'] = function(block: Blockly.Bloc
   const pin = block.getFieldValue('PIN');
   const mode = block.getFieldValue('MODE');
 
-  generator.definitions_[`gas_pin_${pin}`] = `#define GAS_APIN_${pin} ${pin}`;
+  // F-20 (Session 123): 旧コード key `gas_pin_${pin}` は digitalSensorBlocks.ts
+  // の gas_sensor_digital generator (`#define GAS_PIN_X X`) と body-divergent
+  // collision。本 fix で `analog_gas_pin_${pin}` に namespace 分離。
+  generator.definitions_[`analog_gas_pin_${pin}`] = `#define GAS_APIN_${pin} ${pin}`;
 
   let code: string;
   if (mode === 'raw') {
