@@ -36,24 +36,36 @@ const app = new Hono<{ Bindings: Bindings }>();
 
 // CORS設定
 // Default allowed origins (development + production)
+//
+// NEW-8 (Session 121 zero-base re-audit):
+// 4 件の stale CF alias (`esp32-blockly-frontend.pages.dev` / `digicode.pages.dev`
+// / `digicode.app` / `www.digicode.app`) を allowlist から除去。機械検証で:
+//   - `esp32-blockly-frontend.pages.dev` → DNS NXDOMAIN (廃止)
+//   - `digicode.pages.dev` → DNS NXDOMAIN (廃止)
+//   - `digicode.app` → AWS-hosted GoDaddy ドメイン parking、DigiCode service 不在
+//   - `www.digicode.app` → 同上 (CNAME → digicode.app)
+// 現 canonical = `digicode-frontend.pages.dev` (Session 119 T12 で確定)
+// + `code.fablab-westharima.jp` (CF custom domain)。
+// rule 16 attacker-perspective-defense: surface 最小化、外部サービス経由 CSRF risk closure。
 const defaultOrigins = [
   // Development
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:3000',
-  // Production (Cloudflare Pages)
-  'https://esp32-blockly-frontend.pages.dev',
-  'https://digicode.pages.dev',
-  // Custom domain (if configured)
-  'https://digicode.app',
-  'https://www.digicode.app',
+  // Production (Cloudflare Pages canonical, Session 119 T12)
+  'https://digicode-frontend.pages.dev',
+  // Custom domain (Cloudflare-managed)
   'https://code.fablab-westharima.jp',
 ];
 
 app.use('*', cors({
   origin: (origin, c) => {
-    // Allow requests with no origin (mobile apps, curl, etc.)
-    if (!origin) return '*';
+    // NEW-7 (Session 121 zero-base re-audit):
+    // 旧コードは `if (!origin) return '*';` で origin 不在時に
+    // `Access-Control-Allow-Origin: *` + `credentials: true` を組み合わせ返却していた。
+    // browser context では CORS spec 違反で reject、non-browser (curl / mobile app) は
+    // CORS 関係なく動作するため `*` 返却は無意義。defense-in-depth で reject に統一。
+    if (!origin) return null;
 
     // Check default origins
     if (defaultOrigins.includes(origin)) return origin;
