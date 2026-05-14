@@ -191,7 +191,11 @@ twoFactor.post('/send-otp', async (c) => {
           'UPDATE trusted_devices SET last_used_at = datetime(\'now\') WHERE id = ?'
         ).bind(trustedDevice.id).run();
 
-        console.log(`[2FA] Trusted device login for ${user.email}`);
+        // NEW-10 (Session 122): Workers Logs PII redaction.
+        // 旧コードは trusted device login 成功時に user.email を unconditional log。
+        // Session 120 D-2 (passkey) / D-3 (recovery-codes) PII redact pattern の
+        // 隣接 sweep 漏れ。CF アカウントアクセス権を持つ全員に email 露出していた。
+        // 成功は metric (count) で十分、debug が必要な場合は req correlation id 経由。
 
         // JWT発行（2FAスキップ）
         const { accessToken, refreshToken, expiresIn } = await generateTokenPair(
@@ -400,7 +404,10 @@ twoFactor.post('/verify-otp', async (c) => {
         'INSERT INTO trusted_devices (user_id, token_hash, expires_at) VALUES (?, ?, ?)'
       ).bind(user.id, deviceTokenHash, deviceExpiresAt).run();
 
-      console.log(`[2FA] Device trusted for ${user.email}`);
+      // NEW-10 (Session 122): Workers Logs PII redaction.
+      // 旧コードは新規 trusted device 登録成功時に user.email を unconditional log。
+      // Session 120 D-2 / D-3 同 cluster、隣接 sweep 漏れ。CF アカウントアクセス権
+      // を持つ全員に email 露出していた。
 
       // Cookie設定（httpOnly, secure, sameSite）
       // クロスドメインCookieにはSameSite=None + Secureが必須

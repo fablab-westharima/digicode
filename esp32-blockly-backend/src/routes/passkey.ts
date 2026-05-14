@@ -162,7 +162,12 @@ app.post('/register/verify', authMiddleware, async (c) => {
     );
 
     if (!expectedChallenge) {
-      return c.json({ error: 'Challenge not found or expired' }, 400);
+      // finding-3 (Session 122): inline c.json + 英語直書きを errorJson + 5 lang i18n
+      // 化。/login/options 側 (L344-346) は anti-enum silent reject で
+      // auth.authenticationFailed 統一だが、/register/verify は authMiddleware
+      // 通過後 (登録中 user) に KV 5min TTL 切れで起きる UX エラーなので、
+      // 明示的 i18n message で「もう一度お試しください」と提示する。
+      return errorJson(c, 'passkey.challengeExpired', 400);
     }
 
     // Challengeを削除（使い捨て）

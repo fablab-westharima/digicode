@@ -90,6 +90,7 @@ export const errorMessages = {
     'passkey.authFailed': 'パスキー認証に失敗しました',
     'passkey.onlyModeSetFailed': 'パスキーのみモードの設定に失敗しました',
     'passkey.onlyModeCheckFailed': 'パスキーのみモードの確認中にエラーが発生しました',
+    'passkey.challengeExpired': '認証チャレンジの有効期限が切れました。もう一度お試しください',
 
     // ── recovery: リカバリーコード / トークン ──
     'recovery.noCodes': 'リカバリーコードがありません',
@@ -271,6 +272,7 @@ export const errorMessages = {
     'passkey.authFailed': 'Passkey authentication failed',
     'passkey.onlyModeSetFailed': 'Failed to set passkey-only mode',
     'passkey.onlyModeCheckFailed': 'Error checking passkey-only mode',
+    'passkey.challengeExpired': 'Authentication challenge has expired. Please try again',
 
     'recovery.noCodes': 'No recovery codes available',
     'recovery.invalidToken': 'Invalid recovery token',
@@ -440,6 +442,7 @@ export const errorMessages = {
     'passkey.authFailed': 'Error de autenticación con passkey',
     'passkey.onlyModeSetFailed': 'Error al activar el modo solo passkey',
     'passkey.onlyModeCheckFailed': 'Error al comprobar el modo solo passkey',
+    'passkey.challengeExpired': 'El desafío de autenticación ha caducado. Por favor, inténtalo de nuevo',
 
     'recovery.noCodes': 'No hay códigos de recuperación disponibles',
     'recovery.invalidToken': 'Token de recuperación inválido',
@@ -609,6 +612,7 @@ export const errorMessages = {
     'passkey.authFailed': 'Falha na autenticação por passkey',
     'passkey.onlyModeSetFailed': 'Falha ao ativar o modo apenas com passkey',
     'passkey.onlyModeCheckFailed': 'Erro ao verificar o modo apenas com passkey',
+    'passkey.challengeExpired': 'O desafio de autenticação expirou. Por favor, tente novamente',
 
     'recovery.noCodes': 'Não há códigos de recuperação disponíveis',
     'recovery.invalidToken': 'Token de recuperação inválido',
@@ -778,6 +782,7 @@ export const errorMessages = {
     'passkey.authFailed': 'Passkey 驗證失敗',
     'passkey.onlyModeSetFailed': '設定僅 passkey 模式失敗',
     'passkey.onlyModeCheckFailed': '檢查僅 passkey 模式時發生錯誤',
+    'passkey.challengeExpired': '驗證挑戰已過期。請再試一次',
 
     'recovery.noCodes': '沒有可用的復原碼',
     'recovery.invalidToken': '無效的復原權杖',
