@@ -167,10 +167,21 @@ recoveryCodes.post('/verify', async (c) => {
       }
     }
 
-    // リカバリーコードを使用済みにマーク
-    await c.env.DB.prepare(
-      'UPDATE recovery_codes SET used = 1, used_at = datetime(\'now\') WHERE id = ?'
+    // F-32 (Session 123): atomic CAS で TOCTOU race を closure。
+    // 旧コードは SELECT (L117) で recovery_codes WHERE used = 0 + UPDATE (本行)
+    // SET used = 1 の 2 statement 非 atomic。同一 recovery code を持つ 2 並列
+    // request が両方 SELECT (used=0 観測) → 両方 PBKDF2-verify 通過 →
+    // 両方 UPDATE。結果: 1 件 code で 2 JWT 発行可能 (attacker が phished code
+    // を legit user と race する scenario)。
+    // 本 fix で UPDATE に `AND used = 0` filter 追加、affected_rows === 1 確認後
+    // のみ downstream (JWT 発行) 進行。0 件 = parallel request が先に使用済 →
+    // anti-enum 整合の uniform error (auth.emailOrRecoveryCodeInvalid) で reject。
+    const useResult = await c.env.DB.prepare(
+      'UPDATE recovery_codes SET used = 1, used_at = datetime(\'now\') WHERE id = ? AND used = 0'
     ).bind(validCodeId).run();
+    if (useResult.meta.changes === 0) {
+      return errorJson(c, 'auth.emailOrRecoveryCodeInvalid', 401);
+    }
 
     // JWTトークンペア生成（auth.tsと同じ方式）
     const { accessToken, refreshToken, expiresIn } = await generateTokenPair(

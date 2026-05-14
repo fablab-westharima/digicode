@@ -464,8 +464,28 @@ auth.post('/refresh', async (c) => {
       return errorJson(c, 'auth.invalidRefreshToken', 401);
     }
 
-    // 失効チェック
+    // F-29 (Session 123): 失効済 refresh token の再利用検知時、当該 user の
+    // 全 refresh token を即時 revoke (RFC 6749 § 10.4 + OAuth 2.0 Security BCP
+    // § 4.13、industry standard refresh-token rotation の breach detection)。
+    // 旧コードは「該当 token 1 件を 401 で reject」のみ = session theft signal
+    // を defense として活用できていなかった。
+    //
+    // Attack scenario:
+    //   1. Attacker が legit user の refresh token を steal
+    //   2. Legit user が refresh 完了 → 旧 token は revoked_at 設定
+    //   3. Attacker が steal した token で /refresh → revoked_at で reject
+    //   4. 旧コードは reject のみで legit user の新 token (parallel chain) を
+    //      存続させる = attack 続行可能
+    //   5. 本 fix で revoked-reuse 検知時に全 user token revoke、attacker +
+    //      legit user 両方の session を全 terminate (compromise 確定対応)
+    //
+    // 機械検証: 全 user の active token を一括 revoke、idempotent (`revoked_at
+    // IS NULL` filter) で competing race 安全。
     if (storedToken.revoked_at) {
+      await c.env.DB.prepare(
+        'UPDATE refresh_tokens SET revoked_at = datetime(\'now\') WHERE user_id = ? AND revoked_at IS NULL'
+      ).bind(storedToken.user_id).run();
+      console.warn(`[auth] refresh-token reuse detected: user_id=${storedToken.user_id}, all tokens revoked`);
       return errorJson(c, 'auth.refreshTokenRevoked', 401);
     }
 
@@ -686,6 +706,20 @@ auth.post('/reset-password', async (c) => {
       return errorJson(c, 'auth.resetTokenExpired', 400);
     }
 
+    // F-33 (Session 123): atomic CAS で TOCTOU race を closure。
+    // 旧コードは password UPDATE + used_at UPDATE の 2 statement 非 atomic。
+    // 2 並列同 token request: 両方 SELECT (used_at IS NULL) → 両方 password
+    // UPDATE (異なる password) → 第二 request の password が prevail = data
+    // corruption。token は theft 前提 share (phished URL) で 2 path 同時発火
+    // 可能。本 fix で used_at UPDATE を password UPDATE の前に atomic CAS、
+    // changes === 1 確認後のみ downstream 進行。
+    const useResult = await c.env.DB.prepare(
+      'UPDATE password_reset_tokens SET used_at = datetime(\'now\') WHERE id = ? AND used_at IS NULL'
+    ).bind(resetToken.id).run();
+    if (useResult.meta.changes === 0) {
+      return errorJson(c, 'auth.resetTokenAlreadyUsed', 400);
+    }
+
     // パスワードをハッシュ化
     const passwordHash = await hashPassword(password);
 
@@ -693,11 +727,6 @@ auth.post('/reset-password', async (c) => {
     await c.env.DB.prepare(
       'UPDATE users SET password_hash = ? WHERE id = ?'
     ).bind(passwordHash, resetToken.user_id).run();
-
-    // トークンを使用済みにする
-    await c.env.DB.prepare(
-      'UPDATE password_reset_tokens SET used_at = datetime(\'now\') WHERE id = ?'
-    ).bind(resetToken.id).run();
 
     // 全リフレッシュトークンを無効化（セキュリティのため）
     await c.env.DB.prepare(
@@ -848,15 +877,22 @@ auth.post('/verify-email/:token', async (c) => {
       });
     }
 
+    // F-33 (Session 123): atomic CAS で TOCTOU race を closure。
+    // 旧コードは users.email_verified UPDATE + tokens.used_at UPDATE の 2
+    // statement。idempotent UPDATE (email_verified=1) なので race impact は
+    // /reset-password ほど致命ではないが、parallel structure として CAS 化、
+    // post-fix re-run で 0 件残存達成。
+    const useResult = await c.env.DB.prepare(
+      'UPDATE email_verification_tokens SET used_at = datetime(\'now\') WHERE id = ? AND used_at IS NULL'
+    ).bind(verificationToken.id).run();
+    if (useResult.meta.changes === 0) {
+      return errorJson(c, 'auth.verifyTokenAlreadyUsed', 400);
+    }
+
     // メールアドレスを確認済みにする
     await c.env.DB.prepare(
       'UPDATE users SET email_verified = 1, email_verified_at = datetime(\'now\') WHERE id = ?'
     ).bind(verificationToken.user_id).run();
-
-    // トークンを使用済みにする
-    await c.env.DB.prepare(
-      'UPDATE email_verification_tokens SET used_at = datetime(\'now\') WHERE id = ?'
-    ).bind(verificationToken.id).run();
 
     return c.json({
       verified: true,
@@ -988,10 +1024,16 @@ auth.post('/recovery/verify', async (c) => {
       return errorJson(c, 'recovery.tokenExpired', 400);
     }
 
-    // トークンを使用済みにする
-    await c.env.DB.prepare(
-      'UPDATE recovery_tokens SET used_at = datetime(\'now\') WHERE id = ?'
+    // F-33 (Session 123): atomic CAS で TOCTOU race を closure。
+    // 旧コードは used_at UPDATE + 後段 JWT 発行 で同 token 並列 verify が 2 JWT
+    // 取得可能 (phished URL を attacker + legit user 同時実行)。本 fix で CAS
+    // 化、changes === 1 確認後のみ JWT 発行。
+    const useResult = await c.env.DB.prepare(
+      'UPDATE recovery_tokens SET used_at = datetime(\'now\') WHERE id = ? AND used_at IS NULL'
     ).bind(recoveryToken.id).run();
+    if (useResult.meta.changes === 0) {
+      return errorJson(c, 'recovery.tokenAlreadyUsed', 400);
+    }
 
     // JWTトークンペア発行
     const tokens = await generateTokenPair(
