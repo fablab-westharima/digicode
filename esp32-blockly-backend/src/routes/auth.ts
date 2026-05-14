@@ -264,11 +264,19 @@ auth.post('/login', async (c) => {
     }
 
     // メール未確認チェック (パスワード正解後のみ判定 = UX 救済 path 維持 + email_verified 状態 leak 防止)
+    //
+    // NEW-1 (Session 121 zero-base re-audit):
+    // 旧コードは inline `c.json({error: <JP>, needsVerification: true}, 403)` で
+    // errorCode field を含まない 2-key shape を返却していた。同 user state を
+    // 2fa.ts /send-otp:132 / recovery-codes.ts /verify:151 / passkey.ts /login/verify:392
+    // で受けると `errorJson(c, 'auth.emailNotVerified', 403, {needsVerification: true})` =
+    // {error, errorCode, needsVerification} の 3-key shape が返るため、attacker が
+    // 同 email + 正しい password を 2 endpoint に投げると response の `errorCode` field
+    // 有無で email_verified=0 を確定可能 = RB-1 (passkey_only) と同 class の cross-endpoint
+    // anti-enum shape divergence。本 fix で 4 endpoint 全件 同形 errorJson に統一。
+    // needsVerification:true は UX 救済 (EmailVerificationWaiting へ frontend が誘導) で維持。
     if (!user.email_verified) {
-      return c.json({
-        error: 'メールアドレスが確認されていません。確認メールをご確認ください。',
-        needsVerification: true
-      }, 403);
+      return errorJson(c, 'auth.emailNotVerified', 403, { needsVerification: true });
     }
 
     // 生徒ログイン制限: student かつクラス未所属ならログイン不可
