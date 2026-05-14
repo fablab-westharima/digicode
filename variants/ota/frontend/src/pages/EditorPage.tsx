@@ -84,21 +84,31 @@ export function EditorPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { logout, isAuthenticated, user } = useAuthStore();
-  const canUseAiUiCustomize = useFeatureFlagStore((s) => s.canUseAiUiCustomize);
-  const canSubmitFeedback = useFeatureFlagStore((s) => s.canSubmitFeedback);
   // 第103回 hotfix: function ref ではなく flag value を subscribe (StatusBar pattern と同型)。
   // `(s) => s.isFreeOpenNow` は zustand で function ref が不変 → flags state 更新時に
   // 未ログイン user の EditorPage が re-render されず、Feedback button が永久非表示になる。
   const isPinAssignFreeOpen = useFeatureFlagStore(
     (s) => s.flags['pin_assign_pro']?.isFreeNow ?? false
   );
+  // F-25 (Session 123): zustand selector で function ref を返す pattern
+  // (`(s) => s.canUseAiUiCustomize`) は function ref 不変 → flags state 更新時
+  // に re-render 不発火 latent bug。現状は L92-94 `isPinAssignFreeOpen` の
+  // slice-value selector が flags 変化で re-render trigger し、副次的に上の
+  // function selector が再評価されているため masked、ただし L92-94 refactor
+  // 時に latent bug 顕在化する fragile pattern。`memory:zustand_state_reading_selector`
+  // (第103回 hotfix1+hotfix3 で 2 度発現) と同 cluster の sweep 漏れ。
+  // 本 fix で全 selector を slice-value で wrap、selector 内で関数呼出 → value
+  // 取得まで完結、function ref 依存を排除。
+  const isAiUiCustomizeAvailable = useFeatureFlagStore(
+    (s) => !!user && s.canUseAiUiCustomize(user?.plan, user?.accountType)
+  );
+  const canSubmitFeedbackForUser = useFeatureFlagStore(
+    (s) => !!isAuthenticated && s.canSubmitFeedback(user?.plan, user?.accountType)
+  );
   // 第102回 C3: ヘッダー Feedback button + Sidebar 「要望を送る」共通可否
   // 第103回: プレリリース期間中 (pin_assign_pro.isFreeNow=true) は未ログイン含め全 user に開放、
   // 通常時は canSubmitFeedback (lite/pro/enterprise non-student) のみ
-  const isFeedbackAvailable =
-    (isAuthenticated && canSubmitFeedback(user?.plan, user?.accountType)) ||
-    isPinAssignFreeOpen;
-  const isAiUiCustomizeAvailable = canUseAiUiCustomize(user?.plan, user?.accountType);
+  const isFeedbackAvailable = canSubmitFeedbackForUser || isPinAssignFreeOpen;
   const { currentProject, setCurrentProject } = useProjectStore();
   const { status: serialStatus, forceReleaseAllPorts } = useSerialStore();
   const { status: wifiStatus, setHost, setDeviceName, connect: connectWifi } = useWifiStore();
