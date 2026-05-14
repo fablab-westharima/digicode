@@ -61,8 +61,15 @@ app.use('*', cors({
     const additionalOrigins = c.env.CORS_ORIGINS?.split(',').map((o: string) => o.trim()) || [];
     if (additionalOrigins.includes(origin)) return origin;
 
-    // Allow Cloudflare Pages preview deployments
-    if (origin.endsWith('.pages.dev')) return origin;
+    // T12 (Session 119): Allow only DigiCode-owned Cloudflare Pages preview
+    // deployments — the previous `origin.endsWith('.pages.dev')` was a
+    // wildcard that accepted any third-party preview hosted on
+    // pages.dev, opening a CSRF / cookie-piggyback surface (CORS allows
+    // credentials:true). Tighten to the digicode-frontend project's
+    // canonical hostname and its preview subdomains
+    // (`<hash>.digicode-frontend.pages.dev`).
+    if (origin === 'https://digicode-frontend.pages.dev') return origin;
+    if (/^https:\/\/[a-z0-9-]+\.digicode-frontend\.pages\.dev$/.test(origin)) return origin;
 
     // Reject unknown origins
     return null;
