@@ -39,7 +39,14 @@ submissions.get('/my', async (c) => {
       userId,
     });
 
-    if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+    // NEW-5 (Session 121): ML30 internal error string を client に透過していた
+    // c.json({ error: apiResult.error }) を errorJson 統一に置換。
+    // proxyClassApi の error 文字列は将来内部 path / Tunnel / timeout を含む可能性、
+    // rule 16 attacker-perspective-defense 整合で console.error のみ保持。
+    if (!apiResult.ok) {
+      console.error('[submissions] List my submissions ML30 error:', apiResult.error);
+      return errorJson(c, 'submission.listFailed', apiResult.status);
+    }
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('List my submissions error:', error);
@@ -73,7 +80,9 @@ submissions.get('/:id/attachment', async (c) => {
     });
 
     if (!metaResult.ok) {
-      return c.json({ error: metaResult.error }, metaResult.status);
+      // NEW-5 (Session 121): ML30 error 透過を errorJson 統一に置換。
+      console.error('[submissions] Get attachment meta ML30 error:', metaResult.error);
+      return errorJson(c, 'submission.getFailed', metaResult.status);
     }
 
     const sub = (metaResult.body as {
@@ -149,7 +158,11 @@ submissions.get('/:id', async (c) => {
       userId,
     });
 
-    if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+    if (!apiResult.ok) {
+      // NEW-5 (Session 121): ML30 error 透過を errorJson 統一に置換。
+      console.error('[submissions] Get submission ML30 error:', apiResult.error);
+      return errorJson(c, 'submission.getFailed', apiResult.status);
+    }
 
     // 認可: 生徒は自分の submission のみ、enterprise owner は自クラスの submission
     const body = apiResult.body as { submission: { studentUserId: number; classId: number } };
@@ -187,7 +200,10 @@ submissions.put('/:id', async (c) => {
     });
 
     if (!check.ok) {
-      if (check.error) return c.json({ error: check.error }, check.status);
+      // NEW-5 (Session 121): ML30 error 透過を errorJson 統一に置換。
+      // 旧コードは check.error の有無で 2 経路に分かれていたが、いずれも
+      // submission.notFound に集約 (ownership check 失敗を user 視点で notFound 扱い)。
+      console.error('[submissions] Save ownership-check ML30 error:', check.error);
       return errorJson(c, 'submission.notFound', check.status);
     }
 
@@ -205,7 +221,11 @@ submissions.put('/:id', async (c) => {
       body,
     });
 
-    if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+    if (!apiResult.ok) {
+      // NEW-5 (Session 121): ML30 error 透過を errorJson 統一に置換。
+      console.error('[submissions] Save submission ML30 error:', apiResult.error);
+      return errorJson(c, 'submission.saveFailed', apiResult.status);
+    }
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('Save submission error:', error);
@@ -228,7 +248,8 @@ submissions.post('/:id/submit', async (c) => {
     });
 
     if (!check.ok) {
-      if (check.error) return c.json({ error: check.error }, check.status);
+      // NEW-5 (Session 121): ML30 error 透過を errorJson 統一に置換。
+      console.error('[submissions] Submit ownership-check ML30 error:', check.error);
       return errorJson(c, 'submission.notFound', check.status);
     }
 
@@ -243,7 +264,11 @@ submissions.post('/:id/submit', async (c) => {
       userId,
     });
 
-    if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+    if (!apiResult.ok) {
+      // NEW-5 (Session 121): ML30 error 透過を errorJson 統一に置換。
+      console.error('[submissions] Submit submission ML30 error:', apiResult.error);
+      return errorJson(c, 'submission.submitFailed', apiResult.status);
+    }
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('Submit submission error:', error);

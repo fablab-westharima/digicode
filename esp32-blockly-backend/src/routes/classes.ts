@@ -542,7 +542,13 @@ classes.get('/:classId/assignments', async (c) => {
       userId,
     });
 
-    if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+    // NEW-5 (Session 121): ML30 internal error string client 透過を errorJson 統一に置換。
+    // proxyClassApi の error 文字列は将来内部 path / Tunnel / timeout を含む可能性、
+    // rule 16 attacker-perspective-defense 整合で console.error のみ保持。
+    if (!apiResult.ok) {
+      console.error('[classes] List assignments ML30 error:', apiResult.error);
+      return errorJson(c, 'assignment.listFailed', apiResult.status);
+    }
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('List assignments error:', error);
@@ -569,7 +575,11 @@ classes.post('/:classId/assignments', async (c) => {
       body: { ...body, classId },
     });
 
-    if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+    if (!apiResult.ok) {
+      // NEW-5 (Session 121): ML30 error 透過を errorJson 統一に置換。
+      console.error('[classes] Create assignment ML30 error:', apiResult.error);
+      return errorJson(c, 'assignment.createFailed', apiResult.status);
+    }
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('Create assignment error:', error);
@@ -594,7 +604,11 @@ classes.get('/:classId/assignments/:assignmentId', async (c) => {
       userId,
     });
 
-    if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+    if (!apiResult.ok) {
+      // NEW-5 (Session 121): ML30 error 透過を errorJson 統一に置換。
+      console.error('[classes] Get assignment ML30 error:', apiResult.error);
+      return errorJson(c, 'assignment.getFailed', apiResult.status);
+    }
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('Get assignment error:', error);
@@ -660,7 +674,11 @@ classes.delete('/:classId/assignments/:assignmentId', async (c) => {
       userId,
     });
 
-    if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+    if (!apiResult.ok) {
+      // NEW-5 (Session 121): ML30 error 透過を errorJson 統一に置換。
+      console.error('[classes] Delete assignment ML30 error:', apiResult.error);
+      return errorJson(c, 'assignment.deleteFailed', apiResult.status);
+    }
     return c.json(apiResult.body, apiResult.status);
   } catch (error) {
     console.error('Delete assignment error:', error);
@@ -732,7 +750,11 @@ classes.get('/:classId/assignments/:assignmentId/submissions', async (c) => {
       userId,
     });
 
-    if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+    if (!apiResult.ok) {
+      // NEW-5 (Session 121): ML30 error 透過を errorJson 統一に置換。
+      console.error('[classes] List submissions by assignment ML30 error:', apiResult.error);
+      return errorJson(c, 'submission.listFailed', apiResult.status);
+    }
 
     // ML30 からの submissions に D1 users の情報（email, display_name）をマージ
     const body = apiResult.body as {
@@ -797,7 +819,11 @@ classes.put(
         body,
       });
 
-      if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+      if (!apiResult.ok) {
+        // NEW-5 (Session 121): ML30 error 透過を errorJson 統一に置換。
+        console.error('[classes] Grade submission ML30 error:', apiResult.error);
+        return errorJson(c, 'submission.gradeFailed', apiResult.status);
+      }
       return c.json(apiResult.body, apiResult.status);
     } catch (error) {
       console.error('Grade submission error:', error);
@@ -828,7 +854,11 @@ classes.post(
         userId,
       });
 
-      if (!apiResult.ok) return c.json({ error: apiResult.error }, apiResult.status);
+      if (!apiResult.ok) {
+        // NEW-5 (Session 121): ML30 error 透過を errorJson 統一に置換。
+        console.error('[classes] Return submission ML30 error:', apiResult.error);
+        return errorJson(c, 'submission.returnFailed', apiResult.status);
+      }
       return c.json(apiResult.body, apiResult.status);
     } catch (error) {
       console.error('Return submission error:', error);
