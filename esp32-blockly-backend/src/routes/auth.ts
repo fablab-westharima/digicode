@@ -92,12 +92,9 @@ auth.post('/register', async (c) => {
     const isDev = c.req.header('host')?.includes('localhost') ||
                   c.req.header('host')?.includes('127.0.0.1');
 
-    let respondUserId: number;
     let devVerificationToken: string | null = null;
 
     if (existingUser) {
-      respondUserId = existingUser.id;
-
       if (existingUser.email_verified) {
         // 既に verified user — login 誘導 mail を送信、token 発行なし
         if (c.env.RESEND_API_KEY) {
@@ -146,7 +143,6 @@ auth.post('/register', async (c) => {
       if (!userResult) {
         return errorJson(c, 'admin.userCreateFailed', 500);
       }
-      respondUserId = userResult.id;
 
       // サブスクリプション作成（無料プラン）
       await c.env.DB.prepare(
@@ -178,6 +174,14 @@ auth.post('/register', async (c) => {
       devVerificationToken = verificationToken;
     }
 
+    // R1 (Session 119 anti-enum cluster scope-rectification):
+    // 旧コードは response.user.id に respondUserId を含めていたが、新規 user は
+    // INSERT で auto-increment 最新 id を取得 (大きい)、既存 user は過去 id (小さい)
+    // のため数値分布で識別可能 = N-1 enumeration oracle。f04b5d3 commit message の
+    // "id is real for existing paths, fabricated by INSERT for new path" claim は
+    // 実コード上「fabricated」ではない (RETURNING で実 auto-increment id 返却) と
+    // 第119回 Task 1 audit で判明。response から user.id field 自体を削除し、
+    // 全 path で identical shape { message, user: { email } } を返却。
     // 開発モードかつAPIキーがない場合のみ、レスポンスにトークンを含める
     // (既存 verified path では devVerificationToken=null なので token field は省略)
     if (isDev && !c.env.RESEND_API_KEY && devVerificationToken) {
@@ -185,20 +189,14 @@ auth.post('/register', async (c) => {
         message: 'アカウントを作成しました。メールアドレスを確認してください。',
         verificationToken: devVerificationToken,
         verificationUrl: `http://localhost:5173/verify-email/${devVerificationToken}`,
-        user: {
-          id: respondUserId,
-          email,
-        },
+        user: { email },
       }, 201);
     }
 
     // 通常 response: 新規 / 既存 unverified / 既存 verified 全てで identical shape
     return c.json({
       message: 'アカウントを作成しました。確認メールを送信しましたので、メールアドレスを確認してください。',
-      user: {
-        id: respondUserId,
-        email,
-      },
+      user: { email },
     }, 201);
   } catch (error) {
     console.error('Registration error:', error);
