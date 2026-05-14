@@ -638,19 +638,39 @@ javascriptGenerator.forBlock['ha_device_init'] = function(block: Blockly.Block) 
   const availability = block.getFieldValue('AVAILABILITY') === 'TRUE';
   const viaDevice = block.getFieldValue('VIA_DEVICE') || '';
 
-  // インクルードとグローバル変数
+  // F-C1 (Session 118 zero-base re-audit) — case 19 axis 2 cluster 4 件目:
+  // ha_device_init と ha_device_init_auth が同 7 keys を per-block params で
+  // emit していたため、両ブロックを同一 project に置くと第二 forBlock が値を
+  // 上書き = silent config mismatch。Session 113 R2-A (json_doc) / R2-B
+  // (line_sensor) / Session 117 F-3 (qtr) と同 singleton-guard pattern を
+  // 7 keys 全件に適用 (first placement wins)。include_wifi / include_arduinoha
+  // / ha_wifi_client は literal 同値で idempotent のため guard 不要。
   generator.definitions_['include_wifi'] = '#include <WiFi.h>';
   generator.definitions_['include_arduinoha'] = '#include <ArduinoHA.h>';
   generator.definitions_['ha_wifi_client'] = 'WiFiClient haClient;';
-  generator.definitions_['ha_device'] = `HADevice haDevice("${deviceId}");`;
-  generator.definitions_['ha_mqtt'] = 'HAMqtt haMqtt(haClient, haDevice);';
-  generator.definitions_['ha_ssid'] = `const char* ha_ssid = "${ssid}";`;
-  generator.definitions_['ha_wifi_pass'] = `const char* ha_wifi_pass = "${wifiPass}";`;
-  generator.definitions_['ha_broker'] = `const char* ha_broker = "${broker}";`;
-  generator.definitions_['ha_port'] = `const uint16_t ha_port = ${port};`;
+  if (!generator.definitions_['ha_device']) {
+    generator.definitions_['ha_device'] = `HADevice haDevice("${deviceId}");`;
+  }
+  if (!generator.definitions_['ha_mqtt']) {
+    generator.definitions_['ha_mqtt'] = 'HAMqtt haMqtt(haClient, haDevice);';
+  }
+  if (!generator.definitions_['ha_ssid']) {
+    generator.definitions_['ha_ssid'] = `const char* ha_ssid = "${ssid}";`;
+  }
+  if (!generator.definitions_['ha_wifi_pass']) {
+    generator.definitions_['ha_wifi_pass'] = `const char* ha_wifi_pass = "${wifiPass}";`;
+  }
+  if (!generator.definitions_['ha_broker']) {
+    generator.definitions_['ha_broker'] = `const char* ha_broker = "${broker}";`;
+  }
+  if (!generator.definitions_['ha_port']) {
+    generator.definitions_['ha_port'] = `const uint16_t ha_port = ${port};`;
+  }
 
-  // WiFi接続関数
-  generator.definitions_['ha_wifi_connect_func'] = `
+  // WiFi接続関数 — body は ssid/wifiPass マクロ参照のみで per-block params 不在、
+  // 同値だが singleton-guard で defense in depth (両 forBlock 共通 pattern)
+  if (!generator.definitions_['ha_wifi_connect_func']) {
+    generator.definitions_['ha_wifi_connect_func'] = `
 void haWifiConnect() {
   Serial.print("WiFi connecting to ");
   Serial.println(ha_ssid);
@@ -663,6 +683,7 @@ void haWifiConnect() {
   Serial.print("WiFi connected. IP: ");
   Serial.println(WiFi.localIP());
 }`;
+  }
 
   // commit 2: connect WiFi first so the WiFi peripheral is fully initialised,
   // then read MAC (eFuse-backed, but safer post-init), then call HADevice
@@ -771,17 +792,32 @@ javascriptGenerator.forBlock['ha_device_init_auth'] = function(block: Blockly.Bl
   const availability = block.getFieldValue('AVAILABILITY') === 'TRUE';
   const viaDevice = block.getFieldValue('VIA_DEVICE') || '';
 
+  // F-C1 (Session 118 zero-base re-audit) — ha_device_init と pair の
+  // singleton-guard (case 19 axis 2 cluster 4 件目)。L645-665 と同 pattern。
   generator.definitions_['include_wifi'] = '#include <WiFi.h>';
   generator.definitions_['include_arduinoha'] = '#include <ArduinoHA.h>';
   generator.definitions_['ha_wifi_client'] = 'WiFiClient haClient;';
-  generator.definitions_['ha_device'] = `HADevice haDevice("${deviceId}");`;
-  generator.definitions_['ha_mqtt'] = 'HAMqtt haMqtt(haClient, haDevice);';
-  generator.definitions_['ha_ssid'] = `const char* ha_ssid = "${ssid}";`;
-  generator.definitions_['ha_wifi_pass'] = `const char* ha_wifi_pass = "${wifiPass}";`;
-  generator.definitions_['ha_broker'] = `const char* ha_broker = "${broker}";`;
-  generator.definitions_['ha_port'] = `const uint16_t ha_port = ${port};`;
+  if (!generator.definitions_['ha_device']) {
+    generator.definitions_['ha_device'] = `HADevice haDevice("${deviceId}");`;
+  }
+  if (!generator.definitions_['ha_mqtt']) {
+    generator.definitions_['ha_mqtt'] = 'HAMqtt haMqtt(haClient, haDevice);';
+  }
+  if (!generator.definitions_['ha_ssid']) {
+    generator.definitions_['ha_ssid'] = `const char* ha_ssid = "${ssid}";`;
+  }
+  if (!generator.definitions_['ha_wifi_pass']) {
+    generator.definitions_['ha_wifi_pass'] = `const char* ha_wifi_pass = "${wifiPass}";`;
+  }
+  if (!generator.definitions_['ha_broker']) {
+    generator.definitions_['ha_broker'] = `const char* ha_broker = "${broker}";`;
+  }
+  if (!generator.definitions_['ha_port']) {
+    generator.definitions_['ha_port'] = `const uint16_t ha_port = ${port};`;
+  }
 
-  generator.definitions_['ha_wifi_connect_func'] = `
+  if (!generator.definitions_['ha_wifi_connect_func']) {
+    generator.definitions_['ha_wifi_connect_func'] = `
 void haWifiConnect() {
   Serial.print("WiFi connecting to ");
   Serial.println(ha_ssid);
@@ -794,6 +830,7 @@ void haWifiConnect() {
   Serial.print("WiFi connected. IP: ");
   Serial.println(WiFi.localIP());
 }`;
+  }
 
   let body = '  // HA Device Init with Auth\n';
   body += `  haWifiConnect();\n`;
