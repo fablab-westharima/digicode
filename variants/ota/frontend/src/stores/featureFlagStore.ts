@@ -145,7 +145,16 @@ export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
 
   // 要望フォーム: 課金ユーザー限定 (Lite / Pro / Enterprise admin)、Enterprise student / Free / ゲストは投稿不可
   // 41.md §2 認可マトリクス、backend `routes/feedback.ts` の二段階認可と同型 (defense in depth)
+  //
+  // T3 (Session 119): プレリリース期間中の `isFreeNow` bypass を追加。
+  // 他 AI 系 (canUseAiBlockGeneration / canUseAiHelpBot / canUseAiUiCustomize) は
+  // 第103回 hotfix2 で全 bypass 化済だが、canSubmitFeedback のみ漏れていた。
+  // `memory:prerelease_open_scope` 適用 (Pin Assign / AI 3 / Feedback / Classes 全 user 開放)。
+  // 現状 `pin_assign_pro.isFreeNow=false` (DISC-2 第112回 settled) で実害なしだが、
+  // 再点火時に bug が露呈する path をリリース前に閉鎖。
   canSubmitFeedback: (userPlan?: string, accountType?: string) => {
+    const flag = get().flags['pin_assign_pro'];
+    if (flag && flag.isFreeNow) return true;
     if (accountType === 'student') return false;
     if (!userPlan) return false;
     return ['lite', 'pro', 'enterprise'].includes(userPlan);
