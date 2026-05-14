@@ -96,7 +96,11 @@ webhooks.post('/stripe', async (c) => {
   const signature = c.req.header('stripe-signature');
 
   if (!signature) {
-    return c.json({ error: 'Missing stripe-signature header' }, 400);
+    // F-28 (Session 123 post-deploy smoke で発見、本 commit C4 sweep 漏れの即時 closure):
+    // 旧 inline c.json + 英語直書きを errorJson + 5 lang i18n 統一。catch block (L110)
+    // の Stripe library exception と同 webhook signature error cluster、本 fix で
+    // 両 path uniform errorJson + webhook.signatureInvalid 5 lang。
+    return errorJson(c, 'webhook.signatureInvalid', 400);
   }
 
   let event: Stripe.Event;
