@@ -1064,16 +1064,29 @@ auth.post('/change-password', authMiddleware, async (c) => {
       return errorJson(c, 'auth.currentAndNewPasswordRequired', 400);
     }
 
-    if (body.newPassword.length < 4) {
-      return errorJson(c, 'auth.passwordTooShort', 400);
-    }
-
+    // T1 (Session 119): account_type 別に password 強度要件を分岐。
+    //   student → 4 文字以上 (現場で 4 桁 PIN-like 想定、強度は 2FA / passkey で補完)
+    //   regular → register と同 validatePassword (8 文字 + 大小英数記号、target_users
+    //             integrity 維持。change-password 経由で強度 bypass する path を封鎖)
+    // 旧コードは全 user 4 文字許容で、Fab Academy / FS 受講者 / 大学生 等の
+    // regular user が register 強度を回避できる loophole があった。
     const user = await c.env.DB.prepare(
-      'SELECT password_hash FROM users WHERE id = ?'
-    ).bind(userId).first<{ password_hash: string }>();
+      'SELECT password_hash, account_type FROM users WHERE id = ?'
+    ).bind(userId).first<{ password_hash: string; account_type: string | null }>();
 
     if (!user) {
       return errorJson(c, 'auth.userNotFound', 404);
+    }
+
+    if (user.account_type === 'student') {
+      if (body.newPassword.length < 4) {
+        return errorJson(c, 'auth.passwordTooShort', 400);
+      }
+    } else {
+      const passwordValidation = validatePassword(body.newPassword);
+      if (!passwordValidation.valid) {
+        return c.json({ error: passwordValidation.message }, 400);
+      }
     }
 
     const { valid } = await verifyPassword(body.currentPassword, user.password_hash);
