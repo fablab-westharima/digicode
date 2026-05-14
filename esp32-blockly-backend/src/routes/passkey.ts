@@ -88,9 +88,11 @@ app.post('/register/options', authMiddleware, async (c) => {
     const origin = c.req.header('origin');
     const rpId = getRpId(origin);
 
-    console.log('[Passkey Register] User:', user.userId, user.email);
-    console.log('[Passkey Register] Origin:', origin);
-    console.log('[Passkey Register] RP_ID:', rpId);
+    // D-2 (Session 120): Workers Logs PII redaction.
+    // 旧コードは userId + email + origin + RP_ID を unconditional log していたため
+    // CF アカウントアクセス権を持つ全員に email + userId pair が露出していた。
+    // 登録成功は metric (count) で十分、debug が必要な場合は req correlation id で
+    // server-side のみで join する。
 
     // ユーザーの既存パスキーを取得
     const existingAuthenticators = await c.env.DB.prepare(
@@ -98,8 +100,6 @@ app.post('/register/options', authMiddleware, async (c) => {
     )
       .bind(user.userId)
       .all();
-
-    console.log('[Passkey Register] Existing authenticators:', existingAuthenticators.results.length);
 
     // userIDをUint8Arrayに変換（Cloudflare WorkersではBufferが使えないのでTextEncoderを使用）
     // v13 API は Uint8Array<ArrayBuffer> を期待するため new Uint8Array() で明示再パック
@@ -125,16 +125,12 @@ app.post('/register/options', authMiddleware, async (c) => {
       timeout: 60000,
     });
 
-    console.log('[Passkey Register] Generated options challenge:', options.challenge.substring(0, 20) + '...');
-
-    // ChallengeをKVに5分間保存
+    // ChallengeをKVに5分間保存 (D-2: challenge prefix log 削除、KV save 通知も除去)
     await c.env.WEBAUTHN_CHALLENGES.put(
       `${user.userId}:register`,
       options.challenge,
       { expirationTtl: 300 }
     );
-
-    console.log('[Passkey Register] Challenge saved to KV');
 
     return c.json(options);
   } catch (error) {
@@ -187,7 +183,10 @@ app.post('/register/verify', authMiddleware, async (c) => {
 
     // v13では registrationInfo.credential の下にデータがある
     const { credential: registeredCredential } = verification.registrationInfo;
-    console.log('[Passkey Register] registeredCredential:', registeredCredential);
+    // D-2 (Session 120): registeredCredential struct dump 削除。
+    // 旧コードは public key + counter 等を log していたが、Workers Logs に
+    // 認証器の素材が残るのは defense-in-depth 違反。debug が必要な場合は
+    // local dev のみで log を一時復活させる。
 
     // v13では credential.id は既にBase64URL文字列
     // publicKey は Uint8Array なのでエンコードが必要
