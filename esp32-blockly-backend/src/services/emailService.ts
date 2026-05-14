@@ -67,7 +67,7 @@ function generatePasswordResetEmailHtml(resetUrl: string): string {
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
   <div style="background: linear-gradient(135deg, #22c55e 0%, #3b82f6 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
-    <h1 style="color: white; margin: 0; font-size: 28px;">DigiCodeβ2</h1>
+    <h1 style="color: white; margin: 0; font-size: 28px;">DigiCode</h1>
     <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">パスワードリセット</p>
   </div>
 
@@ -98,7 +98,7 @@ function generatePasswordResetEmailHtml(resetUrl: string): string {
   </div>
 
   <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
-    <p>© 2024 DigiCode - ビジュアルプログラミングでESP32を動かそう</p>
+    <p>DigiCode</p>
   </div>
 </body>
 </html>
@@ -110,7 +110,7 @@ function generatePasswordResetEmailHtml(resetUrl: string): string {
  */
 function generatePasswordResetEmailText(resetUrl: string): string {
   return `
-DigiCodeβ2 - パスワードリセット
+DigiCode - パスワードリセット
 
 DigiCodeをご利用いただきありがとうございます。
 
@@ -123,7 +123,7 @@ ${resetUrl}
 心当たりがない場合は、このメールを無視してください。
 
 ---
-© 2024 DigiCode - ビジュアルプログラミングでESP32を動かそう
+DigiCode
   `.trim();
 }
 
@@ -182,7 +182,7 @@ function generateVerificationEmailHtml(verificationUrl: string): string {
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
   <div style="background: linear-gradient(135deg, #22c55e 0%, #3b82f6 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
-    <h1 style="color: white; margin: 0; font-size: 28px;">DigiCodeβ2</h1>
+    <h1 style="color: white; margin: 0; font-size: 28px;">DigiCode</h1>
     <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">メールアドレスの確認</p>
   </div>
 
@@ -213,7 +213,7 @@ function generateVerificationEmailHtml(verificationUrl: string): string {
   </div>
 
   <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
-    <p>© 2024 DigiCode - ビジュアルプログラミングでESP32を動かそう</p>
+    <p>DigiCode</p>
   </div>
 </body>
 </html>
@@ -225,7 +225,7 @@ function generateVerificationEmailHtml(verificationUrl: string): string {
  */
 function generateVerificationEmailText(verificationUrl: string): string {
   return `
-DigiCodeβ2 - メールアドレスの確認
+DigiCode - メールアドレスの確認
 
 DigiCodeへようこそ！
 
@@ -238,7 +238,7 @@ ${verificationUrl}
 心当たりがない場合は、このメールを無視してください。
 
 ---
-© 2024 DigiCode - ビジュアルプログラミングでESP32を動かそう
+DigiCode
   `.trim();
 }
 
@@ -297,7 +297,7 @@ function generateRecoveryEmailHtml(recoveryUrl: string): string {
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
   <div style="background: linear-gradient(135deg, #22c55e 0%, #3b82f6 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
-    <h1 style="color: white; margin: 0; font-size: 28px;">DigiCodeβ2</h1>
+    <h1 style="color: white; margin: 0; font-size: 28px;">DigiCode</h1>
     <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">アカウントリカバリー</p>
   </div>
 
@@ -329,7 +329,7 @@ function generateRecoveryEmailHtml(recoveryUrl: string): string {
   </div>
 
   <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
-    <p>© 2024 DigiCode - ビジュアルプログラミングでESP32を動かそう</p>
+    <p>DigiCode</p>
   </div>
 </body>
 </html>
@@ -341,7 +341,7 @@ function generateRecoveryEmailHtml(recoveryUrl: string): string {
  */
 function generateRecoveryEmailText(recoveryUrl: string): string {
   return `
-DigiCodeβ2 - アカウントリカバリー
+DigiCode - アカウントリカバリー
 
 DigiCodeをご利用いただきありがとうございます。
 
@@ -355,7 +355,7 @@ ${recoveryUrl}
 心当たりがない場合は、このメールを無視してください。
 
 ---
-© 2024 DigiCode - ビジュアルプログラミングでESP32を動かそう
+DigiCode
   `.trim();
 }
 
@@ -445,7 +445,7 @@ function generateLoginOtpEmailHtml(otpCode: string): string {
   </div>
 
   <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
-    <p>&copy; 2024 DigiCode - ビジュアルプログラミングでESP32を動かそう</p>
+    <p>DigiCode</p>
   </div>
 </body>
 </html>
@@ -468,6 +468,6 @@ DigiCodeへのログインが試みられました。
 アカウントのセキュリティを確保するため、このコードを他人と共有しないでください。
 
 ---
-© 2024 DigiCode - ビジュアルプログラミングでESP32を動かそう
+DigiCode
   `.trim();
 }
