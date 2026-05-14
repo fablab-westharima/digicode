@@ -45,11 +45,16 @@ classes.use('*', async (c, next) => {
   return requirePlan('enterprise')(c, next);
 });
 
+// R4 (Session 119 zero-base re-audit): invite_code は class join credential
+// (knowledge-based auth equivalent)、Math.random 由来の予測 risk を回避するため
+// crypto.getRandomValues に置換。modulo bias (256 % 32 = 0、本 chars 32) は均一。
 function generateInviteCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const len = 6;
+  const randomBytes = crypto.getRandomValues(new Uint8Array(len));
   let out = '';
-  for (let i = 0; i < 6; i++) {
-    out += chars[Math.floor(Math.random() * chars.length)];
+  for (let i = 0; i < len; i++) {
+    out += chars[randomBytes[i] % chars.length];
   }
   return out;
 }
@@ -269,11 +274,16 @@ classes.delete('/:id', async (c) => {
 // Student management (Phase C Step 2)
 // ============================================================
 
+// R4 (Session 119 zero-base re-audit): student initial password は teacher 印刷
+// 配布される credential、Math.random 由来の予測 risk を回避するため
+// crypto.getRandomValues に置換。chars.length=55、modulo bias 5/256 ≒ 2% level 受容。
 function generatePassword(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  const len = 8;
+  const randomBytes = crypto.getRandomValues(new Uint8Array(len));
   let out = '';
-  for (let i = 0; i < 8; i++) {
-    out += chars[Math.floor(Math.random() * chars.length)];
+  for (let i = 0; i < len; i++) {
+    out += chars[randomBytes[i] % chars.length];
   }
   return out;
 }

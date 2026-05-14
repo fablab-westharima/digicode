@@ -9,17 +9,23 @@ const recoveryCodes = new Hono<{ Bindings: Bindings }>();
 
 // ランダムなリカバリーコード生成（XXXX-XXXX-XXXX形式）
 // 紛らわしい文字を除外: 0(ゼロ), O(オー), I(アイ), 1(イチ), L(エル)
+//
+// R4 (Session 119 zero-base re-audit): MFA bypass last-resort credential のため
+// crypto.getRandomValues 必須。旧コードの Math.random() は V8 PRNG (cryptographically
+// not secure) で recovery code 推測 = 完全 MFA bypass risk。reference pattern =
+// 2fa.ts:19 generateOtpCode。modulo bias (256 % 31 = 8) は誤差 4% level で実用受容。
 function generateRecoveryCode(): string {
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   const segments = 3;
   const segmentLength = 4;
+  const totalChars = segments * segmentLength;
 
-  const code = [];
+  const randomBytes = crypto.getRandomValues(new Uint8Array(totalChars));
+  const code: string[] = [];
   for (let i = 0; i < segments; i++) {
     let segment = '';
     for (let j = 0; j < segmentLength; j++) {
-      const randomIndex = Math.floor(Math.random() * chars.length);
-      segment += chars[randomIndex];
+      segment += chars[randomBytes[i * segmentLength + j] % chars.length];
     }
     code.push(segment);
   }
