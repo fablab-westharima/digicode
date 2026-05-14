@@ -331,15 +331,25 @@ twoFactor.post('/verify-otp', async (c) => {
       return errorJson(c, 'auth.failed', 401);
     }
 
-    // 試行回数チェック（5回まで）— rate-limit は内部維持、response は uniform
-    if (otpRecord.attempts >= 5) {
+    // F-31 (Session 123): OTP attempts カウンタの atomic CAS。
+    // 旧コードは SELECT (L324) attempts + check (L335 `>= 5`) + UPDATE (L340)
+    // attempts+1 の 3 statement 非 atomic。100 並列 /verify-otp request: 全
+    // 100 が SELECT (attempts=0 観測) + check pass + UPDATE = 100 guesses at
+    // 6-digit OTP (10^6 space) → 1/10,000 brute-force probability per burst
+    // (5-attempt 設計 promise から大幅劣化)。
+    // KV rate-limit (`rateLimitPresets.auth` 10/min) は eventual consistency
+    // ±数件で atomic 補完不能。
+    //
+    // 本 fix で UPDATE に `AND attempts < 5` filter 追加 = SQLite spec で
+    // atomic increment、changes === 0 (= attempts >= 5 既達) で reject。
+    // 残 attempts check も削除 (UPDATE result で代替)、anti-enum uniform
+    // 401 auth.failed 維持。
+    const attemptResult = await c.env.DB.prepare(
+      'UPDATE login_otp_codes SET attempts = attempts + 1 WHERE id = ? AND attempts < 5'
+    ).bind(otpRecord.id).run();
+    if (attemptResult.meta.changes === 0) {
       return errorJson(c, 'auth.failed', 401);
     }
-
-    // 試行回数をインクリメント
-    await c.env.DB.prepare(
-      'UPDATE login_otp_codes SET attempts = attempts + 1 WHERE id = ?'
-    ).bind(otpRecord.id).run();
 
     // OTPコード検証 — 残回数 message も削除 (state leak)
     // D-10 (Session 120): constant-time 比較で hash 一致時の timing 差を抑制。
