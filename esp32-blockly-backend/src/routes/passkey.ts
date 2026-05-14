@@ -229,6 +229,11 @@ app.post('/register/verify', authMiddleware, async (c) => {
 });
 
 // パスキー認証オプション生成
+// RB-3 (Session 117 anti-enum cluster):
+// /check-passkey-mode (auth.ts:283) と同 silent success pattern。
+// user 不在 / passkey 不在の case でも 200 + 空 allowCredentials で options を返却し、
+// challenge を KV に保存 (anonymous key)。攻撃者は 200 のみ観測でき、user 存在 / passkey
+// 登録状態を区別不能。後段の /login/verify で認証失敗として silent reject される。
 app.post('/login/options', async (c) => {
   try {
     const origin = c.req.header('origin');
@@ -239,54 +244,56 @@ app.post('/login/options', async (c) => {
       return errorJson(c, 'auth.emailRequired', 400);
     }
 
-    // ユーザーを取得
+    // ユーザーを取得 (不在でも options 生成は続行)
     const userResult = await c.env.DB.prepare(
       'SELECT id FROM users WHERE email = ?'
     )
       .bind(email)
       .first();
 
-    if (!userResult) {
-      return errorJson(c, 'auth.userNotFound', 404);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let allowCredentials: any[] = [];
+    let kvKey: string;
+
+    if (userResult) {
+      const userId = userResult.id as number;
+      const authenticators = await c.env.DB.prepare(
+        'SELECT credential_id, transports FROM authenticators WHERE user_id = ?'
+      )
+        .bind(userId)
+        .all();
+
+      allowCredentials = authenticators.results.map((auth: any) => ({
+        id: auth.credential_id,
+        type: 'public-key' as const,
+        transports: auth.transports ? JSON.parse(auth.transports) : undefined,
+      }));
+      kvKey = `${userId}:login`;
+    } else {
+      // 不在 user 用 dummy KV key (email を SHA-256 で hash して衝突回避、後段 verify で
+      // user 検索失敗時に silent reject される)
+      const encoder = new TextEncoder();
+      const data = encoder.encode(email);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const emailHash = hashArray
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('')
+        .substring(0, 16);
+      kvKey = `anonymous:${emailHash}:login`;
     }
-
-    const userId = userResult.id as number;
-
-    // ユーザーのパスキーを取得
-    const authenticators = await c.env.DB.prepare(
-      'SELECT credential_id, transports FROM authenticators WHERE user_id = ?'
-    )
-      .bind(userId)
-      .all();
-
-    if (authenticators.results.length === 0) {
-      return errorJson(c, 'passkey.notRegistered', 404);
-    }
-
-    console.log('[Passkey Login] User ID:', userId);
-    console.log('[Passkey Login] RP_ID:', rpId);
-    console.log('[Passkey Login] Origin:', origin);
-    console.log('[Passkey Login] Authenticators:', JSON.stringify(authenticators.results));
 
     const options = await generateAuthenticationOptions({
       rpID: rpId,
-      allowCredentials: authenticators.results.map((auth: any) => ({
-        id: auth.credential_id,
-        type: 'public-key',
-        transports: auth.transports ? JSON.parse(auth.transports) : undefined,
-      })),
+      allowCredentials,
       userVerification: 'preferred',
       timeout: 60000,
     });
 
-    console.log('[Passkey Login] Generated options:', JSON.stringify(options));
-
     // ChallengeをKVに5分間保存
-    await c.env.WEBAUTHN_CHALLENGES.put(
-      `${userId}:login`,
-      options.challenge,
-      { expirationTtl: 300 }
-    );
+    await c.env.WEBAUTHN_CHALLENGES.put(kvKey, options.challenge, {
+      expirationTtl: 300,
+    });
 
     return c.json(options);
   } catch (error) {
@@ -296,6 +303,11 @@ app.post('/login/options', async (c) => {
 });
 
 // パスキー認証検証
+// RB-3 (Session 117 anti-enum cluster):
+// credential 検証成功までの失敗 path 全件で uniform 401 'auth.authenticationFailed' を返却。
+// email_verified / student gate は credential 検証成功後にのみ判定 (UX 救済 path 維持)。
+// /login/options が anonymous KV key で silent success 化されたため、verify 段階で
+// 全ての invalid request を一様な response で reject する。
 app.post('/login/verify', async (c) => {
   try {
     const origin = c.req.header('origin');
@@ -310,7 +322,7 @@ app.post('/login/verify', async (c) => {
       return errorJson(c, 'auth.emailAndCredentialRequired', 400);
     }
 
-    // ユーザーを取得
+    // ユーザーを取得 (不在は silent reject)
     const userResult = await c.env.DB.prepare(
       'SELECT id, email, email_verified, passkey_only, account_type FROM users WHERE email = ?'
     )
@@ -318,41 +330,20 @@ app.post('/login/verify', async (c) => {
       .first();
 
     if (!userResult) {
-      return errorJson(c, 'auth.userNotFound', 404);
+      return errorJson(c, 'auth.authenticationFailed', 401);
     }
 
     const userId = userResult.id as number;
     const emailVerified = userResult.email_verified as number;
     const accountType = userResult.account_type as string | null;
 
-    // メール確認チェック
-    // F-6 fix: needsVerification flag を frontend に返して EmailVerificationWaiting に誘導
-    // (2fa.ts:102 / auth.ts:190 と同 pattern)
-    if (!emailVerified) {
-      return errorJson(c, 'auth.emailNotVerified', 403, { needsVerification: true });
-    }
-
-    // 生徒ログイン制限: student かつクラス未所属ならログイン不可
-    // F-5 fix: auth.ts:220-230 pattern を passkey login にも適用
-    if (accountType === 'student') {
-      const membership = await c.env.DB.prepare(
-        'SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?'
-      ).bind(userId).first<{ n: number }>();
-
-      if (!membership || membership.n === 0) {
-        return c.json({
-          error: 'クラスに所属していないため、ログインできません。管理者にお問い合わせください。',
-        }, 403);
-      }
-    }
-
-    // KVからChallengeを取得
+    // KVからChallengeを取得 (不在は silent reject = anonymous flow / TTL 切れ含む)
     const expectedChallenge = await c.env.WEBAUTHN_CHALLENGES.get(
       `${userId}:login`
     );
 
     if (!expectedChallenge) {
-      return c.json({ error: 'Challenge not found or expired' }, 400);
+      return errorJson(c, 'auth.authenticationFailed', 401);
     }
 
     // Challengeを削除（使い捨て）
@@ -361,24 +352,15 @@ app.post('/login/verify', async (c) => {
     // credentialIDをBase64URLエンコード
     const credentialIDBase64 = credential.id;
 
-    console.log('[Passkey Login Verify] credential.id from browser:', credentialIDBase64);
-
-    // DBから認証器を取得
+    // DBから認証器を取得 (不在は silent reject)
     const authenticator = await c.env.DB.prepare(
       'SELECT id, public_key, counter FROM authenticators WHERE user_id = ? AND credential_id = ?'
     )
       .bind(userId, credentialIDBase64)
       .first();
 
-    console.log('[Passkey Login Verify] authenticator from DB:', authenticator);
-
     if (!authenticator) {
-      // デバッグ: ユーザーの全認証器を取得
-      const allAuths = await c.env.DB.prepare(
-        'SELECT credential_id FROM authenticators WHERE user_id = ?'
-      ).bind(userId).all();
-      console.log('[Passkey Login Verify] All authenticators for user:', JSON.stringify(allAuths.results));
-      return errorJson(c, 'passkey.notFound', 404);
+      return errorJson(c, 'auth.authenticationFailed', 401);
     }
 
     // Base64URLからUint8Arrayに変換（Cloudflare Workers対応）
@@ -401,7 +383,28 @@ app.post('/login/verify', async (c) => {
     });
 
     if (!verification.verified) {
-      return errorJson(c, 'passkey.verifyFailed', 400);
+      return errorJson(c, 'auth.authenticationFailed', 401);
+    }
+
+    // credential 検証成功 — ここから user 状態を返却 (anti-enum 通過済)
+
+    // メール未確認チェック (検証成功後のみ判定 = UX 救済 path 維持、auth.ts / 2fa.ts と同 pattern)
+    if (!emailVerified) {
+      return errorJson(c, 'auth.emailNotVerified', 403, { needsVerification: true });
+    }
+
+    // 生徒ログイン制限: student かつクラス未所属ならログイン不可 (検証成功後)
+    // F-5 fix: auth.ts:220-230 pattern を passkey login にも適用
+    if (accountType === 'student') {
+      const membership = await c.env.DB.prepare(
+        'SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?'
+      ).bind(userId).first<{ n: number }>();
+
+      if (!membership || membership.n === 0) {
+        return c.json({
+          error: 'クラスに所属していないため、ログインできません。管理者にお問い合わせください。',
+        }, 403);
+      }
     }
 
     // カウンターを更新、last_used_atを更新
