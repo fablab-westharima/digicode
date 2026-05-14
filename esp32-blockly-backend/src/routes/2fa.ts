@@ -415,7 +415,20 @@ twoFactor.post('/verify-otp', async (c) => {
 
       // Cookie設定（httpOnly, secure, sameSite）
       // クロスドメインCookieにはSameSite=None + Secureが必須
-      const isProduction = !!c.env.RESEND_API_KEY;
+      // F-12 (Session 123): 旧コード `isProduction = !!c.env.RESEND_API_KEY` は
+      // 「secret 設定 = production」 conflation。RESEND_API_KEY rotation 間隙時
+      // (transient secret unset、accidental dev deploy 等) で production 環境
+      // 内で isProduction=false となり、SameSite=Lax + Secure 不在 = 30 日有効
+      // device cookie が HTTP MITM 経路で漏洩可能 + cross-origin で SameSite=Lax
+      // が intended 動作を破る。本 fix で request host を直接判定、secret
+      // presence と環境判定を分離。
+      const host = c.req.header('host') ?? '';
+      const isProduction =
+        host.endsWith('workers.dev') ||
+        host === 'code.fablab-westharima.jp' ||
+        host.endsWith('.code.fablab-westharima.jp') ||
+        host === 'digicode-frontend.pages.dev' ||
+        host.endsWith('.digicode-frontend.pages.dev');
       const cookieOptions = [
         `${DEVICE_TOKEN_COOKIE_NAME}=${deviceToken}`,
         `Max-Age=${DEVICE_TOKEN_MAX_AGE}`,
