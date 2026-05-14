@@ -76,21 +76,31 @@ javascriptGenerator.forBlock['qtr_8a_init'] = function(block: Blockly.Block) {
 
   const pins = [pin1, pin2, pin3, pin4, pin5, pin6, pin7, pin8].slice(0, parseInt(count));
 
-  javascriptGenerator.definitions_['qtr_include'] =
-    `#include <QTRSensors.h>\n`;
+  // F-3 (Session 117 case 19 cluster sibling, R2-B pattern):
+  // qtr_8a_init と qtr_8rc_init は同じ `qtr_*` キーに書き込むため、両者が同時配置された場合に
+  // 後勝ち上書きで設計者意図と齟齬が起きる。`QTRSensors qtr;` は global 単一 instance なので
+  // 両 block 同時使用は元から非現実的だが、singleton-guard で先勝ち保護に統一。
+  if (!javascriptGenerator.definitions_['qtr_include']) {
+    javascriptGenerator.definitions_['qtr_include'] =
+      `#include <QTRSensors.h>\n`;
+  }
 
-  javascriptGenerator.definitions_['qtr_vars'] =
-    `// QTRセンサー変数\n` +
-    `#define QTR_SENSOR_COUNT ${count}\n` +
-    `QTRSensors qtr;\n` +
-    `uint16_t qtrSensorValues[QTR_SENSOR_COUNT];\n` +
-    `bool qtrCalibrated = false;\n`;
+  if (!javascriptGenerator.definitions_['qtr_vars']) {
+    javascriptGenerator.definitions_['qtr_vars'] =
+      `// QTRセンサー変数\n` +
+      `#define QTR_SENSOR_COUNT ${count}\n` +
+      `QTRSensors qtr;\n` +
+      `uint16_t qtrSensorValues[QTR_SENSOR_COUNT];\n` +
+      `bool qtrCalibrated = false;\n`;
+  }
 
-  javascriptGenerator.setups_['qtr_setup'] =
-    `// QTR-8A初期化\n` +
-    `qtr.setTypeAnalog();\n` +
-    `qtr.setSensorPins((const uint8_t[]){${pins.join(', ')}}, QTR_SENSOR_COUNT);\n` +
-    (emitter !== 0 ? `qtr.setEmitterPin(${emitter});\n` : '');
+  if (!javascriptGenerator.setups_['qtr_setup']) {
+    javascriptGenerator.setups_['qtr_setup'] =
+      `// QTR-8A初期化\n` +
+      `qtr.setTypeAnalog();\n` +
+      `qtr.setSensorPins((const uint8_t[]){${pins.join(', ')}}, QTR_SENSOR_COUNT);\n` +
+      (emitter !== 0 ? `qtr.setEmitterPin(${emitter});\n` : '');
+  }
 
   return '';
 };
@@ -155,21 +165,29 @@ javascriptGenerator.forBlock['qtr_8rc_init'] = function(block: Blockly.Block) {
 
   const pins = [pin1, pin2, pin3, pin4, pin5, pin6, pin7, pin8].slice(0, parseInt(count));
 
-  javascriptGenerator.definitions_['qtr_include'] =
-    `#include <QTRSensors.h>\n`;
+  // F-3 (Session 117 case 19 cluster sibling, R2-B pattern):
+  // qtr_8a_init との `qtr_*` キー競合を singleton-guard で防止。先勝ち。
+  if (!javascriptGenerator.definitions_['qtr_include']) {
+    javascriptGenerator.definitions_['qtr_include'] =
+      `#include <QTRSensors.h>\n`;
+  }
 
-  javascriptGenerator.definitions_['qtr_vars'] =
-    `// QTRセンサー変数\n` +
-    `#define QTR_SENSOR_COUNT ${count}\n` +
-    `QTRSensors qtr;\n` +
-    `uint16_t qtrSensorValues[QTR_SENSOR_COUNT];\n` +
-    `bool qtrCalibrated = false;\n`;
+  if (!javascriptGenerator.definitions_['qtr_vars']) {
+    javascriptGenerator.definitions_['qtr_vars'] =
+      `// QTRセンサー変数\n` +
+      `#define QTR_SENSOR_COUNT ${count}\n` +
+      `QTRSensors qtr;\n` +
+      `uint16_t qtrSensorValues[QTR_SENSOR_COUNT];\n` +
+      `bool qtrCalibrated = false;\n`;
+  }
 
-  javascriptGenerator.setups_['qtr_setup'] =
-    `// QTR-8RC初期化\n` +
-    `qtr.setTypeRC();\n` +
-    `qtr.setSensorPins((const uint8_t[]){${pins.join(', ')}}, QTR_SENSOR_COUNT);\n` +
-    (emitter !== 0 ? `qtr.setEmitterPin(${emitter});\n` : '');
+  if (!javascriptGenerator.setups_['qtr_setup']) {
+    javascriptGenerator.setups_['qtr_setup'] =
+      `// QTR-8RC初期化\n` +
+      `qtr.setTypeRC();\n` +
+      `qtr.setSensorPins((const uint8_t[]){${pins.join(', ')}}, QTR_SENSOR_COUNT);\n` +
+      (emitter !== 0 ? `qtr.setEmitterPin(${emitter});\n` : '');
+  }
 
   return '';
 };
