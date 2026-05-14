@@ -145,9 +145,14 @@ subscriptions.post('/checkout', authMiddleware, async (c) => {
 
     return c.json({ url: session.url });
   } catch (error) {
+    // F-5 (Session 123): 旧コードは Stripe error message を pass-through で
+    // client に返却 = internal error 文字列 (stripe internal API path / state /
+    // hint) を leak。Session 121 NEW-5 ML30 proxy + Session 122 finding-3
+    // passkey と同 cluster の sweep 漏れ。本 fix で errorJson 化、内部 error
+    // は console.error のみで保持。/portal endpoint (L180) は既に errorJson 化
+    // 済、本 fix で parallel structure uniform 達成 (`memory:parallel_structure_audit`)
     console.error('Checkout session error:', error);
-    const msg = error instanceof Error ? error.message : 'Checkout セッションの作成に失敗しました';
-    return c.json({ error: msg }, 500);
+    return errorJson(c, 'subscription.checkoutFailed', 500);
   }
 });
 

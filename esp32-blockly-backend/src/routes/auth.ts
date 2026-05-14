@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { generateTokenPair, generateRefreshToken } from '../utils/jwt';
 import { hashPassword, verifyPassword } from '../utils/password';
 import { authMiddleware } from '../middleware/auth';
-import { errorJson } from '../utils/errorJson';
+import { errorJson, type ErrorKey } from '../utils/errorJson';
 import { getMessage, resolveLocale } from '../i18n/messages';
 import {
   sendPasswordResetEmail,
@@ -33,28 +33,34 @@ function isValidEmail(email: string): boolean {
 }
 
 // パスワード強度バリデーション
-function validatePassword(password: string): { valid: boolean; message: string } {
+// F-4 (Session 123): 旧コードは JA hardcoded message を return = 3 callsite
+// (auth.ts:78 /register, :651 /reset-password, :1098 /change-password) で
+// c.json({error: passwordValidation.message}, 400) を経由して client に
+// pass-through、en/es/pt-PT/zh-TW user は JP error を見る (rule 09-backend-i18n
+// 違反)。本 fix で errorKey: ErrorKey を return、callsite で errorJson 経由
+// 5 lang i18n 化。
+function validatePassword(password: string): { valid: boolean; errorKey?: ErrorKey } {
   if (password.length < 8) {
-    return { valid: false, message: 'パスワードは8文字以上である必要があります' };
+    return { valid: false, errorKey: 'auth.passwordRegularTooShort' };
   }
 
   if (!/[a-z]/.test(password)) {
-    return { valid: false, message: 'パスワードには小文字を含める必要があります' };
+    return { valid: false, errorKey: 'auth.passwordMissingLowercase' };
   }
 
   if (!/[A-Z]/.test(password)) {
-    return { valid: false, message: 'パスワードには大文字を含める必要があります' };
+    return { valid: false, errorKey: 'auth.passwordMissingUppercase' };
   }
 
   if (!/[0-9]/.test(password)) {
-    return { valid: false, message: 'パスワードには数字を含める必要があります' };
+    return { valid: false, errorKey: 'auth.passwordMissingDigit' };
   }
 
   if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-    return { valid: false, message: 'パスワードには特殊文字（!@#$%^&*など）を含める必要があります' };
+    return { valid: false, errorKey: 'auth.passwordMissingSpecial' };
   }
 
-  return { valid: true, message: '' };
+  return { valid: true };
 }
 
 // ユーザー登録
@@ -73,9 +79,10 @@ auth.post('/register', async (c) => {
     }
 
     // パスワード強度チェック
+    // F-4 (Session 123): JA hardcoded message を errorJson + 5 lang i18n key 化
     const passwordValidation = validatePassword(password);
-    if (!passwordValidation.valid) {
-      return c.json({ error: passwordValidation.message }, 400);
+    if (!passwordValidation.valid && passwordValidation.errorKey) {
+      return errorJson(c, passwordValidation.errorKey, 400);
     }
 
     // RB-5 (Session 117 anti-enum cluster):
@@ -667,9 +674,10 @@ auth.post('/reset-password', async (c) => {
     }
 
     // パスワード強度チェック
+    // F-4 (Session 123): JA hardcoded message を errorJson + 5 lang i18n key 化
     const passwordValidation = validatePassword(password);
-    if (!passwordValidation.valid) {
-      return c.json({ error: passwordValidation.message }, 400);
+    if (!passwordValidation.valid && passwordValidation.errorKey) {
+      return errorJson(c, passwordValidation.errorKey, 400);
     }
 
     // トークンのハッシュを計算
@@ -1124,9 +1132,10 @@ auth.post('/change-password', authMiddleware, async (c) => {
         return errorJson(c, 'auth.passwordTooShort', 400);
       }
     } else {
+      // F-4 (Session 123): JA hardcoded message を errorJson + 5 lang i18n key 化
       const passwordValidation = validatePassword(body.newPassword);
-      if (!passwordValidation.valid) {
-        return c.json({ error: passwordValidation.message }, 400);
+      if (!passwordValidation.valid && passwordValidation.errorKey) {
+        return errorJson(c, passwordValidation.errorKey, 400);
       }
     }
 
