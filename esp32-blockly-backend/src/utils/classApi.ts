@@ -110,6 +110,29 @@ export async function proxyClassApi(
       }
     }
 
+    // F-11 (Session 123): ML30 が 4xx/5xx を返した場合も ok:false に flip。
+    // 旧コードは status >= 400 でも ok:true で返却 = callsite (16 sites) の
+    // success path `c.json(apiResult.body, apiResult.status)` に ML30 internal
+    // error JSON が pass-through、attacker が crafted request で ML30 internal
+    // field names / validation messages を leak 可能 (Session 121 NEW-5 fix の
+    // 構造的続き、!apiResult.ok branch のみ closure していて status >= 400 with
+    // ok:true は未 closure だった channel)。
+    //
+    // 本 fix で utility 層 1 箇所で structural closure、callsite 16 sites の
+    // `if (!apiResult.ok)` パスに 4xx/5xx 全件 routes される。
+    // error field は internal log 用に ML30 body の string 化 (callsite で
+    // console.error 経由のみ消費、client に返却されない = NEW-5 整合)。
+    if (res.status >= 400) {
+      const errorText = typeof body === 'object' && body !== null
+        ? JSON.stringify(body)
+        : (text || `HTTP ${res.status}`);
+      return {
+        ok: false,
+        status: res.status as ContentfulStatusCode,
+        error: errorText,
+      };
+    }
+
     return { ok: true, status: res.status as ContentfulStatusCode, body };
   } catch (err) {
     const name = err instanceof Error ? err.name : '';
