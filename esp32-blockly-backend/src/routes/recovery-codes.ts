@@ -103,12 +103,6 @@ recoveryCodes.post('/verify', async (c) => {
       return errorJson(c, 'auth.emailOrRecoveryCodeInvalid', 401);
     }
 
-    // F-9 fix: メール未確認 user の recovery code login を reject
-    // (BUG-083 / auth.ts:188-194 / 2fa.ts:101 と同 pattern)
-    if (!user.email_verified) {
-      return errorJson(c, 'auth.emailNotVerified', 403, { needsVerification: true });
-    }
-
     console.log('[Recovery Code Verify] User found:', user.id);
 
     // 未使用のリカバリーコードを全て取得
@@ -118,9 +112,14 @@ recoveryCodes.post('/verify', async (c) => {
 
     console.log('[Recovery Code Verify] Recovery codes count:', recoveryCodes.results?.length || 0);
 
+    // F-A1 (Session 118 anti-enum cluster scope-rectification):
+    // 旧コードは「該当 user が recovery_codes 未設定」case を 401 recovery.noCodes で
+    // 返却していたが、未登録 user (401 auth.emailOrRecoveryCodeInvalid) と error key が
+    // 異なるため state leak。401 auth.emailOrRecoveryCodeInvalid に統一して
+    // 「user 存在 AND recovery code 未設定」path を識別不能化。
     if (!recoveryCodes.results || recoveryCodes.results.length === 0) {
       console.log('[Recovery Code Verify] No recovery codes found');
-      return errorJson(c, 'recovery.noCodes', 401);
+      return errorJson(c, 'auth.emailOrRecoveryCodeInvalid', 401);
     }
 
     // コードを検証
@@ -139,6 +138,16 @@ recoveryCodes.post('/verify', async (c) => {
     }
 
     console.log('[Recovery Code Verify] Valid code ID:', validCodeId);
+
+    // F-A1 (Session 118 anti-enum cluster scope-rectification):
+    // F-9 gate (旧 line 108-110) は code verification 前にあり、未登録 user (401) vs
+    // 既存 unverified user + bad code (403 auth.emailNotVerified) で state leak していた。
+    // 本 fix で code verification 成功後に defer (auth.ts:230-238 / 2fa.ts:101 RB-4 pattern)、
+    // 失敗 path は uniform 401 auth.emailOrRecoveryCodeInvalid、成功時のみ unverified
+    // user の UX 救済 (403 + needsVerification) を trigger。
+    if (!user.email_verified) {
+      return errorJson(c, 'auth.emailNotVerified', 403, { needsVerification: true });
+    }
 
     // 生徒ログイン制限: student かつクラス未所属ならログイン不可
     // case 19 cluster (BE-1) 第112回: auth.ts:221 / passkey.ts:337 / 2fa.ts (本 commit) と同 pattern。
