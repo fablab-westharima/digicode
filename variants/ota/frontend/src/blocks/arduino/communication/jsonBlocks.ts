@@ -142,9 +142,25 @@ javascriptGenerator.forBlock['json_get_bool'] = function(block: Blockly.Block) {
 
 /**
  * json_get_nested - ネストしたJSON値を取得
+ *
+ * RB-3 (Session 120 zero-base re-audit, case 19 axis 1 storage 外領域 sweep):
+ * TYPE dropdown (String/float/int/bool) で C++ emit `.as<${type}>()` の出力型が変わるが、
+ * 旧コードは `setOutput(true, null)` で unrestricted output (Session 119 R5 と同根の
+ * latent type-leak)。本 fix で TYPE field の validator 経由で setOutput を
+ * String → 'String' / float|int → 'Number' / bool → 'Boolean' に動的切替。
+ * R5 (preferences_get) と同 pattern、JSON 通信領域に sweep。
  */
 Blockly.Blocks['json_get_nested'] = {
   init: function() {
+    const setOutputForType = (type: string) => {
+      if (type === 'String') {
+        this.setOutput(true, 'String');
+      } else if (type === 'bool') {
+        this.setOutput(true, 'Boolean');
+      } else {
+        this.setOutput(true, 'Number'); // float / int
+      }
+    };
     this.appendDummyInput()
         .appendField('📖 ' + (Blockly.Msg.BLOCKS_JSON_GETNESTED || 'JSON Get Nested'));
     this.appendDummyInput()
@@ -158,7 +174,17 @@ Blockly.Blocks['json_get_nested'] = {
           [Blockly.Msg.BLOCKS_JSON_TYPEINT || 'Integer', 'int'],
           [Blockly.Msg.BLOCKS_JSON_TYPEBOOL || 'Boolean', 'bool']
         ]), 'TYPE');
-    this.setOutput(true, null);
+    // R5 pattern: 初期型 'String' で起点、TYPE 変更で動的切替
+    // setValidator は appendField 後に attach (FieldDropdown constructor callback だと
+    // catalog generator regex `new Blockly.FieldDropdown([...]), 'NAME'` 非 match)
+    setOutputForType('String');
+    const typeField = this.getField('TYPE');
+    if (typeField) {
+      typeField.setValidator((newValue: string) => {
+        setOutputForType(newValue);
+        return newValue;
+      });
+    }
     this.setColour('#FF5722');
     this.setTooltip(Blockly.Msg.BLOCKS_JSON_GETNESTEDTOOLTIP || 'Get nested JSON value (e.g., data.items[0].name)');
   }
@@ -225,9 +251,18 @@ javascriptGenerator.forBlock['json_array_size'] = function(block: Blockly.Block)
 
 /**
  * json_array_get - JSON配列の要素を取得
+ *
+ * RB-4 (Session 120 zero-base re-audit, case 19 axis 1 storage 外領域 sweep):
+ * RB-3 (json_get_nested) と同根の dynamic output type pattern。TYPE dropdown
+ * (String/float/int) で `.as<${type}>()` C++ emit が変わるため、R5 pattern で
+ * setOutput を動的切替。bool は本 block では未提供 (json_array は number/string
+ * 主体)、3 型 → String → 'String' / float|int → 'Number'。
  */
 Blockly.Blocks['json_array_get'] = {
   init: function() {
+    const setOutputForType = (type: string) => {
+      this.setOutput(true, type === 'String' ? 'String' : 'Number');
+    };
     this.appendDummyInput()
         .appendField('📖 ' + (Blockly.Msg.BLOCKS_JSON_ARRAY || 'JSON Array'))
         .appendField(new Blockly.FieldTextInput('items'), 'KEY');
@@ -241,7 +276,14 @@ Blockly.Blocks['json_array_get'] = {
           [Blockly.Msg.BLOCKS_JSON_TYPENUMBER || 'Number', 'float'],
           [Blockly.Msg.BLOCKS_JSON_TYPEINT || 'Integer', 'int']
         ]), 'TYPE');
-    this.setOutput(true, null);
+    setOutputForType('String');
+    const typeField = this.getField('TYPE');
+    if (typeField) {
+      typeField.setValidator((newValue: string) => {
+        setOutputForType(newValue);
+        return newValue;
+      });
+    }
     this.setColour('#FF5722');
     this.setTooltip(Blockly.Msg.BLOCKS_JSON_ARRAYGETTOOLTIP || 'Get element from JSON array at specified index');
   }
