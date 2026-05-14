@@ -12,6 +12,7 @@
 import { Hono } from 'hono';
 import Stripe from 'stripe';
 import type { Bindings } from '../types/env';
+import { errorJson } from '../utils/errorJson';
 
 // Stripe API version を明示固定する。SDK v22 のデフォルトと一致。
 // 2026-04-23 に Stripe アカウント + webhook endpoint を 2018-02-28 → dahlia へ migration。
@@ -107,9 +108,15 @@ webhooks.post('/stripe', async (c) => {
       c.env.STRIPE_WEBHOOK_SECRET,
     );
   } catch (err) {
+    // F-28 (Session 123): 旧コードは Stripe library exception message を client
+    // (Stripe 自身) に返却 = malformed payload で Stripe 例外 string を leak、
+    // attacker が library state を fingerprint 可能 (e.g. `No signatures found
+    // matching the expected signature for payload`)。Stripe 側 retry logic は
+    // status code のみ参照、response body は不要。本 fix で error string を
+    // client に返さず、internal log のみで保持。
     const msg = err instanceof Error ? err.message : 'Unknown error';
     console.error('Webhook signature verification failed:', msg);
-    return c.json({ error: `Webhook Error: ${msg}` }, 400);
+    return errorJson(c, 'webhook.signatureInvalid', 400);
   }
 
   const stripe = new Stripe(c.env.STRIPE_SECRET_KEY, { apiVersion: STRIPE_API_VERSION });

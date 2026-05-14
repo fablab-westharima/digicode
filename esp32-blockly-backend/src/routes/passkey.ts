@@ -134,13 +134,14 @@ app.post('/register/options', authMiddleware, async (c) => {
 
     return c.json(options);
   } catch (error) {
+    // F-17 (Session 123): 旧コードは `details: error.message` で internal error
+    // 文字列を client に返却 = stack trace / V8 hints / KV operation details /
+    // simplewebauthn lib internal field names を露出。defense-in-depth 違反。
+    // 本 fix で errorJson 化、internal error は console.error のみで保持。
     console.error('[Passkey Register] Error generating registration options:', error);
     console.error('[Passkey Register] Error details:', error instanceof Error ? error.message : String(error));
     console.error('[Passkey Register] Error stack:', error instanceof Error ? error.stack : 'N/A');
-    return c.json(
-      { error: 'パスキー登録オプションの生成に失敗しました', details: error instanceof Error ? error.message : String(error) },
-      500
-    );
+    return errorJson(c, 'passkey.registerOptionsFailed', 500);
   }
 });
 
