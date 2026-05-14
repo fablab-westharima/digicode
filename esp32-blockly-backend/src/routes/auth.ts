@@ -129,7 +129,11 @@ auth.post('/register', async (c) => {
             console.error('Failed to resend verification email:', emailResult.error);
           }
         } else {
-          console.log(`[DEV] Verification token for ${email} (re-register): ${verificationToken}`);
+          // F-1 (Session 123): 旧コードは [DEV] verification token を email + 値 含めて
+          // console.log = RESEND_API_KEY rotation 間隙時に Workers Logs に token leak。
+          // Session 120 D-2/D-3 完全削除 pattern 踏襲、token 値 log 全廃。
+          // Dev developer は D1 email_verification_tokens から直接 query 可能。
+          console.warn('[DEV] verification email skipped (no RESEND_API_KEY)');
         }
         devVerificationToken = verificationToken;
       }
@@ -170,7 +174,8 @@ auth.post('/register', async (c) => {
           console.error('Failed to send verification email:', emailResult.error);
         }
       } else {
-        console.log(`[DEV] Verification token for ${email}: ${verificationToken}`);
+        // F-1 (Session 123): 同上、token log 全廃
+        console.warn('[DEV] verification email skipped (no RESEND_API_KEY)');
       }
       devVerificationToken = verificationToken;
     }
@@ -183,18 +188,16 @@ auth.post('/register', async (c) => {
     // 実コード上「fabricated」ではない (RETURNING で実 auto-increment id 返却) と
     // 第119回 Task 1 audit で判明。response から user.id field 自体を削除し、
     // 全 path で identical shape { message, user: { email } } を返却。
-    // 開発モードかつAPIキーがない場合のみ、レスポンスにトークンを含める
-    // (既存 verified path では devVerificationToken=null なので token field は省略)
-    if (isDev && !c.env.RESEND_API_KEY && devVerificationToken) {
-      return c.json({
-        message: 'アカウントを作成しました。メールアドレスを確認してください。',
-        verificationToken: devVerificationToken,
-        verificationUrl: `http://localhost:5173/verify-email/${devVerificationToken}`,
-        user: { email },
-      }, 201);
-    }
-
-    // 通常 response: 新規 / 既存 unverified / 既存 verified 全てで identical shape
+    // F-2 (Session 123): 旧コードは isDev && !RESEND_API_KEY 時に verification
+    // token を response body に含めて返却 = production で RESEND_API_KEY 不在 +
+    // attacker が `Host: localhost.evil.com` (substring match で isDev=true)
+    // 送信時に token を直接取得可能な double-fault scenario。本 fix で
+    // dev-mode response body 経由 token 返却 path を完全削除、全 path で
+    // identical silent-success shape を返却 (anti-enum 整合)。
+    // Dev developer は D1 email_verification_tokens から直接 query 可能。
+    //
+    // 通常 response: 新規 / 既存 unverified / 既存 verified / dev-mode 全てで
+    // identical shape
     return c.json({
       message: 'アカウントを作成しました。確認メールを送信しましたので、メールアドレスを確認してください。',
       user: { email },
@@ -637,19 +640,13 @@ auth.post('/forgot-password', async (c) => {
         // メール送信失敗でもエラーを返さない（セキュリティのため）
       }
     } else {
-      // APIキーがない場合は開発モードとしてログ出力
-      console.log(`[DEV] Password reset token for ${email}: ${resetToken}`);
+      // F-1 (Session 123): reset token log 全廃 (PII redact、RESEND_API_KEY
+      // rotation 間隙時の Workers Logs leak 防止)
+      console.warn('[DEV] password reset email skipped (no RESEND_API_KEY)');
     }
 
-    // 開発モードかつAPIキーがない場合のみ、レスポンスにトークンを含める
-    if (isDev && !c.env.RESEND_API_KEY) {
-      return c.json({
-        message: 'パスワードリセットトークンを生成しました（開発モード）',
-        resetToken,
-        resetUrl: `http://localhost:5173/reset-password?token=${resetToken}`
-      });
-    }
-
+    // F-2 (Session 123): reset token を response body に含む path を完全削除、
+    // 全 path で identical silent-success shape を返却 (anti-enum 整合)
     return c.json({
       message: 'メールアドレスが登録されている場合、パスワードリセットのメールを送信しました'
     });
@@ -807,18 +804,12 @@ auth.post('/verify-email/send', async (c) => {
         console.error('Failed to send verification email:', emailResult.error);
       }
     } else {
-      console.log(`[DEV] Verification token for ${email}: ${verificationToken}`);
+      // F-1 (Session 123): verification token log 全廃
+      console.warn('[DEV] verification email skipped (no RESEND_API_KEY)');
     }
 
-    // 開発モードかつAPIキーがない場合のみ、レスポンスにトークンを含める
-    if (isDev && !c.env.RESEND_API_KEY) {
-      return c.json({
-        message: '確認メールを送信しました（開発モード）',
-        verificationToken,
-        verificationUrl: `http://localhost:5173/verify-email/${verificationToken}`
-      });
-    }
-
+    // F-2 (Session 123): verification token を response body に含む path を完全
+    // 削除、全 path で identical silent-success shape (anti-enum 整合)
     return c.json({
       message: 'メールアドレスが登録されている場合、確認メールを送信しました'
     });
@@ -962,18 +953,12 @@ auth.post('/recovery/request', async (c) => {
         console.error('Failed to send recovery email:', emailResult.error);
       }
     } else {
-      console.log(`[DEV] Recovery token for ${email}: ${recoveryToken}`);
+      // F-1 (Session 123): recovery token log 全廃
+      console.warn('[DEV] recovery email skipped (no RESEND_API_KEY)');
     }
 
-    // 開発モードかつAPIキーがない場合のみ、レスポンスにトークンを含める
-    if (isDev && !c.env.RESEND_API_KEY) {
-      return c.json({
-        message: 'リカバリートークンを生成しました（開発モード）',
-        recoveryToken,
-        recoveryUrl: `http://localhost:5173/recovery/${recoveryToken}`
-      });
-    }
-
+    // F-2 (Session 123): recovery token を response body に含む path を完全削除、
+    // 全 path で identical silent-success shape (anti-enum 整合)
     return c.json({
       message: 'メールアドレスが登録されている場合、リカバリーメールを送信しました'
     });

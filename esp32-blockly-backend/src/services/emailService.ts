@@ -492,9 +492,11 @@ export async function sendLoginOtpEmail(
 ): Promise<{ success: boolean; error?: string }> {
   if (!resendApiKey) {
     console.warn('RESEND_API_KEY is not set. Skipping email send.');
-    // 開発環境ではコンソールにOTPを出力
+    // F-1 (Session 123): OTP code + email を console.log する pattern を完全削除。
+    // routes/2fa.ts L256/L522 と同 cluster、PII redact。dev developer は D1
+    // login_otp_codes から直接 query 可能。
     if (isDev) {
-      console.log(`[DEV] Login OTP for ${to}: ${otpCode}`);
+      console.warn('[DEV] login OTP email skipped (no RESEND_API_KEY)');
     }
     return { success: false, error: 'メール送信サービスが設定されていません' };
   }

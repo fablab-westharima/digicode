@@ -251,9 +251,13 @@ twoFactor.post('/send-otp', async (c) => {
       isDev
     );
 
-    // 開発環境ではコンソールにOTPを出力
+    // F-1 (Session 123): OTP code + email を console.log する pattern を
+    // 完全削除。isDev gate は `!c.env.RESEND_API_KEY` 判定 = RESEND_API_KEY
+    // rotation 間隙時に production で発火可能 = Workers Logs に OTP + email
+    // 露出 risk。Session 120 D-2/D-3 完全削除 pattern 踏襲、token / OTP 値
+    // log 全廃。dev developer は D1 login_otp_codes から直接 query 可能。
     if (isDev) {
-      console.log(`[2FA] OTP for ${user.email}: ${otpCode}`);
+      console.warn('[2FA] login OTP email skipped (no RESEND_API_KEY)');
     }
 
     if (!emailResult.success && !isDev) {
@@ -518,8 +522,9 @@ twoFactor.post('/resend-otp', async (c) => {
       isDev
     );
 
+    // F-1 (Session 123): resend OTP の console.log も同 cluster で削除
     if (isDev) {
-      console.log(`[2FA] Resend OTP for ${user.email}: ${otpCode}`);
+      console.warn('[2FA] resend OTP email skipped (no RESEND_API_KEY)');
     }
 
     return c.json({
