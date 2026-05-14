@@ -243,10 +243,11 @@ classes.delete('/:id', async (c) => {
         last_status: ml30Result.status,
         last_error: ml30Result.error,
       }));
-      return c.json(
-        { error: `クラス関連データの削除に失敗しました: ${ml30Result.error}` },
-        ml30Result.status as any
-      );
+      // D-4 (Session 120): 旧コードは `クラス関連データの削除に失敗しました:
+      // ${ml30Result.error}` で ML30 内部 error 文字列 (path / timeout / HTTP status
+      // / 内部 reverse-proxy info を含む可能性) を client に直接返却していた。
+      // 本 fix で uniform errorJson 化、内部 error は console.error のみで保持。
+      return errorJson(c, 'class.deleteFailed', 500);
     }
 
     // D1 CASCADE で class_members も自動削除
