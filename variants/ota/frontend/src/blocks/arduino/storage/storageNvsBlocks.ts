@@ -115,9 +115,22 @@ generator.forBlock['preferences_put'] = function(block: Blockly.Block) {
 
 /**
  * preferences_get - Preferences 読み取り（int/float/string）
+ *
+ * R5 (Session 119 Task 1 zero-base re-audit): TYPE dropdown (Int/Float/String)
+ * で出力型が変わるが、旧コードは unrestricted output (null 指定) で
+ * case 19 axis 1 (BUG-079 由来) latent type-leak。Session 110 G-III group fix が
+ * input 側 (DEFAULT setCheck) のみ対応で output 側 scope 漏れだったため本 fix で
+ * 完成形に。TYPE field の validator で String → 'String'、Int/Float → 'Number' に
+ * 動的切替。validator は appendField 後に setValidator で attach (FieldDropdown
+ * constructor 内 callback だと catalog generator の regex
+ * `new Blockly.FieldDropdown([...]), 'NAME'` が match せず TYPE field を検出
+ * できないため、後付け pattern を採用)。
  */
 Blockly.Blocks['preferences_get'] = {
   init: function() {
+    const setOutputForType = (type: string) => {
+      this.setOutput(true, type === 'String' ? 'String' : 'Number');
+    };
     this.appendDummyInput()
         .appendField('💾 ' + (Blockly.Msg.BLOCKS_PREFERENCES_GET || 'Preferences Get'))
         .appendField(new Blockly.FieldDropdown([
@@ -130,7 +143,15 @@ Blockly.Blocks['preferences_get'] = {
     this.appendValueInput('DEFAULT')
         .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_PREFERENCES_DEFAULT || 'default');
-    this.setOutput(true, null);
+    // 初期値 (Int) で Number 起点、TYPE 変更で String/Number 自動更新
+    setOutputForType('Int');
+    const typeField = this.getField('TYPE');
+    if (typeField) {
+      typeField.setValidator((newValue: string) => {
+        setOutputForType(newValue);
+        return newValue;
+      });
+    }
     this.setColour(NVS_COLOR);
     this.setTooltip(Blockly.Msg.BLOCKS_PREFERENCES_GETTOOLTIP || 'Read a value from Preferences storage. Returns the default value if the key does not exist.');
   }
