@@ -298,6 +298,17 @@ twoFactor.post('/verify-otp', async (c) => {
       return errorJson(c, 'auth.failed', 401);
     }
 
+    // F-A5 (Session 118 anti-enum cluster scope-rectification):
+    // 旧コードは pre-verify failure path を error key 別に分岐していたため、
+    //   未登録 user             → 401 auth.failed
+    //   既存 user + OTP 不在    → 401 twoFa.codeNotFoundOrExpired
+    //   既存 user + 5 回試行超  → 429 twoFa.maxAttemptsExceeded
+    //   既存 user + bad code    → 401 + "残り N 回" message
+    // で attacker が email 存在 / OTP 状態 / 試行回数 を error key + 残回数 message
+    // から識別可能だった。本 fix で OTP 検証成功までの全 failure path を uniform
+    // 401 auth.failed に統一、rate-limit は内部維持 (attempts 増加 + 5 回超で
+    // verify skip) で response 上は同一。残回数 message も削除。
+    //
     // 未使用で有効期限内のOTPを取得
     const otpRecord = await c.env.DB.prepare(
       `SELECT id, code_hash, attempts FROM login_otp_codes
@@ -306,12 +317,12 @@ twoFactor.post('/verify-otp', async (c) => {
     ).bind(user.id).first<{ id: number; code_hash: string; attempts: number }>();
 
     if (!otpRecord) {
-      return errorJson(c, 'twoFa.codeNotFoundOrExpired', 401);
+      return errorJson(c, 'auth.failed', 401);
     }
 
-    // 試行回数チェック（5回まで）
+    // 試行回数チェック（5回まで）— rate-limit は内部維持、response は uniform
     if (otpRecord.attempts >= 5) {
-      return errorJson(c, 'twoFa.maxAttemptsExceeded', 429);
+      return errorJson(c, 'auth.failed', 401);
     }
 
     // 試行回数をインクリメント
@@ -319,13 +330,10 @@ twoFactor.post('/verify-otp', async (c) => {
       'UPDATE login_otp_codes SET attempts = attempts + 1 WHERE id = ?'
     ).bind(otpRecord.id).run();
 
-    // OTPコード検証
+    // OTPコード検証 — 残回数 message も削除 (state leak)
     const inputHash = await hashOtpCode(code);
     if (inputHash !== otpRecord.code_hash) {
-      const remainingAttempts = 5 - otpRecord.attempts - 1;
-      return c.json({
-        error: `認証コードが正しくありません（残り${remainingAttempts}回）`
-      }, 401);
+      return errorJson(c, 'auth.failed', 401);
     }
 
     // 生徒ログイン制限: student かつクラス未所属ならログイン不可
