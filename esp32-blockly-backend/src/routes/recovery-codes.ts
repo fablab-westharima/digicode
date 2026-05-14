@@ -43,9 +43,7 @@ recoveryCodes.post('/generate', authMiddleware, async (c) => {
     const codes: string[] = [];
     for (let i = 0; i < 10; i++) {
       const code = generateRecoveryCode();
-      console.log('[Recovery Code Generate] Code:', code);
       const codeHash = await hashPassword(code, RECOVERY_CODE_ITERATIONS);
-      console.log('[Recovery Code Generate] Hash:', codeHash);
 
       await c.env.DB.prepare(
         'INSERT INTO recovery_codes (user_id, code_hash) VALUES (?, ?)'
@@ -94,8 +92,6 @@ recoveryCodes.post('/verify', async (c) => {
   }
 
   try {
-    console.log('[Recovery Code Verify] Email:', email, 'Code:', code);
-
     // ユーザー取得
     // case 19 cluster (BE-1) 第112回: account_type を SELECT に追加して student gate に供給
     const user = await c.env.DB.prepare(
@@ -130,11 +126,7 @@ recoveryCodes.post('/verify', async (c) => {
     // コードを検証
     let validCodeId: number | null = null;
     for (const recoveryCode of recoveryCodes.results) {
-      console.log('[Recovery Code Verify] Checking code ID:', recoveryCode.id);
-      console.log('[Recovery Code Verify] Input code:', code);
-      console.log('[Recovery Code Verify] Stored hash:', recoveryCode.code_hash);
       const { valid } = await verifyPassword(code, recoveryCode.code_hash);
-      console.log('[Recovery Code Verify] Code valid:', valid);
       if (valid) {
         validCodeId = recoveryCode.id;
         break;
@@ -225,9 +217,7 @@ recoveryCodes.post('/regenerate', authMiddleware, async (c) => {
     const codes: string[] = [];
     for (let i = 0; i < 10; i++) {
       const code = generateRecoveryCode();
-      console.log('[Recovery Code Generate] Code:', code);
       const codeHash = await hashPassword(code, RECOVERY_CODE_ITERATIONS);
-      console.log('[Recovery Code Generate] Hash:', codeHash);
 
       await c.env.DB.prepare(
         'INSERT INTO recovery_codes (user_id, code_hash) VALUES (?, ?)'
