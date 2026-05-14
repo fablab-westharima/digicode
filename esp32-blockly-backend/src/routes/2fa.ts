@@ -445,32 +445,42 @@ twoFactor.post('/resend-otp', async (c) => {
       'SELECT id, email FROM users WHERE email = ?'
     ).bind(email).first<{ id: number; email: string }>();
 
+    // F-A6 (Session 118 anti-enum cluster scope-rectification):
+    // 旧コードは未登録 user に対して silent success (200) を返却しつつ、
+    //   既存 user + 2FA 無効 → 400 twoFa.notEnabled
+    //   既存 user + 2FA 有効 + 直近 10 分で 3 回超 → 429 auth.resendTooSoon
+    //   既存 user + 2FA 有効 + 正常 → 200 success
+    // で response 形状が分岐していた。attacker は status code (200 vs 400 vs 429)
+    // + error key で email 存在 + 2FA 設定状態 + 直近送信頻度 を直接識別可能。
+    // 本 fix で 3 つの reject path 全てを silent success 200 に統合、rate-limit
+    // と "2FA 無効" は内部維持 (実際の mail 送信は skip) で response 上は uniform。
+    const uniformResendResponse = {
+      success: true,
+      message: '認証コードを再送信しました',
+      expiresIn: 600,
+    };
+
     if (!user) {
-      // セキュリティ上、ユーザーが存在しなくても同じレスポンス
-      return c.json({
-        success: true,
-        message: '認証コードを再送信しました',
-        expiresIn: 600,
-      });
+      return c.json(uniformResendResponse);
     }
 
-    // 2FA設定確認
+    // 2FA設定確認 — rate-limit は内部維持、response は uniform
     const twoFaSetting = await c.env.DB.prepare(
       'SELECT enabled FROM user_2fa_settings WHERE user_id = ?'
     ).bind(user.id).first<{ enabled: number }>();
 
     if (!twoFaSetting || !twoFaSetting.enabled) {
-      return errorJson(c, 'twoFa.notEnabled', 400);
+      return c.json(uniformResendResponse);
     }
 
-    // レート制限チェック（直近10分で3回まで）
+    // レート制限チェック（直近10分で3回まで）— throttled も silent success
     const recentCount = await c.env.DB.prepare(
       `SELECT COUNT(*) as count FROM login_otp_codes
        WHERE user_id = ? AND created_at > datetime('now', '-10 minutes')`
     ).bind(user.id).first<{ count: number }>();
 
     if (recentCount && recentCount.count >= 3) {
-      return errorJson(c, 'auth.resendTooSoon', 429);
+      return c.json(uniformResendResponse);
     }
 
     // OTPコード生成
