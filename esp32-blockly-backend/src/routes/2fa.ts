@@ -31,6 +31,20 @@ async function hashOtpCode(code: string): Promise<string> {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// D-10 (Session 120): constant-time hex string 比較。
+// 旧コードは inputHash !== otpRecord.code_hash で JS string `!==` 短絡比較。
+// SHA-256 hash は固定長 64 hex 文字、timing 差は小さいが構造的に F-F2 (jwt.ts
+// verifySignature) と同 pattern。jwt.ts:43-50 constantTimeEqual を本 file に
+// 複製 (post-release polish #66 で utils/crypto.ts に集約予定)。
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
+}
+
 // リフレッシュトークンのハッシュ化（auth.tsと同じ）
 async function hashRefreshToken(token: string): Promise<string> {
   const encoder = new TextEncoder();
@@ -331,8 +345,9 @@ twoFactor.post('/verify-otp', async (c) => {
     ).bind(otpRecord.id).run();
 
     // OTPコード検証 — 残回数 message も削除 (state leak)
+    // D-10 (Session 120): constant-time 比較で hash 一致時の timing 差を抑制。
     const inputHash = await hashOtpCode(code);
-    if (inputHash !== otpRecord.code_hash) {
+    if (!constantTimeEqual(inputHash, otpRecord.code_hash)) {
       return errorJson(c, 'auth.failed', 401);
     }
 
