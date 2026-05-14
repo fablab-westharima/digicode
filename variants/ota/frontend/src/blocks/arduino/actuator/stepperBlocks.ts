@@ -61,14 +61,19 @@ javascriptGenerator.forBlock['stepper_init'] = function(block: Blockly.Block) {
   const in3 = block.getFieldValue('IN3');
   const in4 = block.getFieldValue('IN4');
 
-  generator.definitions_['stepper_pins'] = `
+  // case 19 axis 2 (Session 119 G4): stepper は singleton library 前提、二重 init で
+  // 1 個目の pin 値が silent 上書きされる collision を first-wins guard で防御。
+  if (!generator.definitions_['stepper_pins']) {
+    generator.definitions_['stepper_pins'] = `
 #define STEPPER_IN1 ${in1}
 #define STEPPER_IN2 ${in2}
 #define STEPPER_IN3 ${in3}
 #define STEPPER_IN4 ${in4}
 int stepperStep = 0;`;
+  }
 
-  generator.definitions_['stepper_function'] = `
+  if (!generator.definitions_['stepper_function']) {
+    generator.definitions_['stepper_function'] = `
 void stepperWrite(int a, int b, int c, int d) {
   digitalWrite(STEPPER_IN1, a);
   digitalWrite(STEPPER_IN2, b);
@@ -98,6 +103,7 @@ void stepperMove(int steps, int stepDelay) {
   }
   stepperWrite(0, 0, 0, 0);  // Release coils
 }`;
+  }
 
   return `  pinMode(STEPPER_IN1, OUTPUT);
   pinMode(STEPPER_IN2, OUTPUT);

@@ -65,18 +65,27 @@ javascriptGenerator.forBlock['attach_interrupt'] = function(block: Blockly.Block
 
   const funcName = `isr_pin${pin}`;
 
-  generator.definitions_[`volatile_isr_${pin}`] = `volatile bool isr_flag_${pin} = false;`;
-  generator.definitions_[`isr_func_${pin}`] = `
+  // case 19 axis 2 (Session 119 G5): 同 pin に対する attach_interrupt 二重配置で
+  // handler statement が silent 上書きされる risk を first-wins guard で防御。
+  // ESP32 attachInterrupt 自身も同 pin 二度目呼び出しは latter-wins 仕様だが、
+  // ここでは emit 側を first-wins 化し、user の最初の意図 (handler body) を保持する。
+  if (!generator.definitions_[`volatile_isr_${pin}`]) {
+    generator.definitions_[`volatile_isr_${pin}`] = `volatile bool isr_flag_${pin} = false;`;
+  }
+  if (!generator.definitions_[`isr_func_${pin}`]) {
+    generator.definitions_[`isr_func_${pin}`] = `
 void IRAM_ATTR ${funcName}() {
   isr_flag_${pin} = true;
 }`;
-
-  generator.definitions_[`isr_handler_${pin}`] = `
+  }
+  if (!generator.definitions_[`isr_handler_${pin}`]) {
+    generator.definitions_[`isr_handler_${pin}`] = `
 void handleInterrupt_${pin}() {
   if (isr_flag_${pin}) {
     isr_flag_${pin} = false;
 ${handler}  }
 }`;
+  }
 
   return `  attachInterrupt(digitalPinToInterrupt(${pin}), ${funcName}, ${mode});\n`;
 };

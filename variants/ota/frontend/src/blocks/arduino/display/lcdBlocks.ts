@@ -56,7 +56,11 @@ generator.forBlock['lcd_init'] = function(block: Blockly.Block) {
   const rows = block.getFieldValue('ROWS');
   const addr = block.getFieldValue('ADDR');
   generator.definitions_['include_lcd'] = LCD_INCLUDE;
-  generator.definitions_['lcd_instance'] = `LiquidCrystal_I2C lcd(${addr}, ${cols}, ${rows});`;
+  // case 19 axis 2 (Session 119 G7): lcd singleton instance、二重 init で addr/cols/rows
+  // silent 上書きを first-wins で防御。
+  if (!generator.definitions_['lcd_instance']) {
+    generator.definitions_['lcd_instance'] = `LiquidCrystal_I2C lcd(${addr}, ${cols}, ${rows});`;
+  }
   return `  lcd.init();\n  lcd.backlight();\n`;
 };
 

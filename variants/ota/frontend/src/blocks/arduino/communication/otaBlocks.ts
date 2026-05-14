@@ -56,10 +56,17 @@ javascriptGenerator.forBlock['ota_setup'] = function(block: Blockly.Block) {
 
   generator.definitions_['include_wifi'] = '#include <WiFi.h>';
   generator.definitions_['include_arduinoota'] = '#include <ArduinoOTA.h>';
-  generator.definitions_['ota_ssid'] = `const char* ota_ssid = "${ssid}";`;
-  generator.definitions_['ota_wifi_pass'] = `const char* ota_wifi_pass = "${wifiPass}";`;
+  // case 19 axis 2 (Session 119 G17): ota_setup singleton、二重 init で SSID/password/
+  // connect 関数の silent 上書きを first-wins で防御。
+  if (!generator.definitions_['ota_ssid']) {
+    generator.definitions_['ota_ssid'] = `const char* ota_ssid = "${ssid}";`;
+  }
+  if (!generator.definitions_['ota_wifi_pass']) {
+    generator.definitions_['ota_wifi_pass'] = `const char* ota_wifi_pass = "${wifiPass}";`;
+  }
 
-  generator.definitions_['ota_wifi_connect'] = `
+  if (!generator.definitions_['ota_wifi_connect']) {
+    generator.definitions_['ota_wifi_connect'] = `
 void otaWifiConnect() {
   Serial.print("WiFi connecting to ");
   Serial.println(ota_ssid);
@@ -73,6 +80,7 @@ void otaWifiConnect() {
   Serial.print("WiFi connected. IP: ");
   Serial.println(WiFi.localIP());
 }`;
+  }
 
   let otaSetup = `  // OTA Setup
   otaWifiConnect();

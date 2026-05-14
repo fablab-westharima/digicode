@@ -58,10 +58,16 @@ javascriptGenerator.forBlock['motor_init'] = function(block: Blockly.Block) {
   const in2 = block.getFieldValue('IN2');
   const ena = block.getFieldValue('ENA');
 
-  generator.definitions_[`motor_${motor}_pins`] = `
+  // case 19 axis 2 (Session 119 G3): 同一 motor の二重 init で pin 値が上書きされる
+  // silent collision を first-wins guard で防御。motor 別 key なので Motor A と
+  // Motor B の併用は影響を受けない。
+  const pinsKey = `motor_${motor}_pins`;
+  if (!generator.definitions_[pinsKey]) {
+    generator.definitions_[pinsKey] = `
 #define MOTOR_${motor}_IN1 ${in1}
 #define MOTOR_${motor}_IN2 ${in2}
 #define MOTOR_${motor}_ENA ${ena}`;
+  }
 
   return `  pinMode(MOTOR_${motor}_IN1, OUTPUT);
   pinMode(MOTOR_${motor}_IN2, OUTPUT);
@@ -76,9 +82,13 @@ pythonGenerator.forBlock['motor_init'] = function(block: Blockly.Block) {
   const ena = block.getFieldValue('ENA');
 
   pyGen.definitions_['import_motor'] = 'from machine import Pin, PWM';
-  pyGen.definitions_[`motor_${motor}_pins`] = `motor_${motor}_in1 = Pin(${in1}, Pin.OUT)
+  // case 19 axis 2 (Session 119 G3、Python parallel): JS 側と同 pattern。
+  const pinsKey = `motor_${motor}_pins`;
+  if (!pyGen.definitions_[pinsKey]) {
+    pyGen.definitions_[pinsKey] = `motor_${motor}_in1 = Pin(${in1}, Pin.OUT)
 motor_${motor}_in2 = Pin(${in2}, Pin.OUT)
 motor_${motor}_ena = PWM(Pin(${ena}), freq=1000)`;
+  }
 
   return '';
 };

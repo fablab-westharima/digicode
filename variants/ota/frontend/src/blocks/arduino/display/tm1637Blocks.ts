@@ -69,7 +69,12 @@ Blockly.Blocks['tm1637_init'] = {
 generator.forBlock['tm1637_init'] = function(block: Blockly.Block) {
   const clk = block.getFieldValue('CLK');
   const dio = block.getFieldValue('DIO');
-  generator.definitions_['include_tm1637'] = buildTm1637Include(clk, dio);
+  // case 19 axis 2 (Session 119 G11): tm1637 singleton library、include は CLK/DIO 値を
+  // literal embed する field-dependent build、二重 init で silent 上書きを first-wins
+  // で防御。`setups_['tm1637_begin']` は literal idempotent のため guard 不要。
+  if (!generator.definitions_['include_tm1637']) {
+    generator.definitions_['include_tm1637'] = buildTm1637Include(clk, dio);
+  }
   if (!generator.setups_) generator.setups_ = {};
   generator.setups_['tm1637_begin'] = 'tm1637Display.begin();';
   return '';

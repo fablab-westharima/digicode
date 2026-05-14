@@ -42,11 +42,16 @@ Blockly.Blocks['ir_receiver_init'] = {
 
 generator.forBlock['ir_receiver_init'] = function(block: Blockly.Block) {
   const pin = block.getFieldValue('PIN');
-  generator.definitions_['include_ir_recv'] = `
+  // case 19 axis 2 (Session 119 G14): IRrecv は singleton instance、二重 init で
+  // pin silent 上書きを first-wins で防御。`ir_receiver_decode` 側 (L68) は既に
+  // `||` fallback guard で対応済、本 fix で init 側も対称化。
+  if (!generator.definitions_['include_ir_recv']) {
+    generator.definitions_['include_ir_recv'] = `
 #include <IRrecv.h>
 #include <IRutils.h>
 IRrecv irRecv(${pin});
 decode_results irResults;`;
+  }
   return `  irRecv.enableIRIn();\n`;
 };
 
@@ -100,9 +105,13 @@ Blockly.Blocks['ir_sender_init'] = {
 
 generator.forBlock['ir_sender_init'] = function(block: Blockly.Block) {
   const pin = block.getFieldValue('PIN');
-  generator.definitions_['include_ir_send'] = `
+  // case 19 axis 2 (Session 119 G14): IRsend は singleton instance、二重 init で
+  // pin silent 上書きを first-wins で防御。
+  if (!generator.definitions_['include_ir_send']) {
+    generator.definitions_['include_ir_send'] = `
 #include <IRsend.h>
 IRsend irSend(${pin});`;
+  }
   return `  irSend.begin();\n`;
 };
 

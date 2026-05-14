@@ -47,11 +47,15 @@ javascriptGenerator.forBlock['neopixel_init'] = function(block: Blockly.Block) {
   const numLeds = block.getFieldValue('NUM_LEDS');
 
   generator.definitions_['include_neopixel'] = '#include <Adafruit_NeoPixel.h>';
-  generator.definitions_['neopixel_instance'] =
-    `// NeoPixel strip\n` +
-    `#define NEOPIXEL_PIN ${pin}\n` +
-    `#define NUM_PIXELS ${numLeds}\n` +
-    `Adafruit_NeoPixel pixels(NUM_PIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);`;
+  // case 19 axis 2 (Session 119 G9): neopixel singleton strip、二重 init で
+  // NEOPIXEL_PIN / NUM_PIXELS silent 上書きを first-wins で防御。
+  if (!generator.definitions_['neopixel_instance']) {
+    generator.definitions_['neopixel_instance'] =
+      `// NeoPixel strip\n` +
+      `#define NEOPIXEL_PIN ${pin}\n` +
+      `#define NUM_PIXELS ${numLeds}\n` +
+      `Adafruit_NeoPixel pixels(NUM_PIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);`;
+  }
 
   generator.setups_['neopixel_begin'] = `  pixels.begin();`;
 

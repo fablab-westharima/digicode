@@ -65,12 +65,17 @@ generator.forBlock['a4988_init'] = function(block: Blockly.Block) {
   const enPin = block.getFieldValue('EN');
   generator.definitions_['include_a4988'] = A4988_INCLUDE;
   if (!generator.setups_) generator.setups_ = {};
-  generator.setups_['a4988_init'] = `if (!a4988Stepper) a4988Stepper = new AccelStepper(AccelStepper::DRIVER, ${stepPin}, ${dirPin});
+  // case 19 axis 2 (Session 119 G12): a4988 singleton driver、二重 init で
+  // STEP/DIR/EN pin silent 上書きを first-wins で防御。runtime `if (!a4988Stepper)`
+  // guard と整合 (emit phase で first-wins、runtime でも first-wins)。
+  if (!generator.setups_['a4988_init']) {
+    generator.setups_['a4988_init'] = `if (!a4988Stepper) a4988Stepper = new AccelStepper(AccelStepper::DRIVER, ${stepPin}, ${dirPin});
   a4988EnPin = ${enPin};
   pinMode(${enPin}, OUTPUT);
   digitalWrite(${enPin}, LOW);
   a4988Stepper->setMaxSpeed(1000.0f);
   a4988Stepper->setAcceleration(500.0f);`;
+  }
   return '';
 };
 
@@ -174,10 +179,14 @@ generator.forBlock['uln2003_init'] = function(block: Blockly.Block) {
   const in4 = block.getFieldValue('IN4');
   generator.definitions_['include_uln2003'] = ULN2003_INCLUDE;
   if (!generator.setups_) generator.setups_ = {};
+  // case 19 axis 2 (Session 119 G12): uln2003 singleton driver、二重 init で
+  // IN1-4 pin silent 上書きを first-wins で防御。
   // AccelStepper FULL4WIRE pin 順は IN1, IN3, IN2, IN4 が正規 (28BYJ-48 phase pattern)
-  generator.setups_['uln2003_init'] = `if (!uln2003Stepper) uln2003Stepper = new AccelStepper(AccelStepper::FULL4WIRE, ${in1}, ${in3}, ${in2}, ${in4});
+  if (!generator.setups_['uln2003_init']) {
+    generator.setups_['uln2003_init'] = `if (!uln2003Stepper) uln2003Stepper = new AccelStepper(AccelStepper::FULL4WIRE, ${in1}, ${in3}, ${in2}, ${in4});
   uln2003Stepper->setMaxSpeed(1000.0f);
   uln2003Stepper->setAcceleration(500.0f);`;
+  }
   return '';
 };
 

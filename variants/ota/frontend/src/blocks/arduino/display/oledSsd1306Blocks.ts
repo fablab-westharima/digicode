@@ -63,12 +63,16 @@ generator.forBlock['oled_ssd1306_init'] = function(block: Blockly.Block) {
   // Adafruit lib は constructor 値しか効かないので runtime field は無視 (info 用に保持)。
   generator.definitions_['include_oled_ssd1306'] = OLED_INCLUDE;
   if (!generator.setups_) generator.setups_ = {};
-  generator.setups_['oled_ssd1306_begin'] = `Wire.begin();
+  // case 19 axis 2 (Session 119 G10): oled singleton instance、二重 init で
+  // addr silent 上書きを first-wins で防御。
+  if (!generator.setups_['oled_ssd1306_begin']) {
+    generator.setups_['oled_ssd1306_begin'] = `Wire.begin();
   oledDisplay.begin(SSD1306_SWITCHCAPVCC, ${addr});
   oledDisplay.clearDisplay();
   oledDisplay.setTextSize(1);
   oledDisplay.setTextColor(SSD1306_WHITE);
   oledDisplay.display();`;
+  }
   return '';
 };
 

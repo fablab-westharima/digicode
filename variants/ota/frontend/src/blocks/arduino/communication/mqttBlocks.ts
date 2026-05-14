@@ -63,13 +63,25 @@ javascriptGenerator.forBlock['mqtt_setup'] = function(block: Blockly.Block) {
   generator.definitions_['include_pubsub'] = '#include <PubSubClient.h>';
   generator.definitions_['mqtt_wifi_client'] = 'WiFiClient espClient;';
   generator.definitions_['mqtt_client'] = 'PubSubClient mqttClient(espClient);';
-  generator.definitions_['mqtt_ssid'] = `const char* mqtt_ssid = "${ssid}";`;
-  generator.definitions_['mqtt_wifi_pass'] = `const char* mqtt_wifi_pass = "${wifiPass}";`;
-  generator.definitions_['mqtt_broker'] = `const char* mqtt_broker = "${broker}";`;
+  // case 19 axis 2 (Session 119 G18): mqtt_setup singleton (one client per program)、
+  // 二重 init で SSID/password/broker/clientId silent 上書きを first-wins で防御。
+  // Most user-likely cluster (mqtt_setup is a common-pattern init that students may
+  // accidentally drag twice with different credentials).
+  if (!generator.definitions_['mqtt_ssid']) {
+    generator.definitions_['mqtt_ssid'] = `const char* mqtt_ssid = "${ssid}";`;
+  }
+  if (!generator.definitions_['mqtt_wifi_pass']) {
+    generator.definitions_['mqtt_wifi_pass'] = `const char* mqtt_wifi_pass = "${wifiPass}";`;
+  }
+  if (!generator.definitions_['mqtt_broker']) {
+    generator.definitions_['mqtt_broker'] = `const char* mqtt_broker = "${broker}";`;
+  }
   // Port is now emitted inside setup() so dynamic values (variables / BLE
   // strings) work; file-scope `const int` would break when ${port} is a
   // non-literal expression that has no static initializer.
-  generator.definitions_['mqtt_client_id'] = `const char* mqtt_client_id = "${clientId}";`;
+  if (!generator.definitions_['mqtt_client_id']) {
+    generator.definitions_['mqtt_client_id'] = `const char* mqtt_client_id = "${clientId}";`;
+  }
 
   // WiFi接続関数
   generator.definitions_['mqtt_wifi_connect_func'] = `

@@ -221,7 +221,14 @@ Blockly.Blocks['rtc_init'] = {
 generator.forBlock['rtc_init'] = function(block: Blockly.Block) {
   const model = block.getFieldValue('MODEL');
   generator.definitions_['include_rtc'] = '#include <RTClib.h>';
-  generator.definitions_[`rtc_instance_${model}`] = `RTC_${model} rtc;`;
+  // case 19 axis 2 (Session 119 G2): 旧コードは `rtc_instance_${model}` で動的 key、
+  // 同一 program に DS3231 + DS1307 両方の rtc_init を配置すると 2 つの `RTC_X rtc;`
+  // declaration が emit され `redefinition of 'rtc'` compile fail。共通 key
+  // `rtc_instance` + first-wins guard で 1 個目の model を採用、二番目は silent no-op。
+  // 通常 user は 1 RTC のみ接続前提のため動作影響なし、配置誤り時の compile fail を回避。
+  if (!generator.definitions_['rtc_instance']) {
+    generator.definitions_['rtc_instance'] = `RTC_${model} rtc;`;
+  }
   return [`rtc.begin()`, 0];
 };
 

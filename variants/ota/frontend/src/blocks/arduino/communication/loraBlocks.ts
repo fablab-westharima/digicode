@@ -62,10 +62,14 @@ generator.forBlock['lora_init'] = function(block: Blockly.Block) {
   const dio0 = block.getFieldValue('DIO0');
   generator.definitions_['include_lora'] = LORA_INCLUDE;
   if (!generator.setups_) generator.setups_ = {};
-  generator.setups_['lora_init'] = `LoRa.setPins(${ss}, ${rst}, ${dio0});
+  // case 19 axis 2 (Session 119 G15): LoRa singleton library、二重 init で
+  // SS/RST/DIO0 silent 上書きを first-wins で防御。
+  if (!generator.setups_['lora_init']) {
+    generator.setups_['lora_init'] = `LoRa.setPins(${ss}, ${rst}, ${dio0});
   if (!LoRa.begin(915E6)) {
     Serial.println("[lora] init failed");
   }`;
+  }
   return '';
 };
 

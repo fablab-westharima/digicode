@@ -67,13 +67,17 @@ generator.forBlock['modbus_init'] = function(block: Blockly.Block) {
   const baud = block.getFieldValue('BAUD');
   generator.definitions_['include_modbus'] = MODBUS_INCLUDE;
   if (!generator.setups_) generator.setups_ = {};
-  generator.setups_['modbus_init'] = `_modbusDeRePin = ${deRe};
+  // case 19 axis 2 (Session 119 G16): Modbus singleton master、二重 init で
+  // RX/TX/DE_RE/BAUD silent 上書きを first-wins で防御。
+  if (!generator.setups_['modbus_init']) {
+    generator.setups_['modbus_init'] = `_modbusDeRePin = ${deRe};
   pinMode(${deRe}, OUTPUT);
   digitalWrite(${deRe}, LOW);
   modbusSerial.begin(${baud}, SERIAL_8N1, ${rx}, ${tx});
   modbusNode.begin(1, modbusSerial);
   modbusNode.preTransmission(modbusPreTransmission);
   modbusNode.postTransmission(modbusPostTransmission);`;
+  }
   return '';
 };
 

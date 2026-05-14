@@ -243,7 +243,11 @@ generator.forBlock['max7219_init'] = function(block: Blockly.Block) {
   const n = block.getFieldValue('N');
   generator.definitions_['include_max7219'] = MAX7219_INCLUDE;
   if (!generator.setups_) generator.setups_ = {};
-  generator.setups_['max7219_init'] = `max7219Init(${din}, ${cs}, ${clk}, ${n});`;
+  // case 19 axis 2 (Session 119 G8): max7219 singleton library、二重 init で pin/n
+  // silent 上書きを first-wins で防御。
+  if (!generator.setups_['max7219_init']) {
+    generator.setups_['max7219_init'] = `max7219Init(${din}, ${cs}, ${clk}, ${n});`;
+  }
   return '';
 };
 

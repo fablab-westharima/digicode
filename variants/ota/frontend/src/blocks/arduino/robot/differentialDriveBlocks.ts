@@ -58,17 +58,23 @@ javascriptGenerator.forBlock['diff_drive_init'] = function(block: Blockly.Block)
   const rEnb = block.getFieldValue('R_ENB');
   const trackWidth = block.getFieldValue('TRACK_WIDTH');
 
-  javascriptGenerator.definitions_['diff_drive_vars'] =
-    `// 差動駆動 変数\n` +
-    `#define DIFF_L_IN1 ${lIn1}\n` +
-    `#define DIFF_L_IN2 ${lIn2}\n` +
-    `#define DIFF_L_ENA ${lEna}\n` +
-    `#define DIFF_R_IN1 ${rIn1}\n` +
-    `#define DIFF_R_IN2 ${rIn2}\n` +
-    `#define DIFF_R_ENB ${rEnb}\n` +
-    `#define TRACK_WIDTH ${trackWidth}.0\n` +
-    `int diffLeftSpeed = 0;\n` +
-    `int diffRightSpeed = 0;\n`;
+  // case 19 axis 2 (Session 119 G13): differential drive は singleton singleton singleton
+  // (一台のロボット前提)、二重 init で pin/track_width silent 上書きを first-wins で防御。
+  // 同 file の `encoder_vars` / `encoder_funcs` は既に first-wins guard 適用済で
+  // mixed state を解消。
+  if (!javascriptGenerator.definitions_['diff_drive_vars']) {
+    javascriptGenerator.definitions_['diff_drive_vars'] =
+      `// 差動駆動 変数\n` +
+      `#define DIFF_L_IN1 ${lIn1}\n` +
+      `#define DIFF_L_IN2 ${lIn2}\n` +
+      `#define DIFF_L_ENA ${lEna}\n` +
+      `#define DIFF_R_IN1 ${rIn1}\n` +
+      `#define DIFF_R_IN2 ${rIn2}\n` +
+      `#define DIFF_R_ENB ${rEnb}\n` +
+      `#define TRACK_WIDTH ${trackWidth}.0\n` +
+      `int diffLeftSpeed = 0;\n` +
+      `int diffRightSpeed = 0;\n`;
+  }
 
   javascriptGenerator.definitions_['diff_drive_funcs'] =
     `// 差動駆動 関数\n` +

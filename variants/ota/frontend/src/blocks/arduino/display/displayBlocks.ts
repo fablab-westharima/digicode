@@ -64,11 +64,15 @@ javascriptGenerator.forBlock['display_init'] = function(block: Blockly.Block) {
   const scl = block.getFieldValue('SCL');
 
   generator.definitions_['include_display'] = '#include <Wire.h>\n#include <Adafruit_GFX.h>\n#include <Adafruit_SSD1306.h>';
-  generator.definitions_['display_instance'] = `
+  // case 19 axis 2 (Session 119 G6): display は singleton instance、二重 init で
+  // SCREEN_WIDTH / SCREEN_HEIGHT が silent 上書きされる collision を first-wins で防御。
+  if (!generator.definitions_['display_instance']) {
+    generator.definitions_['display_instance'] = `
 #define SCREEN_WIDTH ${width}
 #define SCREEN_HEIGHT ${height}
 #define OLED_RESET -1
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);`;
+  }
 
   return `  Wire.begin(${sda}, ${scl});
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
