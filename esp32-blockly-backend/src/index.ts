@@ -357,6 +357,71 @@ async function handleScheduled(
       console.error(`[scheduled ${runId}] cross-DB audit failed:`, err);
     }
 
+    // F-30 (Session 123): 7 token / event table の expired row cleanup。
+    // 旧コードは expired classes + canceling subscriptions のみ cleanup、token
+    // 系は無制限蓄積で D1 row count が monotonic increase。Phase D B-5 finding。
+    // 各 table で LIMIT 1000 safety、DRY RUN mode は skip。
+    //
+    // 対象:
+    //   1. refresh_tokens: expired or revoked >30 days ago
+    //   2. password_reset_tokens: expires_at < now
+    //   3. recovery_tokens: expires_at < now
+    //   4. email_verification_tokens: expires_at < now
+    //   5. login_otp_codes: expires_at < now (10-min TTL でも row 残存)
+    //   6. trusted_devices: expires_at < now (30 日 TTL)
+    //   7. processed_webhooks (F-8 で追加): processed_at < 30 days ago
+    //      (Stripe 3-day retry window 過ぎれば再到着不能)
+    try {
+      const cleanupResults: { table: string; deleted: number }[] = [];
+
+      const expiredRefresh = await env.DB.prepare(
+        `DELETE FROM refresh_tokens
+         WHERE expires_at < datetime('now')
+            OR (revoked_at IS NOT NULL AND revoked_at < datetime('now', '-30 days'))`
+      ).run();
+      cleanupResults.push({ table: 'refresh_tokens', deleted: expiredRefresh.meta.changes ?? 0 });
+
+      const expiredReset = await env.DB.prepare(
+        `DELETE FROM password_reset_tokens WHERE expires_at < datetime('now')`
+      ).run();
+      cleanupResults.push({ table: 'password_reset_tokens', deleted: expiredReset.meta.changes ?? 0 });
+
+      const expiredRecovery = await env.DB.prepare(
+        `DELETE FROM recovery_tokens WHERE expires_at < datetime('now')`
+      ).run();
+      cleanupResults.push({ table: 'recovery_tokens', deleted: expiredRecovery.meta.changes ?? 0 });
+
+      const expiredVerify = await env.DB.prepare(
+        `DELETE FROM email_verification_tokens WHERE expires_at < datetime('now')`
+      ).run();
+      cleanupResults.push({ table: 'email_verification_tokens', deleted: expiredVerify.meta.changes ?? 0 });
+
+      const expiredOtp = await env.DB.prepare(
+        `DELETE FROM login_otp_codes WHERE expires_at < datetime('now')`
+      ).run();
+      cleanupResults.push({ table: 'login_otp_codes', deleted: expiredOtp.meta.changes ?? 0 });
+
+      const expiredDevices = await env.DB.prepare(
+        `DELETE FROM trusted_devices WHERE expires_at < datetime('now')`
+      ).run();
+      cleanupResults.push({ table: 'trusted_devices', deleted: expiredDevices.meta.changes ?? 0 });
+
+      const expiredWebhooks = await env.DB.prepare(
+        `DELETE FROM processed_webhooks WHERE processed_at < datetime('now', '-30 days')`
+      ).run();
+      cleanupResults.push({ table: 'processed_webhooks', deleted: expiredWebhooks.meta.changes ?? 0 });
+
+      const totalDeleted = cleanupResults.reduce((sum, r) => sum + r.deleted, 0);
+      console.log(JSON.stringify({
+        event: 'token_cleanup',
+        runId,
+        totalDeleted,
+        breakdown: cleanupResults,
+      }));
+    } catch (err) {
+      console.error(`[scheduled ${runId}] token cleanup failed:`, err);
+    }
+
   } catch (err) {
     console.error(`[scheduled ${runId}] fatal error:`, err);
     // fatal error でも throw しない（次回実行は独立して継続）
