@@ -21,6 +21,7 @@ import adminFeedback from './routes/admin-feedback';
 import feedback from './routes/feedback';
 import classes, { deleteClassCascade } from './routes/classes';
 import submissionsRoute from './routes/submissions';
+import publicFeatureFlags from './routes/public-feature-flags';
 import { rateLimitPresets } from './middleware/rateLimit';
 import { localeMiddleware } from './middleware/locale';
 import { auditCrossDbIntegrity } from './utils/auditCrossDb';
@@ -98,9 +99,9 @@ app.use('/api/classes/*', rateLimitPresets.standard);
 app.use('/api/submissions/*', rateLimitPresets.standard);
 app.use('/api/feedback/*', rateLimitPresets.standard);
 app.use('/api/health/*', rateLimitPresets.standard);
-// 第112回 case 19 cluster (MW-3): /api/feature-flags は admin module 内の no-auth
-// public endpoint (admin.ts L301 + index.ts 下の app.route('/api', admin) 経由)。
-// 他 rate-limit prefix と overlap しないため明示的 single-path use() で適用。
+// /api/feature-flags は no-auth public endpoint (routes/public-feature-flags.ts)。
+// 第119回 R3 fix: 旧コード `app.route('/api', admin)` で admin 全 endpoint が
+// `/api/*` にも mount され brute-force surface を作っていた。本 fix で分離。
 app.use('/api/feature-flags', rateLimitPresets.standard);
 // F-19 fix: 管理者API + admin-feedback 両方カバー、admin route の brute-force defense
 app.use('/api/admin/*', rateLimitPresets.standard);
@@ -138,9 +139,14 @@ app.route('/api/feedback', feedback);
 // 41.md Phase 1: 管理者向け要望ルート — `/api/admin` より前に登録 (Hono 登録順マッチ)
 app.route('/api/admin/feedback', adminFeedback);
 
-// 管理者APIルート（Admin + Feature Flags公開API）
+// 管理者APIルート（authMiddleware + adminMiddleware で全 endpoint gate）
 app.route('/api/admin', admin);
-app.route('/api', admin); // GET /api/feature-flags（認証不要）
+
+// Feature Flags 公開API（認証不要、routes/public-feature-flags.ts）
+// 第119回 R3 fix: 旧コード `app.route('/api', admin)` を撤廃、independent mount で
+// admin の他 endpoint (/users, /flags, /audit-cross-db) が `/api/*` 経由で rate-limit
+// prefix を bypass する surface を閉鎖。
+app.route('/api/feature-flags', publicFeatureFlags);
 
 // Phase C: クラス機能ルート（enterprise プラン専用、ML30 へプロキシ）
 app.route('/api/classes', classes);

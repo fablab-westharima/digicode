@@ -6,7 +6,6 @@ import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import { adminMiddleware } from '../middleware/admin';
 import { errorJson } from '../utils/errorJson';
-import { computeIsFreeNow } from '../utils/featureFlag';
 import { auditCrossDbIntegrity } from '../utils/auditCrossDb';
 import { deleteClassCascade } from './classes';
 import type { Bindings, Variables } from '../types/env';
@@ -293,47 +292,14 @@ admin.post('/flags/:key', authMiddleware, adminMiddleware, async (c) => {
   }
 });
 
-// ========================================
-// 公開API（認証不要）
-// ========================================
-
-// Feature Flags取得（フロントエンド用）
-admin.get('/feature-flags', async (c) => {
-  try {
-    const flags = await c.env.DB.prepare(
-      'SELECT key, enabled, free_until, free_reason FROM feature_flags'
-    ).all<{
-      key: string;
-      enabled: number;
-      free_until: string | null;
-      free_reason: string | null;
-    }>();
-
-    const now = new Date().toISOString();
-    const result: Record<string, {
-      enabled: boolean;
-      freeUntil: string | null;
-      freeReason: string | null;
-      isFreeNow: boolean;
-    }> = {};
-
-    for (const f of flags.results) {
-      // enabled=false → 全員に開放、enabled=true+期間内 → 無料開放中
-      // (computeIsFreeNow と feedback.ts の isFlagFreeNow が同 formula、helper で single source 化)
-      result[f.key] = {
-        enabled: f.enabled === 1,
-        freeUntil: f.free_until,
-        freeReason: f.free_reason,
-        isFreeNow: computeIsFreeNow({ enabled: f.enabled, free_until: f.free_until }, now),
-      };
-    }
-
-    return c.json({ flags: result });
-  } catch (error) {
-    console.error('Get feature flags error:', error);
-    return c.json({ flags: {} });
-  }
-});
+// R3 (Session 119 zero-base re-audit):
+// 旧コードは admin.ts に /feature-flags handler を含み、index.ts で
+// `app.route('/api', admin)` 経由で公開していた。これは admin の他 endpoint
+// (/users, /flags, /audit-cross-db) を全て `/api/*` 配下にも mount する
+// side effect があり、`/api/admin/*` rate-limit prefix から漏れる brute-force
+// surface を作っていた。本 commit で feature-flags は routes/public-feature-flags.ts
+// に分離、index.ts では `app.route('/api/feature-flags', publicFeatureFlags)`
+// で独立 mount するため admin の二重 mount を撤廃。
 
 // ========================================
 // 第103回 BUG-051: cross-DB integrity audit (manual admin trigger)
