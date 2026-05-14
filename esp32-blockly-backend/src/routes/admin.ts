@@ -8,6 +8,7 @@ import { adminMiddleware } from '../middleware/admin';
 import { errorJson } from '../utils/errorJson';
 import { auditCrossDbIntegrity } from '../utils/auditCrossDb';
 import { deleteClassCascade } from './classes';
+import { deleteUserCascade } from '../utils/userCascade';
 import type { Bindings, Variables } from '../types/env';
 
 const admin = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -174,35 +175,11 @@ admin.delete('/users/:id', authMiddleware, adminMiddleware, async (c) => {
       }
     }
 
-    // 関連データ削除（auth.ts のアカウント削除ロジックと同じ順序）
-    // F-15 fix: 削除漏れていた 6 tables を追加
-    const tables = [
-      'authenticators',
-      'refresh_tokens',
-      'password_reset_tokens',
-      'email_verification_tokens',
-      'recovery_tokens',
-      'class_members',       // F-15 新規
-      'login_otp_codes',     // F-15 新規
-      'trusted_devices',     // F-15 新規
-      'user_2fa_settings',   // F-15 新規
-      'recovery_codes',      // F-15 新規
-      'feedback',            // F-15 新規
-      'projects',
-      'compile_usage',
-      'subscriptions',
-    ];
-
-    for (const table of tables) {
-      await c.env.DB.prepare(
-        `DELETE FROM ${table} WHERE user_id = ?`
-      ).bind(targetUserId).run();
-    }
-
-    // ユーザー本体を削除
-    await c.env.DB.prepare(
-      'DELETE FROM users WHERE id = ?'
-    ).bind(targetUserId).run();
+    // T7 (Session 119): 14 dependent tables + users 行を deleteUserCascade に委譲。
+    // 旧コードは auth.ts / admin.ts / classes.ts 3 callsite で同じテーブルリストを
+    // コピペしていたが、classes.ts の student-cleanup path だけ 14 tables 欠落 →
+    // utils/userCascade.ts に集約して single source of truth 化。
+    await deleteUserCascade(c.env, targetUserId);
 
     return c.json({
       success: true,

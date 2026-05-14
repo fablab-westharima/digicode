@@ -23,6 +23,7 @@ import { authMiddleware } from '../middleware/auth';
 import { requirePlan } from '../middleware/plan';
 import { hashPassword } from '../utils/password';
 import { proxyClassApi, type ClassApiEnv } from '../utils/classApi';
+import { deleteStudentCascade } from '../utils/userCascade';
 import { errorJson } from '../utils/errorJson';
 import { isFlagFreeNow } from '../utils/featureFlag';
 import { getUserPlan } from '../utils/plan';
@@ -252,14 +253,15 @@ classes.delete('/:id', async (c) => {
     await c.env.DB.prepare(`DELETE FROM classes WHERE id = ?`).bind(id).run();
 
     // 他クラスにも未所属の student users を連動削除（使い捨てアカウント方針）
+    // T7 (Session 119): deleteStudentCascade で 14 dependent tables + users 行を一括削除。
+    // 旧コードは `DELETE FROM users` のみで authenticators / refresh_tokens 等が
+    // orphan row として残置していた。
     for (const s of students.results || []) {
       const other = await c.env.DB.prepare(
         `SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?`
       ).bind(s.user_id).first<{ n: number }>();
       if (!other || other.n === 0) {
-        await c.env.DB.prepare(
-          `DELETE FROM users WHERE id = ? AND account_type = 'student'`
-        ).bind(s.user_id).run();
+        await deleteStudentCascade(c.env, s.user_id);
       }
     }
 
@@ -456,14 +458,13 @@ classes.delete('/:classId/students/:studentId', async (c) => {
     ).bind(classId, studentId).run();
 
     // 他のクラスにも所属していなければ user ごと削除（使い捨てアカウント）
+    // T7 (Session 119): deleteStudentCascade で 14 dependent tables + users 行を一括削除。
     const otherMemberships = await c.env.DB.prepare(
       `SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?`
     ).bind(studentId).first<{ n: number }>();
 
     if (!otherMemberships || otherMemberships.n === 0) {
-      await c.env.DB.prepare(
-        `DELETE FROM users WHERE id = ? AND account_type = 'student'`
-      ).bind(studentId).run();
+      await deleteStudentCascade(c.env, studentId);
     }
 
     return c.json({ success: true });
@@ -1078,6 +1079,7 @@ export async function deleteClassCascade(
   await env.DB.prepare(`DELETE FROM classes WHERE id = ?`).bind(classId).run();
 
   // 孤児 student を連動削除（使い捨てアカウント方針）
+  // T7 (Session 119): deleteStudentCascade で 14 dependent tables + users 行を一括削除。
   for (const s of students.results || []) {
     const other = await env.DB.prepare(
       `SELECT COUNT(*) AS n FROM class_members WHERE user_id = ?`
@@ -1085,11 +1087,7 @@ export async function deleteClassCascade(
       .bind(s.user_id)
       .first<{ n: number }>();
     if (!other || other.n === 0) {
-      await env.DB.prepare(
-        `DELETE FROM users WHERE id = ? AND account_type = 'student'`
-      )
-        .bind(s.user_id)
-        .run();
+      await deleteStudentCascade(env, s.user_id);
     }
   }
 

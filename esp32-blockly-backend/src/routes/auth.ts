@@ -11,6 +11,7 @@ import {
   sendAccountAlreadyExistsEmail,
 } from '../services/emailService';
 import { deleteClassCascade } from './classes';
+import { deleteUserCascade } from '../utils/userCascade';
 
 // リフレッシュトークンのハッシュ化（SHA-256）
 async function hashRefreshToken(token: string): Promise<string> {
@@ -1019,34 +1020,8 @@ auth.delete('/account', authMiddleware, async (c) => {
   try {
     const { userId } = c.get('user');
 
-    // トランザクション的に削除
-    // 1. パスキーを全て削除
-    await c.env.DB.prepare(
-      'DELETE FROM authenticators WHERE user_id = ?'
-    ).bind(userId).run();
-
-    // 2. リフレッシュトークンを全て削除
-    await c.env.DB.prepare(
-      'DELETE FROM refresh_tokens WHERE user_id = ?'
-    ).bind(userId).run();
-
-    // 3. パスワードリセットトークンを削除
-    await c.env.DB.prepare(
-      'DELETE FROM password_reset_tokens WHERE user_id = ?'
-    ).bind(userId).run();
-
-    // 4. メール確認トークンを削除
-    await c.env.DB.prepare(
-      'DELETE FROM email_verification_tokens WHERE user_id = ?'
-    ).bind(userId).run();
-
-    // 5. リカバリートークンを削除
-    await c.env.DB.prepare(
-      'DELETE FROM recovery_tokens WHERE user_id = ?'
-    ).bind(userId).run();
-
-    // F-20 fix: owner クラスを deleteClassCascade で削除 (ML30 assignments/submissions + D1 classes + 孤児 student)
-    // F-15 の class_members 削除より前に実行することで、deleteClassCascade 内の孤児 student 削除 loop が機能する。
+    // owner クラスを deleteClassCascade で先に削除
+    // (ML30 assignments/submissions + D1 classes + 孤児 student のフル cascade)
     // ML30 通信失敗時は orphan 残置 → cross-DB audit cron で構造化ログに乗り、admin curl で回収。
     const ownerClasses = await c.env.DB.prepare(
       'SELECT id FROM classes WHERE owner_id = ?'
@@ -1064,56 +1039,11 @@ auth.delete('/account', authMiddleware, async (c) => {
       }
     }
 
-    // F-15 fix: 削除漏れていた 6 tables を追加 (auth.ts と admin.ts cascade を同期)
-    // 6. クラス所属を削除
-    await c.env.DB.prepare(
-      'DELETE FROM class_members WHERE user_id = ?'
-    ).bind(userId).run();
-
-    // 7. 2FA OTP 履歴を削除
-    await c.env.DB.prepare(
-      'DELETE FROM login_otp_codes WHERE user_id = ?'
-    ).bind(userId).run();
-
-    // 8. 信頼済みデバイスを削除
-    await c.env.DB.prepare(
-      'DELETE FROM trusted_devices WHERE user_id = ?'
-    ).bind(userId).run();
-
-    // 9. 2FA 設定を削除
-    await c.env.DB.prepare(
-      'DELETE FROM user_2fa_settings WHERE user_id = ?'
-    ).bind(userId).run();
-
-    // 10. リカバリーコードを削除
-    await c.env.DB.prepare(
-      'DELETE FROM recovery_codes WHERE user_id = ?'
-    ).bind(userId).run();
-
-    // 11. 要望履歴を削除
-    await c.env.DB.prepare(
-      'DELETE FROM feedback WHERE user_id = ?'
-    ).bind(userId).run();
-
-    // 12. プロジェクトを全て削除
-    await c.env.DB.prepare(
-      'DELETE FROM projects WHERE user_id = ?'
-    ).bind(userId).run();
-
-    // 7. コンパイル使用量履歴を削除
-    await c.env.DB.prepare(
-      'DELETE FROM compile_usage WHERE user_id = ?'
-    ).bind(userId).run();
-
-    // 8. サブスクリプションを削除
-    await c.env.DB.prepare(
-      'DELETE FROM subscriptions WHERE user_id = ?'
-    ).bind(userId).run();
-
-    // 9. 最後にユーザー自身を削除
-    await c.env.DB.prepare(
-      'DELETE FROM users WHERE id = ?'
-    ).bind(userId).run();
+    // T7 (Session 119): 14 dependent tables + users 行を deleteUserCascade に委譲。
+    // 旧コードは auth.ts / admin.ts / classes.ts 3 callsite で同じテーブルリストを
+    // コピペしていたが、classes.ts の student-cleanup path だけ 14 tables 欠落 →
+    // utils/userCascade.ts に集約して single source of truth 化。
+    await deleteUserCascade(c.env, userId);
 
     return c.json({
       message: 'アカウントを削除しました。ご利用ありがとうございました。'
