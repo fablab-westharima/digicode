@@ -26,7 +26,7 @@ const {
   compileViaSse,
   base64ToUint8Array,
   checkLocalVersion,
-  extractRemoteShaFromTagsResponse,
+  extractRemoteShaFromProxyResponse,
   REMOTE_CACHE_KEY,
 } = __testing__;
 
@@ -236,7 +236,10 @@ function mockFetchByUrl(
 ): void {
   vi.spyOn(globalThis, 'fetch').mockImplementation((input: RequestInfo | URL) => {
     const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
-    for (const [pattern, response] of Object.entries(routes)) {
+    // Iterate in longest-pattern-first order so `compile-server-latest`
+    // wins over the bare `/health` substring (the proxy URL contains both).
+    const ordered = Object.entries(routes).sort((a, b) => b[0].length - a[0].length);
+    for (const [pattern, response] of ordered) {
       if (url.includes(pattern)) {
         if ('reject' in response) {
           return Promise.reject(response.reject);
@@ -253,28 +256,30 @@ function mockFetchByUrl(
   });
 }
 
-describe('extractRemoteShaFromTagsResponse', () => {
-  it('extracts 7-char sha from the first main-<sha> entry', () => {
-    const sha = extractRemoteShaFromTagsResponse({
-      results: [
-        { name: 'latest', last_updated: '2026-05-15T00:00:00Z' },
-        { name: 'main-abcd123', last_updated: '2026-05-15T00:00:00Z' },
-      ],
+describe('extractRemoteShaFromProxyResponse', () => {
+  it("extracts latestSha when proxy returns status: 'ok'", () => {
+    const sha = extractRemoteShaFromProxyResponse({
+      status: 'ok',
+      latestSha: 'abcd123',
+      lastUpdated: '2026-05-15T17:18:00Z',
     });
     expect(sha).toBe('abcd123');
   });
 
-  it('returns null when no main-<sha> entry is present', () => {
-    const sha = extractRemoteShaFromTagsResponse({
-      results: [{ name: 'latest' }, { name: 'v0.1.0' }],
-    });
-    expect(sha).toBeNull();
+  it("returns null when proxy reports status: 'unavailable'", () => {
+    expect(
+      extractRemoteShaFromProxyResponse({ status: 'unavailable', reason: 'timeout' }),
+    ).toBeNull();
   });
 
-  it('returns null on malformed payload', () => {
-    expect(extractRemoteShaFromTagsResponse(null)).toBeNull();
-    expect(extractRemoteShaFromTagsResponse({})).toBeNull();
-    expect(extractRemoteShaFromTagsResponse({ results: 'oops' })).toBeNull();
+  it('returns null on malformed payload (rejects non-7-hex shas)', () => {
+    expect(extractRemoteShaFromProxyResponse(null)).toBeNull();
+    expect(extractRemoteShaFromProxyResponse({})).toBeNull();
+    expect(extractRemoteShaFromProxyResponse({ status: 'ok' })).toBeNull();
+    expect(extractRemoteShaFromProxyResponse({ status: 'ok', latestSha: 'notsha' })).toBeNull();
+    expect(
+      extractRemoteShaFromProxyResponse({ status: 'ok', latestSha: 'ABCDEF0' }), // upper-case rejected
+    ).toBeNull();
   });
 });
 
@@ -282,14 +287,14 @@ describe('checkLocalVersion', () => {
   beforeEach(() => {
     localStorage.clear();
     // Ensure the version cache is empty so each test exercises the real
-    // DockerHub fetch path (the cache TTL hides remote calls otherwise).
+    // proxy fetch path (the cache TTL hides remote calls otherwise).
     localStorage.removeItem(REMOTE_CACHE_KEY);
     // Reset local server URL to the default so getCompileServerLocalUrl()
     // returns http://localhost:3001 in all test runs.
     localStorage.removeItem('compileServerLocalUrl');
   });
 
-  it("case A (ok): outcome='ok' when local gitSha === DockerHub main-<sha>", async () => {
+  it("case A (ok): outcome='ok' when local gitSha === proxy latestSha", async () => {
     mockFetchByUrl({
       '/health': {
         status: 200,
@@ -302,14 +307,9 @@ describe('checkLocalVersion', () => {
           timestamp: '2026-05-15T12:00:00Z',
         },
       },
-      'hub.docker.com': {
+      'compile-server-latest': {
         status: 200,
-        body: {
-          results: [
-            { name: 'latest' },
-            { name: 'main-deadbee' },
-          ],
-        },
+        body: { status: 'ok', latestSha: 'deadbee', lastUpdated: '2026-05-15T17:18:00Z' },
       },
     });
 
@@ -321,7 +321,7 @@ describe('checkLocalVersion', () => {
     }
   });
 
-  it("case B (outdated/sha-mismatch): outcome='outdated' when local gitSha !== remote", async () => {
+  it("case B (outdated/sha-mismatch): outcome='outdated' when local gitSha !== latestSha", async () => {
     mockFetchByUrl({
       '/health': {
         status: 200,
@@ -334,14 +334,9 @@ describe('checkLocalVersion', () => {
           timestamp: '2026-05-15T00:00:00Z',
         },
       },
-      'hub.docker.com': {
+      'compile-server-latest': {
         status: 200,
-        body: {
-          results: [
-            { name: 'latest' },
-            { name: 'main-9999fff' },
-          ],
-        },
+        body: { status: 'ok', latestSha: '9999fff', lastUpdated: '2026-05-15T17:18:00Z' },
       },
     });
 
@@ -366,23 +361,21 @@ describe('checkLocalVersion', () => {
           // gitSha + builtAt absent (pre-Session-129 image)
         },
       },
-      'hub.docker.com': {
-        status: 200,
-        body: {
-          results: [{ name: 'latest' }, { name: 'main-9999fff' }],
-        },
-      },
+      // Proxy intentionally not mocked — legacy-image guard must short-circuit
+      // BEFORE the remote fetch, otherwise the original Session 129 hotfix bug
+      // (proxy/CORS failure lets legacy images through fail-soft) regresses.
     });
 
     const result = await checkLocalVersion();
     expect(result.outcome).toBe('outdated');
     if (result.outcome === 'outdated') {
       expect(result.localSha).toBeUndefined();
+      expect(result.remoteSha).toBeUndefined();
       expect(result.reason).toBe('legacy-image');
     }
   });
 
-  it("case D (check-failed/remote-unreachable): outcome='check-failed' when DockerHub returns 5xx (fail-soft)", async () => {
+  it("case D (check-failed/remote-unreachable): outcome='check-failed' when proxy returns 5xx (fail-soft, fresh-image case only)", async () => {
     mockFetchByUrl({
       '/health': {
         status: 200,
@@ -395,7 +388,7 @@ describe('checkLocalVersion', () => {
           timestamp: '2026-05-15T12:00:00Z',
         },
       },
-      'hub.docker.com': {
+      'compile-server-latest': {
         status: 503,
         body: { error: 'service unavailable' },
       },
@@ -405,6 +398,50 @@ describe('checkLocalVersion', () => {
     expect(result.outcome).toBe('check-failed');
     if (result.outcome === 'check-failed') {
       expect(result.reason).toBe('remote-unreachable');
+    }
+  });
+
+  it("case E (regression defense, legacy + proxy-down): legacy image MUST still block even when proxy is unreachable", async () => {
+    // This is the exact failure mode of the original Session 129 commit
+    // 2dd41d2: the remote fetch ran *before* the legacy check, so a CORS-
+    // blocked Hub call took us to 'check-failed/remote-unreachable' →
+    // fail-soft → compile proceeded with the old (gitSha-less) image. The
+    // refactor moves the legacy guard ahead of the remote fetch so this
+    // path now blocks regardless of the proxy state.
+    mockFetchByUrl({
+      '/health': {
+        status: 200,
+        body: {
+          status: 'ok',
+          service: 'digicode-compile-api',
+          version: '0.1.0',
+          timestamp: '2026-05-15T00:00:00Z',
+          // No gitSha field — legacy image.
+        },
+      },
+      'compile-server-latest': {
+        reject: new TypeError('Failed to fetch (CORS)'), // simulates browser CORS rejection
+      },
+    });
+
+    const result = await checkLocalVersion();
+    expect(result.outcome).toBe('outdated');
+    if (result.outcome === 'outdated') {
+      expect(result.reason).toBe('legacy-image');
+    }
+  });
+
+  it("case F (local-unreachable): outcome='check-failed' when local /health is down", async () => {
+    mockFetchByUrl({
+      '/health': {
+        reject: new TypeError('connection refused'),
+      },
+    });
+
+    const result = await checkLocalVersion();
+    expect(result.outcome).toBe('check-failed');
+    if (result.outcome === 'check-failed') {
+      expect(result.reason).toBe('local-unreachable');
     }
   });
 });

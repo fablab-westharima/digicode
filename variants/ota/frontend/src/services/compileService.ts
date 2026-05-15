@@ -295,19 +295,26 @@ const testCompileServerConnection = async (url: string): Promise<boolean> => {
 //
 // Strategy:
 //   1. GET <local>/health → { gitSha, builtAt, ... }
-//   2. GET hub.docker.com/v2/repositories/.../tags?page_size=2&ordering=last_updated
-//      → results[].name = "latest" / "main-<sha>"
-//   3. Compare local gitSha vs the 7-char sha from the `main-<sha>` entry
+//   2. If local has no gitSha → outdated/legacy-image (no remote fetch needed:
+//      we already know this image predates Session 129 and is missing the
+//      bake-in identifier the CI started emitting from commit 96175ff).
+//   3. GET <backend>/api/health/compile-server-latest → { latestSha }
+//      (Workers-side proxy for DockerHub Hub API, since `hub.docker.com`
+//      does not return Access-Control-Allow-Origin headers — direct browser
+//      fetch always trips CORS.)
+//   4. Compare localSha vs latestSha.
 //
-// Failure mode = fail-soft (Session 129 C-1 案A): DockerHub Hub API outage
-// must not block compile entirely — log a warning, continue.
+// Failure mode = fail-soft (Session 129 C-1 案A): proxy outage must not
+// block compile entirely — log a warning, continue. Legacy-image detection
+// is *unconditional* (does not depend on the remote fetch) so a Hub outage
+// never lets a pre-Session-129 image slip through.
 
 export type LocalVersionCheckOutcome =
   | { outcome: 'ok'; localSha: string; remoteSha: string }
   | {
       outcome: 'outdated';
       localSha: string | undefined;
-      remoteSha: string;
+      remoteSha: string | undefined;
       reason: 'sha-mismatch' | 'legacy-image';
     }
   | {
@@ -316,13 +323,22 @@ export type LocalVersionCheckOutcome =
       detail?: string;
     };
 
-const DOCKERHUB_TAGS_URL =
-  'https://hub.docker.com/v2/repositories/digicollc/digicode-compile-server/tags?page_size=10&ordering=last_updated';
+// Workers-side proxy for the DockerHub Hub API (CORS-safe; the Hub API
+// itself does not advertise Access-Control-Allow-Origin, so a direct
+// browser fetch always fails).
+//
+// Path is relative — same-origin in production CF Pages because
+// frontend / Workers / Pages all live behind `code.fablab-westharima.jp`
+// (and `esp32-blockly-backend.kazunari-takeda.workers.dev` allowlists
+// that origin). For local Vite dev, callers should be on the same network
+// path; falling back to `check-failed/remote-unreachable` if not.
+const VERSION_PROXY_URL =
+  'https://esp32-blockly-backend.kazunari-takeda.workers.dev/api/health/compile-server-latest';
 
-// LocalStorage cache: remoteSha + fetch wall to avoid hammering DockerHub on
-// every compile click. 1 hour TTL (Session 129 C-3 案A) — long enough that
-// DockerHub rate-limit is a non-issue, short enough that a newly-published
-// image notifies users within a single dev session.
+// LocalStorage cache: remoteSha + fetch wall to avoid hammering the proxy
+// on every compile click. 1 hour TTL (Session 129 C-3 案A) — long enough
+// that the upstream rate-limit is a non-issue, short enough that a newly
+// published image notifies users within a single dev session.
 const REMOTE_CACHE_KEY = 'compileServerRemoteShaCache';
 const REMOTE_CACHE_TTL_MS = 60 * 60 * 1000;
 
@@ -357,38 +373,32 @@ function writeRemoteShaCache(remoteSha: string): void {
   }
 }
 
-// Extract the 7-char commit sha from a DockerHub tag list. The CI workflow
-// publishes two interesting tags per build: `latest` (rolling) and
-// `main-<sha>` (commit-pinned). We want the latter — scan results[] for the
-// first `main-<sha>` entry (results are ordered by last_updated DESC).
-function extractRemoteShaFromTagsResponse(json: unknown): string | null {
+// Extract the latestSha string from the Workers proxy response. The proxy
+// normalises DockerHub's tag list down to `{ status: 'ok', latestSha,
+// lastUpdated }` (or `{ status: 'unavailable', reason }`). This helper
+// stays pure so the unit tests can exercise it directly.
+function extractRemoteShaFromProxyResponse(json: unknown): string | null {
   if (!json || typeof json !== 'object') return null;
-  const results = (json as { results?: unknown }).results;
-  if (!Array.isArray(results)) return null;
-  for (const entry of results) {
-    if (!entry || typeof entry !== 'object') continue;
-    const name = (entry as { name?: unknown }).name;
-    if (typeof name !== 'string') continue;
-    const m = name.match(/^main-([0-9a-f]{7})$/);
-    if (m) return m[1];
-  }
-  return null;
+  const status = (json as { status?: unknown }).status;
+  if (status !== 'ok') return null;
+  const sha = (json as { latestSha?: unknown }).latestSha;
+  return typeof sha === 'string' && /^[0-9a-f]{7}$/.test(sha) ? sha : null;
 }
 
 async function fetchRemoteSha(): Promise<string | null> {
   const cached = readRemoteShaCache();
   if (cached) return cached.remoteSha;
-  const response = await fetch(DOCKERHUB_TAGS_URL, {
+  const response = await fetch(VERSION_PROXY_URL, {
     method: 'GET',
     signal: AbortSignal.timeout(5000),
   });
   if (!response.ok) {
-    throw new Error(`DockerHub HTTP ${response.status}`);
+    throw new Error(`proxy HTTP ${response.status}`);
   }
   const json: unknown = await response.json();
-  const sha = extractRemoteShaFromTagsResponse(json);
+  const sha = extractRemoteShaFromProxyResponse(json);
   if (!sha) {
-    throw new Error('DockerHub response missing main-<sha> tag');
+    throw new Error('proxy response missing latestSha');
   }
   writeRemoteShaCache(sha);
   return sha;
@@ -424,7 +434,23 @@ async function checkLocalVersion(): Promise<LocalVersionCheckOutcome> {
       ? localHealth.gitSha
       : undefined;
 
-  // 2. Fetch the latest DockerHub `main-<sha>` tag.
+  // 2. Legacy-image guard — unconditional, BEFORE the remote fetch.
+  //
+  // If the local image predates Session 129 it returns a /health body
+  // without a gitSha field. We can flag it as outdated immediately, without
+  // needing a remote comparison — that's the structural defense against the
+  // CORS bug (Session 129 hotfix): even if the proxy is unreachable the
+  // legacy image is still blocked.
+  if (localSha === undefined) {
+    return {
+      outcome: 'outdated',
+      localSha: undefined,
+      remoteSha: undefined,
+      reason: 'legacy-image',
+    };
+  }
+
+  // 3. Fetch the latest published sha via the Workers proxy.
   let remoteSha: string;
   try {
     const fetched = await fetchRemoteSha();
@@ -443,12 +469,7 @@ async function checkLocalVersion(): Promise<LocalVersionCheckOutcome> {
     };
   }
 
-  // 3. Compare. Legacy images (pre-Session-129) have no gitSha — treat as
-  // outdated so the user is prompted to update (and gets the new /health
-  // shape on the next pull).
-  if (localSha === undefined) {
-    return { outcome: 'outdated', localSha: undefined, remoteSha, reason: 'legacy-image' };
-  }
+  // 4. Compare.
   if (localSha !== remoteSha) {
     return { outcome: 'outdated', localSha, remoteSha, reason: 'sha-mismatch' };
   }
@@ -557,14 +578,16 @@ export const compileService = {
     // DockerHub 障害時は警告 console.warn のみで compile 続行する。
     const versionCheck = await checkLocalVersion();
     if (versionCheck.outcome === 'outdated') {
-      const localLabel = versionCheck.localSha ?? i18n.t('editor.compileLog.versionCheck.unknownLabel', {
+      const unknownLabel = i18n.t('editor.compileLog.versionCheck.unknownLabel', {
         defaultValue: '不明',
-      });
+      }) as string;
+      const localLabel = versionCheck.localSha ?? unknownLabel;
+      const remoteLabel = versionCheck.remoteSha ?? unknownLabel;
       return {
         success: false,
         error: i18n.t('editor.compileLog.versionCheck.outdated', {
           localSha: localLabel,
-          remoteSha: versionCheck.remoteSha,
+          remoteSha: remoteLabel,
           defaultValue:
             'ローカル compile-server が古いバージョンです (ローカル: {{localSha}} / 最新: {{remoteSha}})。Docker Desktop で image を更新してください。',
         }) as string,
@@ -649,6 +672,6 @@ export const __testing__ = {
   base64ToUint8Array,
   FatalSseError,
   checkLocalVersion,
-  extractRemoteShaFromTagsResponse,
+  extractRemoteShaFromProxyResponse,
   REMOTE_CACHE_KEY,
 };

@@ -205,6 +205,68 @@ app.get('/api/health/class-server', async (c) => {
   }
 });
 
+// Local compile-server image freshness — frontend proxy for DockerHub Hub API
+// (Session 129 hotfix). The Hub API does not return Access-Control-Allow-Origin,
+// so browsers cannot fetch it directly. We do the server-side fetch here, then
+// return just the latest `main-<sha>` tag string back to the frontend's
+// checkLocalVersion(). 5min upstream cache (Cache-Control) reduces Hub API
+// traffic when many users compile back-to-back.
+app.get('/api/health/compile-server-latest', async (c) => {
+  const target =
+    'https://hub.docker.com/v2/repositories/digicollc/digicode-compile-server/tags?page_size=10&ordering=last_updated';
+  try {
+    const res = await fetch(target, {
+      method: 'GET',
+      signal: AbortSignal.timeout(5000),
+      headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) {
+      return c.json(
+        { status: 'unavailable', reason: 'non-200', httpStatus: res.status },
+        200,
+        { 'Cache-Control': 'no-store' }
+      );
+    }
+    const upstream = (await res.json().catch(() => null)) as
+      | { results?: Array<{ name?: unknown; last_updated?: unknown }> }
+      | null;
+    if (!upstream || !Array.isArray(upstream.results)) {
+      return c.json(
+        { status: 'unavailable', reason: 'unexpected-shape' },
+        200,
+        { 'Cache-Control': 'no-store' }
+      );
+    }
+    let latestSha: string | null = null;
+    let lastUpdated: string | null = null;
+    for (const entry of upstream.results) {
+      const name = typeof entry?.name === 'string' ? entry.name : null;
+      if (!name) continue;
+      const m = name.match(/^main-([0-9a-f]{7})$/);
+      if (m) {
+        latestSha = m[1];
+        lastUpdated = typeof entry?.last_updated === 'string' ? entry.last_updated : null;
+        break;
+      }
+    }
+    if (!latestSha) {
+      return c.json(
+        { status: 'unavailable', reason: 'no-main-sha-tag' },
+        200,
+        { 'Cache-Control': 'no-store' }
+      );
+    }
+    return c.json(
+      { status: 'ok', latestSha, lastUpdated },
+      200,
+      { 'Cache-Control': 'public, max-age=300' }
+    );
+  } catch (err) {
+    const reason = err instanceof Error && err.name === 'TimeoutError' ? 'timeout' : 'network';
+    return c.json({ status: 'unavailable', reason }, 200, { 'Cache-Control': 'no-store' });
+  }
+});
+
 // ============================================================
 // Step 8: Cloudflare Workers Cron Trigger
 // ============================================================
