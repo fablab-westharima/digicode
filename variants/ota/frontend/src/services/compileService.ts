@@ -329,18 +329,9 @@ export type LocalVersionCheckOutcome =
     }
   | {
       outcome: 'check-failed';
-      reason: 'local-unreachable' | 'remote-unreachable' | 'remote-unexpected-shape' | 'timeout';
+      reason: 'local-unreachable' | 'remote-unreachable' | 'remote-unexpected-shape';
       detail?: string;
     };
-
-// Outer ceiling for the entire checkLocalVersion call. The inner fetches
-// (local /health 3 s + Workers proxy 5 s) already have AbortSignal timeouts,
-// but this wrapper acts as defense-in-depth: any future regression in those
-// inner timers (browser bug, environment quirk, polyfill issue, future code
-// path additions) can never make a compile click wait more than 5 s on the
-// version check before fail-soft continues. Added in response to Session 129
-// follow-up user feedback that the gate must not be allowed to block compile.
-const CHECK_LOCAL_VERSION_OUTER_TIMEOUT_MS = 5000;
 
 // Workers-side proxy for the DockerHub Hub API (CORS-safe; the Hub API
 // itself does not advertise Access-Control-Allow-Origin, so a direct
@@ -424,29 +415,6 @@ async function fetchRemoteSha(): Promise<string | null> {
 }
 
 async function checkLocalVersion(): Promise<LocalVersionCheckOutcome> {
-  // Race the real check against a hard ceiling so a stuck inner step (the
-  // local /health fetch, the proxy fetch, JSON parse, or any future
-  // addition) can never block a compile click for more than the outer
-  // budget. The race "winner" is whichever resolves first. On timeout we
-  // return the 'check-failed/timeout' shape, which the caller treats as
-  // fail-soft (compile proceeds with a console.warn).
-  return Promise.race<LocalVersionCheckOutcome>([
-    runCheckLocalVersion(),
-    new Promise<LocalVersionCheckOutcome>((resolve) =>
-      setTimeout(
-        () =>
-          resolve({
-            outcome: 'check-failed',
-            reason: 'timeout',
-            detail: `exceeded ${CHECK_LOCAL_VERSION_OUTER_TIMEOUT_MS}ms`,
-          }),
-        CHECK_LOCAL_VERSION_OUTER_TIMEOUT_MS,
-      ),
-    ),
-  ]);
-}
-
-async function runCheckLocalVersion(): Promise<LocalVersionCheckOutcome> {
   // 1. Fetch local /health. AbortSignal 3s aligns with testConnection.
   let localHealth: { gitSha?: unknown } & Record<string, unknown>;
   try {
