@@ -1243,6 +1243,22 @@
     "restartRequired": "⚠ A PC restart is required after installation.",
     "downloadApple": "Download (Apple official)"
   },
+  "outdatedCompileServer": {
+    "title": "Compile server update required",
+    "description": "Compile aborted because your local compile-server image is out of date. Please update to the latest image and try again.",
+    "localShaLabel": "Local",
+    "remoteShaLabel": "Latest",
+    "stepsHeading": "Please run the following 3 steps in Docker Desktop",
+    "step1Title": "1. Pull",
+    "step1Body": "On the Images tab, click the ︙ menu next to digicollc/digicode-compile-server and choose Pull.",
+    "step2Title": "2. Stop → Delete the old container",
+    "step2Body": "On the Containers tab, Stop the running container, then Delete it. Stop alone leaves the green indicator on the old image in the Images tab, so Delete is required as well.",
+    "step2Hint": "You must click both Stop and Delete.",
+    "step3Title": "3. Run the new image",
+    "step3Body": "On the Images tab, click Run ▶ next to digicollc/digicode-compile-server:latest. In Optional settings, set Host port and Container port both to 3001.",
+    "retryNote": "After updating, press the compile button again. The version check will rerun automatically.",
+    "closeButton": "Close"
+  },
   "tutorial": {
     "selectTutorial": "Select Tutorial",
     "selectTutorialDesc": "Learn programming step by step",

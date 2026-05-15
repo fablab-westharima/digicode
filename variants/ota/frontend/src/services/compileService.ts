@@ -69,6 +69,16 @@ export interface CompileResult {
   stderr?: string;     // server 側 compile stderr (defensive passthrough、SSE event:error から)
   version?: string;    // ファームウェアバージョン（サーバーから取得）
   template?: string;   // 使用したテンプレート名
+  // Session 129: surfaced when local mode aborts because the local image is
+  // older than the latest DockerHub publish. Callers (EditorPage) open the
+  // OutdatedCompileServerDialog when present; `error` + `details` continue
+  // to carry the same text so the compile log still shows the failure
+  // (dialog + log are intentionally redundant per user requirement).
+  outdated?: {
+    localSha: string | undefined;
+    remoteSha: string | undefined;
+    reason: 'sha-mismatch' | 'legacy-image';
+  };
 }
 
 export type { CompileServerMode };
@@ -595,6 +605,11 @@ export const compileService = {
           defaultValue:
             '更新手順: Docker Desktop の Images タブから digicollc/digicode-compile-server を Pull、または terminal で `docker pull digicollc/digicode-compile-server:latest` を実行後、コンテナを再起動してください。',
         }) as string,
+        outdated: {
+          localSha: versionCheck.localSha,
+          remoteSha: versionCheck.remoteSha,
+          reason: versionCheck.reason,
+        },
       };
     }
     if (versionCheck.outcome === 'check-failed') {

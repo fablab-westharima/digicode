@@ -30,6 +30,7 @@ import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { ServoTrimDialog } from '@/components/servo/ServoTrimDialog';
 import { ServoPulseDialog } from '@/components/servo/ServoPulseDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
+import { OutdatedCompileServerDialog, type OutdatedSignal } from '@/components/settings/OutdatedCompileServerDialog';
 import { WifiDeviceSelectDialog, type Device } from '@/components/device/WifiDeviceSelectDialog';
 import { PasskeyManagementDialog } from '@/components/auth/PasskeyManagementDialog';
 import { TwoFactorSettingsDialog } from '@/components/auth/TwoFactorSettingsDialog';
@@ -147,6 +148,13 @@ export function EditorPage() {
   // 第102回 C3: ヘッダー Feedback button が opens、Sidebar 「要望を送る」と state 共有
   const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [wifiPrerequisitesDialogOpen, setWifiPrerequisitesDialogOpen] = useState(false);
+  // Session 129 follow-up: outdated-image warning dialog. Opened from
+  // executeCompile / handleUsbCompile / handleBleCompile when
+  // compileService returns result.outdated. Per Session 129 C-3 案A the
+  // dialog reopens on every retry, so a single state pair drives all
+  // three callsites and resets each compile click.
+  const [outdatedDialogOpen, setOutdatedDialogOpen] = useState(false);
+  const [outdatedSignal, setOutdatedSignal] = useState<OutdatedSignal | null>(null);
   const [deviceNameDialogOpen, setDeviceNameDialogOpen] = useState(false);
   const [wifiDeviceSelectDialogOpen, setWifiDeviceSelectDialogOpen] = useState(false);
   const [wifiDeviceSelectMultiMode, setWifiDeviceSelectMultiMode] = useState(false);
@@ -675,6 +683,13 @@ export function EditorPage() {
         if (result.details) {
           addLog(t('editor.compileLog.result.details', { details: result.details }));
         }
+        // Session 129 follow-up: surface the dedicated outdated-image dialog
+        // *in addition to* the log lines above. Per C-3 the dialog re-opens
+        // on every retry, so we reset signal state each call.
+        if (result.outdated) {
+          setOutdatedSignal(result.outdated);
+          setOutdatedDialogOpen(true);
+        }
         setIsCompiling(false);
         setStatusBarState('error');
         setStatusBarMessage(result.error || t('status.compileFailed'));
@@ -915,6 +930,11 @@ export function EditorPage() {
         if (result.details) {
           addLog(t('editor.compileLog.result.details', { details: result.details }));
         }
+        // Session 129 follow-up: outdated-image dialog co-emitted with log.
+        if (result.outdated) {
+          setOutdatedSignal(result.outdated);
+          setOutdatedDialogOpen(true);
+        }
         setIsCompiling(false);
         setStatusBarState('error');
         setStatusBarMessage(result.error || t('editor.compileLog.statusBar.compileFailed'));
@@ -1096,6 +1116,11 @@ export function EditorPage() {
         addLog(t('editor.compileLog.result.compileError', { error: result.error || t('editor.compileLog.result.compileErrorNoBinary') }), { isError: true });
         if (result.details) {
           addLog(t('editor.compileLog.result.details', { details: result.details }));
+        }
+        // Session 129 follow-up: outdated-image dialog co-emitted with log.
+        if (result.outdated) {
+          setOutdatedSignal(result.outdated);
+          setOutdatedDialogOpen(true);
         }
         setIsCompiling(false);
         setStatusBarState('error');
@@ -1763,6 +1788,13 @@ export function EditorPage() {
       <WifiPrerequisitesDialog
         open={wifiPrerequisitesDialogOpen}
         onOpenChange={setWifiPrerequisitesDialogOpen}
+      />
+
+      {/* ローカル compile-server image が古い場合の警告ダイアログ (Session 129 follow-up) */}
+      <OutdatedCompileServerDialog
+        open={outdatedDialogOpen}
+        onOpenChange={setOutdatedDialogOpen}
+        signal={outdatedSignal}
       />
 
       {/* Wifiルータに接続ダイアログ */}

@@ -3771,6 +3771,22 @@
     "restartRequired": "⚠ Se requiere reiniciar el PC después de la instalación.",
     "downloadApple": "Descargar (oficial de Apple)"
   },
+  "outdatedCompileServer": {
+    "title": "Es necesario actualizar el compile-server",
+    "description": "La compilación se canceló porque la imagen local del compile-server está desactualizada. Actualiza a la imagen más reciente e inténtalo de nuevo.",
+    "localShaLabel": "Local",
+    "remoteShaLabel": "Más reciente",
+    "stepsHeading": "Ejecuta los siguientes 3 pasos en Docker Desktop",
+    "step1Title": "1. Pull",
+    "step1Body": "En la pestaña Images, haz clic en el menú ︙ junto a digicollc/digicode-compile-server y elige Pull.",
+    "step2Title": "2. Stop → Delete del contenedor antiguo",
+    "step2Body": "En la pestaña Containers, haz Stop al contenedor en ejecución y luego Delete. Solo con Stop el indicador verde de la imagen antigua sigue activo en la pestaña Images, por lo que también es necesario Delete.",
+    "step2Hint": "Es necesario hacer clic en Stop y Delete.",
+    "step3Title": "3. Run con la nueva imagen",
+    "step3Body": "En la pestaña Images, haz clic en Run ▶ junto a digicollc/digicode-compile-server:latest. En Optional settings, establece Host port y Container port en 3001.",
+    "retryNote": "Después de actualizar, vuelve a pulsar el botón de compilación. La verificación de versión se ejecutará automáticamente.",
+    "closeButton": "Cerrar"
+  },
   "modeSelector": {
     "modes": {
       "input": {

@@ -3771,6 +3771,22 @@
     "restartRequired": "⚠ 安裝後需重新啟動電腦。",
     "downloadApple": "下載（Apple 官方）"
   },
+  "outdatedCompileServer": {
+    "title": "編譯伺服器需要更新",
+    "description": "本機 compile-server 映像版本過舊，已中止編譯。請更新至最新映像後再試。",
+    "localShaLabel": "本機",
+    "remoteShaLabel": "最新",
+    "stepsHeading": "請在 Docker Desktop 執行以下 3 個步驟",
+    "step1Title": "1. Pull",
+    "step1Body": "於 Images 分頁，點選 digicollc/digicode-compile-server 旁的 ︙ → Pull。",
+    "step2Title": "2. 將舊容器 Stop → Delete",
+    "step2Body": "於 Containers 分頁將執行中的容器 Stop，接著 Delete。僅 Stop 時 Images 分頁的綠色指示燈仍會留在舊映像上，因此必須一併 Delete。",
+    "step2Hint": "Stop 與 Delete 兩者皆需點選。",
+    "step3Title": "3. 以新映像 Run",
+    "step3Body": "於 Images 分頁點選 digicollc/digicode-compile-server:latest 的 Run ▶。在 Optional settings 將 Host port 與 Container port 都設為 3001。",
+    "retryNote": "更新完成後，請再次點選編譯按鈕。版本檢查會自動再執行一次。",
+    "closeButton": "關閉"
+  },
   "modeSelector": {
     "modes": {
       "input": {

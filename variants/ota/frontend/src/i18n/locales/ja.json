@@ -1243,6 +1243,22 @@
     "restartRequired": "⚠ インストール後、PCの再起動が必要です。",
     "downloadApple": "ダウンロード（Apple公式）"
   },
+  "outdatedCompileServer": {
+    "title": "コンパイルサーバーの更新が必要です",
+    "description": "ローカル compile-server の image が古いため、コンパイルを中止しました。最新の image に更新してから再度お試しください。",
+    "localShaLabel": "ローカル",
+    "remoteShaLabel": "最新",
+    "stepsHeading": "Docker Desktop で以下の 3 ステップを実行してください",
+    "step1Title": "1. Pull",
+    "step1Body": "Images タブで digicollc/digicode-compile-server の ︙ → Pull を実行。",
+    "step2Title": "2. 古いコンテナを Stop → Delete",
+    "step2Body": "Containers タブで動いているコンテナを Stop し、続けて Delete も実行。Stop だけだと Images タブの緑● が消えず古い image を握ったままになるため、Delete も必須。",
+    "step2Hint": "Stop → Delete 両方クリックする必要があります。",
+    "step3Title": "3. 新 image で Run",
+    "step3Body": "Images タブで digicollc/digicode-compile-server:latest の Run ▶ をクリック。Optional settings で Host port を 3001、Container port も 3001 に設定して起動。",
+    "retryNote": "更新後、もう一度コンパイルボタンを押してください。バージョンチェックが自動で再実行されます。",
+    "closeButton": "閉じる"
+  },
   "tutorial": {
     "selectTutorial": "チュートリアルを選択",
     "selectTutorialDesc": "ステップバイステップでプログラミングを学びましょう",
