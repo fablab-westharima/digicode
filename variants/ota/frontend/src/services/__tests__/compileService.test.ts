@@ -444,4 +444,27 @@ describe('checkLocalVersion', () => {
       expect(result.reason).toBe('local-unreachable');
     }
   });
+
+  it("case G (outer timeout): outcome='check-failed/timeout' when the inner steps hang past the 5 s ceiling", async () => {
+    // Replace fetch with one that never resolves — simulates a network
+    // path where even the inner AbortSignal.timeout fails to fire (e.g.,
+    // a future browser regression or polyfill issue). The outer Promise.race
+    // wrapper in checkLocalVersion must still surface 'timeout' so the
+    // compile click is never blocked beyond the 5 s budget.
+    vi.spyOn(globalThis, 'fetch').mockImplementation(
+      () => new Promise(() => { /* hang forever */ }),
+    );
+    vi.useFakeTimers();
+    try {
+      const promise = checkLocalVersion();
+      await vi.advanceTimersByTimeAsync(6000);
+      const result = await promise;
+      expect(result.outcome).toBe('check-failed');
+      if (result.outcome === 'check-failed') {
+        expect(result.reason).toBe('timeout');
+      }
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
