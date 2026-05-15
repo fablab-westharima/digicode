@@ -86,6 +86,18 @@ export async function verifyToken(
     const [encodedHeader, encodedPayload, signature] = parts;
     const dataToVerify = `${encodedHeader}.${encodedPayload}`;
 
+    // E-05 (Session 127): alg whitelist enforce (RFC 8725 §3.1 defense-in-depth)
+    // 旧コードは header.alg を unread = `alg: 'none'` 攻撃理論的可能。
+    // generateToken は HS256 hardcoded のため実害なしだが、attacker が header を
+    // `{"alg":"none","typ":"JWT"}` + signature 部分空文字で送信した場合、
+    // verifySignature が secret 不在で空 string 突合する潜在経路を構造的閉鎖。
+    // 他 alg (none / HS384 / HS512 / RS* / ES* etc.) は全件 silent reject、
+    // signature verify 前に reject = side-channel 最小化。
+    const header = JSON.parse(base64UrlDecode(encodedHeader));
+    if (header.alg !== 'HS256') {
+      return null;
+    }
+
     // 署名検証
     const isValid = await verifySignature(dataToVerify, signature, secret);
     if (!isValid) {
