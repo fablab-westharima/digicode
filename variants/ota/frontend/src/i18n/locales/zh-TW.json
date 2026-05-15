@@ -463,6 +463,11 @@
         "chunkMismatch": "韌體區塊數量不一致 ({{received}}/{{expected}}, 請重試)",
         "chunkMissing": "韌體區塊 {{seq}} 遺失",
         "unknown": "未預期的 SSE 串流錯誤"
+      },
+      "versionCheck": {
+        "unknownLabel": "未知",
+        "outdated": "本機 compile-server 映像版本過舊 (本機:{{localSha}} / 最新:{{remoteSha}})。請透過 Docker Desktop 更新映像。",
+        "updateGuide": "更新方式:於 Docker Desktop 的 Images 分頁拉取 digicollc/digicode-compile-server,或在終端機執行 `docker pull digicollc/digicode-compile-server:latest` 後重新啟動容器。"
       }
     },
     "binExport": {

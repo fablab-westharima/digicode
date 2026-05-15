@@ -463,6 +463,11 @@
         "chunkMismatch": "Discrepancia en el número de fragmentos de firmware ({{received}}/{{expected}}, vuelve a intentarlo)",
         "chunkMissing": "Falta el fragmento {{seq}} del firmware",
         "unknown": "Error inesperado del flujo SSE"
+      },
+      "versionCheck": {
+        "unknownLabel": "desconocido",
+        "outdated": "La imagen del compile-server local está desactualizada (local: {{localSha}} / más reciente: {{remoteSha}}). Actualiza la imagen mediante Docker Desktop.",
+        "updateGuide": "Pasos de actualización: descarga `digicollc/digicode-compile-server` desde la pestaña Images de Docker Desktop, o ejecuta `docker pull digicollc/digicode-compile-server:latest` en una terminal y reinicia el contenedor."
       }
     },
     "binExport": {

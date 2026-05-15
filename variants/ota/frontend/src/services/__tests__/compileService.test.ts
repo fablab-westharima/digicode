@@ -22,7 +22,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { __testing__ } from '../compileService';
 
-const { compileViaSse, base64ToUint8Array } = __testing__;
+const {
+  compileViaSse,
+  base64ToUint8Array,
+  checkLocalVersion,
+  extractRemoteShaFromTagsResponse,
+  REMOTE_CACHE_KEY,
+} = __testing__;
 
 /** SSE event 配列を WHATWG SSE spec format の text に serialize */
 function serializeSseEvents(
@@ -215,5 +221,190 @@ describe('compileViaSse — error path', () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toMatch(/stream.*ended|complete.*event/i);
+  });
+});
+
+// ── Session 129: local compile-server version check ───────────────────────
+//
+// `checkLocalVersion` performs two HTTP fetches (local /health + DockerHub
+// Hub API tag list) and compares the local image's bake-in gitSha against
+// the latest `main-<sha>` tag. We mock `globalThis.fetch` with a URL-aware
+// implementation so a single call can route both requests through one mock.
+
+function mockFetchByUrl(
+  routes: Record<string, { status: number; body: unknown } | { reject: Error }>,
+): void {
+  vi.spyOn(globalThis, 'fetch').mockImplementation((input: RequestInfo | URL) => {
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+    for (const [pattern, response] of Object.entries(routes)) {
+      if (url.includes(pattern)) {
+        if ('reject' in response) {
+          return Promise.reject(response.reject);
+        }
+        return Promise.resolve(
+          new Response(JSON.stringify(response.body), {
+            status: response.status,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
+      }
+    }
+    return Promise.reject(new Error(`unexpected fetch URL in test: ${url}`));
+  });
+}
+
+describe('extractRemoteShaFromTagsResponse', () => {
+  it('extracts 7-char sha from the first main-<sha> entry', () => {
+    const sha = extractRemoteShaFromTagsResponse({
+      results: [
+        { name: 'latest', last_updated: '2026-05-15T00:00:00Z' },
+        { name: 'main-abcd123', last_updated: '2026-05-15T00:00:00Z' },
+      ],
+    });
+    expect(sha).toBe('abcd123');
+  });
+
+  it('returns null when no main-<sha> entry is present', () => {
+    const sha = extractRemoteShaFromTagsResponse({
+      results: [{ name: 'latest' }, { name: 'v0.1.0' }],
+    });
+    expect(sha).toBeNull();
+  });
+
+  it('returns null on malformed payload', () => {
+    expect(extractRemoteShaFromTagsResponse(null)).toBeNull();
+    expect(extractRemoteShaFromTagsResponse({})).toBeNull();
+    expect(extractRemoteShaFromTagsResponse({ results: 'oops' })).toBeNull();
+  });
+});
+
+describe('checkLocalVersion', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    // Ensure the version cache is empty so each test exercises the real
+    // DockerHub fetch path (the cache TTL hides remote calls otherwise).
+    localStorage.removeItem(REMOTE_CACHE_KEY);
+    // Reset local server URL to the default so getCompileServerLocalUrl()
+    // returns http://localhost:3001 in all test runs.
+    localStorage.removeItem('compileServerLocalUrl');
+  });
+
+  it("case A (ok): outcome='ok' when local gitSha === DockerHub main-<sha>", async () => {
+    mockFetchByUrl({
+      '/health': {
+        status: 200,
+        body: {
+          status: 'ok',
+          service: 'digicode-compile-api',
+          version: '0.1.0',
+          gitSha: 'deadbee',
+          builtAt: '2026-05-15T12:00:00Z',
+          timestamp: '2026-05-15T12:00:00Z',
+        },
+      },
+      'hub.docker.com': {
+        status: 200,
+        body: {
+          results: [
+            { name: 'latest' },
+            { name: 'main-deadbee' },
+          ],
+        },
+      },
+    });
+
+    const result = await checkLocalVersion();
+    expect(result.outcome).toBe('ok');
+    if (result.outcome === 'ok') {
+      expect(result.localSha).toBe('deadbee');
+      expect(result.remoteSha).toBe('deadbee');
+    }
+  });
+
+  it("case B (outdated/sha-mismatch): outcome='outdated' when local gitSha !== remote", async () => {
+    mockFetchByUrl({
+      '/health': {
+        status: 200,
+        body: {
+          status: 'ok',
+          service: 'digicode-compile-api',
+          version: '0.1.0',
+          gitSha: '0000111',
+          builtAt: '2026-05-01T00:00:00Z',
+          timestamp: '2026-05-15T00:00:00Z',
+        },
+      },
+      'hub.docker.com': {
+        status: 200,
+        body: {
+          results: [
+            { name: 'latest' },
+            { name: 'main-9999fff' },
+          ],
+        },
+      },
+    });
+
+    const result = await checkLocalVersion();
+    expect(result.outcome).toBe('outdated');
+    if (result.outcome === 'outdated') {
+      expect(result.localSha).toBe('0000111');
+      expect(result.remoteSha).toBe('9999fff');
+      expect(result.reason).toBe('sha-mismatch');
+    }
+  });
+
+  it("case C (outdated/legacy-image): outcome='outdated' when local /health has no gitSha", async () => {
+    mockFetchByUrl({
+      '/health': {
+        status: 200,
+        body: {
+          status: 'ok',
+          service: 'digicode-compile-api',
+          version: '0.1.0',
+          timestamp: '2026-05-15T00:00:00Z',
+          // gitSha + builtAt absent (pre-Session-129 image)
+        },
+      },
+      'hub.docker.com': {
+        status: 200,
+        body: {
+          results: [{ name: 'latest' }, { name: 'main-9999fff' }],
+        },
+      },
+    });
+
+    const result = await checkLocalVersion();
+    expect(result.outcome).toBe('outdated');
+    if (result.outcome === 'outdated') {
+      expect(result.localSha).toBeUndefined();
+      expect(result.reason).toBe('legacy-image');
+    }
+  });
+
+  it("case D (check-failed/remote-unreachable): outcome='check-failed' when DockerHub returns 5xx (fail-soft)", async () => {
+    mockFetchByUrl({
+      '/health': {
+        status: 200,
+        body: {
+          status: 'ok',
+          service: 'digicode-compile-api',
+          version: '0.1.0',
+          gitSha: 'deadbee',
+          builtAt: '2026-05-15T12:00:00Z',
+          timestamp: '2026-05-15T12:00:00Z',
+        },
+      },
+      'hub.docker.com': {
+        status: 503,
+        body: { error: 'service unavailable' },
+      },
+    });
+
+    const result = await checkLocalVersion();
+    expect(result.outcome).toBe('check-failed');
+    if (result.outcome === 'check-failed') {
+      expect(result.reason).toBe('remote-unreachable');
+    }
   });
 });

@@ -463,6 +463,11 @@
         "chunkMismatch": "Firmware chunk count mismatch ({{received}}/{{expected}}, please retry)",
         "chunkMissing": "Firmware chunk {{seq}} is missing",
         "unknown": "Unexpected SSE stream error"
+      },
+      "versionCheck": {
+        "unknownLabel": "unknown",
+        "outdated": "Local compile-server image is out of date (local: {{localSha}} / latest: {{remoteSha}}). Please update the image via Docker Desktop.",
+        "updateGuide": "Update steps: pull `digicollc/digicode-compile-server` from the Docker Desktop Images tab, or run `docker pull digicollc/digicode-compile-server:latest` in a terminal, then restart the container."
       }
     },
     "binExport": {

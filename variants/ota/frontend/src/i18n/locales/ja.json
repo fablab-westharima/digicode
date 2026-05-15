@@ -463,6 +463,11 @@
         "chunkMismatch": "ファームウェア chunk 数不整合 ({{received}}/{{expected}}、再試行してください)",
         "chunkMissing": "ファームウェア chunk {{seq}} が欠落しています",
         "unknown": "予期しない SSE ストリームエラー"
+      },
+      "versionCheck": {
+        "unknownLabel": "不明",
+        "outdated": "ローカル compile-server が古いバージョンです (ローカル: {{localSha}} / 最新: {{remoteSha}})。Docker Desktop で image を更新してください。",
+        "updateGuide": "更新手順: Docker Desktop の Images タブから digicollc/digicode-compile-server を Pull、または terminal で `docker pull digicollc/digicode-compile-server:latest` を実行後、コンテナを再起動してください。"
       }
     },
     "binExport": {

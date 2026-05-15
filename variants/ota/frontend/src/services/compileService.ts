@@ -287,6 +287,174 @@ const testCompileServerConnection = async (url: string): Promise<boolean> => {
   }
 };
 
+// ── Local compile-server version check (DigiCode Session 129) ─────────────
+// Compares the local image's bake-in git sha (returned by /health) against
+// the latest DockerHub `main-<sha>` tag for digicollc/digicode-compile-server.
+// Only invoked in local mode — cloud is auto-deployed via CF LB, never stale
+// from the user's perspective.
+//
+// Strategy:
+//   1. GET <local>/health → { gitSha, builtAt, ... }
+//   2. GET hub.docker.com/v2/repositories/.../tags?page_size=2&ordering=last_updated
+//      → results[].name = "latest" / "main-<sha>"
+//   3. Compare local gitSha vs the 7-char sha from the `main-<sha>` entry
+//
+// Failure mode = fail-soft (Session 129 C-1 案A): DockerHub Hub API outage
+// must not block compile entirely — log a warning, continue.
+
+export type LocalVersionCheckOutcome =
+  | { outcome: 'ok'; localSha: string; remoteSha: string }
+  | {
+      outcome: 'outdated';
+      localSha: string | undefined;
+      remoteSha: string;
+      reason: 'sha-mismatch' | 'legacy-image';
+    }
+  | {
+      outcome: 'check-failed';
+      reason: 'local-unreachable' | 'remote-unreachable' | 'remote-unexpected-shape';
+      detail?: string;
+    };
+
+const DOCKERHUB_TAGS_URL =
+  'https://hub.docker.com/v2/repositories/digicollc/digicode-compile-server/tags?page_size=10&ordering=last_updated';
+
+// LocalStorage cache: remoteSha + fetch wall to avoid hammering DockerHub on
+// every compile click. 1 hour TTL (Session 129 C-3 案A) — long enough that
+// DockerHub rate-limit is a non-issue, short enough that a newly-published
+// image notifies users within a single dev session.
+const REMOTE_CACHE_KEY = 'compileServerRemoteShaCache';
+const REMOTE_CACHE_TTL_MS = 60 * 60 * 1000;
+
+interface RemoteShaCache {
+  remoteSha: string;
+  fetchedAt: number;
+}
+
+function readRemoteShaCache(): RemoteShaCache | null {
+  try {
+    const raw = localStorage.getItem(REMOTE_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<RemoteShaCache>;
+    if (typeof parsed.remoteSha !== 'string' || typeof parsed.fetchedAt !== 'number') {
+      return null;
+    }
+    if (Date.now() - parsed.fetchedAt > REMOTE_CACHE_TTL_MS) return null;
+    return { remoteSha: parsed.remoteSha, fetchedAt: parsed.fetchedAt };
+  } catch {
+    return null;
+  }
+}
+
+function writeRemoteShaCache(remoteSha: string): void {
+  try {
+    localStorage.setItem(
+      REMOTE_CACHE_KEY,
+      JSON.stringify({ remoteSha, fetchedAt: Date.now() }),
+    );
+  } catch {
+    // localStorage quota / disabled — ignore (cache is best-effort).
+  }
+}
+
+// Extract the 7-char commit sha from a DockerHub tag list. The CI workflow
+// publishes two interesting tags per build: `latest` (rolling) and
+// `main-<sha>` (commit-pinned). We want the latter — scan results[] for the
+// first `main-<sha>` entry (results are ordered by last_updated DESC).
+function extractRemoteShaFromTagsResponse(json: unknown): string | null {
+  if (!json || typeof json !== 'object') return null;
+  const results = (json as { results?: unknown }).results;
+  if (!Array.isArray(results)) return null;
+  for (const entry of results) {
+    if (!entry || typeof entry !== 'object') continue;
+    const name = (entry as { name?: unknown }).name;
+    if (typeof name !== 'string') continue;
+    const m = name.match(/^main-([0-9a-f]{7})$/);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+async function fetchRemoteSha(): Promise<string | null> {
+  const cached = readRemoteShaCache();
+  if (cached) return cached.remoteSha;
+  const response = await fetch(DOCKERHUB_TAGS_URL, {
+    method: 'GET',
+    signal: AbortSignal.timeout(5000),
+  });
+  if (!response.ok) {
+    throw new Error(`DockerHub HTTP ${response.status}`);
+  }
+  const json: unknown = await response.json();
+  const sha = extractRemoteShaFromTagsResponse(json);
+  if (!sha) {
+    throw new Error('DockerHub response missing main-<sha> tag');
+  }
+  writeRemoteShaCache(sha);
+  return sha;
+}
+
+async function checkLocalVersion(): Promise<LocalVersionCheckOutcome> {
+  // 1. Fetch local /health. AbortSignal 3s aligns with testConnection.
+  let localHealth: { gitSha?: unknown } & Record<string, unknown>;
+  try {
+    const url = getCompileServerLocalUrl();
+    const response = await fetch(`${url}/health`, {
+      method: 'GET',
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!response.ok) {
+      return {
+        outcome: 'check-failed',
+        reason: 'local-unreachable',
+        detail: `HTTP ${response.status}`,
+      };
+    }
+    localHealth = (await response.json()) as { gitSha?: unknown } & Record<string, unknown>;
+  } catch (e) {
+    return {
+      outcome: 'check-failed',
+      reason: 'local-unreachable',
+      detail: e instanceof Error ? e.message : String(e),
+    };
+  }
+
+  const localSha =
+    typeof localHealth.gitSha === 'string' && localHealth.gitSha !== 'unknown'
+      ? localHealth.gitSha
+      : undefined;
+
+  // 2. Fetch the latest DockerHub `main-<sha>` tag.
+  let remoteSha: string;
+  try {
+    const fetched = await fetchRemoteSha();
+    if (!fetched) {
+      return {
+        outcome: 'check-failed',
+        reason: 'remote-unexpected-shape',
+      };
+    }
+    remoteSha = fetched;
+  } catch (e) {
+    return {
+      outcome: 'check-failed',
+      reason: 'remote-unreachable',
+      detail: e instanceof Error ? e.message : String(e),
+    };
+  }
+
+  // 3. Compare. Legacy images (pre-Session-129) have no gitSha — treat as
+  // outdated so the user is prompted to update (and gets the new /health
+  // shape on the next pull).
+  if (localSha === undefined) {
+    return { outcome: 'outdated', localSha: undefined, remoteSha, reason: 'legacy-image' };
+  }
+  if (localSha !== remoteSha) {
+    return { outcome: 'outdated', localSha, remoteSha, reason: 'sha-mismatch' };
+  }
+  return { outcome: 'ok', localSha, remoteSha };
+}
+
 export const compileService = {
   /**
    * Arduino C++コードをコンパイルして.binファイルを取得。
@@ -383,6 +551,36 @@ export const compileService = {
     }
 
     // local mode (user 設定 URL に SSE)
+    //
+    // Session 129: bake-in gitSha vs DockerHub `main-<sha>` 比較で
+    // 古い image 検出時に compile を中止 + 更新通知。fail-soft (C-1 案A):
+    // DockerHub 障害時は警告 console.warn のみで compile 続行する。
+    const versionCheck = await checkLocalVersion();
+    if (versionCheck.outcome === 'outdated') {
+      const localLabel = versionCheck.localSha ?? i18n.t('editor.compileLog.versionCheck.unknownLabel', {
+        defaultValue: '不明',
+      });
+      return {
+        success: false,
+        error: i18n.t('editor.compileLog.versionCheck.outdated', {
+          localSha: localLabel,
+          remoteSha: versionCheck.remoteSha,
+          defaultValue:
+            'ローカル compile-server が古いバージョンです (ローカル: {{localSha}} / 最新: {{remoteSha}})。Docker Desktop で image を更新してください。',
+        }) as string,
+        details: i18n.t('editor.compileLog.versionCheck.updateGuide', {
+          defaultValue:
+            '更新手順: Docker Desktop の Images タブから digicollc/digicode-compile-server を Pull、または terminal で `docker pull digicollc/digicode-compile-server:latest` を実行後、コンテナを再起動してください。',
+        }) as string,
+      };
+    }
+    if (versionCheck.outcome === 'check-failed') {
+      console.warn(
+        '[Compile] Local version check failed (fail-soft, continuing):',
+        versionCheck.reason,
+        versionCheck.detail,
+      );
+    }
     try {
       const serverUrl = getCompileServerUrl();
       const result = await compileViaSse(
@@ -439,6 +637,8 @@ export const compileService = {
   getServerUrl: getCompileServerUrl,
   getLocalUrl: getCompileServerLocalUrl,
   setLocalUrl: setCompileServerLocalUrl,
+  // Local image vs DockerHub `main-<sha>` 比較 (Session 129)
+  checkLocalVersion,
   servers: COMPILE_SERVERS,
 };
 
@@ -448,4 +648,7 @@ export const __testing__ = {
   compileViaSse,
   base64ToUint8Array,
   FatalSseError,
+  checkLocalVersion,
+  extractRemoteShaFromTagsResponse,
+  REMOTE_CACHE_KEY,
 };
