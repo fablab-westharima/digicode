@@ -361,20 +361,30 @@ export function Sidebar({
     }] : []),
     // アカウント（認証状態・アカウント種別で表示を切り替え）
     ...(isAuthenticated ? [
-      ...(user?.accountType !== 'student' ? [{
-        id: 'plan',
-        label: t('sidebar.plan', { defaultValue: 'プラン・お支払い' }),
-        icon: <CreditCard className="w-4 h-4" />,
-        action: () => navigate('/plan'),
-        category: 'account' as const,
-      }] : []),
-      ...(user?.isAdmin ? [{
-        id: 'admin',
-        label: t('sidebar.admin', { defaultValue: '管理画面' }),
-        icon: <Settings className="w-4 h-4" />,
-        action: () => navigate('/admin'),
-        category: 'account' as const,
-      }] : []),
+      // Session 131: プレリリース中 (LS 決済実装完了前) は決済ページを公開しない
+      // ため、Sidebar からのリンクを一時非表示化。Route + PlanPage 本体は維持。
+      // LS Phase B-D (42_LS-integration plan) 完了 + STAGE 4 海外告知準備後に
+      // 復活させる。詳細は plans/active/admin-security-audit-and-hardening.md
+      // §9.1 A-1 + Task 2 統合 commit 参照。
+      // ...(user?.accountType !== 'student' ? [{
+      //   id: 'plan',
+      //   label: t('sidebar.plan', { defaultValue: 'プラン・お支払い' }),
+      //   icon: <CreditCard className="w-4 h-4" />,
+      //   action: () => navigate('/plan'),
+      //   category: 'account' as const,
+      // }] : []),
+      // Session 131 A-1 hardening: admin menu を Sidebar から非表示化。Public AGPL
+      // repo + AI 攻撃者時代の rule 16 §「Adversary parity」適用、admin 機能の
+      // 「存在自体」を公開 UI から消す surface minimization。Route + AdminPage
+      // 本体は維持、URL 直打ち or bookmark 経由で admin はアクセス可能。詳細は
+      // plans/active/admin-security-audit-and-hardening.md §4.3 + §9.1 A-1 参照。
+      // ...(user?.isAdmin ? [{
+      //   id: 'admin',
+      //   label: t('sidebar.admin', { defaultValue: '管理画面' }),
+      //   icon: <Settings className="w-4 h-4" />,
+      //   action: () => navigate('/admin'),
+      //   category: 'account' as const,
+      // }] : []),
       // 第103回 hotfix2: プレリリース期間中 (pin_assign_pro.isFreeNow=true) は
       // 認証 user (plan 不問) にもクラス管理 menu を表示。anonymous は user 自体が
       // 不在なため対象外 (class owner_id が必要)。
