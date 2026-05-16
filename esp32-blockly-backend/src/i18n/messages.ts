@@ -178,7 +178,9 @@ export const errorMessages = {
     'admin.userCreateFailed': 'ユーザー作成に失敗しました',
     'admin.userDeleteFailed': 'ユーザー削除に失敗しました',
     'admin.cannotDeleteSelf': '管理者自身のアカウントは削除できません',
+    'admin.cannotDeleteAdmin': '他の管理者アカウントは削除できません',
     'admin.planChangeFailed': 'プラン変更に失敗しました',
+    'admin.unknownFlagKey': '未知の Feature Flag キーです',
 
     // ── feature: Feature Flags ──
     'feature.fetchFailed': 'Feature Flagsの取得に失敗しました',
@@ -361,7 +363,9 @@ export const errorMessages = {
     'admin.userCreateFailed': 'Failed to create user',
     'admin.userDeleteFailed': 'Failed to delete user',
     'admin.cannotDeleteSelf': 'You cannot delete your own admin account',
+    'admin.cannotDeleteAdmin': 'You cannot delete another admin account',
     'admin.planChangeFailed': 'Failed to change plan',
+    'admin.unknownFlagKey': 'Unknown Feature Flag key',
 
     'feature.fetchFailed': 'Failed to fetch Feature Flags',
     'feature.updateFailed': 'Failed to update Feature Flag',
@@ -540,7 +544,9 @@ export const errorMessages = {
     'admin.userCreateFailed': 'Error al crear el usuario',
     'admin.userDeleteFailed': 'Error al eliminar el usuario',
     'admin.cannotDeleteSelf': 'No puedes eliminar tu propia cuenta de administrador',
+    'admin.cannotDeleteAdmin': 'No puedes eliminar otra cuenta de administrador',
     'admin.planChangeFailed': 'Error al cambiar el plan',
+    'admin.unknownFlagKey': 'Clave de Feature Flag desconocida',
 
     'feature.fetchFailed': 'Error al obtener Feature Flags',
     'feature.updateFailed': 'Error al actualizar el Feature Flag',
@@ -719,7 +725,9 @@ export const errorMessages = {
     'admin.userCreateFailed': 'Falha ao criar o utilizador',
     'admin.userDeleteFailed': 'Falha ao eliminar o utilizador',
     'admin.cannotDeleteSelf': 'Não pode eliminar a sua própria conta de administrador',
+    'admin.cannotDeleteAdmin': 'Não pode eliminar outra conta de administrador',
     'admin.planChangeFailed': 'Falha ao alterar o plano',
+    'admin.unknownFlagKey': 'Chave de Feature Flag desconhecida',
 
     'feature.fetchFailed': 'Falha ao obter Feature Flags',
     'feature.updateFailed': 'Falha ao atualizar o Feature Flag',
@@ -898,7 +906,9 @@ export const errorMessages = {
     'admin.userCreateFailed': '建立使用者失敗',
     'admin.userDeleteFailed': '刪除使用者失敗',
     'admin.cannotDeleteSelf': '無法刪除自己的管理員帳號',
+    'admin.cannotDeleteAdmin': '無法刪除其他管理員帳號',
     'admin.planChangeFailed': '方案變更失敗',
+    'admin.unknownFlagKey': '未知的 Feature Flag 鍵',
 
     'feature.fetchFailed': '取得 Feature Flags 失敗',
     'feature.updateFailed': '更新 Feature Flag 失敗',

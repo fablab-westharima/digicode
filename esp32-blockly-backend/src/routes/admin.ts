@@ -147,13 +147,22 @@ admin.delete('/users/:id', authMiddleware, adminMiddleware, async (c) => {
       return errorJson(c, 'admin.cannotDeleteSelf', 400);
     }
 
-    // 対象ユーザーの存在確認
+    // 対象ユーザーの存在確認 + admin チェーン削除防止 (Session 131 A-2 hardening)。
+    // 旧コードは self-delete のみ block していたが、他 admin の削除を許していた
+    // = 1 admin account 乗っ取りで全 admin chain 削除可能だった。
+    // is_admin = 1 の target を 403 reject で構造的閉鎖、緊急時は D1 直接操作で
+    // 復旧 path 維持。詳細は plans/active/admin-security-audit-and-hardening.md
+    // §6.1 R-1 + §9.1 A-2 参照。
     const targetUser = await c.env.DB.prepare(
-      'SELECT id, email FROM users WHERE id = ?'
-    ).bind(targetUserId).first<{ id: number; email: string }>();
+      'SELECT id, email, is_admin FROM users WHERE id = ?'
+    ).bind(targetUserId).first<{ id: number; email: string; is_admin: number }>();
 
     if (!targetUser) {
       return errorJson(c, 'auth.userNotFound', 404);
+    }
+
+    if (targetUser.is_admin === 1) {
+      return errorJson(c, 'admin.cannotDeleteAdmin', 403);
     }
 
     // F-21 fix: owner クラスを deleteClassCascade で削除 (ML30 assignments/submissions + D1 classes + 孤児 student)
@@ -219,10 +228,26 @@ admin.get('/flags', authMiddleware, adminMiddleware, async (c) => {
   }
 });
 
+// Session 131 A-3 hardening: Feature Flag key whitelist。
+// 旧コードは任意 key の UPSERT を許していた = admin 認証奪取後の post-exploit で
+// arbitrary flag namespace pollution 可能だった。現状 featureFlagStore は
+// `pin_assign_pro` 1 key のみ参照する設計のため、whitelist を導入して未知 key の
+// 新規作成を構造的に閉鎖する。新 flag 追加時はここの配列に追記する認知運用。
+// 詳細は plans/active/admin-security-audit-and-hardening.md §6.2 R-2 + §9.1 A-3 参照。
+const ALLOWED_FLAG_KEYS = ['pin_assign_pro'] as const;
+type AllowedFlagKey = (typeof ALLOWED_FLAG_KEYS)[number];
+
+function isAllowedFlagKey(key: string): key is AllowedFlagKey {
+  return (ALLOWED_FLAG_KEYS as readonly string[]).includes(key);
+}
+
 // Feature Flag更新
 admin.post('/flags/:key', authMiddleware, adminMiddleware, async (c) => {
   try {
     const key = c.req.param('key');
+    if (!isAllowedFlagKey(key)) {
+      return errorJson(c, 'admin.unknownFlagKey', 400);
+    }
     const { enabled, free_until, free_reason } = await c.req.json<{
       enabled?: boolean;
       free_until?: string | null;
