@@ -166,10 +166,17 @@ const WIFI_INIT_BLOCK_TYPES = new Set<string>([
 export function validateXml(xmlString: string, catalog: BlockCatalog): ValidationResult {
   try {
     const parser = new DOMParser();
-    const doc = parser.parseFromString(xmlString, 'text/xml');
-    const root = doc.documentElement;
+    // Use 'application/xml' to match the existing xmlValidator.ts pattern.
+    // Both 'text/xml' and 'application/xml' are XML modes, but browser DOM
+    // implementations have historically diverged on namespace handling for
+    // `text/xml` — sticking with the proven path keeps parity.
+    const doc = parser.parseFromString(xmlString, 'application/xml');
 
-    if (!root || root.nodeName === 'parsererror' || root.getElementsByTagName('parsererror').length > 0) {
+    // Parse error detection: in Chrome/Firefox XML mode, a malformed input
+    // produces a doc whose tree contains <parsererror>. `doc.querySelector`
+    // searches the entire document (not just below documentElement), which
+    // is the same approach the proven xmlValidator.ts uses.
+    if (doc.querySelector('parsererror')) {
       return {
         valid: false,
         issues: [],
@@ -177,11 +184,20 @@ export function validateXml(xmlString: string, catalog: BlockCatalog): Validatio
       };
     }
 
+    const root = doc.documentElement;
+    if (!root) {
+      return {
+        valid: false,
+        issues: [],
+        loadError: 'XML has no document element',
+      };
+    }
+
     const issues: ValidationIssue[] = [
-      ...checkUnconnectedValueInputs(root, catalog),
+      ...checkUnconnectedValueInputs(doc, catalog),
       ...checkOrphanValueBlocks(root, catalog),
-      ...checkAsymmetricBinaryBranches(root),
-      ...checkMissingWifiConnect(root),
+      ...checkAsymmetricBinaryBranches(doc),
+      ...checkMissingWifiConnect(doc),
     ];
 
     return { valid: issues.length === 0, issues };
@@ -198,11 +214,14 @@ export function validateXml(xmlString: string, catalog: BlockCatalog): Validatio
 // Check 1: unconnected value input
 // ---------------------------------------------------------------------------
 
-function checkUnconnectedValueInputs(root: Element, catalog: BlockCatalog): ValidationIssue[] {
+function checkUnconnectedValueInputs(doc: Document, catalog: BlockCatalog): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   const blockMap = new Map<string, BlockCatalogEntry>(catalog.blocks.map((b) => [b.type, b]));
 
-  const allBlocks = root.getElementsByTagName('block');
+  // querySelectorAll matches by local name across namespaces (proven pattern
+  // from xmlValidator.ts:doc.querySelectorAll('block[type]')). This is more
+  // browser-portable than getElementsByTagName for namespaced XML.
+  const allBlocks = doc.querySelectorAll('block');
   for (let i = 0; i < allBlocks.length; i++) {
     const blockEl = allBlocks[i];
     const blockType = blockEl.getAttribute('type');
@@ -275,10 +294,10 @@ function checkOrphanValueBlocks(root: Element, catalog: BlockCatalog): Validatio
 // Check 3: asymmetric binary branch in on_message HANDLER
 // ---------------------------------------------------------------------------
 
-function checkAsymmetricBinaryBranches(root: Element): ValidationIssue[] {
+function checkAsymmetricBinaryBranches(doc: Document): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
 
-  const allBlocks = root.getElementsByTagName('block');
+  const allBlocks = doc.querySelectorAll('block');
   for (let i = 0; i < allBlocks.length; i++) {
     const handlerEl = allBlocks[i];
     const handlerType = handlerEl.getAttribute('type');
@@ -326,7 +345,7 @@ function checkAsymmetricBinaryBranches(root: Element): ValidationIssue[] {
 
 function collectReceivedValueComparisons(handlerStmt: Element): string[] {
   const values: string[] = [];
-  const compareBlocks = handlerStmt.getElementsByTagName('block');
+  const compareBlocks = handlerStmt.querySelectorAll('block');
   for (let i = 0; i < compareBlocks.length; i++) {
     const cmpEl = compareBlocks[i];
     if (cmpEl.getAttribute('type') !== 'logic_compare') continue;
@@ -375,8 +394,8 @@ function extractLiteralFromCompare(a: Element, b: Element): string | null {
 // Check 4: missing wifi_connect when WiFi-using blocks are present
 // ---------------------------------------------------------------------------
 
-function checkMissingWifiConnect(root: Element): ValidationIssue[] {
-  const allBlocks = root.getElementsByTagName('block');
+function checkMissingWifiConnect(doc: Document): ValidationIssue[] {
+  const allBlocks = doc.querySelectorAll('block');
   const wifiUsingBlocks: string[] = [];
   let hasWifiInit = false;
 

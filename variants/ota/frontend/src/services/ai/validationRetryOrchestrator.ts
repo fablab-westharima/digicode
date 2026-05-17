@@ -66,6 +66,8 @@ export async function generateAndValidate(
   // Initial generation.
   let result: GenerateOutput = await client.generateFromConversation(baseInput);
   let validation = validateXml(result.xml, catalog);
+  const initialIssuesCount = validation.issues.length;
+  const initialLoadError = validation.loadError;
   let semanticRetries = 0;
   let totalCalls = 1;
 
@@ -80,6 +82,20 @@ export async function generateAndValidate(
     validation = validateXml(result.xml, catalog);
     semanticRetries++;
   }
+
+  // BUG-085 P2-V — diagnostic surface for production smoke. Logged once
+  // per generation (not per retry) to keep console quiet for normal flow
+  // but visible enough for the user to confirm the validator+retry path
+  // is firing on their browser.
+  // eslint-disable-next-line no-console
+  console.info('[BUG-085 P2-V] generateAndValidate result', {
+    totalCalls,
+    semanticRetries,
+    initialIssuesCount,
+    initialLoadError,
+    residualIssuesCount: validation.issues.length,
+    residualLoadError: validation.loadError,
+  });
 
   return {
     xml: result.xml,
