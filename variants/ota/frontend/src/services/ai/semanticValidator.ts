@@ -37,7 +37,7 @@
  */
 
 import type { BlockCatalog, BlockCatalogEntry } from './systemPrompt';
-import { CROSS_BLOCK_CONTRACTS, type CrossBlockContract } from '@/data/crossBlockContracts';
+import { CROSS_BLOCK_CONTRACTS, TYPE_C_INIT_CONTRACTS, type CrossBlockContract } from '@/data/crossBlockContracts';
 
 // ---------------------------------------------------------------------------
 // Issue types
@@ -121,6 +121,29 @@ export type ValidationIssue =
       kind: 'controls_if_anomaly_no_body';
       conditionBlockType: string;
       controlIfBlockId: string;
+    }
+  | {
+      // BUG-086 Session 133 (Check 9) — Consumer block of a Type C family
+      // present without the family's init block. Hardware silent fail
+      // pattern: e.g. ble_uart_write emitted but ble_uart_setup missing.
+      // Data-driven from TYPE_C_INIT_CONTRACTS — no hardcoded prefix branches.
+      kind: 'missing_required_init';
+      contractId: string;
+      protocolLabel: string;
+      consumerBlocks: string[]; // sample of consumer blocks present (capped at 5)
+      requiredInitOptions: readonly string[]; // any one of these satisfies
+    }
+  | {
+      // BUG-086 Session 133 (Check 10) — Handler block nested inside another
+      // handler's HANDLER / CALLBACK / ON_CALLBACK / OFF_CALLBACK statement
+      // input. Rule 03's existing prohibition codified into a runtime check.
+      // Nesting causes the inner handler to fire only when the outer one
+      // triggers, breaking independent operation.
+      kind: 'handler_nested_inside_handler';
+      innerHandlerType: string;
+      innerHandlerId: string;
+      outerHandlerType: string;
+      outerHandlerId: string;
     };
 
 export interface ValidationResult {
@@ -277,6 +300,8 @@ export function validateXml(xmlString: string, catalog: BlockCatalog): Validatio
       ...checkTypeMismatchWillCauseDetach(doc, catalog),
       ...checkRegisterWithoutHandler(doc),
       ...checkControlsIfAnomalyNoBody(doc, catalog),
+      ...checkMissingRequiredInit(doc),
+      ...checkHandlerNestedInsideHandler(doc),
     ];
 
     return { valid: issues.length === 0, issues };
@@ -751,6 +776,133 @@ function checkControlsIfAnomalyNoBody(doc: Document, catalog: BlockCatalog): Val
       conditionBlockType: innerType,
       controlIfBlockId,
     });
+  }
+  return issues;
+}
+
+// ---------------------------------------------------------------------------
+// Check 9: Type C missing_required_init (data-driven from TYPE_C_INIT_CONTRACTS)
+// ---------------------------------------------------------------------------
+
+/**
+ * BUG-086 Session 133 — For every TypeCInitContract in the registry,
+ * verify that whenever any consumer block is present, at least one init
+ * block from the family is also present.
+ *
+ * Examples caught:
+ *   - ble_uart_write without ble_uart_setup
+ *   - espnow_send without espnow_init
+ *   - iot_cloud_publish without iot_cloud_connect
+ *
+ * Adding a new Type C family = 1 entry in TYPE_C_INIT_CONTRACTS; this
+ * check auto-extends with no code changes here.
+ */
+function checkMissingRequiredInit(doc: Document): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const allBlocks = doc.querySelectorAll('block');
+  const present = new Set<string>();
+  for (let i = 0; i < allBlocks.length; i++) {
+    const t = allBlocks[i].getAttribute('type');
+    if (t) present.add(t);
+  }
+
+  for (const contract of TYPE_C_INIT_CONTRACTS) {
+    const consumersFound = contract.consumerBlocks.filter((b) => present.has(b));
+    if (consumersFound.length === 0) continue;
+    const hasInit = contract.initBlocks.some((b) => present.has(b));
+    if (hasInit) continue;
+    issues.push({
+      kind: 'missing_required_init',
+      contractId: contract.id,
+      protocolLabel: contract.protocolLabel,
+      consumerBlocks: consumersFound.slice(0, 5),
+      requiredInitOptions: contract.initBlocks,
+    });
+  }
+  return issues;
+}
+
+// ---------------------------------------------------------------------------
+// Check 10: handler nested inside another handler (rule 03 codified)
+// ---------------------------------------------------------------------------
+
+/**
+ * BUG-086 Session 133 — Detects handler blocks (the ones in
+ * HANDLER_BLOCK_TYPES_FOR_BINARY_BRANCH plus a few more) nested inside
+ * another handler's HANDLER / CALLBACK / ON_CALLBACK / OFF_CALLBACK
+ * statement input. Rule 03's existing systemPrompt prohibition is now
+ * runtime-enforced.
+ *
+ * Nesting causes the inner handler to fire only when the outer one
+ * triggers, breaking independent operation.
+ */
+const HANDLER_NEST_STATEMENT_NAMES = new Set<string>([
+  'HANDLER',
+  'CALLBACK',
+  'ON_CALLBACK',
+  'OFF_CALLBACK',
+]);
+
+// Additional handler-class block types beyond the binary-branch set
+// (these can be top-level alone but must NOT nest inside another handler).
+const ALL_HANDLER_BLOCK_TYPES = new Set<string>([
+  ...HANDLER_BLOCK_TYPES_FOR_BINARY_BRANCH,
+  'ha_switch_on_command',
+  'ha_number_on_command',
+  'ha_light_on_command',
+  'ha_light_on_rgb_command',
+  'ha_fan_on_command',
+  'ha_cover_on_command',
+  'ha_button_on_press',
+  'ha_scene_on_command',
+  'ha_tag_scanner_scanned',
+  'ha_on_connected',
+  'ha_on_disconnected',
+  'websocket_server_on_connect',
+  'ble_on_device_found',
+  'espnow_on_receive',
+  'lora_on_receive',
+  'iot_cloud_on_message',
+  'azure_iot_hub_on_c2d',
+  'azure_iot_subscribe_direct_method',
+  'ticker_attach',
+  'attach_interrupt',
+  'esp32_touch_attach_interrupt',
+]);
+
+function checkHandlerNestedInsideHandler(doc: Document): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const allBlocks = doc.querySelectorAll('block');
+  for (let i = 0; i < allBlocks.length; i++) {
+    const inner = allBlocks[i];
+    const innerType = inner.getAttribute('type');
+    if (!innerType || !ALL_HANDLER_BLOCK_TYPES.has(innerType)) continue;
+
+    // Walk up ancestors. If any ancestor is <statement name="HANDLER|CALLBACK|...">
+    // AND its grandparent <block> is also a handler type → nested violation.
+    let cur: Element | null = inner.parentElement;
+    while (cur) {
+      if (cur.tagName === 'statement') {
+        const stmtName = cur.getAttribute('name') ?? '';
+        if (HANDLER_NEST_STATEMENT_NAMES.has(stmtName)) {
+          const grandparent = cur.parentElement;
+          if (grandparent && grandparent.tagName === 'block') {
+            const outerType = grandparent.getAttribute('type');
+            if (outerType && ALL_HANDLER_BLOCK_TYPES.has(outerType)) {
+              issues.push({
+                kind: 'handler_nested_inside_handler',
+                innerHandlerType: innerType,
+                innerHandlerId: inner.getAttribute('id') ?? `${innerType}@${i}`,
+                outerHandlerType: outerType,
+                outerHandlerId: grandparent.getAttribute('id') ?? outerType,
+              });
+              break; // one report per inner handler
+            }
+          }
+        }
+      }
+      cur = cur.parentElement;
+    }
   }
   return issues;
 }

@@ -269,3 +269,45 @@ describe('fixPromptBuilder — Check 8 (controls_if_anomaly_no_body) per languag
     expect(p).toContain('DO0');
   });
 });
+
+// ---------------------------------------------------------------------------
+// BUG-086 Session 133 (Check 9): missing_required_init per language
+// ---------------------------------------------------------------------------
+
+describe('fixPromptBuilder — Check 9 (missing_required_init) per language', () => {
+  const issue: ValidationIssue = {
+    kind: 'missing_required_init',
+    contractId: 'espnow',
+    protocolLabel: 'ESP-NOW',
+    consumerBlocks: ['espnow_send'],
+    requiredInitOptions: ['espnow_init'],
+  };
+
+  it.each(LANGS)('lang=%s mentions protocolLabel + consumer + init', (lang) => {
+    const p = buildFixPrompt(SAMPLE_XML, [issue], lang);
+    expect(p).toContain('ESP-NOW');
+    expect(p).toContain('espnow_send');
+    expect(p).toContain('espnow_init');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// BUG-086 Session 133 (Check 10): handler_nested_inside_handler per language
+// ---------------------------------------------------------------------------
+
+describe('fixPromptBuilder — Check 10 (handler_nested_inside_handler) per language', () => {
+  const issue: ValidationIssue = {
+    kind: 'handler_nested_inside_handler',
+    innerHandlerType: 'websocket_server_on_message',
+    innerHandlerId: 'inner1',
+    outerHandlerType: 'websocket_server_on_message',
+    outerHandlerId: 'outer1',
+  };
+
+  it.each(LANGS)('lang=%s mentions both inner + outer handler types + top-level hint', (lang) => {
+    const p = buildFixPrompt(SAMPLE_XML, [issue], lang);
+    expect(p).toContain('websocket_server_on_message');
+    // top-level placement keyword (varies per lang but always references arduino_setup/loop)
+    expect(p.toLowerCase()).toMatch(/arduino_setup|arduino_loop|top.?level/);
+  });
+});

@@ -5,7 +5,7 @@ import { AI_SYSTEM_PROMPTS } from '@/data/aiSystemPrompts';
 import type { AiLanguage } from '@/data/aiSystemPrompts';
 import { sampleProjects } from '@/data/sampleProjects';
 import { selectFewShot } from './fewShotSelector';
-import { buildCrossBlockContractSection } from '@/data/crossBlockContracts';
+import { buildCrossBlockContractSection, buildTypeCInitSection } from '@/data/crossBlockContracts';
 
 export interface FieldDef {
   name: string;
@@ -260,6 +260,9 @@ export function buildSystemPrompt(ctx: SystemPromptContext): string {
     // Placed AFTER Prohibitions for maximum reinforcement — this is the
     // final text the AI sees before generating output.
     `# Cross-Block Contracts (register/create ↔ handler)\n${buildCrossBlockContractSection(ctx.language)}`,
+    // BUG-086 Session 133 C6: Type C init contracts (consumer-without-init
+    // pattern, auto-emitted from TYPE_C_INIT_CONTRACTS registry).
+    `# Required Init Blocks (BLE / ESP-NOW / LoRa / IoT Cloud families)\n${buildTypeCInitSection(ctx.language)}`,
   ].join('\n\n');
 }
 

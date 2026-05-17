@@ -269,6 +269,106 @@ export function buildCrossBlockContractSection(lang: AiLanguage): string {
 }
 
 // ---------------------------------------------------------------------------
+// Type C: init-without-consumer contracts (BUG-086 Session 133 C6, Check 9)
+// ---------------------------------------------------------------------------
+
+/**
+ * Type C contract: "If you use any consumer block of family X, you MUST also
+ * emit one of its initializer blocks." Unlike Type A (per-channel 1:1),
+ * Type C is global — a single init satisfies any number of consumers.
+ *
+ * Example: ble_uart_write requires ble_uart_setup (or ble_init for the
+ * lower-level path). espnow_send requires espnow_init.
+ *
+ * Adding a new Type C protocol = 1 entry. Check 9 + sample audit
+ * auto-track. Zero hardcoded protocol branches.
+ */
+export interface TypeCInitContract {
+  /** Stable id (kebab-case). */
+  id: string;
+  /** Block types that satisfy the init requirement (any of them). */
+  initBlocks: readonly string[];
+  /** Consumer block types that trigger the requirement (any of them). */
+  consumerBlocks: readonly string[];
+  /** English short label for the protocol. */
+  protocolLabel: string;
+}
+
+export const TYPE_C_INIT_CONTRACTS: readonly TypeCInitContract[] = [
+  {
+    id: 'ble-uart',
+    initBlocks: ['ble_uart_setup'],
+    consumerBlocks: ['ble_uart_write', 'ble_uart_on_receive'],
+    protocolLabel: 'BLE UART',
+  },
+  {
+    id: 'ble-gatt',
+    initBlocks: ['ble_init'],
+    consumerBlocks: ['ble_add_service', 'ble_add_characteristic', 'ble_notify', 'ble_on_write', 'ble_start_advertising'],
+    protocolLabel: 'BLE GATT',
+  },
+  {
+    id: 'ble-scan',
+    initBlocks: ['ble_scan_start'],
+    consumerBlocks: ['ble_on_device_found'],
+    protocolLabel: 'BLE Scan',
+  },
+  {
+    id: 'espnow',
+    initBlocks: ['espnow_init'],
+    consumerBlocks: ['espnow_register_peer', 'espnow_send', 'espnow_broadcast', 'espnow_on_receive'],
+    protocolLabel: 'ESP-NOW',
+  },
+  {
+    id: 'lora',
+    initBlocks: ['lora_init'],
+    consumerBlocks: ['lora_set_freq', 'lora_set_power', 'lora_send', 'lora_on_receive'],
+    protocolLabel: 'LoRa',
+  },
+  {
+    id: 'iot-cloud',
+    initBlocks: ['iot_cloud_connect'],
+    consumerBlocks: ['iot_cloud_publish', 'iot_cloud_on_message', 'iot_cloud_disconnect'],
+    protocolLabel: 'IoT Cloud',
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Type-C i18n templates — same template-per-lang pattern as Type A
+// ---------------------------------------------------------------------------
+
+const TYPE_C_INIT_TEMPLATE: Record<AiLanguage, string> = {
+  ja:      '- ★ {protocolLabel}: ブロック `{consumer}` を emit する場合、必ず `{init}` のいずれかを arduino_setup 内に emit してください。',
+  en:      '- ★ {protocolLabel}: When emitting `{consumer}`, you MUST also emit one of `{init}` inside arduino_setup.',
+  'zh-TW': '- ★ {protocolLabel}: emit `{consumer}` 積木時，必須在 arduino_setup 內 emit `{init}` 之一。',
+  es:      '- ★ {protocolLabel}: Cuando emitas `{consumer}`, DEBES emitir también uno de `{init}` dentro de arduino_setup.',
+  'pt-PT': '- ★ {protocolLabel}: Quando emitires `{consumer}`, DEVES também emitir um de `{init}` dentro de arduino_setup.',
+};
+
+const TYPE_C_INTRO: Record<AiLanguage, string> = {
+  ja:      'init/setup block 不在で消費 block を使うと該当ハードウェアは silent fail します。各 family の init は arduino_setup 内に必ず 1 つ emit してください:',
+  en:      'Using consumer blocks without their init/setup block causes hardware to silently fail. Emit one init per family inside arduino_setup:',
+  'zh-TW': '使用消費積木而缺少 init/setup 積木會導致硬體 silent fail。每個 family 必須在 arduino_setup 內 emit 一個 init:',
+  es:      'Usar bloques consumidores sin su bloque init/setup causa fallo silencioso del hardware. Emite un init por familia dentro de arduino_setup:',
+  'pt-PT': 'Usar blocos consumidores sem o seu bloco init/setup causa falha silenciosa do hardware. Emite um init por família dentro de arduino_setup:',
+};
+
+/**
+ * Builds the Type-C init contract section, parallel to buildCrossBlockContractSection.
+ */
+export function buildTypeCInitSection(lang: AiLanguage): string {
+  const lines: string[] = [TYPE_C_INTRO[lang]];
+  for (const c of TYPE_C_INIT_CONTRACTS) {
+    const rendered = TYPE_C_INIT_TEMPLATE[lang]
+      .replace('{protocolLabel}', c.protocolLabel)
+      .replace('{consumer}', c.consumerBlocks.join(' / '))
+      .replace('{init}', c.initBlocks.join(' / '));
+    lines.push(rendered);
+  }
+  return lines.join('\n');
+}
+
+// ---------------------------------------------------------------------------
 // Internal exports for testing (registry-integrity + auto-emit verify)
 // ---------------------------------------------------------------------------
 
@@ -278,4 +378,6 @@ export const __testing__ = {
   TEMPLATE_GLOBAL,
   ALL_HANDLERS_REQUIRED_CLAUSE,
   REQUIRED_WHEN_CLAUSE,
+  TYPE_C_INTRO,
+  TYPE_C_INIT_TEMPLATE,
 };

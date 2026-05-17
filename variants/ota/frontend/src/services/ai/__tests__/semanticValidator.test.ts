@@ -1026,3 +1026,130 @@ describe('semanticValidator — Check 8: controls_if_anomaly_no_body (BUG-086)',
     expect(issues.length).toBe(0);
   });
 });
+
+// ---------------------------------------------------------------------------
+// BUG-086 Session 133 (Check 9): missing_required_init (Type C contracts)
+// ---------------------------------------------------------------------------
+
+describe('semanticValidator — Check 9: missing_required_init (BUG-086 Type C)', () => {
+  it('flags espnow_send without espnow_init', () => {
+    const xml = wrap(
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="espnow_send"><value name="DATA"><block type="text"><field name="TEXT">hi</field></block></value></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init') as Extract<ValidationIssue, { kind: 'missing_required_init' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].contractId).toBe('espnow');
+  });
+
+  it('passes espnow_send WITH espnow_init', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP"><block type="espnow_init"></block></statement></block>' +
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="espnow_send"><value name="DATA"><block type="text"><field name="TEXT">hi</field></block></value></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init');
+    expect(issues.length).toBe(0);
+  });
+
+  it('flags ble_uart_write without ble_uart_setup', () => {
+    const xml = wrap(
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="ble_uart_write"><value name="TEXT"><block type="text"><field name="TEXT">hi</field></block></value></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init') as Extract<ValidationIssue, { kind: 'missing_required_init' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].contractId).toBe('ble-uart');
+  });
+
+  it('flags lora_send without lora_init', () => {
+    const xml = wrap(
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="lora_send"><value name="DATA"><block type="text"><field name="TEXT">hi</field></block></value></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init') as Extract<ValidationIssue, { kind: 'missing_required_init' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].contractId).toBe('lora');
+  });
+
+  it('flags iot_cloud_publish without iot_cloud_connect', () => {
+    const xml = wrap(
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="iot_cloud_publish"><value name="PAYLOAD"><block type="text"><field name="TEXT">hi</field></block></value></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init') as Extract<ValidationIssue, { kind: 'missing_required_init' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].contractId).toBe('iot-cloud');
+  });
+
+  it('does NOT flag when no consumer block present', () => {
+    const xml = wrap('<block type="arduino_setup"></block>');
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init');
+    expect(issues.length).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// BUG-086 Session 133 (Check 10): handler_nested_inside_handler
+// ---------------------------------------------------------------------------
+
+describe('semanticValidator — Check 10: handler_nested_inside_handler (BUG-086)', () => {
+  it('flags websocket_server_on_message nested inside another on_message HANDLER', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="websocket_server_on_message" id="outer"><field name="CHANNEL_ID">a</field>' +
+          '<statement name="HANDLER">' +
+            '<block type="websocket_server_on_message" id="inner"><field name="CHANNEL_ID">b</field></block>' +
+          '</statement>' +
+        '</block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'handler_nested_inside_handler') as Extract<ValidationIssue, { kind: 'handler_nested_inside_handler' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].innerHandlerType).toBe('websocket_server_on_message');
+    expect(issues[0].outerHandlerType).toBe('websocket_server_on_message');
+  });
+
+  it('flags ha_switch_on_command nested inside another handler CALLBACK', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ha_switch_on_command" id="outer"><field name="SWITCH_ID">a</field>' +
+          '<statement name="ON_CALLBACK">' +
+            '<block type="ha_switch_on_command" id="inner"><field name="SWITCH_ID">b</field></block>' +
+          '</statement>' +
+        '</block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'handler_nested_inside_handler') as Extract<ValidationIssue, { kind: 'handler_nested_inside_handler' }>[];
+    expect(issues.length).toBe(1);
+  });
+
+  it('does NOT flag handlers at top level (sibling of arduino_setup)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP"></statement></block>' +
+      '<block type="ha_switch_on_command"><field name="SWITCH_ID">relay</field></block>' +
+      '<block type="websocket_server_on_message"><field name="CHANNEL_ID">led</field></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'handler_nested_inside_handler');
+    expect(issues.length).toBe(0);
+  });
+
+  it('does NOT flag controls_if (non-handler) containing handler block', () => {
+    // controls_if is not in ALL_HANDLER_BLOCK_TYPES, so its DO0 is fair game
+    // for handler placement (though it would not be idiomatic).
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="controls_if"><statement name="DO0">' +
+          '<block type="websocket_server_on_message" id="x"><field name="CHANNEL_ID">a</field></block>' +
+        '</statement></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'handler_nested_inside_handler');
+    expect(issues.length).toBe(0);
+  });
+});

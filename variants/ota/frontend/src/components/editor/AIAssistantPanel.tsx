@@ -214,6 +214,8 @@ export function AIAssistantPanel({
       register_without_handler: 0,
       xml_structural_malformed: 0,
       controls_if_anomaly_no_body: 0,
+      missing_required_init: 0,
+      handler_nested_inside_handler: 0,
     };
     for (const i of issues) counts[i.kind]++;
     const parts: string[] = [];
@@ -225,6 +227,8 @@ export function AIAssistantPanel({
     if (counts.register_without_handler > 0)        parts.push(`register-without-handler×${counts.register_without_handler}`);
     if (counts.xml_structural_malformed > 0)        parts.push(`xml-malformed×${counts.xml_structural_malformed}`);
     if (counts.controls_if_anomaly_no_body > 0)     parts.push(`if-no-body×${counts.controls_if_anomaly_no_body}`);
+    if (counts.missing_required_init > 0)           parts.push(`missing-init×${counts.missing_required_init}`);
+    if (counts.handler_nested_inside_handler > 0)   parts.push(`handler-nested×${counts.handler_nested_inside_handler}`);
     return parts.join(', ');
   }
 

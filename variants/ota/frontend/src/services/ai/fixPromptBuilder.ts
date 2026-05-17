@@ -72,6 +72,14 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       if (i.kind !== 'controls_if_anomaly_no_body') return '';
       return `\`controls_if\` (id=${i.controlIfBlockId}) の IF0 入力に \`${i.conditionBlockType}\` block が接続されていますが、DO0 / ELSE 等の本体 statement chain が全て空です。\`${i.conditionBlockType}\` は初期化系/非比較系 block と推測されます。\`controls_if\` を空 body で配置せず、(a) \`${i.conditionBlockType}\` を sequential block として直接 setup chain に置く、(b) DO0 に本来の処理を入れる、(c) この controls_if を削除する、のいずれかにしてください。空 body のまま放置すると Blockly の lenient parser が後続の \`<next>\` chain を silent drop します`;
     },
+    missing_required_init: (i) => {
+      if (i.kind !== 'missing_required_init') return '';
+      return `${i.protocolLabel}: 消費 block (${i.consumerBlocks.join(', ')}) を emit していますが、arduino_setup 内に init block (${i.requiredInitOptions.join(' / ')} のいずれか) が不在です。${i.requiredInitOptions.join(' / ')} のうちいずれか 1 つを必ず arduino_setup 内に追加してください。init 不在のままだと ${i.protocolLabel} ハードウェアは silent fail します`;
+    },
+    handler_nested_inside_handler: (i) => {
+      if (i.kind !== 'handler_nested_inside_handler') return '';
+      return `\`${i.innerHandlerType}\` block (id=${i.innerHandlerId}) が \`${i.outerHandlerType}\` block の HANDLER / CALLBACK 入力内に nest されています。ハンドラ系 block は arduino_setup / arduino_loop と並列の top-level に配置してください。nest すると内側 handler は外側 handler 発火時のみ実行され、独立動作になりません`;
+    },
   },
   en: {
     unconnected_value_input: (i) => {
@@ -111,6 +119,14 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
     controls_if_anomaly_no_body: (i) => {
       if (i.kind !== 'controls_if_anomaly_no_body') return '';
       return `\`controls_if\` (id=${i.controlIfBlockId}) has \`${i.conditionBlockType}\` connected as IF0, but DO0 / ELSE / other body statements are all empty. \`${i.conditionBlockType}\` looks like an initialization / non-comparison block. Do NOT place \`controls_if\` with an empty body; instead either (a) put \`${i.conditionBlockType}\` directly as a sequential block in the setup chain, (b) fill DO0 with the intended work, or (c) remove this controls_if entirely. An empty body causes Blockly's lenient parser to silently drop the trailing \`<next>\` chain`;
+    },
+    missing_required_init: (i) => {
+      if (i.kind !== 'missing_required_init') return '';
+      return `${i.protocolLabel}: consumer blocks (${i.consumerBlocks.join(', ')}) are emitted but no init block (${i.requiredInitOptions.join(' / ')}) is present in arduino_setup. Add one of ${i.requiredInitOptions.join(' / ')} inside arduino_setup. Without the init, ${i.protocolLabel} hardware silently fails`;
+    },
+    handler_nested_inside_handler: (i) => {
+      if (i.kind !== 'handler_nested_inside_handler') return '';
+      return `\`${i.innerHandlerType}\` block (id=${i.innerHandlerId}) is nested inside the HANDLER / CALLBACK input of \`${i.outerHandlerType}\`. Handler blocks MUST be placed at the top level alongside arduino_setup / arduino_loop. Nesting causes the inner handler to run only when the outer fires, breaking independent operation`;
     },
   },
   'zh-TW': {
@@ -152,6 +168,14 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       if (i.kind !== 'controls_if_anomaly_no_body') return '';
       return `\`controls_if\` (id=${i.controlIfBlockId}) 的 IF0 輸入連接了 \`${i.conditionBlockType}\` 積木，但 DO0 / ELSE 等 body statement 全部為空。\`${i.conditionBlockType}\` 看起來是初始化系/非比較系積木。請勿將 \`controls_if\` 留空 body，請改用 (a) 將 \`${i.conditionBlockType}\` 直接放在 setup chain 作為 sequential block、(b) 在 DO0 中填入實際處理、或 (c) 移除此 controls_if。空 body 會導致 Blockly 的 lenient parser silent 丟棄後續 \`<next>\` chain`;
     },
+    missing_required_init: (i) => {
+      if (i.kind !== 'missing_required_init') return '';
+      return `${i.protocolLabel}: emit 了消費積木 (${i.consumerBlocks.join(', ')}) 但 arduino_setup 內缺少 init 積木 (${i.requiredInitOptions.join(' / ')} 之一)。請在 arduino_setup 內加入 ${i.requiredInitOptions.join(' / ')} 之一。init 不在則 ${i.protocolLabel} 硬體會 silent fail`;
+    },
+    handler_nested_inside_handler: (i) => {
+      if (i.kind !== 'handler_nested_inside_handler') return '';
+      return `\`${i.innerHandlerType}\` 積木 (id=${i.innerHandlerId}) 被 nest 在 \`${i.outerHandlerType}\` 的 HANDLER / CALLBACK 輸入內。處理器積木必須與 arduino_setup / arduino_loop 並列放置於 top-level。Nest 會使內部處理器僅在外部處理器觸發時執行，破壞獨立運作`;
+    },
   },
   es: {
     unconnected_value_input: (i) => {
@@ -192,6 +216,14 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       if (i.kind !== 'controls_if_anomaly_no_body') return '';
       return `\`controls_if\` (id=${i.controlIfBlockId}) tiene \`${i.conditionBlockType}\` conectado como IF0, pero DO0 / ELSE / otros statements del cuerpo están todos vacíos. \`${i.conditionBlockType}\` parece un bloque de inicialización / no-comparación. NO coloques \`controls_if\` con cuerpo vacío; en su lugar (a) coloca \`${i.conditionBlockType}\` directamente como bloque secuencial en la cadena de setup, (b) rellena DO0 con el trabajo previsto, o (c) elimina este controls_if. Un cuerpo vacío hace que el parser tolerante de Blockly descarte silenciosamente la cadena \`<next>\` posterior`;
     },
+    missing_required_init: (i) => {
+      if (i.kind !== 'missing_required_init') return '';
+      return `${i.protocolLabel}: bloques consumidores (${i.consumerBlocks.join(', ')}) emitidos pero falta un bloque init (${i.requiredInitOptions.join(' / ')}) en arduino_setup. Añade uno de ${i.requiredInitOptions.join(' / ')} dentro de arduino_setup. Sin el init, el hardware ${i.protocolLabel} falla silenciosamente`;
+    },
+    handler_nested_inside_handler: (i) => {
+      if (i.kind !== 'handler_nested_inside_handler') return '';
+      return `El bloque \`${i.innerHandlerType}\` (id=${i.innerHandlerId}) está anidado dentro de la entrada HANDLER / CALLBACK de \`${i.outerHandlerType}\`. Los bloques handler DEBEN colocarse al nivel superior junto a arduino_setup / arduino_loop. Anidar causa que el handler interno se ejecute solo cuando dispara el externo, rompiendo la operación independiente`;
+    },
   },
   'pt-PT': {
     unconnected_value_input: (i) => {
@@ -231,6 +263,14 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
     controls_if_anomaly_no_body: (i) => {
       if (i.kind !== 'controls_if_anomaly_no_body') return '';
       return `\`controls_if\` (id=${i.controlIfBlockId}) tem \`${i.conditionBlockType}\` ligado como IF0, mas DO0 / ELSE / outros statements do corpo estão todos vazios. \`${i.conditionBlockType}\` parece um bloco de inicialização / não-comparação. NÃO coloques \`controls_if\` com corpo vazio; em vez disso (a) coloca \`${i.conditionBlockType}\` diretamente como bloco sequencial na cadeia de setup, (b) preenche DO0 com o trabalho pretendido, ou (c) remove este controls_if. Um corpo vazio faz com que o parser tolerante do Blockly descarte silenciosamente a cadeia \`<next>\` seguinte`;
+    },
+    missing_required_init: (i) => {
+      if (i.kind !== 'missing_required_init') return '';
+      return `${i.protocolLabel}: blocos consumidores (${i.consumerBlocks.join(', ')}) emitidos mas falta um bloco init (${i.requiredInitOptions.join(' / ')}) em arduino_setup. Adiciona um de ${i.requiredInitOptions.join(' / ')} dentro de arduino_setup. Sem o init, o hardware ${i.protocolLabel} falha silenciosamente`;
+    },
+    handler_nested_inside_handler: (i) => {
+      if (i.kind !== 'handler_nested_inside_handler') return '';
+      return `O bloco \`${i.innerHandlerType}\` (id=${i.innerHandlerId}) está aninhado dentro da entrada HANDLER / CALLBACK de \`${i.outerHandlerType}\`. Os blocos handler DEVEM ser colocados no nível superior junto a arduino_setup / arduino_loop. Aninhar faz com que o handler interno execute só quando o externo dispara, quebrando a operação independente`;
     },
   },
 };
