@@ -172,6 +172,38 @@ export function validateXml(xmlString: string, catalog: BlockCatalog): Validatio
     // `text/xml` — sticking with the proven path keeps parity.
     const doc = parser.parseFromString(xmlString, 'application/xml');
 
+    // BUG-085 P2-V silent-failure diagnostic (temporary, remove after the
+    // browser-side root cause of "validator returns issues=[] for AI XML
+    // that should trigger F1+F2" is confirmed). Captures DOMParser state,
+    // structural counts, namespace info, and XML preview so we can see
+    // exactly what the validator received and how the browser DOM parsed it.
+    // This runs synchronously inside the validator, costs ~1 console call
+    // per generation, no business-logic impact.
+    const debugTopLevel = doc.documentElement
+      ? Array.from(doc.documentElement.children).map((c) => ({
+          tagName: c.tagName,
+          type: c.getAttribute('type'),
+        }))
+      : [];
+    const xmlPreview =
+      xmlString.length > 1500
+        ? `${xmlString.slice(0, 750)}\n...[truncated ${xmlString.length - 1500} chars]...\n${xmlString.slice(-750)}`
+        : xmlString;
+    // eslint-disable-next-line no-console
+    console.info('[BUG-085 P2-V DEBUG] validateXml entry', {
+      xmlByteLength: xmlString.length,
+      hasXmlnsDecl: xmlString.includes('xmlns'),
+      rootTagName: doc.documentElement?.tagName ?? null,
+      rootLocalName: doc.documentElement?.localName ?? null,
+      rootNamespaceURI: doc.documentElement?.namespaceURI ?? null,
+      parsererror: !!doc.querySelector('parsererror'),
+      totalBlockCount: doc.querySelectorAll('block').length,
+      topLevelChildrenCount: debugTopLevel.length,
+      topLevelChildren: debugTopLevel,
+      catalogSize: catalog.blocks.length,
+      xmlPreview,
+    });
+
     // Parse error detection: in Chrome/Firefox XML mode, a malformed input
     // produces a doc whose tree contains <parsererror>. `doc.querySelector`
     // searches the entire document (not just below documentElement), which
