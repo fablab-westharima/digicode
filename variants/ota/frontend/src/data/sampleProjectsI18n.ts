@@ -291,6 +291,10 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'HA Robust Build (with watchdog)',
         description: 'watchdog_enable auto-restarts on a 60 s loop hang; ha_diagnostics_auto continuously reports RSSI / Uptime / Heap / reset reason to HA. For 24/7 sensors and factory IoT',
       },
+      'wifi-led-servo-controller': {
+        title: 'WiFi Controller + LED + Servo (2-channel, no temp sensor)',
+        description: 'Control LED toggle / Servo slider from any browser via WebSocket server (BUG-086: 2-channel canonical reference). ★ MUST: emit a matching websocket_server_on_message handler for each WRITE=TRUE register (led / servo) with the same CHANNEL_ID. ★ MUST: connect websocket_server_received_value to servo_write\'s ANGLE input (no hardcoded literals).',
+      },
     },
   },
   es: {
@@ -558,6 +562,10 @@ const overrides: Record<string, LocaleOverride> = {
       'ha-watchdog-resilience': {
         title: 'Construcción robusta HA (con watchdog)',
         description: 'watchdog_enable reinicia automáticamente tras 60 s de bloqueo del loop; ha_diagnostics_auto reporta continuamente RSSI / Uptime / Heap / motivo de reinicio a HA. Para sensores 24/7 e IoT industrial',
+      },
+      'wifi-led-servo-controller': {
+        title: 'Controlador WiFi + LED + Servo (2 canales, sin sensor de temperatura)',
+        description: 'Controla LED toggle / slider de Servo desde un navegador vía servidor WebSocket (BUG-086: referencia canónica de 2 canales). ★ OBLIGATORIO: emitir un handler websocket_server_on_message que coincida para cada register WRITE=TRUE (led / servo) con el mismo CHANNEL_ID. ★ OBLIGATORIO: conectar websocket_server_received_value al input ANGLE de servo_write (sin literales hardcodeados).',
       },
     },
   },
@@ -827,6 +835,10 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Implementação robusta HA (com watchdog)',
         description: 'watchdog_enable reinicia automaticamente após 60 s de bloqueio do loop; ha_diagnostics_auto reporta continuamente RSSI / Uptime / Heap / motivo de reinício para HA. Para sensores 24/7 e IoT industrial',
       },
+      'wifi-led-servo-controller': {
+        title: 'Controlador WiFi + LED + Servo (2 canais, sem sensor de temperatura)',
+        description: 'Controla LED toggle / slider de Servo a partir de um browser via servidor WebSocket (BUG-086: referência canónica de 2 canais). ★ OBRIGATÓRIO: emitir um handler websocket_server_on_message correspondente para cada register WRITE=TRUE (led / servo) com o mesmo CHANNEL_ID. ★ OBRIGATÓRIO: ligar websocket_server_received_value ao input ANGLE de servo_write (sem literais hardcoded).',
+      },
     },
   },
   'zh-TW': {
@@ -1094,6 +1106,10 @@ const overrides: Record<string, LocaleOverride> = {
       'ha-watchdog-resilience': {
         title: 'HA 堅韌構成 (整合 watchdog)',
         description: 'watchdog_enable 在 60 秒 loop 卡住時自動重啟；ha_diagnostics_auto 持續向 HA 回報 RSSI / Uptime / Heap / 重啟原因。適合 24/7 感測器 / 工廠 IoT',
+      },
+      'wifi-led-servo-controller': {
+        title: 'WiFi 控制器 + LED + Servo (2-channel、無溫度感測器)',
+        description: '透過 WebSocket 伺服器從瀏覽器控制 LED toggle / Servo slider (BUG-086: 2-channel 標準參考)。★ 必須: 每個 WRITE=TRUE register block (led / servo) 都要 emit 對應的 websocket_server_on_message handler，且 CHANNEL_ID 相同。★ 必須: 將 websocket_server_received_value 連接到 servo_write 的 ANGLE 輸入 (禁止 hardcode literals)。',
       },
     },
   },
