@@ -188,7 +188,7 @@ const overrides: Record<string, LocaleOverride> = {
       },
       'wifi-dht22-controller': {
         title: 'WiFi Controller + DHT22 Temperature Broadcast (Web UI + LED + Servo + Temperature)',
-        description: 'Control LED toggle and servo slider from any browser via WebSocket + broadcast DHT22 temperature to the Web UI (BUG-085: canonical reference for the user verbatim prompt)',
+        description: 'Control LED toggle and servo slider from any browser via WebSocket + broadcast DHT22 temperature to the Web UI (BUG-085: canonical reference for the user verbatim prompt). ★ MUST: connect websocket_server_received_value to servo_write\'s ANGLE input (no hardcoded literals). ★ MUST: place websocket_server_received_value ONLY inside on_message HANDLER — never at top-level (siblings of arduino_setup / arduino_loop), which emits meaningless `wsServerMessage;` expressions.',
       },
       'ha-multi-control': {
         title: 'HA Multi-entity Control (Switch + Number Slider + Sensor)',
@@ -456,7 +456,7 @@ const overrides: Record<string, LocaleOverride> = {
       },
       'wifi-dht22-controller': {
         title: 'Controlador WiFi + transmisión de temperatura DHT22 (Web UI + LED + Servo + Temperatura)',
-        description: 'Controla toggle LED y slider servo desde cualquier navegador vía WebSocket + transmite la temperatura DHT22 al Web UI (BUG-085: referencia canónica para el prompt verbatim del usuario)',
+        description: 'Controla toggle LED y slider servo desde cualquier navegador vía WebSocket + transmite la temperatura DHT22 al Web UI (BUG-085: referencia canónica para el prompt verbatim del usuario). ★ OBLIGATORIO: conecta websocket_server_received_value a la entrada ANGLE de servo_write (sin hardcoded literals). ★ OBLIGATORIO: coloca websocket_server_received_value SOLO dentro del HANDLER on_message — nunca en top-level (como hermanos de arduino_setup / arduino_loop), lo que emitiría expresiones sin sentido como `wsServerMessage;`.',
       },
       'ha-multi-control': {
         title: 'Control multi-entity HA (Switch + Slider Number + Sensor)',
@@ -724,7 +724,7 @@ const overrides: Record<string, LocaleOverride> = {
       },
       'wifi-dht22-controller': {
         title: 'Controlador WiFi + transmissão de temperatura DHT22 (Web UI + LED + Servo + Temperatura)',
-        description: 'Controla toggle LED e slider servo a partir de qualquer browser via WebSocket + transmite a temperatura DHT22 para o Web UI (BUG-085: referência canónica para o prompt verbatim do utilizador)',
+        description: 'Controla toggle LED e slider servo a partir de qualquer browser via WebSocket + transmite a temperatura DHT22 para o Web UI (BUG-085: referência canónica para o prompt verbatim do utilizador). ★ OBRIGATÓRIO: liga websocket_server_received_value à entrada ANGLE de servo_write (sem hardcoded literals). ★ OBRIGATÓRIO: coloca websocket_server_received_value APENAS dentro do HANDLER on_message — nunca no top-level (como irmãos de arduino_setup / arduino_loop), o que emitiria expressões sem sentido como `wsServerMessage;`.',
       },
       'ha-multi-control': {
         title: 'Controlo multi-entity HA (Switch + Slider Number + Sensor)',
@@ -992,7 +992,7 @@ const overrides: Record<string, LocaleOverride> = {
       },
       'wifi-dht22-controller': {
         title: 'WiFi 控制器 + DHT22 溫度廣播 (Web UI + LED + Servo + 溫度)',
-        description: '透過 WebSocket 從任何瀏覽器控制 LED toggle 和 servo slider + 廣播 DHT22 溫度至 Web UI (BUG-085: user verbatim prompt 的標準參考)',
+        description: '透過 WebSocket 從任何瀏覽器控制 LED toggle 和 servo slider + 廣播 DHT22 溫度至 Web UI (BUG-085: user verbatim prompt 的標準參考)。★ 必須: 將 websocket_server_received_value 連接到 servo_write 的 ANGLE 輸入 (禁止 hardcode 固定值)。★ 必須: websocket_server_received_value 積木僅可放在 on_message HANDLER 內 — 絕對禁止放在 top-level (arduino_setup / arduino_loop 的 sibling)，會 emit 無意義的 `wsServerMessage;` 表達式。',
       },
       'ha-multi-control': {
         title: 'HA 多 entity 控制 (Switch + Number Slider + Sensor)',
