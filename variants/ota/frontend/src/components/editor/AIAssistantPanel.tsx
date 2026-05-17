@@ -10,6 +10,9 @@ import { createAIClient, ApiAuthError, RateLimitError, NetworkError } from '@/se
 import type { AiConfig, Message } from '@/services/ai/index';
 import { AI_LANGUAGES, type AiLanguage } from '@/data/aiSystemPrompts';
 import { exportConversationToMarkdown } from '@/services/ai/conversationExporter';
+import { generateAndValidate } from '@/services/ai/validationRetryOrchestrator';
+import { fetchCatalog } from '@/services/ai/systemPrompt';
+import type { ValidationIssue } from '@/services/ai/semanticValidator';
 import { useBeforeUnloadWarning } from '@/hooks/useBeforeUnloadWarning';
 
 interface AIAssistantPanelProps {
@@ -52,6 +55,10 @@ export function AIAssistantPanel({
   const [input, setInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  // BUG-085 Phase 2-V — warning shown when semantic validator residual issues
+  // remain after 3 retries (D-3 採択: still apply XML + warn user). Distinct
+  // from errorMsg which blocks the flow; warningMsg coexists with success.
+  const [warningMsg, setWarningMsg] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const conversation = currentMode === 'blockGen' ? conversationBlockGen : conversationHelpBot;
@@ -127,6 +134,7 @@ export function AIAssistantPanel({
 
     setGenerating(true);
     setErrorMsg('');
+    setWarningMsg('');
 
     const config: AiConfig = { provider, apiKey, customEndpoint, model };
     const client = createAIClient(config);
@@ -135,24 +143,49 @@ export function AIAssistantPanel({
     const generateRequest = input.trim() || 'Generate.';
 
     try {
-      const result = await client.generateFromConversation({
-        messages: conversationBlockGen,
-        generateRequest,
-        language,
-        robotMode,
-        board,
-        existingXml: workspaceXml,
-      });
+      // BUG-085 Phase 2-V — wrap generateFromConversation with semantic
+      // validator + auto-fix retry loop (max 3 retries). residualIssues
+      // surfaces remaining defects (servo ANGLE hardcode / orphan
+      // received_value at top-level / ON-OFF asymmetric branch / missing
+      // wifi_connect) that even 3 fix-prompt retries couldn't resolve.
+      const catalog = await fetchCatalog();
+      const validatedResult = await generateAndValidate(
+        client,
+        {
+          messages: conversationBlockGen,
+          generateRequest,
+          language,
+          robotMode,
+          board,
+          existingXml: workspaceXml,
+        },
+        catalog,
+      );
 
-      onAppendBlocks?.(result.xml);
+      onAppendBlocks?.(validatedResult.xml);
 
-      const count = (result.xml.match(/<block /g) || []).length;
+      // D-3 採択: residual issues remain → show warning, but still apply XML
+      // (user can manually correct in workspace).
+      if (validatedResult.residualIssues.length > 0) {
+        setWarningMsg(
+          t('ai.validationResidualWarning', {
+            count: validatedResult.residualIssues.length,
+            retries: validatedResult.semanticRetries,
+            summary: summarizeIssues(validatedResult.residualIssues),
+          }),
+        );
+        // Console.warn for debug visibility (rule 14: no secrets in residuals).
+        // eslint-disable-next-line no-console
+        console.warn('[BUG-085 P2-V] Residual validation issues:', validatedResult.residualIssues);
+      }
+
+      const count = (validatedResult.xml.match(/<block /g) || []).length;
       const metaMsg: Message = {
         id: crypto.randomUUID(),
         role: 'system-meta',
         content: t('ai.systemMetaAdded', { count }) + ` (${robotMode} / ${board.name})`,
         timestamp: Date.now(),
-        generatedXml: result.xml,
+        generatedXml: validatedResult.xml,
       };
       appendMessage('blockGen', metaMsg);
       setInput('');
@@ -166,6 +199,26 @@ export function AIAssistantPanel({
       setGenerating(false);
     }
   };
+
+  /**
+   * Compact one-line summary of residual ValidationIssue list for user
+   * warning banner. Console.warn carries the full structured payload.
+   */
+  function summarizeIssues(issues: ValidationIssue[]): string {
+    const counts: Record<ValidationIssue['kind'], number> = {
+      unconnected_value_input: 0,
+      orphan_value_block: 0,
+      asymmetric_binary_branch: 0,
+      missing_wifi_connect: 0,
+    };
+    for (const i of issues) counts[i.kind]++;
+    const parts: string[] = [];
+    if (counts.unconnected_value_input > 0) parts.push(`unconnected×${counts.unconnected_value_input}`);
+    if (counts.orphan_value_block > 0)      parts.push(`orphan×${counts.orphan_value_block}`);
+    if (counts.asymmetric_binary_branch > 0) parts.push(`asymmetric×${counts.asymmetric_binary_branch}`);
+    if (counts.missing_wifi_connect > 0)    parts.push(`missing-wifi×${counts.missing_wifi_connect}`);
+    return parts.join(', ');
+  }
 
   const handleExport = () => {
     if (conversation.length === 0) return;
@@ -386,6 +439,15 @@ export function AIAssistantPanel({
           <div className="mt-1 flex items-start gap-1 text-xs text-red-400">
             <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" />
             <span>{errorMsg}</span>
+          </div>
+        )}
+
+        {/* BUG-085 Phase 2-V — semantic validation residual warning.
+            Coexists with success state (XML still applied per D-3 採択). */}
+        {warningMsg && (
+          <div className="mt-1 flex items-start gap-1 text-xs text-amber-500">
+            <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" />
+            <span>{warningMsg}</span>
           </div>
         )}
       </div>

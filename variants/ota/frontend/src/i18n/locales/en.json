@@ -4452,6 +4452,7 @@
     "errorRateLimit": "Rate limit reached (429)",
     "errorNetwork": "Network error (possibly CORS)",
     "errorGeneration": "Could not generate valid XML (3 attempts)",
+    "validationResidualWarning": "The AI-generated XML has {{count}} unresolved structural issue(s) after {{retries}} auto-fix retries ({{summary}}). Check the console for details. Consider manual correction in the workspace.",
     "provider": {
       "label": "AI Provider",
       "openai": "OpenAI",

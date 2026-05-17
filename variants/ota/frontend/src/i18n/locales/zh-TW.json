@@ -4452,6 +4452,7 @@
     "errorRateLimit": "已達使用上限（429）",
     "errorNetwork": "網路錯誤（可能為 CORS 問題）",
     "errorGeneration": "無法生成有效的 XML（已嘗試 3 次）",
+    "validationResidualWarning": "AI 生成的 XML 在 {{retries}} 次 auto-fix 重試後仍有 {{count}} 個結構性問題未解決（{{summary}}）。請查看 console 取得詳情。可考慮在工作區手動修正。",
     "provider": {
       "label": "AI 提供商",
       "openai": "OpenAI",

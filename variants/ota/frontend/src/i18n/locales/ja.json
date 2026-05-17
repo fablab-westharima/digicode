@@ -4458,6 +4458,7 @@
     "errorRateLimit": "利用制限に達しました（429）",
     "errorNetwork": "ネットワークエラー（CORSの可能性）",
     "errorGeneration": "有効なXMLを生成できませんでした（3回試行）",
+    "validationResidualWarning": "AI 生成 XML に {{count}} 件の構造的問題が残存しています（auto-fix {{retries}} 回 retry 後、{{summary}}）。コンソールで詳細を確認し、必要ならワークスペースで手動修正してください。",
     "provider": {
       "label": "AIプロバイダー",
       "openai": "OpenAI",

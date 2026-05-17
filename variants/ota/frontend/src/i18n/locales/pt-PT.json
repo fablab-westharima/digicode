@@ -4452,6 +4452,7 @@
     "errorRateLimit": "Limite de utilização atingido (429)",
     "errorNetwork": "Erro de rede (possivelmente CORS)",
     "errorGeneration": "Não foi possível gerar XML válido (3 tentativas)",
+    "validationResidualWarning": "O XML gerado pela AI tem {{count}} problema(s) estrutural(is) por resolver após {{retries}} tentativas de auto-fix ({{summary}}). Consulta a consola para detalhes. Considera corrigi-lo manualmente no espaço de trabalho.",
     "provider": {
       "label": "Fornecedor de IA",
       "openai": "OpenAI",
