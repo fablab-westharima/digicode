@@ -186,6 +186,18 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'WiFi Controller Combo (LED + Servo + Temperature)',
         description: 'Bundle LED toggle / servo slider / temperature display on one ESP32 and control them from any browser via the WebSocket controller',
       },
+      'wifi-dht22-controller': {
+        title: 'WiFi Controller + DHT22 Temperature Broadcast (Web UI + LED + Servo + Temperature)',
+        description: 'Control LED toggle and servo slider from any browser via WebSocket + broadcast DHT22 temperature to the Web UI (BUG-085: canonical reference for the user verbatim prompt)',
+      },
+      'ha-multi-control': {
+        title: 'HA Multi-entity Control (Switch + Number Slider + Sensor)',
+        description: 'Control LED via HA Switch ON/OFF + servo angle via HA Number slider + report DHT22 temperature as an HA sensor (canonical reference for the HA callback cluster, BUG-085)',
+      },
+      'espnow-peer-control': {
+        title: 'ESP-NOW Peer Receive → LED Control (actuator drive)',
+        description: 'Receive "LED_ON" / "LED_OFF" messages from another device via ESP-NOW and control the LED (espnow_received_data + controls_if branching pattern, BUG-085)',
+      },
       'tm1637-clock': {
         title: 'TM1637 Digital Clock',
         description: 'Display HH:MM time on TM1637 4-digit 7-segment',
@@ -441,6 +453,18 @@ const overrides: Record<string, LocaleOverride> = {
       'wifi-controller-mix': {
         title: 'Combo controlador WiFi (LED + Servo + Temperatura)',
         description: 'Agrupa toggle LED / slider de servo / display de temperatura en un ESP32 y contrólalos desde cualquier navegador vía el controlador WebSocket',
+      },
+      'wifi-dht22-controller': {
+        title: 'Controlador WiFi + transmisión de temperatura DHT22 (Web UI + LED + Servo + Temperatura)',
+        description: 'Controla toggle LED y slider servo desde cualquier navegador vía WebSocket + transmite la temperatura DHT22 al Web UI (BUG-085: referencia canónica para el prompt verbatim del usuario)',
+      },
+      'ha-multi-control': {
+        title: 'Control multi-entity HA (Switch + Slider Number + Sensor)',
+        description: 'Controla LED vía HA Switch ON/OFF + ángulo de servo vía slider HA Number + reporta temperatura DHT22 como sensor HA (referencia canónica del cluster de callbacks HA, BUG-085)',
+      },
+      'espnow-peer-control': {
+        title: 'Recepción peer ESP-NOW → control LED (drive de actuador)',
+        description: 'Recibe mensajes "LED_ON" / "LED_OFF" desde otro dispositivo vía ESP-NOW y controla el LED (patrón espnow_received_data + bifurcación controls_if, BUG-085)',
       },
       'tm1637-clock': {
         title: 'Reloj digital TM1637',
@@ -698,6 +722,18 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Combo controlador WiFi (LED + Servo + Temperatura)',
         description: 'Agrupa toggle LED / slider de servo / display de temperatura num ESP32 e controla-os a partir de qualquer browser via o controlador WebSocket',
       },
+      'wifi-dht22-controller': {
+        title: 'Controlador WiFi + transmissão de temperatura DHT22 (Web UI + LED + Servo + Temperatura)',
+        description: 'Controla toggle LED e slider servo a partir de qualquer browser via WebSocket + transmite a temperatura DHT22 para o Web UI (BUG-085: referência canónica para o prompt verbatim do utilizador)',
+      },
+      'ha-multi-control': {
+        title: 'Controlo multi-entity HA (Switch + Slider Number + Sensor)',
+        description: 'Controla LED via HA Switch ON/OFF + ângulo do servo via slider HA Number + reporta temperatura DHT22 como sensor HA (referência canónica do cluster de callbacks HA, BUG-085)',
+      },
+      'espnow-peer-control': {
+        title: 'Receção peer ESP-NOW → controlo LED (drive de atuador)',
+        description: 'Recebe mensagens "LED_ON" / "LED_OFF" de outro dispositivo via ESP-NOW e controla o LED (padrão espnow_received_data + bifurcação controls_if, BUG-085)',
+      },
       'tm1637-clock': {
         title: 'Relógio digital TM1637',
         description: 'Mostra HH:MM no display de 4 dígitos TM1637',
@@ -953,6 +989,18 @@ const overrides: Record<string, LocaleOverride> = {
       'wifi-controller-mix': {
         title: 'WiFi 控制器整合 (LED + Servo + 溫度)',
         description: '透過 WebSocket 伺服器在 1 個 ESP32 上整合 LED toggle / Servo slider / 溫度顯示，從任何瀏覽器控制',
+      },
+      'wifi-dht22-controller': {
+        title: 'WiFi 控制器 + DHT22 溫度廣播 (Web UI + LED + Servo + 溫度)',
+        description: '透過 WebSocket 從任何瀏覽器控制 LED toggle 和 servo slider + 廣播 DHT22 溫度至 Web UI (BUG-085: user verbatim prompt 的標準參考)',
+      },
+      'ha-multi-control': {
+        title: 'HA 多 entity 控制 (Switch + Number Slider + Sensor)',
+        description: '透過 HA Switch ON/OFF 控制 LED + 透過 HA Number slider 控制 servo 角度 + 將 DHT22 溫度報告為 HA sensor (HA callback cluster 的標準參考, BUG-085)',
+      },
+      'espnow-peer-control': {
+        title: 'ESP-NOW peer 接收 → LED 控制 (致動器驅動)',
+        description: '透過 ESP-NOW 從其他裝置接收 "LED_ON" / "LED_OFF" 訊息並控制 LED (espnow_received_data + controls_if 分支 pattern, BUG-085)',
       },
       'tm1637-clock': {
         title: 'TM1637 數位時鐘',

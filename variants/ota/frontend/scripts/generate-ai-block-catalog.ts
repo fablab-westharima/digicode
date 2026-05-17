@@ -52,6 +52,14 @@ interface BlockEntry {
   colour: string;
   isStatement: boolean;
   hasOutput: boolean;
+  /**
+   * BUG-085 (第132回): value block の output 型を catalog field 化。setOutput(true, 'String')
+   * の 2nd 引数を AST 解析で抽出、AI が「value block が何を出力するか」を schema レベルで
+   * 認識可能に。`null` = any / dynamic / 抽出不能 (ternary 等)、`string` = 単一型、
+   * `string[]` = 複数型許容 (setOutput(true, ['Number', 'Boolean']) 等)、unset = hasOutput=false
+   * (statement / hat block で output 不在)。
+   */
+  outputType?: string | string[] | null;
   modes: string[];
   boardRequires: string | null;
   builtin?: true;
@@ -101,6 +109,7 @@ interface BlockMeta {
   colour: string;
   isStatement: boolean;
   hasOutput: boolean;
+  outputType: string | string[] | null;
   fields: FieldDef[];
   valueInputs: ValueInputDef[];
   statementInputs: StatementInputDef[];
@@ -194,22 +203,22 @@ function isCredentialField(name: string): boolean {
 // Correct metadata for Blockly built-in blocks that are value blocks (output, not statement).
 // Default fallback in the generator is isStatement=true/hasOutput=false which is wrong for these.
 const BUILTIN_CORRECT_META: Record<string, Partial<BlockMeta>> = {
-  math_number:        { isStatement: false, hasOutput: true, fields: [{ name: 'NUM', fieldType: 'number' }], valueInputs: [], statementInputs: [] },
-  text:               { isStatement: false, hasOutput: true, fields: [{ name: 'TEXT', fieldType: 'text' }],  valueInputs: [], statementInputs: [] },
-  logic_boolean:      { isStatement: false, hasOutput: true, fields: [{ name: 'BOOL', fieldType: 'dropdown', options: ['TRUE', 'FALSE'] }], valueInputs: [], statementInputs: [] },
-  logic_negate:       { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'BOOL', check: 'Boolean' }], statementInputs: [] },
-  logic_compare:      { isStatement: false, hasOutput: true, fields: [{ name: 'OP', fieldType: 'dropdown', options: ['EQ','NEQ','LT','LTE','GT','GTE'] }], valueInputs: [{ name: 'A', check: null }, { name: 'B', check: null }], statementInputs: [] },
-  logic_operation:    { isStatement: false, hasOutput: true, fields: [{ name: 'OP', fieldType: 'dropdown', options: ['AND', 'OR'] }], valueInputs: [{ name: 'A', check: 'Boolean' }, { name: 'B', check: 'Boolean' }], statementInputs: [] },
-  logic_ternary:      { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'IF', check: 'Boolean' }, { name: 'THEN', check: null }, { name: 'ELSE', check: null }], statementInputs: [] },
-  math_arithmetic:    { isStatement: false, hasOutput: true, fields: [{ name: 'OP', fieldType: 'dropdown', options: ['ADD','MINUS','MULTIPLY','DIVIDE','POWER'] }], valueInputs: [{ name: 'A', check: 'Number' }, { name: 'B', check: 'Number' }], statementInputs: [] },
-  math_random_int:    { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'FROM', check: 'Number' }, { name: 'TO', check: 'Number' }], statementInputs: [] },
-  math_modulo:        { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'DIVIDEND', check: 'Number' }, { name: 'DIVISOR', check: 'Number' }], statementInputs: [] },
-  math_constrain:     { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'VALUE', check: 'Number' }, { name: 'LOW', check: 'Number' }, { name: 'HIGH', check: 'Number' }], statementInputs: [] },
-  math_round:         { isStatement: false, hasOutput: true, fields: [{ name: 'OP', fieldType: 'dropdown', options: ['ROUND','ROUNDUP','ROUNDDOWN'] }], valueInputs: [{ name: 'NUM', check: 'Number' }], statementInputs: [] },
-  math_single:        { isStatement: false, hasOutput: true, fields: [{ name: 'OP', fieldType: 'dropdown', options: ['ROOT','ABS','NEG','LN','LOG10','EXP','POW10'] }], valueInputs: [{ name: 'NUM', check: 'Number' }], statementInputs: [] },
-  math_map:           { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'VALUE', check: 'Number' }, { name: 'FROMLOW', check: 'Number' }, { name: 'FROMHIGH', check: 'Number' }, { name: 'TOLOW', check: 'Number' }, { name: 'TOHIGH', check: 'Number' }], statementInputs: [] },
-  text_join:          { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'ADD0', check: null }, { name: 'ADD1', check: null }], statementInputs: [] },
-  text_length:        { isStatement: false, hasOutput: true, fields: [], valueInputs: [{ name: 'VALUE', check: 'String' }], statementInputs: [] },
+  math_number:        { isStatement: false, hasOutput: true, outputType: 'Number', fields: [{ name: 'NUM', fieldType: 'number' }], valueInputs: [], statementInputs: [] },
+  text:               { isStatement: false, hasOutput: true, outputType: 'String', fields: [{ name: 'TEXT', fieldType: 'text' }],  valueInputs: [], statementInputs: [] },
+  logic_boolean:      { isStatement: false, hasOutput: true, outputType: 'Boolean', fields: [{ name: 'BOOL', fieldType: 'dropdown', options: ['TRUE', 'FALSE'] }], valueInputs: [], statementInputs: [] },
+  logic_negate:       { isStatement: false, hasOutput: true, outputType: 'Boolean', fields: [], valueInputs: [{ name: 'BOOL', check: 'Boolean' }], statementInputs: [] },
+  logic_compare:      { isStatement: false, hasOutput: true, outputType: 'Boolean', fields: [{ name: 'OP', fieldType: 'dropdown', options: ['EQ','NEQ','LT','LTE','GT','GTE'] }], valueInputs: [{ name: 'A', check: null }, { name: 'B', check: null }], statementInputs: [] },
+  logic_operation:    { isStatement: false, hasOutput: true, outputType: 'Boolean', fields: [{ name: 'OP', fieldType: 'dropdown', options: ['AND', 'OR'] }], valueInputs: [{ name: 'A', check: 'Boolean' }, { name: 'B', check: 'Boolean' }], statementInputs: [] },
+  logic_ternary:      { isStatement: false, hasOutput: true, outputType: null, fields: [], valueInputs: [{ name: 'IF', check: 'Boolean' }, { name: 'THEN', check: null }, { name: 'ELSE', check: null }], statementInputs: [] },
+  math_arithmetic:    { isStatement: false, hasOutput: true, outputType: 'Number', fields: [{ name: 'OP', fieldType: 'dropdown', options: ['ADD','MINUS','MULTIPLY','DIVIDE','POWER'] }], valueInputs: [{ name: 'A', check: 'Number' }, { name: 'B', check: 'Number' }], statementInputs: [] },
+  math_random_int:    { isStatement: false, hasOutput: true, outputType: 'Number', fields: [], valueInputs: [{ name: 'FROM', check: 'Number' }, { name: 'TO', check: 'Number' }], statementInputs: [] },
+  math_modulo:        { isStatement: false, hasOutput: true, outputType: 'Number', fields: [], valueInputs: [{ name: 'DIVIDEND', check: 'Number' }, { name: 'DIVISOR', check: 'Number' }], statementInputs: [] },
+  math_constrain:     { isStatement: false, hasOutput: true, outputType: 'Number', fields: [], valueInputs: [{ name: 'VALUE', check: 'Number' }, { name: 'LOW', check: 'Number' }, { name: 'HIGH', check: 'Number' }], statementInputs: [] },
+  math_round:         { isStatement: false, hasOutput: true, outputType: 'Number', fields: [{ name: 'OP', fieldType: 'dropdown', options: ['ROUND','ROUNDUP','ROUNDDOWN'] }], valueInputs: [{ name: 'NUM', check: 'Number' }], statementInputs: [] },
+  math_single:        { isStatement: false, hasOutput: true, outputType: 'Number', fields: [{ name: 'OP', fieldType: 'dropdown', options: ['ROOT','ABS','NEG','LN','LOG10','EXP','POW10'] }], valueInputs: [{ name: 'NUM', check: 'Number' }], statementInputs: [] },
+  math_map:           { isStatement: false, hasOutput: true, outputType: 'Number', fields: [], valueInputs: [{ name: 'VALUE', check: 'Number' }, { name: 'FROMLOW', check: 'Number' }, { name: 'FROMHIGH', check: 'Number' }, { name: 'TOLOW', check: 'Number' }, { name: 'TOHIGH', check: 'Number' }], statementInputs: [] },
+  text_join:          { isStatement: false, hasOutput: true, outputType: 'String', fields: [], valueInputs: [{ name: 'ADD0', check: null }, { name: 'ADD1', check: null }], statementInputs: [] },
+  text_length:        { isStatement: false, hasOutput: true, outputType: 'Number', fields: [], valueInputs: [{ name: 'VALUE', check: 'String' }], statementInputs: [] },
   // Compound statement blocks with statement inputs
   controls_if:        { isStatement: true,  hasOutput: false, fields: [], valueInputs: [{ name: 'IF0', check: 'Boolean' }], statementInputs: [{ name: 'DO0' }] },
   controls_ifelse:    { isStatement: true,  hasOutput: false, fields: [], valueInputs: [{ name: 'IF0', check: 'Boolean' }], statementInputs: [{ name: 'DO0' }, { name: 'ELSE' }] },
@@ -217,7 +226,7 @@ const BUILTIN_CORRECT_META: Record<string, Partial<BlockMeta>> = {
   controls_whileUntil:{ isStatement: true,  hasOutput: false, fields: [{ name: 'MODE', fieldType: 'dropdown', options: ['WHILE','UNTIL'] }], valueInputs: [{ name: 'BOOL', check: 'Boolean' }], statementInputs: [{ name: 'DO' }] },
   controls_for:       { isStatement: true,  hasOutput: false, fields: [{ name: 'VAR', fieldType: 'text' }], valueInputs: [{ name: 'FROM', check: 'Number' }, { name: 'TO', check: 'Number' }, { name: 'BY', check: 'Number' }], statementInputs: [{ name: 'DO' }] },
   variables_get: {
-    isStatement: false, hasOutput: true,
+    isStatement: false, hasOutput: true, outputType: null,
     fields: [{ name: 'VAR', fieldType: 'text' }],
     valueInputs: [], statementInputs: [],
   },
@@ -230,9 +239,9 @@ const BUILTIN_CORRECT_META: Record<string, Partial<BlockMeta>> = {
   controls_flow_statements: { isStatement: true, hasOutput: false, fields: [{ name: 'FLOW', fieldType: 'dropdown', options: ['BREAK','CONTINUE'] }], valueInputs: [], statementInputs: [] },
   array_create:       { isStatement: true,  hasOutput: false, fields: [], valueInputs: [], statementInputs: [] },
   array_set:          { isStatement: true,  hasOutput: false, fields: [], valueInputs: [{ name: 'INDEX', check: 'Number' }, { name: 'VALUE', check: null }], statementInputs: [] },
-  array_get:          { isStatement: false, hasOutput: true,  fields: [], valueInputs: [{ name: 'INDEX', check: 'Number' }], statementInputs: [] },
-  array_size:         { isStatement: false, hasOutput: true,  fields: [], valueInputs: [], statementInputs: [] },
-  array_content:      { isStatement: false, hasOutput: true,  fields: [], valueInputs: [], statementInputs: [] },
+  array_get:          { isStatement: false, hasOutput: true,  outputType: null, fields: [], valueInputs: [{ name: 'INDEX', check: 'Number' }], statementInputs: [] },
+  array_size:         { isStatement: false, hasOutput: true,  outputType: 'Number', fields: [], valueInputs: [], statementInputs: [] },
+  array_content:      { isStatement: false, hasOutput: true,  outputType: null, fields: [], valueInputs: [], statementInputs: [] },
 };
 
 // ---------------------------------------------------------------------------
@@ -445,7 +454,28 @@ function parseBlockMeta(
   }
 
   const isStatement = /setPreviousStatement\(true/.test(body);
-  const hasOutput = /setOutput\(true/.test(body);
+  // BUG-085 (第132回): setOutput(true) 2nd 引数を抽出。`setOutput(true, 'String')` /
+  // `setOutput(true, ['Number', 'Boolean'])` / `setOutput(true)` / `setOutput(true, null)` /
+  // dynamic ternary (preferences_get 等) を識別。dynamic ternary 等の AST 解析不能 case は
+  // outputType=null (= any 扱い)。
+  const outputMatch = body.match(/setOutput\(\s*true\s*(?:,\s*((?:'[^']+'|"[^"]+"|\[[^\]]+\]|null|\w+\s*===[^)]+)))?\s*\)/);
+  const hasOutput = outputMatch !== null;
+  let outputType: string | string[] | null = null;
+  if (outputMatch && outputMatch[1]) {
+    const typeArg = outputMatch[1].trim();
+    if (typeArg === 'null') {
+      outputType = null;
+    } else if (typeArg.startsWith('[')) {
+      // Array form: ['Number', 'Boolean']
+      const items = [...typeArg.matchAll(/['"]([^'"]+)['"]/g)].map((mm) => mm[1]);
+      outputType = items.length > 0 ? items : null;
+    } else {
+      // Quoted single form: 'Number' or "Number"
+      const stringMatch = typeArg.match(/^['"]([^'"]+)['"]$/);
+      outputType = stringMatch ? stringMatch[1] : null;
+      // Anything else (ternary expression etc.) → null (= dynamic / unknown).
+    }
+  }
 
   const fields: FieldDef[] = [];
   let fm: RegExpExecArray | null;
@@ -537,7 +567,7 @@ function parseBlockMeta(
     statementInputs.push({ name: fm[1] });
   }
 
-  return { tooltip, colour, isStatement, hasOutput, fields, valueInputs, statementInputs };
+  return { tooltip, colour, isStatement, hasOutput, outputType, fields, valueInputs, statementInputs };
 }
 
 function parseAllBlockMeta(
@@ -624,13 +654,14 @@ function main(): void {
         // Apply correct metadata for known Blockly builtin blocks
         const builtinCorrect = isBuiltin ? BUILTIN_CORRECT_META[blockType] : undefined;
 
+        const hasOutputResolved = builtinCorrect?.hasOutput ?? meta?.hasOutput ?? false;
         const entry: BlockEntry = {
           type: blockType,
           category: catKey,
           tooltip: meta?.tooltip || BUILTIN_TOOLTIPS[blockType] || '',
           colour: meta?.colour ?? '#808080',
           isStatement: builtinCorrect?.isStatement ?? meta?.isStatement ?? true,
-          hasOutput: builtinCorrect?.hasOutput ?? meta?.hasOutput ?? false,
+          hasOutput: hasOutputResolved,
           modes: [mode],
           boardRequires,
           fields: builtinCorrect?.fields ?? meta?.fields ?? [],
@@ -638,6 +669,14 @@ function main(): void {
           statementInputs: builtinCorrect?.statementInputs ?? meta?.statementInputs ?? [],
         };
         if (isBuiltin) entry.builtin = true;
+        // BUG-085 (第132回): outputType field を hasOutput=true block にのみ付与。
+        // statement / hat block (hasOutput=false) には付与しない (catalog file size 抑制)。
+        if (hasOutputResolved) {
+          const ot = builtinCorrect && 'outputType' in builtinCorrect
+            ? (builtinCorrect.outputType as string | string[] | null | undefined)
+            : meta?.outputType;
+          entry.outputType = ot === undefined ? null : ot;
+        }
 
         blockMap.set(blockType, entry);
       }
@@ -653,20 +692,25 @@ function main(): void {
     if (blockMap.has(blockType)) continue; // already present via toolbox
     const correct = BUILTIN_CORRECT_META[blockType];
     if (!correct) continue;
-    blockMap.set(blockType, {
+    const forceHasOutput = correct.hasOutput ?? false;
+    const entry: BlockEntry = {
       type: blockType,
       category: 'variables',
       tooltip: BUILTIN_TOOLTIPS[blockType] || '',
       colour: '#A55B80',
       isStatement: correct.isStatement ?? false,
-      hasOutput: correct.hasOutput ?? false,
+      hasOutput: forceHasOutput,
       modes: [...allModes],
       boardRequires: null,
       builtin: true,
       fields: correct.fields ?? [],
       valueInputs: correct.valueInputs ?? [],
       statementInputs: correct.statementInputs ?? [],
-    });
+    };
+    if (forceHasOutput) {
+      entry.outputType = 'outputType' in correct ? (correct.outputType ?? null) : null;
+    }
+    blockMap.set(blockType, entry);
   }
 
   const catalog: BlockCatalog = {

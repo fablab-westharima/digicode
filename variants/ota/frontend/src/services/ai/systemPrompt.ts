@@ -32,6 +32,15 @@ export interface BlockCatalogEntry {
   tooltip: string;
   isStatement: boolean;
   hasOutput: boolean;
+  /**
+   * BUG-085 (第132回): value block の output 型。`hasOutput=true` の block にのみ存在
+   * (statement / hat block では unset)。
+   * - `string` 単一型 (e.g. 'Number', 'String', 'Boolean', 'Array')
+   * - `string[]` 複数型許容 (e.g. ['Number', 'Boolean'])
+   * - `null` any / dynamic / 抽出不能 (logic_ternary, variables_get 等)
+   * Schema notation で `block_type→Type` 形式で AI に提示。
+   */
+  outputType?: string | string[] | null;
   modes: string[];
   boardRequires: string | null;
   fields: FieldDef[];
@@ -115,6 +124,12 @@ function getFewShotExamples(mode: RobotMode, userPromptText: string): string {
  *   [NAME]            = value input slot (accepts sub-block)
  *   {NAME}            = statement input slot (accepts stacked blocks)
  *   ★                 = credential field — AI must NOT specify a value; block default will show
+ *   →Type             = output type of value block (e.g. websocket_server_received_value→String).
+ *                       Tells AI what type a value block returns when plugged into a [INPUT:Type] slot.
+ *                       `→Any` for dynamic/unknown (logic_ternary / variables_get / preferences_get).
+ *                       `→Number|Boolean` for multi-type outputs (setOutput(true, ['Number','Boolean'])).
+ *                       Added in BUG-085 (第132回) — previously AI saw value blocks as bare type names
+ *                       without output info, causing String → Number slot mismatches.
  */
 function formatBlockSchema(b: BlockCatalogEntry): string {
   const fieldParts: string[] = [];
@@ -143,7 +158,21 @@ function formatBlockSchema(b: BlockCatalogEntry): string {
   const stmtInputParts = b.statementInputs.map(si => `{${si.name}}`);
 
   const schema = [...(fieldParts.length ? [`(${fieldParts.join(',')})`] : []), ...valueInputParts, ...stmtInputParts].join('');
-  return b.type + schema;
+
+  // BUG-085 (第132回): value block の output 型を schema 末尾に `→Type` 形式で付与。
+  // `b.hasOutput=false` (statement / hat block) では付与しない。
+  let outputSuffix = '';
+  if (b.hasOutput) {
+    if (b.outputType === null || b.outputType === undefined) {
+      outputSuffix = '→Any';
+    } else if (Array.isArray(b.outputType)) {
+      outputSuffix = '→' + b.outputType.join('|');
+    } else {
+      outputSuffix = '→' + b.outputType;
+    }
+  }
+
+  return b.type + schema + outputSuffix;
 }
 
 /**
@@ -192,12 +221,13 @@ export function buildSystemPrompt(ctx: SystemPromptContext): string {
   const blockTypeSection = [
     '## Statement blocks — stackable vertically, can have <next>/<previous>',
     statementBlocks.map(formatBlockSchema).join(', '),
-    '## Value blocks — plug into <value> slots only; MUST NOT have <next>/<previous>',
+    '## Value blocks — plug into <value> slots only; MUST NOT have <next>/<previous>; the →Type suffix is what they return',
     valueBlocks.map(formatBlockSchema).join(', '),
     '## Top-level hat blocks — use as root only (arduino_setup, arduino_loop)',
     hatBlocks.map(formatBlockSchema).join(', '),
-    '## Schema notation: (FIELD:type★=credential) [VALUE_INPUT] {STMT_INPUT}',
+    '## Schema notation: (FIELD:type★=credential) [VALUE_INPUT:expectedType] {STMT_INPUT} →OutputType',
     '## ★ credential fields: DO NOT specify values; omit them and the block shows safe defaults',
+    '## →Type matching: when plugging a value block into a [INPUT:ExpectedType] slot, the value block\'s →Type must be compatible (e.g. websocket_server_received_value→String is acceptable for [VALUE:String] / [ANGLE:Number] (auto-coerced via String(x).toInt() in servo / numeric sinks) but NOT for [BOOL:Boolean] without conversion). →Any blocks (variables_get / logic_ternary) are accepted everywhere.',
   ].join('\n');
 
   const contextLines = [

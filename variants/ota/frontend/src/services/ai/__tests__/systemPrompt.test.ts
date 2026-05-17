@@ -58,6 +58,7 @@ const mockCatalog: BlockCatalog = {
     {
       type: 'bmp280_read', category: 'sensor', tooltip: 'BMP280',
       isStatement: false, hasOutput: true,
+      outputType: 'Number',
       modes: ['all_blocks', 'all_blocks', 'custom'], boardRequires: null,
       fields: [{ name: 'TYPE', fieldType: 'dropdown', options: ['temp', 'pres'] }],
       valueInputs: [], statementInputs: [],
@@ -67,6 +68,36 @@ const mockCatalog: BlockCatalog = {
       isStatement: true, hasOutput: false,
       modes: ['all_blocks', 'all_blocks', 'custom'], boardRequires: null,
       fields: [], valueInputs: [{ name: 'TIME', check: 'Number' }], statementInputs: [],
+    },
+    // BUG-085 (第132回) — outputType notation 検証用 4 value block: String / Boolean /
+    // null (dynamic, →Any として render) / 配列 (multi-type、→A|B として render)。
+    {
+      type: 'ws_recv_test', category: 'websocket', tooltip: 'WS receive test',
+      isStatement: false, hasOutput: true,
+      outputType: 'String',
+      modes: ['all_blocks'], boardRequires: null,
+      fields: [], valueInputs: [], statementInputs: [],
+    },
+    {
+      type: 'cmp_test', category: 'logic', tooltip: 'Compare test',
+      isStatement: false, hasOutput: true,
+      outputType: 'Boolean',
+      modes: ['all_blocks'], boardRequires: null,
+      fields: [], valueInputs: [], statementInputs: [],
+    },
+    {
+      type: 'variables_get_test', category: 'variables', tooltip: 'Get variable test',
+      isStatement: false, hasOutput: true,
+      outputType: null,
+      modes: ['all_blocks'], boardRequires: null,
+      fields: [{ name: 'VAR', fieldType: 'text' }], valueInputs: [], statementInputs: [],
+    },
+    {
+      type: 'multi_type_test', category: 'core', tooltip: 'Multi type test',
+      isStatement: false, hasOutput: true,
+      outputType: ['Number', 'Boolean'],
+      modes: ['all_blocks'], boardRequires: null,
+      fields: [], valueInputs: [], statementInputs: [],
     },
   ],
 };
@@ -99,6 +130,54 @@ describe('buildSystemPrompt', () => {
     const humanoidIdx = prompt.indexOf('humanoid_walk');
     expect(humanoidIdx).toBeGreaterThan(statementIdx);
     expect(humanoidIdx).toBeLessThan(valueIdx);
+  });
+
+  // BUG-085 (第132回): value block → output type notation in schema string.
+  // Verifies that the formatBlockSchema function appends `→Type` for hasOutput=true
+  // blocks, allowing AI to see what type each value block returns.
+  it('value block schema includes →Type suffix for single-type output (BUG-085 B)', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard, filteredBlocks, userPromptText: 'test' });
+    // bmp280_read outputType='Number' → schema: 'bmp280_read(TYPE:temp|pres)→Number'
+    expect(prompt).toContain('bmp280_read(TYPE:temp|pres)→Number');
+    // ws_recv_test outputType='String' → 'ws_recv_test→String'
+    expect(prompt).toContain('ws_recv_test→String');
+    // cmp_test outputType='Boolean' → 'cmp_test→Boolean'
+    expect(prompt).toContain('cmp_test→Boolean');
+  });
+
+  it('value block schema renders →Any for null outputType (BUG-085 B dynamic)', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard, filteredBlocks, userPromptText: 'test' });
+    // variables_get_test outputType=null → 'variables_get_test(VAR:text)→Any'
+    expect(prompt).toContain('variables_get_test(VAR:text)→Any');
+  });
+
+  it('value block schema renders →A|B for array outputType (BUG-085 B multi-type)', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard, filteredBlocks, userPromptText: 'test' });
+    // multi_type_test outputType=['Number','Boolean'] → 'multi_type_test→Number|Boolean'
+    expect(prompt).toContain('multi_type_test→Number|Boolean');
+  });
+
+  it('statement / hat blocks do NOT receive →Type suffix (BUG-085 B)', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard, filteredBlocks, userPromptText: 'test' });
+    // Schema notations should be followed by separator (`,` or ` `) or end-of-line, not `→`.
+    // Use [^→\n]* to stop at line boundary or arrow.
+    expect(prompt).not.toMatch(/humanoid_walk[^→\n]*?→/);  // humanoid_walk (statement)
+    expect(prompt).not.toMatch(/wifi_connect[^→\n]*?→/);    // wifi_connect (statement)
+    expect(prompt).not.toMatch(/ble_scan[^→\n]*?→/);        // ble_scan (statement)
+    // esp32_delay (statement, has TIME input) — schema should be 'esp32_delay[TIME:Number]', no →
+    expect(prompt).toContain('esp32_delay[TIME:Number]');
+    expect(prompt).not.toMatch(/esp32_delay\[TIME:Number\]→/);
+  });
+
+  it('schema notation header mentions →Type (BUG-085 B legend)', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard, filteredBlocks, userPromptText: 'test' });
+    expect(prompt).toContain('→OutputType');
+    expect(prompt).toContain('→Any');
   });
 
   it('marks credential fields with ★ in the schema', () => {

@@ -19,6 +19,7 @@ interface CatalogBlock {
   type: string;
   isStatement: boolean;
   hasOutput: boolean;
+  outputType?: string | string[] | null;
   fields: CatalogField[];
   valueInputs: CatalogInput[];
   statementInputs: CatalogInput[];
@@ -138,6 +139,70 @@ describe('catalog invariants', () => {
     for (const b of blocks) {
       expect(b.isStatement && b.hasOutput, `${b.type}: isStatement and hasOutput both true`).toBe(false);
     }
+  });
+
+  // BUG-085 (第132回): catalog schema enrichment — outputType field for value blocks.
+  // Verifies that the generator extracts `setOutput(true, 'Type')` 2nd arg into
+  // `outputType` field, and that statement / hat blocks do NOT have it.
+  it('all hasOutput=true blocks have outputType field defined (BUG-085 B)', () => {
+    for (const b of blocks) {
+      if (!b.hasOutput) continue;
+      // outputType can be: string ('Number'/'String'/'Boolean'/'Array'), string[] (multi-type),
+      // or null (dynamic / any). undefined is NOT allowed for hasOutput=true blocks.
+      expect(b.outputType !== undefined, `${b.type}: hasOutput=true but outputType is undefined`).toBe(true);
+    }
+  });
+
+  it('no hasOutput=false block has outputType field (BUG-085 B)', () => {
+    for (const b of blocks) {
+      if (b.hasOutput) continue;
+      expect(b.outputType === undefined, `${b.type}: hasOutput=false but outputType=${JSON.stringify(b.outputType)} is set`).toBe(true);
+    }
+  });
+
+  it('websocket_server_received_value has outputType=String (BUG-085 B canonical sample)', () => {
+    const b = byType['websocket_server_received_value'];
+    expect(b).toBeDefined();
+    expect(b.hasOutput).toBe(true);
+    expect(b.outputType).toBe('String');
+  });
+
+  it('ble_received_value has outputType=String (BUG-085 B)', () => {
+    const b = byType['ble_received_value'];
+    expect(b).toBeDefined();
+    expect(b.outputType).toBe('String');
+  });
+
+  it('math_number has outputType=Number (BUG-085 B builtin)', () => {
+    const b = byType['math_number'];
+    expect(b).toBeDefined();
+    expect(b.outputType).toBe('Number');
+  });
+
+  it('text has outputType=String (BUG-085 B builtin)', () => {
+    const b = byType['text'];
+    expect(b).toBeDefined();
+    expect(b.outputType).toBe('String');
+  });
+
+  it('logic_compare has outputType=Boolean (BUG-085 B builtin)', () => {
+    const b = byType['logic_compare'];
+    expect(b).toBeDefined();
+    expect(b.outputType).toBe('Boolean');
+  });
+
+  it('variables_get has outputType=null (BUG-085 B builtin, dynamic)', () => {
+    const b = byType['variables_get'];
+    expect(b).toBeDefined();
+    expect(b.outputType).toBe(null);
+  });
+
+  it('preferences_get has outputType=null (BUG-085 B, ternary cannot be statically resolved)', () => {
+    const b = byType['preferences_get'];
+    expect(b).toBeDefined();
+    // preferences_get uses `setOutput(true, type === 'String' ? 'String' : 'Number')` — depends on
+    // runtime TYPE field, so static AST extraction yields null (= dynamic / any).
+    expect(b.outputType).toBe(null);
   });
 });
 
@@ -282,6 +347,125 @@ describe('selectFewShot (動的 Few-shot 選択)', () => {
   it('browser control keyword maps to wifi-controller-mix (commit #7)', () => {
     const result = selectFewShot('all_blocks', 'ブラウザから ESP32 を制御するページが欲しい');
     expect(result[4]).toBe('wifi-controller-mix');
+  });
+
+  // BUG-085 (第132回): 英語 variant の coverage 拡張。元の regex は literal "controller"
+  // 必須で "controlled" / "control" / "controls" / Wi-Fi 系を miss していた。中広拡張で
+  // canonical sample を english prompt に対しても hit させる (rule 16 §Adversary parity
+  // 適用、英語 prompt も主要 attack surface = audit 対象)。
+  it('English "WiFi-controlled" maps to wifi-controller-mix (BUG-085)', () => {
+    const result = selectFewShot('all_blocks', 'Create a WiFi-controlled program for ESP32');
+    expect(result[4]).toBe('wifi-controller-mix');
+  });
+
+  it('English "WiFi-controlled" + LED + Servo (no DHT) maps to wifi-controller-mix (BUG-085 A2 regex)', () => {
+    // A2 regex test: verbatim user prompt without the DHT22 / temperature sensor
+    // portion. The full user prompt (with DHT22) is covered by D1 below and
+    // routes to wifi-dht22-controller (more specific). This test isolates the
+    // A2 regex expansion (English "WiFi-controlled" variant).
+    const result = selectFewShot(
+      'all_blocks',
+      'Create a WiFi-controlled program for ESP32. A toggle button on the web UI to turn on/off the LED on pin 2. A slider on the web UI to control a servo motor angle (0-180 degrees) on pin 13.'
+    );
+    expect(result[4]).toBe('wifi-controller-mix');
+  });
+
+  it('English "WiFi controls" (verb form) maps to wifi-controller-mix (BUG-085)', () => {
+    const result = selectFewShot('all_blocks', 'WiFi controls a servo motor');
+    expect(result[4]).toBe('wifi-controller-mix');
+  });
+
+  it('English "Wi-Fi-controlled" (hyphenated form) maps to wifi-controller-mix (BUG-085)', () => {
+    const result = selectFewShot('all_blocks', 'Wi-Fi-controlled device');
+    expect(result[4]).toBe('wifi-controller-mix');
+  });
+
+  it('English "web UI with toggle" maps to wifi-controller-mix (BUG-085)', () => {
+    const result = selectFewShot('all_blocks', 'A web UI with toggle button to switch LED on/off');
+    expect(result[4]).toBe('wifi-controller-mix');
+  });
+
+  it('English "slider on web UI" maps to wifi-controller-mix (BUG-085)', () => {
+    const result = selectFewShot('all_blocks', 'A slider on the web UI to control servo angle');
+    expect(result[4]).toBe('wifi-controller-mix');
+  });
+
+  it('Smartphone control (JA スマホ) maps to wifi-controller-mix (BUG-085)', () => {
+    const result = selectFewShot('all_blocks', 'スマホで ESP32 を制御するアプリ');
+    expect(result[4]).toBe('wifi-controller-mix');
+  });
+
+  // BUG-085 regression: false-positive guard. WiFi mentioned without control word
+  // should NOT route to wifi-controller-mix (otherwise generic WiFi + sensor / HTTP
+  // prompts would shadow MQTT/HTTP/NTP samples). web UI alone (no control verb /
+  // widget) similarly should not trigger (would mis-fire for "show settings on web
+  // UI" type prompts).
+  it('Regression: "WiFi + MQTT only" should NOT map to wifi-controller-mix (BUG-085 FP guard)', () => {
+    const result = selectFewShot('all_blocks', 'Connect to WiFi and send sensor data via MQTT');
+    expect(result[4]).not.toBe('wifi-controller-mix');
+  });
+
+  it('Regression: "WiFi + HTTP only" should NOT map to wifi-controller-mix (BUG-085 FP guard)', () => {
+    const result = selectFewShot('all_blocks', 'Use WiFi to POST sensor readings to a REST API');
+    expect(result[4]).not.toBe('wifi-controller-mix');
+  });
+
+  it('Regression: "web UI without control widget" should NOT map to wifi-controller-mix (BUG-085 FP guard)', () => {
+    const result = selectFewShot('all_blocks', 'Configure your settings in the web UI');
+    // Note: may match other regex (HTTP / settings / etc.) but must not route to wifi-controller-mix
+    expect(result[4]).not.toBe('wifi-controller-mix');
+  });
+
+  // BUG-085 (第132回): D1-D3 new sample routing (more specific than existing).
+  // Verifies that the user's verbatim prompt + key variant prompts route to the
+  // new specialized samples instead of the existing broader ones.
+  it('User verbatim prompt (WiFi-controlled + DHT22) maps to wifi-dht22-controller (BUG-085 D1)', () => {
+    const result = selectFewShot(
+      'all_blocks',
+      'Create a WiFi-controlled program for ESP32 with SSID and password input. The device has: 1) A toggle button on the web UI to turn on/off the LED on pin 2. 2) A slider on the web UI to control a servo motor angle (0-180 degrees) on pin 13. 3) A DHT22 temperature sensor on pin 4 that displays the current temperature on the web UI.'
+    );
+    expect(result[4]).toBe('wifi-dht22-controller');
+  });
+
+  it('"WiFi controller + DHT22" routes to wifi-dht22-controller (BUG-085 D1)', () => {
+    const result = selectFewShot('all_blocks', 'WiFi controller with DHT22 temperature sensor');
+    expect(result[4]).toBe('wifi-dht22-controller');
+  });
+
+  it('"ブラウザ制御 + 温度センサ" routes to wifi-dht22-controller (BUG-085 D1 JA)', () => {
+    const result = selectFewShot('all_blocks', 'ブラウザから ESP32 を制御 + 温度センサを表示');
+    expect(result[4]).toBe('wifi-dht22-controller');
+  });
+
+  it('"HA 複数 entity 制御" routes to ha-multi-control (BUG-085 D2)', () => {
+    const result = selectFewShot('all_blocks', 'HA で複数 entity を制御したい (switch + number slider)');
+    expect(result[4]).toBe('ha-multi-control');
+  });
+
+  it('English "HA switch and number" routes to ha-multi-control (BUG-085 D2)', () => {
+    const result = selectFewShot('all_blocks', 'HA switch and number entity together');
+    expect(result[4]).toBe('ha-multi-control');
+  });
+
+  it('"ESP-NOW + LED 制御" routes to espnow-peer-control (BUG-085 D3)', () => {
+    const result = selectFewShot('all_blocks', 'ESP-NOW で受信して LED を制御したい');
+    expect(result[4]).toBe('espnow-peer-control');
+  });
+
+  it('English "ESP-NOW with relay" routes to espnow-peer-control (BUG-085 D3)', () => {
+    const result = selectFewShot('all_blocks', 'ESP-NOW receiver with relay control');
+    expect(result[4]).toBe('espnow-peer-control');
+  });
+
+  // BUG-085 regression: existing samples still win for non-overlap prompts.
+  it('Regression: pure "WiFi-controlled" (no temperature) still maps to wifi-controller-mix', () => {
+    const result = selectFewShot('all_blocks', 'WiFi-controlled LED toggle program');
+    expect(result[4]).toBe('wifi-controller-mix');
+  });
+
+  it('Regression: pure ESP-NOW receiver (no actuator) still maps to espnow-mesh-receiver', () => {
+    const result = selectFewShot('all_blocks', 'ESP-NOW で受信機を作って Serial 出力');
+    expect(result[4]).toBe('espnow-mesh-receiver');
   });
 
   it('all referenced sample ids exist in sampleProjects', () => {

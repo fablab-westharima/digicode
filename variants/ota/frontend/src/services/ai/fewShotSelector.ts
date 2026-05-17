@@ -21,13 +21,29 @@ const MODE_SPECIFIC_SAMPLES: Record<RobotMode, readonly [string, string]> = {
 };
 
 // 優先度順（上から match 試行、最初に hit したものを採用）
-// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 20 / Phase 3 (BUG-052): +1 → 21 / BUG-053+054: +2 → 23 / 47.md Phase 2 commit #7 (第73回 wifi-controller-mix): +1 → 24 / 52.md commit #21 (2026-05-04 第80回): +6 → 30 / 第88回 (2026-05-08 残カテゴリ FEW_SHOT 12 sample): +12 → 42 / 第98回 (2026-05-09 Task 3 HA 対応強化 5 sample 対応): +5 → 47 entries
+// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 20 / Phase 3 (BUG-052): +1 → 21 / BUG-053+054: +2 → 23 / 47.md Phase 2 commit #7 (第73回 wifi-controller-mix): +1 → 24 / 52.md commit #21 (2026-05-04 第80回): +6 → 30 / 第88回 (2026-05-08 残カテゴリ FEW_SHOT 12 sample): +12 → 42 / 第98回 (2026-05-09 Task 3 HA 対応強化 5 sample 対応): +5 → 47 / BUG-085 (2026-05-17 第132回 AI 生成精度): +3 → 50 entries (wifi-dht22-controller / ha-multi-control / espnow-peer-control)
 const KEYWORD_TO_SAMPLE: ReadonlyArray<readonly [RegExp, string]> = [
+  // BUG-085 (第132回): user の verbatim prompt (WiFi-controlled + DHT22 + LED + Servo)
+  // に specific match させる reference。wifi-controller-mix (MPU6050 ベース) より
+  // 優先 = AI が「DHT22」を MPU6050 から類推する必要なく直接 follow できる。
+  [/(wi.?fi[\-\s.]?control|wi.?fi.*コントロー|ブラウザ.*制御|web.?UI).*(DHT|temperature.?sensor|温度センサ|温湿度|humidity)|(DHT|temperature.?sensor|温度センサ|温湿度|humidity).*(wi.?fi[\-\s.]?control|wi.?fi.*コントロー|ブラウザ.*制御|web.?UI)/i, 'wifi-dht22-controller'],
+  // BUG-085 (第132回): HA 複数 entity 双方向制御 specific match。ha-led-control
+  // (単一 LED) / ha-multi-sensor (read-only) より優先で、HA callback cluster prompt
+  // にこの sample を hit させる。
+  [/HA.*(複数.*制御|複数.*entity|multi.?entity|multi.?control|switch.*(number|slider|light)|(number|slider|light).*switch|callback.*cluster)|(複数.*制御|multi.?entity).*HA/i, 'ha-multi-control'],
+  // BUG-085 (第132回): ESP-NOW 受信 → アクチュエータ駆動 specific match。
+  // espnow-mesh-receiver (read-only Serial 出力) より優先。
+  [/ESP.?NOW.*(LED|servo|アクチュエータ|制御|control|relay|リレー)|(LED|servo|relay|アクチュエータ).*ESP.?NOW|ESP.?NOW.*(receiver|受信).*(control|制御|drive)/i, 'espnow-peer-control'],
   // 47.md Phase 2 WiFi controller (commit #7): WebSocket server / WiFi
   // controller / browser-based control patterns. Listed near the top so
   // controller-flavored prompts hit this canonical Few-shot before the
   // generic IoT heuristics (mqtt / http / json) below.
-  [/websocket|wi.?fi.?controller|wi.?fi.*コントロー|LAN.*control|ブラウザ.*制御|browser.*control/i, 'wifi-controller-mix'],
+  //
+  // BUG-085 (第132回): 英語 "WiFi-controlled" / "web UI control" / "browser-based"
+  // 系 variant も hit させるよう regex を中広拡張。元の `wi.?fi.?controller` は
+  // literal "controller" 必須で "controlled" を miss していた = canonical sample
+  // 不在で AI が WS handler 接続パターンを from scratch 推論 → 4 件問題発生。
+  [/websocket|wi.?fi[\-\s.]?control|wi.?fi.*コントロー|LAN.*control|ブラウザ.*制御|browser.*control|web.?UI.*(control|slider|toggle|switch)|(slider|toggle.button).*web.?UI|スマホ.*ESP|スマートフォン.*ESP/i, 'wifi-controller-mix'],
   // 第98回 (2026-05-09) Task 3 HA 対応強化 commit 0-7 で追加された specific use case
   // pattern (HA OTA / via_device 階層 / watchdog 堅牢化 / 自動診断 / binary sensor)。
   // MODE_SPECIFIC_SAMPLES.homeassistant の 2 sample (ha-led-control / ha-multi-sensor)
