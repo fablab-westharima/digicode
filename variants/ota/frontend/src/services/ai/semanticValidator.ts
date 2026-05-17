@@ -207,12 +207,21 @@ const HANDLER_BLOCK_TYPES_FOR_BINARY_BRANCH = new Set<string>([
 
 /**
  * Block types that, when present, satisfy the WiFi-connect prerequisite
- * for Check 4 (because they embed a WiFi.begin() call).
+ * for Check 4 (because they embed a WiFi.begin() call internally — verified
+ * by grep of WiFi.begin call sites in src/blocks/arduino/communication/*.ts).
+ *
+ * BUG-086 Session 133 C4: added mqtt_setup and ota_setup after Layer 0
+ * sample audit surfaced false-positive missing_wifi_connect issues for
+ * ha-led-control and mqtt-direct samples that use mqtt_setup without a
+ * separate wifi_connect block. Both blocks emit `mqttWifiConnect()` /
+ * the equivalent OTA WiFi init, which calls `WiFi.begin()` directly.
  */
 const WIFI_INIT_BLOCK_TYPES = new Set<string>([
   'wifi_connect',
   'ha_device_init',
   'ha_device_init_auth',
+  'mqtt_setup',  // embeds WiFi.begin via mqttWifiConnect()
+  'ota_setup',   // embeds WiFi.begin internally
 ]);
 
 // ---------------------------------------------------------------------------

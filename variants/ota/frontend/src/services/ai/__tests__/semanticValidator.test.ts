@@ -394,27 +394,42 @@ describe('semanticValidator — Check 4: missing_wifi_connect', () => {
     expect(result.issues.some((i) => i.kind === 'missing_wifi_connect')).toBe(false);
   });
 
-  it('flags mqtt_setup without wifi_connect', () => {
+  // BUG-086 Session 133 C4: mqtt_setup internally embeds WiFi.begin via
+  // mqttWifiConnect() function, so it satisfies the WiFi-init prerequisite
+  // by itself — same pattern as ha_device_init. This test was previously
+  // expecting Check 4 to flag mqtt_setup-alone, which was a false positive
+  // surfaced by Layer 0 sample audit (ha-led-control / mqtt-direct samples
+  // were tripping the false positive).
+  it('passes when mqtt_setup is present alone (embeds WiFi internally)', () => {
     const xml = wrap(
       '<block type="arduino_setup"><statement name="SETUP">' +
         '<block type="mqtt_setup"><field name="SSID">x</field><field name="WIFI_PASS">y</field><field name="BROKER">b</field><field name="PORT">1883</field></block>' +
       '</statement></block>',
     );
     const result = validateXml(xml, CATALOG);
-    // mqtt_setup is mqtt_ prefix → WiFi needed; mqtt_setup itself doesn't include wifi_connect block type
-    expect(result.issues.some((i) => i.kind === 'missing_wifi_connect')).toBe(true);
+    expect(result.issues.some((i) => i.kind === 'missing_wifi_connect')).toBe(false);
   });
 
-  it('reports up to 5 unique WiFi-using block types', () => {
+  it('passes when ota_setup is present alone (embeds WiFi internally)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ota_setup"><field name="SSID">x</field><field name="WIFI_PASS">y</field></block>' +
+      '</statement></block>',
+    );
+    const result = validateXml(xml, CATALOG);
+    expect(result.issues.some((i) => i.kind === 'missing_wifi_connect')).toBe(false);
+  });
+
+  it('reports up to 5 unique WiFi-using block types when no init present', () => {
     const xml = wrap(
       '<block type="arduino_setup"><statement name="SETUP">' +
         '<block type="websocket_server_start"></block>' +
         '<block type="websocket_server_register"></block>' +
         '<block type="websocket_server_on_message"></block>' +
         '<block type="websocket_server_send"></block>' +
-        '<block type="mqtt_setup"></block>' +
         '<block type="http_get"></block>' +
         '<block type="ntp_sync"></block>' +
+        '<block type="ha_sensor_create"></block>' +
       '</statement></block>',
     );
     const result = validateXml(xml, CATALOG);
