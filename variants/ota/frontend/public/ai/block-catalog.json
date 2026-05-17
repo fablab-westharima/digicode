@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-17T10:08:20.984Z",
+  "generatedAt": "2026-05-17T12:42:46.409Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -4181,7 +4181,11 @@
       "valueInputs": [
         {
           "name": "TEXT",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "X",
@@ -4285,7 +4289,11 @@
       "valueInputs": [
         {
           "name": "TEXT",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -4307,15 +4315,27 @@
       "valueInputs": [
         {
           "name": "X",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "Y",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "TEXT",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -4451,7 +4471,11 @@
       "valueInputs": [
         {
           "name": "TEXT",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "X",
@@ -4924,7 +4948,11 @@
       "valueInputs": [
         {
           "name": "TEXT",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -5558,7 +5586,11 @@
       "valueInputs": [
         {
           "name": "TEXT",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -5580,7 +5612,11 @@
       "valueInputs": [
         {
           "name": "TEXT",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "X",
@@ -6006,7 +6042,11 @@
       "valueInputs": [
         {
           "name": "SPEED",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -6038,7 +6078,11 @@
       "valueInputs": [
         {
           "name": "SPEED",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -6123,7 +6167,11 @@
       "valueInputs": [
         {
           "name": "ANGLE",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -6154,15 +6202,27 @@
       "valueInputs": [
         {
           "name": "START",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "END",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "SPEED",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -6268,7 +6328,11 @@
       "valueInputs": [
         {
           "name": "STEPS",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -6301,7 +6365,11 @@
       "valueInputs": [
         {
           "name": "ANGLE",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -8250,11 +8318,17 @@
         },
         {
           "name": "PARAM1_NAME",
-          "check": "String"
+          "check": [
+            "String",
+            "Number"
+          ]
         },
         {
           "name": "PARAM1_VALUE",
-          "check": null
+          "check": [
+            "String",
+            "Number"
+          ]
         }
       ],
       "statementInputs": [],
@@ -8520,7 +8594,10 @@
       "valueInputs": [
         {
           "name": "MESSAGE",
-          "check": null
+          "check": [
+            "String",
+            "Number"
+          ]
         }
       ],
       "statementInputs": []
@@ -8561,7 +8638,10 @@
       "valueInputs": [
         {
           "name": "MESSAGE",
-          "check": null
+          "check": [
+            "String",
+            "Number"
+          ]
         }
       ],
       "statementInputs": []
@@ -8846,7 +8926,11 @@
       "valueInputs": [
         {
           "name": "TEXT",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -9071,7 +9155,11 @@
       "valueInputs": [
         {
           "name": "VALUE",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -9155,7 +9243,11 @@
       "valueInputs": [
         {
           "name": "TEXT",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -9374,7 +9466,11 @@
       "valueInputs": [
         {
           "name": "VALUE",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -9626,11 +9722,19 @@
       "valueInputs": [
         {
           "name": "MAC",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "DATA",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -9652,7 +9756,11 @@
       "valueInputs": [
         {
           "name": "DATA",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -9838,7 +9946,10 @@
       "valueInputs": [
         {
           "name": "DATA",
-          "check": null
+          "check": [
+            "String",
+            "Number"
+          ]
         }
       ],
       "statementInputs": []
@@ -10051,7 +10162,11 @@
       "valueInputs": [
         {
           "name": "PAYLOAD",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -10170,7 +10285,11 @@
       "valueInputs": [
         {
           "name": "PAYLOAD",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -10262,11 +10381,19 @@
       "valueInputs": [
         {
           "name": "KEY",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "VALUE",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -10309,11 +10436,19 @@
       "valueInputs": [
         {
           "name": "KEY",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "VALUE",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -10421,11 +10556,19 @@
       "valueInputs": [
         {
           "name": "TS",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "VAL",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -11128,19 +11271,35 @@
       "valueInputs": [
         {
           "name": "KEY1",
-          "check": "String"
+          "check": [
+            "String",
+            "Number",
+            "Boolean"
+          ]
         },
         {
           "name": "VALUE1",
-          "check": "String"
+          "check": [
+            "String",
+            "Number",
+            "Boolean"
+          ]
         },
         {
           "name": "KEY2",
-          "check": "String"
+          "check": [
+            "String",
+            "Number",
+            "Boolean"
+          ]
         },
         {
           "name": "VALUE2",
-          "check": null
+          "check": [
+            "String",
+            "Number",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -12976,7 +13135,11 @@
       "valueInputs": [
         {
           "name": "VALUE",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -13013,7 +13176,11 @@
       "valueInputs": [
         {
           "name": "DEFAULT",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -13177,11 +13344,19 @@
       "valueInputs": [
         {
           "name": "FILENAME",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "CONTENT",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -13271,19 +13446,35 @@
       "valueInputs": [
         {
           "name": "FILENAME",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "COL1",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "COL2",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "COL3",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -13332,11 +13523,19 @@
       "valueInputs": [
         {
           "name": "FILENAME",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "CONTENT",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -13986,7 +14185,11 @@
       "valueInputs": [
         {
           "name": "TEXT",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -14008,7 +14211,11 @@
       "valueInputs": [
         {
           "name": "TEXT",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -14241,7 +14448,11 @@
       "valueInputs": [
         {
           "name": "VALUE",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -14263,7 +14474,11 @@
       "valueInputs": [
         {
           "name": "VALUE",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -15021,15 +15236,27 @@
       "valueInputs": [
         {
           "name": "INDEX0",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "VALUE",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "VALUE",
-          "check": null
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []

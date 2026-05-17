@@ -2,10 +2,11 @@
  * case 19 cluster T-1 regression test (Session 111, commit 1 `08f0202`).
  *
  * Verifies the setCheck tightening applied to 91 `appendValueInput` sites
- * across 24 block files by the same commit:
+ * across 24 block files by the same commit (BUG-085 Phase 3 2026-05-17:
+ * 8 actuator sites moved N → M, totals shifted 78/13 → 70/21).
  *
- *   - Group N (78 sites): Number-only sinks → setCheck('Number')
- *   - Group M (13 sites): Mixed sinks (String wrap or Print:: overload) →
+ *   - Group N (70 sites): Number-only sinks → setCheck('Number')
+ *   - Group M (21 sites): Mixed sinks (String wrap or Print:: overload) →
  *     setCheck(['Number', 'String', 'Boolean'])
  *
  * `array_set.VALUE` has 2 source-code sites (init + updateShape_ mutator)
@@ -65,15 +66,12 @@ interface Target {
 const TARGETS: ReadonlyArray<Target> = [
   // ===== Group N (Number-only sinks, 78 sites) =====
 
-  // actuator
-  { type: 'motor_move', input: 'SPEED', group: 'N' },
-  { type: 'motor_speed', input: 'SPEED', group: 'N' },
-  { type: 'servo_write', input: 'ANGLE', group: 'N' },
-  { type: 'servo_sweep', input: 'START', group: 'N' },
-  { type: 'servo_sweep', input: 'END', group: 'N', label: 'servo_sweep(END)' },
-  { type: 'servo_sweep', input: 'SPEED', group: 'N', label: 'servo_sweep(SPEED)' },
-  { type: 'stepper_move', input: 'STEPS', group: 'N' },
-  { type: 'stepper_rotate', input: 'ANGLE', group: 'N' },
+  // actuator (BUG-085 Phase 3, 2026-05-17: 8 sites moved from Group N to
+  // Group M — setCheck broadened to ['Number','String','Boolean'] so
+  // received-value blocks like websocket_server_received_value can connect
+  // at workspace load. cpp generator handles type coercion via
+  // String(${expr}).toInt(). Array_content still rejected per case 19
+  // invariant.)
 
   // audio
   { type: 'dfplayer_play', input: 'TRACK', group: 'N' },
@@ -166,7 +164,18 @@ const TARGETS: ReadonlyArray<Target> = [
   { type: 'qtr_line_detected', input: 'THRESHOLD', group: 'N', label: 'qtr_line_detected(THRESHOLD)' },
   { type: 'mpu6050_calibrate', input: 'SAMPLES', group: 'N', label: 'mpu6050_calibrate(SAMPLES)' },
 
-  // ===== Group M (Mixed sinks, 12 unique pairs / 13 source sites) =====
+  // ===== Group M (Mixed sinks, 20 unique pairs / 21 source sites — was 12/13,
+  // +8 actuator entries added in BUG-085 Phase 3) =====
+
+  // actuator (BUG-085 Phase 3, broadened to ['Number','String','Boolean'])
+  { type: 'motor_move', input: 'SPEED', group: 'M' },
+  { type: 'motor_speed', input: 'SPEED', group: 'M' },
+  { type: 'servo_write', input: 'ANGLE', group: 'M' },
+  { type: 'servo_sweep', input: 'START', group: 'M' },
+  { type: 'servo_sweep', input: 'END', group: 'M', label: 'servo_sweep(END)' },
+  { type: 'servo_sweep', input: 'SPEED', group: 'M', label: 'servo_sweep(SPEED)' },
+  { type: 'stepper_move', input: 'STEPS', group: 'M' },
+  { type: 'stepper_rotate', input: 'ANGLE', group: 'M' },
 
   // azure iot
   { type: 'azure_iot_hub_publish_d2c', input: 'PAYLOAD', group: 'M' },

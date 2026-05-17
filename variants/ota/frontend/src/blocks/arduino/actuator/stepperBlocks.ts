@@ -159,8 +159,10 @@ Blockly.Blocks['stepper_move'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_MOVE || 'Stepper Move');
+    // BUG-085 Phase 3: ['Number','String','Boolean'] for received-value
+    // compatibility (cpp generator coerces via String(x).toInt()).
     this.appendValueInput('STEPS')
-        .setCheck('Number')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_STEPS || 'Steps');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_SPEED || 'Speed')
@@ -198,8 +200,10 @@ Blockly.Blocks['stepper_rotate'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_ROTATE || 'Stepper Rotate');
+    // BUG-085 Phase 3: ['Number','String','Boolean'] for received-value
+    // compatibility (cpp generator coerces via String(x).toInt()).
     this.appendValueInput('ANGLE')
-        .setCheck('Number')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_STEPPER_ANGLE || 'Angle');
     this.appendDummyInput()
         .appendField('°')

@@ -53,6 +53,12 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       const more = i.presentWifiBlocks.length > 3 ? ', ...' : '';
       return `WiFi 通信を含む block (${blocksHead}${more}) を使用していますが、arduino_setup 内に wifi_connect (または WiFi 接続を内包する ha_device_init) が不在です。必ず arduino_setup の先頭付近に wifi_connect block を追加してください`;
     },
+    type_mismatch_will_cause_detach: (i) => {
+      if (i.kind !== 'type_mismatch_will_cause_detach') return '';
+      const exp = Array.isArray(i.expectedType) ? i.expectedType.join('|') : i.expectedType;
+      const out = Array.isArray(i.childOutputType) ? i.childOutputType.join('|') : i.childOutputType;
+      return `${i.parentBlockType} block (id=${i.parentBlockId}) の ${i.inputName} 入力 (受入型: ${exp}) に ${i.childBlockType} block (出力型: ${out ?? '?'}) を接続していますが、型不一致で Blockly が workspace load 時に接続を rejection、child block が top-level orphan 化します。型互換 block (例: math_number / variables_get) に切り替えるか、別 input slot を使用してください`;
+    },
   },
   en: {
     unconnected_value_input: (i) => {
@@ -73,6 +79,12 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       const blocksHead = i.presentWifiBlocks.slice(0, 3).join(', ');
       const more = i.presentWifiBlocks.length > 3 ? ', ...' : '';
       return `WiFi-using blocks (${blocksHead}${more}) are used, but wifi_connect (or ha_device_init that embeds WiFi) is missing from arduino_setup. Add a wifi_connect block near the top of arduino_setup`;
+    },
+    type_mismatch_will_cause_detach: (i) => {
+      if (i.kind !== 'type_mismatch_will_cause_detach') return '';
+      const exp = Array.isArray(i.expectedType) ? i.expectedType.join('|') : i.expectedType;
+      const out = Array.isArray(i.childOutputType) ? i.childOutputType.join('|') : i.childOutputType;
+      return `${i.parentBlockType} block (id=${i.parentBlockId}) ${i.inputName} input (accepts: ${exp}) has ${i.childBlockType} block (outputs: ${out ?? '?'}) connected, but the type mismatch will cause Blockly to REJECT the connection at workspace load and detach the child to top-level. Use a type-compatible block (e.g. math_number / variables_get) or a different input slot`;
     },
   },
   'zh-TW': {
@@ -95,6 +107,12 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       const more = i.presentWifiBlocks.length > 3 ? ', ...' : '';
       return `使用 WiFi 通訊類積木 (${blocksHead}${more}) 但 arduino_setup 內缺少 wifi_connect (或內含 WiFi 連線的 ha_device_init)。請於 arduino_setup 開頭附近新增 wifi_connect 積木`;
     },
+    type_mismatch_will_cause_detach: (i) => {
+      if (i.kind !== 'type_mismatch_will_cause_detach') return '';
+      const exp = Array.isArray(i.expectedType) ? i.expectedType.join('|') : i.expectedType;
+      const out = Array.isArray(i.childOutputType) ? i.childOutputType.join('|') : i.childOutputType;
+      return `${i.parentBlockType} 積木 (id=${i.parentBlockId}) 的 ${i.inputName} 輸入 (接受型別: ${exp}) 連接了 ${i.childBlockType} 積木 (輸出型別: ${out ?? '?'})，但型別不符會導致 Blockly 在 workspace load 時拒絕連接、將 child 積木分離至 top-level orphan。請改用型別相容的積木 (例: math_number / variables_get) 或使用其他 input slot`;
+    },
   },
   es: {
     unconnected_value_input: (i) => {
@@ -116,6 +134,12 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       const more = i.presentWifiBlocks.length > 3 ? ', ...' : '';
       return `Bloques que usan WiFi (${blocksHead}${more}) están presentes, pero falta wifi_connect (o ha_device_init que incrusta WiFi) en arduino_setup. Añade un bloque wifi_connect cerca del inicio de arduino_setup`;
     },
+    type_mismatch_will_cause_detach: (i) => {
+      if (i.kind !== 'type_mismatch_will_cause_detach') return '';
+      const exp = Array.isArray(i.expectedType) ? i.expectedType.join('|') : i.expectedType;
+      const out = Array.isArray(i.childOutputType) ? i.childOutputType.join('|') : i.childOutputType;
+      return `El bloque ${i.parentBlockType} (id=${i.parentBlockId}) entrada ${i.inputName} (acepta: ${exp}) tiene conectado el bloque ${i.childBlockType} (salida: ${out ?? '?'}), pero la incompatibilidad de tipos hará que Blockly RECHACE la conexión al cargar el workspace y desplace el bloque hijo al top-level (orphan). Usa un bloque compatible (p.ej. math_number / variables_get) o una entrada distinta`;
+    },
   },
   'pt-PT': {
     unconnected_value_input: (i) => {
@@ -136,6 +160,12 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       const blocksHead = i.presentWifiBlocks.slice(0, 3).join(', ');
       const more = i.presentWifiBlocks.length > 3 ? ', ...' : '';
       return `Blocos que usam WiFi (${blocksHead}${more}) estão presentes, mas falta wifi_connect (ou ha_device_init que incorpora WiFi) em arduino_setup. Adiciona um bloco wifi_connect perto do início de arduino_setup`;
+    },
+    type_mismatch_will_cause_detach: (i) => {
+      if (i.kind !== 'type_mismatch_will_cause_detach') return '';
+      const exp = Array.isArray(i.expectedType) ? i.expectedType.join('|') : i.expectedType;
+      const out = Array.isArray(i.childOutputType) ? i.childOutputType.join('|') : i.childOutputType;
+      return `O bloco ${i.parentBlockType} (id=${i.parentBlockId}) entrada ${i.inputName} (aceita: ${exp}) tem conectado o bloco ${i.childBlockType} (saída: ${out ?? '?'}), mas a incompatibilidade de tipos fará com que Blockly REJEITE a conexão ao carregar o workspace e desloque o bloco filho para o top-level (orphan). Usa um bloco compatível (p.ex. math_number / variables_get) ou outra entrada`;
     },
   },
 };

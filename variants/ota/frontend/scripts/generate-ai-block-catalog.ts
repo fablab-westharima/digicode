@@ -38,7 +38,12 @@ interface FieldDef {
 
 interface ValueInputDef {
   name: string;
-  check: string | null; // Blockly type check e.g. 'Number', 'String', null = any
+  // BUG-085 Phase 3 (2026-05-17): extended to string[] for array setCheck
+  // form e.g. setCheck(['Number','String','Boolean']) (case 19 cluster pattern
+  // for sinks that accept multiple coerced types). Single-string and null
+  // forms remain supported for back-compat. Used by semanticValidator Check 5
+  // to predict Blockly workspace-load connection rejections.
+  check: string | string[] | null;
 }
 
 interface StatementInputDef {
@@ -550,13 +555,27 @@ function parseBlockMeta(
   }
 
   // appendValueInput('NAME') — look ahead up to 200 chars for optional .setCheck(...)
+  // BUG-085 Phase 3: setCheck parsing extended to array form. Three forms:
+  //   .setCheck(null)                       → check = null (accept any)
+  //   .setCheck('Number')                   → check = 'Number'
+  //   .setCheck(['Number','String',...])    → check = ['Number','String',...]
   const valueInputs: ValueInputDef[] = [];
   const viRe = /\.appendValueInput\(['"](\w+)['"]\)/g;
   while ((fm = viRe.exec(body)) !== null) {
     const name = fm[1];
-    const ahead = body.substring(fm.index + fm[0].length, fm.index + fm[0].length + 200);
-    const checkM = ahead.match(/\.setCheck\((?:null|['"](\w+)['"])\)/);
-    const check = checkM ? (checkM[1] ?? null) : null;
+    const ahead = body.substring(fm.index + fm[0].length, fm.index + fm[0].length + 300);
+    // Try array form first: .setCheck(['A', 'B', ...])
+    const arrayM = ahead.match(/\.setCheck\(\s*\[([^\]]+)\]\s*\)/);
+    let check: string | string[] | null;
+    if (arrayM) {
+      // Extract quoted strings from the array literal
+      const items = [...arrayM[1].matchAll(/['"]([^'"]+)['"]/g)].map((m) => m[1]);
+      check = items.length > 0 ? items : null;
+    } else {
+      // Fall back to single-string or null form
+      const singleM = ahead.match(/\.setCheck\((?:null|['"](\w+)['"])\)/);
+      check = singleM ? (singleM[1] ?? null) : null;
+    }
     valueInputs.push({ name, check });
   }
 

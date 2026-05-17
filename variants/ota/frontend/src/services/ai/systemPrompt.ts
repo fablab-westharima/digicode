@@ -19,7 +19,9 @@ export interface FieldDef {
 
 export interface ValueInputDef {
   name: string;
-  check: string | null;
+  // BUG-085 Phase 3: string[] supports array setCheck form e.g.
+  // setCheck(['Number','String','Boolean']) used in case 19 cluster sinks.
+  check: string | string[] | null;
 }
 
 export interface StatementInputDef {
@@ -152,9 +154,13 @@ function formatBlockSchema(b: BlockCatalogEntry): string {
     }
   }
 
-  const valueInputParts = b.valueInputs.map(vi =>
-    vi.check ? `[${vi.name}:${vi.check}]` : `[${vi.name}]`
-  );
+  const valueInputParts = b.valueInputs.map((vi) => {
+    if (vi.check === null || vi.check === undefined) return `[${vi.name}]`;
+    // BUG-085 Phase 3: array check renders with pipe (matches outputType
+    // notation for consistency, e.g. [ANGLE:Number|String|Boolean]).
+    const checkStr = Array.isArray(vi.check) ? vi.check.join('|') : vi.check;
+    return `[${vi.name}:${checkStr}]`;
+  });
   const stmtInputParts = b.statementInputs.map(si => `{${si.name}}`);
 
   const schema = [...(fieldParts.length ? [`(${fieldParts.join(',')})`] : []), ...valueInputParts, ...stmtInputParts].join('');

@@ -48,7 +48,7 @@ export type ValidationIssue =
       blockType: string;
       blockId: string;
       inputName: string;
-      expectedType: string | null;
+      expectedType: string | string[] | null;
     }
   | {
       kind: 'orphan_value_block';
@@ -65,6 +65,24 @@ export type ValidationIssue =
   | {
       kind: 'missing_wifi_connect';
       presentWifiBlocks: string[];
+    }
+  | {
+      // BUG-085 Phase 3 (Check 5) — Type-mismatch will cause Blockly's
+      // connection-checker to REJECT the connection at workspace load,
+      // detaching the child block to top-level (where it becomes an
+      // orphan + value blocks emit `scrubNakedValue` expressions).
+      // XML-level "looks connected" but runtime reality is "disconnected".
+      // Root-cause defense for F1+F2 same-source bugs (servo_write
+      // setCheck('Number') rejecting websocket_server_received_value's
+      // 'String' output).
+      kind: 'type_mismatch_will_cause_detach';
+      parentBlockType: string;
+      parentBlockId: string;
+      inputName: string;
+      expectedType: string | string[];
+      childBlockType: string;
+      childBlockId: string;
+      childOutputType: string | string[] | null;
     };
 
 export interface ValidationResult {
@@ -172,33 +190,6 @@ export function validateXml(xmlString: string, catalog: BlockCatalog): Validatio
     // `text/xml` — sticking with the proven path keeps parity.
     const doc = parser.parseFromString(xmlString, 'application/xml');
 
-    // BUG-085 P2-V silent-failure diagnostic v2 (temporary, remove after the
-    // browser-side root cause of "validator returns issues=[] for AI XML
-    // that should trigger F1+F2" is confirmed). User smoke v1 showed
-    // truncation hid the relevant middle section (~6KB cut). v2 emits the
-    // full XML so the AI's exact representation of servo_write + orphan
-    // received_value is visible.
-    const debugTopLevel = doc.documentElement
-      ? Array.from(doc.documentElement.children).map((c) => ({
-          tagName: c.tagName,
-          type: c.getAttribute('type'),
-        }))
-      : [];
-    // eslint-disable-next-line no-console
-    console.info('[BUG-085 P2-V DEBUG] validateXml entry', {
-      xmlByteLength: xmlString.length,
-      hasXmlnsDecl: xmlString.includes('xmlns'),
-      rootTagName: doc.documentElement?.tagName ?? null,
-      rootLocalName: doc.documentElement?.localName ?? null,
-      rootNamespaceURI: doc.documentElement?.namespaceURI ?? null,
-      parsererror: !!doc.querySelector('parsererror'),
-      totalBlockCount: doc.querySelectorAll('block').length,
-      topLevelChildrenCount: debugTopLevel.length,
-      topLevelChildren: debugTopLevel,
-      catalogSize: catalog.blocks.length,
-      xmlFull: xmlString,
-    });
-
     // Parse error detection: in Chrome/Firefox XML mode, a malformed input
     // produces a doc whose tree contains <parsererror>. `doc.querySelector`
     // searches the entire document (not just below documentElement), which
@@ -225,6 +216,7 @@ export function validateXml(xmlString: string, catalog: BlockCatalog): Validatio
       ...checkOrphanValueBlocks(root, catalog),
       ...checkAsymmetricBinaryBranches(doc),
       ...checkMissingWifiConnect(doc),
+      ...checkTypeMismatchWillCauseDetach(doc, catalog),
     ];
 
     return { valid: issues.length === 0, issues };
@@ -245,14 +237,6 @@ function checkUnconnectedValueInputs(doc: Document, catalog: BlockCatalog): Vali
   const issues: ValidationIssue[] = [];
   const blockMap = new Map<string, BlockCatalogEntry>(catalog.blocks.map((b) => [b.type, b]));
 
-  // BUG-085 P2-V DEBUG v2 — accumulate per-iteration trace into a single
-  // console.info call at function exit. Per-block console.info during the
-  // loop floods vitest parallel-test stdout and destabilizes unrelated
-  // test files (observed: full suite 17 fail / isolated semanticValidator
-  // 14 fail, while isolated factory.test.ts passes — classic stdout
-  // overflow signature). One aggregated log keeps user visibility intact.
-  const trace: Array<Record<string, unknown>> = [];
-
   // querySelectorAll matches by local name across namespaces (proven pattern
   // from xmlValidator.ts:doc.querySelectorAll('block[type]')). This is more
   // browser-portable than getElementsByTagName for namespaced XML.
@@ -262,38 +246,25 @@ function checkUnconnectedValueInputs(doc: Document, catalog: BlockCatalog): Vali
     const blockType = blockEl.getAttribute('type');
     if (!blockType) continue;
     const meta = blockMap.get(blockType);
-    if (!meta || meta.valueInputs.length === 0) {
-      trace.push({
-        i,
-        blockType,
-        skipped: !meta ? 'no-catalog-meta' : 'no-valueInputs',
-      });
-      continue;
-    }
+    if (!meta || meta.valueInputs.length === 0) continue;
 
     const blockId = blockEl.getAttribute('id') ?? `${blockType}@${i}`;
 
     for (const valueInputDef of meta.valueInputs) {
       const valueChild = findDirectChild(blockEl, 'value', valueInputDef.name);
-      const inner = valueChild ? findDirectChildAny(valueChild, ['block', 'shadow']) : null;
-      const decision = !valueChild
-        ? 'FLAG-no-value-child'
-        : !inner
-          ? 'FLAG-empty-value'
-          : `ok-connected-${inner.tagName.toLowerCase()}-${inner.getAttribute('type') ?? '?'}`;
-
-      trace.push({
-        i,
-        blockType,
-        blockId,
-        inputName: valueInputDef.name,
-        expectedType: valueInputDef.check ?? null,
-        decision,
-        innerTagName: inner?.tagName ?? null,
-        innerType: inner?.getAttribute('type') ?? null,
-      });
-
-      if (!valueChild || !inner) {
+      if (!valueChild) {
+        issues.push({
+          kind: 'unconnected_value_input',
+          blockType,
+          blockId,
+          inputName: valueInputDef.name,
+          expectedType: valueInputDef.check ?? null,
+        });
+        continue;
+      }
+      // <value name="X"> exists but has no <block> or <shadow> child → still unconnected
+      const inner = findDirectChildAny(valueChild, ['block', 'shadow']);
+      if (!inner) {
         issues.push({
           kind: 'unconnected_value_input',
           blockType,
@@ -304,13 +275,6 @@ function checkUnconnectedValueInputs(doc: Document, catalog: BlockCatalog): Vali
       }
     }
   }
-
-  // eslint-disable-next-line no-console
-  console.info('[BUG-085 P2-V DEBUG] check1 trace', {
-    totalBlocksScanned: allBlocks.length,
-    issuesFound: issues.length,
-    trace,
-  });
 
   return issues;
 }
@@ -323,44 +287,14 @@ function checkOrphanValueBlocks(root: Element, catalog: BlockCatalog): Validatio
   const issues: ValidationIssue[] = [];
   const blockMap = new Map<string, BlockCatalogEntry>(catalog.blocks.map((b) => [b.type, b]));
 
-  // BUG-085 P2-V DEBUG v2 — accumulated trace (same stdout-flood mitigation
-  // as check1). Surfaces every top-level child the validator considers,
-  // why each was skipped or flagged.
-  const trace: Array<Record<string, unknown>> = [];
-
   // Direct child <block> elements of the <xml> root.
   const children = root.children;
   for (let i = 0; i < children.length; i++) {
     const child = children[i];
-    if (child.tagName !== 'block') {
-      trace.push({
-        i,
-        tagName: child.tagName,
-        type: child.getAttribute('type'),
-        skipped: 'non-block-tag',
-        outerHTMLPreview: child.outerHTML.slice(0, 200),
-      });
-      continue;
-    }
+    if (child.tagName !== 'block') continue;
     const blockType = child.getAttribute('type');
-    if (!blockType) {
-      trace.push({ i, skipped: 'block-no-type-attr' });
-      continue;
-    }
+    if (!blockType) continue;
     const meta = blockMap.get(blockType);
-    const decision = !meta
-      ? 'skip-no-catalog-meta'
-      : !meta.hasOutput
-        ? 'skip-non-value (hasOutput=false)'
-        : 'FLAG-orphan-value-block';
-    trace.push({
-      i,
-      blockType,
-      hasMeta: !!meta,
-      hasOutput: meta?.hasOutput ?? null,
-      decision,
-    });
-
     if (!meta) continue;
     if (!meta.hasOutput) continue;
 
@@ -371,13 +305,6 @@ function checkOrphanValueBlocks(root: Element, catalog: BlockCatalog): Validatio
       blockId,
     });
   }
-
-  // eslint-disable-next-line no-console
-  console.info('[BUG-085 P2-V DEBUG] check2 trace', {
-    topLevelChildrenScanned: children.length,
-    issuesFound: issues.length,
-    trace,
-  });
 
   return issues;
 }
@@ -511,6 +438,104 @@ function checkMissingWifiConnect(doc: Document): ValidationIssue[] {
       presentWifiBlocks: Array.from(new Set(wifiUsingBlocks)).slice(0, 5),
     },
   ];
+}
+
+// ---------------------------------------------------------------------------
+// Check 5: type-mismatch will cause Blockly to detach connection at load
+// ---------------------------------------------------------------------------
+
+/**
+ * BUG-085 Phase 3 — when a value block (hasOutput=true) appears as a child
+ * inside a `<value name="X">` element of a parent block, Blockly's
+ * connection-checker will REJECT the connection at workspace load if the
+ * child's `outputType` is incompatible with the parent's `valueInputs[X].check`.
+ * The XML "looks connected" but the runtime workspace state has the child
+ * as an orphan (which then emits either a hardcoded fallback in the parent's
+ * cpp generator OR `scrubNakedValue` expression at top-level).
+ *
+ * This is the root cause of F1 (servo_write ANGLE setCheck('Number') rejecting
+ * websocket_server_received_value's 'String' output → '90' fallback) and F2
+ * (the rejected received_value becoming top-level orphan → `wsServerMessage;`).
+ *
+ * Phase 3 fix loosens 8 actuator setChecks to ['Number','String','Boolean'],
+ * eliminating the immediate cause. Check 5 is the structural defense for
+ * future similar cluster bugs (any new block with overly-restrictive setCheck
+ * + AI generation that would pass an incompatible-typed received-value).
+ *
+ * Type compatibility rules:
+ *   - parent.check === null    → accepts any → no flag
+ *   - child.outputType === null → dynamic/unknown → defensive accept → no flag
+ *   - otherwise: any child type in parent's accepted-types list → compatible
+ *     (else flag)
+ *   - shadow blocks NOT checked (shadows are intentional typed defaults,
+ *     never cause Blockly detach — they ARE the type-compatible filler)
+ */
+function checkTypeMismatchWillCauseDetach(
+  doc: Document,
+  catalog: BlockCatalog,
+): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const blockMap = new Map<string, BlockCatalogEntry>(catalog.blocks.map((b) => [b.type, b]));
+
+  const allBlocks = doc.querySelectorAll('block');
+  for (let i = 0; i < allBlocks.length; i++) {
+    const parentEl = allBlocks[i];
+    const parentType = parentEl.getAttribute('type');
+    if (!parentType) continue;
+    const parentMeta = blockMap.get(parentType);
+    if (!parentMeta || parentMeta.valueInputs.length === 0) continue;
+
+    const parentId = parentEl.getAttribute('id') ?? `${parentType}@${i}`;
+
+    for (const valueInputDef of parentMeta.valueInputs) {
+      // No type constraint declared → accepts any → no mismatch possible
+      if (valueInputDef.check === null || valueInputDef.check === undefined) continue;
+
+      const valueChild = findDirectChild(parentEl, 'value', valueInputDef.name);
+      if (!valueChild) continue;
+
+      // Only inspect real <block> children. <shadow> blocks are typed-default
+      // fillers that match by construction; they never cause Blockly detach.
+      const innerBlock = findDirectChild(valueChild, 'block', null);
+      if (!innerBlock) continue;
+
+      const childType = innerBlock.getAttribute('type');
+      if (!childType) continue;
+      const childMeta = blockMap.get(childType);
+      if (!childMeta) continue;
+      // Child must be a value block (hasOutput=true) for this check to apply.
+      // A non-value block in a value slot would be caught by Blockly load
+      // (Block.outputConnection mismatch with appendValueInput), surfaced as
+      // a load error, but our pre-check ensures cleaner diagnosis.
+      if (!childMeta.hasOutput) continue;
+
+      const childOutput = childMeta.outputType;
+      // Dynamic / unknown output type → defensive accept (could match anything)
+      if (childOutput === null || childOutput === undefined) continue;
+
+      const parentAccepted = Array.isArray(valueInputDef.check)
+        ? valueInputDef.check
+        : [valueInputDef.check];
+      const childTypes = Array.isArray(childOutput) ? childOutput : [childOutput];
+
+      const compatible = childTypes.some((t) => parentAccepted.includes(t));
+      if (compatible) continue;
+
+      const childId = innerBlock.getAttribute('id') ?? childType;
+      issues.push({
+        kind: 'type_mismatch_will_cause_detach',
+        parentBlockType: parentType,
+        parentBlockId: parentId,
+        inputName: valueInputDef.name,
+        expectedType: valueInputDef.check,
+        childBlockType: childType,
+        childBlockId: childId,
+        childOutputType: childOutput,
+      });
+    }
+  }
+
+  return issues;
 }
 
 // ---------------------------------------------------------------------------

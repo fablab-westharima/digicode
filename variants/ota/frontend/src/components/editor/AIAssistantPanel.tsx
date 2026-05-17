@@ -210,13 +210,15 @@ export function AIAssistantPanel({
       orphan_value_block: 0,
       asymmetric_binary_branch: 0,
       missing_wifi_connect: 0,
+      type_mismatch_will_cause_detach: 0,
     };
     for (const i of issues) counts[i.kind]++;
     const parts: string[] = [];
-    if (counts.unconnected_value_input > 0) parts.push(`unconnected×${counts.unconnected_value_input}`);
-    if (counts.orphan_value_block > 0)      parts.push(`orphan×${counts.orphan_value_block}`);
-    if (counts.asymmetric_binary_branch > 0) parts.push(`asymmetric×${counts.asymmetric_binary_branch}`);
-    if (counts.missing_wifi_connect > 0)    parts.push(`missing-wifi×${counts.missing_wifi_connect}`);
+    if (counts.unconnected_value_input > 0)         parts.push(`unconnected×${counts.unconnected_value_input}`);
+    if (counts.orphan_value_block > 0)              parts.push(`orphan×${counts.orphan_value_block}`);
+    if (counts.asymmetric_binary_branch > 0)        parts.push(`asymmetric×${counts.asymmetric_binary_branch}`);
+    if (counts.missing_wifi_connect > 0)            parts.push(`missing-wifi×${counts.missing_wifi_connect}`);
+    if (counts.type_mismatch_will_cause_detach > 0) parts.push(`type-mismatch×${counts.type_mismatch_will_cause_detach}`);
     return parts.join(', ');
   }
 

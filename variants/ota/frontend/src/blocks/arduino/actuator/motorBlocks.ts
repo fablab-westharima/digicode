@@ -110,8 +110,11 @@ Blockly.Blocks['motor_move'] = {
           [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_BACKWARD || 'Backward', 'backward'],
           [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_STOP || 'Stop', 'stop']
         ]), 'DIRECTION');
+    // BUG-085 Phase 3: ['Number','String','Boolean'] broadens connection to
+    // received-value blocks (String output) via the cpp generator's String()
+    // coercion path. case 19 cluster excludes 'Array'.
     this.appendValueInput('SPEED')
-        .setCheck('Number')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_SPEED || 'speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -187,8 +190,11 @@ Blockly.Blocks['motor_speed'] = {
           [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOTORA || 'Motor A', 'A'],
           [Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_MOTORB || 'Motor B', 'B']
         ]), 'MOTOR');
+    // BUG-085 Phase 3: ['Number','String','Boolean'] broadens connection to
+    // received-value blocks (String output) via the cpp generator's String()
+    // coercion path. case 19 cluster excludes 'Array'.
     this.appendValueInput('SPEED')
-        .setCheck('Number')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_MOTOR_SPEED || 'speed');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);

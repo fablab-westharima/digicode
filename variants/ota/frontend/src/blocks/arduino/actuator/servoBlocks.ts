@@ -72,6 +72,19 @@ pythonGenerator.forBlock['servo_attach'] = function(block: Blockly.Block) {
 // drive the servo from variables, BLE-received values, math expressions, etc.
 // Legacy XML using `<field name="ANGLE">N</field>` loads with empty input;
 // generator falls back to '90' to preserve compile success (sunset: 2027-05-03).
+//
+// BUG-085 Phase 3 (2026-05-17): setCheck broadened from 'Number' to
+// ['Number','String','Boolean'] to allow received-value blocks (which output
+// 'String') to connect at workspace load. Previously, AI-generated XML with
+// websocket_server_received_value / ble_received_value in the ANGLE slot was
+// rejected by Blockly's connection-checker, leaving the slot empty (→ '90'
+// fallback) AND making the received_value block an orphan at workspace top-
+// level (→ scrubNakedValue emits `wsServerMessage;`). The cpp generator's
+// `String(${expr}).toInt()` wrapping already handles coercion for all three
+// types; Array is intentionally NOT in the list (case 19 cluster discipline:
+// reject array_content brace-init at UI level to prevent Stream API compile
+// failures of the BUG-079 family). Same change applies to servo_sweep
+// START/END/SPEED, motor_*, stepper_* below.
 Blockly.Blocks['servo_write'] = {
   init: function() {
     const pins = getServoPins();
@@ -80,7 +93,7 @@ Blockly.Blocks['servo_write'] = {
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
         .appendField(new Blockly.FieldNumber(pins.servo1, 0, 39), 'PIN');
     this.appendValueInput('ANGLE')
-        .setCheck('Number')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_ANGLE || 'angle');
     this.appendDummyInput()
         .appendField('°');
@@ -171,13 +184,13 @@ Blockly.Blocks['servo_sweep'] = {
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_PIN || 'Pin')
         .appendField(new Blockly.FieldNumber(pins.servo1, 0, 39), 'PIN');
     this.appendValueInput('START')
-        .setCheck('Number')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_ACTUATOR_SERVO_START || 'start');
     this.appendValueInput('END')
-        .setCheck('Number')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('° ' + (Blockly.Msg.BLOCKS_ACTUATOR_SERVO_END || 'end'));
     this.appendValueInput('SPEED')
-        .setCheck('Number')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('° ' + (Blockly.Msg.BLOCKS_ACTUATOR_SERVO_SPEED || 'speed'));
     this.appendDummyInput()
         .appendField('ms');

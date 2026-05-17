@@ -32,7 +32,10 @@ describe('semanticValidator — Check 1: unconnected_value_input', () => {
     );
     expect(f1).toBeDefined();
     expect(f1?.inputName).toBe('ANGLE');
-    expect(f1?.expectedType).toBe('Number');
+    // BUG-085 Phase 3: servo_write ANGLE check broadened from 'Number' to
+    // ['Number','String','Boolean'] to allow received-value blocks; catalog
+    // regen reflects this. Assertion updated to match the new shape.
+    expect(f1?.expectedType).toEqual(['Number', 'String', 'Boolean']);
   });
 
   it('flags <value name="ANGLE"> with empty inner (no block, no shadow)', () => {
@@ -420,6 +423,78 @@ describe('semanticValidator — Check 4: missing_wifi_connect', () => {
     );
     expect(issue).toBeDefined();
     expect(issue?.presentWifiBlocks.length).toBeLessThanOrEqual(5);
+  });
+});
+
+describe('semanticValidator — Check 5: type_mismatch_will_cause_detach', () => {
+  // BUG-085 Phase 3: Check 5 catches XML-level "connected" cases that
+  // Blockly's connection-checker will REJECT at workspace load (parent
+  // input check incompatible with child outputType). These are the
+  // F1+F2 root-cause shape that prompt-only mitigation can't prevent.
+
+  it('does NOT flag servo_write ANGLE + websocket_server_received_value after Phase 3 fix (now compatible: String in [Number,String,Boolean])', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="websocket_server_on_message"><field name="CHANNEL_ID">servo</field>' +
+          '<statement name="HANDLER">' +
+            '<block type="servo_write"><field name="PIN">13</field>' +
+              '<value name="ANGLE"><block type="websocket_server_received_value"></block></value>' +
+            '</block>' +
+          '</statement>' +
+        '</block>' +
+      '</statement></block>',
+    );
+    const result = validateXml(xml, CATALOG);
+    // Phase 3 broadens servo_write ANGLE check to ['Number','String','Boolean'],
+    // so String output is in the accepted set → no detach predicted.
+    expect(result.issues.some((i) => i.kind === 'type_mismatch_will_cause_detach')).toBe(false);
+  });
+
+  it('does NOT flag math_number in Number-only input (compatible)', () => {
+    const xml = wrap(
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value></block>' +
+      '</statement></block>',
+    );
+    const result = validateXml(xml, CATALOG);
+    expect(result.issues.some((i) => i.kind === 'type_mismatch_will_cause_detach')).toBe(false);
+  });
+
+  it('does NOT flag variables_get (outputType=null, defensive accept) anywhere', () => {
+    const xml = wrap(
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="esp32_delay"><value name="TIME"><block type="variables_get"><field name="VAR">x</field></block></value></block>' +
+      '</statement></block>',
+    );
+    const result = validateXml(xml, CATALOG);
+    expect(result.issues.some((i) => i.kind === 'type_mismatch_will_cause_detach')).toBe(false);
+  });
+
+  it('flags text (String) in esp32_delay TIME (still Number-only, group N)', () => {
+    const xml = wrap(
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="esp32_delay" id="delay1"><value name="TIME"><block type="text" id="t1"><field name="TEXT">1000</field></block></value></block>' +
+      '</statement></block>',
+    );
+    const result = validateXml(xml, CATALOG);
+    const tm = result.issues.find((i): i is Extract<ValidationIssue, { kind: 'type_mismatch_will_cause_detach' }> =>
+      i.kind === 'type_mismatch_will_cause_detach',
+    );
+    expect(tm).toBeDefined();
+    expect(tm?.parentBlockType).toBe('esp32_delay');
+    expect(tm?.inputName).toBe('TIME');
+    expect(tm?.childBlockType).toBe('text');
+    expect(tm?.childOutputType).toBe('String');
+  });
+
+  it('does NOT flag shadow-only value (shadows never cause detach)', () => {
+    const xml = wrap(
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">1000</field></shadow></value></block>' +
+      '</statement></block>',
+    );
+    const result = validateXml(xml, CATALOG);
+    expect(result.issues.some((i) => i.kind === 'type_mismatch_will_cause_detach')).toBe(false);
   });
 });
 
