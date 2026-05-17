@@ -212,6 +212,8 @@ export function AIAssistantPanel({
       missing_wifi_connect: 0,
       type_mismatch_will_cause_detach: 0,
       register_without_handler: 0,
+      xml_structural_malformed: 0,
+      controls_if_anomaly_no_body: 0,
     };
     for (const i of issues) counts[i.kind]++;
     const parts: string[] = [];
@@ -221,6 +223,8 @@ export function AIAssistantPanel({
     if (counts.missing_wifi_connect > 0)            parts.push(`missing-wifi×${counts.missing_wifi_connect}`);
     if (counts.type_mismatch_will_cause_detach > 0) parts.push(`type-mismatch×${counts.type_mismatch_will_cause_detach}`);
     if (counts.register_without_handler > 0)        parts.push(`register-without-handler×${counts.register_without_handler}`);
+    if (counts.xml_structural_malformed > 0)        parts.push(`xml-malformed×${counts.xml_structural_malformed}`);
+    if (counts.controls_if_anomaly_no_body > 0)     parts.push(`if-no-body×${counts.controls_if_anomaly_no_body}`);
     return parts.join(', ');
   }
 

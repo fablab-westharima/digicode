@@ -592,11 +592,15 @@ describe('semanticValidator — integration (user verbatim failure replication)'
     expect(result.issues).toEqual([]);
   });
 
-  it('returns loadError for malformed XML', () => {
+  it('returns xml_structural_malformed issue + loadError for malformed XML (BUG-086 Check 7)', () => {
     const result = validateXml('not xml at all <<<', CATALOG);
     expect(result.valid).toBe(false);
-    // jsdom parser is lenient — may produce loadError or empty issues, both OK
-    expect(result.issues).toEqual([]);
+    // BUG-086 Session 133 (Check 7): malformed XML now surfaces as a regular
+    // ValidationIssue so the retry orchestrator triggers regeneration.
+    // Previously this returned with empty issues and bypassed retry.
+    expect(result.loadError).toBe('XML parse failed');
+    expect(result.issues.length).toBe(1);
+    expect(result.issues[0].kind).toBe('xml_structural_malformed');
   });
 
   it('returns valid:true for completely empty xml root', () => {
@@ -874,5 +878,136 @@ describe('semanticValidator — Check 6: register_without_handler (BUG-086)', ()
     expect(issues.length).toBe(3);
     const contractIds = new Set(issues.map((i) => i.contractId));
     expect(contractIds).toEqual(new Set(['ha-switch', 'ha-number', 'mqtt-subscribe']));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// BUG-086 Session 133 (Check 7): xml_structural_malformed
+// ---------------------------------------------------------------------------
+
+describe('semanticValidator — Check 7: xml_structural_malformed (BUG-086)', () => {
+  it('flags malformed XML with unclosed tags (wifi-dht22-controller pattern)', () => {
+    const xml =
+      '<xml xmlns="https://developers.google.com/blockly/xml">' +
+        '<block type="arduino_setup"><statement name="SETUP">' +
+          '<block type="wifi_connect"><field name="SSID">x</field><field name="PASSWORD">y</field>' +
+            '<next><block type="websocket_server_start">' +
+              // missing close tags here — `<next>` opened but never closed before `</statement>`
+        '</statement></block>' +
+      '</xml>';
+    const result = validateXml(xml, CATALOG);
+    const issues = result.issues.filter((i) => i.kind === 'xml_structural_malformed') as Extract<ValidationIssue, { kind: 'xml_structural_malformed' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].parseErrorSnippet.length).toBeGreaterThan(0);
+    // Validator returns malformed-XML issue ONLY (other checks skipped after parse error)
+    expect(result.issues.length).toBe(1);
+    expect(result.valid).toBe(false);
+    expect(result.loadError).toBe('XML parse failed');
+  });
+
+  it('flags malformed XML with invalid tag name', () => {
+    const xml = '<xml><block type="x"><not a valid xml></block></xml>';
+    const result = validateXml(xml, CATALOG);
+    const issues = result.issues.filter((i) => i.kind === 'xml_structural_malformed');
+    expect(issues.length).toBe(1);
+  });
+
+  it('does NOT flag well-formed XML even if semantically empty', () => {
+    const xml = wrap('');
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'xml_structural_malformed');
+    expect(issues.length).toBe(0);
+  });
+
+  it('parseErrorSnippet is truncated to 200 chars (does not bloat fix prompt)', () => {
+    const longBrokenXml = '<xml>' + '<bad'.repeat(500) + '</xml>'; // unclosed tag spam
+    const result = validateXml(longBrokenXml, CATALOG);
+    const issues = result.issues.filter((i) => i.kind === 'xml_structural_malformed') as Extract<ValidationIssue, { kind: 'xml_structural_malformed' }>[];
+    if (issues.length > 0) {
+      expect(issues[0].parseErrorSnippet.length).toBeLessThanOrEqual(200);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// BUG-086 Session 133 (Check 8): controls_if_anomaly_no_body
+// ---------------------------------------------------------------------------
+
+describe('semanticValidator — Check 8: controls_if_anomaly_no_body (BUG-086)', () => {
+  it('flags controls_if(IF0=mpu6050_init, no DO) — wifi-controller-mix defect', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="controls_if" id="if1">' +
+          '<value name="IF0"><block type="mpu6050_init"><field name="ACCEL_RANGE">MPU6050_RANGE_8_G</field><field name="GYRO_RANGE">MPU6050_RANGE_500_DEG</field></block></value>' +
+        '</block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'controls_if_anomaly_no_body') as Extract<ValidationIssue, { kind: 'controls_if_anomaly_no_body' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].conditionBlockType).toBe('mpu6050_init');
+  });
+
+  it('flags controls_if(IF0=iot_cloud_connect, no DO) — modbus-temp-monitor defect', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="controls_if" id="if2">' +
+          '<value name="IF0"><block type="iot_cloud_connect"><field name="PROVIDER">azure_iot_hub</field></block></value>' +
+        '</block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'controls_if_anomaly_no_body') as Extract<ValidationIssue, { kind: 'controls_if_anomaly_no_body' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].conditionBlockType).toBe('iot_cloud_connect');
+  });
+
+  it('does NOT flag controls_if with non-empty DO0 body', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="controls_if" id="if3">' +
+          '<value name="IF0"><block type="mpu6050_init"></block></value>' +
+          '<statement name="DO0"><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">HIGH</field></block></statement>' +
+        '</block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'controls_if_anomaly_no_body');
+    expect(issues.length).toBe(0);
+  });
+
+  it('does NOT flag controls_if(IF0=logic_compare, no DO) — idiomatic value-test pattern', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="controls_if" id="if4">' +
+          '<value name="IF0"><block type="logic_compare">' +
+            '<field name="OP">EQ</field>' +
+            '<value name="A"><block type="math_number"><field name="NUM">1</field></block></value>' +
+            '<value name="B"><block type="math_number"><field name="NUM">2</field></block></value>' +
+          '</block></value>' +
+        '</block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'controls_if_anomaly_no_body');
+    expect(issues.length).toBe(0);
+  });
+
+  it('does NOT flag controls_if with ELSE body only', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="controls_if" id="if5">' +
+          '<value name="IF0"><block type="mpu6050_init"></block></value>' +
+          '<statement name="ELSE"><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">LOW</field></block></statement>' +
+        '</block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'controls_if_anomaly_no_body');
+    expect(issues.length).toBe(0);
+  });
+
+  it('does NOT flag controls_if without IF0 (no condition set)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="controls_if" id="if6"></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'controls_if_anomaly_no_body');
+    expect(issues.length).toBe(0);
   });
 });

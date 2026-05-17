@@ -232,3 +232,40 @@ describe('fixPromptBuilder — Check 6 (register_without_handler) per language',
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// BUG-086 Session 133 (Check 7): xml_structural_malformed per language
+// ---------------------------------------------------------------------------
+
+describe('fixPromptBuilder — Check 7 (xml_structural_malformed) per language', () => {
+  const issue: ValidationIssue = {
+    kind: 'xml_structural_malformed',
+    parseErrorSnippet: '1:1304: unexpected close tag.',
+  };
+
+  it.each(LANGS)('lang=%s mentions parse error + well-formed regen hint', (lang) => {
+    const p = buildFixPrompt(SAMPLE_XML, [issue], lang);
+    expect(p).toContain('parse error');
+    expect(p).toContain('1304'); // snippet substring
+    expect(p).toContain('<block>'); // well-formedness hint mentions <block>
+  });
+});
+
+// ---------------------------------------------------------------------------
+// BUG-086 Session 133 (Check 8): controls_if_anomaly_no_body per language
+// ---------------------------------------------------------------------------
+
+describe('fixPromptBuilder — Check 8 (controls_if_anomaly_no_body) per language', () => {
+  const issue: ValidationIssue = {
+    kind: 'controls_if_anomaly_no_body',
+    conditionBlockType: 'mpu6050_init',
+    controlIfBlockId: 'if1',
+  };
+
+  it.each(LANGS)('lang=%s mentions controls_if + conditionBlockType + DO0 hint', (lang) => {
+    const p = buildFixPrompt(SAMPLE_XML, [issue], lang);
+    expect(p).toContain('controls_if');
+    expect(p).toContain('mpu6050_init');
+    expect(p).toContain('DO0');
+  });
+});

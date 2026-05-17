@@ -64,6 +64,14 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       const idClause = i.idField ? ` (${i.idField}="${i.missingId}")` : ' (global handler)';
       return `${i.protocolLabel}: \`${i.registerType}\` block${idClause} に対応する \`${i.handlerType}\` handler block が同 XML 内に不在です。${i.idField ? `同じ ${i.idField} 値を持つ` : '少なくとも 1 つの'} ${i.handlerType} block を必ず生成してください。register と handler は 1:1 対応で、handler が無いとブラウザ/HA UI から値を送っても device は反応しません (silent fail)`;
     },
+    xml_structural_malformed: (i) => {
+      if (i.kind !== 'xml_structural_malformed') return '';
+      return `生成された XML が構造的に不正です (parse error: ${i.parseErrorSnippet})。Blockly の寛容な parser が malformed XML を silent に dropping して broken cpp を emit する原因になります。\`<block>\` / \`<next>\` / \`<statement>\` / \`<value>\` の開閉が全て揃っていること、属性が正しく quote されていること、全 tag が小文字であることを確認し、well-formed な XML を再生成してください`;
+    },
+    controls_if_anomaly_no_body: (i) => {
+      if (i.kind !== 'controls_if_anomaly_no_body') return '';
+      return `\`controls_if\` (id=${i.controlIfBlockId}) の IF0 入力に \`${i.conditionBlockType}\` block が接続されていますが、DO0 / ELSE 等の本体 statement chain が全て空です。\`${i.conditionBlockType}\` は初期化系/非比較系 block と推測されます。\`controls_if\` を空 body で配置せず、(a) \`${i.conditionBlockType}\` を sequential block として直接 setup chain に置く、(b) DO0 に本来の処理を入れる、(c) この controls_if を削除する、のいずれかにしてください。空 body のまま放置すると Blockly の lenient parser が後続の \`<next>\` chain を silent drop します`;
+    },
   },
   en: {
     unconnected_value_input: (i) => {
@@ -95,6 +103,14 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       if (i.kind !== 'register_without_handler') return '';
       const idClause = i.idField ? ` (${i.idField}="${i.missingId}")` : ' (global handler)';
       return `${i.protocolLabel}: \`${i.registerType}\` block${idClause} has no matching \`${i.handlerType}\` handler in the same XML. You MUST emit a \`${i.handlerType}\` block ${i.idField ? `with the SAME ${i.idField} value` : '(at least one)'}. Register and handler are 1:1; without the handler, the device silently fails to react when values arrive from the browser / HA UI`;
+    },
+    xml_structural_malformed: (i) => {
+      if (i.kind !== 'xml_structural_malformed') return '';
+      return `Your generated XML is structurally malformed (parse error: ${i.parseErrorSnippet}). Blockly's lenient parser silently drops malformed sub-trees and emits broken cpp. Ensure every \`<block>\` / \`<next>\` / \`<statement>\` / \`<value>\` open tag has a matching close tag, every attribute is properly quoted, and all tags are lowercase, then regenerate well-formed XML`;
+    },
+    controls_if_anomaly_no_body: (i) => {
+      if (i.kind !== 'controls_if_anomaly_no_body') return '';
+      return `\`controls_if\` (id=${i.controlIfBlockId}) has \`${i.conditionBlockType}\` connected as IF0, but DO0 / ELSE / other body statements are all empty. \`${i.conditionBlockType}\` looks like an initialization / non-comparison block. Do NOT place \`controls_if\` with an empty body; instead either (a) put \`${i.conditionBlockType}\` directly as a sequential block in the setup chain, (b) fill DO0 with the intended work, or (c) remove this controls_if entirely. An empty body causes Blockly's lenient parser to silently drop the trailing \`<next>\` chain`;
     },
   },
   'zh-TW': {
@@ -128,6 +144,14 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       const idClause = i.idField ? ` (${i.idField}="${i.missingId}")` : ' (global handler)';
       return `${i.protocolLabel}: \`${i.registerType}\` 積木${idClause} 在同 XML 內缺少對應的 \`${i.handlerType}\` handler 積木。請務必 emit ${i.idField ? `具有相同 ${i.idField} 值的` : '至少一個'} \`${i.handlerType}\` 積木。register 與 handler 為 1:1 對應，缺少 handler 會導致瀏覽器 / HA UI 傳值時 device 無回應 (silent fail)`;
     },
+    xml_structural_malformed: (i) => {
+      if (i.kind !== 'xml_structural_malformed') return '';
+      return `生成的 XML 結構不正確 (parse error: ${i.parseErrorSnippet})。Blockly 的寬容 parser 會 silent 丟棄不完整的子樹並 emit broken cpp。請確認 \`<block>\` / \`<next>\` / \`<statement>\` / \`<value>\` 所有 tag 都有對應的關閉、屬性都正確 quote、所有 tag 為小寫，然後重新生成 well-formed XML`;
+    },
+    controls_if_anomaly_no_body: (i) => {
+      if (i.kind !== 'controls_if_anomaly_no_body') return '';
+      return `\`controls_if\` (id=${i.controlIfBlockId}) 的 IF0 輸入連接了 \`${i.conditionBlockType}\` 積木，但 DO0 / ELSE 等 body statement 全部為空。\`${i.conditionBlockType}\` 看起來是初始化系/非比較系積木。請勿將 \`controls_if\` 留空 body，請改用 (a) 將 \`${i.conditionBlockType}\` 直接放在 setup chain 作為 sequential block、(b) 在 DO0 中填入實際處理、或 (c) 移除此 controls_if。空 body 會導致 Blockly 的 lenient parser silent 丟棄後續 \`<next>\` chain`;
+    },
   },
   es: {
     unconnected_value_input: (i) => {
@@ -160,6 +184,14 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       const idClause = i.idField ? ` (${i.idField}="${i.missingId}")` : ' (handler global)';
       return `${i.protocolLabel}: el bloque \`${i.registerType}\`${idClause} no tiene un bloque handler \`${i.handlerType}\` correspondiente en el mismo XML. DEBES emitir un bloque \`${i.handlerType}\` ${i.idField ? `con el MISMO valor de ${i.idField}` : '(al menos uno)'}. Register y handler son 1:1; sin el handler, el dispositivo falla silenciosamente al recibir valores desde el navegador / HA UI`;
     },
+    xml_structural_malformed: (i) => {
+      if (i.kind !== 'xml_structural_malformed') return '';
+      return `Tu XML generado está estructuralmente mal formado (parse error: ${i.parseErrorSnippet}). El parser tolerante de Blockly descarta silenciosamente sub-árboles mal formados y emite cpp roto. Asegúrate de que cada \`<block>\` / \`<next>\` / \`<statement>\` / \`<value>\` tenga su tag de cierre, los atributos estén entre comillas y todos los tags sean minúsculas, luego regenera el XML well-formed`;
+    },
+    controls_if_anomaly_no_body: (i) => {
+      if (i.kind !== 'controls_if_anomaly_no_body') return '';
+      return `\`controls_if\` (id=${i.controlIfBlockId}) tiene \`${i.conditionBlockType}\` conectado como IF0, pero DO0 / ELSE / otros statements del cuerpo están todos vacíos. \`${i.conditionBlockType}\` parece un bloque de inicialización / no-comparación. NO coloques \`controls_if\` con cuerpo vacío; en su lugar (a) coloca \`${i.conditionBlockType}\` directamente como bloque secuencial en la cadena de setup, (b) rellena DO0 con el trabajo previsto, o (c) elimina este controls_if. Un cuerpo vacío hace que el parser tolerante de Blockly descarte silenciosamente la cadena \`<next>\` posterior`;
+    },
   },
   'pt-PT': {
     unconnected_value_input: (i) => {
@@ -191,6 +223,14 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       if (i.kind !== 'register_without_handler') return '';
       const idClause = i.idField ? ` (${i.idField}="${i.missingId}")` : ' (handler global)';
       return `${i.protocolLabel}: o bloco \`${i.registerType}\`${idClause} não tem um bloco handler \`${i.handlerType}\` correspondente no mesmo XML. DEVES emitir um bloco \`${i.handlerType}\` ${i.idField ? `com o MESMO valor de ${i.idField}` : '(pelo menos um)'}. Register e handler são 1:1; sem o handler, o dispositivo falha silenciosamente ao receber valores do browser / HA UI`;
+    },
+    xml_structural_malformed: (i) => {
+      if (i.kind !== 'xml_structural_malformed') return '';
+      return `O teu XML gerado está estruturalmente mal formado (parse error: ${i.parseErrorSnippet}). O parser tolerante do Blockly descarta silenciosamente sub-árvores mal formadas e emite cpp partido. Garante que cada \`<block>\` / \`<next>\` / \`<statement>\` / \`<value>\` tem a sua tag de fecho, os atributos estão entre aspas e todas as tags são minúsculas, depois regenera o XML well-formed`;
+    },
+    controls_if_anomaly_no_body: (i) => {
+      if (i.kind !== 'controls_if_anomaly_no_body') return '';
+      return `\`controls_if\` (id=${i.controlIfBlockId}) tem \`${i.conditionBlockType}\` ligado como IF0, mas DO0 / ELSE / outros statements do corpo estão todos vazios. \`${i.conditionBlockType}\` parece um bloco de inicialização / não-comparação. NÃO coloques \`controls_if\` com corpo vazio; em vez disso (a) coloca \`${i.conditionBlockType}\` diretamente como bloco sequencial na cadeia de setup, (b) preenche DO0 com o trabalho pretendido, ou (c) remove este controls_if. Um corpo vazio faz com que o parser tolerante do Blockly descarte silenciosamente a cadeia \`<next>\` seguinte`;
     },
   },
 };

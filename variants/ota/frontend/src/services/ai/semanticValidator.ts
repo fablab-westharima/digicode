@@ -100,6 +100,27 @@ export type ValidationIssue =
       idField: string | null;
       missingId: string; // '__global__' when idField is null
       protocolLabel: string;
+    }
+  | {
+      // BUG-086 Session 133 (Check 7) — XML failed strict (application/xml)
+      // parse. Blockly's runtime parser (Blockly.utils.xml.textToDom) is
+      // lenient and silently drops malformed sub-trees, producing broken
+      // cpp without visible failure. Surfacing this at validator level
+      // triggers the retry loop, asking AI to regenerate well-formed XML
+      // before the broken output reaches the user's workspace.
+      kind: 'xml_structural_malformed';
+      parseErrorSnippet: string;
+    }
+  | {
+      // BUG-086 Session 133 (Check 8) — controls_if with IF0=block child
+      // (non-comparison, e.g. an *_init block) but no DO/ELSE statement
+      // chain. This is the wifi-controller-mix / modbus-temp-monitor
+      // canonical-sample defect that AI mimics: the if-condition is set
+      // but the body is empty, AND a `<next>` chain after the controls_if
+      // gets silently dropped by Blockly's lenient parser.
+      kind: 'controls_if_anomaly_no_body';
+      conditionBlockType: string;
+      controlIfBlockId: string;
     };
 
 export interface ValidationResult {
@@ -211,10 +232,21 @@ export function validateXml(xmlString: string, catalog: BlockCatalog): Validatio
     // produces a doc whose tree contains <parsererror>. `doc.querySelector`
     // searches the entire document (not just below documentElement), which
     // is the same approach the proven xmlValidator.ts uses.
-    if (doc.querySelector('parsererror')) {
+    //
+    // BUG-086 Session 133 (Check 7): convert parse error into a regular
+    // ValidationIssue so the retry orchestrator triggers a regeneration
+    // request. Previously this returned with loadError + empty issues,
+    // which bypassed retry entirely and let broken XML reach the workspace.
+    const parsererror = doc.querySelector('parsererror');
+    if (parsererror) {
       return {
         valid: false,
-        issues: [],
+        issues: [
+          {
+            kind: 'xml_structural_malformed',
+            parseErrorSnippet: (parsererror.textContent ?? 'XML parse failed').slice(0, 200),
+          },
+        ],
         loadError: 'XML parse failed',
       };
     }
@@ -235,6 +267,7 @@ export function validateXml(xmlString: string, catalog: BlockCatalog): Validatio
       ...checkMissingWifiConnect(doc),
       ...checkTypeMismatchWillCauseDetach(doc, catalog),
       ...checkRegisterWithoutHandler(doc),
+      ...checkControlsIfAnomalyNoBody(doc, catalog),
     ];
 
     return { valid: issues.length === 0, issues };
@@ -640,6 +673,77 @@ function makeIssue(
     missingId,
     protocolLabel: contract.protocolLabel,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Check 8: controls_if anomaly with no body (controls_if(IF0=block, no DO/ELSE))
+// ---------------------------------------------------------------------------
+
+/**
+ * BUG-086 Session 133 — Detects `controls_if` where IF0 has a child block
+ * (typically an *_init / non-comparison hasOutput block) but no DO/ELSE
+ * statement chain. This is the wifi-controller-mix / modbus-temp-monitor
+ * canonical sample defect: `controls_if(IF0=mpu6050_init, no DO)` with
+ * the actual work chained via `<next>` AFTER the controls_if. Blockly's
+ * lenient parser drops the `<next>` chain in some cases, and even when it
+ * loads, the result is a no-op `if (init()) {}` that confuses the AI.
+ *
+ * Heuristic: flag when IF0 condition is a block but ALL of DO0..DOn /
+ * ELSE statements are absent. Empty controls_if is suspicious anyway —
+ * intentional empty bodies should use `controls_if` only after at least
+ * one branch is filled.
+ */
+function checkControlsIfAnomalyNoBody(doc: Document, catalog: BlockCatalog): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const blockMap = new Map<string, BlockCatalogEntry>(catalog.blocks.map((b) => [b.type, b]));
+  const allBlocks = doc.querySelectorAll('block');
+  for (let i = 0; i < allBlocks.length; i++) {
+    const el = allBlocks[i];
+    if (el.getAttribute('type') !== 'controls_if') continue;
+
+    const if0 = findDirectChild(el, 'value', 'IF0');
+    if (!if0) continue;
+    const inner = findDirectChild(if0, 'block', null);
+    if (!inner) continue;
+    const innerType = inner.getAttribute('type');
+    if (!innerType) continue;
+
+    // Has any DO chain (DO0, DO1, ...) or ELSE branch?
+    let hasBody = false;
+    for (let j = 0; j < el.children.length; j++) {
+      const c = el.children[j];
+      if (c.tagName !== 'statement') continue;
+      const nm = c.getAttribute('name') ?? '';
+      if (nm.startsWith('DO') || nm === 'ELSE') {
+        // Statement element exists; consider non-empty if it has any child
+        if (c.children.length > 0) {
+          hasBody = true;
+          break;
+        }
+      }
+    }
+    if (hasBody) continue;
+
+    // Skip pure logic_compare / logic_operation / logic_boolean conditions —
+    // they're idiomatic "if value is true" patterns. Only flag when the
+    // condition is something else hasOutput=true (like *_init returning
+    // Boolean status, but architecturally the wrong use of controls_if).
+    if (innerType === 'logic_compare' || innerType === 'logic_operation' || innerType === 'logic_boolean' || innerType === 'logic_negate' || innerType === 'logic_ternary') continue;
+
+    // Only flag if inner has hasOutput=true (the wifi-controller-mix /
+    // modbus-temp-monitor pattern). Pure-statement children inside
+    // value-slot would already be caught by Blockly's connection checker.
+    const innerMeta = blockMap.get(innerType);
+    if (!innerMeta || !innerMeta.hasOutput) continue;
+
+    const controlIfBlockId = el.getAttribute('id') ?? `controls_if@${i}`;
+    issues.push({
+      kind: 'controls_if_anomaly_no_body',
+      conditionBlockType: innerType,
+      controlIfBlockId,
+    });
+  }
+  return issues;
 }
 
 // ---------------------------------------------------------------------------
