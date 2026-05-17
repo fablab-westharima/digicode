@@ -55,21 +55,16 @@ const catalog = JSON.parse(fs.readFileSync(CATALOG_PATH, 'utf-8')) as BlockCatal
 // ---------------------------------------------------------------------------
 
 /**
- * 7 broken samples identified by Phase A audit. C5 commit will fix them
- * and remove from this allowlist. After C5, the allowlist must be empty
- * for a successful build.
+ * Known-broken sample allowlist. C5 commit emptied this after fixing all
+ * 7 Phase A-identified broken samples. Any future defect detection trips
+ * the build immediately — there is no temporary tolerance window.
  *
- * Each entry: sampleId → reason (for grep / changelog).
+ * If a future commit legitimately needs to land while a sample fix is
+ * staged, add an entry here with `id → reason (rev N: planned-fix commit)`
+ * and remove it within the same PR cycle. Leaving stale entries here is
+ * a code-review red flag.
  */
-const KNOWN_BROKEN_ALLOWLIST: Record<string, string> = {
-  'wifi-dht22-controller':     'C5: XML structural defect (unclosed <next> + <block> at setup→loop boundary)',
-  'ha-watchdog-resilience':    'C5: same XML structural defect pattern as wifi-dht22-controller',
-  'wifi-controller-mix':       'C5: controls_if(IF0=mpu6050_init, no DO) anomaly + handlers silent-dropped',
-  'ha-rgb-led':                'C5: ha_light_create_rgb missing ha_light_on_command (state/brightness)',
-  'ha-via-device-multi-esp32': 'C5: ha_number_create missing ha_number_on_command',
-  'modbus-temp-monitor':       'C5: controls_if(IF0=iot_cloud_connect, no DO) anomaly',
-  'neomatrix-pixel-display':   'C5: Blockly shadow block connection error in xmlToCpp gen',
-};
+const KNOWN_BROKEN_ALLOWLIST: Record<string, string> = {};
 
 // ---------------------------------------------------------------------------
 // Audit primitives

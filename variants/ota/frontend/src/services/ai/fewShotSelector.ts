@@ -21,12 +21,18 @@ const MODE_SPECIFIC_SAMPLES: Record<RobotMode, readonly [string, string]> = {
 };
 
 // 優先度順（上から match 試行、最初に hit したものを採用）
-// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 20 / Phase 3 (BUG-052): +1 → 21 / BUG-053+054: +2 → 23 / 47.md Phase 2 commit #7 (第73回 wifi-controller-mix): +1 → 24 / 52.md commit #21 (2026-05-04 第80回): +6 → 30 / 第88回 (2026-05-08 残カテゴリ FEW_SHOT 12 sample): +12 → 42 / 第98回 (2026-05-09 Task 3 HA 対応強化 5 sample 対応): +5 → 47 / BUG-085 (2026-05-17 第132回 AI 生成精度): +3 → 50 entries (wifi-dht22-controller / ha-multi-control / espnow-peer-control)
+// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 20 / Phase 3 (BUG-052): +1 → 21 / BUG-053+054: +2 → 23 / 47.md Phase 2 commit #7 (第73回 wifi-controller-mix): +1 → 24 / 52.md commit #21 (2026-05-04 第80回): +6 → 30 / 第88回 (2026-05-08 残カテゴリ FEW_SHOT 12 sample): +12 → 42 / 第98回 (2026-05-09 Task 3 HA 対応強化 5 sample 対応): +5 → 47 / BUG-085 (2026-05-17 第132回 AI 生成精度): +3 → 50 / BUG-086 (2026-05-18 第133回 2-channel canonical): +1 → 51 entries (wifi-led-servo-controller)
 const KEYWORD_TO_SAMPLE: ReadonlyArray<readonly [RegExp, string]> = [
   // BUG-085 (第132回): user の verbatim prompt (WiFi-controlled + DHT22 + LED + Servo)
   // に specific match させる reference。wifi-controller-mix (MPU6050 ベース) より
   // 優先 = AI が「DHT22」を MPU6050 から類推する必要なく直接 follow できる。
   [/(wi.?fi[\-\s.]?control|wi.?fi.*コントロー|ブラウザ.*制御|web.?UI).*(DHT|temperature.?sensor|温度センサ|温湿度|humidity)|(DHT|temperature.?sensor|温度センサ|温湿度|humidity).*(wi.?fi[\-\s.]?control|wi.?fi.*コントロー|ブラウザ.*制御|web.?UI)/i, 'wifi-dht22-controller'],
+  // BUG-086 (第133回): 2-channel WiFi controller (LED + Servo, no temperature)
+  // canonical sample。wifi-dht22-controller (3-channel) より下、wifi-controller-mix
+  // (generic, MPU6050) より上に置き、user prompt が "LED + Servo" combo を含むが
+  // DHT22 / 温度センサを含まない場合に hit させる = AI が 3-channel pattern を
+  // 2-channel に縮小する際の handler 落としを構造的に予防。
+  [/((LED|toggle).*(servo|slider)|(servo|slider).*(LED|toggle)).*(web.?UI|wi.?fi[\-\s.]?control|browser|ブラウザ|スマホ|スマートフォン)|(web.?UI|wi.?fi[\-\s.]?control|browser|ブラウザ).*((LED|toggle).*(servo|slider)|(servo|slider).*(LED|toggle))/i, 'wifi-led-servo-controller'],
   // BUG-085 (第132回): HA 複数 entity 双方向制御 specific match。ha-led-control
   // (単一 LED) / ha-multi-sensor (read-only) より優先で、HA callback cluster prompt
   // にこの sample を hit させる。

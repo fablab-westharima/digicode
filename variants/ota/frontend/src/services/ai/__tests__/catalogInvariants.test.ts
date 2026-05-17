@@ -358,16 +358,19 @@ describe('selectFewShot (動的 Few-shot 選択)', () => {
     expect(result[4]).toBe('wifi-controller-mix');
   });
 
-  it('English "WiFi-controlled" + LED + Servo (no DHT) maps to wifi-controller-mix (BUG-085 A2 regex)', () => {
-    // A2 regex test: verbatim user prompt without the DHT22 / temperature sensor
-    // portion. The full user prompt (with DHT22) is covered by D1 below and
-    // routes to wifi-dht22-controller (more specific). This test isolates the
-    // A2 regex expansion (English "WiFi-controlled" variant).
+  it('English "WiFi-controlled" + LED + Servo (no DHT) maps to wifi-led-servo-controller (BUG-086 C5 2-channel canonical)', () => {
+    // BUG-086 (第133回): the verbatim user prompt without DHT22 now routes to
+    // the new 2-channel canonical wifi-led-servo-controller (LED+servo only,
+    // no temperature). Previously this fell through to wifi-controller-mix
+    // (3-channel + MPU6050), causing AI to overgeneralize the 3-channel
+    // pattern and drop the servo on_message handler. The new sample is
+    // wired in fewShotSelector.ts BETWEEN wifi-dht22-controller (3-channel
+    // with temperature) and wifi-controller-mix (generic MPU6050).
     const result = selectFewShot(
       'all_blocks',
       'Create a WiFi-controlled program for ESP32. A toggle button on the web UI to turn on/off the LED on pin 2. A slider on the web UI to control a servo motor angle (0-180 degrees) on pin 13.'
     );
-    expect(result[4]).toBe('wifi-controller-mix');
+    expect(result[4]).toBe('wifi-led-servo-controller');
   });
 
   it('English "WiFi controls" (verb form) maps to wifi-controller-mix (BUG-085)', () => {
@@ -435,6 +438,43 @@ describe('selectFewShot (動的 Few-shot 選択)', () => {
   it('"ブラウザ制御 + 温度センサ" routes to wifi-dht22-controller (BUG-085 D1 JA)', () => {
     const result = selectFewShot('all_blocks', 'ブラウザから ESP32 を制御 + 温度センサを表示');
     expect(result[4]).toBe('wifi-dht22-controller');
+  });
+
+  // BUG-086 (第133回) C5: 2-channel canonical wifi-led-servo-controller routing tests
+  // Validates that prompts containing LED+servo combinations (no temperature)
+  // route to the new 2-channel canonical, NOT to wifi-controller-mix (3-channel
+  // with MPU6050). Tests the regex's specific-first ordering vs fall-through.
+
+  it('"LED toggle + servo slider on web UI" routes to wifi-led-servo-controller (BUG-086)', () => {
+    const result = selectFewShot('all_blocks', 'LED toggle and servo slider on web UI');
+    expect(result[4]).toBe('wifi-led-servo-controller');
+  });
+
+  it('"servo + LED via browser" (servo-first) routes to wifi-led-servo-controller (BUG-086)', () => {
+    const result = selectFewShot('all_blocks', 'Control a servo and an LED from the browser');
+    expect(result[4]).toBe('wifi-led-servo-controller');
+  });
+
+  it('"WiFi-controlled LED + servo" (without "controller" / "controlled" alone in noun form) routes to wifi-led-servo-controller (BUG-086)', () => {
+    const result = selectFewShot('all_blocks', 'WiFi-controlled program with LED toggle and servo slider for ESP32');
+    expect(result[4]).toBe('wifi-led-servo-controller');
+  });
+
+  it('Regression: "LED + servo + DHT22" (3-channel) routes to wifi-dht22-controller (NOT wifi-led-servo-controller, BUG-086 FP guard)', () => {
+    const result = selectFewShot(
+      'all_blocks',
+      'WiFi-controlled program with LED toggle, servo slider, and DHT22 temperature sensor',
+    );
+    expect(result[4]).toBe('wifi-dht22-controller');
+  });
+
+  it('Regression: "MPU6050 + LED + servo via WiFi" (generic controller) falls through to wifi-controller-mix (NOT wifi-led-servo-controller, BUG-086 FP guard)', () => {
+    // Without LED+servo combo in adjacent form, the wifi-led-servo regex
+    // doesn't fire; falls through to wifi-controller-mix which is generic.
+    // Use "WiFi controller" (noun, not adj.) to match wifi-controller-mix
+    // without satisfying the BUG-086 2-channel regex.
+    const result = selectFewShot('all_blocks', 'WiFi controller with MPU6050 motion sensor');
+    expect(result[4]).toBe('wifi-controller-mix');
   });
 
   it('"HA 複数 entity 制御" routes to ha-multi-control (BUG-085 D2)', () => {
