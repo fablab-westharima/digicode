@@ -59,6 +59,11 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       const out = Array.isArray(i.childOutputType) ? i.childOutputType.join('|') : i.childOutputType;
       return `${i.parentBlockType} block (id=${i.parentBlockId}) の ${i.inputName} 入力 (受入型: ${exp}) に ${i.childBlockType} block (出力型: ${out ?? '?'}) を接続していますが、型不一致で Blockly が workspace load 時に接続を rejection、child block が top-level orphan 化します。型互換 block (例: math_number / variables_get) に切り替えるか、別 input slot を使用してください`;
     },
+    register_without_handler: (i) => {
+      if (i.kind !== 'register_without_handler') return '';
+      const idClause = i.idField ? ` (${i.idField}="${i.missingId}")` : ' (global handler)';
+      return `${i.protocolLabel}: \`${i.registerType}\` block${idClause} に対応する \`${i.handlerType}\` handler block が同 XML 内に不在です。${i.idField ? `同じ ${i.idField} 値を持つ` : '少なくとも 1 つの'} ${i.handlerType} block を必ず生成してください。register と handler は 1:1 対応で、handler が無いとブラウザ/HA UI から値を送っても device は反応しません (silent fail)`;
+    },
   },
   en: {
     unconnected_value_input: (i) => {
@@ -85,6 +90,11 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       const exp = Array.isArray(i.expectedType) ? i.expectedType.join('|') : i.expectedType;
       const out = Array.isArray(i.childOutputType) ? i.childOutputType.join('|') : i.childOutputType;
       return `${i.parentBlockType} block (id=${i.parentBlockId}) ${i.inputName} input (accepts: ${exp}) has ${i.childBlockType} block (outputs: ${out ?? '?'}) connected, but the type mismatch will cause Blockly to REJECT the connection at workspace load and detach the child to top-level. Use a type-compatible block (e.g. math_number / variables_get) or a different input slot`;
+    },
+    register_without_handler: (i) => {
+      if (i.kind !== 'register_without_handler') return '';
+      const idClause = i.idField ? ` (${i.idField}="${i.missingId}")` : ' (global handler)';
+      return `${i.protocolLabel}: \`${i.registerType}\` block${idClause} has no matching \`${i.handlerType}\` handler in the same XML. You MUST emit a \`${i.handlerType}\` block ${i.idField ? `with the SAME ${i.idField} value` : '(at least one)'}. Register and handler are 1:1; without the handler, the device silently fails to react when values arrive from the browser / HA UI`;
     },
   },
   'zh-TW': {
@@ -113,6 +123,11 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       const out = Array.isArray(i.childOutputType) ? i.childOutputType.join('|') : i.childOutputType;
       return `${i.parentBlockType} 積木 (id=${i.parentBlockId}) 的 ${i.inputName} 輸入 (接受型別: ${exp}) 連接了 ${i.childBlockType} 積木 (輸出型別: ${out ?? '?'})，但型別不符會導致 Blockly 在 workspace load 時拒絕連接、將 child 積木分離至 top-level orphan。請改用型別相容的積木 (例: math_number / variables_get) 或使用其他 input slot`;
     },
+    register_without_handler: (i) => {
+      if (i.kind !== 'register_without_handler') return '';
+      const idClause = i.idField ? ` (${i.idField}="${i.missingId}")` : ' (global handler)';
+      return `${i.protocolLabel}: \`${i.registerType}\` 積木${idClause} 在同 XML 內缺少對應的 \`${i.handlerType}\` handler 積木。請務必 emit ${i.idField ? `具有相同 ${i.idField} 值的` : '至少一個'} \`${i.handlerType}\` 積木。register 與 handler 為 1:1 對應，缺少 handler 會導致瀏覽器 / HA UI 傳值時 device 無回應 (silent fail)`;
+    },
   },
   es: {
     unconnected_value_input: (i) => {
@@ -139,6 +154,11 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       const exp = Array.isArray(i.expectedType) ? i.expectedType.join('|') : i.expectedType;
       const out = Array.isArray(i.childOutputType) ? i.childOutputType.join('|') : i.childOutputType;
       return `El bloque ${i.parentBlockType} (id=${i.parentBlockId}) entrada ${i.inputName} (acepta: ${exp}) tiene conectado el bloque ${i.childBlockType} (salida: ${out ?? '?'}), pero la incompatibilidad de tipos hará que Blockly RECHACE la conexión al cargar el workspace y desplace el bloque hijo al top-level (orphan). Usa un bloque compatible (p.ej. math_number / variables_get) o una entrada distinta`;
+    },
+    register_without_handler: (i) => {
+      if (i.kind !== 'register_without_handler') return '';
+      const idClause = i.idField ? ` (${i.idField}="${i.missingId}")` : ' (handler global)';
+      return `${i.protocolLabel}: el bloque \`${i.registerType}\`${idClause} no tiene un bloque handler \`${i.handlerType}\` correspondiente en el mismo XML. DEBES emitir un bloque \`${i.handlerType}\` ${i.idField ? `con el MISMO valor de ${i.idField}` : '(al menos uno)'}. Register y handler son 1:1; sin el handler, el dispositivo falla silenciosamente al recibir valores desde el navegador / HA UI`;
     },
   },
   'pt-PT': {
@@ -167,6 +187,11 @@ const ISSUE_RENDERERS: Record<AiLanguage, Record<ValidationIssue['kind'], IssueR
       const out = Array.isArray(i.childOutputType) ? i.childOutputType.join('|') : i.childOutputType;
       return `O bloco ${i.parentBlockType} (id=${i.parentBlockId}) entrada ${i.inputName} (aceita: ${exp}) tem conectado o bloco ${i.childBlockType} (saída: ${out ?? '?'}), mas a incompatibilidade de tipos fará com que Blockly REJEITE a conexão ao carregar o workspace e desloque o bloco filho para o top-level (orphan). Usa um bloco compatível (p.ex. math_number / variables_get) ou outra entrada`;
     },
+    register_without_handler: (i) => {
+      if (i.kind !== 'register_without_handler') return '';
+      const idClause = i.idField ? ` (${i.idField}="${i.missingId}")` : ' (handler global)';
+      return `${i.protocolLabel}: o bloco \`${i.registerType}\`${idClause} não tem um bloco handler \`${i.handlerType}\` correspondente no mesmo XML. DEVES emitir um bloco \`${i.handlerType}\` ${i.idField ? `com o MESMO valor de ${i.idField}` : '(pelo menos um)'}. Register e handler são 1:1; sem o handler, o dispositivo falha silenciosamente ao receber valores do browser / HA UI`;
+    },
   },
 };
 
@@ -183,11 +208,11 @@ const FIX_PROMPT_INTRO: Record<AiLanguage, string> = {
 };
 
 const RULES_REMINDER: Record<AiLanguage, string> = {
-  ja: '修正に必要なルール (BUG-085 再掲):\n- ★ 全 valueInput には必ず block を接続 (固定値 literal hardcode 禁止、generator default fallback も禁止)\n- ★ value 系 received-value block (websocket_server_received_value 等) は HANDLER 内の <value> 子要素のみ、top-level 配置禁止\n- ★ 2 値分岐 (ON/OFF, 1/0, true/false, OPEN/CLOSE) は両方の controls_if を必ず生成\n- ★ WiFi 通信 block (websocket_server_* / mqtt_* / http_* / ha_* / ntp_* / ota_*) 使用時は wifi_connect を arduino_setup に必須',
-  en: 'Rules to apply (BUG-085 reminder):\n- ★ Every valueInput MUST have a block connected (no hardcoded literals, no relying on generator default fallback)\n- ★ Received-value blocks (websocket_server_received_value, etc.) MUST be nested as <value> children inside their HANDLER, NEVER at top-level\n- ★ Binary branches (ON/OFF, 1/0, true/false, OPEN/CLOSE) MUST emit BOTH controls_if branches\n- ★ When using WiFi blocks (websocket_server_* / mqtt_* / http_* / ha_* / ntp_* / ota_*), wifi_connect MUST be in arduino_setup',
-  'zh-TW': '修正所需規則 (BUG-085 重點重申):\n- ★ 所有 valueInput 必須連接 block (禁止使用 hardcoded literal，禁止依賴 generator default fallback)\n- ★ value 系 received-value 積木 (websocket_server_received_value 等) 僅可作為 HANDLER 內的 <value> 子元素，禁止 top-level 放置\n- ★ 2 值分支 (ON/OFF, 1/0, true/false, OPEN/CLOSE) 必須同時生成兩個 controls_if 分支\n- ★ 使用 WiFi 通訊類積木 (websocket_server_* / mqtt_* / http_* / ha_* / ntp_* / ota_*) 時，wifi_connect 必須放在 arduino_setup 內',
-  es: 'Reglas a aplicar (recordatorio BUG-085):\n- ★ Cada valueInput DEBE tener un bloque conectado (sin literales hardcoded, sin depender del fallback del generator)\n- ★ Los bloques de valor recibido (websocket_server_received_value, etc.) DEBEN anidarse como hijos <value> dentro de su HANDLER, NUNCA en top-level\n- ★ Las ramas binarias (ON/OFF, 1/0, true/false, OPEN/CLOSE) DEBEN emitir AMBAS ramas controls_if\n- ★ Al usar bloques WiFi (websocket_server_* / mqtt_* / http_* / ha_* / ntp_* / ota_*), wifi_connect DEBE estar en arduino_setup',
-  'pt-PT': 'Regras a aplicar (lembrete BUG-085):\n- ★ Cada valueInput DEVE ter um bloco conectado (sem literais hardcoded, sem depender do fallback do generator)\n- ★ Os blocos de valor recebido (websocket_server_received_value, etc.) DEVEM ser aninhados como filhos <value> dentro do seu HANDLER, NUNCA no top-level\n- ★ Os ramos binários (ON/OFF, 1/0, true/false, OPEN/CLOSE) DEVEM emitir AMBOS os ramos controls_if\n- ★ Ao usar blocos WiFi (websocket_server_* / mqtt_* / http_* / ha_* / ntp_* / ota_*), wifi_connect DEVE estar em arduino_setup',
+  ja: '修正に必要なルール (BUG-085 + BUG-086 再掲):\n- ★ 全 valueInput には必ず block を接続 (固定値 literal hardcode 禁止、generator default fallback も禁止)\n- ★ value 系 received-value block (websocket_server_received_value 等) は HANDLER 内の <value> 子要素のみ、top-level 配置禁止\n- ★ 2 値分岐 (ON/OFF, 1/0, true/false, OPEN/CLOSE) は両方の controls_if を必ず生成\n- ★ WiFi 通信 block (websocket_server_* / mqtt_* / http_* / ha_* / ntp_* / ota_*) 使用時は wifi_connect を arduino_setup に必須\n- ★ [BUG-086] register/create block (websocket_server_register WRITE=TRUE / ha_*_create / mqtt_subscribe 等) を emit したら、対応する handler block を同じ ID で必ず同 XML 内に emit。register と handler は 1:1 対応',
+  en: 'Rules to apply (BUG-085 + BUG-086 reminder):\n- ★ Every valueInput MUST have a block connected (no hardcoded literals, no relying on generator default fallback)\n- ★ Received-value blocks (websocket_server_received_value, etc.) MUST be nested as <value> children inside their HANDLER, NEVER at top-level\n- ★ Binary branches (ON/OFF, 1/0, true/false, OPEN/CLOSE) MUST emit BOTH controls_if branches\n- ★ When using WiFi blocks (websocket_server_* / mqtt_* / http_* / ha_* / ntp_* / ota_*), wifi_connect MUST be in arduino_setup\n- ★ [BUG-086] When you emit a register/create block (websocket_server_register WRITE=TRUE / ha_*_create / mqtt_subscribe, etc.), you MUST emit the matching handler block with the SAME ID in the same XML. Register and handler are 1:1',
+  'zh-TW': '修正所需規則 (BUG-085 + BUG-086 重點重申):\n- ★ 所有 valueInput 必須連接 block (禁止使用 hardcoded literal，禁止依賴 generator default fallback)\n- ★ value 系 received-value 積木 (websocket_server_received_value 等) 僅可作為 HANDLER 內的 <value> 子元素，禁止 top-level 放置\n- ★ 2 值分支 (ON/OFF, 1/0, true/false, OPEN/CLOSE) 必須同時生成兩個 controls_if 分支\n- ★ 使用 WiFi 通訊類積木 (websocket_server_* / mqtt_* / http_* / ha_* / ntp_* / ota_*) 時，wifi_connect 必須放在 arduino_setup 內\n- ★ [BUG-086] emit register/create 積木 (websocket_server_register WRITE=TRUE / ha_*_create / mqtt_subscribe 等) 時，必須在同一 XML 內以相同 ID emit 對應的 handler 積木。register 與 handler 為 1:1 對應',
+  es: 'Reglas a aplicar (recordatorio BUG-085 + BUG-086):\n- ★ Cada valueInput DEBE tener un bloque conectado (sin literales hardcoded, sin depender del fallback del generator)\n- ★ Los bloques de valor recibido (websocket_server_received_value, etc.) DEBEN anidarse como hijos <value> dentro de su HANDLER, NUNCA en top-level\n- ★ Las ramas binarias (ON/OFF, 1/0, true/false, OPEN/CLOSE) DEBEN emitir AMBAS ramas controls_if\n- ★ Al usar bloques WiFi (websocket_server_* / mqtt_* / http_* / ha_* / ntp_* / ota_*), wifi_connect DEBE estar en arduino_setup\n- ★ [BUG-086] Al emitir un bloque register/create (websocket_server_register WRITE=TRUE / ha_*_create / mqtt_subscribe, etc.), DEBES emitir el bloque handler correspondiente con el MISMO ID en el mismo XML. Register y handler son 1:1',
+  'pt-PT': 'Regras a aplicar (lembrete BUG-085 + BUG-086):\n- ★ Cada valueInput DEVE ter um bloco conectado (sem literais hardcoded, sem depender do fallback do generator)\n- ★ Os blocos de valor recebido (websocket_server_received_value, etc.) DEVEM ser aninhados como filhos <value> dentro do seu HANDLER, NUNCA no top-level\n- ★ Os ramos binários (ON/OFF, 1/0, true/false, OPEN/CLOSE) DEVEM emitir AMBOS os ramos controls_if\n- ★ Ao usar blocos WiFi (websocket_server_* / mqtt_* / http_* / ha_* / ntp_* / ota_*), wifi_connect DEVE estar em arduino_setup\n- ★ [BUG-086] Ao emitir um bloco register/create (websocket_server_register WRITE=TRUE / ha_*_create / mqtt_subscribe, etc.), DEVES emitir o bloco handler correspondente com o MESMO ID no mesmo XML. Register e handler são 1:1',
 };
 
 const PREVIOUS_XML_LABEL: Record<AiLanguage, string> = {

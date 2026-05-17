@@ -211,6 +211,7 @@ export function AIAssistantPanel({
       asymmetric_binary_branch: 0,
       missing_wifi_connect: 0,
       type_mismatch_will_cause_detach: 0,
+      register_without_handler: 0,
     };
     for (const i of issues) counts[i.kind]++;
     const parts: string[] = [];
@@ -219,6 +220,7 @@ export function AIAssistantPanel({
     if (counts.asymmetric_binary_branch > 0)        parts.push(`asymmetric×${counts.asymmetric_binary_branch}`);
     if (counts.missing_wifi_connect > 0)            parts.push(`missing-wifi×${counts.missing_wifi_connect}`);
     if (counts.type_mismatch_will_cause_detach > 0) parts.push(`type-mismatch×${counts.type_mismatch_will_cause_detach}`);
+    if (counts.register_without_handler > 0)        parts.push(`register-without-handler×${counts.register_without_handler}`);
     return parts.join(', ');
   }
 

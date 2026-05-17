@@ -37,6 +37,7 @@
  */
 
 import type { BlockCatalog, BlockCatalogEntry } from './systemPrompt';
+import { CROSS_BLOCK_CONTRACTS, type CrossBlockContract } from '@/data/crossBlockContracts';
 
 // ---------------------------------------------------------------------------
 // Issue types
@@ -83,6 +84,22 @@ export type ValidationIssue =
       childBlockType: string;
       childBlockId: string;
       childOutputType: string | string[] | null;
+    }
+  | {
+      // BUG-086 Session 133 (Check 6) — Register/create block emitted
+      // without the matching handler block(s) per the cross-block 1:1
+      // contract registry. AI's most common cross-block defect: emit a
+      // ha_switch_create / websocket_server_register but forget the
+      // ha_switch_on_command / websocket_server_on_message handler.
+      // Data-driven from CROSS_BLOCK_CONTRACTS — no hardcoded protocol
+      // branches; adding a new protocol = 1 registry entry.
+      kind: 'register_without_handler';
+      contractId: string;
+      registerType: string;
+      handlerType: string; // pipe-joined when multiple handlers required (e.g. 'ha_light_on_command|ha_light_on_rgb_command')
+      idField: string | null;
+      missingId: string; // '__global__' when idField is null
+      protocolLabel: string;
     };
 
 export interface ValidationResult {
@@ -217,6 +234,7 @@ export function validateXml(xmlString: string, catalog: BlockCatalog): Validatio
       ...checkAsymmetricBinaryBranches(doc),
       ...checkMissingWifiConnect(doc),
       ...checkTypeMismatchWillCauseDetach(doc, catalog),
+      ...checkRegisterWithoutHandler(doc),
     ];
 
     return { valid: issues.length === 0, issues };
@@ -536,6 +554,92 @@ function checkTypeMismatchWillCauseDetach(
   }
 
   return issues;
+}
+
+// ---------------------------------------------------------------------------
+// Check 6: register-without-handler (data-driven from CROSS_BLOCK_CONTRACTS)
+// ---------------------------------------------------------------------------
+
+/**
+ * BUG-086 Session 133 — For every CrossBlockContract in the registry,
+ * verify that every register block in the XML has the matching handler
+ * block(s). Match rule depends on the contract:
+ *   - idField !== null: handler must exist with same idField value
+ *   - idField === null: any handler of the type satisfies (global handler)
+ *   - allHandlersRequired: all handlers in `handlers[]` must match (RGB light)
+ *   - requiredWhen set: contract only enforced when register matches the filter
+ *
+ * Adding a new protocol = add registry entry; this function automatically
+ * starts enforcing the new contract with no code changes here.
+ */
+function checkRegisterWithoutHandler(doc: Document): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const allBlocks = doc.querySelectorAll('block');
+
+  for (const contract of CROSS_BLOCK_CONTRACTS) {
+    const registers: Array<{ id: string }> = [];
+    const handlersByType: Record<string, string[]> = {};
+    for (const h of contract.handlers) handlersByType[h] = [];
+
+    for (let i = 0; i < allBlocks.length; i++) {
+      const el = allBlocks[i];
+      const t = el.getAttribute('type');
+      if (!t) continue;
+
+      if (t === contract.register) {
+        if (contract.requiredWhen) {
+          const fEl = findDirectChild(el, 'field', contract.requiredWhen.fieldName);
+          if (fEl?.textContent !== contract.requiredWhen.fieldValue) continue;
+        }
+        const id = contract.idField
+          ? (findDirectChild(el, 'field', contract.idField)?.textContent ?? '?')
+          : '__global__';
+        registers.push({ id });
+      }
+      if (contract.handlers.includes(t)) {
+        const id = contract.idField
+          ? (findDirectChild(el, 'field', contract.idField)?.textContent ?? '?')
+          : '__global__';
+        handlersByType[t].push(id);
+      }
+    }
+
+    for (const reg of registers) {
+      if (contract.allHandlersRequired) {
+        // ALL listed handlers must have a matching ID (RGB light requires
+        // both on_command + on_rgb_command per LIGHT_ID)
+        for (const ht of contract.handlers) {
+          if (!handlersByType[ht].includes(reg.id)) {
+            issues.push(makeIssue(contract, ht, reg.id));
+          }
+        }
+      } else {
+        // ANY matching handler is sufficient
+        const ok = contract.handlers.some((ht) => handlersByType[ht].includes(reg.id));
+        if (!ok) {
+          issues.push(makeIssue(contract, contract.handlers.join('|'), reg.id));
+        }
+      }
+    }
+  }
+
+  return issues;
+}
+
+function makeIssue(
+  contract: CrossBlockContract,
+  handlerType: string,
+  missingId: string,
+): ValidationIssue {
+  return {
+    kind: 'register_without_handler',
+    contractId: contract.id,
+    registerType: contract.register,
+    handlerType,
+    idField: contract.idField,
+    missingId,
+    protocolLabel: contract.protocolLabel,
+  };
 }
 
 // ---------------------------------------------------------------------------

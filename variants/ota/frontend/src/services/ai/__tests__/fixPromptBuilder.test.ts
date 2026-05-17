@@ -159,3 +159,76 @@ describe('fixPromptBuilder — multi-issue prompt', () => {
     expect(prompt).toContain('wifi_connect');
   });
 });
+
+// ---------------------------------------------------------------------------
+// BUG-086 Session 133 (Check 6): register_without_handler per language
+// ---------------------------------------------------------------------------
+
+describe('fixPromptBuilder — Check 6 (register_without_handler) per language', () => {
+  const idKeyedIssue: ValidationIssue = {
+    kind: 'register_without_handler',
+    contractId: 'websocket-server',
+    registerType: 'websocket_server_register',
+    handlerType: 'websocket_server_on_message',
+    idField: 'CHANNEL_ID',
+    missingId: 'servo',
+    protocolLabel: 'WebSocket server',
+  };
+
+  const globalIssue: ValidationIssue = {
+    kind: 'register_without_handler',
+    contractId: 'mqtt-subscribe',
+    registerType: 'mqtt_subscribe',
+    handlerType: 'mqtt_on_message',
+    idField: null,
+    missingId: '__global__',
+    protocolLabel: 'MQTT Subscribe',
+  };
+
+  it.each(LANGS)('id-keyed (WebSocket) issue: lang=%s mentions registerType + handlerType + idField + missingId + protocolLabel', (lang) => {
+    const p = buildFixPrompt(SAMPLE_XML, [idKeyedIssue], lang);
+    expect(p).toContain('websocket_server_register');
+    expect(p).toContain('websocket_server_on_message');
+    expect(p).toContain('CHANNEL_ID');
+    expect(p).toContain('servo');
+    expect(p).toContain('WebSocket server');
+  });
+
+  it.each(LANGS)('global (MQTT) issue: lang=%s mentions registerType + handlerType + global indicator', (lang) => {
+    const p = buildFixPrompt(SAMPLE_XML, [globalIssue], lang);
+    expect(p).toContain('mqtt_subscribe');
+    expect(p).toContain('mqtt_on_message');
+    expect(p).toContain('MQTT Subscribe');
+    expect(p).toContain('global');
+  });
+
+  it('multi-protocol issues coexist in a single fix prompt', () => {
+    const issues: ValidationIssue[] = [
+      idKeyedIssue,
+      {
+        kind: 'register_without_handler',
+        contractId: 'ha-switch',
+        registerType: 'ha_switch_create',
+        handlerType: 'ha_switch_on_command',
+        idField: 'SWITCH_ID',
+        missingId: 'relay',
+        protocolLabel: 'HA Switch',
+      },
+      globalIssue,
+    ];
+    const p = buildFixPrompt(SAMPLE_XML, issues, 'en');
+    expect(p).toContain('1.');
+    expect(p).toContain('2.');
+    expect(p).toContain('3.');
+    expect(p).toContain('websocket_server_register');
+    expect(p).toContain('ha_switch_create');
+    expect(p).toContain('mqtt_subscribe');
+  });
+
+  it('RULES_REMINDER includes BUG-086 cross-block contract rule in all langs', () => {
+    for (const lang of LANGS) {
+      const p = buildFixPrompt(SAMPLE_XML, [idKeyedIssue], lang);
+      expect(p).toContain('BUG-086');
+    }
+  });
+});

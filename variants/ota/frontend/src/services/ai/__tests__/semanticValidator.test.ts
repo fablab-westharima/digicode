@@ -605,3 +605,274 @@ describe('semanticValidator — integration (user verbatim failure replication)'
     expect(result.issues).toEqual([]);
   });
 });
+
+// ---------------------------------------------------------------------------
+// BUG-086 Session 133 (Check 6): register-without-handler
+// Data-driven from CROSS_BLOCK_CONTRACTS. Adding a new protocol entry
+// auto-extends this check; tests below use representative cases per pattern.
+// ---------------------------------------------------------------------------
+
+describe('semanticValidator — Check 6: register_without_handler (BUG-086)', () => {
+  // ---- WebSocket server (WRITE=TRUE only, ID-keyed by CHANNEL_ID) ----
+
+  it('flags websocket_server_register WRITE=TRUE without matching on_message', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="websocket_server_register">' +
+          '<field name="CHANNEL_ID">led</field>' +
+          '<field name="WRITE">TRUE</field>' +
+        '</block>' +
+      '</statement></block>',
+    );
+    const result = validateXml(xml, CATALOG);
+    const issues = result.issues.filter((i) => i.kind === 'register_without_handler') as Extract<ValidationIssue, { kind: 'register_without_handler' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].contractId).toBe('websocket-server');
+    expect(issues[0].missingId).toBe('led');
+    expect(issues[0].handlerType).toBe('websocket_server_on_message');
+  });
+
+  it('does NOT flag websocket_server_register WRITE=FALSE (NOTIFY-only)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="websocket_server_register">' +
+          '<field name="CHANNEL_ID">temp</field>' +
+          '<field name="WRITE">FALSE</field>' +
+          '<field name="NOTIFY">TRUE</field>' +
+        '</block>' +
+      '</statement></block>',
+    );
+    const result = validateXml(xml, CATALOG);
+    const issues = result.issues.filter((i) => i.kind === 'register_without_handler');
+    expect(issues.length).toBe(0);
+  });
+
+  it('passes websocket_server_register WRITE=TRUE with matching on_message (same CHANNEL_ID)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="websocket_server_register">' +
+          '<field name="CHANNEL_ID">led</field>' +
+          '<field name="WRITE">TRUE</field>' +
+          '<next><block type="websocket_server_on_message">' +
+            '<field name="CHANNEL_ID">led</field>' +
+            '<statement name="HANDLER"><block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">HIGH</field></block></statement>' +
+          '</block></next>' +
+        '</block>' +
+      '</statement></block>',
+    );
+    const result = validateXml(xml, CATALOG);
+    const issues = result.issues.filter((i) => i.kind === 'register_without_handler');
+    expect(issues.length).toBe(0);
+  });
+
+  it('flags 2 registers + 1 handler (the BUG-086 canonical 2-channel defect)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="websocket_server_register">' +
+          '<field name="CHANNEL_ID">led</field><field name="WRITE">TRUE</field>' +
+          '<next><block type="websocket_server_register">' +
+            '<field name="CHANNEL_ID">servo</field><field name="WRITE">TRUE</field>' +
+            '<next><block type="websocket_server_on_message">' +
+              '<field name="CHANNEL_ID">led</field>' +
+            '</block></next>' +
+          '</block></next>' +
+        '</block>' +
+      '</statement></block>',
+    );
+    const result = validateXml(xml, CATALOG);
+    const issues = result.issues.filter((i) => i.kind === 'register_without_handler') as Extract<ValidationIssue, { kind: 'register_without_handler' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].missingId).toBe('servo');
+  });
+
+  // ---- HA Switch / Number / Light / Fan / Cover / Button / Scene ----
+
+  it('flags ha_switch_create without ha_switch_on_command', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ha_switch_create"><field name="SWITCH_ID">relay</field></block>' +
+      '</statement></block>',
+    );
+    const result = validateXml(xml, CATALOG);
+    const issues = result.issues.filter((i) => i.kind === 'register_without_handler') as Extract<ValidationIssue, { kind: 'register_without_handler' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].contractId).toBe('ha-switch');
+    expect(issues[0].missingId).toBe('relay');
+  });
+
+  it('passes ha_switch_create with matching on_command (top-level placement)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ha_switch_create"><field name="SWITCH_ID">relay</field></block>' +
+      '</statement></block>' +
+      '<block type="ha_switch_on_command">' +
+        '<field name="SWITCH_ID">relay</field>' +
+      '</block>',
+    );
+    const result = validateXml(xml, CATALOG);
+    const issues = result.issues.filter((i) => i.kind === 'register_without_handler');
+    expect(issues.length).toBe(0);
+  });
+
+  it('flags ha_number_create without ha_number_on_command (ha-via-device-multi-esp32 defect)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ha_number_create"><field name="NUMBER_ID">extruder_speed</field></block>' +
+      '</statement></block>',
+    );
+    const result = validateXml(xml, CATALOG);
+    const issues = result.issues.filter((i) => i.kind === 'register_without_handler') as Extract<ValidationIssue, { kind: 'register_without_handler' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].contractId).toBe('ha-number');
+    expect(issues[0].missingId).toBe('extruder_speed');
+  });
+
+  it('flags ha_light_create without ha_light_on_command', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ha_light_create"><field name="LIGHT_ID">main</field></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'register_without_handler') as Extract<ValidationIssue, { kind: 'register_without_handler' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].contractId).toBe('ha-light');
+  });
+
+  it('flags ha_fan_create / ha_cover_create / ha_button_create / ha_scene_create', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ha_fan_create"><field name="FAN_ID">ceiling</field></block>' +
+      '</statement></block>' +
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ha_cover_create"><field name="COVER_ID">blinds</field></block>' +
+      '</statement></block>' +
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ha_button_create"><field name="BUTTON_ID">restart</field></block>' +
+      '</statement></block>' +
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ha_scene_create"><field name="SCENE_ID">night</field></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'register_without_handler') as Extract<ValidationIssue, { kind: 'register_without_handler' }>[];
+    const contractIds = new Set(issues.map((i) => i.contractId));
+    expect(contractIds).toEqual(new Set(['ha-fan', 'ha-cover', 'ha-button', 'ha-scene']));
+    expect(issues.length).toBe(4);
+  });
+
+  // ---- HA Light RGB (allHandlersRequired: both on_command + on_rgb_command) ----
+
+  it('flags ha_light_create_rgb with ONLY on_rgb_command (missing on_command — ha-rgb-led defect)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ha_light_create_rgb"><field name="LIGHT_ID">rgb_led</field></block>' +
+      '</statement></block>' +
+      '<block type="ha_light_on_rgb_command"><field name="LIGHT_ID">rgb_led</field></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'register_without_handler') as Extract<ValidationIssue, { kind: 'register_without_handler' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].handlerType).toBe('ha_light_on_command');
+    expect(issues[0].missingId).toBe('rgb_led');
+  });
+
+  it('flags ha_light_create_rgb with ONLY on_command (missing on_rgb_command)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ha_light_create_rgb"><field name="LIGHT_ID">rgb_led</field></block>' +
+      '</statement></block>' +
+      '<block type="ha_light_on_command"><field name="LIGHT_ID">rgb_led</field></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'register_without_handler') as Extract<ValidationIssue, { kind: 'register_without_handler' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].handlerType).toBe('ha_light_on_rgb_command');
+  });
+
+  it('passes ha_light_create_rgb with BOTH handlers (same LIGHT_ID)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ha_light_create_rgb"><field name="LIGHT_ID">rgb_led</field></block>' +
+      '</statement></block>' +
+      '<block type="ha_light_on_command"><field name="LIGHT_ID">rgb_led</field></block>' +
+      '<block type="ha_light_on_rgb_command"><field name="LIGHT_ID">rgb_led</field></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'register_without_handler');
+    expect(issues.length).toBe(0);
+  });
+
+  // ---- MQTT subscribe (global handler, idField=null, existence-only) ----
+
+  it('flags mqtt_subscribe without any mqtt_on_message (global existence-only)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="mqtt_subscribe"><field name="TOPIC">home/led</field></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'register_without_handler') as Extract<ValidationIssue, { kind: 'register_without_handler' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].contractId).toBe('mqtt-subscribe');
+    expect(issues[0].idField).toBe(null);
+    expect(issues[0].missingId).toBe('__global__');
+  });
+
+  it('passes mqtt_subscribe with any mqtt_on_message present (global match)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="mqtt_subscribe"><field name="TOPIC">home/led</field></block>' +
+      '</statement></block>' +
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="mqtt_on_message"></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'register_without_handler');
+    expect(issues.length).toBe(0);
+  });
+
+  // ---- Mismatched ID (register channel_id != handler channel_id) ----
+
+  it('flags when handler exists but with different CHANNEL_ID (id mismatch)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="websocket_server_register">' +
+          '<field name="CHANNEL_ID">led</field><field name="WRITE">TRUE</field>' +
+          '<next><block type="websocket_server_on_message">' +
+            '<field name="CHANNEL_ID">servo</field>' + // wrong id!
+          '</block></next>' +
+        '</block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'register_without_handler') as Extract<ValidationIssue, { kind: 'register_without_handler' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].missingId).toBe('led');
+  });
+
+  // ---- No registers in XML → no contract violations ----
+
+  it('passes XML with no register blocks', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="esp32_digital_write"><field name="PIN">2</field><field name="VALUE">HIGH</field></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'register_without_handler');
+    expect(issues.length).toBe(0);
+  });
+
+  // ---- Multiple distinct violations in one XML aggregate ----
+
+  it('reports separate issues for separate registers across protocols', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ha_switch_create"><field name="SWITCH_ID">relay</field></block>' +
+      '</statement></block>' +
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="ha_number_create"><field name="NUMBER_ID">speed</field></block>' +
+      '</statement></block>' +
+      '<block type="arduino_setup"><statement name="SETUP">' +
+        '<block type="mqtt_subscribe"><field name="TOPIC">a/b</field></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'register_without_handler') as Extract<ValidationIssue, { kind: 'register_without_handler' }>[];
+    expect(issues.length).toBe(3);
+    const contractIds = new Set(issues.map((i) => i.contractId));
+    expect(contractIds).toEqual(new Set(['ha-switch', 'ha-number', 'mqtt-subscribe']));
+  });
+});
