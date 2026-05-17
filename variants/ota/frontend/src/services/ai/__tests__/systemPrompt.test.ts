@@ -103,7 +103,7 @@ const mockCatalog: BlockCatalog = {
 };
 
 describe('buildSystemPrompt', () => {
-  it('contains all 6 required section headers', () => {
+  it('contains all 7 required section headers (incl. BUG-086 Cross-Block Contracts)', () => {
     const filteredBlocks = filterCatalog(mockCatalog);
     const prompt = buildSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard, filteredBlocks, userPromptText: 'LEDを点滅させたい' });
     expect(prompt).toContain('# Role');
@@ -112,7 +112,50 @@ describe('buildSystemPrompt', () => {
     expect(prompt).toContain('# Examples');
     expect(prompt).toContain('# Current Context');
     expect(prompt).toContain('# Prohibitions');
+    expect(prompt).toContain('# Cross-Block Contracts');
   });
+
+  // BUG-086 Session 133: Cross-Block Contracts section auto-emitted from
+  // CROSS_BLOCK_CONTRACTS registry. Per-protocol per-lang content is verified
+  // in crossBlockContracts.test.ts; here we verify integration into buildSystemPrompt.
+  it('Cross-Block Contracts section appears AFTER Prohibitions (last reinforcement)', () => {
+    const filteredBlocks = filterCatalog(mockCatalog);
+    const prompt = buildSystemPrompt({ language: 'ja', mode: 'all_blocks', board: mockBoard, filteredBlocks, userPromptText: 'LED' });
+    const prohibitionsIdx = prompt.indexOf('# Prohibitions');
+    const contractsIdx = prompt.indexOf('# Cross-Block Contracts');
+    expect(prohibitionsIdx).toBeGreaterThan(-1);
+    expect(contractsIdx).toBeGreaterThan(prohibitionsIdx);
+  });
+
+  it.each(['ja', 'en', 'zh-TW', 'es', 'pt-PT'] as const)(
+    'Cross-Block Contracts section is auto-emitted in lang=%s with all 10 protocols',
+    (lang) => {
+      const filteredBlocks = filterCatalog(mockCatalog);
+      const prompt = buildSystemPrompt({ language: lang, mode: 'all_blocks', board: mockBoard, filteredBlocks, userPromptText: 't' });
+      // All 10 registers must appear in the contract section
+      expect(prompt).toContain('websocket_server_register');
+      expect(prompt).toContain('ha_switch_create');
+      expect(prompt).toContain('ha_number_create');
+      expect(prompt).toContain('ha_light_create');
+      expect(prompt).toContain('ha_light_create_rgb');
+      expect(prompt).toContain('ha_fan_create');
+      expect(prompt).toContain('ha_cover_create');
+      expect(prompt).toContain('ha_button_create');
+      expect(prompt).toContain('ha_scene_create');
+      expect(prompt).toContain('mqtt_subscribe');
+      // All corresponding handlers must appear too
+      expect(prompt).toContain('websocket_server_on_message');
+      expect(prompt).toContain('ha_switch_on_command');
+      expect(prompt).toContain('ha_number_on_command');
+      expect(prompt).toContain('ha_light_on_command');
+      expect(prompt).toContain('ha_light_on_rgb_command');
+      expect(prompt).toContain('ha_fan_on_command');
+      expect(prompt).toContain('ha_cover_on_command');
+      expect(prompt).toContain('ha_button_on_press');
+      expect(prompt).toContain('ha_scene_on_command');
+      expect(prompt).toContain('mqtt_on_message');
+    },
+  );
 
   it('groups blocks by connection shape (statement / value / hat)', () => {
     const filteredBlocks = filterCatalog(mockCatalog);

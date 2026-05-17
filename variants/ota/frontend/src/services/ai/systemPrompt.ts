@@ -5,6 +5,7 @@ import { AI_SYSTEM_PROMPTS } from '@/data/aiSystemPrompts';
 import type { AiLanguage } from '@/data/aiSystemPrompts';
 import { sampleProjects } from '@/data/sampleProjects';
 import { selectFewShot } from './fewShotSelector';
+import { buildCrossBlockContractSection } from '@/data/crossBlockContracts';
 
 export interface FieldDef {
   name: string;
@@ -254,6 +255,11 @@ export function buildSystemPrompt(ctx: SystemPromptContext): string {
     `# Examples\n${getFewShotExamples(ctx.mode, ctx.userPromptText)}`,
     `# Current Context\n${contextLines.join('\n')}`,
     `# Prohibitions\n${templates.prohibitions}`,
+    // BUG-086 Session 133: cross-block 1:1 contract section (auto-emitted
+    // from CROSS_BLOCK_CONTRACTS registry, single source of truth).
+    // Placed AFTER Prohibitions for maximum reinforcement — this is the
+    // final text the AI sees before generating output.
+    `# Cross-Block Contracts (register/create ↔ handler)\n${buildCrossBlockContractSection(ctx.language)}`,
   ].join('\n\n');
 }
 
