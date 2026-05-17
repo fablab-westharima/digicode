@@ -172,23 +172,18 @@ export function validateXml(xmlString: string, catalog: BlockCatalog): Validatio
     // `text/xml` — sticking with the proven path keeps parity.
     const doc = parser.parseFromString(xmlString, 'application/xml');
 
-    // BUG-085 P2-V silent-failure diagnostic (temporary, remove after the
+    // BUG-085 P2-V silent-failure diagnostic v2 (temporary, remove after the
     // browser-side root cause of "validator returns issues=[] for AI XML
-    // that should trigger F1+F2" is confirmed). Captures DOMParser state,
-    // structural counts, namespace info, and XML preview so we can see
-    // exactly what the validator received and how the browser DOM parsed it.
-    // This runs synchronously inside the validator, costs ~1 console call
-    // per generation, no business-logic impact.
+    // that should trigger F1+F2" is confirmed). User smoke v1 showed
+    // truncation hid the relevant middle section (~6KB cut). v2 emits the
+    // full XML so the AI's exact representation of servo_write + orphan
+    // received_value is visible.
     const debugTopLevel = doc.documentElement
       ? Array.from(doc.documentElement.children).map((c) => ({
           tagName: c.tagName,
           type: c.getAttribute('type'),
         }))
       : [];
-    const xmlPreview =
-      xmlString.length > 1500
-        ? `${xmlString.slice(0, 750)}\n...[truncated ${xmlString.length - 1500} chars]...\n${xmlString.slice(-750)}`
-        : xmlString;
     // eslint-disable-next-line no-console
     console.info('[BUG-085 P2-V DEBUG] validateXml entry', {
       xmlByteLength: xmlString.length,
@@ -201,7 +196,7 @@ export function validateXml(xmlString: string, catalog: BlockCatalog): Validatio
       topLevelChildrenCount: debugTopLevel.length,
       topLevelChildren: debugTopLevel,
       catalogSize: catalog.blocks.length,
-      xmlPreview,
+      xmlFull: xmlString,
     });
 
     // Parse error detection: in Chrome/Firefox XML mode, a malformed input
@@ -250,6 +245,14 @@ function checkUnconnectedValueInputs(doc: Document, catalog: BlockCatalog): Vali
   const issues: ValidationIssue[] = [];
   const blockMap = new Map<string, BlockCatalogEntry>(catalog.blocks.map((b) => [b.type, b]));
 
+  // BUG-085 P2-V DEBUG v2 — accumulate per-iteration trace into a single
+  // console.info call at function exit. Per-block console.info during the
+  // loop floods vitest parallel-test stdout and destabilizes unrelated
+  // test files (observed: full suite 17 fail / isolated semanticValidator
+  // 14 fail, while isolated factory.test.ts passes — classic stdout
+  // overflow signature). One aggregated log keeps user visibility intact.
+  const trace: Array<Record<string, unknown>> = [];
+
   // querySelectorAll matches by local name across namespaces (proven pattern
   // from xmlValidator.ts:doc.querySelectorAll('block[type]')). This is more
   // browser-portable than getElementsByTagName for namespaced XML.
@@ -259,25 +262,38 @@ function checkUnconnectedValueInputs(doc: Document, catalog: BlockCatalog): Vali
     const blockType = blockEl.getAttribute('type');
     if (!blockType) continue;
     const meta = blockMap.get(blockType);
-    if (!meta || meta.valueInputs.length === 0) continue;
+    if (!meta || meta.valueInputs.length === 0) {
+      trace.push({
+        i,
+        blockType,
+        skipped: !meta ? 'no-catalog-meta' : 'no-valueInputs',
+      });
+      continue;
+    }
 
     const blockId = blockEl.getAttribute('id') ?? `${blockType}@${i}`;
 
     for (const valueInputDef of meta.valueInputs) {
       const valueChild = findDirectChild(blockEl, 'value', valueInputDef.name);
-      if (!valueChild) {
-        issues.push({
-          kind: 'unconnected_value_input',
-          blockType,
-          blockId,
-          inputName: valueInputDef.name,
-          expectedType: valueInputDef.check ?? null,
-        });
-        continue;
-      }
-      // <value name="X"> exists but has no <block> or <shadow> child → still unconnected
-      const inner = findDirectChildAny(valueChild, ['block', 'shadow']);
-      if (!inner) {
+      const inner = valueChild ? findDirectChildAny(valueChild, ['block', 'shadow']) : null;
+      const decision = !valueChild
+        ? 'FLAG-no-value-child'
+        : !inner
+          ? 'FLAG-empty-value'
+          : `ok-connected-${inner.tagName.toLowerCase()}-${inner.getAttribute('type') ?? '?'}`;
+
+      trace.push({
+        i,
+        blockType,
+        blockId,
+        inputName: valueInputDef.name,
+        expectedType: valueInputDef.check ?? null,
+        decision,
+        innerTagName: inner?.tagName ?? null,
+        innerType: inner?.getAttribute('type') ?? null,
+      });
+
+      if (!valueChild || !inner) {
         issues.push({
           kind: 'unconnected_value_input',
           blockType,
@@ -288,6 +304,13 @@ function checkUnconnectedValueInputs(doc: Document, catalog: BlockCatalog): Vali
       }
     }
   }
+
+  // eslint-disable-next-line no-console
+  console.info('[BUG-085 P2-V DEBUG] check1 trace', {
+    totalBlocksScanned: allBlocks.length,
+    issuesFound: issues.length,
+    trace,
+  });
 
   return issues;
 }
@@ -300,14 +323,44 @@ function checkOrphanValueBlocks(root: Element, catalog: BlockCatalog): Validatio
   const issues: ValidationIssue[] = [];
   const blockMap = new Map<string, BlockCatalogEntry>(catalog.blocks.map((b) => [b.type, b]));
 
+  // BUG-085 P2-V DEBUG v2 — accumulated trace (same stdout-flood mitigation
+  // as check1). Surfaces every top-level child the validator considers,
+  // why each was skipped or flagged.
+  const trace: Array<Record<string, unknown>> = [];
+
   // Direct child <block> elements of the <xml> root.
   const children = root.children;
   for (let i = 0; i < children.length; i++) {
     const child = children[i];
-    if (child.tagName !== 'block') continue;
+    if (child.tagName !== 'block') {
+      trace.push({
+        i,
+        tagName: child.tagName,
+        type: child.getAttribute('type'),
+        skipped: 'non-block-tag',
+        outerHTMLPreview: child.outerHTML.slice(0, 200),
+      });
+      continue;
+    }
     const blockType = child.getAttribute('type');
-    if (!blockType) continue;
+    if (!blockType) {
+      trace.push({ i, skipped: 'block-no-type-attr' });
+      continue;
+    }
     const meta = blockMap.get(blockType);
+    const decision = !meta
+      ? 'skip-no-catalog-meta'
+      : !meta.hasOutput
+        ? 'skip-non-value (hasOutput=false)'
+        : 'FLAG-orphan-value-block';
+    trace.push({
+      i,
+      blockType,
+      hasMeta: !!meta,
+      hasOutput: meta?.hasOutput ?? null,
+      decision,
+    });
+
     if (!meta) continue;
     if (!meta.hasOutput) continue;
 
@@ -318,6 +371,13 @@ function checkOrphanValueBlocks(root: Element, catalog: BlockCatalog): Validatio
       blockId,
     });
   }
+
+  // eslint-disable-next-line no-console
+  console.info('[BUG-085 P2-V DEBUG] check2 trace', {
+    topLevelChildrenScanned: children.length,
+    issuesFound: issues.length,
+    trace,
+  });
 
   return issues;
 }
