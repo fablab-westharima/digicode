@@ -6,6 +6,8 @@
  * See LICENSE file in the repository root for full terms.
  */
 
+/// <reference types="node" />
+
 /**
  * BUG-086 Session 133 — Cross-block contract registry integrity tests.
  *
@@ -20,6 +22,12 @@
  * the zero-manual-sync gate: adding/removing an entry to/from
  * CROSS_BLOCK_CONTRACTS automatically requires this test to update OR pass,
  * surfacing any contract drift.
+ *
+ * Node types: this test reads sample/source files via fs/path at runtime
+ * (vitest Node mode). @types/node is enabled file-locally via the
+ * triple-slash reference above to avoid exposing Node globals to the rest
+ * of src/ (tsconfig.app.json keeps types = ["vite/client", "web-bluetooth"]
+ * to maintain browser-bundle discipline).
  */
 
 import { describe, it, expect } from 'vitest';
