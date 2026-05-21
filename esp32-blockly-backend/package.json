@@ -5,6 +5,8 @@
 		"dev": "wrangler dev",
 		"deploy": "wrangler deploy --minify",
 		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest",
 		"cf-typegen": "wrangler types --env-interface CloudflareBindings"
 	},
 	"dependencies": {
@@ -12,11 +14,14 @@
 		"hono": "^4.10.6",
 		"jspdf": "^3.0.4",
 		"resend": "^6.5.2",
+		"standardwebhooks": "^1.0.0",
 		"stripe": "^22.0.1"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20251121.0",
+		"@vitest/coverage-v8": "^4.1.7",
 		"typescript": "~5.9.3",
+		"vitest": "^4.1.7",
 		"wrangler": "^4.50.0"
 	}
 }

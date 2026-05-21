@@ -379,11 +379,15 @@ async function handleScheduled(
             }
           }
 
-          // subscriptions を free に戻す
+          // subscriptions を free に戻す。Plan 58: polar 列も同時 clear
+          // することで status='canceling' で grace 中だった polar 加入者の
+          // 期限切れ後 row が「polar_subscription_id 残存 + plan_type='free'」
+          // という宙ぶらりん状態にならないようにする。
           await env.DB.prepare(`
             UPDATE subscriptions
             SET plan_type = 'free', status = 'canceled',
                 stripe_subscription_id = NULL, stripe_price_id = NULL,
+                polar_subscription_id = NULL,
                 expires_at = NULL, updated_at = datetime('now')
             WHERE user_id = ?
           `).bind(row.user_id).run();

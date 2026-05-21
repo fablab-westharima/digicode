@@ -46,6 +46,23 @@ export type Bindings = {
   /** Optional: 2FA / OTP email transport. */
   RESEND_API_KEY?: string;
 
+  // ── MoR payment integration (plan 58) ───────────────────────────
+  // Provider-side IDs of the Lite/Pro/Enterprise plans. Stored as env
+  // vars rather than D1 rows so a stripe-dashboard typo can be reverted
+  // by a wrangler secret update without writing a migration.
+  /** Stripe price IDs per plan, set via `wrangler secret put`. */
+  STRIPE_PRICE_LITE?: string;
+  STRIPE_PRICE_PRO?: string;
+  STRIPE_PRICE_ENTERPRISE?: string;
+  /** Polar Organization Access Token (Bearer `polar_oat_…`). */
+  POLAR_ACCESS_TOKEN?: string;
+  /** Polar webhook signing secret (base64-encoded, Standard Webhooks spec). */
+  POLAR_WEBHOOK_SECRET?: string;
+  /** Polar product UUIDs per plan, set via `wrangler secret put`. */
+  POLAR_PRODUCT_LITE?: string;
+  POLAR_PRODUCT_PRO?: string;
+  POLAR_PRODUCT_ENTERPRISE?: string;
+
   // ── vars (wrangler.jsonc) ───────────────────────────────────────
   /** Optional: comma-separated list of additional CORS origins. */
   CORS_ORIGINS?: string;
@@ -53,6 +70,8 @@ export type Bindings = {
   CLASS_API_URL: string;
   /** Step 8: Scheduled handler dry-run flag — 'true' で実削除せずログのみ. */
   SCHEDULED_DRY_RUN?: string;
+  /** Polar API server — 'sandbox' (default) or 'production'. */
+  POLAR_SERVER_MODE?: 'sandbox' | 'production';
 };
 
 /**
@@ -72,6 +91,12 @@ export type Variables = {
   };
   userPlan: PlanType;
   locale: Locale;
+  /**
+   * ISO 3166-1 alpha-2 set by `countryMiddleware` from CF-IPCountry.
+   * `null` when the header is missing, or `'XX'`/`'T1'` (unknown/Tor) —
+   * factory treats either as "route to Stripe (safer fallback)".
+   */
+  country: string | null;
 };
 
 /** Convenience composite for `Hono<Env>`. */

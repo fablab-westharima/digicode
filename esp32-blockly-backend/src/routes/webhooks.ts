@@ -11,8 +11,11 @@
  */
 import { Hono } from 'hono';
 import Stripe from 'stripe';
+import { Webhook, WebhookVerificationError } from 'standardwebhooks';
 import type { Bindings } from '../types/env';
 import { errorJson } from '../utils/errorJson';
+import { normalizePolarEvent } from '../services/payment/polarEventNormalizer';
+import { applyPolarEvent } from '../services/payment/applyEvent';
 
 // Stripe API version を明示固定する。SDK v22 のデフォルトと一致。
 // 2026-04-23 に Stripe アカウント + webhook endpoint を 2018-02-28 → dahlia へ migration。
@@ -329,6 +332,111 @@ webhooks.get('/stripe/health', (c) => {
   return c.json({
     status: 'ok',
     webhookSecretConfigured: !!c.env.STRIPE_WEBHOOK_SECRET,
+  });
+});
+
+// ============================================================
+// Polar webhook handler (plan 58 §6)
+// ============================================================
+//
+// Polar.sh follows the Standard Webhooks spec, delivered as POST with
+// three signature headers: `webhook-id`, `webhook-timestamp`,
+// `webhook-signature`. Signature verification is delegated to the
+// `standardwebhooks` npm package (MIT, Workers-compatible — see
+// lib-adoption-protocol audit P3-1).
+//
+// Event semantics + state mapping live in
+// `services/payment/polarEventNormalizer.ts`; D1 writes live in
+// `services/payment/applyEvent.ts`. This handler is the thin transport
+// layer: verify → idempotency → normalize → apply.
+
+webhooks.post('/polar', async (c) => {
+  // 1. Read the raw body BEFORE the JSON parse — Standard Webhooks
+  //    signs the bytes Polar sent, not the post-JSON-roundtrip shape.
+  const body = await c.req.text();
+
+  // 2. Pull the three required headers. The standardwebhooks Webhook
+  //    class will reject on missing values, but checking up front lets
+  //    us short-circuit cleanly without instantiating the verifier.
+  const webhookId = c.req.header('webhook-id');
+  const webhookTimestamp = c.req.header('webhook-timestamp');
+  const webhookSignature = c.req.header('webhook-signature');
+  if (!webhookId || !webhookTimestamp || !webhookSignature) {
+    console.error('[webhook polar] missing standard-webhooks headers');
+    return errorJson(c, 'webhook.signatureInvalid', 400);
+  }
+
+  if (!c.env.POLAR_WEBHOOK_SECRET) {
+    // Configuration error — surface clearly in logs but reject with
+    // the same opaque code so a misconfigured environment is not
+    // distinguishable to an attacker from a forged signature.
+    console.error('[webhook polar] POLAR_WEBHOOK_SECRET is not set');
+    return errorJson(c, 'webhook.signatureInvalid', 400);
+  }
+
+  // 3. Verify the signature. WebhookVerificationError covers missing
+  //    headers, bad timestamps, and signature mismatches; any other
+  //    throw is unexpected and must bubble (so the test suite catches
+  //    SDK regressions).
+  let event: { type?: string; data?: unknown };
+  try {
+    const verifier = new Webhook(c.env.POLAR_WEBHOOK_SECRET);
+    const parsed = verifier.verify(body, {
+      'webhook-id': webhookId,
+      'webhook-timestamp': webhookTimestamp,
+      'webhook-signature': webhookSignature,
+    });
+    event = parsed as { type?: string; data?: unknown };
+  } catch (err) {
+    if (err instanceof WebhookVerificationError) {
+      console.error('[webhook polar] signature verification failed:', err.message);
+      return errorJson(c, 'webhook.signatureInvalid', 400);
+    }
+    throw err;
+  }
+
+  const eventType = typeof event.type === 'string' ? event.type : '<unknown>';
+  console.log(`[webhook polar] ${eventType} id=${webhookId}`);
+
+  // 4. Idempotency — Polar retries up to 10× with exponential backoff
+  //    and disables the endpoint after 10 consecutive failures, so a
+  //    duplicate event id during retry is realistic. We reuse the
+  //    existing processed_webhooks table (added in migration 0026 for
+  //    Stripe); a globally unique webhook-id from Standard Webhooks +
+  //    Stripe's evt_ id share the same column without collision.
+  const insertResult = await c.env.DB
+    .prepare('INSERT OR IGNORE INTO processed_webhooks (event_id, event_type) VALUES (?, ?)')
+    .bind(webhookId, eventType)
+    .run();
+
+  if (insertResult.meta.changes === 0) {
+    console.log(`[webhook polar] duplicate event ignored: ${eventType} id=${webhookId}`);
+    return c.json({ received: true, duplicate: true });
+  }
+
+  // 5. Normalize + apply. Unhandled event types (most of Polar's 26)
+  //    fall to `null` and we return 200 without writing — Polar must
+  //    not retry on a handled-but-unmapped event.
+  const normalized = normalizePolarEvent(eventType, event.data);
+  if (!normalized) {
+    console.log(`[webhook polar] unhandled event type: ${eventType}`);
+    return c.json({ received: true });
+  }
+
+  const result = await applyPolarEvent(c.env, normalized);
+  if (result.outcome === 'skipped') {
+    console.warn(`[webhook polar] skipped: ${result.reason}`);
+  }
+
+  return c.json({ received: true });
+});
+
+// ---------- GET /polar/health ----------
+webhooks.get('/polar/health', (c) => {
+  return c.json({
+    status: 'ok',
+    webhookSecretConfigured: !!c.env.POLAR_WEBHOOK_SECRET,
+    serverMode: c.env.POLAR_SERVER_MODE ?? 'sandbox',
   });
 });
 
