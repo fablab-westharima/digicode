@@ -4260,6 +4260,8 @@
     "manageSubscription": "Gerir subscrição",
     "statePastDue": "Pagamento falhou — atualize o seu método de pagamento o mais rápido possível",
     "stateCanceling": "Cancelamento pendente",
+    "internationalPaymentComingSoon": "O pagamento internacional está em preparação. Volte mais tarde",
+    "preparingButton": "Em breve",
     "free": {
       "description": "Para iniciantes e primeiros passos"
     },

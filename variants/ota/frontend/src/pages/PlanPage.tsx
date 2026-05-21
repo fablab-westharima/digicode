@@ -9,9 +9,10 @@ import {
   createPortalSession,
   AlreadyActiveError,
   derivePlanState,
+  deriveEffectivePlanState,
   type SubscriptionStatusResponse,
   type ProviderId,
-  type PlanState,
+  type EffectivePlanState,
 } from '@/services/subscriptionService';
 import { MismatchDialog } from '@/components/plan/MismatchDialog';
 
@@ -67,6 +68,7 @@ export default function PlanPage() {
 
   const status = statusResponse?.subscription ?? null;
   const expectedProvider: ProviderId = statusResponse?.expectedProvider ?? 'stripe';
+  const polarAvailable: boolean = statusResponse?.polarAvailable ?? false;
 
   const currentPlan = user?.plan || status?.planType || 'free';
   const isAdmin = !!user?.isAdmin;
@@ -76,22 +78,28 @@ export default function PlanPage() {
   const planRank = (p: string) => (PLAN_ORDER as readonly string[]).indexOf(p);
   const isHigherPlan = (planId: string) => planRank(planId) > planRank(currentPlan);
 
-  const planState: PlanState = useMemo(
-    () =>
-      derivePlanState(
-        !!status?.hasActiveSubscription,
-        status?.provider ?? null,
-        expectedProvider,
-      ),
-    [status?.hasActiveSubscription, status?.provider, expectedProvider],
-  );
+  const planState: EffectivePlanState = useMemo(() => {
+    const raw = derivePlanState(
+      !!status?.hasActiveSubscription,
+      status?.provider ?? null,
+      expectedProvider,
+    );
+    return deriveEffectivePlanState(raw, expectedProvider, polarAvailable);
+  }, [status?.hasActiveSubscription, status?.provider, expectedProvider, polarAvailable]);
 
+  const isComingSoon = planState === 'A_COMING_SOON';
   const isCanceling = status?.status === 'canceling';
 
   // §6a guard: regular users in state C clicking subscribe show the
   // mismatch dialog instead of starting a checkout that the backend
   // would reject with 409 anyway.
   const handlePaidPlanClick = async (planId: PaidPlanId) => {
+    if (planState === 'A_COMING_SOON') {
+      // Defensive: the button should be disabled, but if it gets
+      // clicked anyway (e.g. accessibility tools bypassing the
+      // disabled attribute), no-op rather than fire a doomed checkout.
+      return;
+    }
     if (planState === 'C') {
       setMismatchDialogOpen(true);
       return;
@@ -176,6 +184,15 @@ export default function PlanPage() {
         {error && (
           <div className="mb-6 p-4 rounded-md bg-destructive/10 border border-destructive/30">
             <p className="text-sm text-foreground">{error}</p>
+          </div>
+        )}
+
+        {/* §6a 追補: 海外決済 (Polar) 未開通時の案内バナー */}
+        {isComingSoon && (
+          <div className="mb-6 p-4 rounded-md bg-primary/10 border border-primary/30">
+            <p className="text-sm text-foreground">
+              {t('plan.internationalPaymentComingSoon')}
+            </p>
           </div>
         )}
 
@@ -280,16 +297,21 @@ export default function PlanPage() {
 
                   // Regular user: button label + handler driven by §6a state.
                   const isStateB = planState === 'B';
-                  const label = isStateB ? t('plan.manageSubscription') : t('plan.subscribe');
+                  const label = isComingSoon
+                    ? t('plan.preparingButton')
+                    : isStateB
+                      ? t('plan.manageSubscription')
+                      : t('plan.subscribe');
                   const isLoading =
-                    (isStateB && actionLoading === 'portal') || actionLoading === planId;
+                    !isComingSoon &&
+                    ((isStateB && actionLoading === 'portal') || actionLoading === planId);
                   const styleClasses = isStateB
                     ? 'w-full py-2 text-sm rounded border border-primary text-primary hover:bg-primary/10 disabled:opacity-50 flex items-center justify-center gap-2'
                     : 'w-full py-2 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2';
                   return (
                     <button
                       onClick={() => handlePaidPlanClick(planId)}
-                      disabled={!!actionLoading}
+                      disabled={!!actionLoading || isComingSoon}
                       className={styleClasses}
                     >
                       {isLoading && <Loader2 className="w-3 h-3 animate-spin" />}

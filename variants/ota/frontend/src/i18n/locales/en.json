@@ -4260,6 +4260,8 @@
     "manageSubscription": "Manage subscription",
     "statePastDue": "Payment failed — please update your payment method as soon as possible",
     "stateCanceling": "Cancellation pending",
+    "internationalPaymentComingSoon": "International payment is being prepared. Please check back later",
+    "preparingButton": "Coming soon",
     "free": {
       "description": "For beginners & getting started"
     },

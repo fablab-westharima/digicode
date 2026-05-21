@@ -4260,6 +4260,8 @@
     "manageSubscription": "管理訂閱",
     "statePastDue": "付款失敗 — 請儘快更新您的付款方式",
     "stateCanceling": "取消處理中",
+    "internationalPaymentComingSoon": "國際付款服務正在準備中。請稍後再來",
+    "preparingButton": "準備中",
     "free": {
       "description": "適合入門與試用"
     },

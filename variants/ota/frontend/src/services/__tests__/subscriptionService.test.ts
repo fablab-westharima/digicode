@@ -9,6 +9,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   derivePlanState,
+  deriveEffectivePlanState,
   AlreadyActiveError,
   type ProviderId,
 } from '../subscriptionService';
@@ -37,6 +38,38 @@ describe('derivePlanState', () => {
     // monotonic if data drift ever occurs.
     expect(derivePlanState(true, null, 'stripe')).toBe('C');
     expect(derivePlanState(true, null, 'polar')).toBe('C');
+  });
+});
+
+describe('deriveEffectivePlanState — polar availability fallback', () => {
+  it('returns the raw state unchanged when expected provider is Stripe', () => {
+    // Stripe never depends on polarAvailable — even with polarAvailable=false,
+    // a Stripe-routed user can subscribe normally.
+    expect(deriveEffectivePlanState('A', 'stripe', false)).toBe('A');
+    expect(deriveEffectivePlanState('B', 'stripe', false)).toBe('B');
+    expect(deriveEffectivePlanState('C', 'stripe', false)).toBe('C');
+    expect(deriveEffectivePlanState('A', 'stripe', true)).toBe('A');
+  });
+
+  it('returns the raw state unchanged when Polar is available', () => {
+    expect(deriveEffectivePlanState('A', 'polar', true)).toBe('A');
+    expect(deriveEffectivePlanState('B', 'polar', true)).toBe('B');
+    expect(deriveEffectivePlanState('C', 'polar', true)).toBe('C');
+  });
+
+  it('maps A → A_COMING_SOON when polar expected but unavailable', () => {
+    expect(deriveEffectivePlanState('A', 'polar', false)).toBe('A_COMING_SOON');
+  });
+
+  it('maps C → B when polar expected but unavailable (do not strand the user)', () => {
+    // Users with an active Stripe sub but a Polar-routed IP should keep
+    // managing the Stripe sub via portal; do NOT push them toward a
+    // cancellation into a destination that doesn't exist yet.
+    expect(deriveEffectivePlanState('C', 'polar', false)).toBe('B');
+  });
+
+  it('leaves B unchanged when polar expected but unavailable', () => {
+    expect(deriveEffectivePlanState('B', 'polar', false)).toBe('B');
   });
 });
 

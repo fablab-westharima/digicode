@@ -62,6 +62,14 @@ export interface SubscriptionStatusResponse {
    * `subscription.provider` to detect a mismatch (state C).
    */
   expectedProvider: ProviderId;
+  /**
+   * Whether the Polar.sh integration is wired up in the current
+   * backend env (POLAR_ACCESS_TOKEN set). When false and
+   * `expectedProvider === 'polar'`, the frontend swaps the subscribe
+   * button for a "coming soon" message rather than starting a
+   * checkout against an unconfigured provider.
+   */
+  polarAvailable: boolean;
 }
 
 /**
@@ -86,6 +94,43 @@ export function derivePlanState(
   if (!hasActiveSubscription) return 'A';
   if (currentProvider === expectedProvider) return 'B';
   return 'C';
+}
+
+/**
+ * Effective state for rendering when Polar is not yet wired up in this
+ * environment. The §6a.3 mismatch path requires the user to cancel
+ * their existing provider and resubscribe via the recommended one — but
+ * if the recommended one is Polar and Polar is unavailable, walking the
+ * user through cancellation leaves them stranded. The conservative
+ * collapse is:
+ *
+ *   - state A with expected=polar + !polarAvailable → comingSoon (UI
+ *     shows the "international payment coming soon" notice instead of
+ *     subscribe buttons)
+ *   - state C with expected=polar + !polarAvailable → behave as state B
+ *     (let the user manage their existing Stripe sub via portal; do
+ *     NOT push them to cancel into an unavailable destination)
+ *   - all other combinations → raw state unchanged
+ */
+export type EffectivePlanState = PlanState | 'A_COMING_SOON';
+
+export function deriveEffectivePlanState(
+  rawState: PlanState,
+  expectedProvider: ProviderId,
+  polarAvailable: boolean,
+): EffectivePlanState {
+  if (expectedProvider !== 'polar' || polarAvailable) {
+    return rawState;
+  }
+  // expected=polar AND !polarAvailable
+  switch (rawState) {
+    case 'A':
+      return 'A_COMING_SOON';
+    case 'C':
+      return 'B';
+    case 'B':
+      return 'B';
+  }
 }
 
 export async function getPlans(): Promise<PlanInfo[]> {

@@ -4266,6 +4266,8 @@
     "manageSubscription": "プランを管理する",
     "statePastDue": "お支払いに失敗しました — 速やかにお支払い方法をご更新ください",
     "stateCanceling": "解約手続き済み",
+    "internationalPaymentComingSoon": "海外決済は現在準備中です。しばらくお待ちください",
+    "preparingButton": "準備中",
     "free": {
       "description": "入門・お試し向け"
     },

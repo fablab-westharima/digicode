@@ -173,6 +173,14 @@ subscriptions.get('/status', async (c) => {
       },
       country,
       expectedProvider: decideProviderByCountry(country),
+      // Phase 4 follow-up: is Polar.sh actually wired up in this env?
+      // Frontend swaps the international subscribe button for a
+      // "coming soon" message when this is false, so users who route
+      // to Polar by CF-IPCountry don't try to start a checkout against
+      // an unconfigured provider. The signal is presence of an
+      // Organization Access Token; the Polar dashboard product UUIDs
+      // can be set later without re-deploying.
+      polarAvailable: !!c.env.POLAR_ACCESS_TOKEN,
     });
   } catch (error) {
     console.error('Get subscription status error:', error);
