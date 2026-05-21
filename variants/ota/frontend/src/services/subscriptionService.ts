@@ -219,6 +219,37 @@ async function postCheckout(body: { planId?: string; priceId?: string }): Promis
   return data.url;
 }
 
+/**
+ * Admin-only payment test checkout (plan 58 Phase 5 follow-up).
+ *
+ * POSTs to /api/admin/payment-test/checkout with an explicit provider
+ * override, bypassing the §6a active-sub guard. The admin can run
+ * Stripe and Polar checkouts side by side without VPN-shuffling.
+ * Backend protects the endpoint with authMiddleware + adminMiddleware
+ * so a regular user calling this gets 403 before reaching the
+ * provider layer.
+ */
+export async function adminTestCheckout(
+  planId: 'lite' | 'pro' | 'enterprise',
+  provider: ProviderId,
+): Promise<string> {
+  const res = await fetchWithAuth('/api/admin/payment-test/checkout', {
+    method: 'POST',
+    body: JSON.stringify({ planId, provider }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(
+      data.error ||
+        i18n.t('errors.subscription.checkoutFailed', {
+          defaultValue: 'Checkout セッションの作成に失敗しました',
+        }),
+    );
+  }
+  const data = await res.json();
+  return data.url;
+}
+
 export async function createPortalSession(): Promise<string> {
   const res = await fetchWithAuth('/api/subscriptions/portal', {
     method: 'POST',

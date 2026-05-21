@@ -71,7 +71,9 @@ export default function PlanPage() {
   const polarAvailable: boolean = statusResponse?.polarAvailable ?? false;
 
   const currentPlan = user?.plan || status?.planType || 'free';
-  const isAdmin = !!user?.isAdmin;
+  // Phase 5 R-5: removed `isAdmin` derivation because admins now flow
+  // through the same state A/B/C UI as regular users. The dedicated
+  // /admin payment-test tab still provides provider-override checkout.
   const isInvited = user?.planSource === 'admin_granted';
   const [inviteConfirmPlan, setInviteConfirmPlan] = useState<string | null>(null);
 
@@ -197,9 +199,18 @@ export default function PlanPage() {
         )}
 
         {/* 現在のプラン */}
+        {/*
+          Plan 58 Phase 5 R-5: isAdmin is no longer hidden — only the
+          isInvited account type keeps the original "you have been
+          granted Enterprise privileges" UX (the grant lives on
+          users.plan + planSource='admin_granted'; the user does not
+          have a real subscription record). Admins go through the same
+          state A/B/C UI as regular users and can run real checkout
+          via this page (and the dedicated /admin payment-test tab).
+        */}
         <div className="mb-8 p-4 rounded-md bg-card border border-border">
           <p className="text-sm text-muted-foreground">{t('plan.currentPlan')}</p>
-          {(isAdmin || isInvited) ? (
+          {isInvited ? (
             <>
               <p className="text-xl font-bold mt-1 text-foreground">{t('plan.invitedAccount')}</p>
               <p className="mt-2 text-sm text-destructive">
@@ -211,25 +222,85 @@ export default function PlanPage() {
               {PLAN_DISPLAY_STATIC[currentPlan]?.badge || currentPlan}
             </p>
           )}
-          {/* §6a.4 grace period note — shown while status='canceling' (期間末まで access あり) */}
-          {!isAdmin && !isInvited && isCanceling && (
-            <p className="mt-2 text-sm text-muted-foreground">{t('plan.gracePeriodNote')}</p>
-          )}
-          {!isAdmin && !isInvited && status?.hasActiveSubscription && (
+        </div>
+
+        {/*
+          Active subscription detail block (state B / canceling) —
+          shows plan + provider badge + status + period end + a
+          prominent "Change plan / Cancel" button so the cancellation
+          path is always one click away.
+
+          Gated by `!isInvited` (invited accounts have no real sub)
+          and `hasActiveSubscription`. Free users have no info to
+          show here and skip the whole block.
+        */}
+        {!isInvited && status?.hasActiveSubscription && status.provider && (
+          <div className="mb-8 p-5 rounded-md bg-card border border-border">
+            <h2 className="text-base font-semibold mb-4 text-foreground">
+              {t('plan.activeSection.title')}
+            </h2>
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-4">
+              <div>
+                <dt className="text-muted-foreground">{t('plan.activeSection.planLabel')}</dt>
+                <dd
+                  className={`mt-0.5 font-semibold ${
+                    PLAN_DISPLAY_STATIC[status.planType]?.color || ''
+                  }`}
+                >
+                  {PLAN_DISPLAY_STATIC[status.planType]?.badge || status.planType}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">{t('plan.activeSection.providerLabel')}</dt>
+                <dd className="mt-0.5 text-foreground">
+                  {t(`plan.providerLabel.${status.provider}`)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">{t('plan.activeSection.statusLabel')}</dt>
+                <dd className="mt-0.5 text-foreground">
+                  {status.status === 'past_due'
+                    ? t('plan.activeSection.statusPastDue')
+                    : isCanceling
+                      ? t('plan.activeSection.statusCanceling')
+                      : t('plan.activeSection.statusActive')}
+                </dd>
+              </div>
+              {status.periodEndAt && (
+                <div>
+                  <dt className="text-muted-foreground">
+                    {isCanceling
+                      ? t('plan.activeSection.expiresOn')
+                      : t('plan.activeSection.nextBillingDate')}
+                  </dt>
+                  <dd className="mt-0.5 text-foreground">
+                    {new Date(status.periodEndAt).toLocaleDateString()}
+                  </dd>
+                </div>
+              )}
+            </dl>
+            {isCanceling && (
+              <p className="text-sm text-muted-foreground mb-4">
+                {t('plan.gracePeriodNote')}
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground mb-3">
+              {t('plan.activeSection.managePlanNote')}
+            </p>
             <button
               onClick={handlePortal}
               disabled={actionLoading === 'portal'}
-              className="mt-3 flex items-center gap-1 text-sm text-primary hover:underline disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded border border-primary text-primary hover:bg-primary/10 disabled:opacity-50"
             >
               {actionLoading === 'portal' ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
               ) : (
                 <ExternalLink className="w-3 h-3" />
               )}
-              {t('plan.portalLink')}
+              {t('plan.activeSection.managePlanButton')}
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* プラン一覧 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -271,7 +342,13 @@ export default function PlanPage() {
 
                 {/* アクションボタン */}
                 {(() => {
-                  if (isAdmin || isCurrent || planId === 'free') {
+                  // Phase 5 R-5: isAdmin no longer skips the action button.
+                  // Admins go through the same state A/B/C flow as regular
+                  // users and can hit checkout (useful for Polar review
+                  // dry-runs from a real account). The dedicated payment-
+                  // test tab in /admin still exists for explicit
+                  // provider-override flows.
+                  if (isCurrent || planId === 'free') {
                     return null;
                   }
 

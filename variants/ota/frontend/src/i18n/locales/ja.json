@@ -4268,6 +4268,20 @@
     "stateCanceling": "解約手続き済み",
     "internationalPaymentComingSoon": "海外決済は現在準備中です。しばらくお待ちください",
     "preparingButton": "準備中",
+    "activeSection": {
+      "title": "現在ご契約中のプラン",
+      "planLabel": "プラン",
+      "providerLabel": "決済システム",
+      "statusLabel": "ステータス",
+      "statusActive": "アクティブ",
+      "statusPastDue": "支払い再試行中",
+      "statusCanceling": "解約予定",
+      "nextBillingDate": "次回更新日",
+      "expiresOn": "利用終了日",
+      "managePlanButton": "プラン変更・解約",
+      "cancelButton": "解約手続きへ",
+      "managePlanNote": "プランの変更・解約・お支払い方法の更新は、決済プロバイダーの管理画面から行えます"
+    },
     "free": {
       "description": "入門・お試し向け"
     },
@@ -4533,7 +4547,18 @@
     "tabs": {
       "users": "ユーザー管理",
       "flags": "Feature Flags",
-      "feedback": "要望"
+      "feedback": "要望",
+      "paymentTest": "決済テスト"
+    },
+    "paymentTest": {
+      "title": "決済テスト (admin 専用)",
+      "description": "Stripe と海外決済 (MoR) の両方の checkout を任意で起動できます。本番課金が走るため、必ず即時 cancel + refund を実施してください。",
+      "warning": "⚠️ このボタンは本番課金を発生させます。Polar 審査やリリース前検証以外では使用しないでください。",
+      "stripeColumn": "Stripe (国内決済)",
+      "polarColumn": "海外決済 (Merchant of Record)",
+      "tryCheckout": "{{plan}} で checkout を試す",
+      "redirecting": "決済画面に移動中...",
+      "loadingFailed": "checkout 画面の URL 取得に失敗しました"
     },
     "users": {
       "filters": {

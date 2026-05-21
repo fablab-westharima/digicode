@@ -5,10 +5,18 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import { adminMiddleware } from '../middleware/admin';
-import { errorJson } from '../utils/errorJson';
+import { errorJson, type ErrorKey } from '../utils/errorJson';
 import { auditCrossDbIntegrity } from '../utils/auditCrossDb';
 import { deleteClassCascade } from './classes';
 import { deleteUserCascade } from '../utils/userCascade';
+import { StripeProvider } from '../services/payment/stripeProvider';
+import { PolarProvider } from '../services/payment/polarProvider';
+import {
+  PaymentProviderError,
+  type PaymentProvider,
+  type PlanId,
+  type ProviderId,
+} from '../services/payment/types';
 import type { Bindings, Variables } from '../types/env';
 
 const admin = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -314,6 +322,96 @@ admin.get('/audit-cross-db', authMiddleware, adminMiddleware, async (c) => {
   } catch (error) {
     console.error('Cross-DB audit error:', error);
     return errorJson(c, 'common.serverConfigError', 500);
+  }
+});
+
+// ========================================
+// Plan 58 / Phase 5: admin-only payment test endpoint
+// ========================================
+//
+// Lets an admin start a Stripe OR Polar checkout for a chosen plan
+// regardless of CF-IPCountry, bypassing the §6a active-sub guard.
+// The intent is verification before Polar審査 + production smoke —
+// an admin can walk through both providers from the same browser
+// session without VPN-shuffling and without an existing subscription
+// blocking the new flow.
+//
+// Critical differences from the production /api/subscriptions/checkout:
+//
+//   1. NO `findBlockingActiveSubscription` guard. An admin may need to
+//      create a parallel subscription on the other provider during
+//      審査 — we trust the admin to clean up afterwards (refund + cancel
+//      via each provider's Customer Portal).
+//   2. Provider chosen by the request body, NOT CF-IPCountry. The
+//      `provider` field is required and validated against the union
+//      {'stripe','polar'}.
+//   3. authMiddleware + adminMiddleware: regular users get 403 from
+//      the adminMiddleware before reaching this handler.
+//
+// The route INTENTIONALLY uses the same Stripe/Polar provider classes
+// as production so any error in the test path mirrors production.
+
+const VALID_PROVIDER_IDS = new Set<ProviderId>(['stripe', 'polar']);
+const VALID_PLAN_IDS = new Set<PlanId>(['lite', 'pro', 'enterprise']);
+
+function adminTestErrorKey(code: string): ErrorKey {
+  switch (code) {
+    case 'subscription.priceNotConfigured':
+    case 'subscription.checkoutFailed':
+    case 'subscription.portalSessionFailed':
+    case 'subscription.providerError':
+      return code;
+    default:
+      return 'subscription.providerError';
+  }
+}
+
+admin.post('/payment-test/checkout', authMiddleware, adminMiddleware, async (c) => {
+  try {
+    const user = c.get('user');
+    const body = await c.req.json<{ planId?: string; provider?: string }>();
+
+    if (!body.planId || !VALID_PLAN_IDS.has(body.planId as PlanId)) {
+      return errorJson(c, 'validation.invalidPlan', 400);
+    }
+    if (!body.provider || !VALID_PROVIDER_IDS.has(body.provider as ProviderId)) {
+      // No dedicated i18n key for "invalid provider" — reuse the plan
+      // validation key. This is an admin-only tool; the 400 response
+      // body is enough diagnostic.
+      return errorJson(c, 'validation.invalidPlan', 400);
+    }
+
+    const planId = body.planId as PlanId;
+    const providerId = body.provider as ProviderId;
+
+    let provider: PaymentProvider;
+    if (providerId === 'stripe') {
+      provider = new StripeProvider(c.env);
+    } else {
+      provider = new PolarProvider(c.env);
+    }
+
+    const origin = c.req.header('Origin') || 'https://code.fablab-westharima.jp';
+    const result = await provider.createCheckout({
+      userId: user.userId,
+      email: user.email,
+      planId,
+      origin,
+    });
+
+    return c.json({ url: result.url, provider: providerId, planId });
+  } catch (error) {
+    if (error instanceof PaymentProviderError) {
+      console.error(
+        'Admin payment-test provider error:',
+        error.code,
+        error.message,
+        error.cause,
+      );
+      return errorJson(c, adminTestErrorKey(error.code), 500);
+    }
+    console.error('Admin payment-test checkout error:', error);
+    return errorJson(c, 'subscription.checkoutFailed', 500);
   }
 });
 

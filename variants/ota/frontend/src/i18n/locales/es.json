@@ -4262,6 +4262,20 @@
     "stateCanceling": "Cancelación pendiente",
     "internationalPaymentComingSoon": "El pago internacional está en preparación. Vuelve más tarde",
     "preparingButton": "Próximamente",
+    "activeSection": {
+      "title": "Tu suscripción actual",
+      "planLabel": "Plan",
+      "providerLabel": "Proveedor de pago",
+      "statusLabel": "Estado",
+      "statusActive": "Activa",
+      "statusPastDue": "Reintentando el pago",
+      "statusCanceling": "Programada para cancelación",
+      "nextBillingDate": "Próxima fecha de facturación",
+      "expiresOn": "Finaliza el servicio el",
+      "managePlanButton": "Cambiar plan / Cancelar",
+      "cancelButton": "Ir a cancelación",
+      "managePlanNote": "Los cambios de plan, cancelaciones y actualizaciones del método de pago se gestionan a través del portal del proveedor de pago"
+    },
     "free": {
       "description": "Para principiantes y prueba inicial"
     },
@@ -4527,7 +4541,18 @@
     "tabs": {
       "users": "Gestión de usuarios",
       "flags": "Feature Flags",
-      "feedback": "Feedback"
+      "feedback": "Feedback",
+      "paymentTest": "Prueba de pago"
+    },
+    "paymentTest": {
+      "title": "Prueba de pago (solo administrador)",
+      "description": "Inicia un checkout de Stripe o internacional (MoR) para cualquier plan. Genera un cobro real — asegúrate de cancelar y reembolsar de inmediato.",
+      "warning": "⚠️ Estos botones generan cobros reales. Úsalos solo para revisión de Polar o verificación previa al lanzamiento.",
+      "stripeColumn": "Stripe (nacional)",
+      "polarColumn": "Internacional (Merchant of Record)",
+      "tryCheckout": "Probar checkout para {{plan}}",
+      "redirecting": "Redirigiendo al checkout...",
+      "loadingFailed": "No se pudo obtener la URL del checkout"
     },
     "users": {
       "filters": {

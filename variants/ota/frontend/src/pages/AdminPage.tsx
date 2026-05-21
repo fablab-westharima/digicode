@@ -917,13 +917,141 @@ function FeedbackTab() {
   );
 }
 
+// ---- Payment Test Tab (plan 58 Phase 5) ----
+//
+// Admin-only grid of 6 buttons (3 plans × 2 providers) that POST to
+// /api/admin/payment-test/checkout. Used for Polar審査 dry-runs and
+// pre-release smoke; the backend bypasses §6a active-sub guard for
+// this endpoint specifically. Triggers a real charge — copy of the
+// warning text from `admin.paymentTest.warning` is shown at the top.
+
+function PaymentTestTab() {
+  const { t } = useTranslation();
+  const [loadingKey, setLoadingKey] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const start = async (
+    plan: 'lite' | 'pro' | 'enterprise',
+    provider: 'stripe' | 'polar',
+  ) => {
+    const key = `${plan}-${provider}`;
+    setLoadingKey(key);
+    setError(null);
+    try {
+      const { adminTestCheckout } = await import('@/services/subscriptionService');
+      const url = await adminTestCheckout(plan, provider);
+      if (url) window.location.href = url;
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? e.message
+          : t('admin.paymentTest.loadingFailed', { defaultValue: 'Failed to obtain checkout URL' }),
+      );
+      setLoadingKey(null);
+    }
+  };
+
+  const plans: Array<{ id: 'lite' | 'pro' | 'enterprise'; label: string }> = [
+    { id: 'lite', label: 'Lite' },
+    { id: 'pro', label: 'Pro' },
+    { id: 'enterprise', label: 'Enterprise' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold mb-2">
+          {t('admin.paymentTest.title', { defaultValue: '決済テスト (admin 専用)' })}
+        </h2>
+        <p className="text-sm text-[#8B949E]">
+          {t('admin.paymentTest.description', {
+            defaultValue:
+              'Stripe と海外決済 (MoR) の両方の checkout を任意で起動できます。本番課金が走るため、必ず即時 cancel + refund を実施してください。',
+          })}
+        </p>
+      </div>
+
+      <div className="rounded-md border border-red-700/40 bg-red-900/20 px-4 py-3">
+        <p className="text-sm text-red-200">
+          {t('admin.paymentTest.warning', {
+            defaultValue:
+              '⚠️ このボタンは本番課金を発生させます。Polar 審査やリリース前検証以外では使用しないでください。',
+          })}
+        </p>
+      </div>
+
+      {error && (
+        <div className="rounded-md border border-red-600/40 bg-red-900/30 px-4 py-3">
+          <p className="text-sm text-red-200">{error}</p>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="rounded-md border border-[#2E333D] bg-[#161B22] p-4">
+          <h3 className="text-sm font-semibold mb-3 text-[#E6EDF3]">
+            {t('admin.paymentTest.stripeColumn', { defaultValue: 'Stripe (国内決済)' })}
+          </h3>
+          <div className="space-y-2">
+            {plans.map(({ id, label }) => {
+              const key = `${id}-stripe`;
+              return (
+                <Button
+                  key={key}
+                  variant="outline"
+                  className="w-full justify-start"
+                  disabled={!!loadingKey}
+                  onClick={() => start(id, 'stripe')}
+                >
+                  {loadingKey === key
+                    ? t('admin.paymentTest.redirecting', { defaultValue: 'Redirecting to checkout...' })
+                    : t('admin.paymentTest.tryCheckout', {
+                        plan: label,
+                        defaultValue: `Try checkout for ${label}`,
+                      })}
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="rounded-md border border-[#2E333D] bg-[#161B22] p-4">
+          <h3 className="text-sm font-semibold mb-3 text-[#E6EDF3]">
+            {t('admin.paymentTest.polarColumn', { defaultValue: '海外決済 (Merchant of Record)' })}
+          </h3>
+          <div className="space-y-2">
+            {plans.map(({ id, label }) => {
+              const key = `${id}-polar`;
+              return (
+                <Button
+                  key={key}
+                  variant="outline"
+                  className="w-full justify-start"
+                  disabled={!!loadingKey}
+                  onClick={() => start(id, 'polar')}
+                >
+                  {loadingKey === key
+                    ? t('admin.paymentTest.redirecting', { defaultValue: 'Redirecting to checkout...' })
+                    : t('admin.paymentTest.tryCheckout', {
+                        plan: label,
+                        defaultValue: `Try checkout for ${label}`,
+                      })}
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ---- Main AdminPage ----
 
 export function AdminPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
-  const [activeTab, setActiveTab] = useState<'users' | 'flags' | 'feedback'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'flags' | 'feedback' | 'paymentTest'>('users');
 
   // 非adminはリダイレクト
   if (!user?.isAdmin) {
@@ -986,12 +1114,23 @@ export function AdminPage() {
           >
             {t('admin.tabs.feedback', { defaultValue: '要望' })}
           </button>
+          <button
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'paymentTest'
+                ? 'border-blue-500 text-[#E6EDF3]'
+                : 'border-transparent text-[#8B949E] hover:text-[#E6EDF3]'
+            }`}
+            onClick={() => setActiveTab('paymentTest')}
+          >
+            {t('admin.tabs.paymentTest', { defaultValue: '決済テスト' })}
+          </button>
         </div>
 
         {/* Tab Content */}
         {activeTab === 'users' && <UsersTab />}
         {activeTab === 'flags' && <FlagsTab />}
         {activeTab === 'feedback' && <FeedbackTab />}
+        {activeTab === 'paymentTest' && <PaymentTestTab />}
       </div>
     </div>
   );

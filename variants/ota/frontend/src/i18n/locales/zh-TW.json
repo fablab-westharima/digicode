@@ -4262,6 +4262,20 @@
     "stateCanceling": "取消處理中",
     "internationalPaymentComingSoon": "國際付款服務正在準備中。請稍後再來",
     "preparingButton": "準備中",
+    "activeSection": {
+      "title": "您目前的訂閱",
+      "planLabel": "方案",
+      "providerLabel": "付款服務",
+      "statusLabel": "狀態",
+      "statusActive": "啟用中",
+      "statusPastDue": "正在重試付款",
+      "statusCanceling": "預定取消",
+      "nextBillingDate": "下次計費日",
+      "expiresOn": "服務結束日",
+      "managePlanButton": "變更方案 / 取消",
+      "cancelButton": "前往取消頁面",
+      "managePlanNote": "方案變更、取消、付款方式更新請透過付款服務的管理頁面進行"
+    },
     "free": {
       "description": "適合入門與試用"
     },
@@ -4527,7 +4541,18 @@
     "tabs": {
       "users": "使用者管理",
       "flags": "Feature Flags",
-      "feedback": "意見回饋"
+      "feedback": "意見回饋",
+      "paymentTest": "付款測試"
+    },
+    "paymentTest": {
+      "title": "付款測試 (僅限管理員)",
+      "description": "可任意啟動 Stripe 或國際 (MoR) 的 checkout。會產生實際扣款 — 請務必立即取消並退款。",
+      "warning": "⚠️ 此按鈕會產生實際扣款。僅供 Polar 審查或正式發布前的驗證使用。",
+      "stripeColumn": "Stripe (國內)",
+      "polarColumn": "國際 (Merchant of Record)",
+      "tryCheckout": "試用 {{plan}} 的 checkout",
+      "redirecting": "正在前往 checkout 畫面...",
+      "loadingFailed": "無法取得 checkout URL"
     },
     "users": {
       "filters": {
