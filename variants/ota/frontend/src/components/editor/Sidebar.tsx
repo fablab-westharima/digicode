@@ -361,9 +361,9 @@ export function Sidebar({
     }] : []),
     // アカウント（認証状態・アカウント種別で表示を切り替え）
     ...(isAuthenticated ? [
-      // Session 131: プレリリース中 (LS 決済実装完了前) は決済ページを公開しない
+      // Session 131: プレリリース中 (海外決済 MoR 実装完了前) は決済ページを公開しない
       // ため、Sidebar からのリンクを一時非表示化。Route + PlanPage 本体は維持。
-      // LS Phase B-D (42_LS-integration plan) 完了 + STAGE 4 海外告知準備後に
+      // 海外決済 Phase B-D (42_LS-integration plan) 完了 + STAGE 4 海外告知準備後に
       // 復活させる。詳細は plans/active/admin-security-audit-and-hardening.md
       // §9.1 A-1 + Task 2 統合 commit 参照。
       // ...(user?.accountType !== 'student' ? [{
