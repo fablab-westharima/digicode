@@ -19,7 +19,11 @@ import { authMiddleware } from '../middleware/auth';
 import { countryMiddleware } from '../middleware/country';
 import { getUserPlan } from '../utils/plan';
 import { errorJson, type ErrorKey } from '../utils/errorJson';
-import { decideProviderByCountry, getProviderForUser } from '../services/payment';
+import {
+  decideProviderByCountry,
+  getProviderForUser,
+  resolveEffectiveCountry,
+} from '../services/payment';
 import { findBlockingActiveSubscription } from '../services/payment/activeSubscription';
 import { PaymentProviderError } from '../services/payment/types';
 import type { Bindings, Variables } from '../types/env';
@@ -129,6 +133,11 @@ subscriptions.get('/status', async (c) => {
     const { userId } = c.get('user');
     const country = c.get('country');
     const plan = await getUserPlan(c.env.DB, userId);
+    // Phase 5 R-2: persisted users.country_code overrides CF-IPCountry
+    // for provider routing. Reflect that in the response so the
+    // frontend computes the same expectedProvider the backend will
+    // use at checkout.
+    const effectiveCountry = await resolveEffectiveCountry(c.env, userId, country);
 
     const subscription = await c.env.DB.prepare(`
       SELECT status, plan_type, provider,
@@ -171,8 +180,8 @@ subscriptions.get('/status', async (c) => {
         hasActiveSubscription: isActiveStatus(subscription?.status),
         periodEndAt: subscription?.expires_at || null,
       },
-      country,
-      expectedProvider: decideProviderByCountry(country),
+      country: effectiveCountry,
+      expectedProvider: decideProviderByCountry(effectiveCountry),
       // Phase 4 follow-up: is Polar.sh actually wired up in this env?
       // Frontend swaps the international subscribe button for a
       // "coming soon" message when this is false, so users who route
