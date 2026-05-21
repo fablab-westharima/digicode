@@ -4242,6 +4242,24 @@
     "confirmNote": "此後您的方案將基於您自己的訂閱。",
     "confirmCancel": "取消",
     "confirmSubmit": "訂閱",
+    "mismatchDialog": {
+      "title": "變更方案前請先取消目前的訂閱",
+      "bodyLine1": "您目前透過「{{currentProviderLabel}}」訂閱中，但根據您目前的位置，建議的付款服務為「{{newProviderLabel}}」。",
+      "bodyLine2": "為避免重複扣款，更換付款服務前必須先取消目前的訂閱。完成取消後，請返回此頁面重新申請新方案。",
+      "cancelButton": "前往取消頁面",
+      "dismissButton": "取消"
+    },
+    "providerLabel": {
+      "stripe": "國內付款 (Stripe)",
+      "polar": "國際付款 (Merchant of Record)"
+    },
+    "gracePeriodNote": "您目前的方案在計費週期結束前仍可繼續使用。週期結束後即可訂閱新方案",
+    "alreadyActive": {
+      "fallback": "您已經有有效的訂閱。"
+    },
+    "manageSubscription": "管理訂閱",
+    "statePastDue": "付款失敗 — 請儘快更新您的付款方式",
+    "stateCanceling": "取消處理中",
     "free": {
       "description": "適合入門與試用"
     },

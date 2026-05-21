@@ -19,7 +19,8 @@ import { authMiddleware } from '../middleware/auth';
 import { countryMiddleware } from '../middleware/country';
 import { getUserPlan } from '../utils/plan';
 import { errorJson, type ErrorKey } from '../utils/errorJson';
-import { getProviderForUser } from '../services/payment';
+import { decideProviderByCountry, getProviderForUser } from '../services/payment';
+import { findBlockingActiveSubscription } from '../services/payment/activeSubscription';
 import { PaymentProviderError } from '../services/payment/types';
 import type { Bindings, Variables } from '../types/env';
 
@@ -41,6 +42,17 @@ function providerErrorKey(code: string): ErrorKey {
     default:
       return 'subscription.providerError';
   }
+}
+
+/**
+ * Derive whether the user is currently consuming a paid slot on either
+ * provider — the same set of states that block a new checkout (§6a.1
+ * principle 6). Used both for the /checkout guard and for the /status
+ * response shape (so the frontend can render state B/C correctly).
+ */
+const ACTIVE_STATUSES = new Set(['active', 'past_due', 'canceling']);
+function isActiveStatus(status: string | null | undefined): boolean {
+  return !!status && ACTIVE_STATUSES.has(status);
 }
 
 const subscriptions = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -94,9 +106,28 @@ subscriptions.get('/plans', (c) => {
 });
 
 // ---------- GET /status ----------
+//
+// Phase 4 §6a.3: response was extended with three new fields so the
+// frontend can drive the state A/B/C decision in PlanPage:
+//
+//   subscription.provider             — which MoR owns the sub (or null)
+//   subscription.hasActiveSubscription — derived from status; true while
+//                                        the user is consuming a paid slot
+//                                        (active / past_due / canceling)
+//   country                            — CF-IPCountry of THIS request
+//   expectedProvider                   — what decideProviderByCountry
+//                                        would route a fresh checkout to,
+//                                        i.e. "if they cancelled now and
+//                                        re-subscribed today, who would
+//                                        bill them"
+//
+// Existing fields (stripeCustomerId / stripeSubscriptionId /
+// hasStripeSubscription) are kept verbatim so the pre-Phase-4 PlanPage
+// bundle in any browser cache continues to render.
 subscriptions.get('/status', async (c) => {
   try {
     const { userId } = c.get('user');
+    const country = c.get('country');
     const plan = await getUserPlan(c.env.DB, userId);
 
     const subscription = await c.env.DB.prepare(`
@@ -120,17 +151,28 @@ subscriptions.get('/status', async (c) => {
     }>();
 
     const planDef = PLANS[plan as keyof typeof PLANS] || PLANS.free;
+    const subStatus = subscription?.status ?? 'free';
+    const subProvider =
+      subscription?.provider === 'stripe' || subscription?.provider === 'polar'
+        ? subscription.provider
+        : null;
 
     return c.json({
       subscription: {
-        status: subscription?.status || 'free',
+        status: subStatus,
         planType: plan,
         plan: planDef,
         // ---- existing fields (backward-compat) ----
         stripeCustomerId: subscription?.stripe_customer_id || null,
         stripeSubscriptionId: subscription?.stripe_subscription_id || null,
         hasStripeSubscription: !!subscription?.stripe_subscription_id,
+        // ---- Phase 4 §6a additions ----
+        provider: subProvider,
+        hasActiveSubscription: isActiveStatus(subscription?.status),
+        periodEndAt: subscription?.expires_at || null,
       },
+      country,
+      expectedProvider: decideProviderByCountry(country),
     });
   } catch (error) {
     console.error('Get subscription status error:', error);
@@ -152,6 +194,21 @@ subscriptions.post('/checkout', async (c) => {
   try {
     const { userId, email } = c.get('user');
     const body = await c.req.json<{ planId?: string; priceId?: string }>();
+
+    // §6a.2 active-sub guard — must run BEFORE provider selection so
+    // both the new {planId} path and the legacy {priceId} path are
+    // covered. A user with any active/past_due/canceling row is told
+    // to manage their existing subscription via the customer portal
+    // instead of starting a new one (which would create a parallel
+    // subscription on the same provider or a duplicate one on a
+    // different provider — both are double-charges).
+    const blocking = await findBlockingActiveSubscription(c.env.DB, userId);
+    if (blocking) {
+      return errorJson(c, 'subscription.alreadyActive', 409, {
+        currentProvider: blocking.provider,
+        currentPlan: blocking.plan_type,
+      });
+    }
 
     // ---- New path: planId → provider factory ----
     if (body.planId) {

@@ -4242,6 +4242,24 @@
     "confirmNote": "Your plan will be based on your own subscription going forward.",
     "confirmCancel": "Cancel",
     "confirmSubmit": "Subscribe",
+    "mismatchDialog": {
+      "title": "Please cancel your current subscription before changing plans",
+      "bodyLine1": "You currently have a subscription with \"{{currentProviderLabel}}\", but \"{{newProviderLabel}}\" is the recommended payment provider for your current location.",
+      "bodyLine2": "To prevent double-charging, you must cancel your current subscription before subscribing through a new provider. After cancellation, return to this page to apply for the new plan.",
+      "cancelButton": "Go to cancellation",
+      "dismissButton": "Cancel"
+    },
+    "providerLabel": {
+      "stripe": "Domestic payment (Stripe)",
+      "polar": "International payment (Merchant of Record)"
+    },
+    "gracePeriodNote": "Your current plan remains available until the end of your billing period. You can subscribe to a new plan after the current period ends",
+    "alreadyActive": {
+      "fallback": "You already have an active subscription."
+    },
+    "manageSubscription": "Manage subscription",
+    "statePastDue": "Payment failed — please update your payment method as soon as possible",
+    "stateCanceling": "Cancellation pending",
     "free": {
       "description": "For beginners & getting started"
     },

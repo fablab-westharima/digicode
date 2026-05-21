@@ -4248,6 +4248,24 @@
     "confirmNote": "以降はご自身の契約に基づくプランが適用されます。",
     "confirmCancel": "キャンセル",
     "confirmSubmit": "契約する",
+    "mismatchDialog": {
+      "title": "プラン変更には現契約の解約が必要です",
+      "bodyLine1": "現在「{{currentProviderLabel}}」でのサブスクリプションをご利用中ですが、本日のアクセス元から「{{newProviderLabel}}」でのお支払いが推奨される設定となっています。",
+      "bodyLine2": "二重課金を防ぐため、新しいプロバイダーで契約するには、まず現契約を解約していただく必要があります。解約手続き後、ページに戻って改めてお申し込みください。",
+      "cancelButton": "解約ページへ",
+      "dismissButton": "キャンセル"
+    },
+    "providerLabel": {
+      "stripe": "国内決済 (Stripe)",
+      "polar": "海外決済 (Merchant of Record)"
+    },
+    "gracePeriodNote": "現在のプランは契約期間の終了まで引き続きご利用いただけます。期間終了後に新しいプランをお申し込みいただけます",
+    "alreadyActive": {
+      "fallback": "既にアクティブなサブスクリプションがあります。"
+    },
+    "manageSubscription": "プランを管理する",
+    "statePastDue": "お支払いに失敗しました — 速やかにお支払い方法をご更新ください",
+    "stateCanceling": "解約手続き済み",
     "free": {
       "description": "入門・お試し向け"
     },

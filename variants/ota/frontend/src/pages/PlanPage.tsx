@@ -1,14 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Check, Loader2, ExternalLink } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import {
-  getSubscriptionStatus,
-  createCheckoutSession,
+  getSubscriptionStatusFull,
+  createCheckoutByPlan,
   createPortalSession,
-  type SubscriptionStatus,
+  AlreadyActiveError,
+  derivePlanState,
+  type SubscriptionStatusResponse,
+  type ProviderId,
+  type PlanState,
 } from '@/services/subscriptionService';
+import { MismatchDialog } from '@/components/plan/MismatchDialog';
 
 const PLAN_ORDER = ['free', 'lite', 'pro', 'enterprise'] as const;
 
@@ -19,25 +24,23 @@ const PLAN_DISPLAY_STATIC: Record<string, { badge: string; color: string }> = {
   enterprise: { badge: 'Enterprise', color: 'text-purple-400' },
 };
 
-// Price ID は Stripe Dashboard で Product/Price 作成後に設定する。
-// 本番運用開始までに環境変数化 or DB 管理に移行予定。
-// 現時点では空文字（Checkout ボタンは Price ID 未設定時に無効化）。
-const PRICE_IDS: Record<string, string> = {
-  lite: 'price_1TNRCMKt2XofKR981nzCU58p',
-  pro: 'price_1TNRCyKt2XofKR98eQVV1WlL',
-  enterprise: 'price_1TNRDPKt2XofKR9885ZZcEzR',
-};
+type PaidPlanId = 'lite' | 'pro' | 'enterprise';
+const PAID_PLANS: readonly PaidPlanId[] = ['lite', 'pro', 'enterprise'] as const;
+function isPaidPlanId(value: string): value is PaidPlanId {
+  return (PAID_PLANS as readonly string[]).includes(value);
+}
 
 export default function PlanPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const { user, checkAuth } = useAuthStore();
-  const [status, setStatus] = useState<SubscriptionStatus | null>(null);
+  const [statusResponse, setStatusResponse] = useState<SubscriptionStatusResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [mismatchDialogOpen, setMismatchDialogOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -51,16 +54,19 @@ export default function PlanPage() {
         // checkAuth 失敗は無視（ProtectedRoute が処理）
       }
       try {
-        const s = await getSubscriptionStatus();
-        setStatus(s);
+        const s = await getSubscriptionStatusFull();
+        setStatusResponse(s);
       } catch (e) {
         // status 取得失敗でもページは表示する（user.plan で代替）
-        console.warn('getSubscriptionStatus failed:', e);
+        console.warn('getSubscriptionStatusFull failed:', e);
       } finally {
         setLoading(false);
       }
     })();
   }, [searchParams, checkAuth, t]);
+
+  const status = statusResponse?.subscription ?? null;
+  const expectedProvider: ProviderId = statusResponse?.expectedProvider ?? 'stripe';
 
   const currentPlan = user?.plan || status?.planType || 'free';
   const isAdmin = !!user?.isAdmin;
@@ -70,19 +76,54 @@ export default function PlanPage() {
   const planRank = (p: string) => (PLAN_ORDER as readonly string[]).indexOf(p);
   const isHigherPlan = (planId: string) => planRank(planId) > planRank(currentPlan);
 
-  const handleCheckout = async (planId: string) => {
-    const priceId = PRICE_IDS[planId];
-    if (!priceId) {
-      setError(t('plan.priceNotSet'));
+  const planState: PlanState = useMemo(
+    () =>
+      derivePlanState(
+        !!status?.hasActiveSubscription,
+        status?.provider ?? null,
+        expectedProvider,
+      ),
+    [status?.hasActiveSubscription, status?.provider, expectedProvider],
+  );
+
+  const isCanceling = status?.status === 'canceling';
+
+  // §6a guard: regular users in state C clicking subscribe show the
+  // mismatch dialog instead of starting a checkout that the backend
+  // would reject with 409 anyway.
+  const handlePaidPlanClick = async (planId: PaidPlanId) => {
+    if (planState === 'C') {
+      setMismatchDialogOpen(true);
+      return;
+    }
+    if (planState === 'B') {
+      // For users already subscribed, the cards' primary action is to
+      // open Customer Portal so they can upgrade/downgrade inside the
+      // existing provider. The button label below already says
+      // "Manage subscription"; we route through portal here.
+      await handlePortal();
       return;
     }
     setActionLoading(planId);
     setError(null);
     try {
-      const url = await createCheckoutSession(priceId);
+      const url = await createCheckoutByPlan(planId);
       if (url) window.location.href = url;
     } catch (e) {
-      setError(e instanceof Error ? e.message : t('plan.error'));
+      if (e instanceof AlreadyActiveError) {
+        // Defense in depth: the backend may have changed state between
+        // our last /status fetch and this checkout (e.g. another tab
+        // started a sub). Refresh and re-render.
+        setMismatchDialogOpen(true);
+        try {
+          const refreshed = await getSubscriptionStatusFull();
+          setStatusResponse(refreshed);
+        } catch (refetchErr) {
+          console.warn('status refetch after AlreadyActive failed:', refetchErr);
+        }
+      } else {
+        setError(e instanceof Error ? e.message : t('plan.error'));
+      }
     } finally {
       setActionLoading(null);
     }
@@ -153,7 +194,11 @@ export default function PlanPage() {
               {PLAN_DISPLAY_STATIC[currentPlan]?.badge || currentPlan}
             </p>
           )}
-          {!isAdmin && !isInvited && status?.hasStripeSubscription && (
+          {/* §6a.4 grace period note — shown while status='canceling' (期間末まで access あり) */}
+          {!isAdmin && !isInvited && isCanceling && (
+            <p className="mt-2 text-sm text-muted-foreground">{t('plan.gracePeriodNote')}</p>
+          )}
+          {!isAdmin && !isInvited && status?.hasActiveSubscription && (
             <button
               onClick={handlePortal}
               disabled={actionLoading === 'portal'}
@@ -175,7 +220,6 @@ export default function PlanPage() {
             const display = PLAN_DISPLAY_STATIC[planId];
             const description = t(`plan.${planId}.description`);
             const isCurrent = currentPlan === planId;
-            const priceId = PRICE_IDS[planId as keyof typeof PRICE_IDS];
 
             return (
               <div
@@ -210,16 +254,15 @@ export default function PlanPage() {
 
                 {/* アクションボタン */}
                 {(() => {
-                  if (isAdmin || isCurrent || planId === 'free' || !priceId) {
-                    // 管理者 / 現在のプラン / Free / Price未設定 → ボタンなし
-                    if (planId !== 'free' && !priceId && !isCurrent) {
-                      return <p className="text-xs text-muted-foreground text-center">{t('plan.preparing')}</p>;
-                    }
+                  if (isAdmin || isCurrent || planId === 'free') {
+                    return null;
+                  }
+
+                  if (!isPaidPlanId(planId)) {
                     return null;
                   }
 
                   if (isInvited && isHigherPlan(planId)) {
-                    // 招待ユーザー: 上位プランのみ表示（確認ダイアログ付き）
                     return (
                       <button
                         onClick={() => setInviteConfirmPlan(planId)}
@@ -232,33 +275,26 @@ export default function PlanPage() {
                   }
 
                   if (isInvited) {
-                    // 招待ユーザー: 下位プランはボタンなし
                     return null;
                   }
 
-                  // 通常ユーザー
-                  if (status?.hasStripeSubscription) {
-                    return (
-                      <button
-                        onClick={handlePortal}
-                        disabled={!!actionLoading}
-                        className="w-full py-2 text-sm rounded border border-primary text-primary hover:bg-primary/10 disabled:opacity-50 flex items-center justify-center gap-2"
-                      >
-                        {actionLoading === 'portal' && <Loader2 className="w-3 h-3 animate-spin" />}
-                        <ExternalLink className="w-3 h-3" />
-                        {t('plan.changePlan')}
-                      </button>
-                    );
-                  }
-
+                  // Regular user: button label + handler driven by §6a state.
+                  const isStateB = planState === 'B';
+                  const label = isStateB ? t('plan.manageSubscription') : t('plan.subscribe');
+                  const isLoading =
+                    (isStateB && actionLoading === 'portal') || actionLoading === planId;
+                  const styleClasses = isStateB
+                    ? 'w-full py-2 text-sm rounded border border-primary text-primary hover:bg-primary/10 disabled:opacity-50 flex items-center justify-center gap-2'
+                    : 'w-full py-2 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2';
                   return (
                     <button
-                      onClick={() => handleCheckout(planId)}
+                      onClick={() => handlePaidPlanClick(planId)}
                       disabled={!!actionLoading}
-                      className="w-full py-2 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2"
+                      className={styleClasses}
                     >
-                      {actionLoading === planId && <Loader2 className="w-3 h-3 animate-spin" />}
-                      {t('plan.subscribe')}
+                      {isLoading && <Loader2 className="w-3 h-3 animate-spin" />}
+                      {isStateB && <ExternalLink className="w-3 h-3" />}
+                      {label}
                     </button>
                   );
                 })()}
@@ -266,6 +302,20 @@ export default function PlanPage() {
             );
           })}
         </div>
+
+        {/* §6a.4 Mismatch dialog (state C) */}
+        {mismatchDialogOpen && status?.provider && (
+          <MismatchDialog
+            currentProvider={status.provider}
+            expectedProvider={expectedProvider}
+            onCancellationRedirect={() => {
+              setMismatchDialogOpen(false);
+              handlePortal();
+            }}
+            onDismiss={() => setMismatchDialogOpen(false)}
+            redirecting={actionLoading === 'portal'}
+          />
+        )}
 
         {/* 招待ユーザーの上位プラン契約確認ダイアログ */}
         {inviteConfirmPlan && (
@@ -294,7 +344,9 @@ export default function PlanPage() {
                   onClick={() => {
                     const planId = inviteConfirmPlan;
                     setInviteConfirmPlan(null);
-                    handleCheckout(planId);
+                    if (isPaidPlanId(planId)) {
+                      handlePaidPlanClick(planId);
+                    }
                   }}
                   disabled={!!actionLoading}
                   className="px-4 py-2 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2"

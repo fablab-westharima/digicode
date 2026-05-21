@@ -4242,6 +4242,24 @@
     "confirmNote": "O seu plano será baseado na sua própria subscrição daqui em diante.",
     "confirmCancel": "Cancelar",
     "confirmSubmit": "Subscrever",
+    "mismatchDialog": {
+      "title": "Cancele a sua subscrição atual antes de alterar o plano",
+      "bodyLine1": "Tem atualmente uma subscrição com «{{currentProviderLabel}}», mas «{{newProviderLabel}}» é o fornecedor de pagamento recomendado para a sua localização atual.",
+      "bodyLine2": "Para evitar uma cobrança dupla, tem de cancelar a subscrição atual antes de subscrever através de um novo fornecedor. Após o cancelamento, volte a esta página para solicitar o novo plano.",
+      "cancelButton": "Ir para cancelamento",
+      "dismissButton": "Cancelar"
+    },
+    "providerLabel": {
+      "stripe": "Pagamento nacional (Stripe)",
+      "polar": "Pagamento internacional (Merchant of Record)"
+    },
+    "gracePeriodNote": "O seu plano atual mantém-se disponível até ao fim do período de faturação. Pode subscrever um novo plano após o fim do período atual",
+    "alreadyActive": {
+      "fallback": "Já tem uma subscrição ativa."
+    },
+    "manageSubscription": "Gerir subscrição",
+    "statePastDue": "Pagamento falhou — atualize o seu método de pagamento o mais rápido possível",
+    "stateCanceling": "Cancelamento pendente",
     "free": {
       "description": "Para iniciantes e primeiros passos"
     },
