@@ -374,13 +374,39 @@ webhooks.post('/polar', async (c) => {
     return errorJson(c, 'webhook.signatureInvalid', 400);
   }
 
-  // 3. Verify the signature. WebhookVerificationError covers missing
-  //    headers, bad timestamps, and signature mismatches; any other
-  //    throw is unexpected and must bubble (so the test suite catches
-  //    SDK regressions).
+  // 3. Verify the signature.
+  //
+  // Two failure modes from `standardwebhooks` arrive as separate
+  // exception types and we collapse both to HTTP 400 with the same
+  // opaque error code:
+  //
+  //   - `new Webhook(secret)` ctor may throw a plain `Error` when the
+  //     configured POLAR_WEBHOOK_SECRET cannot be base64-decoded (e.g.
+  //     during a brief window where a placeholder value is set before
+  //     the real webhook signing secret is provisioned, or any future
+  //     misconfiguration). Returning 500 here would (a) be a
+  //     server-fingerprint leak per rule 16 §attacker-perspective, and
+  //     (b) count toward Polar's "10 consecutive failed deliveries →
+  //     auto-disable" counter, so we treat the misconfig as a client-
+  //     visible signature-invalid response.
+  //   - `verifier.verify(...)` throws `WebhookVerificationError` for
+  //     missing headers, bad timestamps, and signature mismatches.
+  //
+  // Both are logged server-side via `console.error`; the response body
+  // is identical so an attacker can't distinguish the two from outside.
+  let verifier: Webhook;
+  try {
+    verifier = new Webhook(c.env.POLAR_WEBHOOK_SECRET);
+  } catch (err) {
+    console.error(
+      '[webhook polar] webhook secret could not be initialized:',
+      err instanceof Error ? err.message : err,
+    );
+    return errorJson(c, 'webhook.signatureInvalid', 400);
+  }
+
   let event: { type?: string; data?: unknown };
   try {
-    const verifier = new Webhook(c.env.POLAR_WEBHOOK_SECRET);
     const parsed = verifier.verify(body, {
       'webhook-id': webhookId,
       'webhook-timestamp': webhookTimestamp,
@@ -392,6 +418,10 @@ webhooks.post('/polar', async (c) => {
       console.error('[webhook polar] signature verification failed:', err.message);
       return errorJson(c, 'webhook.signatureInvalid', 400);
     }
+    // Anything else here would be an unexpected SDK regression (e.g.
+    // verify() throwing a non-WebhookVerificationError). Bubble so the
+    // test suite catches it; production rate-limits + the outer Hono
+    // error boundary keep this from spinning into an endpoint disable.
     throw err;
   }
 
