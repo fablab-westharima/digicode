@@ -35,6 +35,7 @@
 import type { PaymentProvider, ProviderId } from './types';
 import { StripeProvider } from './stripeProvider';
 import { PolarProvider } from './polarProvider';
+import { findBlockingActiveSubscription } from './activeSubscription';
 import type { Bindings } from '../../types/env';
 
 export async function getProviderForUser(
@@ -42,16 +43,17 @@ export async function getProviderForUser(
   userId: number,
   countryFromHeader: string | null,
 ): Promise<PaymentProvider> {
-  const existing = await env.DB
-    .prepare(
-      `SELECT provider FROM subscriptions
-       WHERE user_id = ? AND status IN ('active', 'past_due', 'canceled', 'canceling')`,
-    )
-    .bind(userId)
-    .first<{ provider: ProviderId | null }>();
-
-  if (existing?.provider === 'stripe' || existing?.provider === 'polar') {
-    return instantiate(env, existing.provider);
+  // Reuse the §6a.2 double-charge-guard helper so the "what counts as
+  // an in-flight subscription that locks the provider" set is defined
+  // in one place. An earlier inline copy here drifted to include
+  // 'canceled' too, which violated the §6a.1 #5 contract ("cross-
+  // provider switch only happens after the user fully cancels and
+  // re-subscribes"): a fully-canceled row would have kept the user
+  // pinned to their old provider on the next checkout. The helper's
+  // status set is `('active', 'past_due', 'canceling')` only.
+  const blocking = await findBlockingActiveSubscription(env.DB, userId);
+  if (blocking) {
+    return instantiate(env, blocking.provider);
   }
 
   const effective = await resolveEffectiveCountry(env, userId, countryFromHeader);

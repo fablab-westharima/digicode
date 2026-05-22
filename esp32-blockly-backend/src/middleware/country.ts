@@ -9,16 +9,28 @@
  *      (Cloudflare auto-injects on every request that hits a Worker)
  *   2. Normalizes to uppercase 2-letter or `null`
  *   3. `c.set('country', value)` for the factory to consume
- *   4. Fire-and-forget D1 update of `users.country_code` for
- *      observability (admin panels, log analysis). The update never
- *      influences the factory — the factory only reads the live header
- *      on each request, so VPN/travel naturally re-routes the user on
- *      next checkout.
+ *   4. Fire-and-forget D1 write of `users.country_code` on FIRST
+ *      observation only (Phase 5 R-2 sticky semantics — Plan 58 §6a +
+ *      handover S13). The first country observed for a user becomes
+ *      sticky: subsequent VPN/travel changes in CF-IPCountry leave the
+ *      column alone, and the factory routes by the persisted column
+ *      via `resolveEffectiveCountry` (services/payment/index.ts).
+ *
+ *      Sticky semantics matter because:
+ *        - The factory now READS this column (Phase 5 R-2). If the
+ *          middleware kept overwriting it from each request's header,
+ *          a JP-resident clicking checkout while VPN-ing to US would
+ *          flip to Polar, then back to Stripe the next request — a
+ *          provider thrash that violates the §6a.1 #5 contract
+ *          ("cross-provider switch only via cancel → re-subscribe").
+ *        - Admin overrides (e.g. seeding a US value via D1 for the
+ *          Polar overseas test account) must survive subsequent
+ *          authenticated visits. Per S13, all writes are uniform
+ *          (no separate `manually_set` flag) — the NULL-guard is the
+ *          only mechanism distinguishing first-observed from override.
  *
  * The D1 write uses `c.executionCtx.waitUntil` so it runs to completion
- * after the response is sent without blocking the request. It is
- * guarded by `IS NULL OR != ?` so we only write on first-seen or
- * changed values, sparing D1 quota.
+ * after the response is sent without blocking the request.
  */
 
 import type { MiddlewareHandler } from 'hono';
@@ -42,10 +54,14 @@ export const countryMiddleware: MiddlewareHandler<{
       c.executionCtx.waitUntil(
         c.env.DB
           .prepare(
+            // NULL-only guard = first-observed sticky. Non-NULL values
+            // (auto-written on a prior visit OR admin-seeded via D1)
+            // are preserved so the factory's `resolveEffectiveCountry`
+            // sees a stable signal.
             `UPDATE users SET country_code = ?
-             WHERE id = ? AND (country_code IS NULL OR country_code != ?)`,
+             WHERE id = ? AND country_code IS NULL`,
           )
-          .bind(country, user.userId, country)
+          .bind(country, user.userId)
           .run()
           .catch((err) => {
             // Best-effort: log and continue; the country resolution path

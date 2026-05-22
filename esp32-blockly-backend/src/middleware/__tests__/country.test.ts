@@ -15,6 +15,11 @@ function buildCtx(opts: {
   const waitedPromises: Promise<unknown>[] = [];
 
   const run = opts.dbRunSpy ?? vi.fn().mockResolvedValue({ meta: { changes: 1 } });
+  // Explicit param types let the SQL/bind capture assertions read
+  // `prepare.mock.calls[0][0]` and `bind.mock.calls[0]` with proper types
+  // instead of `never[]`.
+  const bind = vi.fn((..._args: unknown[]) => ({ run }));
+  const prepare = vi.fn((_sql: string) => ({ bind }));
 
   const ctx = {
     req: {
@@ -29,9 +34,7 @@ function buildCtx(opts: {
     }),
     env: {
       DB: {
-        prepare: vi.fn(() => ({
-          bind: vi.fn(() => ({ run })),
-        })),
+        prepare,
       },
     },
     executionCtx: {
@@ -41,7 +44,7 @@ function buildCtx(opts: {
     },
   };
 
-  return { ctx, store, waitedPromises, run };
+  return { ctx, store, waitedPromises, run, prepare, bind };
 }
 
 describe('countryMiddleware — header → context', () => {
@@ -129,5 +132,52 @@ describe('countryMiddleware — observability D1 write', () => {
     // @ts-expect-error
     await countryMiddleware(ctx, async () => {});
     expect(ctx.executionCtx.waitUntil).not.toHaveBeenCalled();
+  });
+});
+
+describe('countryMiddleware — first-observed sticky guard (Phase 5 R-2)', () => {
+  // Regression cluster: an earlier `IS NULL OR != ?` guard overwrote any
+  // existing country_code whenever CF-IPCountry differed from the stored
+  // value. That destroyed admin overrides (e.g. seeding 'US' on the Polar
+  // overseas test account, then losing it when the user logged in from
+  // JP) and broke the §6a.1 #5 "no automatic cross-provider switch"
+  // contract. The fix is a NULL-only guard.
+  //
+  // These tests inspect the prepared SQL + bound arguments directly,
+  // because the in-process mock cannot enforce a real D1 WHERE clause —
+  // we have to verify the SQL the middleware would send is the one that
+  // makes SQLite skip the UPDATE for non-NULL rows.
+  it('prepares SQL with `country_code IS NULL` only (no inequality OR branch)', async () => {
+    const { ctx, waitedPromises, prepare } = buildCtx({
+      header: 'US',
+      user: { userId: 7, email: 'a@example.com' },
+    });
+    // @ts-expect-error
+    await countryMiddleware(ctx, async () => {});
+    await Promise.all(waitedPromises);
+
+    expect(prepare).toHaveBeenCalledOnce();
+    const sql = prepare.mock.calls[0][0];
+    expect(sql).toMatch(/country_code IS NULL/);
+    // The old broken form wrote `IS NULL OR country_code != ?`. Assert
+    // the second branch is gone so the test fails fast on regression.
+    expect(sql).not.toMatch(/!=/);
+    expect(sql).not.toMatch(/<>/);
+  });
+
+  it('binds exactly two arguments (new country + userId, no inequality value)', async () => {
+    const { ctx, waitedPromises, bind } = buildCtx({
+      header: 'US',
+      user: { userId: 42, email: 'b@example.com' },
+    });
+    // @ts-expect-error
+    await countryMiddleware(ctx, async () => {});
+    await Promise.all(waitedPromises);
+
+    expect(bind).toHaveBeenCalledOnce();
+    // The old broken form was .bind(country, userId, country) — three args.
+    // The fixed form is .bind(country, userId) — two args.
+    const args = bind.mock.calls[0];
+    expect(args).toEqual(['US', 42]);
   });
 });
