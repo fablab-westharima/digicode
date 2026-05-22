@@ -376,6 +376,25 @@ webhooks.post('/polar', async (c) => {
 
   // 3. Verify the signature.
   //
+  // Polar follows the Standard Webhooks spec's "secret must be base64-
+  // encoded before passing to the verifier" gotcha (see Polar docs
+  // §integrate/webhooks/delivery and `@polar-sh/sdk` validateEvent,
+  // which does `Buffer.from(secret, 'utf-8').toString('base64')` before
+  // instantiating standardwebhooks.Webhook). The value Polar puts on
+  // the dashboard — and therefore the value we store in
+  // POLAR_WEBHOOK_SECRET — is a raw ASCII string (typically
+  // `whsec_<random>`), NOT a base64 payload. Passing it directly to
+  // `new Webhook(secret)` makes standardwebhooks strip the `whsec_`
+  // prefix and base64-decode the random tail, which:
+  //   (a) usually fails outright because the tail contains chars
+  //       outside the standard base64 alphabet (`A-Z a-z 0-9 + / =`),
+  //   (b) and even when it happens to decode, yields different HMAC
+  //       key bytes than Polar's SDK uses, so every signature fails.
+  // Encoding the entire raw string with `btoa()` mirrors Polar's SDK
+  // exactly: standardwebhooks sees no `whsec_` prefix, decodes the
+  // base64 back to the original UTF-8 bytes of the raw secret, and
+  // uses those bytes as the HMAC key — the same bytes Polar signs with.
+  //
   // Two failure modes from `standardwebhooks` arrive as separate
   // exception types and we collapse both to HTTP 400 with the same
   // opaque error code:
@@ -384,8 +403,10 @@ webhooks.post('/polar', async (c) => {
   //     configured POLAR_WEBHOOK_SECRET cannot be base64-decoded (e.g.
   //     during a brief window where a placeholder value is set before
   //     the real webhook signing secret is provisioned, or any future
-  //     misconfiguration). Returning 500 here would (a) be a
-  //     server-fingerprint leak per rule 16 §attacker-perspective, and
+  //     misconfiguration). `btoa()` itself throws `DOMException` if
+  //     the raw secret contains non-Latin-1 chars; this catch absorbs
+  //     that path too. Returning 500 here would (a) be a server-
+  //     fingerprint leak per rule 16 §attacker-perspective, and
   //     (b) count toward Polar's "10 consecutive failed deliveries →
   //     auto-disable" counter, so we treat the misconfig as a client-
   //     visible signature-invalid response.
@@ -396,7 +417,8 @@ webhooks.post('/polar', async (c) => {
   // is identical so an attacker can't distinguish the two from outside.
   let verifier: Webhook;
   try {
-    verifier = new Webhook(c.env.POLAR_WEBHOOK_SECRET);
+    const encodedSecret = btoa(c.env.POLAR_WEBHOOK_SECRET);
+    verifier = new Webhook(encodedSecret);
   } catch (err) {
     console.error(
       '[webhook polar] webhook secret could not be initialized:',
