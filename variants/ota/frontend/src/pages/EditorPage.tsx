@@ -57,6 +57,7 @@ import { usbFirmwareService, type UsbFlashProgress, type UsbChipInfo } from '@/s
 import { bleFirmwareService, type BleFlashProgress, type BleDeviceInfo } from '@/services/bleFirmwareService';
 import { checkADC2Usage, type ADC2Warning } from '@/utils/adc2Check';
 import { api } from '@/lib/api';
+import { track } from '@/lib/analytics';
 import { firmwareService, type FlashProgress } from '@/services/firmwareService';
 import { Loader2, Zap, SlidersHorizontal, Code, Usb, Wifi, Bluetooth, AlertTriangle, Download } from 'lucide-react';
 import {
@@ -459,6 +460,7 @@ export function EditorPage() {
       generatedCode,
     });
     await submitSubmission(currentSubmission.id);
+    track('class_feature_use', { action: 'submission_submit' });
     setCurrentSubmission((prev) => prev ? { ...prev, status: 'submitted' } : null);
     setIsDirty(false);
     if (blocklyEditorRef.current) {
@@ -583,6 +585,7 @@ export function EditorPage() {
   // 実際のコンパイル処理（書込み方法選択後に呼ばれる）
   // OTA/USB書込み用のコンパイル（firmware.binのBlobを返す）
   const executeCompile = async (format: 'bin' | 'uf2' = 'bin'): Promise<Blob | null> => {
+    track('compile_execute', { mode: compileService.getMode() });
     setIsCompiling(true);
     resetCompileLog();
     setCompileDialogOpen(true);

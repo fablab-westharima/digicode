@@ -15,6 +15,7 @@ import { usePinPresetStore } from '@/stores/pinPresetStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useFeatureFlagStore } from '@/stores/featureFlagStore';
 import { useRobotModeStore, ROBOT_MODES, type RobotMode } from '@/stores/robotModeStore';
+import { track } from '@/lib/analytics';
 import {
   Dialog,
   DialogContent,
@@ -237,6 +238,7 @@ export function PinSettingsDialog({ open, onOpenChange }: PinSettingsDialogProps
       pins: editedPins,
       // servoConfig は ServoPulseDialog で別途編集 (第107回 Task 1)、ここでは触らない
     });
+    track('pin_assign_change');
     setHasChanges(false);
   };
 

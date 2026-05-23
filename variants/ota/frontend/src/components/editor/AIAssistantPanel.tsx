@@ -14,6 +14,7 @@ import { generateAndValidate } from '@/services/ai/validationRetryOrchestrator';
 import { fetchCatalog } from '@/services/ai/systemPrompt';
 import type { ValidationIssue } from '@/services/ai/semanticValidator';
 import { useBeforeUnloadWarning } from '@/hooks/useBeforeUnloadWarning';
+import { track } from '@/lib/analytics';
 
 interface AIAssistantPanelProps {
   onAppendBlocks?: (xml: string) => void;
@@ -87,6 +88,7 @@ export function AIAssistantPanel({
       timestamp: Date.now(),
     };
     appendMessage(currentMode, userMsg);
+    track(currentMode === 'blockGen' ? 'ai_block_generate' : 'ai_help_bot');
     setInput('');
     setIsSending(true);
     setErrorMsg('');

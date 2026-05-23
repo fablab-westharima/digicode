@@ -29,6 +29,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Gauge, Save, RotateCcw, Plus, Trash2 } from 'lucide-react';
 import { usePinPresetStore, SERVO_TYPE_DEFAULTS, type ServoType, type PinServoConfig } from '@/stores/pinPresetStore';
+import { track } from '@/lib/analytics';
 
 interface ServoPulseDialogProps {
   open: boolean;
@@ -69,6 +70,7 @@ export function ServoPulseDialog({ open, onOpenChange }: ServoPulseDialogProps) 
     updatePreset(currentPresetId, {
       servoConfig: { servoType, minPulse, maxPulse, perPinConfigs },
     });
+    track('servo_pulse_adjust');
     setHasChanges(false);
   };
 

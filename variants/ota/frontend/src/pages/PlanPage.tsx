@@ -15,6 +15,7 @@ import {
   type EffectivePlanState,
 } from '@/services/subscriptionService';
 import { MismatchDialog } from '@/components/plan/MismatchDialog';
+import { track } from '@/lib/analytics';
 
 const PLAN_ORDER = ['free', 'lite', 'pro', 'enterprise'] as const;
 
@@ -42,6 +43,10 @@ export default function PlanPage() {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [mismatchDialogOpen, setMismatchDialogOpen] = useState(false);
+
+  useEffect(() => {
+    track('plan_page_view');
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -117,6 +122,7 @@ export default function PlanPage() {
     setActionLoading(planId);
     setError(null);
     try {
+      track('checkout_start', { planId, provider: expectedProvider });
       const url = await createCheckoutByPlan(planId);
       if (url) window.location.href = url;
     } catch (e) {

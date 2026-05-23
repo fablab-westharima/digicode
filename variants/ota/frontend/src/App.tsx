@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { useClassServerHealthStore } from '@/stores/classServerHealthStore';
 import { AuthPage } from '@/components/auth/AuthPage';
@@ -33,6 +33,37 @@ import { initBlocklyMessages } from '@/utils/blocklyMessages';
 import { ToastContainer } from '@/components/common/Toast';
 
 // 保護されたルート
+/**
+ * Fires GA4 `page_view` on every react-router location change.
+ *
+ * Mounted inside <BrowserRouter> so `useLocation()` is available, and
+ * outside <Routes> so it survives every route transition. The boot-
+ * time `gtag('config', ..., { send_page_view: false })` call in
+ * index.html suppresses the implicit initial page_view so this hook
+ * is the single source of page_view events; the first useEffect run
+ * after mount produces the equivalent initial event for the landing
+ * route.
+ *
+ * When VITE_GA_MEASUREMENT_ID is unset the gtag shim is never
+ * installed (index.html startsWith('%') guard), `window.gtag` stays
+ * undefined, and the effect's inner branch is skipped — no error,
+ * no network request.
+ */
+function GAPageView() {
+  const location = useLocation();
+  useEffect(() => {
+    if (
+      typeof window !== 'undefined' &&
+      window.gtag &&
+      window.__GA_ID__ &&
+      !window.__GA_ID__.startsWith('%')
+    ) {
+      window.gtag('event', 'page_view', { page_path: location.pathname });
+    }
+  }, [location.pathname]);
+  return null;
+}
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuthStore();
 
@@ -149,6 +180,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <GAPageView />
       <Routes>
         <Route path="/auth" element={<AuthRoute />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
