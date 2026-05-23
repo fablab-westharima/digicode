@@ -10,6 +10,7 @@ import {
   Radio,
   Code,
   SlidersHorizontal,
+  Gauge,
   Cpu,
   Trash2,
   LogOut,
@@ -47,6 +48,7 @@ interface SidebarProps {
   onUsbPortRelease?: () => void;
   onServoTrim?: () => void;
   onServoPulse?: () => void;
+  onServoSpeed?: () => void;
   onPinAssignment?: () => void;
   onCompileServerSettings?: () => void;
   onDocs?: () => void;
@@ -102,6 +104,7 @@ export function Sidebar({
   onUsbPortRelease,
   onServoTrim,
   onServoPulse,
+  onServoSpeed,
   onPinAssignment,
   onCompileServerSettings,
   onDocs,
@@ -270,6 +273,16 @@ export function Sidebar({
       label: t('sidebar.servoPulse', { defaultValue: 'サーボパルス調整' }),
       icon: <SlidersHorizontal className="w-4 h-4" />,
       action: onServoPulse || (() => {}),
+      category: 'tuning',
+      proGate: true,
+    },
+    // 第137 Phase 2: サーボスピード調整 (大型サーボのギヤ保護用、Option A settings-only)
+    // canUseServoPulse alias re-use で同 Pro gate + prerelease 開放 (第137 user 判断 #4、`memory:prerelease_open_scope`)
+    {
+      id: 'servo-speed',
+      label: t('sidebar.servoSpeed', { defaultValue: 'サーボスピード調整' }),
+      icon: <Gauge className="w-4 h-4" />,
+      action: onServoSpeed || (() => {}),
       category: 'tuning',
       proGate: true,
     },

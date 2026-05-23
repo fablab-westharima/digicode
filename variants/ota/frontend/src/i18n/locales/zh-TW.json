@@ -3299,6 +3299,19 @@
     "perPinDesc": "可依個別腳位覆寫脈衝寬度以配合伺服馬達的個體差異",
     "perPinEmpty": "無個別腳位覆寫 (上方一括設定將套用至所有腳位)"
   },
+  "servoSpeed": {
+    "title": "伺服速度調整",
+    "description": "調整伺服器移動速度 (°/秒)。0 = 無限制 (沿用原行為)。",
+    "currentPreset": "目前的預設",
+    "settings": "伺服速度設定",
+    "settingsDesc": "設定全域最大角速度。0 = 無限制 (ESP32Servo 原生速度)。",
+    "speed": "速度",
+    "speedUnit": "°/秒",
+    "speedHelp": "0 = 無限制。建議範圍: 30-720 °/秒。",
+    "perPinSettings": "依腳位個別速度設定",
+    "perPinDesc": "依腳位覆寫速度 (刪除後恢復為全域設定)",
+    "perPinEmpty": "無個別設定 (上方的全域設定套用至所有腳位)"
+  },
   "docs": {
     "loadError": "無法載入文件。",
     "index": {
@@ -3571,6 +3584,7 @@
     "usbPortRelease": "釋放USB連接埠",
     "servoTrim": "伺服馬達微調",
     "servoPulse": "伺服脈衝調整",
+    "servoSpeed": "伺服速度調整",
     "pinAssignment": "腳位指定設定",
     "passkeyManagement": "密鑰管理",
     "codePreview": "生成的程式碼",

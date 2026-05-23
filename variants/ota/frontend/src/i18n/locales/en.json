@@ -1043,6 +1043,7 @@
     "usbPortRelease": "USB Port Release",
     "servoTrim": "Servo Trim Settings",
     "servoPulse": "Servo Pulse Settings",
+    "servoSpeed": "Servo Speed Settings",
     "pinAssignment": "Pin Assignment",
     "passkeyManagement": "Passkey Management",
     "codePreview": "Generated Code",
@@ -3522,6 +3523,19 @@
     "perPinSettings": "Per-Pin Servo Pulse Width Settings",
     "perPinDesc": "Override the pulse width per pin to accommodate servo variations",
     "perPinEmpty": "No per-pin overrides (the global settings above apply to all pins)"
+  },
+  "servoSpeed": {
+    "title": "Servo Speed Settings",
+    "description": "Adjust servo movement speed (°/sec). 0 = unlimited (legacy behavior).",
+    "currentPreset": "Current Preset",
+    "settings": "Servo Speed Settings",
+    "settingsDesc": "Configure the global maximum angular speed. 0 = unlimited (ESP32Servo native speed).",
+    "speed": "Speed",
+    "speedUnit": "°/sec",
+    "speedHelp": "0 = unlimited. Recommended range: 30-720 °/sec.",
+    "perPinSettings": "Per-Pin Servo Speed Settings",
+    "perPinDesc": "Override the speed per pin (remove to revert to the global setting)",
+    "perPinEmpty": "No per-pin overrides (the global setting above applies to all pins)"
   },
   "docs": {
     "loadError": "Failed to load document.",

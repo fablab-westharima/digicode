@@ -1043,6 +1043,7 @@
     "usbPortRelease": "USBポート解放",
     "servoTrim": "サーボトリム設定",
     "servoPulse": "サーボパルス調整",
+    "servoSpeed": "サーボスピード調整",
     "pinAssignment": "ピンアサイン設定",
     "passkeyManagement": "パスキー管理",
     "codePreview": "生成コード",
@@ -3527,6 +3528,19 @@
     "maxPulse": "最大パルス幅 (μs)",
     "perPinSettings": "ピンごとの個別パルス幅設定",
     "perPinDesc": "サーボの個体差に合わせて、ピンごとにパルス幅を上書きできます",
+    "perPinEmpty": "個別設定なし (上記の一括設定が全ピンに適用されます)"
+  },
+  "servoSpeed": {
+    "title": "サーボスピード調整",
+    "description": "サーボの動作速度 (°/秒) を調整します。0 = 制限なし (既存挙動)。",
+    "currentPreset": "現在のプリセット",
+    "settings": "サーボ速度設定",
+    "settingsDesc": "全サーボ共通の最大角速度を設定します。0 = 制限なし (ESP32Servo ネイティブ速度)。",
+    "speed": "速度",
+    "speedUnit": "°/秒",
+    "speedHelp": "0 = 制限なし、推奨レンジ 30-720 °/秒",
+    "perPinSettings": "ピンごとの個別速度設定",
+    "perPinDesc": "ピンごとに個別の速度を上書きできます (削除すれば一括設定に戻ります)",
     "perPinEmpty": "個別設定なし (上記の一括設定が全ピンに適用されます)"
   },
   "docs": {

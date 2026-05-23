@@ -3299,6 +3299,19 @@
     "perPinDesc": "Sobrescreva a largura de pulso por pino para acomodar variações de servo",
     "perPinEmpty": "Sem ajustes por pino (os ajustes globais acima aplicam-se a todos os pinos)"
   },
+  "servoSpeed": {
+    "title": "Ajuste de velocidade do servo",
+    "description": "Ajustar a velocidade de movimento do servo (°/seg). 0 = sem limite (comportamento existente).",
+    "currentPreset": "Predefinição atual",
+    "settings": "Ajustes de velocidade do servo",
+    "settingsDesc": "Configurar a velocidade angular máxima global. 0 = sem limite (velocidade nativa do ESP32Servo).",
+    "speed": "Velocidade",
+    "speedUnit": "°/seg",
+    "speedHelp": "0 = sem limite. Faixa recomendada: 30-720 °/seg.",
+    "perPinSettings": "Ajustes de velocidade por pino",
+    "perPinDesc": "Substituir a velocidade por pino (remova para voltar ao ajuste global)",
+    "perPinEmpty": "Sem ajustes por pino (o ajuste global acima aplica-se a todos os pinos)"
+  },
   "docs": {
     "loadError": "Falha ao carregar o documento.",
     "index": {
@@ -3571,6 +3584,7 @@
     "usbPortRelease": "Liberar porta USB",
     "servoTrim": "Ajuste de Servo",
     "servoPulse": "Ajuste de pulso de servo",
+    "servoSpeed": "Ajuste de velocidade do servo",
     "pinAssignment": "Atribuição de pinos",
     "passkeyManagement": "Gerenciar Passkeys",
     "codePreview": "Código gerado",

@@ -29,6 +29,7 @@ import { FirmwareInstallerDialog } from '@/components/firmware/FirmwareInstaller
 import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { ServoTrimDialog } from '@/components/servo/ServoTrimDialog';
 import { ServoPulseDialog } from '@/components/servo/ServoPulseDialog';
+import { ServoSpeedDialog } from '@/components/servo/ServoSpeedDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
 import { OutdatedCompileServerDialog, type OutdatedSignal } from '@/components/settings/OutdatedCompileServerDialog';
 import { WifiDeviceSelectDialog, type Device } from '@/components/device/WifiDeviceSelectDialog';
@@ -164,6 +165,7 @@ export function EditorPage() {
   const [pinSettingsDialogOpen, setPinSettingsDialogOpen] = useState(false);
   const [servoTrimDialogOpen, setServoTrimDialogOpen] = useState(false);
   const [servoPulseDialogOpen, setServoPulseDialogOpen] = useState(false);
+  const [servoSpeedDialogOpen, setServoSpeedDialogOpen] = useState(false);
   const [compileServerSettingsDialogOpen, setCompileServerSettingsDialogOpen] = useState(false);
   const [binExportDialogOpen, setBinExportDialogOpen] = useState(false);
   const [binExportVersion, setBinExportVersion] = useState('1.0.0');
@@ -1331,6 +1333,7 @@ export function EditorPage() {
           onUsbPortRelease={handleUsbPortRelease}
           onServoTrim={() => setServoTrimDialogOpen(true)}
           onServoPulse={() => setServoPulseDialogOpen(true)}
+          onServoSpeed={() => setServoSpeedDialogOpen(true)}
           onPinAssignment={() => setPinSettingsDialogOpen(true)}
           onCompileServerSettings={() => setCompileServerSettingsDialogOpen(true)}
           onDocs={() => window.open('/docs', '_blank')}
@@ -1852,6 +1855,12 @@ export function EditorPage() {
       <ServoPulseDialog
         open={servoPulseDialogOpen}
         onOpenChange={setServoPulseDialogOpen}
+      />
+
+      {/* サーボスピード調整ダイアログ (第137 Phase 2、Option A settings-only) */}
+      <ServoSpeedDialog
+        open={servoSpeedDialogOpen}
+        onOpenChange={setServoSpeedDialogOpen}
       />
 
       {/* コンパイルサーバー設定ダイアログ */}
