@@ -67,8 +67,19 @@ export function ServoPulseDialog({ open, onOpenChange }: ServoPulseDialogProps) 
   };
 
   const handleSave = () => {
+    // Bug 2 fix (Session 138): spread `...currentPreset.servoConfig` so other
+    // sibling fields (speedDegPerSec, future additions) are preserved. Without
+    // the spread, zustand's shallow merge in `updatePreset` replaces the
+    // entire `servoConfig` object — destructive across dialogs. Mirrors
+    // ServoSpeedDialog handleSave canonical pattern.
     updatePreset(currentPresetId, {
-      servoConfig: { servoType, minPulse, maxPulse, perPinConfigs },
+      servoConfig: {
+        ...currentPreset.servoConfig,
+        servoType,
+        minPulse,
+        maxPulse,
+        perPinConfigs,
+      },
     });
     track('servo_pulse_adjust');
     setHasChanges(false);

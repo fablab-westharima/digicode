@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useRobotModeStore } from '../../stores/robotModeStore';
 import { useFavoriteCategoriesStore } from '../../stores/favoriteCategoriesStore';
 import { useBoardStore } from '../../stores/boardStore';
+import { usePinPresetStore } from '@/stores/pinPresetStore';
 import { digiCodeDarkTheme } from './blocklyTheme';
 import { installContrastTextPatch, attachContrastWorkspaceListener } from './blocklyContrast';
 import { populateBlocklyMessages } from '@/utils/blocklyMessages';
@@ -550,6 +551,24 @@ export const BlocklyEditor = forwardRef<BlocklyEditorRef, BlocklyEditorProps>(
       };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentToolbox, robotMode, uiLanguage]);
+
+    // pinPresetStore (servoConfig, pins) 変化で cpp を再生成。
+    // Bug 1 fix (Session 138): Blockly workspace の addChangeListener は workspace
+    // 自体の編集 (block 追加/削除/接続) でしか発火しないため、ServoSpeedDialog /
+    // ServoPulseDialog / PinSettingsDialog の Save で store だけ更新された場合、
+    // generatedCode state が再評価されず preview に Save 前の cpp が残る。
+    // store の presets array reference 変化を hook して handleWorkspaceChange を
+    // 再呼出することで、Dialog Save 後の即時反映を保証。
+    // presets 以外の slice (isPremiumEnabled / currentPresetId) は別経路で flow
+    // するため、ここでは presets reference 比較のみで判定 (false fire を抑制)。
+    useEffect(() => {
+      const unsubscribe = usePinPresetStore.subscribe((state, prev) => {
+        if (state.presets !== prev.presets) {
+          handleWorkspaceChange();
+        }
+      });
+      return unsubscribe;
+    }, [handleWorkspaceChange]);
 
     // リサイズ対応
     useEffect(() => {
