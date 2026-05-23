@@ -5,36 +5,6 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DigiCodeβ2</title>
-    <!--
-      Google Analytics 4 — gated on VITE_GA_MEASUREMENT_ID at build time.
-      Vite substitutes the literal '%VITE_GA_MEASUREMENT_ID%' below; if
-      the env var is unset the placeholder remains, the startsWith('%')
-      guard short-circuits, and gtag.js is never requested. Privacy
-      contract: anonymize_ip enabled; no user_id; call sites in
-      src/lib/analytics.ts pass non-PII params only.
-    -->
-    <script>
-      window.__GA_ID__ = '%VITE_GA_MEASUREMENT_ID%';
-    </script>
-    <script>
-      if (window.__GA_ID__ && !window.__GA_ID__.startsWith('%')) {
-        var s = document.createElement('script');
-        s.async = true;
-        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.__GA_ID__;
-        document.head.appendChild(s);
-        window.dataLayer = window.dataLayer || [];
-        window.gtag = function () { window.dataLayer.push(arguments); };
-        window.gtag('js', new Date());
-        // send_page_view:false — react-router useLocation listener in
-        // src/App.tsx fires page_view manually on every route change,
-        // so we suppress the implicit boot-time one to avoid double-
-        // counting the initial visit.
-        window.gtag('config', window.__GA_ID__, {
-          anonymize_ip: true,
-          send_page_view: false,
-        });
-      }
-    </script>
   </head>
   <body>
     <div id="root"></div>
