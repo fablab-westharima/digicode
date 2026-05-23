@@ -1,14 +1,23 @@
 /**
- * servo_write speed-aware cpp emit tests (第137 Phase 3、Option A settings-only)
+ * servo_write speed-aware cpp emit tests (Session 138 redesign: 非同期並列動作)
+ *
+ * Session 138 (2026-05-24): the original blocking helper (`_servoMoveAt` with
+ * delay-driven for-loop, Session 137 Phase 3 commit f658c30) was unusable for
+ * the actual founding use case (humanoid robot left+right leg simultaneous
+ * sweep) because each `_servoMoveAt` call blocked the loop for steps×stepMs.
+ * The helper is now a FreeRTOS background task: `_servoStart()` sets the
+ * target and returns immediately; a 1 ms tick task advances every active
+ * pin's current angle in parallel, fully concurrent with user delay() and
+ * other blocking operations on the Arduino main loop.
  *
  * Critical contract (user requirement, R1 mitigation):
  *   - speed === 0 (default) → cpp output byte-identical to pre-Phase-3
- *     emit; the `_servoMoveAt` / `_servoLastAngle` helper is NOT injected
+ *     emit; the helper (struct, task fn, _servoStart) is NOT injected
  *     into generator.definitions_ → not present anywhere in the produced
  *     fullCode (no globals overhead, no behavior change vs legacy).
- *   - speed > 0 → cpp routes through `_servoMoveAt(servo${pin}, ${pin},
+ *   - speed > 0 → cpp routes through `_servoStart(servo${pin}, ${pin},
  *     String(${angle}).toInt(), ${speed});` and the helper definition
- *     appears exactly once in globals.
+ *     appears exactly once in globals (struct + task fn + _servoStart).
  *   - Per-pin override resolves through getServoSpeed(pinNum) so two
  *     servo_write blocks in the same workspace can take different paths.
  *
@@ -107,16 +116,31 @@ beforeEach(() => {
   setSpeedConfig({ global: 0, perPin: [] });
 });
 
+// Symbols that the new (non-blocking, FreeRTOS-task) helper introduces.
+// All must be absent in R1 (speed=0) cases and all present (helper count
+// == 1 of each) in helper-injected cases. Asserting on a set rather than
+// a single function name keeps the test from going stale if the helper
+// internals get tuned (e.g. stack size, task name) — only the structural
+// shape is the contract.
+const HELPER_SYMBOLS = [
+  '_servoStart',
+  '_servoStates',
+  '_servoBackgroundTask',
+  '_servoTaskHandle',
+  'xTaskCreatePinnedToCore',
+];
+
 describe('servo_write cpp emit — speed===0 default path (R1 byte-identical verify)', () => {
-  it('speed=0: emits direct servo.write, helper NOT injected anywhere in fullCode', () => {
+  it('speed=0: emits direct servo.write, helper symbols ABSOLUTELY absent in fullCode', () => {
     const result = xmlToCpp(servoWriteXml(32, 90));
 
     // Direct call appears in loop body (existing pre-Phase-3 emit, unchanged)
     expect(result.loopCode).toContain('servo32.write(String(90).toInt());');
 
-    // Critical R1 invariant: helper symbols ABSOLUTELY MUST NOT appear anywhere
-    expect(result.fullCode).not.toContain('_servoMoveAt');
-    expect(result.fullCode).not.toContain('_servoLastAngle');
+    // Critical R1 invariant: every helper symbol must be absent everywhere
+    for (const sym of HELPER_SYMBOLS) {
+      expect(result.fullCode).not.toContain(sym);
+    }
     expect(result.fullCode).not.toContain('servo_speed_helper');
   });
 
@@ -127,7 +151,7 @@ describe('servo_write cpp emit — speed===0 default path (R1 byte-identical ver
     // produced by the generator; xmlToCpp strips the leading 2-space indent
     // when extracting loopCode, so the assertion checks the body verbatim.
     expect(result.loopCode).toContain('servo32.write(String(180).toInt());');
-    expect(result.fullCode).not.toMatch(/_servoMoveAt|_servoLastAngle/);
+    expect(result.fullCode).not.toMatch(/_servoStart|_servoStates|_servoBackgroundTask/);
   });
 
   it('legacy state (speedDegPerSec undefined) behaves identical to speed=0', () => {
@@ -150,46 +174,60 @@ describe('servo_write cpp emit — speed===0 default path (R1 byte-identical ver
 
     const result = xmlToCpp(servoWriteXml(13, 45));
     expect(result.loopCode).toContain('servo13.write(String(45).toInt());');
-    expect(result.fullCode).not.toContain('_servoMoveAt');
+    expect(result.fullCode).not.toContain('_servoStart');
   });
 });
 
-describe('servo_write cpp emit — speed>0 helper-injected path', () => {
-  it('speed=180 global: routes through _servoMoveAt and injects helper once', () => {
+describe('servo_write cpp emit — speed>0 helper-injected path (non-blocking, FreeRTOS task)', () => {
+  it('speed=180 global: routes through _servoStart and injects helper once', () => {
     setSpeedConfig({ global: 180 });
     const result = xmlToCpp(servoWriteXml(32, 90));
 
     // Call routes through helper (not direct write)
-    expect(result.loopCode).toContain('_servoMoveAt(servo32, 32, String(90).toInt(), 180);');
+    expect(result.loopCode).toContain('_servoStart(servo32, 32, String(90).toInt(), 180);');
     expect(result.loopCode).not.toContain('servo32.write(String(90).toInt());');
 
     // Helper definition appears in globals (between #include and void setup())
-    expect(result.globals).toContain('void _servoMoveAt(Servo &s, int pin, int target, int degPerSec)');
-    expect(result.globals).toContain('int _servoLastAngle[40]');
+    expect(result.globals).toContain('void _servoStart(Servo& s, int pin, int target, int degPerSec)');
+    expect(result.globals).toContain('struct _ServoState');
+    expect(result.globals).toContain('_ServoState _servoStates[40]');
+    expect(result.globals).toContain('TaskHandle_t _servoTaskHandle');
 
-    // Helper appears EXACTLY ONCE even if multiple servo_write blocks
-    // (deduped via generator.definitions_ key 'servo_speed_helper')
-    const helperCount = (result.fullCode.match(/void _servoMoveAt/g) || []).length;
+    // Helper definition appears EXACTLY ONCE even if multiple servo_write
+    // blocks (deduped via generator.definitions_ key 'servo_speed_helper')
+    const helperCount = (result.fullCode.match(/void _servoStart\(Servo&/g) || []).length;
     expect(helperCount).toBe(1);
   });
 
-  it('helper body contains the rate-limit loop structure (delay-driven step)', () => {
+  it('helper body contains the non-blocking FreeRTOS task structure (millis-driven, 1 ms tick, lazy spawn)', () => {
     setSpeedConfig({ global: 360 });
     const result = xmlToCpp(servoWriteXml(13, 60));
 
-    // Key structural elements of the rate-limit loop
-    expect(result.globals).toContain('int stepMs = 1000 / degPerSec;');
-    expect(result.globals).toMatch(/for \(int i = 0; i < steps; i\+\+\)/);
-    expect(result.globals).toContain('delay(stepMs);');
-    expect(result.globals).toContain('s.write(current);');
+    // Key structural elements of the non-blocking design
+    expect(result.globals).toContain('void _servoBackgroundTask(void*');
+    expect(result.globals).toContain('vTaskDelay(1 / portTICK_PERIOD_MS)');
+    expect(result.globals).toContain('xTaskCreatePinnedToCore(_servoBackgroundTask');
+    // Task is lazy-spawned only on the first _servoStart call (nullptr guard)
+    expect(result.globals).toContain('if (_servoTaskHandle == nullptr)');
+    // State machine: 1° step per stepMs interval, no blocking delay
+    expect(result.globals).toMatch(/st\.current \+= \(st\.current < st\.target\) \? 1 : -1/);
+    expect(result.globals).toContain('st.servo->write(st.current)');
+    // 🔴 Critical: the old blocking `delay(stepMs)` MUST be gone — its
+    // presence in the helper body is the original Bug surface (humanoid
+    // left/right leg can't move in parallel because each call blocks
+    // for steps×stepMs ms).
+    expect(result.globals).not.toMatch(/delay\(stepMs\)/);
+    // Old helper symbols must not reappear
+    expect(result.globals).not.toContain('_servoMoveAt');
+    expect(result.globals).not.toContain('_servoLastAngle');
   });
 
   it('per-pin override: pin 13 speed=60, global=0 → pin 13 uses helper; helper injected', () => {
     setSpeedConfig({ global: 0, perPin: [{ pin: 13, speedDegPerSec: 60 }] });
     const result = xmlToCpp(servoWriteXml(13, 90));
 
-    expect(result.loopCode).toContain('_servoMoveAt(servo13, 13, String(90).toInt(), 60);');
-    expect(result.globals).toContain('_servoMoveAt(Servo &s');
+    expect(result.loopCode).toContain('_servoStart(servo13, 13, String(90).toInt(), 60);');
+    expect(result.globals).toContain('void _servoStart(Servo& s');
   });
 
   it('per-pin scoping: pin 13 has override speed=60 but workspace only uses pin 32 → no helper (R1 preserved for unaffected pins)', () => {
@@ -198,7 +236,9 @@ describe('servo_write cpp emit — speed>0 helper-injected path', () => {
     const result = xmlToCpp(servoWriteXml(32, 90));
 
     expect(result.loopCode).toContain('servo32.write(String(90).toInt());');
-    expect(result.fullCode).not.toContain('_servoMoveAt');
+    for (const sym of HELPER_SYMBOLS) {
+      expect(result.fullCode).not.toContain(sym);
+    }
   });
 });
 
@@ -207,12 +247,30 @@ describe('servo_write cpp emit — mixed speed (one pin global=0, another pin ov
     setSpeedConfig({ global: 0, perPin: [{ pin: 13, speedDegPerSec: 60 }] });
     const result = xmlToCpp(twoServoWriteXml(13, 32, 90));
 
-    // pin 13 = via helper
-    expect(result.loopCode).toContain('_servoMoveAt(servo13, 13, String(90).toInt(), 60);');
+    // pin 13 = via helper (non-blocking _servoStart, returns immediately)
+    expect(result.loopCode).toContain('_servoStart(servo13, 13, String(90).toInt(), 60);');
     // pin 32 = direct write (no override, global=0)
     expect(result.loopCode).toContain('servo32.write(String(90).toInt());');
     // helper is injected (because pin 13 needs it) — exactly once
-    const helperCount = (result.fullCode.match(/void _servoMoveAt/g) || []).length;
+    const helperCount = (result.fullCode.match(/void _servoStart\(Servo&/g) || []).length;
     expect(helperCount).toBe(1);
+  });
+
+  it('two servo_write blocks with same global speed: BOTH route via _servoStart (non-blocking parallel — the founding use case)', () => {
+    // This is the humanoid-robot motivating case: left + right leg must
+    // sweep together. With the old blocking helper, the right leg only
+    // started moving after the left finished. With FreeRTOS task, both
+    // _servoStart calls return immediately and the background task drives
+    // them in parallel.
+    setSpeedConfig({ global: 180 });
+    const result = xmlToCpp(twoServoWriteXml(13, 32, 90));
+
+    expect(result.loopCode).toContain('_servoStart(servo13, 13, String(90).toInt(), 180);');
+    expect(result.loopCode).toContain('_servoStart(servo32, 32, String(90).toInt(), 180);');
+    // Helper still deduped to 1 instance
+    const helperCount = (result.fullCode.match(/void _servoStart\(Servo&/g) || []).length;
+    expect(helperCount).toBe(1);
+    // No blocking delay anywhere in the helper body
+    expect(result.globals).not.toMatch(/delay\(stepMs\)/);
   });
 });

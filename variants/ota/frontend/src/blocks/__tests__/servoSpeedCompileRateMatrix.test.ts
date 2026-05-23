@@ -1,12 +1,18 @@
 /**
- * servo_write compile-rate matrix (第137 Phase 5、Option A settings-only)
+ * servo_write compile-rate matrix (Session 138 redesign: 非同期並列動作)
  *
  * user 要件 #6「コンパイル率の検証計画」の CI gate 実装。
  * 10 fixtures × 5 speed values × 2 scope (global vs per-pin) を網羅し、
  * 全件で xmlToCpp が exit 0 + 期待 emit パターン (helper 有無 / call shape / dedup
  * count) と一致することを machine-verify。Phase 3 の servoSpeedGenerator.test.ts
- * (8 cases) との重複は意図的 = Phase 3 が「2 path 分岐の構造」を verify、本 file
+ * との重複は意図的 = Phase 3 が「2 path 分岐の構造」を verify、本 file
  * が「広 speed × scope matrix での compile 率 100% 維持」を verify、軸が別。
+ *
+ * Session 138 redesign: 旧 blocking helper (_servoMoveAt + delay) を non-
+ * blocking FreeRTOS task helper (_servoStart + _servoBackgroundTask) に置換。
+ * call shape も `_servoMoveAt(servo${pin}, ${pin}, ..., ${speed})` から
+ * `_servoStart(servo${pin}, ${pin}, ..., ${speed})` に変更。R1 invariant
+ * (speed=0 で helper 完全不在) は維持、speed>0 で複数サーボの並列動作可能に。
  *
  * 採用 fixture (10 cases):
  *   1. global=0 / 1 write           — baseline (R1: helper absent)
@@ -221,16 +227,33 @@ describe('servo_write compile rate matrix — 10/10 (100%) PASS gate (user 要�
     it(`helper definition appears exactly ${c.expectHelperCount} time(s) in fullCode`, () => {
       configureStore(c);
       const result = xmlToCpp(buildXml(c.writes));
-      const helperCount = (result.fullCode.match(/void _servoMoveAt/g) || []).length;
+      // Session 138 redesign: helper signature is `_servoStart(Servo& s, ...)`,
+      // appears exactly once when at least one servo_write resolves speed>0
+      const helperCount = (result.fullCode.match(/void _servoStart\(Servo&/g) || []).length;
       expect(helperCount).toBe(c.expectHelperCount);
 
-      // R1 invariant cross-check: when expectHelperCount===0, helper symbols
-      // must be ABSOLUTELY absent (not just the function definition — also
-      // _servoLastAngle, servo_speed_helper marker, and any call site).
+      // R1 invariant cross-check: when expectHelperCount===0, every helper
+      // symbol must be ABSOLUTELY absent — function, state struct, task fn,
+      // task handle, xTaskCreate call, the servo_speed_helper marker, and
+      // any old (blocking) helper symbol must also be gone. Keeping the
+      // assertion set tight prevents drift if the helper internals get
+      // tuned in a future refactor.
       if (c.expectHelperCount === 0) {
+        const newSymbols = [
+          '_servoStart',
+          '_servoStates',
+          '_servoBackgroundTask',
+          '_servoTaskHandle',
+          'xTaskCreatePinnedToCore',
+          'servo_speed_helper',
+        ];
+        for (const sym of newSymbols) {
+          expect(result.fullCode).not.toContain(sym);
+        }
+        // Old (Session 137 Phase 3) blocking helper symbols must also be
+        // absent — re-introduction would re-surface the parallel-blocking bug.
         expect(result.fullCode).not.toContain('_servoMoveAt');
         expect(result.fullCode).not.toContain('_servoLastAngle');
-        expect(result.fullCode).not.toContain('servo_speed_helper');
       }
     });
 
@@ -239,9 +262,13 @@ describe('servo_write compile rate matrix — 10/10 (100%) PASS gate (user 要�
       const result = xmlToCpp(buildXml(c.writes));
       for (const call of c.expectedCalls) {
         if (call.usesHelper) {
-          // helper-routed: _servoMoveAt(servo${pin}, ${pin}, String(${angle}).toInt(), ${speed})
-          const pattern = new RegExp(`_servoMoveAt\\(servo${call.pin}, ${call.pin}, String\\([^)]+\\)\\.toInt\\(\\), ${call.speed}\\);`);
+          // helper-routed: _servoStart(servo${pin}, ${pin}, String(${angle}).toInt(), ${speed})
+          // — non-blocking, returns immediately, background task drives the motion
+          const pattern = new RegExp(`_servoStart\\(servo${call.pin}, ${call.pin}, String\\([^)]+\\)\\.toInt\\(\\), ${call.speed}\\);`);
           expect(result.loopCode).toMatch(pattern);
+          // Old blocking call shape must not coexist
+          const oldPattern = new RegExp(`_servoMoveAt\\(servo${call.pin}`);
+          expect(result.loopCode).not.toMatch(oldPattern);
         } else {
           // direct write: servo${pin}.write(String(${angle}).toInt());
           const pattern = new RegExp(`servo${call.pin}\\.write\\(String\\([^)]+\\)\\.toInt\\(\\)\\);`);

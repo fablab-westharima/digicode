@@ -3301,7 +3301,7 @@
   },
   "servoSpeed": {
     "title": "Ajuste de velocidade do servo",
-    "description": "Ajustar a velocidade de movimento do servo (°/seg). 0 = sem limite (comportamento existente).",
+    "description": "Ajustar a velocidade de movimento do servo (°/seg). 0 = sem limite (comportamento existente). Vários servos movem-se em paralelo (as pernas esquerda/direita ou ambos os braços podem mover-se em simultâneo).",
     "currentPreset": "Predefinição atual",
     "settings": "Ajustes de velocidade do servo",
     "settingsDesc": "Configurar a velocidade angular máxima global. 0 = sem limite (velocidade nativa do ESP32Servo).",

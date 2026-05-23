@@ -116,43 +116,79 @@ javascriptGenerator.forBlock['servo_write'] = function(block: Blockly.Block) {
   // Necessary because servo.write() takes an int, but value-input slots accept
   // any block (setCheck removed in c531097 to support BLE-driven angles).
 
-  // 第137 Phase 3: optional rate-limit via getServoSpeed (perPin override →
-  // global default → 0 fallback). speed === 0 path is byte-identical to the
-  // pre-Phase-3 emit — the helper definition is NOT injected, so cpp output
-  // for the default-configured (0) case is fully equivalent to the previous
-  // implementation (R1 mitigation, user requirement: speed=0 = existing cpp
-  // と完全同一出力 + helper は generator.definitions_ に一切含めない).
+  // Session 138 Phase 3 redesign: 非同期並列動作 (FreeRTOS task 経由)。
+  // 旧 implementation (delay() ベース blocking helper、Session 137 Phase 3
+  // commit f658c30) は左右足の同時動作 (2 足歩行ロボットの本来の use case)
+  // で各サーボが順次動作になり実用不能だったため、本 commit で完全に書換。
+  //
+  // R1 invariant 維持: speed === 0 (default) では helper / task / state
+  // struct を一切 emit せず、pre-Phase-3 と byte-identical な direct write
+  // のみ。speed > 0 path では _servoStart() で target を設定し即 return、
+  // 別 FreeRTOS task が 1ms tick で全 active pin を 1° ずつ進める。
+  // user code 側の delay() / blocking 操作とは無干渉で並列動作。
+  //
+  // Thread safety (ESP-IDF + ESP32Servo source verify 済、2026-05-24):
+  //   - 異なる pin = 異なる LEDC channel への concurrent write は safe
+  //     (ESP-IDF 公式 docs)
+  //   - 同 pin への concurrent write は design 上発生しない (task 独占)
+  //   - struct field は volatile + 32-bit aligned word で atomic write
+  //   - attach は setup() 1 回 = task spawn 前 = global state race なし
   const speed = getServoSpeed(isNaN(pinNum) ? undefined : pinNum);
   if (speed <= 0) {
     return `  servo${pin}.write(String(${angle}).toInt());\n`;
   }
 
-  // speed > 0: inject the rate-limit helper once (deduped via definitions_
+  // speed > 0: inject the non-blocking helper once (deduped via definitions_
   // key 'servo_speed_helper' — rule 03 §「Generator output traps」 Trap 6
   // = shared global / shared key), route this call through it. Servo.h is
-  // already #included by servo_attach via `include_servo`; the helper only
-  // adds globals + a function definition.
+  // already #included by servo_attach via `include_servo`; FreeRTOS API
+  // (xTaskCreatePinnedToCore / vTaskDelay) is part of Arduino-ESP32 core
+  // and needs no extra include.
   generator.definitions_['servo_speed_helper'] = `
-/* emits: _servoMoveAt, _servoLastAngle  (第137 Phase 3 サーボスピード rate-limit) */
-int _servoLastAngle[40] = {0};  // indexed by GPIO (ESP32 0-39)
-void _servoMoveAt(Servo &s, int pin, int target, int degPerSec) {
-  if (degPerSec <= 0) { s.write(target); _servoLastAngle[pin] = target; return; }
-  int current = _servoLastAngle[pin];
-  int diff = target - current;
-  int steps = (diff > 0) ? diff : -diff;
-  if (steps == 0) { return; }
-  int stepMs = 1000 / degPerSec;
-  if (stepMs <= 0) stepMs = 1;
-  int dir = (diff > 0) ? 1 : -1;
-  for (int i = 0; i < steps; i++) {
-    current += dir;
-    s.write(current);
-    delay(stepMs);
+/* emits: _servoStart, _servoStates, _servoBackgroundTask, _servoTaskHandle  (Session 138 redesign: 非同期並列動作、FreeRTOS task 経由) */
+struct _ServoState {
+  Servo* servo;
+  volatile int current;
+  volatile int target;
+  volatile int stepMs;
+  volatile unsigned long lastStepMs;
+  volatile bool active;
+};
+static _ServoState _servoStates[40] = {};
+static TaskHandle_t _servoTaskHandle = nullptr;
+
+void _servoBackgroundTask(void* /*param*/) {
+  for (;;) {
+    unsigned long now = millis();
+    for (int pin = 0; pin < 40; pin++) {
+      _ServoState& st = _servoStates[pin];
+      if (!st.active || st.servo == nullptr) continue;
+      if (st.current == st.target) { st.active = false; continue; }
+      if (now - st.lastStepMs < (unsigned long)st.stepMs) continue;
+      st.current += (st.current < st.target) ? 1 : -1;
+      st.servo->write(st.current);
+      st.lastStepMs = now;
+    }
+    vTaskDelay(1 / portTICK_PERIOD_MS);
   }
-  _servoLastAngle[pin] = target;
+}
+
+void _servoStart(Servo& s, int pin, int target, int degPerSec) {
+  if (degPerSec <= 0) { s.write(target); return; }
+  _ServoState& st = _servoStates[pin];
+  st.servo = &s;
+  st.target = target;
+  int sm = 1000 / degPerSec;
+  st.stepMs = (sm > 0) ? sm : 1;
+  st.lastStepMs = millis();
+  st.active = true;
+  if (_servoTaskHandle == nullptr) {
+    xTaskCreatePinnedToCore(_servoBackgroundTask, "servoTask",
+                            2048, nullptr, 1, &_servoTaskHandle, 1);
+  }
 }
 `;
-  return `  _servoMoveAt(servo${pin}, ${pin}, String(${angle}).toInt(), ${speed});\n`;
+  return `  _servoStart(servo${pin}, ${pin}, String(${angle}).toInt(), ${speed});\n`;
 };
 
 pythonGenerator.forBlock['servo_write'] = function(block: Blockly.Block) {

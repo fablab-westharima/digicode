@@ -3526,7 +3526,7 @@
   },
   "servoSpeed": {
     "title": "Servo Speed Settings",
-    "description": "Adjust servo movement speed (°/sec). 0 = unlimited (legacy behavior).",
+    "description": "Adjust servo movement speed (°/sec). 0 = unlimited (legacy behavior). Multiple servos move in parallel (left/right legs or both arms can sweep simultaneously).",
     "currentPreset": "Current Preset",
     "settings": "Servo Speed Settings",
     "settingsDesc": "Configure the global maximum angular speed. 0 = unlimited (ESP32Servo native speed).",
