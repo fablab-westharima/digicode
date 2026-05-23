@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import i18n from 'i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { BookOpen, Wrench, Lightbulb, Blocks, HelpCircle, Cpu, Server, Wifi, Home, Sparkles } from 'lucide-react';
+import { ArrowLeft, BookOpen, Wrench, Lightbulb, Blocks, HelpCircle, Cpu, Server, Wifi, Home, Sparkles } from 'lucide-react';
 import { LocaleSelector } from '@/components/common/LocaleSelector';
 
 interface DocItem {
@@ -142,6 +143,16 @@ export function DocsPage() {
       <header className="bg-[#161B22]/80 backdrop-blur-sm border-b border-[#2E333D] sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            {/* 戻り導線 (第137 Task 1、AboutShell pattern、`memory:ui_placement_implies_relation` 適用):
+                Link to="/" で SPA 経由エディタ復帰、EditorPage onDocs `window.open('/docs','_blank')`
+                由来の new-tab + 直 URL access 両方で uniform 動作 (navigate(-1) は new-tab 履歴空で
+                no-op になるため `<Link to="/">` 採用)。i18n key `common.back` は 5 lang 既存。 */}
+            <Link to="/">
+              <Button variant="ghost" size="sm" className="text-[#8B949E] hover:text-[#E6EDF3]">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                {t('common.back')}
+              </Button>
+            </Link>
             <BookOpen className="w-6 h-6 text-teal-400" />
             <h1 className="text-xl font-bold text-[#E6EDF3]">{t('home.docs')}</h1>
           </div>
