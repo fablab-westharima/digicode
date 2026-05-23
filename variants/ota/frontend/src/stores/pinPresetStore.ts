@@ -22,6 +22,10 @@ export interface PinServoConfig {
   pin: number;
   minPulse: number;
   maxPulse: number;
+  // ピンごとの速度オーバーライド (°/秒)。
+  // undefined = 親の global speedDegPerSec に従う / 0 = 明示的に unlimited (native ESP32Servo write 速度) /
+  // >0 = 増分 write + delay で rate-limit (servoBlocks.ts 側 generator が helper 経由 emit、第137 Phase 3)。
+  speedDegPerSec?: number;
 }
 
 export interface ServoConfig {
@@ -29,6 +33,10 @@ export interface ServoConfig {
   minPulse: number;        // 最小パルス幅 (μs) - 一括設定
   maxPulse: number;        // 最大パルス幅 (μs) - 一括設定
   perPinConfigs?: PinServoConfig[];  // ピンごとの個別設定（オプション）
+  // 全ピン共通の速度デフォルト (°/秒)。0 = unlimited (default = 既存 ESP32Servo native 挙動と完全互換)、
+  // >0 で servoBlocks.ts servo_write generator が rate-limit helper 経由 emit (第137 Phase 3)。
+  // 第136 §5 Plan 58 S13 pattern を踏襲 = 0 default で既存 cpp 形状不変、新 user 操作時のみ behavior 変化。
+  speedDegPerSec?: number;
 }
 
 /**
@@ -149,6 +157,8 @@ const DEFAULT_SERVO_CONFIG: ServoConfig = {
   servoType: '180',
   minPulse: 500,
   maxPulse: 2400,
+  // 0 = unlimited / native ESP32Servo write 速度 = 既存 cpp 形状と完全互換 (第137 Phase 1 設計、helper 注入 skip 条件)。
+  speedDegPerSec: 0,
 };
 
 const DEFAULT_PRESET: PinPreset = {
@@ -334,7 +344,7 @@ export const usePinPresetStore = create<PinPresetStore>()(
     }),
     {
       name: 'pin-preset-storage',
-      version: 8,
+      version: 9,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Migration handles various historic state structures
       migrate: (persistedState: any, version: number) => {
         let state = persistedState;
@@ -482,6 +492,26 @@ export const usePinPresetStore = create<PinPresetStore>()(
 
             return { ...preset, pins };
           }) || [DEFAULT_PRESET];
+
+          state = {
+            ...state,
+            presets,
+          };
+        }
+
+        // バージョン9: サーボ速度制御 (°/秒) を追加 (第137 Phase 1、Option A settings-only)
+        // global speedDegPerSec を servoConfig に注入、既存 perPinConfigs は不変
+        // (perPin.speedDegPerSec undefined = global fallback の意味維持、user が ServoSpeedDialog で
+        // 明示的に override 設定した時のみ field present)。default=0 = unlimited で既存 cpp 完全互換。
+        if (version < 9) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Historic state has varying shapes
+          const presets = state?.presets?.map((preset: any) => ({
+            ...preset,
+            servoConfig: {
+              ...preset.servoConfig,
+              speedDegPerSec: preset.servoConfig?.speedDegPerSec ?? 0,
+            },
+          })) || [DEFAULT_PRESET];
 
           state = {
             ...state,

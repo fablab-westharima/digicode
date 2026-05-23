@@ -115,6 +115,30 @@ export function getServoPulseWidth(pin?: number) {
 }
 
 /**
+ * サーボの速度制御 (°/秒) を取得 (第137 Phase 1、Option A settings-only)
+ *
+ * 解決順序: perPin override (`config.perPinConfigs[].speedDegPerSec`、明示時のみ field 存在)
+ *           → global default (`config.speedDegPerSec`)
+ *           → 0 fallback (legacy state、v9 migrate 前)
+ *
+ * 戻り値:
+ *   0 = unlimited / native ESP32Servo write 速度 = 既存 cpp 形状と完全互換、
+ *       servoBlocks.ts servo_write generator は helper 注入を skip (`if (speed === 0)` early return)
+ *   >0 = 増分 write + delay で rate-limit、generator は `_servoMoveAt` helper 経由 emit (第137 Phase 3)
+ */
+export function getServoSpeed(pin?: number): number {
+  const config = getServoConfig();
+  // ピン番号指定時、個別 speed override を検索
+  if (pin !== undefined && config.perPinConfigs?.length) {
+    const perPin = config.perPinConfigs.find(c => c.pin === pin);
+    if (perPin && perPin.speedDegPerSec !== undefined) {
+      return perPin.speedDegPerSec;
+    }
+  }
+  return config.speedDegPerSec ?? 0;
+}
+
+/**
  * DCモーターのピン番号を取得
  */
 export function getMotorPins() {
