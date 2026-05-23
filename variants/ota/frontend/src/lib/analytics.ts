@@ -70,8 +70,15 @@ export function initGA(): boolean {
 
   window.__GA_ID__ = id;
   window.dataLayer = window.dataLayer || [];
-  window.gtag = function (...args: unknown[]) {
-    window.dataLayer!.push(args);
+  // Fix C (Session 136): match Google's official gtag boilerplate
+  // byte-for-byte. The earlier rest-spread shim pushed a real `Array`
+  // to dataLayer; gtag.js's iterator works on array-like shapes in
+  // principle, but matching the documented `IArguments` shape removes
+  // any silent-incompatibility surface and aligns with the example
+  // GA4 docs publish at developers.google.com/tag-platform/gtagjs.
+  window.gtag = function gtag() {
+    // eslint-disable-next-line prefer-rest-params
+    window.dataLayer!.push(arguments);
   };
 
   const s = document.createElement('script');
@@ -80,12 +87,18 @@ export function initGA(): boolean {
   document.head.appendChild(s);
 
   window.gtag('js', new Date());
+  // Fix A (Session 136): pass page_location + page_title explicitly on
+  // the boot config. With `send_page_view: false` we forgo gtag.js's
+  // auto page_view, and reports surfaced that the library's automatic
+  // URL/title enrichment can be incomplete in that mode — leaving the
+  // GA4 data stream stuck on the "no data collected" verification
+  // warning even when the script loads. The SPA route listener in
+  // src/App.tsx re-supplies these fields on every route transition.
   window.gtag('config', id, {
     anonymize_ip: true,
-    // SPA route listener in src/App.tsx fires page_view on every
-    // location change, so we suppress the implicit boot-time one to
-    // avoid double-counting the landing route.
     send_page_view: false,
+    page_location: window.location.href,
+    page_title: document.title,
   });
 
   return true;

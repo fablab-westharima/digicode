@@ -88,15 +88,48 @@ describe('initGA — VITE_GA_MEASUREMENT_ID loader', () => {
   it('queues js + config calls into dataLayer (suppresses boot page_view)', () => {
     vi.stubEnv('VITE_GA_MEASUREMENT_ID', 'G-TESTID00');
     initGA();
-    // dataLayer should have 2 entries: ['js', Date] and ['config', id, opts]
+    // dataLayer should have 2 entries: ['js', Date] and
+    // ['config', id, opts]. Each entry is an IArguments-shaped value
+    // (see the dedicated push-shape test below), but indexed access
+    // works the same way Google's gtag.js iterator expects.
     expect(window.dataLayer?.length).toBe(2);
-    const second = (window.dataLayer![1] as unknown[]);
+    const second = window.dataLayer![1] as IArguments;
     expect(second[0]).toBe('config');
     expect(second[1]).toBe('G-TESTID00');
+    // Fix A (Session 136): config call must include page_location +
+    // page_title so the GA4 data stream "no data collected" warning
+    // clears even with send_page_view:false. anonymize_ip:true is
+    // unchanged. The SPA listener in App.tsx re-supplies page_location
+    // + page_title on every route transition.
     expect(second[2]).toMatchObject({
       anonymize_ip: true,
       send_page_view: false,
     });
+    const opts = second[2] as Record<string, unknown>;
+    expect(typeof opts.page_location).toBe('string');
+    expect(typeof opts.page_title).toBe('string');
+  });
+
+  it('pushes IArguments-shaped entries to dataLayer (Fix C — Google boilerplate parity)', () => {
+    // Fix C (Session 136): the earlier rest-spread shim pushed real
+    // Array objects to dataLayer; matching Google's official boiler-
+    // plate (`function gtag(){dataLayer.push(arguments);}`) eliminates
+    // a silent-incompatibility surface where gtag.js's internal
+    // iterator might distinguish Array from IArguments. The runtime
+    // check below is the explicit shape contract: NOT Array, but has
+    // `length` + numeric indices.
+    vi.stubEnv('VITE_GA_MEASUREMENT_ID', 'G-TESTID00');
+    initGA();
+    const initialLength = window.dataLayer!.length;
+    window.gtag!('event', 'test_event', { foo: 'bar' });
+
+    const pushed = window.dataLayer![initialLength];
+    expect(Array.isArray(pushed)).toBe(false);
+    const args = pushed as IArguments;
+    expect(args.length).toBe(3);
+    expect(args[0]).toBe('event');
+    expect(args[1]).toBe('test_event');
+    expect(args[2]).toMatchObject({ foo: 'bar' });
   });
 });
 

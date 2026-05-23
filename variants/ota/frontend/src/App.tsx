@@ -39,15 +39,22 @@ import { ToastContainer } from '@/components/common/Toast';
  * Mounted inside <BrowserRouter> so `useLocation()` is available, and
  * outside <Routes> so it survives every route transition. The boot-
  * time `gtag('config', ..., { send_page_view: false })` call in
- * index.html suppresses the implicit initial page_view so this hook
- * is the single source of page_view events; the first useEffect run
- * after mount produces the equivalent initial event for the landing
- * route.
+ * `initGA()` (src/lib/analytics.ts) suppresses the implicit initial
+ * page_view so this hook is the single source of page_view events;
+ * the first useEffect run after mount produces the equivalent
+ * initial event for the landing route.
  *
- * When VITE_GA_MEASUREMENT_ID is unset the gtag shim is never
- * installed (index.html startsWith('%') guard), `window.gtag` stays
- * undefined, and the effect's inner branch is skipped — no error,
- * no network request.
+ * Fix A (Session 136): every event includes the full GA4 page_view
+ * payload — `page_path`, `page_location`, and `page_title`. Sending
+ * `page_path` alone left the GA4 data stream stuck on the "no data
+ * collected" verification warning even after gtag.js loaded; gtag.js's
+ * automatic URL/title enrichment is unreliable under `send_page_view:
+ * false`, so we provide the canonical session signal explicitly.
+ *
+ * When VITE_GA_MEASUREMENT_ID is unset (or set to an invalid shape),
+ * `initGA()` short-circuits before installing `window.gtag` /
+ * `window.__GA_ID__`, so the guard below is the single safe-fallback
+ * gate — no error, no network request.
  */
 function GAPageView() {
   const location = useLocation();
@@ -55,10 +62,13 @@ function GAPageView() {
     if (
       typeof window !== 'undefined' &&
       window.gtag &&
-      window.__GA_ID__ &&
-      !window.__GA_ID__.startsWith('%')
+      window.__GA_ID__
     ) {
-      window.gtag('event', 'page_view', { page_path: location.pathname });
+      window.gtag('event', 'page_view', {
+        page_path: location.pathname,
+        page_location: window.location.href,
+        page_title: document.title,
+      });
     }
   }, [location.pathname]);
   return null;
