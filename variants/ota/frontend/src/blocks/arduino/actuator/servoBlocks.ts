@@ -16,7 +16,7 @@
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
 import { pythonGenerator } from 'blockly/python';
-import { getServoPins, getServoPulseWidth } from '@/utils/pinHelper';
+import { getServoPins, getServoPulseWidth, getServoSpeed } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -107,6 +107,7 @@ Blockly.Blocks['servo_write'] = {
 
 javascriptGenerator.forBlock['servo_write'] = function(block: Blockly.Block) {
   const pin = block.getFieldValue('PIN');
+  const pinNum = parseInt(pin, 10);
   const angle = generator.valueToCode(block, 'ANGLE', generator.ORDER_ATOMIC) || '90';
   // Wrap in `String(${expr}).toInt()` so any input type compiles in Arduino:
   //   - numeric literal `90`         → `String(90).toInt()` → 90
@@ -114,7 +115,44 @@ javascriptGenerator.forBlock['servo_write'] = function(block: Blockly.Block) {
   //   - boolean / variable           → coerced through String() constructor
   // Necessary because servo.write() takes an int, but value-input slots accept
   // any block (setCheck removed in c531097 to support BLE-driven angles).
-  return `  servo${pin}.write(String(${angle}).toInt());\n`;
+
+  // 第137 Phase 3: optional rate-limit via getServoSpeed (perPin override →
+  // global default → 0 fallback). speed === 0 path is byte-identical to the
+  // pre-Phase-3 emit — the helper definition is NOT injected, so cpp output
+  // for the default-configured (0) case is fully equivalent to the previous
+  // implementation (R1 mitigation, user requirement: speed=0 = existing cpp
+  // と完全同一出力 + helper は generator.definitions_ に一切含めない).
+  const speed = getServoSpeed(isNaN(pinNum) ? undefined : pinNum);
+  if (speed <= 0) {
+    return `  servo${pin}.write(String(${angle}).toInt());\n`;
+  }
+
+  // speed > 0: inject the rate-limit helper once (deduped via definitions_
+  // key 'servo_speed_helper' — rule 03 §「Generator output traps」 Trap 6
+  // = shared global / shared key), route this call through it. Servo.h is
+  // already #included by servo_attach via `include_servo`; the helper only
+  // adds globals + a function definition.
+  generator.definitions_['servo_speed_helper'] = `
+/* emits: _servoMoveAt, _servoLastAngle  (第137 Phase 3 サーボスピード rate-limit) */
+int _servoLastAngle[40] = {0};  // indexed by GPIO (ESP32 0-39)
+void _servoMoveAt(Servo &s, int pin, int target, int degPerSec) {
+  if (degPerSec <= 0) { s.write(target); _servoLastAngle[pin] = target; return; }
+  int current = _servoLastAngle[pin];
+  int diff = target - current;
+  int steps = (diff > 0) ? diff : -diff;
+  if (steps == 0) { return; }
+  int stepMs = 1000 / degPerSec;
+  if (stepMs <= 0) stepMs = 1;
+  int dir = (diff > 0) ? 1 : -1;
+  for (int i = 0; i < steps; i++) {
+    current += dir;
+    s.write(current);
+    delay(stepMs);
+  }
+  _servoLastAngle[pin] = target;
+}
+`;
+  return `  _servoMoveAt(servo${pin}, ${pin}, String(${angle}).toInt(), ${speed});\n`;
 };
 
 pythonGenerator.forBlock['servo_write'] = function(block: Blockly.Block) {
