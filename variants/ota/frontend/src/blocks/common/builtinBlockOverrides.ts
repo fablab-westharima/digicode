@@ -61,7 +61,14 @@ javascriptGenerator.forBlock['controls_for'] = function (block: Blockly.Block) {
   const to = javascriptGenerator.valueToCode(block, 'TO', Order.ASSIGNMENT) || '0';
   const by = javascriptGenerator.valueToCode(block, 'BY', Order.ASSIGNMENT) || '1';
   const branch = javascriptGenerator.statementToCode(block, 'DO');
-  return `for (int ${variable} = ${from}; ${variable} <= ${to}; ${variable} += ${by}) {\n${branch}}\n`;
+  // FROM / TO / BY are value inputs that may be runtime expressions
+  // (variables_get, sensor reads, math operations), so direction can't
+  // always be decided at codegen time. Compute the comparator at runtime
+  // via a ternary on the sign of `by` — descending loops (by < 0) use
+  // `>=`, ascending (by >= 0) uses `<=`. Mirrors the canonical pattern
+  // already used by servo_sweep (servoBlocks.ts:256). by===0 produces an
+  // infinite loop, matching Blockly's stock JS generator semantics.
+  return `for (int ${variable} = ${from}; ((${by}) >= 0) ? ${variable} <= ${to} : ${variable} >= ${to}; ${variable} += ${by}) {\n${branch}}\n`;
 };
 
 javascriptGenerator.forBlock['controls_repeat_ext'] = function (block: Blockly.Block) {

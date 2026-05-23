@@ -95,7 +95,12 @@ describe('xmlToCpp — built-in block overrides (BUG-060 / BUG-061)', () => {
       '<block type="arduino_loop" x="50" y="350"></block>' +
       '</xml>';
     const out = xmlToCpp(xml);
-    expect(out.setupCode).toMatch(/for \(int i = 0; i <= 5; i \+= 1\)/);
+    // Session 138 hotfix: controls_for now emits a runtime ternary so
+    // descending loops (by < 0) pick `>=` instead of the hardcoded `<=`
+    // that silently broke them. Ascending case (by=1 here) still takes
+    // the `<=` branch at runtime via the ternary. See builtinBlockOverrides.ts
+    // and rule 03 §「Generator output traps」 Trap 7.
+    expect(out.setupCode).toMatch(/for \(int i = 0; \(\(1\) >= 0\) \? i <= 5 : i >= 5; i \+= 1\)/);
     expect(out.globals).toContain('int i = 0;');
     // No JS var keyword anywhere — Blockly's hoist was rewritten and the
     // controls_for body uses an inner `int` declaration.
