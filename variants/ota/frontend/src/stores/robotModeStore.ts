@@ -160,10 +160,10 @@ export const useRobotModeStore = create<RobotModeState>()(
         }
         const state = persistedState as { mode?: string };
         const modeMap: Record<string, RobotMode> = {
-          // OTTO 系 (version 1 から継承、2027-04-21 sunset)
-          otto_bipedal: 'robotics',
-          otto_wheel: 'robotics',
-          otto_ninja: 'robotics',
+          // Phase B-4 (Session 146、T5 §J 痕跡解消): OTTO 系 mode key (otto_bipedal/otto_wheel/otto_ninja)
+          // を migrate map から削除。理由 = case 23 incident E (OttoDIYLib derivation working tree 完全消滅、
+          // Phase A-η + B-2) で OTTO 言及自体が legacy clean state。1 年 sunset 期限を待たず即時削除可能
+          // (legacy data carry-over は他 mode 名へ fallback、本 migrate fn で未知 mode → default 'robotics' 化)。
           micromouse: 'robotics',
           line_trace: 'robotics',
           // Pre-Session-104 use-case modes → function-category modes
