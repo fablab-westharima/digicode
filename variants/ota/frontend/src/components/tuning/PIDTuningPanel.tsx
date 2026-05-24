@@ -3,7 +3,7 @@
  * Real-time adjustment of PID parameters with presets
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +27,9 @@ import {
 import { usePIDTuningStore } from '@/stores/pidTuningStore';
 import { useSerialStore } from '@/stores/serialStore';
 import { useWifiStore } from '@/stores/wifiStore';
+import { bluetoothService } from '@/services/bluetoothService';
+import { createPidTransport } from '@/services/pid/PidTransportFactory';
+import type { IPidTransport } from '@/services/pid/IPidTransport';
 import { Save, RotateCcw, Send, Trash2 } from 'lucide-react';
 
 interface PIDTuningPanelProps {
@@ -43,23 +46,31 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
     reset
   } = usePIDTuningStore();
 
-  const { send: serialSend, status: serialStatus } = useSerialStore();
-  const { status: wifiStatus } = useWifiStore();
+  const serialStatus = useSerialStore(state => state.status);
+  const wifiStatus = useWifiStore(state => state.status);
 
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [presetName, setPresetName] = useState('');
   const [presetDescription, setPresetDescription] = useState('');
 
-  // Check if any connection is available
-  const isConnected = serialStatus === 'connected' ||
-                      wifiStatus === 'connected';
+  // Phase D-2 (Session 148、 D-new-6 (B)、 case 23 incident F transport-side 解消):
+  // 接続方式自動判定 = WiFi → USB → BLE priority (trim と同一設計 pattern)。
+  // wifiStatus / serialStatus 変化で再評価、 bluetoothService は plain class のため
+  // isConnected snapshot を dep に含めることで render-time 再評価。
+  const bleConnected = bluetoothService.isConnected;
+  const transport: IPidTransport | null = useMemo(
+    () => createPidTransport(),
+    [wifiStatus, serialStatus, bleConnected]
+  );
+  const isConnected = transport !== null;
 
-  // Send PID parameters to ESP32
+  // Send PID parameters to ESP32 via current transport (HTTP/Serial/BLE)
   const sendToESP32 = async () => {
-    const command = `PID:${kp},${ki},${kd}\n`;
-
-    if (serialStatus === 'connected') {
-      await serialSend(command);
+    if (!transport) return;
+    try {
+      await transport.setPid('default', kp, ki, kd);
+    } catch (err) {
+      console.error('Failed to send PID:', err);
     }
   };
 
