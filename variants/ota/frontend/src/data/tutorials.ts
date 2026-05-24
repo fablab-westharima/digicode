@@ -262,7 +262,7 @@ export const tutorials: Tutorial[] = [
   <block type="arduino_loop" x="50" y="180">
     <statement name="LOOP">
       <block type="biped_gesture">
-        <field name="GESTURE">Happy</field>
+        <field name="GESTURE">GESTURE_CHEER</field>
         <next>
           <block type="esp32_delay">
             <value name="TIME">
@@ -272,7 +272,7 @@ export const tutorials: Tutorial[] = [
             </value>
             <next>
               <block type="biped_gesture">
-                <field name="GESTURE">Sad</field>
+                <field name="GESTURE">GESTURE_SLEEPY</field>
                 <next>
                   <block type="esp32_delay">
                     <value name="TIME">
@@ -282,7 +282,7 @@ export const tutorials: Tutorial[] = [
                     </value>
                     <next>
                       <block type="biped_gesture">
-                        <field name="GESTURE">Victory</field>
+                        <field name="GESTURE">GESTURE_SURPRISE</field>
                         <next>
                           <block type="esp32_delay">
                             <value name="TIME">
@@ -308,7 +308,7 @@ export const tutorials: Tutorial[] = [
       {
         id: 'gesture-1',
         title: 'ジェスチャー',
-        content: 'Humanoidが「ハッピー」→「悲しい」→「勝利」のジェスチャーを順番に表現します。',
+        content: 'Humanoidが「歓喜」→「眠い」→「驚き」のジェスチャーを順番に表現します。',
         position: 'center',
       },
     ],
@@ -397,7 +397,7 @@ export const tutorials: Tutorial[] = [
   <block type="arduino_loop" x="50" y="180">
     <statement name="LOOP">
       <block type="buzzer_play_preset">
-        <field name="SOUND">S_superHappy</field>
+        <field name="PRESET">BEEP_FANFARE</field>
         <next>
           <block type="biped_dance_blocking">
             <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
@@ -420,7 +420,7 @@ export const tutorials: Tutorial[] = [
       {
         id: 'sound-1',
         title: '音声とダンス',
-        content: 'Humanoidが「Super Happy」音声を発しながらダンスを繰り返します。',
+        content: 'Humanoidが「ファンファーレ」音声を発しながらダンスを繰り返します。',
         position: 'center',
       },
     ],
@@ -474,7 +474,7 @@ export const tutorials: Tutorial[] = [
         </value>
         <statement name="DO0">
           <block type="biped_gesture">
-            <field name="GESTURE">Confused</field>
+            <field name="GESTURE">GESTURE_THINKING</field>
             <next>
               <block type="biped_turn_blocking">
                 <value name="STEPS"><block type="math_number"><field name="NUM">3</field></block></value>

@@ -83,7 +83,7 @@ const overrides: Record<string, LocaleOverride> = {
         steps: {
           'gesture-1': {
             title: 'Gestures',
-            content: 'The humanoid performs "Happy" → "Sad" → "Victory" gestures in sequence.',
+            content: 'The humanoid performs "Cheer" → "Sleepy" → "Surprise" gestures in sequence.',
           },
         },
       },
@@ -103,7 +103,7 @@ const overrides: Record<string, LocaleOverride> = {
         steps: {
           'sound-1': {
             title: 'Sound and Dance',
-            content: 'The humanoid plays the "Super Happy" sound while performing a dance loop.',
+            content: 'The humanoid plays the "Fanfare" sound while performing a dance loop.',
           },
         },
       },
@@ -171,7 +171,7 @@ const overrides: Record<string, LocaleOverride> = {
         steps: {
           'gesture-1': {
             title: 'Gestos',
-            content: 'El robot realiza "Feliz" → "Triste" → "Victoria" en secuencia.',
+            content: 'El robot realiza "Animar" → "Somnoliento" → "Sorpresa" en secuencia.',
           },
         },
       },
@@ -191,7 +191,7 @@ const overrides: Record<string, LocaleOverride> = {
         steps: {
           'sound-1': {
             title: 'Sonido y baile',
-            content: 'El robot reproduce el sonido "Super Happy" mientras realiza un bucle de baile.',
+            content: 'El robot reproduce el sonido "Fanfarria" mientras realiza un bucle de baile.',
           },
         },
       },
@@ -259,7 +259,7 @@ const overrides: Record<string, LocaleOverride> = {
         steps: {
           'gesture-1': {
             title: 'Gestos',
-            content: 'O robot realiza "Feliz" → "Triste" → "Vitória" em sequência.',
+            content: 'O robot realiza "Aclamar" → "Sonolento" → "Surpresa" em sequência.',
           },
         },
       },
@@ -279,7 +279,7 @@ const overrides: Record<string, LocaleOverride> = {
         steps: {
           'sound-1': {
             title: 'Som e dança',
-            content: 'O robot reproduz o som "Super Happy" enquanto executa um loop de dança.',
+            content: 'O robot reproduz o som "Fanfarra" enquanto executa um loop de dança.',
           },
         },
       },
@@ -347,7 +347,7 @@ const overrides: Record<string, LocaleOverride> = {
         steps: {
           'gesture-1': {
             title: '動作',
-            content: 'Humanoid 依序表現「快樂」→「悲傷」→「勝利」。',
+            content: 'Humanoid 依序表現「歡呼」→「想睡」→「驚訝」。',
           },
         },
       },
@@ -367,7 +367,7 @@ const overrides: Record<string, LocaleOverride> = {
         steps: {
           'sound-1': {
             title: '聲音與舞蹈',
-            content: '機器人發出「Super Happy」音效並重複跳舞。',
+            content: '機器人發出「號角聲」音效並重複跳舞。',
           },
         },
       },
