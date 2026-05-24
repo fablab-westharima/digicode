@@ -605,17 +605,70 @@ function parseAllBlockMeta(
       colorConstants[ccm[1]] = ccm[2];
     }
 
-    // Split on each block registration
+    // Split on each block registration (inline form: Blockly.Blocks['name'] = {...})
+    // Phase C (Session 147): body extraction switched from "until next inline block start"
+    // to brace-balanced. The old logic stopped at the next `\nBlockly.Blocks['`, which means
+    // when an inline block is followed by factory functions before the next inline block, the
+    // body would include all those factory bodies — and parseBlockMeta then attributed every
+    // appendValueInput/Field from the factory bodies to the inline block (e.g.
+    // biped_home_blocking would gain 5 STEPS valueInputs and 6 dropdown fields belonging to
+    // makeWalkBlock/makeTurnBlock/makeTimesBlock/makeBendBlock/makeMoonwalkBlock). Brace-
+    // balanced extraction stops at the closing `};` of the block-config object itself.
     const re = /Blockly\.Blocks\['(\w+)'\]\s*=\s*\{/g;
     let m: RegExpExecArray | null;
     while ((m = re.exec(content)) !== null) {
       const blockType = m[1];
-      const bodyStart = m.index;
-      const nextStart = content.indexOf("\nBlockly.Blocks['", bodyStart + 10);
-      const body = nextStart !== -1
-        ? content.substring(bodyStart, nextStart)
-        : content.substring(bodyStart);
+      const openBraceIdx = content.indexOf('{', m.index);
+      let depth = 0;
+      let closeIdx = -1;
+      for (let i = openBraceIdx; i < content.length; i++) {
+        if (content[i] === '{') depth++;
+        else if (content[i] === '}') {
+          depth--;
+          if (depth === 0) { closeIdx = i + 1; break; }
+        }
+      }
+      if (closeIdx === -1) continue;
+      const body = content.substring(m.index, closeIdx);
       map.set(blockType, parseBlockMeta(body, colorConstants, i18nMessages, content));
+    }
+
+    // Phase C (Session 147): factory form support
+    //   function makeXxxBlock(blockType: string, ...) { Blockly.Blocks[blockType] = {...}; }
+    //   makeXxxBlock('biped_walk_blocking', ...);
+    // The factory body contains the actual appendValueInput / FieldDropdown / setCheck etc.;
+    // each call site materializes one block type. We extract the factory body once and
+    // re-use it for every call site to recover field/valueInput schemas that the inline
+    // regex above cannot reach. Without this pass, blocks defined in biped/morpher/rover/
+    // stepper *Blocks.ts via factory functions have empty fields/valueInputs in catalog =
+    // sample audits flag every reference as `has no field "X"` / `has no <value name="Y">`.
+    const factoryDefRe = /^function\s+(\w+)\s*\([^)]*\)\s*\{/gm;
+    let fdm: RegExpExecArray | null;
+    while ((fdm = factoryDefRe.exec(content)) !== null) {
+      const fnName = fdm[1];
+      const bodyStart = fdm.index;
+      // Find matching close brace by depth counting
+      let depth = 0;
+      let bodyEnd = -1;
+      for (let i = content.indexOf('{', bodyStart); i < content.length; i++) {
+        if (content[i] === '{') depth++;
+        else if (content[i] === '}') {
+          depth--;
+          if (depth === 0) { bodyEnd = i + 1; break; }
+        }
+      }
+      if (bodyEnd === -1) continue;
+      const fnBody = content.substring(bodyStart, bodyEnd);
+      // Only treat as block-factory if body contains Blockly.Blocks[blockType] assignment
+      if (!/Blockly\.Blocks\[blockType\]\s*=\s*\{/.test(fnBody)) continue;
+      // Find every call site: fnName('block_type_name', ...)
+      const callRe = new RegExp(`\\b${fnName}\\s*\\(\\s*['"](\\w+)['"]`, 'g');
+      let cm: RegExpExecArray | null;
+      while ((cm = callRe.exec(content)) !== null) {
+        const blockType = cm[1];
+        if (map.has(blockType)) continue; // inline form took precedence
+        map.set(blockType, parseBlockMeta(fnBody, colorConstants, i18nMessages, content));
+      }
     }
   }
   return map;

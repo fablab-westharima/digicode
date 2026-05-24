@@ -134,15 +134,26 @@ function extractSourceShapes(): Map<string, SourceShape> {
 
   for (const file of getBlockFiles(BLOCKS_DIR)) {
     const content = fs.readFileSync(file, 'utf-8');
+    // Phase C (Session 147): brace-balanced body extraction (was: stop at next inline
+    // block start, which incorrectly pulled in interleaved factory function bodies and
+    // attributed their fields/valueInputs to the preceding inline block). Mirror of the
+    // same fix applied to generate-ai-block-catalog.ts so the two parsers stay aligned.
     const re = /Blockly\.Blocks\['(\w+)'\]\s*=\s*\{/g;
     let m: RegExpExecArray | null;
     while ((m = re.exec(content)) !== null) {
       const blockType = m[1];
-      const bodyStart = m.index;
-      const nextStart = content.indexOf("\nBlockly.Blocks['", bodyStart + 10);
-      const body = nextStart !== -1
-        ? content.substring(bodyStart, nextStart)
-        : content.substring(bodyStart);
+      const openBraceIdx = content.indexOf('{', m.index);
+      let depth = 0;
+      let closeIdx = -1;
+      for (let i = openBraceIdx; i < content.length; i++) {
+        if (content[i] === '{') depth++;
+        else if (content[i] === '}') {
+          depth--;
+          if (depth === 0) { closeIdx = i + 1; break; }
+        }
+      }
+      if (closeIdx === -1) continue;
+      const body = content.substring(m.index, closeIdx);
 
       // Mirrors generate-ai-block-catalog.ts parseBlockMeta so the two stay aligned.
       // Why per-class regexes instead of a single greedy one: FieldDropdown's inline array
@@ -174,6 +185,66 @@ function extractSourceShapes(): Map<string, SourceShape> {
         hasOutput: /setOutput\(true/.test(body),
         fields, valueInputs, statementInputs,
       });
+    }
+
+    // Phase C (Session 147): factory form support — mirror of the extension applied to
+    // generate-ai-block-catalog.ts. The new block files (bipedBlocks/morpherBlocks/
+    // roverBlocks/stepperBlocks) define many block types via factory functions:
+    //   function makeXxxBlock(blockType: string, ...) { Blockly.Blocks[blockType] = {...}; }
+    //   makeXxxBlock('biped_walk_blocking', ...);
+    // Without this pass, the source-shape map misses every factory-produced block and
+    // checkCatalogVsSource reports them as `in catalog but not found in src/blocks/**`.
+    const factoryDefRe = /^function\s+(\w+)\s*\([^)]*\)\s*\{/gm;
+    let fdm: RegExpExecArray | null;
+    while ((fdm = factoryDefRe.exec(content)) !== null) {
+      const fnName = fdm[1];
+      const bodyStart = fdm.index;
+      let depth = 0;
+      let bodyEnd = -1;
+      for (let i = content.indexOf('{', bodyStart); i < content.length; i++) {
+        if (content[i] === '{') depth++;
+        else if (content[i] === '}') {
+          depth--;
+          if (depth === 0) { bodyEnd = i + 1; break; }
+        }
+      }
+      if (bodyEnd === -1) continue;
+      const fnBody = content.substring(bodyStart, bodyEnd);
+      if (!/Blockly\.Blocks\[blockType\]\s*=\s*\{/.test(fnBody)) continue;
+
+      // Parse fields/inputs from the factory body (one parse, reused per call)
+      const factoryFields = new Set<string>();
+      let ffm: RegExpExecArray | null;
+      const numRe2      = /new Blockly\.FieldNumber\([^)]*\),\s*'(\w+)'/g;
+      const ddInlineRe2 = /new Blockly\.FieldDropdown\(\[[\s\S]*?\]\)(?:\s+as\s+[^,]+?)?,\s*'(\w+)'/g;
+      const ddIdentRe2  = /new Blockly\.FieldDropdown\([a-zA-Z_]\w*\)(?:\s+as\s+[^,]+?)?,\s*'(\w+)'/g;
+      const textRe2     = /new Blockly\.FieldTextInput\(['"][^'"]*['"]\),\s*'(\w+)'/g;
+      const cbRe2       = /new Blockly\.FieldCheckbox\([^)]*\),\s*'(\w+)'/g;
+      const angRe2      = /new Blockly\.FieldAngle\([^)]*\),\s*'(\w+)'/g;
+      for (const re of [numRe2, ddInlineRe2, ddIdentRe2, textRe2, cbRe2, angRe2]) {
+        while ((ffm = re.exec(fnBody)) !== null) factoryFields.add(ffm[1]);
+      }
+      const factoryValueInputs = new Set<string>();
+      const fvRe = /\.appendValueInput\(\s*['"](\w+)['"]\s*\)/g;
+      while ((ffm = fvRe.exec(fnBody)) !== null) factoryValueInputs.add(ffm[1]);
+      const factoryStatementInputs = new Set<string>();
+      const fsRe = /\.appendStatementInput\(\s*['"](\w+)['"]\s*\)/g;
+      while ((ffm = fsRe.exec(fnBody)) !== null) factoryStatementInputs.add(ffm[1]);
+      const factoryShape = {
+        isStatement: /setPreviousStatement\(true/.test(fnBody),
+        hasOutput: /setOutput\(true/.test(fnBody),
+        fields: factoryFields,
+        valueInputs: factoryValueInputs,
+        statementInputs: factoryStatementInputs,
+      };
+
+      const callRe = new RegExp(`\\b${fnName}\\s*\\(\\s*['"](\\w+)['"]`, 'g');
+      let cm: RegExpExecArray | null;
+      while ((cm = callRe.exec(content)) !== null) {
+        const blockType = cm[1];
+        if (shapes.has(blockType)) continue; // inline form wins
+        shapes.set(blockType, factoryShape);
+      }
     }
   }
 

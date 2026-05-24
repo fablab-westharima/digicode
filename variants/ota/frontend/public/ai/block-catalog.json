@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-24T17:19:53.358Z",
+  "generatedAt": "2026-05-24T18:30:53.196Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -6462,7 +6462,26 @@
             "String",
             "Boolean"
           ]
-        },
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "stepper_step_blocking",
+      "category": "stepper",
+      "tooltip": "",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
         {
           "name": "STEPS",
           "check": [
@@ -6470,7 +6489,53 @@
             "String",
             "Boolean"
           ]
-        },
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "stepper_step_async",
+      "category": "stepper",
+      "tooltip": "",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "stepper_rotate_blocking",
+      "category": "stepper",
+      "tooltip": "",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
         {
           "name": "ANGLE",
           "check": [
@@ -6483,67 +6548,10 @@
       "statementInputs": []
     },
     {
-      "type": "stepper_step_blocking",
-      "category": "stepper",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "output",
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
-      "type": "stepper_step_async",
-      "category": "stepper",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "output",
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
-      "type": "stepper_rotate_blocking",
-      "category": "stepper",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "output",
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
       "type": "stepper_rotate_async",
       "category": "stepper",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#795548",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -6554,9 +6562,17 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "valueInputs": [
+        {
+          "name": "ANGLE",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "stepper_stop",
@@ -6943,6 +6959,23 @@
         "custom"
       ],
       "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "biped_walk_blocking",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#FF6B35",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
       "fields": [
         {
           "name": "DIRECTION",
@@ -6960,7 +6993,34 @@
             "normal",
             "slow"
           ]
-        },
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "biped_walk_async",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#FF6B35",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
         {
           "name": "DIRECTION",
           "fieldType": "dropdown",
@@ -6977,15 +7037,148 @@
             "normal",
             "slow"
           ]
-        },
+        }
+      ],
+      "valueInputs": [
         {
-          "name": "SIDE",
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "biped_turn_blocking",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#FF6B35",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
-            "left",
-            "right"
+            "1",
+            "-1"
           ]
         },
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "biped_turn_async",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#FF6B35",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "DIRECTION",
+          "fieldType": "dropdown",
+          "options": [
+            "1",
+            "-1"
+          ]
+        },
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "biped_jump_blocking",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#FF6B35",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "biped_moonwalk_blocking",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#FF6B35",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
         {
           "name": "DIRECTION",
           "fieldType": "dropdown",
@@ -7003,31 +7196,25 @@
             "String",
             "Boolean"
           ]
-        },
-        {
-          "name": "STEPS",
-          "check": [
-            "Number",
-            "String",
-            "Boolean"
-          ]
-        },
-        {
-          "name": "STEPS",
-          "check": [
-            "Number",
-            "String",
-            "Boolean"
-          ]
-        },
-        {
-          "name": "STEPS",
-          "check": [
-            "Number",
-            "String",
-            "Boolean"
-          ]
-        },
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "biped_dance_blocking",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#FF6B35",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
         {
           "name": "STEPS",
           "check": [
@@ -7040,136 +7227,10 @@
       "statementInputs": []
     },
     {
-      "type": "biped_walk_blocking",
-      "category": "robot_humanoid",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
-      "type": "biped_walk_async",
-      "category": "robot_humanoid",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
-      "type": "biped_turn_blocking",
-      "category": "robot_humanoid",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
-      "type": "biped_turn_async",
-      "category": "robot_humanoid",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
-      "type": "biped_jump_blocking",
-      "category": "robot_humanoid",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
-      "type": "biped_moonwalk_blocking",
-      "category": "robot_humanoid",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
-      "type": "biped_dance_blocking",
-      "category": "robot_humanoid",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
       "type": "biped_swing_blocking",
       "category": "robot_humanoid",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#FF6B35",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7179,15 +7240,23 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "biped_bend_blocking",
       "category": "robot_humanoid",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#FF6B35",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7196,10 +7265,27 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "fields": [
+        {
+          "name": "SIDE",
+          "fieldType": "dropdown",
+          "options": [
+            "left",
+            "right"
+          ]
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "biped_gesture",
@@ -7347,7 +7433,25 @@
           "default": null,
           "min": 0,
           "max": 39
-        },
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "rover_forward",
+      "category": "robot_wheel",
+      "tooltip": "",
+      "colour": "#4CAF50",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
         {
           "name": "SPEED",
           "fieldType": "dropdown",
@@ -7362,28 +7466,10 @@
       "statementInputs": []
     },
     {
-      "type": "rover_forward",
-      "category": "robot_wheel",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
       "type": "rover_backward",
       "category": "robot_wheel",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#4CAF50",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7392,16 +7478,25 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "100",
+            "50",
+            "30"
+          ]
+        }
+      ],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "rover_turn_left",
       "category": "robot_wheel",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#4CAF50",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7412,14 +7507,13 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "rover_turn_right",
       "category": "robot_wheel",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#4CAF50",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7430,14 +7524,13 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "rover_spin_left",
       "category": "robot_wheel",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#4CAF50",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7448,14 +7541,13 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "rover_spin_right",
       "category": "robot_wheel",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#4CAF50",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7466,14 +7558,13 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "rover_stop",
       "category": "robot_wheel",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#4CAF50",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7484,8 +7575,7 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "rover_is_moving",
@@ -7572,7 +7662,25 @@
             "walk",
             "roll"
           ]
-        },
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "morpher_shift_blocking",
+      "category": "robot_transform",
+      "tooltip": "",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
         {
           "name": "MODE",
           "fieldType": "dropdown",
@@ -7586,28 +7694,10 @@
       "statementInputs": []
     },
     {
-      "type": "morpher_shift_blocking",
-      "category": "robot_transform",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
       "type": "morpher_shift_async",
       "category": "robot_transform",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#9C27B0",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7616,15 +7706,40 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "MODE",
+          "fieldType": "dropdown",
+          "options": [
+            "walk",
+            "roll"
+          ]
+        }
+      ],
       "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "statementInputs": []
     },
     {
       "type": "morpher_home_blocking",
       "category": "robot_transform",
       "tooltip": "Return to upright position, blocks",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "morpher_walk_blocking",
+      "category": "robot_transform",
+      "tooltip": "",
       "colour": "#9C27B0",
       "isStatement": true,
       "hasOutput": false,
@@ -7651,7 +7766,60 @@
             "normal",
             "slow"
           ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "morpher_walk_async",
+      "category": "robot_transform",
+      "tooltip": "",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "DIRECTION",
+          "fieldType": "dropdown",
+          "options": [
+            "forward",
+            "backward"
+          ]
         },
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "morpher_turn_blocking",
+      "category": "robot_transform",
+      "tooltip": "",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
         {
           "name": "DIRECTION",
           "fieldType": "dropdown",
@@ -7672,60 +7840,6 @@
         }
       ],
       "statementInputs": []
-    },
-    {
-      "type": "morpher_walk_blocking",
-      "category": "robot_transform",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
-      "type": "morpher_walk_async",
-      "category": "robot_transform",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
-      "type": "morpher_turn_blocking",
-      "category": "robot_transform",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
     },
     {
       "type": "morpher_stop",
@@ -7748,7 +7862,95 @@
             "walk",
             "roll"
           ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "morpher_roll_blocking",
+      "category": "robot_transform",
+      "tooltip": "",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "DIRECTION",
+          "fieldType": "dropdown",
+          "options": [
+            "forward",
+            "backward"
+          ]
         },
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "morpher_roll_async",
+      "category": "robot_transform",
+      "tooltip": "",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "DIRECTION",
+          "fieldType": "dropdown",
+          "options": [
+            "forward",
+            "backward"
+          ]
+        },
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "morpher_roll_rotate_blocking",
+      "category": "robot_transform",
+      "tooltip": "",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
         {
           "name": "DIRECTION",
           "fieldType": "dropdown",
@@ -7766,15 +7968,25 @@
             "String",
             "Boolean"
           ]
-        },
-        {
-          "name": "STEPS",
-          "check": [
-            "Number",
-            "String",
-            "Boolean"
-          ]
-        },
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "morpher_pushup_blocking",
+      "category": "robot_transform",
+      "tooltip": "",
+      "colour": "#9C27B0",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [
         {
           "name": "STEPS",
           "check": [
@@ -7787,82 +7999,10 @@
       "statementInputs": []
     },
     {
-      "type": "morpher_roll_blocking",
-      "category": "robot_transform",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
-      "type": "morpher_roll_async",
-      "category": "robot_transform",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
-      "type": "morpher_roll_rotate_blocking",
-      "category": "robot_transform",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
-      "type": "morpher_pushup_blocking",
-      "category": "robot_transform",
-      "tooltip": "",
-      "colour": "#808080",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
-    },
-    {
       "type": "morpher_dance_blocking",
       "category": "robot_transform",
       "tooltip": "",
-      "colour": "#808080",
+      "colour": "#9C27B0",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7872,9 +8012,17 @@
       ],
       "boardRequires": null,
       "fields": [],
-      "valueInputs": [],
-      "statementInputs": [],
-      "builtin": true
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
+      "statementInputs": []
     },
     {
       "type": "morpher_is_idle",

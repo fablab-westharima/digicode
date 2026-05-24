@@ -7,12 +7,14 @@ const cat = loadCatalog();
 const idx = indexByType(cat);
 
 describe('allocate', () => {
-  it('returns the canonical 573/86/100/26/200/15 split for count=1000', () => {
+  it('returns the canonical 588/86/100/11/200/15 split for count=1000', () => {
+    // Phase C (Session 147): singleton 573 → 588 (+15)、pair 26 → 11 (-15) で
+    // catalog 587 (+2 buffer = 588) carry。経緯: 580.md generate-cases.ts §FULL_ALLOCATION 参照。
     expect(allocate(1000)).toEqual({
-      singleton: 573,
+      singleton: 588,
       edge: 86,
       matrix: 100,
-      pair: 26,
+      pair: 11,
       template: 200,
       combo: 15,
     });

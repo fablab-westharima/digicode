@@ -145,11 +145,20 @@ interface StrategyAllocation {
 // HA 対応強化 commit 7 (2026-05-09 第96回): catalog 570 → 571 で
 // ha_ota_setup (+1) ブロック追加。singleton 572 → 573 (+1)、pair 27 → 26
 // (-1) で総数 1000 維持 + +2 buffer convention (catalog 571 + 2 = 573) 維持。
+//
+// Phase C (2026-05-25 Session 147): Phase B-2 で catalog 571 → 587 (+16 net、
+// 64 new robotics block - 40 old + DigiBuzzer 3 - overlap) によって generable
+// 549 → 586 (+37) に増加、singleton budget 573 では math_round 等 13 件
+// coverage 漏れ = generate-cases test 「singleton missed math_round」失敗。
+// singleton 573 → 588 (+15)、pair 26 → 11 (-15) で総数 1000 維持 +
+// +2 buffer convention (catalog 587 - skipped 1 + 2 = 588) 復元。
+// pair strategy は 15 件 → ~57% 削減だが、現 catalog で pair 全件カバー
+// 必要性低 (= edge / matrix / template が大半担当)、復元時は再 audit。
 const FULL_ALLOCATION: StrategyAllocation = {
-  singleton: 573,
+  singleton: 588,
   edge: 86,
   matrix: 100,
-  pair: 26,
+  pair: 11,
   template: 200,
   combo: 15,
 };

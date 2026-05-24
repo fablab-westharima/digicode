@@ -295,6 +295,18 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'WiFi Controller + LED + Servo (2-channel, no temp sensor)',
         description: 'Control LED toggle / Servo slider from any browser via WebSocket server (BUG-086: 2-channel canonical reference). ★ MUST: emit a matching websocket_server_on_message handler for each WRITE=TRUE register (led / servo) with the same CHANNEL_ID. ★ MUST: connect websocket_server_received_value to servo_write\'s ANGLE input (no hardcoded literals).',
       },
+      'humanoid-large-servo-protect': {
+        title: 'Humanoid Life-size Gear Protection',
+        description: 'Walk a life-size Humanoid at slow speed (30 deg/sec) to protect the gears (founding use case demo for case 22; per-pin override via ServoSpeedDialog)',
+      },
+      'biped-walk-while-mqtt-publishing': {
+        title: 'Biped Walk + MQTT in parallel',
+        description: 'biped_walk_async walks in background while MQTT publishes temperature (D-new-4 (B) IoT coexistence demo; blocking version stalls the loop, async + wait_until_idle runs both)',
+      },
+      'stepper-hw-precise': {
+        title: 'Stepper HW Precise Position Control',
+        description: 'High-speed, high-precision position control via FastAccelStepper (HW RMT/MCPWM peripheral, D9 demo, target 200 kHz, no polling, much lower step jitter than AccelStepper)',
+      },
     },
   },
   es: {
@@ -566,6 +578,18 @@ const overrides: Record<string, LocaleOverride> = {
       'wifi-led-servo-controller': {
         title: 'Controlador WiFi + LED + Servo (2 canales, sin sensor de temperatura)',
         description: 'Controla LED toggle / slider de Servo desde un navegador vía servidor WebSocket (BUG-086: referencia canónica de 2 canales). ★ OBLIGATORIO: emitir un handler websocket_server_on_message que coincida para cada register WRITE=TRUE (led / servo) con el mismo CHANNEL_ID. ★ OBLIGATORIO: conectar websocket_server_received_value al input ANGLE de servo_write (sin literales hardcodeados).',
+      },
+      'humanoid-large-servo-protect': {
+        title: 'Humanoid tamaño real: protección de engranajes',
+        description: 'Hacer caminar a un Humanoid tamaño real a velocidad lenta (30 deg/s) para proteger los engranajes (demo del caso fundacional caso 22; override por pin desde ServoSpeedDialog)',
+      },
+      'biped-walk-while-mqtt-publishing': {
+        title: 'Bípedo camina + MQTT en paralelo',
+        description: 'biped_walk_async camina en segundo plano mientras MQTT publica la temperatura (demo D-new-4 (B) de coexistencia con IoT; la versión bloqueante detiene el loop, async + wait_until_idle ejecuta ambos)',
+      },
+      'stepper-hw-precise': {
+        title: 'Stepper HW: control de posición preciso',
+        description: 'Control de posición de alta velocidad y precisión vía FastAccelStepper (periférico HW RMT/MCPWM, demo D9, objetivo 200 kHz, sin polling, jitter de paso mucho menor que AccelStepper)',
       },
     },
   },
@@ -839,6 +863,18 @@ const overrides: Record<string, LocaleOverride> = {
         title: 'Controlador WiFi + LED + Servo (2 canais, sem sensor de temperatura)',
         description: 'Controla LED toggle / slider de Servo a partir de um browser via servidor WebSocket (BUG-086: referência canónica de 2 canais). ★ OBRIGATÓRIO: emitir um handler websocket_server_on_message correspondente para cada register WRITE=TRUE (led / servo) com o mesmo CHANNEL_ID. ★ OBRIGATÓRIO: ligar websocket_server_received_value ao input ANGLE de servo_write (sem literais hardcoded).',
       },
+      'humanoid-large-servo-protect': {
+        title: 'Humanoid em tamanho real: proteção das engrenagens',
+        description: 'Andar um Humanoid em tamanho real a velocidade lenta (30 graus/s) para proteger as engrenagens (demo do caso fundador caso 22; override por pin via ServoSpeedDialog)',
+      },
+      'biped-walk-while-mqtt-publishing': {
+        title: 'Bípede a andar + MQTT em paralelo',
+        description: 'biped_walk_async anda em segundo plano enquanto MQTT publica a temperatura (demo D-new-4 (B) de coexistência IoT; a versão bloqueante pára o loop, async + wait_until_idle executa ambos)',
+      },
+      'stepper-hw-precise': {
+        title: 'Stepper HW: controlo de posição preciso',
+        description: 'Controlo de posição de alta velocidade e precisão via FastAccelStepper (periférico HW RMT/MCPWM, demo D9, alvo 200 kHz, sem polling, jitter de passo muito menor que AccelStepper)',
+      },
     },
   },
   'zh-TW': {
@@ -1110,6 +1146,18 @@ const overrides: Record<string, LocaleOverride> = {
       'wifi-led-servo-controller': {
         title: 'WiFi 控制器 + LED + Servo (2-channel、無溫度感測器)',
         description: '透過 WebSocket 伺服器從瀏覽器控制 LED toggle / Servo slider (BUG-086: 2-channel 標準參考)。★ 必須: 每個 WRITE=TRUE register block (led / servo) 都要 emit 對應的 websocket_server_on_message handler，且 CHANNEL_ID 相同。★ 必須: 將 websocket_server_received_value 連接到 servo_write 的 ANGLE 輸入 (禁止 hardcode literals)。',
+      },
+      'humanoid-large-servo-protect': {
+        title: 'Humanoid 等身大齒輪保護',
+        description: '以慢速 (30 度/秒) 行走等身大 Humanoid 以保護齒輪 (case 22 founding use case demo；ServoSpeedDialog 可 per-pin override)',
+      },
+      'biped-walk-while-mqtt-publishing': {
+        title: 'Biped 行走 + MQTT 並行',
+        description: 'biped_walk_async 在背景行走的同時 MQTT 發佈溫度 (D-new-4 (B) IoT 共存 demo；blocking 版會停止 loop，async + wait_until_idle 可並行)',
+      },
+      'stepper-hw-precise': {
+        title: 'Stepper HW 高精度位置控制',
+        description: '透過 FastAccelStepper (HW RMT/MCPWM 周邊) 進行高速、高精度位置控制 (D9 demo，目標 200 kHz，無 polling，step jitter 較 AccelStepper 大幅降低)',
       },
     },
   },
