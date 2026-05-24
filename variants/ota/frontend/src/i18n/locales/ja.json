@@ -2209,30 +2209,6 @@
       "getSpeed": "現在速度",
       "getSpeedTooltip": "現在設定されているモーター速度を取得"
     },
-    "wheel": {
-      "init": "Wheel初期化",
-      "initTooltip": "Wheelを初期化します",
-      "leftWheelPin": "左車輪ピン",
-      "rightWheelPin": "右車輪ピン",
-      "forward": "Wheel前進",
-      "forwardTooltip": "前進します",
-      "speed": "速度",
-      "speedFast": "速い",
-      "speedNormal": "普通",
-      "speedSlow": "遅い",
-      "backward": "Wheel後退",
-      "backwardTooltip": "後退します",
-      "turnLeft": "Wheel左折",
-      "turnLeftTooltip": "左に曲がります",
-      "turnRight": "Wheel右折",
-      "turnRightTooltip": "右に曲がります",
-      "spinLeft": "Wheel左回転",
-      "spinLeftTooltip": "その場で左回転します",
-      "spinRight": "Wheel右回転",
-      "spinRightTooltip": "その場で右回転します",
-      "stop": "Wheel停止",
-      "stopTooltip": "停止します"
-    },
     "pid": {
       "init": "PID制御 初期化",
       "initTooltip": "PID制御器を初期化します。Kp=比例、Ki=積分、Kd=微分ゲイン",
@@ -2635,149 +2611,11 @@
       "backward": "後退",
       "left": "左",
       "right": "右",
-      "leftLeg": "左足ピン",
-      "rightLeg": "右足ピン",
-      "leftAnkle": "左足首ピン",
-      "rightAnkle": "右足首ピン"
-    },
-    "humanoid": {
-      "init": {
-        "label": "Humanoid初期化",
-        "tooltip": "Humanoidロボットを初期化します（ピン番号はプリセットから取得）"
-      },
-      "home": {
-        "label": "Humanoidホームポジション",
-        "tooltip": "Humanoidを直立姿勢にします"
-      },
-      "walk": {
-        "label": "Humanoid歩く",
-        "tooltip": "Humanoidを歩かせます"
-      },
-      "turn": {
-        "label": "Humanoid回転",
-        "tooltip": "Humanoidを回転させます"
-      },
-      "jump": {
-        "label": "Humanoidジャンプ",
-        "tooltip": "Humanoidをジャンプさせます"
-      },
-      "dance": {
-        "label": "Humanoidダンス",
-        "tooltip": "Humanoidをダンスさせます"
-      },
-      "swing": {
-        "label": "Humanoidスウィング",
-        "tooltip": "Humanoidを左右に揺らします"
-      },
-      "bend": {
-        "label": "Humanoid傾ける",
-        "tooltip": "Humanoidを左右に傾けます"
-      },
-      "moonwalk": {
-        "label": "Humanoidムーンウォーク",
-        "tooltip": "Humanoidをムーンウォークさせます"
-      },
-      "gesture": {
-        "label": "Humanoidジェスチャー",
-        "tooltip": "Humanoidが感情を動きと音で表現します",
-        "happy": "ハッピー",
-        "superHappy": "超ハッピー",
-        "sad": "悲しい",
-        "victory": "勝利",
-        "angry": "怒り",
-        "sleeping": "眠い",
-        "fretful": "イライラ",
-        "love": "ラブ",
-        "confused": "困惑",
-        "fart": "おなら",
-        "wave": "手を振る",
-        "magic": "マジック",
-        "fail": "失敗"
-      },
-      "sound": {
-        "label": "Humanoidサウンド",
-        "tooltip": "Humanoidが音を鳴らします",
-        "connection": "接続音",
-        "disconnection": "切断音",
-        "buttonPushed": "ボタン押下",
-        "mode1": "モード1",
-        "mode2": "モード2",
-        "mode3": "モード3",
-        "surprise": "驚き",
-        "ohOoh": "おっと",
-        "ohOoh2": "おっと2",
-        "cuddly": "甘え",
-        "sleeping": "眠り",
-        "happy": "ハッピー",
-        "superHappy": "超ハッピー",
-        "happyShort": "ハッピー短",
-        "sad": "悲しい",
-        "confused": "困惑",
-        "fart1": "おなら1",
-        "fart2": "おなら2",
-        "fart3": "おなら3"
-      }
-    },
-    "transform": {
-      "init": {
-        "label": "Transform初期化",
-        "tooltip": "Transformを初期化します（ピン番号はプリセットから取得）"
-      },
-      "mode": {
-        "label": "Ninjaモード",
-        "walk": "歩行 (Walk)",
-        "roll": "走行 (Roll)",
-        "tooltip": "Walk(4足歩行)とRoll(ホイール走行)を切り替えます（モードのみ）"
-      },
-      "transform": {
-        "label": "Ninjaトランスフォーム",
-        "tooltip": "サーボを動かして物理的に変形します（Walk↔Roll）"
-      },
-      "home": {
-        "label": "Ninjaホーム",
-        "tooltip": "直立姿勢にします"
-      },
-      "walk": {
-        "label": "Ninja歩行",
-        "tooltip": "Walkモードで歩きます"
-      },
-      "roll": {
-        "label": "Ninja走行",
-        "tooltip": "Rollモードで走行します"
-      },
-      "rollRotate": {
-        "label": "Ninja回転走行",
-        "tooltip": "Rollモードで回転します"
-      },
-      "turn": {
-        "label": "Ninja回転歩行",
-        "tooltip": "Walkモードで回転します"
-      },
-      "stop": {
-        "label": "Ninja停止",
-        "tooltip": "指定モードを停止します"
-      },
-      "pushup": {
-        "label": "Ninja腕立て",
-        "tooltip": "腕立て伏せをします"
-      },
-      "dance": {
-        "label": "Ninjaダンス",
-        "tooltip": "ダンスします"
-      }
-    },
-    "a4988": {
-      "dir": "DIR",
-      "direction": "A4988 方向",
-      "direction_tooltip": "A4988 の方向を設定します。次の a4988_step が forward なら正、backward なら負ステップで動作。",
-      "en": "EN",
-      "init": "A4988 を初期化",
-      "init_tooltip": "A4988 ステッピングドライバを初期化します。STEP/DIR/EN ピン指定。EN は LOW で有効化。AccelStepper DRIVER mode 使用。",
-      "microstep": "A4988 マイクロステップ",
-      "microstep_tooltip": "A4988 のマイクロステップモードを設定します (内部 step 倍率)。⚠️ HW の MS1/MS2/MS3 pin もこの値に合わせて配線必要。",
-      "step": "STEP",
-      "step_block": "A4988 ステップ",
-      "step_tooltip": "A4988 を指定ステップ数 (microstep 倍率込) で動作させます。runToNewPosition で完了まで block。"
+      "leftLeg": "左脚ピン",
+      "rightLeg": "右脚ピン",
+      "leftFoot": "左足ピン",
+      "rightFoot": "右足ピン",
+      "pin": "ピン"
     },
     "acs712": {
       "init": "ACS712 を初期化",
@@ -3260,18 +3098,244 @@
       "show_time_tooltip": "TM1637 に時刻を HH:MM 形式で表示します (コロン on)。事前に tm1637_init が必要。"
     },
     "type": "型",
-    "uln2003": {
-      "init": "ULN2003 を初期化",
-      "init_tooltip": "ULN2003 ステッピングドライバ + 28BYJ-48 を初期化します。AccelStepper FULL4WIRE mode (pin 順 IN1, IN3, IN2, IN4 で正常回転)。",
-      "speed": "速度",
-      "step": "ULN2003 (28BYJ-48) ステップ",
-      "steps": "ステップ数",
-      "step_tooltip": "ULN2003 + 28BYJ-48 を指定ステップ・速度で動作させます (28BYJ-48 1 回転 = 4096 ステップ in half-step)。"
-    },
     "unit": {
       "seconds": "秒"
     },
-    "value": "値"
+    "value": "値",
+    "biped": {
+      "init": {
+        "label": "二足初期化",
+        "tooltip": "DigiBipedロボット（脚4本＋ブザー）を初期化します"
+      },
+      "buzzer": {
+        "pin": "ブザーピン"
+      },
+      "home_blocking": {
+        "label": "二足ホームポジション（同期）",
+        "tooltip": "二足を直立姿勢に戻し、完了するまでブロックします"
+      },
+      "walk_blocking": {
+        "label": "二足歩行（同期）",
+        "tooltip": "N歩歩き、完了するまでブロックします"
+      },
+      "walk_async": {
+        "label": "二足歩行（非同期）",
+        "tooltip": "N歩歩行をバックグラウンドで開始、wait_until_idleで待機できます"
+      },
+      "turn_blocking": {
+        "label": "二足回転（同期）",
+        "tooltip": "N回回転、完了するまでブロックします"
+      },
+      "turn_async": {
+        "label": "二足回転（非同期）",
+        "tooltip": "バックグラウンドで回転を開始します"
+      },
+      "jump_blocking": {
+        "label": "二足ジャンプ（同期）",
+        "tooltip": "N回ジャンプ、完了するまでブロックします"
+      },
+      "jump_async": {
+        "label": "二足ジャンプ（非同期）",
+        "tooltip": "バックグラウンドでジャンプを開始します"
+      },
+      "dance_blocking": {
+        "label": "二足ダンス（同期）",
+        "tooltip": "Nサイクル踊り、完了するまでブロックします"
+      },
+      "dance_async": {
+        "label": "二足ダンス（非同期）",
+        "tooltip": "バックグラウンドでダンスを開始します"
+      },
+      "swing_blocking": {
+        "label": "二足スイング（同期）",
+        "tooltip": "Nサイクル左右に揺れ、完了するまでブロックします"
+      },
+      "swing_async": {
+        "label": "二足スイング（非同期）",
+        "tooltip": "バックグラウンドでスイングを開始します"
+      },
+      "bend_blocking": {
+        "label": "二足曲げ（同期）",
+        "tooltip": "左右にN回曲げ、完了するまでブロックします"
+      },
+      "bend_async": {
+        "label": "二足曲げ（非同期）",
+        "tooltip": "バックグラウンドで曲げ動作を開始します"
+      },
+      "moonwalk_blocking": {
+        "label": "二足ムーンウォーク（同期）",
+        "tooltip": "N歩ムーンウォーク、完了するまでブロックします"
+      },
+      "moonwalk_async": {
+        "label": "二足ムーンウォーク（非同期）",
+        "tooltip": "バックグラウンドでムーンウォークを開始します"
+      },
+      "gesture": {
+        "label": "二足ジェスチャー",
+        "tooltip": "DigiCodeオリジナルジェスチャー（動作＋音）を再生（意図ベースの命名、OttoDIYLib派生なし）",
+        "greeting": "あいさつ",
+        "acknowledge": "了解",
+        "yes": "はい",
+        "no": "いいえ",
+        "curiosity": "好奇",
+        "search": "探索",
+        "idle_breathing": "アイドル呼吸",
+        "cheer": "歓喜",
+        "thinking": "思考",
+        "surprise": "驚き",
+        "sleepy": "眠い",
+        "wakeup": "起床",
+        "confirmation": "確認",
+        "error_alert": "エラー警告"
+      },
+      "is_idle": {
+        "label": "二足はアイドル中？",
+        "tooltip": "二足がアイドル状態（非同期動作なし）ならtrueを返します"
+      },
+      "wait_until_idle": {
+        "label": "二足アイドルまで待機",
+        "tooltip": "二足の非同期動作完了までブロック（IoTループ共存のためのバリア）"
+      }
+    },
+    "morpher": {
+      "init": {
+        "label": "モーファー初期化",
+        "tooltip": "Morpher（変形）ロボットを初期化します（4サーボ）"
+      },
+      "set_mode": {
+        "label": "モーファーモード設定",
+        "tooltip": "モーファーのモード（Walk＝歩行 / Roll＝走行）を設定します（フラグのみ、物理変形なし）"
+      },
+      "mode": {
+        "walk": "歩行 (Walk)",
+        "roll": "走行 (Roll)"
+      },
+      "home_blocking": {
+        "label": "モーファーホーム（同期）",
+        "tooltip": "モーファーを直立姿勢に戻し、完了するまでブロックします"
+      },
+      "stop": {
+        "label": "モーファー停止",
+        "tooltip": "進行中のモーファー動作を停止します"
+      },
+      "is_idle": {
+        "label": "モーファーはアイドル中？",
+        "tooltip": "モーファーがアイドル状態（非同期動作なし）ならtrueを返します"
+      },
+      "wait_until_idle": {
+        "label": "モーファーアイドルまで待機",
+        "tooltip": "モーファーの非同期動作完了までブロックします"
+      }
+    },
+    "rover": {
+      "init_servo": {
+        "label": "ローバー初期化（連続回転サーボ）",
+        "tooltip": "2ピン連続回転サーボでRoverを初期化します"
+      },
+      "init_dc": {
+        "label": "ローバー初期化（DCモーター）",
+        "tooltip": "4ピンHブリッジ駆動のDCモーターでRoverを初期化します"
+      },
+      "left": {
+        "pin": "左ピン"
+      },
+      "right": {
+        "pin": "右ピン"
+      },
+      "dc": {
+        "l": {
+          "in": "左IN1/IN2ピン"
+        },
+        "r": {
+          "in": "右IN1/IN2ピン"
+        }
+      },
+      "is_moving": {
+        "label": "ローバーは移動中？",
+        "tooltip": "ローバーが移動中（forward/backward/turn/spin発動中）ならtrueを返します"
+      }
+    },
+    "buzzer": {
+      "duration": "ms",
+      "freq": "Hz",
+      "from": "開始",
+      "to": "終了",
+      "play_preset": {
+        "label": "ブザープリセット再生",
+        "tooltip": "プリセット音色を再生します（DigiCode独自、OttoDIYLib由来なし）"
+      },
+      "play_tone": {
+        "label": "ブザートーン再生",
+        "tooltip": "指定周波数のトーンを指定ms再生します"
+      },
+      "play_bend": {
+        "label": "ブザーベンドトーン",
+        "tooltip": "指定msかけて開始周波数から終了周波数までスイープします"
+      },
+      "preset": {
+        "startup": "起動",
+        "shutdown": "終了",
+        "ok_short": "OK (短)",
+        "error_descending": "エラー（下降）",
+        "query_rising": "問いかけ（上昇）",
+        "confirmation": "確認",
+        "high_short": "高音（短）",
+        "short_high": "短い高音",
+        "short_low": "短い低音",
+        "two_high": "高音2回",
+        "two_low": "低音2回",
+        "rising_fast": "急上昇",
+        "falling_slow": "緩降下",
+        "rising_pair": "上昇ペア",
+        "falling_pair": "下降ペア",
+        "query_pair": "問いかけペア",
+        "fanfare": "ファンファーレ"
+      }
+    },
+    "stepper": {
+      "init": {
+        "4wire": {
+          "label": "ステッパー初期化（4線式ULN2003）",
+          "tooltip": "ULN2003ドライバ（28BYJ-48モーター、FULL4WIREモード、AccelStepper駆動）でステッパーを初期化"
+        },
+        "driver": {
+          "label": "ステッパー初期化（A4988/DRV8825ドライバ）",
+          "tooltip": "A4988/DRV8825ドライバ（STEP/DIR/ENピン、AccelStepper DRIVERモード）でステッパーを初期化"
+        },
+        "hw": {
+          "label": "ステッパー初期化（HWペリフェラル）",
+          "tooltip": "ESP32のRMT/MCPWMペリフェラル経由の高速ステッパー（FastAccelStepper、目標200kHz）"
+        }
+      },
+      "set_microstep": {
+        "label": "ステッパーマイクロステップ",
+        "tooltip": "マイクロステップ倍率を設定（HW側MS1/MS2/MS3ピン配線が必要）"
+      },
+      "set_direction": {
+        "label": "ステッパー方向",
+        "tooltip": "次回stepper_stepの回転方向を設定します"
+      },
+      "set_speed": {
+        "label": "ステッパー速度",
+        "tooltip": "最大速度を設定します（step/sec）"
+      },
+      "stop": {
+        "label": "ステッパー停止",
+        "tooltip": "ステッパーを即座に停止します（target = current）"
+      },
+      "is_at_target": {
+        "label": "ステッパーは目標位置？",
+        "tooltip": "ステッパーが目標位置に到達していればtrueを返します"
+      },
+      "get_position": {
+        "label": "ステッパー位置",
+        "tooltip": "ステッパー現在位置を取得します（原点からのステップ数）"
+      },
+      "wait": {
+        "label": "ステッパー目標到達まで待機",
+        "tooltip": "ステッパーの非同期動作完了までブロックします"
+      }
+    }
   },
   "toolbox": {
     "categories": {
@@ -4058,8 +4122,6 @@
       "parts": {
         "leftFoot": "左足",
         "rightFoot": "右足",
-        "leftAnkle": "左足首",
-        "rightAnkle": "右足首",
         "leftArm": "左腕",
         "rightArm": "右腕",
         "leftWheel": "左車輪",
@@ -4068,7 +4130,9 @@
         "servo2": "サーボ2",
         "servo3": "サーボ3",
         "servo4": "サーボ4",
-        "servoN": "サーボ{{n}}"
+        "servoN": "サーボ{{n}}",
+        "leftLeg": "左脚",
+        "rightLeg": "右脚"
       }
     }
   },

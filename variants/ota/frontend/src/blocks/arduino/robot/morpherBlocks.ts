@@ -43,9 +43,9 @@ Blockly.Blocks['morpher_init'] = {
         .appendField(new Blockly.FieldNumber(pins.leftLeg, 0, 39), 'PIN_LL')
         .appendField(Blockly.Msg.BLOCKS_COMMON_RIGHTLEG || 'right leg pin')
         .appendField(new Blockly.FieldNumber(pins.rightLeg, 0, 39), 'PIN_RL')
-        .appendField(Blockly.Msg.BLOCKS_COMMON_LEFTANKLE || 'left foot pin')
+        .appendField(Blockly.Msg.BLOCKS_COMMON_LEFTFOOT || 'left foot pin')
         .appendField(new Blockly.FieldNumber(pins.leftFoot, 0, 39), 'PIN_LF')
-        .appendField(Blockly.Msg.BLOCKS_COMMON_RIGHTANKLE || 'right foot pin')
+        .appendField(Blockly.Msg.BLOCKS_COMMON_RIGHTFOOT || 'right foot pin')
         .appendField(new Blockly.FieldNumber(pins.rightFoot, 0, 39), 'PIN_RF');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

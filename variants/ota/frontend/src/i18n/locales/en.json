@@ -2203,30 +2203,6 @@
       "getSpeed": "Current Speed",
       "getSpeedTooltip": "Get currently set motor speed"
     },
-    "wheel": {
-      "init": "Wheel Init",
-      "initTooltip": "Initialize Wheel",
-      "leftWheelPin": "Left Wheel Pin",
-      "rightWheelPin": "Right Wheel Pin",
-      "forward": "Wheel Forward",
-      "forwardTooltip": "Move forward",
-      "speed": "Speed",
-      "speedFast": "Fast",
-      "speedNormal": "Normal",
-      "speedSlow": "Slow",
-      "backward": "Wheel Backward",
-      "backwardTooltip": "Move backward",
-      "turnLeft": "Wheel Turn Left",
-      "turnLeftTooltip": "Turn left",
-      "turnRight": "Wheel Turn Right",
-      "turnRightTooltip": "Turn right",
-      "spinLeft": "Wheel Spin Left",
-      "spinLeftTooltip": "Spin left in place",
-      "spinRight": "Wheel Spin Right",
-      "spinRightTooltip": "Spin right in place",
-      "stop": "Wheel Stop",
-      "stopTooltip": "Stop"
-    },
     "pid": {
       "init": "PID Control Init",
       "initTooltip": "Initialize PID controller. Kp=proportional, Ki=integral, Kd=derivative gain",
@@ -2631,147 +2607,9 @@
       "right": "right",
       "leftLeg": "left leg pin",
       "rightLeg": "right leg pin",
-      "leftAnkle": "left ankle pin",
-      "rightAnkle": "right ankle pin"
-    },
-    "humanoid": {
-      "init": {
-        "label": "Humanoid Init",
-        "tooltip": "Initialize Humanoid robot (pin numbers from preset)"
-      },
-      "home": {
-        "label": "Humanoid Home",
-        "tooltip": "Set Humanoid to upright position"
-      },
-      "walk": {
-        "label": "Humanoid Walk",
-        "tooltip": "Make Humanoid walk"
-      },
-      "turn": {
-        "label": "Humanoid Turn",
-        "tooltip": "Make Humanoid turn"
-      },
-      "jump": {
-        "label": "Humanoid Jump",
-        "tooltip": "Make Humanoid jump"
-      },
-      "dance": {
-        "label": "Humanoid Dance",
-        "tooltip": "Make Humanoid dance"
-      },
-      "swing": {
-        "label": "Humanoid Swing",
-        "tooltip": "Swing Humanoid side to side"
-      },
-      "bend": {
-        "label": "Humanoid Bend",
-        "tooltip": "Bend Humanoid left or right"
-      },
-      "moonwalk": {
-        "label": "Humanoid Moonwalk",
-        "tooltip": "Make Humanoid moonwalk"
-      },
-      "gesture": {
-        "label": "Humanoid Gesture",
-        "tooltip": "Humanoid expresses emotions with movement and sound",
-        "happy": "Happy",
-        "superHappy": "Super Happy",
-        "sad": "Sad",
-        "victory": "Victory",
-        "angry": "Angry",
-        "sleeping": "Sleeping",
-        "fretful": "Fretful",
-        "love": "Love",
-        "confused": "Confused",
-        "fart": "Fart",
-        "wave": "Wave",
-        "magic": "Magic",
-        "fail": "Fail"
-      },
-      "sound": {
-        "label": "Humanoid Sound",
-        "tooltip": "Humanoid plays a sound",
-        "connection": "Connection",
-        "disconnection": "Disconnection",
-        "buttonPushed": "Button Pushed",
-        "mode1": "Mode 1",
-        "mode2": "Mode 2",
-        "mode3": "Mode 3",
-        "surprise": "Surprise",
-        "ohOoh": "Oh Ooh",
-        "ohOoh2": "Oh Ooh 2",
-        "cuddly": "Cuddly",
-        "sleeping": "Sleeping",
-        "happy": "Happy",
-        "superHappy": "Super Happy",
-        "happyShort": "Happy Short",
-        "sad": "Sad",
-        "confused": "Confused",
-        "fart1": "Fart 1",
-        "fart2": "Fart 2",
-        "fart3": "Fart 3"
-      }
-    },
-    "transform": {
-      "init": {
-        "label": "Transform Init",
-        "tooltip": "Initialize Transform (pin numbers from preset)"
-      },
-      "mode": {
-        "label": "Ninja Mode",
-        "walk": "Walk",
-        "roll": "Roll",
-        "tooltip": "Switch between Walk (4-legged) and Roll (wheel) modes"
-      },
-      "transform": {
-        "label": "Ninja Transform",
-        "tooltip": "Physically transform with servo movement (Walk↔Roll)"
-      },
-      "home": {
-        "label": "Ninja Home",
-        "tooltip": "Set to upright position"
-      },
-      "walk": {
-        "label": "Ninja Walk",
-        "tooltip": "Walk in Walk mode"
-      },
-      "roll": {
-        "label": "Ninja Roll",
-        "tooltip": "Roll in Roll mode"
-      },
-      "rollRotate": {
-        "label": "Ninja Roll Rotate",
-        "tooltip": "Rotate in Roll mode"
-      },
-      "turn": {
-        "label": "Ninja Turn",
-        "tooltip": "Turn in Walk mode"
-      },
-      "stop": {
-        "label": "Ninja Stop",
-        "tooltip": "Stop specified mode"
-      },
-      "pushup": {
-        "label": "Ninja Push-up",
-        "tooltip": "Do push-ups"
-      },
-      "dance": {
-        "label": "Ninja Dance",
-        "tooltip": "Dance"
-      }
-    },
-    "a4988": {
-      "dir": "DIR",
-      "en": "EN",
-      "step": "STEP",
-      "direction": "A4988 direction",
-      "direction_tooltip": "Set the A4988 direction. Next a4988_step runs forward (positive) or backward (negative).",
-      "init": "Initialize A4988",
-      "init_tooltip": "Initialize A4988 stepper driver. Specify STEP/DIR/EN pins. EN active LOW. Uses AccelStepper DRIVER mode.",
-      "microstep": "A4988 microstep",
-      "microstep_tooltip": "Set A4988 microstep mode (internal step multiplier). ⚠️ The MS1/MS2/MS3 pins on the HW must be wired to match this value.",
-      "step_block": "A4988 step",
-      "step_tooltip": "Run A4988 by the specified number of steps (microstep factor included). Blocks until completion via runToNewPosition."
+      "leftFoot": "left foot pin",
+      "rightFoot": "right foot pin",
+      "pin": "pin"
     },
     "array": {
       "1d": "1D",
@@ -3258,13 +3096,239 @@
       "show_time": "TM1637 show time",
       "show_time_tooltip": "Displays the time in HH:MM format on TM1637 (colon on). Requires tm1637_init beforehand."
     },
-    "uln2003": {
-      "init": "Initialize ULN2003",
-      "init_tooltip": "Initialize ULN2003 stepper driver + 28BYJ-48. AccelStepper FULL4WIRE mode (pin order IN1, IN3, IN2, IN4 for normal rotation).",
-      "speed": "Speed",
-      "step": "ULN2003 (28BYJ-48) step",
-      "steps": "Step count",
-      "step_tooltip": "Runs ULN2003 + 28BYJ-48 by the specified steps and speed (28BYJ-48 1 revolution = 4096 steps in half-step)."
+    "biped": {
+      "init": {
+        "label": "Biped Init",
+        "tooltip": "Initialize DigiBiped biped robot (4 legs + buzzer)"
+      },
+      "buzzer": {
+        "pin": "buzzer pin"
+      },
+      "home_blocking": {
+        "label": "Biped Home (blocking)",
+        "tooltip": "Move biped to upright home position, blocks until done"
+      },
+      "walk_blocking": {
+        "label": "Biped Walk (blocking)",
+        "tooltip": "Walk N steps, blocks until done"
+      },
+      "walk_async": {
+        "label": "Biped Walk (async)",
+        "tooltip": "Start walking N steps in background; use biped_wait_until_idle to barrier"
+      },
+      "turn_blocking": {
+        "label": "Biped Turn (blocking)",
+        "tooltip": "Turn N times, blocks until done"
+      },
+      "turn_async": {
+        "label": "Biped Turn (async)",
+        "tooltip": "Start turning in background"
+      },
+      "jump_blocking": {
+        "label": "Biped Jump (blocking)",
+        "tooltip": "Jump N times, blocks"
+      },
+      "jump_async": {
+        "label": "Biped Jump (async)",
+        "tooltip": "Start jumping in background"
+      },
+      "dance_blocking": {
+        "label": "Biped Dance (blocking)",
+        "tooltip": "Dance N cycles, blocks"
+      },
+      "dance_async": {
+        "label": "Biped Dance (async)",
+        "tooltip": "Start dancing in background"
+      },
+      "swing_blocking": {
+        "label": "Biped Swing (blocking)",
+        "tooltip": "Swing side-to-side N cycles, blocks"
+      },
+      "swing_async": {
+        "label": "Biped Swing (async)",
+        "tooltip": "Start swinging in background"
+      },
+      "bend_blocking": {
+        "label": "Biped Bend (blocking)",
+        "tooltip": "Bend left or right N times, blocks"
+      },
+      "bend_async": {
+        "label": "Biped Bend (async)",
+        "tooltip": "Start bending in background"
+      },
+      "moonwalk_blocking": {
+        "label": "Biped Moonwalk (blocking)",
+        "tooltip": "Moonwalk N steps, blocks"
+      },
+      "moonwalk_async": {
+        "label": "Biped Moonwalk (async)",
+        "tooltip": "Start moonwalking in background"
+      },
+      "gesture": {
+        "label": "Biped Gesture",
+        "tooltip": "Play DigiCode-original gesture (motion + sound combo, intent-based naming, no OttoDIYLib derivation)",
+        "greeting": "Greeting",
+        "acknowledge": "Acknowledge",
+        "yes": "Yes",
+        "no": "No",
+        "curiosity": "Curiosity",
+        "search": "Search",
+        "idle_breathing": "Idle Breathing",
+        "cheer": "Cheer",
+        "thinking": "Thinking",
+        "surprise": "Surprise",
+        "sleepy": "Sleepy",
+        "wakeup": "Wake Up",
+        "confirmation": "Confirmation",
+        "error_alert": "Error Alert"
+      },
+      "is_idle": {
+        "label": "Biped is idle?",
+        "tooltip": "Returns true if biped is idle (no async motion running)"
+      },
+      "wait_until_idle": {
+        "label": "Wait until biped idle",
+        "tooltip": "Block until biped async motion completes (barrier for IoT loop coexistence)"
+      }
+    },
+    "morpher": {
+      "init": {
+        "label": "Morpher Init",
+        "tooltip": "Initialize Morpher (transforming) robot (4 servos)"
+      },
+      "set_mode": {
+        "label": "Morpher Set Mode",
+        "tooltip": "Set Morpher mode flag (Walk = 4-leg / Roll = wheel mode); state flag only, no physical transformation"
+      },
+      "mode": {
+        "walk": "Walk",
+        "roll": "Roll"
+      },
+      "home_blocking": {
+        "label": "Morpher Home (blocking)",
+        "tooltip": "Move Morpher to upright home position, blocks until done"
+      },
+      "stop": {
+        "label": "Morpher Stop",
+        "tooltip": "Stop any in-progress Morpher motion"
+      },
+      "is_idle": {
+        "label": "Morpher is idle?",
+        "tooltip": "Returns true if Morpher is idle (no async motion running)"
+      },
+      "wait_until_idle": {
+        "label": "Wait until Morpher idle",
+        "tooltip": "Block until Morpher async motion completes"
+      }
+    },
+    "rover": {
+      "init_servo": {
+        "label": "Rover Init (continuous servos)",
+        "tooltip": "Initialize Rover with 2-pin continuous rotation servos"
+      },
+      "init_dc": {
+        "label": "Rover Init (DC motor)",
+        "tooltip": "Initialize Rover with 4-pin H-bridge DC motors"
+      },
+      "left": {
+        "pin": "left pin"
+      },
+      "right": {
+        "pin": "right pin"
+      },
+      "dc": {
+        "l": {
+          "in": "left IN1/IN2 pins"
+        },
+        "r": {
+          "in": "right IN1/IN2 pins"
+        }
+      },
+      "is_moving": {
+        "label": "Rover is moving?",
+        "tooltip": "Returns true if Rover is currently moving"
+      }
+    },
+    "buzzer": {
+      "duration": "ms",
+      "freq": "Hz",
+      "from": "from",
+      "to": "to",
+      "play_preset": {
+        "label": "Buzzer Play Preset",
+        "tooltip": "Play a preset sound (DigiCode-original, no OttoDIYLib derivation)"
+      },
+      "play_tone": {
+        "label": "Buzzer Play Tone",
+        "tooltip": "Play a tone at specified frequency for specified ms"
+      },
+      "play_bend": {
+        "label": "Buzzer Bend Tone",
+        "tooltip": "Sweep frequency from init to end over duration ms"
+      },
+      "preset": {
+        "startup": "Startup",
+        "shutdown": "Shutdown",
+        "ok_short": "OK (short)",
+        "error_descending": "Error (descending)",
+        "query_rising": "Query (rising)",
+        "confirmation": "Confirmation",
+        "high_short": "High (short)",
+        "short_high": "Short High",
+        "short_low": "Short Low",
+        "two_high": "Two High",
+        "two_low": "Two Low",
+        "rising_fast": "Rising (fast)",
+        "falling_slow": "Falling (slow)",
+        "rising_pair": "Rising Pair",
+        "falling_pair": "Falling Pair",
+        "query_pair": "Query Pair",
+        "fanfare": "Fanfare"
+      }
+    },
+    "stepper": {
+      "init": {
+        "4wire": {
+          "label": "Stepper Init (4-wire ULN2003)",
+          "tooltip": "Initialize stepper with ULN2003 driver (28BYJ-48 motor, FULL4WIRE mode, AccelStepper backed)"
+        },
+        "driver": {
+          "label": "Stepper Init (Driver A4988/DRV8825)",
+          "tooltip": "Initialize stepper with A4988/DRV8825 driver (STEP/DIR/EN pins, AccelStepper DRIVER mode)"
+        },
+        "hw": {
+          "label": "Stepper Init (HW peripheral)",
+          "tooltip": "High-speed stepper via ESP32 RMT/MCPWM peripheral (FastAccelStepper, target 200 kHz)"
+        }
+      },
+      "set_microstep": {
+        "label": "Stepper Microstep",
+        "tooltip": "Set microstep multiplier (HW MS1/MS2/MS3 pins must be wired accordingly)"
+      },
+      "set_direction": {
+        "label": "Stepper Direction",
+        "tooltip": "Set direction for next stepper_step"
+      },
+      "set_speed": {
+        "label": "Stepper Speed",
+        "tooltip": "Set max speed (step/sec)"
+      },
+      "stop": {
+        "label": "Stepper Stop",
+        "tooltip": "Stop stepper immediately (target = current)"
+      },
+      "is_at_target": {
+        "label": "Stepper at target?",
+        "tooltip": "Returns true if stepper reached target"
+      },
+      "get_position": {
+        "label": "Stepper position",
+        "tooltip": "Get current stepper position (step count from origin)"
+      },
+      "wait": {
+        "label": "Wait until stepper at target",
+        "tooltip": "Block until stepper async motion completes"
+      }
     }
   },
   "toolbox": {
@@ -4052,8 +4116,6 @@
       "parts": {
         "leftFoot": "Left Foot",
         "rightFoot": "Right Foot",
-        "leftAnkle": "Left Ankle",
-        "rightAnkle": "Right Ankle",
         "leftArm": "Left Arm",
         "rightArm": "Right Arm",
         "leftWheel": "Left Wheel",
@@ -4062,7 +4124,9 @@
         "servo2": "Servo 2",
         "servo3": "Servo 3",
         "servo4": "Servo 4",
-        "servoN": "Servo {{n}}"
+        "servoN": "Servo {{n}}",
+        "leftLeg": "Left Leg",
+        "rightLeg": "Right Leg"
       }
     }
   },

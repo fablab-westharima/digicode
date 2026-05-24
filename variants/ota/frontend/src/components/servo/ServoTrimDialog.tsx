@@ -49,20 +49,23 @@ interface ServoPresetDef {
 const SERVO_PRESETS_DEF: ServoPresetDef[] = [
   {
     id: 'humanoid-basic',
+    // case 23 incident D 解消 (Phase C、Session 147): nameKey を新 lib const
+    //   (DigiBiped: LEFT_LEG=0, RIGHT_LEG=1, LEFT_FOOT=2, RIGHT_FOOT=3) に揃える。
+    //   pin 番号は不変 (27/15/14/13)、UI 表記が新 lib と semantic 一致。
     servos: [
-      { nameKey: 'leftFoot', pin: 27, type: '180' },
-      { nameKey: 'rightFoot', pin: 15, type: '180' },
-      { nameKey: 'leftAnkle', pin: 14, type: '180' },
-      { nameKey: 'rightAnkle', pin: 13, type: '180' },
+      { nameKey: 'leftLeg', pin: 27, type: '180' },
+      { nameKey: 'rightLeg', pin: 15, type: '180' },
+      { nameKey: 'leftFoot', pin: 14, type: '180' },
+      { nameKey: 'rightFoot', pin: 13, type: '180' },
     ],
   },
   {
     id: 'humanoid-plus',
     servos: [
-      { nameKey: 'leftFoot', pin: 27, type: '180' },
-      { nameKey: 'rightFoot', pin: 15, type: '180' },
-      { nameKey: 'leftAnkle', pin: 14, type: '180' },
-      { nameKey: 'rightAnkle', pin: 13, type: '180' },
+      { nameKey: 'leftLeg', pin: 27, type: '180' },
+      { nameKey: 'rightLeg', pin: 15, type: '180' },
+      { nameKey: 'leftFoot', pin: 14, type: '180' },
+      { nameKey: 'rightFoot', pin: 13, type: '180' },
       { nameKey: 'leftArm', pin: 12, type: '180' },
       { nameKey: 'rightArm', pin: 26, type: '180' },
     ],
@@ -77,10 +80,10 @@ const SERVO_PRESETS_DEF: ServoPresetDef[] = [
   {
     id: 'transform',
     servos: [
-      { nameKey: 'leftFoot', pin: 27, type: '180' },
-      { nameKey: 'rightFoot', pin: 15, type: '180' },
-      { nameKey: 'leftAnkle', pin: 14, type: '360' },
-      { nameKey: 'rightAnkle', pin: 13, type: '360' },
+      { nameKey: 'leftLeg', pin: 27, type: '180' },
+      { nameKey: 'rightLeg', pin: 15, type: '180' },
+      { nameKey: 'leftFoot', pin: 14, type: '360' },
+      { nameKey: 'rightFoot', pin: 13, type: '360' },
     ],
   },
   {

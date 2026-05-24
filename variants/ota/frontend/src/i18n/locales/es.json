@@ -1978,30 +1978,6 @@
       "getSpeed": "Velocidad actual",
       "getSpeedTooltip": "Obtener la velocidad de motor actualmente establecida"
     },
-    "wheel": {
-      "init": "Wheel iniciar",
-      "initTooltip": "Inicializar Wheel",
-      "leftWheelPin": "Pin de rueda izquierda",
-      "rightWheelPin": "Pin de rueda derecha",
-      "forward": "Wheel adelante",
-      "forwardTooltip": "Avanzar",
-      "speed": "Velocidad",
-      "speedFast": "Rápido",
-      "speedNormal": "Normal",
-      "speedSlow": "Lento",
-      "backward": "Wheel atrás",
-      "backwardTooltip": "Retroceder",
-      "turnLeft": "Wheel girar izquierda",
-      "turnLeftTooltip": "Girar izquierda",
-      "turnRight": "Wheel girar derecha",
-      "turnRightTooltip": "Girar derecha",
-      "spinLeft": "Wheel giro izquierda",
-      "spinLeftTooltip": "Girar izquierda en el sitio",
-      "spinRight": "Wheel giro derecha",
-      "spinRightTooltip": "Girar derecha en el sitio",
-      "stop": "Wheel parar",
-      "stopTooltip": "Detener"
-    },
     "pid": {
       "init": "Iniciar control PID",
       "initTooltip": "Inicializar controlador PID. Kp=proporcional, Ki=integral, Kd=derivada",
@@ -2406,147 +2382,9 @@
       "right": "derecha",
       "leftLeg": "pin de la pierna izquierda",
       "rightLeg": "pin de la pierna derecha",
-      "leftAnkle": "pin del tobillo izquierdo",
-      "rightAnkle": "pin del tobillo derecho"
-    },
-    "humanoid": {
-      "init": {
-        "label": "Inicializar Humanoid",
-        "tooltip": "Inicializar robot Humanoid (números de pin desde preset)"
-      },
-      "home": {
-        "label": "Posición inicial Humanoid",
-        "tooltip": "Poner Humanoid en posición vertical"
-      },
-      "walk": {
-        "label": "Humanoid caminar",
-        "tooltip": "Hacer que Humanoid camine"
-      },
-      "turn": {
-        "label": "Humanoid girar",
-        "tooltip": "Hacer que Humanoid gire"
-      },
-      "jump": {
-        "label": "Humanoid saltar",
-        "tooltip": "Hacer que Humanoid salte"
-      },
-      "dance": {
-        "label": "Humanoid bailar",
-        "tooltip": "Hacer que Humanoid baile"
-      },
-      "swing": {
-        "label": "Humanoid balanceo",
-        "tooltip": "Balancear Humanoid de lado a lado"
-      },
-      "bend": {
-        "label": "Humanoid inclinar",
-        "tooltip": "Doblar Humanoid hacia la izquierda o hacia la derecha"
-      },
-      "moonwalk": {
-        "label": "Humanoid moonwalk",
-        "tooltip": "Hacer que Humanoid haga moonwalk"
-      },
-      "gesture": {
-        "label": "Humanoid gesto",
-        "tooltip": "Humanoid expresa emociones con movimiento y sonido",
-        "happy": "Feliz",
-        "superHappy": "Muy feliz",
-        "sad": "Triste",
-        "victory": "Victoria",
-        "angry": "Enojado",
-        "sleeping": "Durmiendo",
-        "fretful": "Nervioso",
-        "love": "Amor",
-        "confused": "Confundido",
-        "fart": "Pedo",
-        "wave": "Saludo",
-        "magic": "Magia",
-        "fail": "Fallo"
-      },
-      "sound": {
-        "label": "Humanoid sonido",
-        "tooltip": "Humanoid reproduce un sonido",
-        "connection": "Conexión",
-        "disconnection": "Desconexión",
-        "buttonPushed": "Botón pulsado",
-        "mode1": "Modo 1",
-        "mode2": "Modo 2",
-        "mode3": "Modo 3",
-        "surprise": "Sorpresa",
-        "ohOoh": "Oh Ooh",
-        "ohOoh2": "Oh Ooh 2",
-        "cuddly": "Cariñoso",
-        "sleeping": "Durmiendo",
-        "happy": "Feliz",
-        "superHappy": "Muy feliz",
-        "happyShort": "Feliz corto",
-        "sad": "Triste",
-        "confused": "Confundido",
-        "fart1": "Pedo 1",
-        "fart2": "Pedo 2",
-        "fart3": "Pedo 3"
-      }
-    },
-    "transform": {
-      "init": {
-        "label": "Transform iniciar",
-        "tooltip": "Inicializar Transform (números de pin desde preset)"
-      },
-      "mode": {
-        "label": "Ninja modo",
-        "walk": "Caminar",
-        "roll": "Roll (rodar)",
-        "tooltip": "Cambiar entre modos Walk (4 patas) y Roll (rueda)"
-      },
-      "transform": {
-        "label": "Ninja transformar",
-        "tooltip": "Transformación física con movimiento de servo (Walk↔Roll)"
-      },
-      "home": {
-        "label": "Ninja inicio",
-        "tooltip": "Poner en posición vertical"
-      },
-      "walk": {
-        "label": "Ninja caminar",
-        "tooltip": "Caminar en modo Walk"
-      },
-      "roll": {
-        "label": "Ninja rodar",
-        "tooltip": "Rodar en modo Roll"
-      },
-      "rollRotate": {
-        "label": "Ninja rotar rodando",
-        "tooltip": "Rotar en modo Roll"
-      },
-      "turn": {
-        "label": "Ninja girar",
-        "tooltip": "Girar en modo Walk"
-      },
-      "stop": {
-        "label": "Ninja parar",
-        "tooltip": "Detener modo especificado"
-      },
-      "pushup": {
-        "label": "Ninja flexión",
-        "tooltip": "Hacer flexiones"
-      },
-      "dance": {
-        "label": "Ninja bailar",
-        "tooltip": "Baile"
-      }
-    },
-    "a4988": {
-      "dir": "DIR",
-      "en": "EN",
-      "step": "STEP",
-      "direction": "Dirección A4988",
-      "direction_tooltip": "Establece la dirección del A4988. El siguiente a4988_step se ejecuta hacia adelante (positivo) o hacia atrás (negativo).",
-      "init": "Inicializar A4988",
-      "init_tooltip": "Inicializa el controlador de motor paso a paso A4988. Especifica los pines STEP/DIR/EN. EN se activa en LOW. Usa el modo DRIVER de AccelStepper.",
-      "microstep": "Micropaso A4988",
-      "microstep_tooltip": "Establece el modo micropaso del A4988 (multiplicador interno de pasos). ⚠️ Los pines MS1/MS2/MS3 del HW deben cablearse según este valor.",
-      "step_block": "Paso A4988",
-      "step_tooltip": "Ejecuta el A4988 con el número de pasos especificado (factor de micropaso incluido). Bloquea hasta completar mediante runToNewPosition."
+      "leftFoot": "pin del pie izquierdo",
+      "rightFoot": "pin del pie derecho",
+      "pin": "pin"
     },
     "array": {
       "1d": "1D",
@@ -3033,13 +2871,239 @@
       "show_time": "TM1637 mostrar hora",
       "show_time_tooltip": "Muestra la hora en formato HH:MM en TM1637 (colon encendido). Requiere tm1637_init previamente."
     },
-    "uln2003": {
-      "init": "Inicializar ULN2003",
-      "init_tooltip": "Inicializa el driver de motor paso a paso ULN2003 + 28BYJ-48. Modo FULL4WIRE de AccelStepper (orden de pines IN1, IN3, IN2, IN4 para giro normal).",
-      "speed": "Velocidad",
-      "step": "Paso ULN2003 (28BYJ-48)",
-      "steps": "Número de pasos",
-      "step_tooltip": "Ejecuta ULN2003 + 28BYJ-48 con los pasos y velocidad indicados (28BYJ-48 1 revolución = 4096 pasos en half-step)."
+    "biped": {
+      "init": {
+        "label": "Inicio bípedo",
+        "tooltip": "Inicializa el robot bípedo DigiBiped (4 patas + zumbador)"
+      },
+      "buzzer": {
+        "pin": "pin del zumbador"
+      },
+      "home_blocking": {
+        "label": "Posición inicial bípeda (bloqueante)",
+        "tooltip": "Mueve el bípedo a la posición vertical, bloquea hasta completarse"
+      },
+      "walk_blocking": {
+        "label": "Caminar bípedo (bloqueante)",
+        "tooltip": "Camina N pasos, bloquea hasta completarse"
+      },
+      "walk_async": {
+        "label": "Caminar bípedo (asíncrono)",
+        "tooltip": "Inicia N pasos en segundo plano; usa biped_wait_until_idle para sincronizar"
+      },
+      "turn_blocking": {
+        "label": "Girar bípedo (bloqueante)",
+        "tooltip": "Gira N veces, bloquea hasta completarse"
+      },
+      "turn_async": {
+        "label": "Girar bípedo (asíncrono)",
+        "tooltip": "Inicia el giro en segundo plano"
+      },
+      "jump_blocking": {
+        "label": "Saltar bípedo (bloqueante)",
+        "tooltip": "Salta N veces, bloquea"
+      },
+      "jump_async": {
+        "label": "Saltar bípedo (asíncrono)",
+        "tooltip": "Inicia el salto en segundo plano"
+      },
+      "dance_blocking": {
+        "label": "Bailar bípedo (bloqueante)",
+        "tooltip": "Baila N ciclos, bloquea"
+      },
+      "dance_async": {
+        "label": "Bailar bípedo (asíncrono)",
+        "tooltip": "Inicia el baile en segundo plano"
+      },
+      "swing_blocking": {
+        "label": "Balancear bípedo (bloqueante)",
+        "tooltip": "Balancea de lado a lado N ciclos, bloquea"
+      },
+      "swing_async": {
+        "label": "Balancear bípedo (asíncrono)",
+        "tooltip": "Inicia el balanceo en segundo plano"
+      },
+      "bend_blocking": {
+        "label": "Doblar bípedo (bloqueante)",
+        "tooltip": "Dobla a izquierda o derecha N veces, bloquea"
+      },
+      "bend_async": {
+        "label": "Doblar bípedo (asíncrono)",
+        "tooltip": "Inicia el doblado en segundo plano"
+      },
+      "moonwalk_blocking": {
+        "label": "Moonwalk bípedo (bloqueante)",
+        "tooltip": "Moonwalk N pasos, bloquea"
+      },
+      "moonwalk_async": {
+        "label": "Moonwalk bípedo (asíncrono)",
+        "tooltip": "Inicia el moonwalk en segundo plano"
+      },
+      "gesture": {
+        "label": "Gesto bípedo",
+        "tooltip": "Reproduce un gesto original DigiCode (movimiento + sonido, nomenclatura por intención, sin derivación de OttoDIYLib)",
+        "greeting": "Saludo",
+        "acknowledge": "Reconocer",
+        "yes": "Sí",
+        "no": "No",
+        "curiosity": "Curiosidad",
+        "search": "Buscar",
+        "idle_breathing": "Respiración en reposo",
+        "cheer": "Animar",
+        "thinking": "Pensando",
+        "surprise": "Sorpresa",
+        "sleepy": "Somnoliento",
+        "wakeup": "Despertar",
+        "confirmation": "Confirmación",
+        "error_alert": "Alerta de error"
+      },
+      "is_idle": {
+        "label": "¿Bípedo en reposo?",
+        "tooltip": "Devuelve true si el bípedo está en reposo (sin movimiento asíncrono)"
+      },
+      "wait_until_idle": {
+        "label": "Esperar a que el bípedo esté en reposo",
+        "tooltip": "Bloquea hasta que termine el movimiento asíncrono del bípedo (barrera para coexistencia con bucle IoT)"
+      }
+    },
+    "morpher": {
+      "init": {
+        "label": "Inicio Morpher",
+        "tooltip": "Inicializa el robot Morpher (transformable) (4 servos)"
+      },
+      "set_mode": {
+        "label": "Establecer modo Morpher",
+        "tooltip": "Establece la bandera de modo Morpher (Walk = 4 patas / Roll = ruedas); solo bandera de estado, sin transformación física"
+      },
+      "mode": {
+        "walk": "Caminar",
+        "roll": "Rodar"
+      },
+      "home_blocking": {
+        "label": "Posición inicial Morpher (bloqueante)",
+        "tooltip": "Mueve Morpher a la posición vertical, bloquea hasta completarse"
+      },
+      "stop": {
+        "label": "Detener Morpher",
+        "tooltip": "Detiene cualquier movimiento Morpher en curso"
+      },
+      "is_idle": {
+        "label": "¿Morpher en reposo?",
+        "tooltip": "Devuelve true si Morpher está en reposo (sin movimiento asíncrono)"
+      },
+      "wait_until_idle": {
+        "label": "Esperar a que Morpher esté en reposo",
+        "tooltip": "Bloquea hasta que termine el movimiento asíncrono de Morpher"
+      }
+    },
+    "rover": {
+      "init_servo": {
+        "label": "Inicio Rover (servos continuos)",
+        "tooltip": "Inicializa Rover con servos de rotación continua de 2 pines"
+      },
+      "init_dc": {
+        "label": "Inicio Rover (motor DC)",
+        "tooltip": "Inicializa Rover con motores DC de puente H de 4 pines"
+      },
+      "left": {
+        "pin": "pin izquierdo"
+      },
+      "right": {
+        "pin": "pin derecho"
+      },
+      "dc": {
+        "l": {
+          "in": "pines IN1/IN2 izquierdos"
+        },
+        "r": {
+          "in": "pines IN1/IN2 derechos"
+        }
+      },
+      "is_moving": {
+        "label": "¿Rover en movimiento?",
+        "tooltip": "Devuelve true si Rover está en movimiento"
+      }
+    },
+    "buzzer": {
+      "duration": "ms",
+      "freq": "Hz",
+      "from": "desde",
+      "to": "a",
+      "play_preset": {
+        "label": "Reproducir preset del zumbador",
+        "tooltip": "Reproduce un sonido predefinido (original DigiCode, sin derivación de OttoDIYLib)"
+      },
+      "play_tone": {
+        "label": "Reproducir tono del zumbador",
+        "tooltip": "Reproduce un tono a la frecuencia y ms especificados"
+      },
+      "play_bend": {
+        "label": "Tono curvado del zumbador",
+        "tooltip": "Barre la frecuencia desde el inicio al final durante ms"
+      },
+      "preset": {
+        "startup": "Inicio",
+        "shutdown": "Apagado",
+        "ok_short": "OK (corto)",
+        "error_descending": "Error (descendente)",
+        "query_rising": "Consulta (ascendente)",
+        "confirmation": "Confirmación",
+        "high_short": "Agudo (corto)",
+        "short_high": "Agudo corto",
+        "short_low": "Grave corto",
+        "two_high": "Dos agudos",
+        "two_low": "Dos graves",
+        "rising_fast": "Ascendente rápido",
+        "falling_slow": "Descendente lento",
+        "rising_pair": "Par ascendente",
+        "falling_pair": "Par descendente",
+        "query_pair": "Par de consulta",
+        "fanfare": "Fanfarria"
+      }
+    },
+    "stepper": {
+      "init": {
+        "4wire": {
+          "label": "Inicio Stepper (4 hilos ULN2003)",
+          "tooltip": "Inicializa el motor paso a paso con driver ULN2003 (motor 28BYJ-48, modo FULL4WIRE, AccelStepper)"
+        },
+        "driver": {
+          "label": "Inicio Stepper (Driver A4988/DRV8825)",
+          "tooltip": "Inicializa el motor paso a paso con driver A4988/DRV8825 (pines STEP/DIR/EN, modo DRIVER de AccelStepper)"
+        },
+        "hw": {
+          "label": "Inicio Stepper (periférico HW)",
+          "tooltip": "Motor paso a paso de alta velocidad mediante periférico RMT/MCPWM de ESP32 (FastAccelStepper, objetivo 200 kHz)"
+        }
+      },
+      "set_microstep": {
+        "label": "Microstep Stepper",
+        "tooltip": "Establece el multiplicador de microstep (pines HW MS1/MS2/MS3 deben estar cableados)"
+      },
+      "set_direction": {
+        "label": "Dirección Stepper",
+        "tooltip": "Establece la dirección para el próximo stepper_step"
+      },
+      "set_speed": {
+        "label": "Velocidad Stepper",
+        "tooltip": "Establece la velocidad máxima (paso/seg)"
+      },
+      "stop": {
+        "label": "Detener Stepper",
+        "tooltip": "Detiene el stepper inmediatamente (target = actual)"
+      },
+      "is_at_target": {
+        "label": "¿Stepper en objetivo?",
+        "tooltip": "Devuelve true si el stepper alcanzó el objetivo"
+      },
+      "get_position": {
+        "label": "Posición Stepper",
+        "tooltip": "Obtiene la posición actual del stepper (pasos desde el origen)"
+      },
+      "wait": {
+        "label": "Esperar hasta que el stepper esté en el objetivo",
+        "tooltip": "Bloquea hasta que termine el movimiento asíncrono del stepper"
+      }
     }
   },
   "toolbox": {
@@ -4052,8 +4116,6 @@
       "parts": {
         "leftFoot": "Pie izquierdo",
         "rightFoot": "Pie derecho",
-        "leftAnkle": "Tobillo izquierdo",
-        "rightAnkle": "Tobillo derecho",
         "leftArm": "Brazo izquierdo",
         "rightArm": "Brazo derecho",
         "leftWheel": "Rueda izquierda",
@@ -4062,7 +4124,9 @@
         "servo2": "Servo 2",
         "servo3": "Servo 3",
         "servo4": "Servo 4",
-        "servoN": "Servo {{n}}"
+        "servoN": "Servo {{n}}",
+        "leftLeg": "Pierna izquierda",
+        "rightLeg": "Pierna derecha"
       }
     }
   },

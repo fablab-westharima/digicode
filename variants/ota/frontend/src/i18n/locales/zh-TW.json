@@ -1978,30 +1978,6 @@
       "getSpeed": "目前速度",
       "getSpeedTooltip": "取得目前設定的馬達速度"
     },
-    "wheel": {
-      "init": "Wheel 初始化",
-      "initTooltip": "初始化 Wheel",
-      "leftWheelPin": "左輪腳位",
-      "rightWheelPin": "右輪腳位",
-      "forward": "Wheel 前進",
-      "forwardTooltip": "前進",
-      "speed": "速度",
-      "speedFast": "快",
-      "speedNormal": "正常",
-      "speedSlow": "慢",
-      "backward": "Wheel 後退",
-      "backwardTooltip": "後退",
-      "turnLeft": "Wheel 左轉",
-      "turnLeftTooltip": "左轉",
-      "turnRight": "Wheel 右轉",
-      "turnRightTooltip": "右轉",
-      "spinLeft": "Wheel 左旋",
-      "spinLeftTooltip": "原地左旋",
-      "spinRight": "Wheel 右旋",
-      "spinRightTooltip": "原地右旋",
-      "stop": "Wheel 停止",
-      "stopTooltip": "停止"
-    },
     "pid": {
       "init": "PID 控制初始化",
       "initTooltip": "初始化 PID 控制器。Kp=比例、Ki=積分、Kd=微分增益",
@@ -2406,147 +2382,9 @@
       "right": "右",
       "leftLeg": "左腿腳位",
       "rightLeg": "右腿腳位",
-      "leftAnkle": "左腳踝腳位",
-      "rightAnkle": "右腳踝腳位"
-    },
-    "humanoid": {
-      "init": {
-        "label": "Humanoid 初始化",
-        "tooltip": "初始化 Humanoid 機器人（腳位編號來自預設）"
-      },
-      "home": {
-        "label": "Humanoid 歸位",
-        "tooltip": "將 Humanoid 設為直立姿勢"
-      },
-      "walk": {
-        "label": "Humanoid 行走",
-        "tooltip": "讓 Humanoid 行走"
-      },
-      "turn": {
-        "label": "Humanoid 轉向",
-        "tooltip": "讓 Humanoid 轉向"
-      },
-      "jump": {
-        "label": "Humanoid 跳躍",
-        "tooltip": "讓 Humanoid 跳躍"
-      },
-      "dance": {
-        "label": "Humanoid 跳舞",
-        "tooltip": "讓 Humanoid 跳舞"
-      },
-      "swing": {
-        "label": "Humanoid 搖擺",
-        "tooltip": "Humanoid 左右搖擺"
-      },
-      "bend": {
-        "label": "Humanoid 彎身",
-        "tooltip": "將 Humanoid 向左或向右彎曲"
-      },
-      "moonwalk": {
-        "label": "Humanoid 月球漫步",
-        "tooltip": "讓 Humanoid 月球漫步"
-      },
-      "gesture": {
-        "label": "Humanoid 手勢",
-        "tooltip": "Humanoid 以動作和聲音表現情緒",
-        "happy": "快樂",
-        "superHappy": "超級快樂",
-        "sad": "難過",
-        "victory": "勝利",
-        "angry": "生氣",
-        "sleeping": "睡眠中",
-        "fretful": "煩躁",
-        "love": "愛心",
-        "confused": "困惑",
-        "fart": "放屁",
-        "wave": "揮手",
-        "magic": "魔法",
-        "fail": "失敗"
-      },
-      "sound": {
-        "label": "Humanoid 聲音",
-        "tooltip": "Humanoid 播放聲音",
-        "connection": "連線",
-        "disconnection": "斷線",
-        "buttonPushed": "按鈕按下",
-        "mode1": "模式 1",
-        "mode2": "模式 2",
-        "mode3": "模式 3",
-        "surprise": "驚訝",
-        "ohOoh": "哎喔",
-        "ohOoh2": "哎喔 2",
-        "cuddly": "親密",
-        "sleeping": "睡眠中",
-        "happy": "快樂",
-        "superHappy": "超級快樂",
-        "happyShort": "短暫快樂",
-        "sad": "難過",
-        "confused": "困惑",
-        "fart1": "放屁 1",
-        "fart2": "放屁 2",
-        "fart3": "放屁 3"
-      }
-    },
-    "transform": {
-      "init": {
-        "label": "Transform 初始化",
-        "tooltip": "初始化 Transform（腳位編號來自預設）"
-      },
-      "mode": {
-        "label": "Ninja 模式",
-        "walk": "行走",
-        "roll": "行進 (Roll)",
-        "tooltip": "在 Walk（4 腳）和 Roll（輪）模式間切換"
-      },
-      "transform": {
-        "label": "Ninja 變形",
-        "tooltip": "以伺服動作實際變形 (Walk↔Roll)"
-      },
-      "home": {
-        "label": "Ninja 歸位",
-        "tooltip": "設為直立姿勢"
-      },
-      "walk": {
-        "label": "Ninja 行走",
-        "tooltip": "以 Walk 模式行走"
-      },
-      "roll": {
-        "label": "Ninja 滾動",
-        "tooltip": "以 Roll 模式滾動"
-      },
-      "rollRotate": {
-        "label": "Ninja 滾轉",
-        "tooltip": "以 Roll 模式旋轉"
-      },
-      "turn": {
-        "label": "Ninja 轉向",
-        "tooltip": "以 Walk 模式轉向"
-      },
-      "stop": {
-        "label": "Ninja 停止",
-        "tooltip": "停止指定模式"
-      },
-      "pushup": {
-        "label": "Ninja 伏地挺身",
-        "tooltip": "做伏地挺身"
-      },
-      "dance": {
-        "label": "Ninja 跳舞",
-        "tooltip": "跳舞"
-      }
-    },
-    "a4988": {
-      "dir": "DIR",
-      "en": "EN",
-      "step": "STEP",
-      "direction": "A4988 方向",
-      "direction_tooltip": "設定 A4988 方向。下一個 a4988_step 為正向 (positive) 或反向 (negative) 運轉。",
-      "init": "初始化 A4988",
-      "init_tooltip": "初始化 A4988 步進馬達驅動器。指定 STEP/DIR/EN 腳位。EN 為 LOW 時啟用。使用 AccelStepper DRIVER 模式。",
-      "microstep": "A4988 微步",
-      "microstep_tooltip": "設定 A4988 微步模式 (內部步進倍率)。⚠️ HW 的 MS1/MS2/MS3 腳位也必須配線符合此值。",
-      "step_block": "A4988 步進",
-      "step_tooltip": "以指定步數 (含微步倍率) 運轉 A4988。透過 runToNewPosition 阻塞直到完成。"
+      "leftFoot": "左腳腳位",
+      "rightFoot": "右腳腳位",
+      "pin": "腳位"
     },
     "array": {
       "1d": "1D",
@@ -3033,13 +2871,239 @@
       "show_time": "TM1637 時間顯示",
       "show_time_tooltip": "於 TM1637 以 HH:MM 格式顯示時間 (冒號 on)。事前需要 tm1637_init。"
     },
-    "uln2003": {
-      "init": "初始化 ULN2003",
-      "init_tooltip": "初始化 ULN2003 步進驅動 + 28BYJ-48。AccelStepper FULL4WIRE 模式 (pin 順序 IN1, IN3, IN2, IN4 為正常旋轉)。",
-      "speed": "速度",
-      "step": "ULN2003 (28BYJ-48) 步進",
-      "steps": "步數",
-      "step_tooltip": "以指定步數與速度運轉 ULN2003 + 28BYJ-48 (28BYJ-48 1 圈 = 4096 步,half-step 模式)。"
+    "biped": {
+      "init": {
+        "label": "雙足初始化",
+        "tooltip": "初始化DigiBiped雙足機器人（4腿+蜂鳴器）"
+      },
+      "buzzer": {
+        "pin": "蜂鳴器腳位"
+      },
+      "home_blocking": {
+        "label": "雙足歸位（阻塞）",
+        "tooltip": "將雙足回到直立位置，完成前阻塞"
+      },
+      "walk_blocking": {
+        "label": "雙足行走（阻塞）",
+        "tooltip": "行走N步，完成前阻塞"
+      },
+      "walk_async": {
+        "label": "雙足行走（非同步）",
+        "tooltip": "在背景開始行走N步；使用biped_wait_until_idle同步"
+      },
+      "turn_blocking": {
+        "label": "雙足轉向（阻塞）",
+        "tooltip": "轉向N次，完成前阻塞"
+      },
+      "turn_async": {
+        "label": "雙足轉向（非同步）",
+        "tooltip": "在背景開始轉向"
+      },
+      "jump_blocking": {
+        "label": "雙足跳躍（阻塞）",
+        "tooltip": "跳躍N次，阻塞"
+      },
+      "jump_async": {
+        "label": "雙足跳躍（非同步）",
+        "tooltip": "在背景開始跳躍"
+      },
+      "dance_blocking": {
+        "label": "雙足跳舞（阻塞）",
+        "tooltip": "跳舞N循環，阻塞"
+      },
+      "dance_async": {
+        "label": "雙足跳舞（非同步）",
+        "tooltip": "在背景開始跳舞"
+      },
+      "swing_blocking": {
+        "label": "雙足擺動（阻塞）",
+        "tooltip": "左右擺動N循環，阻塞"
+      },
+      "swing_async": {
+        "label": "雙足擺動（非同步）",
+        "tooltip": "在背景開始擺動"
+      },
+      "bend_blocking": {
+        "label": "雙足彎曲（阻塞）",
+        "tooltip": "向左或向右彎曲N次，阻塞"
+      },
+      "bend_async": {
+        "label": "雙足彎曲（非同步）",
+        "tooltip": "在背景開始彎曲"
+      },
+      "moonwalk_blocking": {
+        "label": "雙足月球漫步（阻塞）",
+        "tooltip": "月球漫步N步，阻塞"
+      },
+      "moonwalk_async": {
+        "label": "雙足月球漫步（非同步）",
+        "tooltip": "在背景開始月球漫步"
+      },
+      "gesture": {
+        "label": "雙足手勢",
+        "tooltip": "播放DigiCode原創手勢（動作+音效，意圖式命名，無OttoDIYLib衍生）",
+        "greeting": "問候",
+        "acknowledge": "確認",
+        "yes": "是",
+        "no": "否",
+        "curiosity": "好奇",
+        "search": "搜尋",
+        "idle_breathing": "待機呼吸",
+        "cheer": "歡呼",
+        "thinking": "思考",
+        "surprise": "驚訝",
+        "sleepy": "想睡",
+        "wakeup": "醒來",
+        "confirmation": "確認",
+        "error_alert": "錯誤警示"
+      },
+      "is_idle": {
+        "label": "雙足是否閒置？",
+        "tooltip": "若雙足閒置（無非同步動作運行）則回傳true"
+      },
+      "wait_until_idle": {
+        "label": "等待雙足閒置",
+        "tooltip": "阻塞直到雙足非同步動作完成（用於與IoT迴圈共存的屏障）"
+      }
+    },
+    "morpher": {
+      "init": {
+        "label": "Morpher初始化",
+        "tooltip": "初始化Morpher（變形）機器人（4個伺服）"
+      },
+      "set_mode": {
+        "label": "設定Morpher模式",
+        "tooltip": "設定Morpher模式旗標（Walk=4腿 / Roll=輪子）；僅狀態旗標，無物理變形"
+      },
+      "mode": {
+        "walk": "行走 (Walk)",
+        "roll": "滾動 (Roll)"
+      },
+      "home_blocking": {
+        "label": "Morpher歸位（阻塞）",
+        "tooltip": "將Morpher回到直立位置，完成前阻塞"
+      },
+      "stop": {
+        "label": "Morpher停止",
+        "tooltip": "停止任何進行中的Morpher動作"
+      },
+      "is_idle": {
+        "label": "Morpher是否閒置？",
+        "tooltip": "若Morpher閒置（無非同步動作運行）則回傳true"
+      },
+      "wait_until_idle": {
+        "label": "等待Morpher閒置",
+        "tooltip": "阻塞直到Morpher非同步動作完成"
+      }
+    },
+    "rover": {
+      "init_servo": {
+        "label": "Rover初始化（連續旋轉伺服）",
+        "tooltip": "使用2腳連續旋轉伺服初始化Rover"
+      },
+      "init_dc": {
+        "label": "Rover初始化（DC馬達）",
+        "tooltip": "使用4腳H橋接DC馬達初始化Rover"
+      },
+      "left": {
+        "pin": "左腳位"
+      },
+      "right": {
+        "pin": "右腳位"
+      },
+      "dc": {
+        "l": {
+          "in": "左IN1/IN2腳位"
+        },
+        "r": {
+          "in": "右IN1/IN2腳位"
+        }
+      },
+      "is_moving": {
+        "label": "Rover是否在移動？",
+        "tooltip": "若Rover正在移動則回傳true"
+      }
+    },
+    "buzzer": {
+      "duration": "ms",
+      "freq": "Hz",
+      "from": "從",
+      "to": "到",
+      "play_preset": {
+        "label": "播放蜂鳴器預設",
+        "tooltip": "播放預設音效（DigiCode原創，無OttoDIYLib衍生）"
+      },
+      "play_tone": {
+        "label": "播放蜂鳴器音調",
+        "tooltip": "以指定頻率播放指定毫秒的音調"
+      },
+      "play_bend": {
+        "label": "蜂鳴器彎曲音調",
+        "tooltip": "在毫秒期間從起始頻率掃描到結束頻率"
+      },
+      "preset": {
+        "startup": "啟動",
+        "shutdown": "關閉",
+        "ok_short": "確認（短）",
+        "error_descending": "錯誤（下降）",
+        "query_rising": "詢問（上升）",
+        "confirmation": "確認",
+        "high_short": "高音（短）",
+        "short_high": "短高音",
+        "short_low": "短低音",
+        "two_high": "兩個高音",
+        "two_low": "兩個低音",
+        "rising_fast": "快速上升",
+        "falling_slow": "緩慢下降",
+        "rising_pair": "上升對",
+        "falling_pair": "下降對",
+        "query_pair": "詢問對",
+        "fanfare": "號角聲"
+      }
+    },
+    "stepper": {
+      "init": {
+        "4wire": {
+          "label": "步進馬達初始化（4線ULN2003）",
+          "tooltip": "使用ULN2003驅動初始化步進馬達（28BYJ-48馬達，FULL4WIRE模式，AccelStepper）"
+        },
+        "driver": {
+          "label": "步進馬達初始化（A4988/DRV8825驅動）",
+          "tooltip": "使用A4988/DRV8825驅動初始化步進馬達（STEP/DIR/EN腳位，AccelStepper DRIVER模式）"
+        },
+        "hw": {
+          "label": "步進馬達初始化（HW周邊）",
+          "tooltip": "透過ESP32 RMT/MCPWM周邊的高速步進馬達（FastAccelStepper，目標200 kHz）"
+        }
+      },
+      "set_microstep": {
+        "label": "步進馬達微步",
+        "tooltip": "設定微步倍率（HW MS1/MS2/MS3腳位必須對應配線）"
+      },
+      "set_direction": {
+        "label": "步進馬達方向",
+        "tooltip": "設定下次stepper_step的方向"
+      },
+      "set_speed": {
+        "label": "步進馬達速度",
+        "tooltip": "設定最大速度（步/秒）"
+      },
+      "stop": {
+        "label": "步進馬達停止",
+        "tooltip": "立即停止步進馬達（target = current）"
+      },
+      "is_at_target": {
+        "label": "步進馬達在目標位置？",
+        "tooltip": "若步進馬達已到達目標則回傳true"
+      },
+      "get_position": {
+        "label": "步進馬達位置",
+        "tooltip": "取得步進馬達當前位置（從原點起的步數）"
+      },
+      "wait": {
+        "label": "等待步進馬達到達目標",
+        "tooltip": "阻塞直到步進馬達非同步動作完成"
+      }
     }
   },
   "toolbox": {
@@ -4052,8 +4116,6 @@
       "parts": {
         "leftFoot": "左腳",
         "rightFoot": "右腳",
-        "leftAnkle": "左腳踝",
-        "rightAnkle": "右腳踝",
         "leftArm": "左臂",
         "rightArm": "右臂",
         "leftWheel": "左輪",
@@ -4062,7 +4124,9 @@
         "servo2": "伺服 2",
         "servo3": "伺服 3",
         "servo4": "伺服 4",
-        "servoN": "伺服 {{n}}"
+        "servoN": "伺服 {{n}}",
+        "leftLeg": "左腿",
+        "rightLeg": "右腿"
       }
     }
   },
