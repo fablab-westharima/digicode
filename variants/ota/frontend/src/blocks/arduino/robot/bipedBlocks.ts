@@ -28,7 +28,7 @@
 
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
-import { getHumanoidPins, getPinFromPreset } from '@/utils/pinHelper';
+import { getHumanoidPins, getPinFromPreset, getServoPulseWidth, getServoSpeed, getServoTrim } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -78,8 +78,32 @@ javascriptGenerator.forBlock['biped_init'] = function(block: Blockly.Block) {
   const pinBuzzer = block.getFieldValue('PIN_BUZZER');
   generator.definitions_['include_digibiped'] = '#include <DigiBiped.h>';
   generator.definitions_['biped_instance'] = 'DigiBiped biped;';
-  // Phase B-2: 基本 init のみ emit。 Phase B-3 で pulse + speed + trim 3 軸 per-channel emit 追加 (E1)。
-  return `  biped.init(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF}, ${pinBuzzer});\n`;
+  // Phase B-3 (Session 146、E1 = pulse + speed + trim 3 軸統合): per-channel emit (default 値以外のみ、R1 invariant)。
+  // 各 channel (index 0=LL, 1=RL, 2=LF, 3=RF) について getServo{PulseWidth,Speed,Trim}(pin) を呼び、
+  // default 以外なら biped.setChannelPulseRange/MaxRate/Trim(i, ...) emit。
+  // case 23 incident A (silent ignore cluster) 完全解消 = robot block 経由でも pulse/speed/trim が HW に到達。
+  const pins = [pinLL, pinRL, pinLF, pinRF];
+  const setupLines: string[] = [];
+  for (let i = 0; i < 4; i++) {
+    const pinNum = parseInt(pins[i], 10);
+    if (isNaN(pinNum)) continue;
+    const pulse = getServoPulseWidth(pinNum);
+    const speed = getServoSpeed(pinNum);
+    const trim = getServoTrim(pinNum);
+    if (pulse.min !== 500 || pulse.max !== 2400) {
+      setupLines.push(`  biped.setChannelPulseRange(${i}, ${pulse.min}, ${pulse.max});`);
+    }
+    if (speed > 0) {
+      setupLines.push(`  biped.setChannelMaxRate(${i}, ${speed});`);
+    }
+    if (trim !== 0) {
+      setupLines.push(`  biped.setChannelTrim(${i}, ${trim});`);
+    }
+  }
+  // init は最後 (setChannelPulseRange は attach 前必要、setMaxRate/setTrim は attach 後でも可だが
+  // 設計上 init() 内で attach するため per-channel 設定を先行 = lib 側で reorder 吸収)。
+  setupLines.push(`  biped.init(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF}, ${pinBuzzer});`);
+  return setupLines.join('\n') + '\n';
 };
 
 // ===== biped_home_blocking =====

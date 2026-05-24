@@ -14,6 +14,7 @@
  */
 import * as Blockly from 'blockly';
 import { javascriptGenerator, Order } from 'blockly/javascript';
+import { getPidGains } from '@/utils/pinHelper';
 
 // ========================================
 // PID制御初期化
@@ -48,9 +49,16 @@ Blockly.Blocks['pid_init'] = {
 
 javascriptGenerator.forBlock['pid_init'] = function(block: Blockly.Block) {
   const name = block.getFieldValue('NAME');
-  const kp = javascriptGenerator.valueToCode(block, 'KP', Order.ATOMIC) || '0.5';
-  const ki = javascriptGenerator.valueToCode(block, 'KI', Order.ATOMIC) || '0.0';
-  const kd = javascriptGenerator.valueToCode(block, 'KD', Order.ATOMIC) || '0.1';
+  // Phase B-3 (Session 146、case 23 incident F generator-side 解消、D-new-6 (B) 確定):
+  // KP/KI/KD value input optional 化 = 未接続時は usePIDTuningStore (PIDTuningPanel slider 値) を default 取得。
+  // PIDTuningPanel で slider 操作 → store update → pid_init 再生成 cpp に値反映 = orphan storage 解消の必要条件。
+  // 旧固定 '0.5'/'0.0'/'0.1' fallback は PIDTuningPanel 値が consumer 0 だった orphan の原因 (case 23 incident F)。
+  // 新 fallback = pidTuningStore.getState() 値 = user が PIDTuningPanel で設定した値。
+  // (Phase D commit 2 で全 transport runtime command + PIDTuningPanel sendToESP32 button 経由 runtime override 追加 = 十分条件)
+  const gains = getPidGains();
+  const kp = javascriptGenerator.valueToCode(block, 'KP', Order.ATOMIC) || String(gains.kp);
+  const ki = javascriptGenerator.valueToCode(block, 'KI', Order.ATOMIC) || String(gains.ki);
+  const kd = javascriptGenerator.valueToCode(block, 'KD', Order.ATOMIC) || String(gains.kd);
 
   javascriptGenerator.definitions_[`pid_${name}_vars`] =
     `// PID制御変数 (${name})\n` +

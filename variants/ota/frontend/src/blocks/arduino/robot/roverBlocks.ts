@@ -22,7 +22,7 @@
 
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
-import { getWheelPins, getMotorPins } from '@/utils/pinHelper';
+import { getWheelPins, getMotorPins, getServoPulseWidth, getServoSpeed, getServoTrim } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -50,7 +50,28 @@ javascriptGenerator.forBlock['rover_init_servo'] = function(block: Blockly.Block
   const pinR = block.getFieldValue('PIN_R');
   generator.definitions_['include_digirover'] = '#include <DigiRover.h>';
   generator.definitions_['rover_instance'] = 'DigiRover rover;';
-  return `  rover.initServoMode(${pinL}, ${pinR});\n`;
+  // Phase B-3 (Session 146、E1): 連続回転 servo (2 channel) 3 軸 per-channel emit (default 以外のみ、R1)。
+  // continuous-rotation servo: pulse range は通常 default、speed (= acceleration %/sec)、trim (= 90° stop center からの shift)。
+  const pins = [pinL, pinR];
+  const setupLines: string[] = [];
+  for (let i = 0; i < 2; i++) {
+    const pinNum = parseInt(pins[i], 10);
+    if (isNaN(pinNum)) continue;
+    const pulse = getServoPulseWidth(pinNum);
+    const speed = getServoSpeed(pinNum);
+    const trim = getServoTrim(pinNum);
+    if (pulse.min !== 500 || pulse.max !== 2400) {
+      setupLines.push(`  rover.setChannelPulseRange(${i}, ${pulse.min}, ${pulse.max});`);
+    }
+    if (speed > 0) {
+      setupLines.push(`  rover.setChannelMaxRate(${i}, ${speed});`);
+    }
+    if (trim !== 0) {
+      setupLines.push(`  rover.setChannelTrim(${i}, ${trim});`);
+    }
+  }
+  setupLines.push(`  rover.initServoMode(${pinL}, ${pinR});`);
+  return setupLines.join('\n') + '\n';
 };
 
 // ===== rover_init_dc_motor (4-pin DC motor mode、case 19 dead-code 露出) =====

@@ -16,7 +16,7 @@
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
 import { pythonGenerator } from 'blockly/python';
-import { getServoPins, getServoPulseWidth, getServoSpeed } from '@/utils/pinHelper';
+import { getServoPins, getServoPulseWidth, getServoSpeed, getServoTrim } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -134,8 +134,14 @@ javascriptGenerator.forBlock['servo_write'] = function(block: Blockly.Block) {
   //   - struct field は volatile + 32-bit aligned word で atomic write
   //   - attach は setup() 1 回 = task spawn 前 = global state race なし
   const speed = getServoSpeed(isNaN(pinNum) ? undefined : pinNum);
+  // Phase B-3 (Session 146、E1 = 3 軸統合、case 23 incident A 解消): trim 軸追加
+  // trim === 0 (default) → byte-identical 旧挙動 (R1 invariant 維持) / trim != 0 → constrain(angle + trim, 0, 180)
+  const trim = getServoTrim(isNaN(pinNum) ? undefined : pinNum);
+  const angleExpr = trim !== 0
+    ? `constrain(String(${angle}).toInt() + (${trim}), 0, 180)`
+    : `String(${angle}).toInt()`;
   if (speed <= 0) {
-    return `  servo${pin}.write(String(${angle}).toInt());\n`;
+    return `  servo${pin}.write(${angleExpr});\n`;
   }
 
   // speed > 0: inject the non-blocking helper once (deduped via definitions_
@@ -188,7 +194,7 @@ void _servoStart(Servo& s, int pin, int target, int degPerSec) {
   }
 }
 `;
-  return `  _servoStart(servo${pin}, ${pin}, String(${angle}).toInt(), ${speed});\n`;
+  return `  _servoStart(servo${pin}, ${pin}, ${angleExpr}, ${speed});\n`;
 };
 
 pythonGenerator.forBlock['servo_write'] = function(block: Blockly.Block) {

@@ -18,7 +18,7 @@
 
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
-import { getTransformPins } from '@/utils/pinHelper';
+import { getTransformPins, getServoPulseWidth, getServoSpeed, getServoTrim } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -60,7 +60,27 @@ javascriptGenerator.forBlock['morpher_init'] = function(block: Blockly.Block) {
   const pinRF = block.getFieldValue('PIN_RF');
   generator.definitions_['include_digimorpher'] = '#include <DigiMorpher.h>';
   generator.definitions_['morpher_instance'] = 'DigiMorpher morpher;';
-  return `  morpher.init(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF});\n`;
+  // Phase B-3 (Session 146、E1): per-channel 3 軸 emit (default 以外のみ、R1 invariant)、biped_init と同 pattern。
+  const pins = [pinLL, pinRL, pinLF, pinRF];
+  const setupLines: string[] = [];
+  for (let i = 0; i < 4; i++) {
+    const pinNum = parseInt(pins[i], 10);
+    if (isNaN(pinNum)) continue;
+    const pulse = getServoPulseWidth(pinNum);
+    const speed = getServoSpeed(pinNum);
+    const trim = getServoTrim(pinNum);
+    if (pulse.min !== 500 || pulse.max !== 2400) {
+      setupLines.push(`  morpher.setChannelPulseRange(${i}, ${pulse.min}, ${pulse.max});`);
+    }
+    if (speed > 0) {
+      setupLines.push(`  morpher.setChannelMaxRate(${i}, ${speed});`);
+    }
+    if (trim !== 0) {
+      setupLines.push(`  morpher.setChannelTrim(${i}, ${trim});`);
+    }
+  }
+  setupLines.push(`  morpher.init(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF});`);
+  return setupLines.join('\n') + '\n';
 };
 
 // ===== morpher_set_mode (state flag、 blocking semantic 不要) =====
