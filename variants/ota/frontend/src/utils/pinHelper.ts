@@ -4,6 +4,7 @@
  */
 
 import { usePinPresetStore } from '../stores/pinPresetStore';
+import { usePIDTuningStore } from '../stores/pidTuningStore';
 
 /**
  * 現在のプリセットからピン番号を取得
@@ -136,6 +137,50 @@ export function getServoSpeed(pin?: number): number {
     }
   }
   return config.speedDegPerSec ?? 0;
+}
+
+/**
+ * サーボの trim (°) を取得 (Phase B-1、Session 146、E1 = pulse + speed + trim 3 軸統合)
+ *
+ * 解決順序: perPin override (`config.perPinConfigs[].trimDeg`、明示時のみ field 存在)
+ *           → global default (`config.trimDeg`)
+ *           → 0 fallback (legacy state、v10 migrate 前)
+ *
+ * 戻り値:
+ *   0 = no trim = 既存 cpp 形状不変、Phase B-3 generator は emit skip (R1 invariant、default 時のみ emit ない)
+ *   非零 = Layer 2 _writeHw 内 `final = constrain(target + trim, 0, 180)` で position offset
+ *   範囲: -30..+30 (DigiMotion ServoChannel180::setTrim clamp 仕様、Layer 2 側で再 clamp 適用)
+ *
+ * case 23 incident A 解消の核 helper: 全 generator (servo_write + biped_init + morpher_init + rover_init_servo +
+ * stepper_init_*) が同 helper 経由で trim 取得、partial reflection 構造禁止。
+ */
+export function getServoTrim(pin?: number): number {
+  const config = getServoConfig();
+  // ピン番号指定時、個別 trim override を検索
+  if (pin !== undefined && config.perPinConfigs?.length) {
+    const perPin = config.perPinConfigs.find(c => c.pin === pin);
+    if (perPin && perPin.trimDeg !== undefined) {
+      return perPin.trimDeg;
+    }
+  }
+  return config.trimDeg ?? 0;
+}
+
+/**
+ * PID gain (kp, ki, kd) を取得 (Phase B-1、Session 146、case 23 incident F generator side 解消の核 helper)
+ *
+ * 解決順序: `usePIDTuningStore` の現在値を直接取得 (PIDTuningPanel slider 操作で更新される field)。
+ *
+ * Phase B-3 で `pid_init` 6 block の KP/KI/KD value input を optional 化、未接続時 (math_number 未配置時) は
+ * 本 helper の戻り値を emit。PIDTuningPanel と pid_init block の値が同期 = case 23 incident F の 3 層 orphan の
+ * 「generator side で store ignore」 を解消 (D-new-6 案 (A) generator emit + (B) runtime transport の前者、
+ * 後者 = transport は Phase D commit 2 で別途実装)。
+ *
+ * 戻り値: `{kp, ki, kd}` 直接値 (number)、generator emit で template literal に直接埋込。
+ */
+export function getPidGains(): { kp: number; ki: number; kd: number } {
+  const store = usePIDTuningStore.getState();
+  return { kp: store.kp, ki: store.ki, kd: store.kd };
 }
 
 /**

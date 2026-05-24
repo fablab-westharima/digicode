@@ -1,21 +1,19 @@
 /**
- * pinHelper — getServoSpeed (第137 Phase 1、Option A settings-only)
+ * pinHelper — getServoSpeed (第137 Phase 1、Option A settings-only) + getServoTrim + getPidGains (Phase B-1、Session 146)
  *
  * scope:
  * - getServoSpeed(pin?) の解決順序: perPin override → global default → 0 fallback
- * - 0 = unlimited / native ESP32Servo write 速度 = 既存 cpp 完全互換 (Phase 3 helper 注入 skip 条件)
- * - >0 = rate-limit (Phase 3 で servo_write generator が `_servoMoveAt` helper 経由 emit)
+ * - getServoTrim(pin?) の解決順序: perPin override → global default → 0 fallback (E1 軸、case 23 incident A 解消)
+ * - getPidGains() の解決: usePIDTuningStore 直接 read (case 23 incident F generator side 解消)
  *
- * R2 (handover §3 R-2) mitigation: legacy state (speedDegPerSec field 不在) で fallback=0 保証、
- * v8→v9 migrate 後の挙動が既存挙動と完全 binary-identical であることを単体検証。
- *
- * 設計: pinPresetStore の persist migrate を直接 unit test するのは複雑なので、
- * `setState` で legacy-shape state を直接注入 → getServoSpeed の挙動を検証する
- * integration 形式 (rule 04 §「Static + unit + integration」軸の unit-level fallback verify)。
+ * 設計: pinPresetStore + pidTuningStore の persist migrate を直接 unit test するのは複雑なので、
+ * `setState` で state を直接注入 → helper の挙動を検証する integration 形式
+ * (rule 04 §「Static + unit + integration」軸の unit-level fallback verify)。
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { usePinPresetStore, type PinPreset, type ServoConfig } from '../../stores/pinPresetStore';
-import { getServoSpeed, getServoConfig } from '../pinHelper';
+import { usePIDTuningStore } from '../../stores/pidTuningStore';
+import { getServoSpeed, getServoConfig, getServoTrim, getPidGains } from '../pinHelper';
 
 const BASE_PRESET: PinPreset = usePinPresetStore.getState().presets[0];
 
@@ -149,5 +147,159 @@ describe('getServoSpeed — per-pin override resolution', () => {
       ],
     });
     expect(getServoSpeed(13)).toBe(0); // perPin 0 wins, NOT global 360
+  });
+});
+
+// ============================================================================
+// Phase B-1 (Session 146) — getServoTrim (E1 = pulse + speed + trim 3 軸統合)
+// ============================================================================
+
+describe('getServoTrim — default behavior (legacy / unset)', () => {
+  beforeEach(() => {
+    usePinPresetStore.setState({
+      currentPresetId: 'default',
+      presets: [BASE_PRESET],
+      isPremiumEnabled: true,
+    });
+  });
+
+  it('returns 0 when no pin specified and default servoConfig (DEFAULT_SERVO_CONFIG.trimDeg===0)', () => {
+    expect(getServoTrim()).toBe(0);
+  });
+
+  it('returns 0 for any pin when default servoConfig (no perPin trim overrides)', () => {
+    expect(getServoTrim(13)).toBe(0);
+    expect(getServoTrim(27)).toBe(0);
+  });
+
+  it('returns 0 when global trimDeg is undefined (legacy v9 state pre-v10 migrate, fallback ?? 0)', () => {
+    // Simulate legacy state where v9 servoConfig had no trimDeg field (case 21 reporting accuracy verify)
+    setServoConfig({
+      servoType: '180',
+      minPulse: 500,
+      maxPulse: 2400,
+      speedDegPerSec: 0,
+      // trimDeg: 未定義 = legacy v9 state、v10 migrate 前の挙動
+    });
+    expect(getServoTrim()).toBe(0);
+    expect(getServoTrim(13)).toBe(0);
+  });
+});
+
+describe('getServoTrim — global default override', () => {
+  it('returns global trimDeg when no pin specified', () => {
+    setServoConfig({
+      servoType: '180',
+      minPulse: 500,
+      maxPulse: 2400,
+      speedDegPerSec: 0,
+      trimDeg: 5,
+    });
+    expect(getServoTrim()).toBe(5);
+  });
+
+  it('returns global trimDeg for any pin (no perPin override present)', () => {
+    setServoConfig({
+      servoType: '180',
+      minPulse: 500,
+      maxPulse: 2400,
+      speedDegPerSec: 0,
+      trimDeg: -10,
+    });
+    expect(getServoTrim(13)).toBe(-10);
+    expect(getServoTrim(27)).toBe(-10);
+  });
+});
+
+describe('getServoTrim — per-pin override resolution', () => {
+  it('returns perPin trimDeg when matched (perPin overrides global)', () => {
+    setServoConfig({
+      servoType: '180',
+      minPulse: 500,
+      maxPulse: 2400,
+      speedDegPerSec: 0,
+      trimDeg: 5, // global
+      perPinConfigs: [
+        { pin: 13, minPulse: 500, maxPulse: 2400, trimDeg: -8 }, // pin 13 = override
+      ],
+    });
+    expect(getServoTrim(13)).toBe(-8);
+  });
+
+  it('falls back to global when perPin entry exists but trimDeg field is undefined', () => {
+    setServoConfig({
+      servoType: '180',
+      minPulse: 500,
+      maxPulse: 2400,
+      speedDegPerSec: 0,
+      trimDeg: 7,
+      perPinConfigs: [
+        { pin: 13, minPulse: 500, maxPulse: 2400 }, // legacy v9 perPin entry (no trim field)
+      ],
+    });
+    expect(getServoTrim(13)).toBe(7); // global fallback
+  });
+
+  it('falls back to global when pin does not match any perPin entry', () => {
+    setServoConfig({
+      servoType: '180',
+      minPulse: 500,
+      maxPulse: 2400,
+      speedDegPerSec: 0,
+      trimDeg: 3,
+      perPinConfigs: [
+        { pin: 13, minPulse: 500, maxPulse: 2400, trimDeg: -5 },
+      ],
+    });
+    expect(getServoTrim(27)).toBe(3); // pin 27 not in perPin list, falls to global
+  });
+
+  it('returns perPin trimDeg=0 when explicitly set (explicit no-trim override per-pin)', () => {
+    setServoConfig({
+      servoType: '180',
+      minPulse: 500,
+      maxPulse: 2400,
+      speedDegPerSec: 0,
+      trimDeg: 10, // global non-zero
+      perPinConfigs: [
+        { pin: 13, minPulse: 500, maxPulse: 2400, trimDeg: 0 }, // pin 13 = explicit no-trim
+      ],
+    });
+    expect(getServoTrim(13)).toBe(0); // perPin 0 wins, NOT global 10
+  });
+});
+
+// ============================================================================
+// Phase B-1 (Session 146) — getPidGains (case 23 incident F generator side 解消)
+// ============================================================================
+
+describe('getPidGains — usePIDTuningStore read-through', () => {
+  beforeEach(() => {
+    // pidTuningStore default = { kp: 0.2, ki: 0.0001, kd: 5 }
+    usePIDTuningStore.getState().reset();
+  });
+
+  it('returns default kp/ki/kd from store on initial state', () => {
+    const gains = getPidGains();
+    expect(gains).toEqual({ kp: 0.2, ki: 0.0001, kd: 5 });
+  });
+
+  it('reflects setPID changes (slider operation in PIDTuningPanel)', () => {
+    usePIDTuningStore.getState().setPID(0.8, 0.01, 12);
+    const gains = getPidGains();
+    expect(gains).toEqual({ kp: 0.8, ki: 0.01, kd: 12 });
+  });
+
+  it('reflects loadPreset (e.g. micromouse-wall = kp=1.0, ki=0.01, kd=15)', () => {
+    usePIDTuningStore.getState().loadPreset('micromouse-wall');
+    const gains = getPidGains();
+    expect(gains).toEqual({ kp: 1.0, ki: 0.01, kd: 15 });
+  });
+
+  it('reflects setKp/setKi/setKd individual setters', () => {
+    usePIDTuningStore.getState().setKp(0.5);
+    usePIDTuningStore.getState().setKi(0.005);
+    usePIDTuningStore.getState().setKd(8);
+    expect(getPidGains()).toEqual({ kp: 0.5, ki: 0.005, kd: 8 });
   });
 });

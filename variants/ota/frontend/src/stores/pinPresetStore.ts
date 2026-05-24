@@ -26,6 +26,10 @@ export interface PinServoConfig {
   // undefined = 親の global speedDegPerSec に従う / 0 = 明示的に unlimited (native ESP32Servo write 速度) /
   // >0 = 増分 write + delay で rate-limit (servoBlocks.ts 側 generator が helper 経由 emit、第137 Phase 3)。
   speedDegPerSec?: number;
+  // ピンごとの trim オーバーライド (°)。E1 = pulse + speed + trim 3 軸統合 (Phase B-1、Session 146)。
+  // undefined = 親の global trimDeg に従う / 0 = no trim / 非零 = 中心位置を offset (Layer 2 _writeHw 内 `final = target + trim`)。
+  // 範囲: -30..+30 (DigiMotion ServoChannel180::setTrim clamp 仕様、case 23 incident A/D 解消)。
+  trimDeg?: number;
 }
 
 export interface ServoConfig {
@@ -37,6 +41,9 @@ export interface ServoConfig {
   // >0 で servoBlocks.ts servo_write generator が rate-limit helper 経由 emit (第137 Phase 3)。
   // 第136 §5 Plan 58 S13 pattern を踏襲 = 0 default で既存 cpp 形状不変、新 user 操作時のみ behavior 変化。
   speedDegPerSec?: number;
+  // 全ピン共通の trim デフォルト (°)。E1 = pulse + speed + trim 3 軸統合 (Phase B-1、Session 146)。
+  // 0 default = 既存 cpp 形状不変 (Layer 2 setTrim skip)、user が ServoTrimDialog で明示時のみ emit。
+  trimDeg?: number;
 }
 
 /**
@@ -54,6 +61,10 @@ export interface PinPreset {
     humanoidRightLeg: number;
     humanoidLeftFoot: number;
     humanoidRightFoot: number;
+
+    // Humanoid 専用 buzzer (D5 = humanoidBuzzer field、Phase B-1 Session 146)。
+    // 汎用 buzzer field と分離 = robot 内蔵 buzzer pin を独立管理、共有による副作用回避。
+    humanoidBuzzer: number;
 
     // Wheel ロボット (Connector #10, #11)
     wheelLeft: number;
@@ -159,6 +170,8 @@ const DEFAULT_SERVO_CONFIG: ServoConfig = {
   maxPulse: 2400,
   // 0 = unlimited / native ESP32Servo write 速度 = 既存 cpp 形状と完全互換 (第137 Phase 1 設計、helper 注入 skip 条件)。
   speedDegPerSec: 0,
+  // 0 = no trim = 既存 cpp 形状不変 (Phase B-3 generator は trimDeg !== 0 のみ emit、R1 invariant)。
+  trimDeg: 0,
 };
 
 const DEFAULT_PRESET: PinPreset = {
@@ -173,6 +186,9 @@ const DEFAULT_PRESET: PinPreset = {
     humanoidRightLeg: 15,
     humanoidLeftFoot: 14,
     humanoidRightFoot: 13,
+
+    // Humanoid 専用 buzzer (D5、汎用 buzzer = 25 と同 GPIO default、user が別 pin に rebind 可能)
+    humanoidBuzzer: 25,
 
     // Wheel ロボット
     wheelLeft: 14,
@@ -344,7 +360,7 @@ export const usePinPresetStore = create<PinPresetStore>()(
     }),
     {
       name: 'pin-preset-storage',
-      version: 9,
+      version: 10,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Migration handles various historic state structures
       migrate: (persistedState: any, version: number) => {
         let state = persistedState;
@@ -510,6 +526,39 @@ export const usePinPresetStore = create<PinPresetStore>()(
             servoConfig: {
               ...preset.servoConfig,
               speedDegPerSec: preset.servoConfig?.speedDegPerSec ?? 0,
+            },
+          })) || [DEFAULT_PRESET];
+
+          state = {
+            ...state,
+            presets,
+          };
+        }
+
+        // バージョン10: trim (°) + humanoidBuzzer (専用 field) を追加
+        //   (Phase B-1、Session 146、E1 = pulse + speed + trim 3 軸統合 + D5 = humanoidBuzzer 専用化)。
+        //
+        // 60.md spec deviation #9 (Session 146 surface 済): 60.md §1 Phase B-1 verbatim は
+        //   「persist version 8 → 9」 と記載、ただし設計書起案時 (Session 139) baseline 仮定で
+        //   実態は既に v9 (Session 137 で speedDegPerSec 追加時 bump 済)。 user 確認で v9→v10 確定、
+        //   既存 v9 user data を破壊せず trim+humanoidBuzzer のみ追加。
+        //
+        // trimDeg fallback: undefined → 0 (no trim = 既存 cpp 形状不変、Phase B-3 generator R1 invariant)
+        // humanoidBuzzer fallback: undefined → 既存 buzzer pin (25 default) で初期化 = D5 専用化前の
+        //   暗黙共有挙動と binary-identical 維持、user が後で別 pin に rebind 可能。
+        if (version < 10) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Historic state has varying shapes
+          const presets = state?.presets?.map((preset: any) => ({
+            ...preset,
+            servoConfig: {
+              ...preset.servoConfig,
+              trimDeg: preset.servoConfig?.trimDeg ?? 0,
+              // perPinConfigs 内 entry の trimDeg は undefined のままで OK
+              // (getServoTrim 内で undefined → global fallback の意味維持、ServoSpeedDialog と同 pattern)
+            },
+            pins: {
+              ...preset.pins,
+              humanoidBuzzer: preset.pins?.humanoidBuzzer ?? preset.pins?.buzzer ?? 25,
             },
           })) || [DEFAULT_PRESET];
 
