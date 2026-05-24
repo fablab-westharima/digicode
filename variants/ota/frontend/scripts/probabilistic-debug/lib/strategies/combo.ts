@@ -60,30 +60,32 @@ export interface InitDependency {
  *     `json_create_object` が `_jsonOutDoc` (output) 宣言、両者は別系統
  */
 export const INIT_DEPENDENCIES: readonly InitDependency[] = [
+  // Phase B-2 (Session 146): 旧 humanoid_/transform_/wheel_ 置換 = biped_/morpher_/rover_
+  // D8 (Session 139 settled): blocking + async 両 form。combo INIT_DEPENDENCIES では blocking 系のみ enum (init dependency 検証目的)、async は同 init 由来で別途 cover
   {
-    init: 'humanoid_init',
-    label: 'humanoid',
+    init: 'biped_init',
+    label: 'biped',
     operations: [
-      'humanoid_home', 'humanoid_walk', 'humanoid_turn', 'humanoid_jump',
-      'humanoid_moonwalk', 'humanoid_dance', 'humanoid_swing', 'humanoid_bend',
-      'humanoid_gesture', 'humanoid_sound',
+      'biped_home_blocking', 'biped_walk_blocking', 'biped_turn_blocking', 'biped_jump_blocking',
+      'biped_moonwalk_blocking', 'biped_dance_blocking', 'biped_swing_blocking', 'biped_bend_blocking',
+      'biped_gesture',
     ],
   },
   {
-    init: 'transform_init',
-    label: 'transform',
+    init: 'morpher_init',
+    label: 'morpher',
     operations: [
-      'transform_mode', 'transform_shift', 'transform_home', 'transform_walk',
-      'transform_turn', 'transform_stop', 'transform_roll', 'transform_roll_rotate',
-      'transform_pushup', 'transform_dance',
+      'morpher_set_mode', 'morpher_shift_blocking', 'morpher_home_blocking', 'morpher_walk_blocking',
+      'morpher_turn_blocking', 'morpher_stop', 'morpher_roll_blocking', 'morpher_roll_rotate_blocking',
+      'morpher_pushup_blocking', 'morpher_dance_blocking',
     ],
   },
   {
-    init: 'wheel_init',
-    label: 'wheel',
+    init: 'rover_init_servo',
+    label: 'rover',
     operations: [
-      'wheel_forward', 'wheel_backward', 'wheel_turn_left', 'wheel_turn_right',
-      'wheel_spin_left', 'wheel_spin_right', 'wheel_stop',
+      'rover_forward', 'rover_backward', 'rover_turn_left', 'rover_turn_right',
+      'rover_spin_left', 'rover_spin_right', 'rover_stop',
     ],
   },
   {
@@ -457,9 +459,10 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
   {
     // stepper_init が `AccelStepper stepperMove(...)` を declares
     // (cluster #23 = stepperMove undeclared 2 件)。
-    init: 'stepper_init',
+    init: 'stepper_init_4wire',
     label: 'stepper',
-    operations: ['stepper_move', 'stepper_rotate', 'stepper_stop'],
+    // Phase B-2: stepper_move → stepper_step_blocking、stepper_rotate → stepper_rotate_blocking
+    operations: ['stepper_step_blocking', 'stepper_rotate_blocking', 'stepper_stop'],
   },
   {
     // mpu6050_init が `Adafruit_MPU6050 mpu;` を declares

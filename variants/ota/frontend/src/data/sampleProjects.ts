@@ -269,7 +269,7 @@ export const sampleProjects: SampleProject[] = [
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
 <statement name="SETUP">
-          <block type="wheel_init">
+          <block type="rover_init_servo">
             <field name="PIN_L">14</field>
             <field name="PIN_R">13</field>
             <next>
@@ -298,9 +298,9 @@ export const sampleProjects: SampleProject[] = [
               </block>
             </value>
             <statement name="DO0">
-              <block type="wheel_stop">
+              <block type="rover_stop">
                 <next>
-                  <block type="wheel_backward">
+                  <block type="rover_backward">
                     <field name="SPEED">50</field>
                     <next>
                       <block type="esp32_delay">
@@ -310,7 +310,7 @@ export const sampleProjects: SampleProject[] = [
                           </block>
                         </value>
                         <next>
-                          <block type="wheel_spin_right">
+                          <block type="rover_spin_right">
                             <next>
                               <block type="esp32_delay">
                                 <value name="TIME">
@@ -329,7 +329,7 @@ export const sampleProjects: SampleProject[] = [
               </block>
             </statement>
             <next>
-              <block type="wheel_forward">
+              <block type="rover_forward">
                 <field name="SPEED">50</field>
                 <next>
                   <block type="esp32_delay">
@@ -356,7 +356,7 @@ export const sampleProjects: SampleProject[] = [
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
 <statement name="SETUP">
-          <block type="transform_init">
+          <block type="morpher_init">
             <field name="PIN_LL">27</field>
             <field name="PIN_RL">15</field>
             <field name="PIN_LF">14</field>
@@ -366,14 +366,14 @@ export const sampleProjects: SampleProject[] = [
 </block>
 <block type="arduino_loop" x="50" y="250">
 <statement name="LOOP">
-          <block type="transform_shift">
+          <block type="morpher_shift_blocking">
             <field name="MODE">walk</field>
             <next>
-              <block type="transform_walk">
+              <block type="morpher_walk_blocking">
                 <field name="DIRECTION">forward</field>
                 <field name="SPEED">normal</field>
                 <next>
-                  <block type="transform_walk">
+                  <block type="morpher_walk_blocking">
                     <field name="DIRECTION">forward</field>
                     <field name="SPEED">normal</field>
                     <next>
@@ -384,10 +384,10 @@ export const sampleProjects: SampleProject[] = [
                           </block>
                         </value>
                         <next>
-                          <block type="transform_shift">
+                          <block type="morpher_shift_blocking">
                             <field name="MODE">roll</field>
                             <next>
-                              <block type="transform_roll">
+                              <block type="morpher_roll_blocking">
                                 <field name="DIRECTION">forward</field>
                                 <field name="SPEED">normal</field>
                                 <next>
@@ -398,7 +398,7 @@ export const sampleProjects: SampleProject[] = [
                                       </block>
                                     </value>
                                     <next>
-                                      <block type="transform_stop">
+                                      <block type="morpher_stop">
                                         <field name="MODE">roll</field>
                                         <next>
                                           <block type="esp32_delay">
@@ -437,7 +437,7 @@ export const sampleProjects: SampleProject[] = [
     blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml">
       <block type="arduino_setup" x="50" y="50">
 <statement name="SETUP">
-          <block type="humanoid_init">
+          <block type="biped_init">
             <field name="PIN_LL">27</field>
             <field name="PIN_RL">15</field>
             <field name="PIN_LF">14</field>
@@ -447,7 +447,7 @@ export const sampleProjects: SampleProject[] = [
 </block>
 <block type="arduino_loop" x="50" y="250">
 <statement name="LOOP">
-          <block type="humanoid_home">
+          <block type="biped_home_blocking">
             <next>
               <block type="esp32_delay">
                 <value name="TIME">
@@ -456,17 +456,17 @@ export const sampleProjects: SampleProject[] = [
                   </block>
                 </value>
                 <next>
-                  <block type="humanoid_dance">
+                  <block type="biped_dance_blocking">
                     <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
                     <next>
-                      <block type="humanoid_swing">
+                      <block type="biped_swing_blocking">
                         <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
                         <next>
-                          <block type="humanoid_moonwalk">
+                          <block type="biped_moonwalk_blocking">
                             <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
                             <field name="DIRECTION">1</field>
                             <next>
-                              <block type="humanoid_jump">
+                              <block type="biped_jump_blocking">
                                 <value name="STEPS"><block type="math_number"><field name="NUM">2</field></block></value>
                                 <next>
                                   <block type="esp32_delay">
@@ -922,7 +922,7 @@ export const sampleProjects: SampleProject[] = [
     description: '超音波センサーで20cm以内に物体検知したら停止、それ以外で前進',
     category: 'sensor',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="ultrasonic_init"><field name="TRIG_PIN">18</field><field name="ECHO_PIN">19</field><next><block type="wheel_init"><field name="PIN_L">14</field><field name="PIN_R">13</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="controls_ifelse"><value name="IF0"><block type="logic_compare"><field name="OP">LT</field><value name="A"><block type="ultrasonic_distance"></block></value><value name="B"><block type="math_number"><field name="NUM">20</field></block></value></block></value><statement name="DO0"><block type="wheel_stop"></block></statement><statement name="ELSE"><block type="wheel_forward"><field name="SPEED">50</field></block></statement><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">100</field></block></value></block></next></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="ultrasonic_init"><field name="TRIG_PIN">18</field><field name="ECHO_PIN">19</field><next><block type="rover_init_servo"><field name="PIN_L">14</field><field name="PIN_R">13</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="controls_ifelse"><value name="IF0"><block type="logic_compare"><field name="OP">LT</field><value name="A"><block type="ultrasonic_distance"></block></value><value name="B"><block type="math_number"><field name="NUM">20</field></block></value></block></value><statement name="DO0"><block type="rover_stop"></block></statement><statement name="ELSE"><block type="rover_forward"><field name="SPEED">50</field></block></statement><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">100</field></block></value></block></next></block></statement></block></xml>`
   },
   {
     id: 'ble-uart-receive',
@@ -978,7 +978,7 @@ export const sampleProjects: SampleProject[] = [
     description: 'Humanoidが前後に歩行する基本動作',
     category: 'robots',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="humanoid_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="humanoid_home"><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">500</field></block></value><next><block type="humanoid_walk"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">1</field><field name="SPEED">1000</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value><next><block type="humanoid_walk"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">-1</field><field name="SPEED">1000</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="biped_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="biped_home_blocking"><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">500</field></block></value><next><block type="biped_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">1</field><field name="SPEED">1000</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value><next><block type="biped_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">-1</field><field name="SPEED">1000</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
   },
   {
     id: 'wheel-line-follow',
@@ -986,7 +986,7 @@ export const sampleProjects: SampleProject[] = [
     description: '光センサーでラインに沿って前進',
     category: 'robots',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="wheel_init"><field name="PIN_L">14</field><field name="PIN_R">13</field><next><block type="line_sensor_init_simple_2"><field name="PIN1">36</field><field name="PIN2">39</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="controls_ifelse"><value name="IF0"><block type="logic_compare"><field name="OP">LT</field><value name="A"><block type="line_sensor_position"></block></value><value name="B"><block type="math_number"><field name="NUM">0</field></block></value></block></value><statement name="DO0"><block type="wheel_turn_left"></block></statement><statement name="ELSE"><block type="wheel_turn_right"></block></statement><next><block type="wheel_forward"><field name="SPEED">30</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">50</field></block></value></block></next></block></next></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="rover_init_servo"><field name="PIN_L">14</field><field name="PIN_R">13</field><next><block type="line_sensor_init_simple_2"><field name="PIN1">36</field><field name="PIN2">39</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="controls_ifelse"><value name="IF0"><block type="logic_compare"><field name="OP">LT</field><value name="A"><block type="line_sensor_position"></block></value><value name="B"><block type="math_number"><field name="NUM">0</field></block></value></block></value><statement name="DO0"><block type="rover_turn_left"></block></statement><statement name="ELSE"><block type="rover_turn_right"></block></statement><next><block type="rover_forward"><field name="SPEED">30</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">50</field></block></value></block></next></block></next></block></statement></block></xml>`
   },
   {
     id: 'transform-morph',
@@ -994,7 +994,7 @@ export const sampleProjects: SampleProject[] = [
     description: 'Walk → Roll の形態変化で移動',
     category: 'robots',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="transform_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="transform_shift"><field name="MODE">walk</field><next><block type="transform_walk"><field name="DIRECTION">forward</field><field name="SPEED">normal</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="transform_shift"><field name="MODE">roll</field><next><block type="transform_roll"><field name="DIRECTION">forward</field><field name="SPEED">fast</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="transform_stop"><field name="MODE">roll</field></block></next></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="morpher_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="morpher_shift_blocking"><field name="MODE">walk</field><next><block type="morpher_walk_blocking"><field name="DIRECTION">forward</field><field name="SPEED">normal</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="morpher_shift_blocking"><field name="MODE">roll</field><next><block type="morpher_roll_blocking"><field name="DIRECTION">forward</field><field name="SPEED">fast</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="morpher_stop"><field name="MODE">roll</field></block></next></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
   },
   {
     id: 'http-get-request',
@@ -1035,7 +1035,7 @@ export const sampleProjects: SampleProject[] = [
     description: 'Humanoidが手振り・喜び・マジックなど複数のジェスチャーを順に実行',
     category: 'robots',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="humanoid_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="humanoid_home"><next><block type="humanoid_gesture"><field name="GESTURE">Wave</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="humanoid_gesture"><field name="GESTURE">Happy</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="humanoid_gesture"><field name="GESTURE">Magic</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value></block></next></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="biped_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="biped_home_blocking"><next><block type="biped_gesture"><field name="GESTURE">Wave</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="biped_gesture"><field name="GESTURE">Happy</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="biped_gesture"><field name="GESTURE">Magic</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value></block></next></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
   },
   {
     id: 'wheel-remote-control',
@@ -1043,7 +1043,7 @@ export const sampleProjects: SampleProject[] = [
     description: 'BLEで受信したらWheelロボットを1秒前進させて停止',
     category: 'robots',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="ble_uart_setup"><field name="NAME">WheelRemote</field><next><block type="wheel_init"><field name="PIN_L">14</field><field name="PIN_R">13</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="ble_uart_on_receive"><statement name="HANDLER"><block type="wheel_forward"><field name="SPEED">50</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value><next><block type="wheel_stop"></block></next></block></next></block></statement></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="ble_uart_setup"><field name="NAME">WheelRemote</field><next><block type="rover_init_servo"><field name="PIN_L">14</field><field name="PIN_R">13</field></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="ble_uart_on_receive"><statement name="HANDLER"><block type="rover_forward"><field name="SPEED">50</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value><next><block type="rover_stop"></block></next></block></next></block></statement></block></statement></block></xml>`
   },
   {
     id: 'multi-sensor-dashboard',
@@ -1218,7 +1218,7 @@ export const sampleProjects: SampleProject[] = [
     description: '28BYJ-48 + ULN2003 で 90 度回転 → 1 秒待機 → 反対回転 (CNC / 自動化)',
     category: 'motor',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="stepper_init"><field name="IN1">14</field><field name="IN2">27</field><field name="IN3">26</field><field name="IN4">25</field></block></statement></block><block type="arduino_loop" x="50" y="200"><statement name="LOOP"><block type="stepper_rotate"><field name="SPEED">5</field><value name="ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">1000</field></shadow></value><next><block type="stepper_rotate"><field name="SPEED">5</field><value name="ANGLE"><shadow type="math_number"><field name="NUM">-90</field></shadow></value><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">1000</field></shadow></value></block></next></block></next></block></next></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="stepper_init_4wire"><field name="IN1">14</field><field name="IN2">27</field><field name="IN3">26</field><field name="IN4">25</field></block></statement></block><block type="arduino_loop" x="50" y="200"><statement name="LOOP"><block type="stepper_rotate_blocking"><field name="SPEED">5</field><value name="ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">1000</field></shadow></value><next><block type="stepper_rotate_blocking"><field name="SPEED">5</field><value name="ANGLE"><shadow type="math_number"><field name="NUM">-90</field></shadow></value><next><block type="esp32_delay"><value name="TIME"><shadow type="math_number"><field name="NUM">1000</field></shadow></value></block></next></block></next></block></next></block></statement></block></xml>`
   },
   {
     id: 'relay-timer-control',

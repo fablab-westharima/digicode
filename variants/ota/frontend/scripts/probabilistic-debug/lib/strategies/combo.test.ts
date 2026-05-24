@@ -52,12 +52,13 @@ describe('INIT_DEPENDENCIES (manual map)', () => {
     // 10 prefix (第64回 mqtt expand + json split + 第65回 BUG-072 diff_drive add):
     // ~101 fail (35%) cluster top + 第64回 cluster #3 (6 件) を解消、json は read
     // (_jsonDoc) と write (_jsonOutDoc) の 2 系統。
+    // Phase B-2 (Session 146): humanoid/transform/wheel → biped/morpher/rover (DigiBiped/Morpher/Rover lib 移行)
     const labels = INIT_DEPENDENCIES.map((d) => d.label).filter(Boolean);
     expect(labels).toEqual(
       expect.arrayContaining([
-        'humanoid',
-        'transform',
-        'wheel',
+        'biped',
+        'morpher',
+        'rover',
         'qtr-8a',
         'mqtt',
         'neopixel',
@@ -70,8 +71,9 @@ describe('INIT_DEPENDENCIES (manual map)', () => {
 });
 
 describe('OPERATION_TO_INIT_MAP (derived)', () => {
-  it('maps humanoid_dance → humanoid_init', () => {
-    expect(OPERATION_TO_INIT_MAP.get('humanoid_dance')).toBe('humanoid_init');
+  // Phase B-2 (Session 146): humanoid_* → biped_blocking 系
+  it('maps biped_dance_blocking → biped_init', () => {
+    expect(OPERATION_TO_INIT_MAP.get('biped_dance_blocking')).toBe('biped_init');
   });
 
   it('maps mqtt_publish → mqtt_setup', () => {
@@ -138,7 +140,8 @@ describe('OPERATION_TO_INIT_MAP (derived)', () => {
     expect(OPERATION_TO_INIT_MAP.get('rtc_set_time')).toBe('rtc_init');
     expect(OPERATION_TO_INIT_MAP.get('rus04_distance')).toBe('rus04_init');
     expect(OPERATION_TO_INIT_MAP.get('dht_temperature')).toBe('dht_init');
-    expect(OPERATION_TO_INIT_MAP.get('stepper_move')).toBe('stepper_init');
+    // Phase B-2 (Session 146): stepper_move → stepper_step_blocking、stepper_init → stepper_init_4wire
+    expect(OPERATION_TO_INIT_MAP.get('stepper_step_blocking')).toBe('stepper_init_4wire');
     expect(OPERATION_TO_INIT_MAP.get('mpu6050_read_accel')).toBe('mpu6050_init');
   });
 
@@ -204,13 +207,14 @@ describe('generateComboCases', () => {
     expect(some[2].id).toBe('case_0102');
   });
 
-  it('humanoid combo case includes humanoid_init + at least one humanoid op', () => {
-    const humanoidCase = cases.find((c) =>
-      c.blocksUsed.includes('humanoid_init'),
+  it('biped combo case includes biped_init + at least one biped op', () => {
+    // Phase B-2 (Session 146): humanoid_* → biped_*
+    const bipedCase = cases.find((c) =>
+      c.blocksUsed.includes('biped_init'),
     );
-    expect(humanoidCase).toBeDefined();
-    const ops = humanoidCase!.blocksUsed.filter(
-      (b) => b.startsWith('humanoid_') && b !== 'humanoid_init',
+    expect(bipedCase).toBeDefined();
+    const ops = bipedCase!.blocksUsed.filter(
+      (b) => b.startsWith('biped_') && b !== 'biped_init',
     );
     expect(ops.length).toBeGreaterThanOrEqual(1);
   });

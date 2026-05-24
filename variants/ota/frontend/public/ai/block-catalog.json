@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-17T12:42:46.409Z",
+  "generatedAt": "2026-05-24T17:19:53.358Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -5839,6 +5839,145 @@
       "statementInputs": []
     },
     {
+      "type": "buzzer_play_preset",
+      "category": "buzzer",
+      "tooltip": "Play DigiCode sound preset (intent-based naming, no OttoDIYLib derivation)",
+      "colour": "#E91E63",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "PRESET",
+          "fieldType": "dropdown",
+          "options": [
+            "BEEP_SHORT_HIGH",
+            "BEEP_SHORT_LOW",
+            "BEEP_TWO_HIGH",
+            "BEEP_TWO_LOW",
+            "BEEP_RISING_PAIR",
+            "BEEP_FALLING_PAIR",
+            "BEEP_RISING_FAST",
+            "BEEP_FALLING_SLOW",
+            "BEEP_QUERY_PAIR",
+            "BEEP_QUERY_RISING",
+            "BEEP_FANFARE",
+            "BEEP_OK_SHORT",
+            "BEEP_ERROR_DESCENDING",
+            "BEEP_HIGH_SHORT",
+            "BEEP_STARTUP",
+            "BEEP_SHUTDOWN"
+          ]
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "buzzer_play_tone",
+      "category": "buzzer",
+      "tooltip": "Play raw tone at frequency for duration (blocking via delay)",
+      "colour": "#E91E63",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "FREQ",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        },
+        {
+          "name": "DURATION",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
+      "statementInputs": []
+    },
+    {
+      "type": "buzzer_play_bend_tone",
+      "category": "buzzer",
+      "tooltip": "Sweep frequency from init to end over duration ms",
+      "colour": "#E91E63",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "PIN",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [
+        {
+          "name": "INIT_FREQ",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        },
+        {
+          "name": "END_FREQ",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        },
+        {
+          "name": "DURATION",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
+      "statementInputs": []
+    },
+    {
       "type": "dfplayer_init",
       "category": "audio_dfplayer",
       "tooltip": "Initialize DFPlayer Mini via SoftwareSerial. Returns true if found. Connect DFPlayer TX to ESP32 RX pin, and DFPlayer RX (via 1kΩ resistor) to ESP32 TX pin.",
@@ -6254,9 +6393,9 @@
       "statementInputs": []
     },
     {
-      "type": "stepper_init",
+      "type": "stepper_init_4wire",
       "category": "stepper",
-      "tooltip": "Configure stepper motor pins (28BYJ-48 + ULN2003)",
+      "tooltip": "Initialize stepper with ULN2003 driver (28BYJ-48 motor, FULL4WIRE mode, AccelStepper backed)",
       "colour": "#795548",
       "isStatement": true,
       "hasOutput": false,
@@ -6301,9 +6440,9 @@
       "statementInputs": []
     },
     {
-      "type": "stepper_move",
+      "type": "stepper_set_speed",
       "category": "stepper",
-      "tooltip": "Move motor by specified number of steps",
+      "tooltip": "Set max speed (step/sec)",
       "colour": "#795548",
       "isStatement": true,
       "hasOutput": false,
@@ -6314,18 +6453,16 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [
+      "fields": [],
+      "valueInputs": [
         {
           "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "5",
-            "3",
-            "2"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
           ]
-        }
-      ],
-      "valueInputs": [
+        },
         {
           "name": "STEPS",
           "check": [
@@ -6333,36 +6470,7 @@
             "String",
             "Boolean"
           ]
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "stepper_rotate",
-      "category": "stepper",
-      "tooltip": "Rotate motor by specified angle",
-      "colour": "#795548",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "output",
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "5",
-            "3",
-            "2"
-          ]
-        }
-      ],
-      "valueInputs": [
+        },
         {
           "name": "ANGLE",
           "check": [
@@ -6375,9 +6483,85 @@
       "statementInputs": []
     },
     {
+      "type": "stepper_step_blocking",
+      "category": "stepper",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "stepper_step_async",
+      "category": "stepper",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "stepper_rotate_blocking",
+      "category": "stepper",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "stepper_rotate_async",
+      "category": "stepper",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
       "type": "stepper_stop",
       "category": "stepper",
-      "tooltip": "Stop motor and release coil current",
+      "tooltip": "Stop stepper immediately (target = current)",
       "colour": "#795548",
       "isStatement": true,
       "hasOutput": false,
@@ -6393,10 +6577,66 @@
       "statementInputs": []
     },
     {
-      "type": "a4988_init",
+      "type": "stepper_is_at_target",
+      "category": "stepper",
+      "tooltip": "Returns true if stepper reached target",
+      "colour": "#795548",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "outputType": "Boolean"
+    },
+    {
+      "type": "stepper_get_position",
+      "category": "stepper",
+      "tooltip": "Get current stepper position (step count from origin)",
+      "colour": "#795548",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "outputType": "Number"
+    },
+    {
+      "type": "stepper_wait_until_target",
+      "category": "stepper",
+      "tooltip": "Block until stepper async motion completes",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "stepper_init_hw",
       "category": "stepper_driver",
-      "tooltip": "A4988 ステッピングドライバを初期化します。STEP/DIR/EN ピン指定。EN は LOW で有効化。AccelStepper DRIVER mode 使用。",
-      "colour": "#FF5722",
+      "tooltip": "High-speed stepper via ESP32 RMT/MCPWM peripheral (FastAccelStepper, target 200 kHz)",
+      "colour": "#795548",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -6433,10 +6673,50 @@
       "statementInputs": []
     },
     {
-      "type": "a4988_set_microstep",
+      "type": "stepper_init_driver",
       "category": "stepper_driver",
-      "tooltip": "A4988 のマイクロステップモードを設定します (内部 step 倍率)。⚠️ HW の MS1/MS2/MS3 pin もこの値に合わせて配線必要。",
-      "colour": "#FF5722",
+      "tooltip": "Initialize stepper with A4988/DRV8825 driver (STEP/DIR/EN pins, AccelStepper DRIVER mode)",
+      "colour": "#795548",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "output",
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [
+        {
+          "name": "STEP",
+          "fieldType": "number",
+          "default": 14,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "DIR",
+          "fieldType": "number",
+          "default": 27,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "EN",
+          "fieldType": "number",
+          "default": 26,
+          "min": 0,
+          "max": 39
+        }
+      ],
+      "valueInputs": [],
+      "statementInputs": []
+    },
+    {
+      "type": "stepper_set_microstep",
+      "category": "stepper_driver",
+      "tooltip": "Set microstep multiplier (HW MS1/MS2/MS3 pins must be wired accordingly)",
+      "colour": "#795548",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -6463,10 +6743,10 @@
       "statementInputs": []
     },
     {
-      "type": "a4988_set_direction",
+      "type": "stepper_set_direction",
       "category": "stepper_driver",
-      "tooltip": "A4988 の方向を設定します。次の a4988_step が forward なら正、backward なら負ステップで動作。",
-      "colour": "#FF5722",
+      "tooltip": "Set direction for next stepper_step",
+      "colour": "#795548",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -6481,109 +6761,12 @@
           "name": "DIR",
           "fieldType": "dropdown",
           "options": [
-            "FORWARD",
-            "BACKWARD"
+            "1",
+            "-1"
           ]
         }
       ],
       "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "a4988_step",
-      "category": "stepper_driver",
-      "tooltip": "A4988 を指定ステップ数 (microstep 倍率込) で動作させます。runToNewPosition で完了まで block。",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "output",
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [
-        {
-          "name": "STEPS",
-          "check": "Number"
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "uln2003_init",
-      "category": "stepper_driver",
-      "tooltip": "ULN2003 ステッピングドライバ + 28BYJ-48 を初期化します。AccelStepper FULL4WIRE mode (pin 順 IN1, IN3, IN2, IN4 で正常回転)。",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "output",
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "IN1",
-          "fieldType": "number",
-          "default": 13,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "IN2",
-          "fieldType": "number",
-          "default": 12,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "IN3",
-          "fieldType": "number",
-          "default": 14,
-          "min": 0,
-          "max": 39
-        },
-        {
-          "name": "IN4",
-          "fieldType": "number",
-          "default": 27,
-          "min": 0,
-          "max": 39
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "uln2003_step_28byj48",
-      "category": "stepper_driver",
-      "tooltip": "ULN2003 + 28BYJ-48 を指定ステップ・速度で動作させます (28BYJ-48 1 回転 = 4096 ステップ in half-step)。",
-      "colour": "#FF5722",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "output",
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [
-        {
-          "name": "STEPS",
-          "check": "Number"
-        },
-        {
-          "name": "SPEED",
-          "check": "Number"
-        }
-      ],
       "statementInputs": []
     },
     {
@@ -6695,9 +6878,9 @@
       "statementInputs": []
     },
     {
-      "type": "humanoid_init",
+      "type": "biped_init",
       "category": "robot_humanoid",
-      "tooltip": "Initialize Humanoid robot (pin numbers from preset)",
+      "tooltip": "Initialize DigiBiped biped robot (4 legs + buzzer)",
       "colour": "#FF6B35",
       "isStatement": true,
       "hasOutput": false,
@@ -6735,32 +6918,22 @@
           "default": null,
           "min": 0,
           "max": 39
+        },
+        {
+          "name": "PIN_BUZZER",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
         }
       ],
       "valueInputs": [],
       "statementInputs": []
     },
     {
-      "type": "humanoid_home",
+      "type": "biped_home_blocking",
       "category": "robot_humanoid",
-      "tooltip": "Set Humanoid to upright position",
-      "colour": "#FF6B35",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "humanoid_walk",
-      "category": "robot_humanoid",
-      "tooltip": "Make Humanoid walk",
+      "tooltip": "Move biped to upright home position, blocks until done",
       "colour": "#FF6B35",
       "isStatement": true,
       "hasOutput": false,
@@ -6783,34 +6956,11 @@
           "name": "SPEED",
           "fieldType": "dropdown",
           "options": [
-            "1000",
-            "600",
-            "1500"
+            "fast",
+            "normal",
+            "slow"
           ]
-        }
-      ],
-      "valueInputs": [
-        {
-          "name": "STEPS",
-          "check": "Number"
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "humanoid_turn",
-      "category": "robot_humanoid",
-      "tooltip": "Make Humanoid turn",
-      "colour": "#FF6B35",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
+        },
         {
           "name": "DIRECTION",
           "fieldType": "dropdown",
@@ -6823,152 +6973,238 @@
           "name": "SPEED",
           "fieldType": "dropdown",
           "options": [
-            "1000",
-            "600",
-            "1500"
+            "fast",
+            "normal",
+            "slow"
           ]
-        }
-      ],
-      "valueInputs": [
+        },
         {
-          "name": "STEPS",
-          "check": "Number"
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "humanoid_jump",
-      "category": "robot_humanoid",
-      "tooltip": "Make Humanoid jump",
-      "colour": "#FF6B35",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [
-        {
-          "name": "STEPS",
-          "check": "Number"
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "humanoid_moonwalk",
-      "category": "robot_humanoid",
-      "tooltip": "Make Humanoid moonwalk",
-      "colour": "#FF6B35",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "DIRECTION",
-          "fieldType": "dropdown",
-          "options": [
-            "1",
-            "-1"
-          ]
-        }
-      ],
-      "valueInputs": [
-        {
-          "name": "STEPS",
-          "check": "Number"
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "humanoid_dance",
-      "category": "robot_humanoid",
-      "tooltip": "Make Humanoid dance",
-      "colour": "#FF6B35",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [
-        {
-          "name": "STEPS",
-          "check": "Number"
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "humanoid_swing",
-      "category": "robot_humanoid",
-      "tooltip": "Swing Humanoid side to side",
-      "colour": "#FF6B35",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [],
-      "valueInputs": [
-        {
-          "name": "STEPS",
-          "check": "Number"
-        }
-      ],
-      "statementInputs": []
-    },
-    {
-      "type": "humanoid_bend",
-      "category": "robot_humanoid",
-      "tooltip": "Bend Humanoid left or right",
-      "colour": "#FF6B35",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "DIRECTION",
+          "name": "SIDE",
           "fieldType": "dropdown",
           "options": [
             "left",
             "right"
           ]
+        },
+        {
+          "name": "DIRECTION",
+          "fieldType": "dropdown",
+          "options": [
+            "1",
+            "-1"
+          ]
         }
       ],
       "valueInputs": [
         {
           "name": "STEPS",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        },
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        },
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        },
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        },
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
     },
     {
-      "type": "humanoid_gesture",
+      "type": "biped_walk_blocking",
       "category": "robot_humanoid",
-      "tooltip": "Humanoid expresses emotions with movement and sound",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "biped_walk_async",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "biped_turn_blocking",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "biped_turn_async",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "biped_jump_blocking",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "biped_moonwalk_blocking",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "biped_dance_blocking",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "biped_swing_blocking",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "biped_bend_blocking",
+      "category": "robot_humanoid",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "biped_gesture",
+      "category": "robot_humanoid",
+      "tooltip": "Play DigiCode-original gesture (motion + sound combo, intent-based naming, no OttoDIYLib derivation)",
       "colour": "#FF6B35",
       "isStatement": true,
       "hasOutput": false,
@@ -6983,19 +7219,20 @@
           "name": "GESTURE",
           "fieldType": "dropdown",
           "options": [
-            "Happy",
-            "SuperHappy",
-            "Sad",
-            "Victory",
-            "Angry",
-            "Sleeping",
-            "Fretful",
-            "Love",
-            "Confused",
-            "Fart",
-            "Wave",
-            "Magic",
-            "Fail"
+            "GESTURE_GREETING",
+            "GESTURE_ACKNOWLEDGE",
+            "GESTURE_YES",
+            "GESTURE_NO",
+            "GESTURE_CURIOSITY",
+            "GESTURE_SEARCH",
+            "GESTURE_IDLE_BREATHING",
+            "GESTURE_CHEER",
+            "GESTURE_THINKING",
+            "GESTURE_SURPRISE",
+            "GESTURE_SLEEPY",
+            "GESTURE_WAKEUP",
+            "GESTURE_CONFIRMATION",
+            "GESTURE_ERROR_ALERT"
           ]
         }
       ],
@@ -7003,9 +7240,27 @@
       "statementInputs": []
     },
     {
-      "type": "humanoid_sound",
+      "type": "biped_is_idle",
       "category": "robot_humanoid",
-      "tooltip": "Humanoid plays a sound",
+      "tooltip": "Returns true if biped is idle (no async motion running)",
+      "colour": "#FF6B35",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "outputType": "Boolean"
+    },
+    {
+      "type": "biped_wait_until_idle",
+      "category": "robot_humanoid",
+      "tooltip": "Block until biped async motion completes (barrier for IoT loop coexistence)",
       "colour": "#FF6B35",
       "isStatement": true,
       "hasOutput": false,
@@ -7015,40 +7270,14 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [
-        {
-          "name": "SOUND",
-          "fieldType": "dropdown",
-          "options": [
-            "S_connection",
-            "S_disconnection",
-            "S_buttonPushed",
-            "S_mode1",
-            "S_mode2",
-            "S_mode3",
-            "S_surprise",
-            "S_OhOoh",
-            "S_OhOoh2",
-            "S_cuddly",
-            "S_sleeping",
-            "S_happy",
-            "S_superHappy",
-            "S_happy_short",
-            "S_sad",
-            "S_confused",
-            "S_fart1",
-            "S_fart2",
-            "S_fart3"
-          ]
-        }
-      ],
+      "fields": [],
       "valueInputs": [],
       "statementInputs": []
     },
     {
-      "type": "wheel_init",
+      "type": "rover_init_servo",
       "category": "robot_wheel",
-      "tooltip": "Initialize Wheel",
+      "tooltip": "Initialize rover with 2 continuous-rotation servos (PWM velocity)",
       "colour": "#4CAF50",
       "isStatement": true,
       "hasOutput": false,
@@ -7078,9 +7307,9 @@
       "statementInputs": []
     },
     {
-      "type": "wheel_forward",
+      "type": "rover_init_dc_motor",
       "category": "robot_wheel",
-      "tooltip": "Move forward",
+      "tooltip": "Initialize rover with 2 DC motors via L298N-style H-bridge (4 GPIO pins)",
       "colour": "#4CAF50",
       "isStatement": true,
       "hasOutput": false,
@@ -7091,6 +7320,34 @@
       ],
       "boardRequires": null,
       "fields": [
+        {
+          "name": "PIN_LA",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "PIN_LB",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "PIN_RA",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
+        {
+          "name": "PIN_RB",
+          "fieldType": "number",
+          "default": null,
+          "min": 0,
+          "max": 39
+        },
         {
           "name": "SPEED",
           "fieldType": "dropdown",
@@ -7105,37 +7362,10 @@
       "statementInputs": []
     },
     {
-      "type": "wheel_backward",
+      "type": "rover_forward",
       "category": "robot_wheel",
-      "tooltip": "Move backward",
-      "colour": "#4CAF50",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "100",
-            "50",
-            "30"
-          ]
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "wheel_turn_left",
-      "category": "robot_wheel",
-      "tooltip": "Turn left",
-      "colour": "#4CAF50",
+      "tooltip": "",
+      "colour": "#808080",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7146,13 +7376,14 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": []
+      "statementInputs": [],
+      "builtin": true
     },
     {
-      "type": "wheel_turn_right",
+      "type": "rover_backward",
       "category": "robot_wheel",
-      "tooltip": "Turn right",
-      "colour": "#4CAF50",
+      "tooltip": "",
+      "colour": "#808080",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7163,13 +7394,14 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": []
+      "statementInputs": [],
+      "builtin": true
     },
     {
-      "type": "wheel_spin_left",
+      "type": "rover_turn_left",
       "category": "robot_wheel",
-      "tooltip": "Spin left in place",
-      "colour": "#4CAF50",
+      "tooltip": "",
+      "colour": "#808080",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7180,13 +7412,14 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": []
+      "statementInputs": [],
+      "builtin": true
     },
     {
-      "type": "wheel_spin_right",
+      "type": "rover_turn_right",
       "category": "robot_wheel",
-      "tooltip": "Spin right in place",
-      "colour": "#4CAF50",
+      "tooltip": "",
+      "colour": "#808080",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7197,13 +7430,14 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": []
+      "statementInputs": [],
+      "builtin": true
     },
     {
-      "type": "wheel_stop",
+      "type": "rover_spin_left",
       "category": "robot_wheel",
-      "tooltip": "Stop",
-      "colour": "#4CAF50",
+      "tooltip": "",
+      "colour": "#808080",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7214,12 +7448,67 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": []
+      "statementInputs": [],
+      "builtin": true
     },
     {
-      "type": "transform_init",
+      "type": "rover_spin_right",
+      "category": "robot_wheel",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "rover_stop",
+      "category": "robot_wheel",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "rover_is_moving",
+      "category": "robot_wheel",
+      "tooltip": "Returns true if rover wheels are currently driven",
+      "colour": "#4CAF50",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "outputType": "Boolean"
+    },
+    {
+      "type": "morpher_init",
       "category": "robot_transform",
-      "tooltip": "Initialize Transform robot (pin numbers from preset)",
+      "tooltip": "Initialize DigiMorpher (4-servo, Walk/Roll mode switchable)",
       "colour": "#9C27B0",
       "isStatement": true,
       "hasOutput": false,
@@ -7263,9 +7552,9 @@
       "statementInputs": []
     },
     {
-      "type": "transform_mode",
+      "type": "morpher_set_mode",
       "category": "robot_transform",
-      "tooltip": "Switch between Walk (4-leg walk) and Roll (wheel drive) mode",
+      "tooltip": "Set mode flag (Walk for 4-leg walking / Roll for wheel drive)",
       "colour": "#9C27B0",
       "isStatement": true,
       "hasOutput": false,
@@ -7283,25 +7572,7 @@
             "walk",
             "roll"
           ]
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "transform_shift",
-      "category": "robot_transform",
-      "tooltip": "Physically transform by moving servos (Walk↔Roll)",
-      "colour": "#9C27B0",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
+        },
         {
           "name": "MODE",
           "fieldType": "dropdown",
@@ -7315,10 +7586,10 @@
       "statementInputs": []
     },
     {
-      "type": "transform_home",
+      "type": "morpher_shift_blocking",
       "category": "robot_transform",
-      "tooltip": "Return to upright position",
-      "colour": "#9C27B0",
+      "tooltip": "",
+      "colour": "#808080",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7329,12 +7600,31 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": []
+      "statementInputs": [],
+      "builtin": true
     },
     {
-      "type": "transform_walk",
+      "type": "morpher_shift_async",
       "category": "robot_transform",
-      "tooltip": "Walk in Walk mode",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "morpher_home_blocking",
+      "category": "robot_transform",
+      "tooltip": "Return to upright position, blocks",
       "colour": "#9C27B0",
       "isStatement": true,
       "hasOutput": false,
@@ -7357,29 +7647,11 @@
           "name": "SPEED",
           "fieldType": "dropdown",
           "options": [
-            "normal",
             "fast",
+            "normal",
             "slow"
           ]
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "transform_turn",
-      "category": "robot_transform",
-      "tooltip": "Turn in Walk mode",
-      "colour": "#9C27B0",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
+        },
         {
           "name": "DIRECTION",
           "fieldType": "dropdown",
@@ -7392,15 +7664,73 @@
       "valueInputs": [
         {
           "name": "STEPS",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
     },
     {
-      "type": "transform_stop",
+      "type": "morpher_walk_blocking",
       "category": "robot_transform",
-      "tooltip": "Stop specified mode",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "morpher_walk_async",
+      "category": "robot_transform",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "morpher_turn_blocking",
+      "category": "robot_transform",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "morpher_stop",
+      "category": "robot_transform",
+      "tooltip": "Stop specified mode immediately",
       "colour": "#9C27B0",
       "isStatement": true,
       "hasOutput": false,
@@ -7418,60 +7748,7 @@
             "walk",
             "roll"
           ]
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "transform_roll",
-      "category": "robot_transform",
-      "tooltip": "Drive in Roll mode",
-      "colour": "#9C27B0",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
-        {
-          "name": "DIRECTION",
-          "fieldType": "dropdown",
-          "options": [
-            "forward",
-            "backward"
-          ]
         },
-        {
-          "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "normal",
-            "fast",
-            "slow"
-          ]
-        }
-      ],
-      "valueInputs": [],
-      "statementInputs": []
-    },
-    {
-      "type": "transform_roll_rotate",
-      "category": "robot_transform",
-      "tooltip": "Rotate in Roll mode",
-      "colour": "#9C27B0",
-      "isStatement": true,
-      "hasOutput": false,
-      "modes": [
-        "robotics",
-        "all_blocks",
-        "custom"
-      ],
-      "boardRequires": null,
-      "fields": [
         {
           "name": "DIRECTION",
           "fieldType": "dropdown",
@@ -7484,16 +7761,36 @@
       "valueInputs": [
         {
           "name": "POWER",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        },
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        },
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
     },
     {
-      "type": "transform_pushup",
+      "type": "morpher_roll_blocking",
       "category": "robot_transform",
-      "tooltip": "Do push-ups",
-      "colour": "#9C27B0",
+      "tooltip": "",
+      "colour": "#808080",
       "isStatement": true,
       "hasOutput": false,
       "modes": [
@@ -7504,12 +7801,103 @@
       "boardRequires": null,
       "fields": [],
       "valueInputs": [],
-      "statementInputs": []
+      "statementInputs": [],
+      "builtin": true
     },
     {
-      "type": "transform_dance",
+      "type": "morpher_roll_async",
       "category": "robot_transform",
-      "tooltip": "Perform a dance",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "morpher_roll_rotate_blocking",
+      "category": "robot_transform",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "morpher_pushup_blocking",
+      "category": "robot_transform",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "morpher_dance_blocking",
+      "category": "robot_transform",
+      "tooltip": "",
+      "colour": "#808080",
+      "isStatement": true,
+      "hasOutput": false,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "builtin": true
+    },
+    {
+      "type": "morpher_is_idle",
+      "category": "robot_transform",
+      "tooltip": "Returns true if morpher is idle",
+      "colour": "#9C27B0",
+      "isStatement": false,
+      "hasOutput": true,
+      "modes": [
+        "robotics",
+        "all_blocks",
+        "custom"
+      ],
+      "boardRequires": null,
+      "fields": [],
+      "valueInputs": [],
+      "statementInputs": [],
+      "outputType": "Boolean"
+    },
+    {
+      "type": "morpher_wait_until_idle",
+      "category": "robot_transform",
+      "tooltip": "Block until morpher async motion completes",
       "colour": "#9C27B0",
       "isStatement": true,
       "hasOutput": false,

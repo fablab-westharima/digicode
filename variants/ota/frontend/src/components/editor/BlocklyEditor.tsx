@@ -19,9 +19,11 @@ import { showToast } from '@/components/common/Toast';
 import { FavoriteSettingsDialog } from './FavoriteSettingsDialog';
 // Old esp32BlocksArduino.ts removed - using arduino/core/esp32Blocks with Blockly.Msg.*
 import '../../blocks/arduino/core/esp32Blocks';
-import '../../blocks/arduino/robot/humanoidBlocks';
-import '../../blocks/arduino/robot/wheelBlocks';
-import '../../blocks/arduino/robot/transformBlocks';
+// Phase B-2 (Session 146): 旧 humanoidBlocks/wheelBlocks/transformBlocks (DigiCode{Humanoid,Transform,Wheel} lib、case 23 incident E) を完全置換
+import '../../blocks/arduino/robot/bipedBlocks';
+import '../../blocks/arduino/robot/morpherBlocks';
+import '../../blocks/arduino/robot/roverBlocks';
+import '../../blocks/arduino/audio/buzzerBlocks';
 import '../../blocks/sensorBlocks';
 // Old audioBlocks.ts removed - using arduino/audio/audioBlocks with Blockly.Msg.*
 import '../../blocks/arduino/audio/audioBlocks';
@@ -67,7 +69,7 @@ import '../../blocks/arduino/display/tm1637Blocks';
 import '../../blocks/arduino/display/max7219Blocks';
 import '../../blocks/arduino/core/esp32TouchBlocks';
 import '../../blocks/arduino/display/epaperBlocks';
-import '../../blocks/arduino/motor/stepperDriverBlocks';
+// Phase B-2: stepperDriverBlocks (a4988_*/uln2003_*) は unified stepperBlocks (line 35) に統合済 (Session 146)
 import '../../blocks/arduino/sensor/piezoBlocks';
 import '../../blocks/arduino/communication/loraBlocks';
 import '../../blocks/arduino/sensor/gpsBlocks';

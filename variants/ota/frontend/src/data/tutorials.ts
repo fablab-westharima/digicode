@@ -198,25 +198,25 @@ export const tutorials: Tutorial[] = [
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="arduino_setup" x="50" y="30">
     <statement name="SETUP">
-      <block type="humanoid_init">
+      <block type="biped_init">
         <field name="PIN_LL">2</field>
         <field name="PIN_RL">4</field>
         <field name="PIN_LF">5</field>
         <field name="PIN_RF">18</field>
         <next>
-          <block type="humanoid_home"></block>
+          <block type="biped_home_blocking"></block>
         </next>
       </block>
     </statement>
   </block>
   <block type="arduino_loop" x="50" y="180">
     <statement name="LOOP">
-      <block type="humanoid_walk">
+      <block type="biped_walk_blocking">
         <value name="STEPS"><block type="math_number"><field name="NUM">2</field></block></value>
         <field name="DIRECTION">1</field>
         <field name="SPEED">1000</field>
         <next>
-          <block type="humanoid_turn">
+          <block type="biped_turn_blocking">
             <value name="STEPS"><block type="math_number"><field name="NUM">2</field></block></value>
             <field name="DIRECTION">1</field>
             <field name="SPEED">1000</field>
@@ -248,20 +248,20 @@ export const tutorials: Tutorial[] = [
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="arduino_setup" x="50" y="30">
     <statement name="SETUP">
-      <block type="humanoid_init">
+      <block type="biped_init">
         <field name="PIN_LL">2</field>
         <field name="PIN_RL">4</field>
         <field name="PIN_LF">5</field>
         <field name="PIN_RF">18</field>
         <next>
-          <block type="humanoid_home"></block>
+          <block type="biped_home_blocking"></block>
         </next>
       </block>
     </statement>
   </block>
   <block type="arduino_loop" x="50" y="180">
     <statement name="LOOP">
-      <block type="humanoid_gesture">
+      <block type="biped_gesture">
         <field name="GESTURE">Happy</field>
         <next>
           <block type="esp32_delay">
@@ -271,7 +271,7 @@ export const tutorials: Tutorial[] = [
               </block>
             </value>
             <next>
-              <block type="humanoid_gesture">
+              <block type="biped_gesture">
                 <field name="GESTURE">Sad</field>
                 <next>
                   <block type="esp32_delay">
@@ -281,7 +281,7 @@ export const tutorials: Tutorial[] = [
                       </block>
                     </value>
                     <next>
-                      <block type="humanoid_gesture">
+                      <block type="biped_gesture">
                         <field name="GESTURE">Victory</field>
                         <next>
                           <block type="esp32_delay">
@@ -326,30 +326,30 @@ export const tutorials: Tutorial[] = [
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="arduino_setup" x="50" y="30">
     <statement name="SETUP">
-      <block type="humanoid_init">
+      <block type="biped_init">
         <field name="PIN_LL">2</field>
         <field name="PIN_RL">4</field>
         <field name="PIN_LF">5</field>
         <field name="PIN_RF">18</field>
         <next>
-          <block type="humanoid_home"></block>
+          <block type="biped_home_blocking"></block>
         </next>
       </block>
     </statement>
   </block>
   <block type="arduino_loop" x="50" y="180">
     <statement name="LOOP">
-      <block type="humanoid_swing">
+      <block type="biped_swing_blocking">
         <value name="STEPS"><block type="math_number"><field name="NUM">2</field></block></value>
         <next>
-          <block type="humanoid_dance">
+          <block type="biped_dance_blocking">
             <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
             <next>
-              <block type="humanoid_moonwalk">
+              <block type="biped_moonwalk_blocking">
                 <value name="STEPS"><block type="math_number"><field name="NUM">2</field></block></value>
                 <field name="DIRECTION">1</field>
                 <next>
-                  <block type="humanoid_jump">
+                  <block type="biped_jump_blocking">
                     <value name="STEPS"><block type="math_number"><field name="NUM">2</field></block></value>
                   </block>
                 </next>
@@ -383,23 +383,23 @@ export const tutorials: Tutorial[] = [
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="arduino_setup" x="50" y="30">
     <statement name="SETUP">
-      <block type="humanoid_init">
+      <block type="biped_init">
         <field name="PIN_LL">2</field>
         <field name="PIN_RL">4</field>
         <field name="PIN_LF">5</field>
         <field name="PIN_RF">18</field>
         <next>
-          <block type="humanoid_home"></block>
+          <block type="biped_home_blocking"></block>
         </next>
       </block>
     </statement>
   </block>
   <block type="arduino_loop" x="50" y="180">
     <statement name="LOOP">
-      <block type="humanoid_sound">
+      <block type="buzzer_play_preset">
         <field name="SOUND">S_superHappy</field>
         <next>
-          <block type="humanoid_dance">
+          <block type="biped_dance_blocking">
             <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
             <next>
               <block type="esp32_delay">
@@ -442,13 +442,13 @@ export const tutorials: Tutorial[] = [
         <field name="TRIG_PIN">12</field>
         <field name="ECHO_PIN">13</field>
         <next>
-          <block type="humanoid_init">
+          <block type="biped_init">
             <field name="PIN_LL">2</field>
             <field name="PIN_RL">4</field>
             <field name="PIN_LF">5</field>
             <field name="PIN_RF">18</field>
             <next>
-              <block type="humanoid_home"></block>
+              <block type="biped_home_blocking"></block>
             </next>
           </block>
         </next>
@@ -473,10 +473,10 @@ export const tutorials: Tutorial[] = [
           </block>
         </value>
         <statement name="DO0">
-          <block type="humanoid_gesture">
+          <block type="biped_gesture">
             <field name="GESTURE">Confused</field>
             <next>
-              <block type="humanoid_turn">
+              <block type="biped_turn_blocking">
                 <value name="STEPS"><block type="math_number"><field name="NUM">3</field></block></value>
                 <field name="DIRECTION">1</field>
                 <field name="SPEED">800</field>
@@ -485,7 +485,7 @@ export const tutorials: Tutorial[] = [
           </block>
         </statement>
         <statement name="ELSE">
-          <block type="humanoid_walk">
+          <block type="biped_walk_blocking">
             <value name="STEPS"><block type="math_number"><field name="NUM">1</field></block></value>
             <field name="DIRECTION">1</field>
             <field name="SPEED">1000</field>

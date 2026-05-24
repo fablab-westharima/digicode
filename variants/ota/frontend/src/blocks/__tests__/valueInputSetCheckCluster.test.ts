@@ -48,8 +48,10 @@ import '../arduino/display/oledSsd1306Blocks';
 import '../arduino/display/tftBlocks';
 import '../arduino/m5stack/m5stackBlocks';
 import '../arduino/robot/differentialDriveBlocks';
-import '../arduino/robot/humanoidBlocks';
-import '../arduino/robot/transformBlocks';
+// Phase B-2 (Session 146): humanoidBlocks/transformBlocks/wheelBlocks → bipedBlocks/morpherBlocks/roverBlocks
+import '../arduino/robot/bipedBlocks';
+import '../arduino/robot/morpherBlocks';
+import '../arduino/robot/roverBlocks';
 import '../arduino/sensor/lineSensorBlocks';
 import '../arduino/sensor/qtrSensorBlocks';
 import '../arduino/sensor/sensorMotionBlocks';
@@ -143,18 +145,20 @@ const TARGETS: ReadonlyArray<Target> = [
   { type: 'diff_drive_line_trace', input: 'ERROR', group: 'N' },
   { type: 'diff_drive_line_trace', input: 'CORRECTION', group: 'N' },
 
-  // robot: humanoid (7 sites, all STEPS)
-  { type: 'humanoid_walk', input: 'STEPS', group: 'N', label: 'humanoid_walk(STEPS)' },
-  { type: 'humanoid_turn', input: 'STEPS', group: 'N', label: 'humanoid_turn(STEPS)' },
-  { type: 'humanoid_jump', input: 'STEPS', group: 'N', label: 'humanoid_jump(STEPS)' },
-  { type: 'humanoid_dance', input: 'STEPS', group: 'N', label: 'humanoid_dance(STEPS)' },
-  { type: 'humanoid_swing', input: 'STEPS', group: 'N', label: 'humanoid_swing(STEPS)' },
-  { type: 'humanoid_bend', input: 'STEPS', group: 'N', label: 'humanoid_bend(STEPS)' },
-  { type: 'humanoid_moonwalk', input: 'STEPS', group: 'N', label: 'humanoid_moonwalk(STEPS)' },
-
-  // robot: transform
-  { type: 'transform_roll_rotate', input: 'POWER', group: 'N' },
-  { type: 'transform_turn', input: 'STEPS', group: 'N', label: 'transform_turn(STEPS)' },
+  // Phase B-2 (Session 146): robot: biped + morpher (旧 humanoid + transform)
+  // setCheck = ['Number','String','Boolean'] = Group M (BUG-085 Phase 3 pattern、received-value coercion)
+  // blocking + async 両 form (D8) で同 setCheck contract、_async は省略 (entry 倍化回避、catalog で同 contract)
+  { type: 'biped_walk_blocking', input: 'STEPS', group: 'M', label: 'biped_walk_blocking(STEPS)' },
+  { type: 'biped_turn_blocking', input: 'STEPS', group: 'M', label: 'biped_turn_blocking(STEPS)' },
+  { type: 'biped_jump_blocking', input: 'STEPS', group: 'M', label: 'biped_jump_blocking(STEPS)' },
+  { type: 'biped_dance_blocking', input: 'STEPS', group: 'M', label: 'biped_dance_blocking(STEPS)' },
+  { type: 'biped_swing_blocking', input: 'STEPS', group: 'M', label: 'biped_swing_blocking(STEPS)' },
+  { type: 'biped_bend_blocking', input: 'STEPS', group: 'M', label: 'biped_bend_blocking(STEPS)' },
+  { type: 'biped_moonwalk_blocking', input: 'STEPS', group: 'M', label: 'biped_moonwalk_blocking(STEPS)' },
+  { type: 'morpher_roll_rotate_blocking', input: 'POWER', group: 'M', label: 'morpher_roll_rotate_blocking(POWER)' },
+  { type: 'morpher_turn_blocking', input: 'STEPS', group: 'M', label: 'morpher_turn_blocking(STEPS)' },
+  { type: 'morpher_pushup_blocking', input: 'STEPS', group: 'M', label: 'morpher_pushup_blocking(STEPS)' },
+  { type: 'morpher_dance_blocking', input: 'STEPS', group: 'M', label: 'morpher_dance_blocking(STEPS)' },
 
   // sensor
   { type: 'line_sensor_calibrate', input: 'DURATION', group: 'N', label: 'line_sensor_calibrate(DURATION)' },
@@ -174,8 +178,9 @@ const TARGETS: ReadonlyArray<Target> = [
   { type: 'servo_sweep', input: 'START', group: 'M' },
   { type: 'servo_sweep', input: 'END', group: 'M', label: 'servo_sweep(END)' },
   { type: 'servo_sweep', input: 'SPEED', group: 'M', label: 'servo_sweep(SPEED)' },
-  { type: 'stepper_move', input: 'STEPS', group: 'M' },
-  { type: 'stepper_rotate', input: 'ANGLE', group: 'M' },
+  // Phase B-2 (Session 146): stepper_move → stepper_step_blocking、stepper_rotate → stepper_rotate_blocking
+  { type: 'stepper_step_blocking', input: 'STEPS', group: 'M' },
+  { type: 'stepper_rotate_blocking', input: 'ANGLE', group: 'M' },
 
   // azure iot
   { type: 'azure_iot_hub_publish_d2c', input: 'PAYLOAD', group: 'M' },

@@ -54,18 +54,20 @@ describe('generateEdgeCases — custom counts', () => {
 });
 
 describe('generateEdgeCases — dropdown enum coverage', () => {
-  it('includes every option of humanoid_sound (19 options)', () => {
+  it('includes every option of biped_gesture (14 options)', () => {
+    // Phase B-2 (Session 146): humanoid_sound 19 options → biped_gesture 14 options
+    // (D-new-1a § 1-7.2、Otto S_* derivation 排除 + 意図ベース命名 GESTURE_*)。
+    // buzzer_play_preset (16 preset) も dropdown 大、後続 coverage で cover。
     const cases = generateEdgeCases(cat, {
       numberBoundaryCount: 0,
       dropdownEnumCount: 50,
       deepNestCount: 0,
     });
-    const humanoidSound = cases.filter((c) =>
-      c.blocksUsed.includes('humanoid_sound'),
+    const bipedGesture = cases.filter((c) =>
+      c.blocksUsed.includes('biped_gesture'),
     );
-    // humanoid_sound has 19 options, all should appear (since it's the
-    // first/longest dropdown target).
-    expect(humanoidSound.length).toBeGreaterThanOrEqual(13);
+    // biped_gesture has 14 options, expect substantial coverage
+    expect(bipedGesture.length).toBeGreaterThanOrEqual(10);
   });
 });
 

@@ -17,9 +17,11 @@ import './jsdom-bootstrap';
 
 import '../../../src/blocks/arduino/core/esp32Blocks';
 import '../../../src/blocks/arduino/core/esp32TouchBlocks';
-import '../../../src/blocks/arduino/robot/humanoidBlocks';
-import '../../../src/blocks/arduino/robot/wheelBlocks';
-import '../../../src/blocks/arduino/robot/transformBlocks';
+// Phase B-2 (Session 146): 旧 humanoidBlocks/wheelBlocks/transformBlocks 完全置換 (case 23 incident E)
+import '../../../src/blocks/arduino/robot/bipedBlocks';
+import '../../../src/blocks/arduino/robot/morpherBlocks';
+import '../../../src/blocks/arduino/robot/roverBlocks';
+import '../../../src/blocks/arduino/audio/buzzerBlocks';
 import '../../../src/blocks/sensorBlocks';
 import '../../../src/blocks/arduino/audio/audioBlocks';
 import '../../../src/blocks/arduino/display/neopixelBlocks';
@@ -27,7 +29,7 @@ import '../../../src/blocks/arduino/actuator/servoBlocks';
 import '../../../src/blocks/arduino/actuator/motorBlocks';
 import '../../../src/blocks/arduino/actuator/stepperBlocks';
 import '../../../src/blocks/arduino/actuator/relayBlocks';
-import '../../../src/blocks/arduino/motor/stepperDriverBlocks';
+// Phase B-2: stepperDriverBlocks (a4988_*/uln2003_*) は unified stepperBlocks に統合済
 import '../../../src/blocks/arduino/display/displayBlocks';
 import '../../../src/blocks/arduino/sensor/lineSensorBlocks';
 import '../../../src/blocks/arduino/sensor/encoderBlocks';

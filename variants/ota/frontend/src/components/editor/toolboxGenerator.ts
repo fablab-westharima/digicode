@@ -124,78 +124,103 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="esp32_serial_println"></block>
   </category>`,
 
+  // Phase B-2 (Session 146): DigiBiped (旧 Humanoid)、D8 = blocking + async 両 form、新 gesture set
   robot_humanoid: `
-  <category id="robotHumanoid" name="${cat('humanoid')}" colour="#FF6B35">
-    <block type="humanoid_init"></block>
-    <block type="humanoid_home"></block>
+  <category id="robotBiped" name="${cat('humanoid')}" colour="#FF6B35">
+    <block type="biped_init"></block>
+    <block type="biped_home_blocking"></block>
     <sep></sep>
     <label text="${label('movement')}"></label>
-    <block type="humanoid_walk">
+    <block type="biped_walk_blocking">
       <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
     </block>
-    <block type="humanoid_turn">
+    <block type="biped_walk_async">
       <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
     </block>
-    <block type="humanoid_jump">
+    <block type="biped_turn_blocking">
+      <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
+    </block>
+    <block type="biped_turn_async">
+      <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
+    </block>
+    <block type="biped_jump_blocking">
       <value name="STEPS"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
     </block>
-    <block type="humanoid_moonwalk">
+    <block type="biped_moonwalk_blocking">
       <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
     </block>
     <sep></sep>
     <label text="${label('gesture')}"></label>
-    <block type="humanoid_dance">
+    <block type="biped_dance_blocking">
       <value name="STEPS"><shadow type="math_number"><field name="NUM">4</field></shadow></value>
     </block>
-    <block type="humanoid_swing">
+    <block type="biped_swing_blocking">
       <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
     </block>
-    <block type="humanoid_bend">
+    <block type="biped_bend_blocking">
       <value name="STEPS"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
     </block>
-    <block type="humanoid_gesture"></block>
-    <block type="humanoid_sound"></block>
+    <block type="biped_gesture"></block>
+    <sep></sep>
+    <label text="async barrier"></label>
+    <block type="biped_is_idle"></block>
+    <block type="biped_wait_until_idle"></block>
   </category>`,
 
+  // Phase B-2: DigiRover (旧 Wheel)、 servo mode + 新規 DC motor mode (case 19 dead-code 露出)
   robot_wheel: `
-  <category id="robotWheel" name="${cat('wheelRobot')}" colour="#4CAF50">
-    <block type="wheel_init"></block>
+  <category id="robotRover" name="${cat('wheelRobot')}" colour="#4CAF50">
+    <block type="rover_init_servo"></block>
+    <block type="rover_init_dc_motor"></block>
     <sep></sep>
     <label text="${label('movement')}"></label>
-    <block type="wheel_forward"></block>
-    <block type="wheel_backward"></block>
-    <block type="wheel_turn_left"></block>
-    <block type="wheel_turn_right"></block>
-    <block type="wheel_spin_left"></block>
-    <block type="wheel_spin_right"></block>
-    <block type="wheel_stop"></block>
+    <block type="rover_forward"></block>
+    <block type="rover_backward"></block>
+    <block type="rover_turn_left"></block>
+    <block type="rover_turn_right"></block>
+    <block type="rover_spin_left"></block>
+    <block type="rover_spin_right"></block>
+    <block type="rover_stop"></block>
+    <sep></sep>
+    <label text="query"></label>
+    <block type="rover_is_moving"></block>
   </category>`,
 
+  // Phase B-2: DigiMorpher (旧 Transform)、 walk/roll mode + D8 blocking/async
   robot_transform: `
-  <category id="robotTransform" name="${cat('transform')}" colour="#9C27B0">
+  <category id="robotMorpher" name="${cat('transform')}" colour="#9C27B0">
     <label text="${label('init')}"></label>
-    <block type="transform_init"></block>
-    <block type="transform_mode"></block>
-    <block type="transform_shift"></block>
-    <block type="transform_home"></block>
+    <block type="morpher_init"></block>
+    <block type="morpher_set_mode"></block>
+    <block type="morpher_shift_blocking"></block>
+    <block type="morpher_shift_async"></block>
+    <block type="morpher_home_blocking"></block>
     <sep></sep>
     <label text="${label('walk')}"></label>
-    <block type="transform_walk"></block>
-    <block type="transform_turn">
+    <block type="morpher_walk_blocking"></block>
+    <block type="morpher_walk_async"></block>
+    <block type="morpher_turn_blocking">
       <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
     </block>
-    <block type="transform_stop"></block>
+    <block type="morpher_stop"></block>
     <sep></sep>
     <label text="${label('roll')}"></label>
-    <block type="transform_roll"></block>
-    <block type="transform_roll_rotate">
+    <block type="morpher_roll_blocking"></block>
+    <block type="morpher_roll_async"></block>
+    <block type="morpher_roll_rotate_blocking">
       <value name="POWER"><shadow type="math_number"><field name="NUM">50</field></shadow></value>
     </block>
     <sep></sep>
     <label text="${label('gesture')}"></label>
-    <block type="transform_pushup"></block>
-    <block type="transform_dance"></block>
+    <block type="morpher_pushup_blocking"></block>
+    <block type="morpher_dance_blocking"></block>
+    <sep></sep>
+    <label text="async barrier"></label>
+    <block type="morpher_is_idle"></block>
+    <block type="morpher_wait_until_idle"></block>
   </category>`,
+
+  // Phase B-2 (Session 146): DigiBuzzer 関連 block は 850 行付近の既存 buzzer category に統合 (deviation #10、duplicate 回避)
 
   // センサー - 超音波
   sensor_ultrasonic: `
@@ -808,15 +833,28 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="neopixel_clear"></block>
   </category>`,
 
-  // ブザー
+  // ブザー (audio + DigiBuzzer 統合、Phase B-2 Session 146 で DigiBuzzer block 3 件追加)
   buzzer: `
   <category id="buzzer" name="${cat('buzzer')}" colour="#8BC34A">
+    <label text="basic"></label>
     <block type="buzzer_tone">
       <value name="FREQ_CUSTOM"><shadow type="math_number"><field name="NUM">440</field></shadow></value>
       <value name="DURATION"><shadow type="math_number"><field name="NUM">500</field></shadow></value>
     </block>
     <block type="buzzer_stop"></block>
     <block type="buzzer_melody"></block>
+    <sep></sep>
+    <label text="DigiBuzzer (preset + bend tone)"></label>
+    <block type="buzzer_play_preset"></block>
+    <block type="buzzer_play_tone">
+      <value name="FREQ"><shadow type="math_number"><field name="NUM">440</field></shadow></value>
+      <value name="DURATION"><shadow type="math_number"><field name="NUM">200</field></shadow></value>
+    </block>
+    <block type="buzzer_play_bend_tone">
+      <value name="INIT_FREQ"><shadow type="math_number"><field name="NUM">400</field></shadow></value>
+      <value name="END_FREQ"><shadow type="math_number"><field name="NUM">1200</field></shadow></value>
+      <value name="DURATION"><shadow type="math_number"><field name="NUM">500</field></shadow></value>
+    </block>
   </category>`,
 
   // ディスプレイ
@@ -1268,22 +1306,16 @@ const getToolboxCategories = (): Record<string, string> => ({
     </block>
   </category>`,
 
-  // ステッピングドライバ詳細 (52.md commit #7, 2026-05-04 第80回) — Phase D、A4988 + ULN2003
+  // Phase B-2 (Session 146): stepper unified、a4988/uln2003/旧 stepper を DigiMotion StepperPollChannel + StepperHwChannel (D9) 経由に統合
+  // 旧 stepper_driver category は本 stepper category に統合済、entry 名は backward compat のため `stepper_driver` 維持
   stepper_driver: `
   <category id="stepper_driver" name="${cat('stepperDriver')}" colour="#FF5722">
-    <label text="A4988"></label>
-    <block type="a4988_init"></block>
-    <block type="a4988_set_microstep"></block>
-    <block type="a4988_set_direction"></block>
-    <block type="a4988_step">
-      <value name="STEPS"><shadow type="math_number"><field name="NUM">200</field></shadow></value>
-    </block>
-    <label text="ULN2003 + 28BYJ-48"></label>
-    <block type="uln2003_init"></block>
-    <block type="uln2003_step_28byj48">
-      <value name="STEPS"><shadow type="math_number"><field name="NUM">512</field></shadow></value>
-      <value name="SPEED"><shadow type="math_number"><field name="NUM">500</field></shadow></value>
-    </block>
+    <label text="HW peripheral (D9 FastAccelStepper、最高速)"></label>
+    <block type="stepper_init_hw"></block>
+    <label text="Driver (A4988/DRV8825)"></label>
+    <block type="stepper_init_driver"></block>
+    <block type="stepper_set_microstep"></block>
+    <block type="stepper_set_direction"></block>
   </category>`,
 
   // E-paper ディスプレイ (52.md commit #6, 2026-05-04 第80回) — Phase D、Waveshare/M5Paper 対応
@@ -1439,17 +1471,34 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="battery_percentage"></block>
   </category>`,
 
-  // ステッピングモーター
+  // Phase B-2 (Session 146): stepper unified、4-wire + poll-mode 主体、driver/hw は stepper_driver category 参照
   stepper: `
   <category id="stepper" name="${cat('stepper')}" colour="#795548">
-    <block type="stepper_init"></block>
-    <block type="stepper_move">
+    <label text="ULN2003 + 28BYJ-48"></label>
+    <block type="stepper_init_4wire"></block>
+    <sep></sep>
+    <label text="motion"></label>
+    <block type="stepper_set_speed">
+      <value name="SPEED"><shadow type="math_number"><field name="NUM">1000</field></shadow></value>
+    </block>
+    <block type="stepper_step_blocking">
       <value name="STEPS"><shadow type="math_number"><field name="NUM">512</field></shadow></value>
     </block>
-    <block type="stepper_rotate">
+    <block type="stepper_step_async">
+      <value name="STEPS"><shadow type="math_number"><field name="NUM">512</field></shadow></value>
+    </block>
+    <block type="stepper_rotate_blocking">
+      <value name="ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value>
+    </block>
+    <block type="stepper_rotate_async">
       <value name="ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value>
     </block>
     <block type="stepper_stop"></block>
+    <sep></sep>
+    <label text="query / wait"></label>
+    <block type="stepper_is_at_target"></block>
+    <block type="stepper_get_position"></block>
+    <block type="stepper_wait_until_target"></block>
   </category>`,
 
   // テキスト
