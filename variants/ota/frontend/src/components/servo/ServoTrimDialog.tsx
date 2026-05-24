@@ -2,6 +2,11 @@
  * サーボトリム設定ダイアログ
  * ESP32に接続してサーボのトリム値をリアルタイムで調整
  * プリセット選択 + 任意のピン番号編集に対応
+ *
+ * Phase D-1 (Session 148、case 23 incident B 解消 cluster):
+ *   trimService 直接呼出 → ITrimTransport 抽象経由に書換。
+ *   transport factory = WiFi (HTTP) → USB (Serial) → BLE (GATT NUS) priority。
+ *   transport null 時は「接続なし」UI を表示 (R-9 mitigation 含む)。
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,8 +29,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { trimService } from '@/services/trimService';
+import { createTrimTransport } from '@/services/trim/TrimTransportFactory';
+import type { ITrimTransport, TrimTestAction } from '@/services/trim/ITrimTransport';
 import { useWifiStore } from '@/stores/wifiStore';
+import { useSerialStore } from '@/stores/serialStore';
+import { bluetoothService } from '@/services/bluetoothService';
 import { SlidersHorizontal, Play, RotateCcw, Save, Wifi, WifiOff, Home, Plus, Minus, Trash2 } from 'lucide-react';
 
 interface ServoTrimDialogProps {
@@ -154,7 +162,19 @@ function saveServoConfig(preset: string, servos: ServoItem[]) {
 
 export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
   const { t } = useTranslation();
-  const { status: wifiStatus, getDeviceUrl, host } = useWifiStore();
+  const wifiStatus = useWifiStore(state => state.status);
+  const wifiHost = useWifiStore(state => state.host);
+  const serialStatus = useSerialStore(state => state.status);
+
+  // Phase D-1: transport は接続方式自動判定 (WiFi → USB → BLE)。
+  // wifiStatus / serialStatus 変化で再評価、 bluetoothService は plain class のため
+  // isConnected snapshot を dep に含めることで render-time 再評価。
+  const bleConnected = bluetoothService.isConnected;
+  const transport: ITrimTransport | null = useMemo(
+    () => createTrimTransport(),
+    [wifiStatus, serialStatus, bleConnected]
+  );
+  const isConnected = transport !== null;
 
   // プリセット表示名リスト（t() で現在の言語に解決）
   const SERVO_PRESETS = useMemo(() => SERVO_PRESETS_DEF.map(p => ({
@@ -169,6 +189,20 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 接続表示用ラベル: transport の kind と (HTTP 時のみ) host を組合せ。
+  const connectionLabel = useMemo(() => {
+    if (!transport) {
+      return t('servo.trim.notConnected', { defaultValue: 'デバイスに接続してください' });
+    }
+    const kindLabel =
+      transport.kind === 'http' ? t('servo.trim.transport.http', { defaultValue: 'WiFi' })
+      : transport.kind === 'serial' ? t('servo.trim.transport.serial', { defaultValue: 'USB' })
+      : t('servo.trim.transport.ble', { defaultValue: 'Bluetooth' });
+    const connected = t('servo.trim.connected', { defaultValue: '接続済み' });
+    const detail = transport.kind === 'http' && wifiHost ? `: ${wifiHost}` : '';
+    return `${connected} (${kindLabel})${detail}`;
+  }, [transport, wifiHost, t]);
+
   // プリセット変更時の処理
   const handlePresetChange = (presetId: string) => {
     setSelectedPreset(presetId);
@@ -177,18 +211,13 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
     setTrims(newServos.map(() => 0));
   };
 
-  // isConnected / loadTrimsFromDevice は下の useEffect から dep 参照するため
-  // 宣言順序を useEffect より前に配置（TDZ 回避）
-  const isConnected = wifiStatus === 'connected' && host;
-
   const loadTrimsFromDevice = useCallback(async () => {
-    if (!isConnected) return;
+    if (!transport) return;
 
     setIsLoading(true);
     setError(null);
     try {
-      const deviceUrl = getDeviceUrl();
-      const data = await trimService.getTrims(deviceUrl);
+      const data = await transport.getTrims();
       if (data.trims && data.trims.length > 0) {
         // サーボ数に合わせてトリム値を設定
         const newTrims = servos.map((_, i) => data.trims[i] || 0);
@@ -200,7 +229,7 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [isConnected, getDeviceUrl, servos, t]);
+  }, [transport, servos, t]);
 
   // サーボ数変更時にトリム配列を調整
   useEffect(() => {
@@ -215,10 +244,10 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
 
   // ダイアログ開いた時にデバイスからトリム値を読み込み
   useEffect(() => {
-    if (open && isConnected) {
+    if (open && transport) {
       loadTrimsFromDevice();
     }
-  }, [open, isConnected, loadTrimsFromDevice]);
+  }, [open, transport, loadTrimsFromDevice]);
 
   const handleTrimChange = async (index: number, value: number) => {
     const newTrims = [...trims];
@@ -226,21 +255,19 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
     setTrims(newTrims);
 
     // リアルタイムでデバイスに送信
-    if (isConnected) {
+    if (transport) {
       try {
-        const deviceUrl = getDeviceUrl();
-        await trimService.setTrim(deviceUrl, index, value);
+        await transport.setTrim(index, value);
       } catch (err) {
         console.error('Failed to set trim:', err);
       }
     }
   };
 
-  const handleTest = async (action: 'home' | 'sweep' | 'walk', index?: number) => {
-    if (!isConnected) return;
+  const handleTest = async (action: TrimTestAction, index?: number) => {
+    if (!transport) return;
     try {
-      const deviceUrl = getDeviceUrl();
-      await trimService.testServo(deviceUrl, action, index);
+      await transport.testServo(action, index);
     } catch (err) {
       console.error('Failed to test servo:', err);
       setError(t('servo.trim.testError', { defaultValue: 'テスト動作に失敗しました' }));
@@ -248,15 +275,14 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
   };
 
   const handleSave = async () => {
-    if (!isConnected) return;
+    if (!transport) return;
     setIsSaving(true);
     setError(null);
     try {
-      const deviceUrl = getDeviceUrl();
       // トリム値を一括送信
-      await trimService.setTrims(deviceUrl, trims);
+      await transport.setTrims(trims);
       // NVSに保存
-      await trimService.saveTrims(deviceUrl);
+      await transport.saveTrims();
       // ローカルにサーボ設定を保存
       saveServoConfig(selectedPreset, servos);
       setError(null);
@@ -346,9 +372,7 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
                     <WifiOff className="w-5 h-5 text-red-500" />
                   )}
                   <span className={`text-sm ${isConnected ? 'text-green-500' : 'text-red-500'}`}>
-                    {isConnected
-                      ? t('servo.trim.connected', { defaultValue: '接続済み' }) + `: ${host}`
-                      : t('servo.trim.notConnected', { defaultValue: 'デバイスに接続してください' })}
+                    {connectionLabel}
                   </span>
                 </div>
                 {isConnected && (
@@ -365,6 +389,13 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
                   </Button>
                 )}
               </div>
+              {!isConnected && (
+                <p className="text-xs text-[#8B949E] mt-2">
+                  {t('servo.trim.connectGuide', {
+                    defaultValue: 'WiFi OTA、USB シリアル、または Bluetooth (ble_uart_setup ブロックが必要) のいずれかでデバイスに接続してください。',
+                  })}
+                </p>
+              )}
             </CardContent>
           </Card>
 

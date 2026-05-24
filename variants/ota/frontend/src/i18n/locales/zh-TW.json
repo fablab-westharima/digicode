@@ -4127,7 +4127,13 @@
         "servoN": "伺服 {{n}}",
         "leftLeg": "左腿",
         "rightLeg": "右腿"
-      }
+      },
+      "transport": {
+        "http": "Wi-Fi",
+        "serial": "USB",
+        "ble": "Bluetooth"
+      },
+      "connectGuide": "請透過 Wi-Fi OTA、USB 序列埠或藍牙 (需要 ble_uart_setup 區塊) 連接到裝置。"
     }
   },
   "accountDelete": {

@@ -4133,7 +4133,13 @@
         "servoN": "サーボ{{n}}",
         "leftLeg": "左脚",
         "rightLeg": "右脚"
-      }
+      },
+      "transport": {
+        "http": "WiFi",
+        "serial": "USB",
+        "ble": "Bluetooth"
+      },
+      "connectGuide": "WiFi OTA、USB シリアル、または Bluetooth (ble_uart_setup ブロックが必要) のいずれかでデバイスに接続してください。"
     }
   },
   "accountDelete": {

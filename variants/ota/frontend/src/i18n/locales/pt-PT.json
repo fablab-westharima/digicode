@@ -4127,7 +4127,13 @@
         "servoN": "Servo {{n}}",
         "leftLeg": "Perna esquerda",
         "rightLeg": "Perna direita"
-      }
+      },
+      "transport": {
+        "http": "Wi-Fi",
+        "serial": "USB",
+        "ble": "Bluetooth"
+      },
+      "connectGuide": "Por favor ligue o dispositivo via Wi-Fi OTA, USB série ou Bluetooth (requer o bloco ble_uart_setup)."
     }
   },
   "accountDelete": {
