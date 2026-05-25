@@ -215,17 +215,54 @@ app.get('/api/health/compile-server-latest', async (c) => {
   const target =
     'https://hub.docker.com/v2/repositories/digicollc/digicode-compile-server/tags?page_size=10&ordering=last_updated';
   try {
-    // Session 154 hotfix (Workers proxy DockerHub 429 rate-limit fix): authenticated
-    // call uses 5000/6h rate limit window vs anonymous 100/6h. PAT は wrangler secret
-    // put DOCKERHUB_PAT で設定 (optional、 unset 時 anonymous fallback = fail-soft 維持)。
+    // Session 155 fix (Workers proxy DockerHub 429 rate-limit follow-up):
+    // Hub API は PAT を Authorization Bearer header に直接渡しても 401 (invalid
+    // Bearer 実験で confirmed)。 正しい auth flow = 2-step JWT exchange:
+    //   1. POST /v2/users/login {username, password: PAT} → {token: JWT}
+    //   2. GET /v2/repositories/.../tags  Authorization: Bearer ${JWT}
+    // username + PAT 両方ある場合のみ JWT 交換、 失敗 (network / 401) は
+    // anonymous fallback (per-IP rate limit、 fail-soft per Session 129 design)。
+    let jwt: string | null = null;
+    if (c.env.DOCKERHUB_USERNAME && c.env.DOCKERHUB_PAT) {
+      try {
+        const loginRes = await fetch('https://hub.docker.com/v2/users/login', {
+          method: 'POST',
+          signal: AbortSignal.timeout(3000),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: c.env.DOCKERHUB_USERNAME,
+            password: c.env.DOCKERHUB_PAT,
+          }),
+        });
+        if (loginRes.ok) {
+          const loginJson = (await loginRes.json().catch(() => null)) as
+            | { token?: unknown }
+            | null;
+          jwt = typeof loginJson?.token === 'string' ? loginJson.token : null;
+        }
+      } catch {
+        // Network error or timeout: fall through to anonymous request below.
+      }
+    }
     const headers: Record<string, string> = { Accept: 'application/json' };
-    if (c.env.DOCKERHUB_PAT) {
-      headers['Authorization'] = `Bearer ${c.env.DOCKERHUB_PAT}`;
+    if (jwt) {
+      headers['Authorization'] = `Bearer ${jwt}`;
     }
     const res = await fetch(target, {
       method: 'GET',
       signal: AbortSignal.timeout(5000),
       headers,
+    });
+    // Session 155 diagnostic log (F-1 verify、 PAT 値露出禁止 = 存在 boolean のみ)。
+    // 429 復活時の root cause 判別用、 polish phase で削除候補。
+    console.log('compile-server-latest:', {
+      hasUsername: !!c.env.DOCKERHUB_USERNAME,
+      hasPat: !!c.env.DOCKERHUB_PAT,
+      jwtObtained: !!jwt,
+      upstreamStatus: res.status,
+      ratelimitRemaining: res.headers.get('x-ratelimit-remaining'),
+      ratelimitLimit: res.headers.get('x-ratelimit-limit'),
+      ratelimitIp: res.headers.get('x-ratelimit-ip'),
     });
     if (!res.ok) {
       return c.json(

@@ -46,14 +46,27 @@ export type Bindings = {
   /** Optional: 2FA / OTP email transport. */
   RESEND_API_KEY?: string;
   /**
-   * Optional: DockerHub Personal Access Token (`dckr_pat_…` form) for
-   * authenticated Hub API calls. Used by `/api/health/compile-server-latest`
-   * to bypass the anonymous rate limit (100/6h → 5000/6h authenticated, Session
-   * 154 hotfix for 429 rate-limit hit). Set via `wrangler secret put
-   * DOCKERHUB_PAT`. If absent, the endpoint falls back to anonymous access
+   * Optional: DockerHub Personal Access Token (`dckr_pat_…` form). Paired
+   * with `DOCKERHUB_USERNAME` for authenticated Hub API calls via 2-step
+   * JWT exchange (POST `/v2/users/login` with {username, password: PAT}
+   * → returns JWT → `Authorization: Bearer ${JWT}` for subsequent calls).
+   *
+   * Session 154 hotfix (commit 230579b) initially used `Bearer ${PAT}`
+   * directly but Hub API rejects PAT in Bearer (401) — Session 155 (commit
+   * 26fc881 follow-up) corrected to 2-step JWT flow. Anonymous per-IP rate
+   * limit (~180/6h) is hit on shared CF Worker egress IP; authenticated
+   * session uses per-account quota (much higher).
+   *
+   * If either secret is absent, falls back to anonymous Hub API access
    * (fail-soft per Session 129 design).
    */
   DOCKERHUB_PAT?: string;
+  /**
+   * Optional: DockerHub username paired with `DOCKERHUB_PAT` for the
+   * 2-step JWT exchange auth flow. Set via `wrangler secret put
+   * DOCKERHUB_USERNAME`. See `DOCKERHUB_PAT` doc above for rationale.
+   */
+  DOCKERHUB_USERNAME?: string;
 
   // ── MoR payment integration (plan 58) ───────────────────────────
   // Provider-side IDs of the Lite/Pro/Enterprise plans. Stored as env
