@@ -7,19 +7,27 @@
  */
 
 /*
- * DigiBuzzer Blockly Blocks — Phase B-2 (Session 146、D-new-1 D5)
+ * DigiBuzzer Blockly Blocks — Phase X-2 commit 2 (Session 152、 user Q-B=(a) 確定後)
  *
- * Robot lib から独立した汎用 buzzer module、任意 ESP32 board で使用可能。
- * 16 sound preset (`BEEP_<intent>`) は OttoDIYLib `S_xxx` 命名規則を一切持ち込まない (E5 + case 23 incident E)、
- * 周波数 sequence は意図ベース命名 (§1-7.3 candidate、 Phase E user 主観評価で fine-tune iteration、D-new-1b)。
+ * Robot lib から独立した汎用 buzzer module、 任意 ESP32 board で使用可能。
+ * 16 sound preset (`BEEP_<intent>`) は OttoDIYLib `S_xxx` 命名規則を一切持ち込まない
+ * (E5 + case 23 incident E)、 周波数 sequence は意図ベース命名 (§1-7.3 candidate、
+ * Phase E user 主観評価で fine-tune iteration、 D-new-1b)。
  *
  * 3 block: play_preset / play_tone / play_bend_tone
  *
- * 60.md spec deviation #10 (Session 146 B-2 発覚): spec は 4 block (stop 含む) を verbatim 指定だが、
- * 既存 audio/audioBlocks.ts:99 `buzzer_stop` (noTone(pin) 直接 emit) が同名で先行存在。新 DigiBuzzer 経由
- * stop は本 commit では追加せず、既存 buzzer_stop block で代用 (機能等価: noTone は tone()/playTone() 全ての停止に有効)。
- * post-Phase 別 session で audioBlocks.ts buzzer 系を rename or 統合する別 task 候補、本 deviation は 60.md §1 B-2
- * 本文 update 対象。
+ * Phase X-2 commit 2 で ensureBuzzerDecl を修正 (user Q-B=(a) 確定方針):
+ *   - 旧: `DigiBuzzer buzzer;` global declare = anonymous namespace 内 class への
+ *     global declare で undefined symbol error (compile fail)
+ *   - 新: `IBuzzer& buzzer = getBuzzer();` reference 経由 = singleton accessor
+ *     経由で DigiBuzzer concrete instance (Platform HAL 抽象化、 anonymous namespace
+ *     意図的設計) に link。 virtual method 呼出 (polymorphism) で
+ *     attach/playTone/playPreset/playBendTone を IBuzzer abstract 経由 invoke。
+ *
+ * 60.md spec deviation #10 (Session 146 B-2 発覚): spec は 4 block (stop 含む) を
+ * verbatim 指定だが、 既存 audio/audioBlocks.ts:99 `buzzer_stop` (noTone(pin) 直接 emit)
+ * が同名で先行存在。 新 DigiBuzzer 経由 stop は本 commit でも追加せず、 既存 buzzer_stop
+ * block で代用 (機能等価: noTone は tone()/playTone() 全ての停止に有効)。
  */
 
 import * as Blockly from 'blockly';
@@ -32,9 +40,11 @@ const generator = javascriptGenerator as any;
 const BUZZER_COLOR = '#E91E63';
 
 function ensureBuzzerDecl(): void {
-  // singleton declaration pattern (case 19 axis 2 G-style)
-  generator.definitions_['include_digibuzzer'] = '#include <sound/IBuzzer.h>';
-  generator.definitions_['digibuzzer_instance'] = 'DigiBuzzer buzzer;';
+  // Phase X-2 commit 2 (Q-B=(a) confirmed): IBuzzer& reference via getBuzzer() singleton accessor
+  // 経由 emit。 DigiMotion.h umbrella で <sound/IBuzzer.h> transitive include 済 (Phase X-1)。
+  // case 19 axis 2 G-style: definitions_ unique key で multi-include / multi-decl 防御。
+  generator.definitions_['include_digimotion'] = '#include <DigiMotion.h>';
+  generator.definitions_['digibuzzer_instance'] = '/* emits: buzzer (IBuzzer&) */\nIBuzzer& buzzer = getBuzzer();';
 }
 
 // ===== buzzer_play_preset (16 BEEP_<intent>、D-new-1b 全件仮実装) =====
@@ -74,7 +84,7 @@ javascriptGenerator.forBlock['buzzer_play_preset'] = function(block: Blockly.Blo
   const pin = block.getFieldValue('PIN');
   const preset = block.getFieldValue('PRESET');
   ensureBuzzerDecl();
-  return `  buzzer.attach(${pin});\n  buzzer.playPreset(${preset});\n`;
+  return `  /* requires: buzzer */ buzzer.attach(${pin});\n  buzzer.playPreset(${preset});\n`;
 };
 
 // ===== buzzer_play_tone (raw freq + duration) =====
@@ -103,7 +113,7 @@ javascriptGenerator.forBlock['buzzer_play_tone'] = function(block: Blockly.Block
   const freq = generator.valueToCode(block, 'FREQ', generator.ORDER_ATOMIC) || '440';
   const duration = generator.valueToCode(block, 'DURATION', generator.ORDER_ATOMIC) || '200';
   ensureBuzzerDecl();
-  return `  buzzer.attach(${pin});\n  buzzer.playTone(String(${freq}).toInt(), String(${duration}).toInt());\n`;
+  return `  /* requires: buzzer */ buzzer.attach(${pin});\n  buzzer.playTone(String(${freq}).toInt(), String(${duration}).toInt());\n`;
 };
 
 // ===== buzzer_play_bend_tone (sweep freq) =====
@@ -136,7 +146,7 @@ javascriptGenerator.forBlock['buzzer_play_bend_tone'] = function(block: Blockly.
   const endFreq = generator.valueToCode(block, 'END_FREQ', generator.ORDER_ATOMIC) || '1200';
   const duration = generator.valueToCode(block, 'DURATION', generator.ORDER_ATOMIC) || '500';
   ensureBuzzerDecl();
-  return `  buzzer.attach(${pin});\n  buzzer.playBendTone(String(${initFreq}).toInt(), String(${endFreq}).toInt(), String(${duration}).toInt());\n`;
+  return `  /* requires: buzzer */ buzzer.attach(${pin});\n  buzzer.playBendTone(String(${initFreq}).toInt(), String(${endFreq}).toInt(), String(${duration}).toInt());\n`;
 };
 
 // buzzer_stop block は audio/audioBlocks.ts 既存 (deviation #10 参照、上記 doc comment)。

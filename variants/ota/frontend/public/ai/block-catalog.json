@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-25T08:03:47.216Z",
+  "generatedAt": "2026-05-25T08:15:32.946Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -6731,7 +6731,7 @@
     {
       "type": "stepper_set_microstep",
       "category": "stepper_driver",
-      "tooltip": "Set microstep multiplier (HW MS1/MS2/MS3 pins must be wired accordingly)",
+      "tooltip": "Microstep selector — HW only: wire MS1/MS2/MS3 pins to driver per this selection (A4988/DRV8825). The block emits a documentation comment; no software-side microstep setting exists.",
       "colour": "#795548",
       "isStatement": true,
       "hasOutput": false,
@@ -6761,7 +6761,7 @@
     {
       "type": "stepper_set_direction",
       "category": "stepper_driver",
-      "tooltip": "Set direction for next stepper_step",
+      "tooltip": "Direction selector — sign of stepper_step / rotate target value encodes direction (positive = forward, negative = backward). The block emits a documentation comment; no software-side direction state.",
       "colour": "#795548",
       "isStatement": true,
       "hasOutput": false,
