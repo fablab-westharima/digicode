@@ -214,7 +214,7 @@ export function ServoSpeedDialog({ open, onOpenChange }: ServoSpeedDialogProps) 
               ) : (
                 <div className="space-y-2">
                   {perPinRows.map((row, index) => (
-                    <div key={index} className="grid grid-cols-[80px_1fr_40px] gap-2 items-center bg-[#0D1117] p-2 rounded-lg border border-[#2E333D]">
+                    <div key={index} className="grid grid-cols-[80px_1fr_80px] gap-2 items-center bg-[#0D1117] p-2 rounded-lg border border-[#2E333D]">
                       <div className="space-y-1">
                         <Label className="text-xs text-[#E6EDF3]">GPIO</Label>
                         <Input
@@ -253,7 +253,19 @@ export function ServoSpeedDialog({ open, onOpenChange }: ServoSpeedDialogProps) 
                           className="h-8 bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]"
                         />
                       </div>
-                      <div className="flex items-end pb-0.5">
+                      <div className="flex items-end pb-0.5 gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D] h-8 w-8 p-0"
+                          onClick={() => {
+                            setPerPinRows((prev) => prev.map((c, i) => (i === index ? { ...c, speedDegPerSec: globalSpeed } : c)));
+                            setHasChanges(true);
+                          }}
+                          title={t('servoSpeed.resetPerPin', { defaultValue: 'デフォルト (グローバル値) に戻す' })}
+                        >
+                          <RotateCcw className="w-4 h-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -262,6 +274,7 @@ export function ServoSpeedDialog({ open, onOpenChange }: ServoSpeedDialogProps) 
                             setPerPinRows((prev) => prev.filter((_, i) => i !== index));
                             setHasChanges(true);
                           }}
+                          title={t('common.delete', { defaultValue: '削除' })}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>

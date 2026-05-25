@@ -534,9 +534,30 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
                     >
                       +
                     </Button>
-                    <span className="text-sm font-mono text-[#8B949E] w-10 text-right">
-                      {(trims[index] || 0) > 0 ? '+' : ''}{trims[index] || 0}
-                    </span>
+                    <Input
+                      type="number"
+                      value={trims[index] || 0}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        if (!isNaN(val)) {
+                          handleTrimChange(index, Math.max(-30, Math.min(30, val)));
+                        }
+                      }}
+                      min={-30}
+                      max={30}
+                      disabled={!isConnected}
+                      className="h-7 w-14 text-sm font-mono text-center bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleTrimChange(index, 0)}
+                      disabled={!isConnected || (trims[index] || 0) === 0}
+                      title={t('servo.trim.resetPerServo', { defaultValue: 'デフォルト (0) に戻す' })}
+                      className="text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D] h-7 w-7 p-0"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"

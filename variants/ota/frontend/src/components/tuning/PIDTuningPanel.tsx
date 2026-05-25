@@ -96,11 +96,13 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
   const currentValue = currentPresetId || 'custom';
 
   // Slider configuration for each parameter
+  // defaultValue: pidTuningStore.reset() の default (kp: 0.2 / ki: 0.0001 / kd: 5、 line-trace default)
   const sliderConfigs = [
     {
       label: t('pidTuning.kp'),
       value: kp,
       setValue: setKp,
+      defaultValue: 0.2,
       min: 0,
       max: 2,
       step: 0.01,
@@ -110,6 +112,7 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
       label: t('pidTuning.ki'),
       value: ki,
       setValue: setKi,
+      defaultValue: 0.0001,
       min: 0,
       max: 0.01,
       step: 0.00001,
@@ -119,6 +122,7 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
       label: t('pidTuning.kd'),
       value: kd,
       setValue: setKd,
+      defaultValue: 5,
       min: 0,
       max: 50,
       step: 0.1,
@@ -192,15 +196,27 @@ export function PIDTuningPanel({ className }: PIDTuningPanelProps) {
           <div key={config.label} className="space-y-2">
             <div className="flex items-center justify-between">
               <Label className="text-xs text-[#8B949E]">{config.label}</Label>
-              <Input
-                type="number"
-                value={config.value}
-                onChange={(e) => config.setValue(parseFloat(e.target.value) || 0)}
-                step={config.step}
-                min={config.min}
-                max={config.max}
-                className="w-24 h-6 text-right bg-[#0D1117] border-[#2E333D] text-[#E6EDF3] text-xs"
-              />
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => config.setValue(config.defaultValue)}
+                  disabled={config.value === config.defaultValue}
+                  title={t('pidTuning.resetPerGain', { defaultValue: 'デフォルトに戻す' })}
+                  className="text-[#8B949E] hover:text-[#E6EDF3] hover:bg-[#2E333D] h-6 w-6 p-0"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                </Button>
+                <Input
+                  type="number"
+                  value={config.value}
+                  onChange={(e) => config.setValue(parseFloat(e.target.value) || 0)}
+                  step={config.step}
+                  min={config.min}
+                  max={config.max}
+                  className="w-24 h-6 text-right bg-[#0D1117] border-[#2E333D] text-[#E6EDF3] text-xs"
+                />
+              </div>
             </div>
             <Slider
               value={[config.value]}
