@@ -171,7 +171,14 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
   // 「現在のプリセット」 表示 (Speed/Pulse 同 form)。 ServoTrim 内 servo 配列は接続
   // デバイス経由のリアルタイム送信用 = pinPresetStore とは independent (data model
   // 不変)、 表示のみ統一。
-  const currentPreset = usePinPresetStore(state => state.getCurrentPreset());
+  //
+  // memory:zustand_state_reading_selector 防衛: selector で `state.getCurrentPreset()`
+  // 関数呼出すると毎 render で新 PinPreset object 返却 → zustand 比較 (Object.is) 失敗 →
+  // state 変化と誤検出 → 無限 re-render = browser blank。 ServoSpeedDialog L50 と同 pattern
+  // で destructure (全 state subscribe、 currentPresetId 変化で正常 re-render)。
+  const { getCurrentPreset, currentPresetId } = usePinPresetStore();
+  void currentPresetId; // subscribe trigger (currentPresetId 変化時の re-render 確保)、 React 18 strict mode で unused warning 回避
+  const currentPreset = getCurrentPreset();
   const presetDisplayName = currentPreset.id === 'default'
     ? t('pinPreset.defaultName', { defaultValue: 'デフォルト' })
     : currentPreset.name;
