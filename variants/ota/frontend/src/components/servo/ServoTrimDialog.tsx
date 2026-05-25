@@ -35,7 +35,7 @@ import { useWifiStore } from '@/stores/wifiStore';
 import { useSerialStore } from '@/stores/serialStore';
 import { usePinPresetStore } from '@/stores/pinPresetStore';
 import { bluetoothService } from '@/services/bluetoothService';
-import { SlidersHorizontal, Play, RotateCcw, Save, Wifi, WifiOff, Home, Plus, Minus, Trash2 } from 'lucide-react';
+import { SlidersHorizontal, Play, RotateCcw, Save, Wifi, WifiOff, Home, Plus, Minus, Trash2, Plug, Unplug } from 'lucide-react';
 
 interface ServoTrimDialogProps {
   open: boolean;
@@ -166,6 +166,10 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
   const wifiStatus = useWifiStore(state => state.status);
   const wifiHost = useWifiStore(state => state.host);
   const serialStatus = useSerialStore(state => state.status);
+  // selector で function ref subscribe (ref 不変 = re-render 不発火、 SerialMonitor.tsx L20-21 同 pattern、
+  // memory:zustand_state_reading_selector conform)
+  const serialConnect = useSerialStore(state => state.connect);
+  const serialDisconnect = useSerialStore(state => state.disconnect);
 
   // UI-6 (III 中間 refactor、 Session 154): pinPresetStore.currentPreset 経由で
   // 「現在のプリセット」 表示 (Speed/Pulse 同 form)。 ServoTrim 内 servo 配列は接続
@@ -396,11 +400,44 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
                 )}
               </div>
               {!isConnected && (
-                <p className="text-xs text-[#8B949E] mt-2">
-                  {t('servo.trim.connectGuide', {
-                    defaultValue: 'WiFi OTA、USB シリアル、または Bluetooth (ble_uart_setup ブロックが必要) のいずれかでデバイスに接続してください。',
-                  })}
-                </p>
+                <>
+                  <p className="text-xs text-[#8B949E] mt-2">
+                    {t('servo.trim.connectGuide', {
+                      defaultValue: 'WiFi OTA、USB シリアル、または Bluetooth (ble_uart_setup ブロックが必要) のいずれかでデバイスに接続してください。',
+                    })}
+                  </p>
+                  {/* USB Serial 接続 button (Session 154 user 指示、 SerialMonitor.tsx L75-101 同 pattern):
+                      connect/disconnect toggle + 3 state (connected/connecting/disconnected)、 Plug/Unplug icon */}
+                  <div className="mt-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => (serialStatus === 'connected' ? serialDisconnect() : serialConnect())}
+                      disabled={serialStatus === 'connecting'}
+                      className={`border-[#2E333D] hover:bg-[#2E333D] ${
+                        serialStatus === 'connected'
+                          ? 'text-green-500 hover:text-green-400'
+                          : serialStatus === 'connecting'
+                            ? 'text-yellow-400'
+                            : 'text-[#E6EDF3]'
+                      }`}
+                    >
+                      {serialStatus === 'connected' ? (
+                        <>
+                          <Unplug className="w-4 h-4 mr-2" />
+                          {t('editor.serial.disconnectUsb', { defaultValue: 'USB 切断' })}
+                        </>
+                      ) : serialStatus === 'connecting' ? (
+                        t('editor.serial.connecting', { defaultValue: '接続中...' })
+                      ) : (
+                        <>
+                          <Plug className="w-4 h-4 mr-2" />
+                          {t('editor.serial.connectUsb', { defaultValue: 'USB 接続' })}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </>
               )}
             </CardContent>
           </Card>
