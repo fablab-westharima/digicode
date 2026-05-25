@@ -47,13 +47,13 @@ Blockly.Blocks['pushover_send'] = {
     this.appendDummyInput()
         .appendField('🔔 ' + (Blockly.Msg.BLOCKS_PUSHOVER_SEND || 'Pushover 通知を送信'));
     this.appendValueInput('TOKEN')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_PUSHOVER_TOKEN || 'App トークン');
     this.appendValueInput('USER')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_PUSHOVER_USER || 'ユーザーキー');
     this.appendValueInput('MESSAGE')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_PUSHOVER_MESSAGE || 'メッセージ');
     this.appendDummyInput()
         .appendField(Blockly.Msg.BLOCKS_PUSHOVER_PRIORITY || '優先度')

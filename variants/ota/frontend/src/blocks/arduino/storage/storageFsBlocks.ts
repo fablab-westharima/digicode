@@ -60,7 +60,7 @@ Blockly.Blocks['sd_write'] = {
           [Blockly.Msg.BLOCKS_SD_OVERWRITE || 'overwrite', 'FILE_WRITE'],
         ]), 'MODE');
     this.appendValueInput('FILENAME')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_SD_FILENAME || 'file');
     this.appendValueInput('CONTENT')
         .setCheck(['Number', 'String', 'Boolean'])
@@ -86,7 +86,7 @@ generator.forBlock['sd_write'] = function(block: Blockly.Block) {
 Blockly.Blocks['sd_read'] = {
   init: function() {
     this.appendValueInput('FILENAME')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('📂 ' + (Blockly.Msg.BLOCKS_SD_READ || 'SD Read'));
     this.setOutput(true, 'String');
     this.setColour(SD_COLOR);
@@ -113,7 +113,7 @@ String sdReadFile(const char* path) {
 Blockly.Blocks['sd_exists'] = {
   init: function() {
     this.appendValueInput('FILENAME')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('📂 ' + (Blockly.Msg.BLOCKS_SD_EXISTS || 'SD Exists'));
     this.setOutput(true, 'Boolean');
     this.setColour(SD_COLOR);
@@ -133,7 +133,7 @@ generator.forBlock['sd_exists'] = function(block: Blockly.Block) {
 Blockly.Blocks['sd_delete'] = {
   init: function() {
     this.appendValueInput('FILENAME')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('📂 ' + (Blockly.Msg.BLOCKS_SD_DELETE || 'SD Delete'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -156,7 +156,7 @@ Blockly.Blocks['sd_csv_append'] = {
     this.appendDummyInput()
         .appendField('📂 ' + (Blockly.Msg.BLOCKS_SD_CSV || 'SD CSV Append'));
     this.appendValueInput('FILENAME')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_SD_FILENAME || 'file');
     this.appendValueInput('COL1')
         .setCheck(['Number', 'String', 'Boolean'])
@@ -216,7 +216,7 @@ Blockly.Blocks['fs_write'] = {
           [Blockly.Msg.BLOCKS_SD_OVERWRITE || 'overwrite', 'w'],
         ]), 'MODE');
     this.appendValueInput('FILENAME')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_SD_FILENAME || 'file');
     this.appendValueInput('CONTENT')
         .setCheck(['Number', 'String', 'Boolean'])
@@ -243,7 +243,7 @@ generator.forBlock['fs_write'] = function(block: Blockly.Block) {
 Blockly.Blocks['fs_read'] = {
   init: function() {
     this.appendValueInput('FILENAME')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('🗂️ ' + (Blockly.Msg.BLOCKS_FS_READ || 'LittleFS Read'));
     this.setOutput(true, 'String');
     this.setColour(FS_COLOR);
@@ -271,7 +271,7 @@ String fsReadFile(const char* path) {
 Blockly.Blocks['fs_exists'] = {
   init: function() {
     this.appendValueInput('FILENAME')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('🗂️ ' + (Blockly.Msg.BLOCKS_FS_EXISTS || 'LittleFS Exists'));
     this.setOutput(true, 'Boolean');
     this.setColour(FS_COLOR);
@@ -292,7 +292,7 @@ generator.forBlock['fs_exists'] = function(block: Blockly.Block) {
 Blockly.Blocks['fs_delete'] = {
   init: function() {
     this.appendValueInput('FILENAME')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('🗂️ ' + (Blockly.Msg.BLOCKS_FS_DELETE || 'LittleFS Delete'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

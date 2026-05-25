@@ -2398,7 +2398,7 @@ javascriptGenerator.forBlock['ha_tag_scanner_create'] = function(block: Blockly.
 Blockly.Blocks['ha_tag_scanner_scanned'] = {
   init: function() {
     this.appendValueInput('TAG_ID')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('🏷️ ' + (Blockly.Msg.BLOCKS_HA_TAGSCANNED || 'HA Tag Scanned'))
         .appendField(new Blockly.FieldTextInput('nfc_reader'), 'SCANNER_ID')
         .appendField(Blockly.Msg.BLOCKS_HA_TAGID || 'Tag ID');

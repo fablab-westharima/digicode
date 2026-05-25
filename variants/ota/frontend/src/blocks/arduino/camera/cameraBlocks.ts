@@ -109,7 +109,7 @@ generator.forBlock['camera_capture'] = function() {
 Blockly.Blocks['camera_save_sd'] = {
   init: function() {
     this.appendValueInput('FILENAME')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('📷 ' + (Blockly.Msg.BLOCKS_CAM_SAVESD || 'Camera Save SD'));
     this.setOutput(true, 'Boolean');
     this.setColour(CAM_COLOR);
@@ -151,7 +151,7 @@ generator.forBlock['camera_save_sd'] = function(block: Blockly.Block) {
 Blockly.Blocks['camera_send_http'] = {
   init: function() {
     this.appendValueInput('URL')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('📷 ' + (Blockly.Msg.BLOCKS_CAM_SENDHTTP || 'Camera Send HTTP'));
     this.setOutput(true, 'Boolean');
     this.setColour(CAM_COLOR);

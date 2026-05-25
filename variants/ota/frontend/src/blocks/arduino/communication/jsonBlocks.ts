@@ -336,7 +336,7 @@ javascriptGenerator.forBlock['json_create_object'] = function() {
 Blockly.Blocks['json_set_string'] = {
   init: function() {
     this.appendValueInput('VALUE')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('📝 ' + (Blockly.Msg.BLOCKS_JSON_SET || 'JSON Set'))
         .appendField(new Blockly.FieldTextInput('key'), 'KEY')
         .appendField('=');

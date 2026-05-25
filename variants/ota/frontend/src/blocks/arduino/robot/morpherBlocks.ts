@@ -49,7 +49,7 @@ function speedToDegPerSec(speedSlot: string): string {
 
 // MorphMode 'walk' / 'roll' を lib enum 値に map
 function modeToEnum(modeSlot: string): string {
-  return modeSlot === 'roll' ? 'MORPH_ROLL' : 'MORPH_WALK';
+  return modeSlot === 'roll' ? 'DigiMorpher::MORPH_ROLL' : 'DigiMorpher::MORPH_WALK';
 }
 
 // ===== morpher_init =====

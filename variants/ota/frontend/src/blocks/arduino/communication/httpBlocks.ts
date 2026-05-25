@@ -29,7 +29,7 @@ Blockly.Blocks['http_get'] = {
     this.appendDummyInput()
         .appendField('🌐 ' + (Blockly.Msg.BLOCKS_HTTP_GET || 'HTTP GET'));
     this.appendValueInput('URL')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('URL');
     this.setOutput(true, 'String');
     this.setColour('#2196F3');
@@ -70,13 +70,13 @@ Blockly.Blocks['http_get_with_headers'] = {
     this.appendDummyInput()
         .appendField('🌐 ' + (Blockly.Msg.BLOCKS_HTTP_GETWITHHEADERS || 'HTTP GET with Headers'));
     this.appendValueInput('URL')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('URL');
     this.appendValueInput('HEADER_NAME')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_HTTP_HEADERNAME || 'Header Name');
     this.appendValueInput('HEADER_VALUE')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_HTTP_HEADERVALUE || 'Header Value');
     this.setOutput(true, 'String');
     this.setColour('#2196F3');
@@ -122,10 +122,10 @@ Blockly.Blocks['http_post'] = {
     this.appendDummyInput()
         .appendField('📤 ' + (Blockly.Msg.BLOCKS_HTTP_POST || 'HTTP POST'));
     this.appendValueInput('URL')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('URL');
     this.appendValueInput('BODY')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_HTTP_BODY || 'Body');
     this.appendDummyInput()
         .appendField('Content-Type')
@@ -176,10 +176,10 @@ Blockly.Blocks['http_post_json'] = {
     this.appendDummyInput()
         .appendField('📤 ' + (Blockly.Msg.BLOCKS_HTTP_POSTJSON || 'HTTP POST JSON'));
     this.appendValueInput('URL')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('URL');
     this.appendValueInput('JSON')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('JSON');
     this.setOutput(true, 'String');
     this.setColour('#4CAF50');
@@ -224,10 +224,10 @@ Blockly.Blocks['http_put'] = {
     this.appendDummyInput()
         .appendField('📝 ' + (Blockly.Msg.BLOCKS_HTTP_PUT || 'HTTP PUT'));
     this.appendValueInput('URL')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('URL');
     this.appendValueInput('BODY')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_HTTP_BODY || 'Body');
     this.setOutput(true, 'String');
     this.setColour('#FF9800');
@@ -270,7 +270,7 @@ Blockly.Blocks['http_delete'] = {
     this.appendDummyInput()
         .appendField('🗑️ ' + (Blockly.Msg.BLOCKS_HTTP_DELETE || 'HTTP DELETE'));
     this.appendValueInput('URL')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('URL');
     this.setOutput(true, 'Number');
     this.setColour('#f44336');
@@ -327,7 +327,7 @@ javascriptGenerator.forBlock['http_is_success'] = function(block: Blockly.Block)
 Blockly.Blocks['http_url_encode'] = {
   init: function() {
     this.appendValueInput('TEXT')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('🔗 ' + (Blockly.Msg.BLOCKS_HTTP_URLENCODE || 'URL Encode'));
     this.setOutput(true, 'String');
     this.setColour('#607D8B');
@@ -370,10 +370,10 @@ String urlEncode(String str) {
 Blockly.Blocks['http_build_url'] = {
   init: function() {
     this.appendValueInput('BASE_URL')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField('🔗 ' + (Blockly.Msg.BLOCKS_HTTP_BUILDURL || 'Build URL') + ' ' + (Blockly.Msg.BLOCKS_HTTP_BASEURL || 'Base'));
     this.appendValueInput('PARAM1_NAME')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_HTTP_PARAM1NAME || 'Param1 Name');
     this.appendValueInput('PARAM1_VALUE')
         .setCheck(['String', 'Number'])

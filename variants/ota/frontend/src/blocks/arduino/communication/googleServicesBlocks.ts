@@ -65,10 +65,10 @@ Blockly.Blocks['google_sheets_append'] = {
     this.appendDummyInput()
         .appendField('📊 ' + (Blockly.Msg.BLOCKS_GOOGLE_SHEETS_APPEND || 'Google スプレッドシートに追記'));
     this.appendValueInput('URL')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_GOOGLE_SHEETS_URL || 'Webhook URL');
     this.appendValueInput('DATA')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_GOOGLE_SHEETS_DATA || 'データ (JSON)');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

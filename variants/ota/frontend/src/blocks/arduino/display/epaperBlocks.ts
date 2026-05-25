@@ -109,7 +109,7 @@ Blockly.Blocks['epaper_print'] = {
     this.appendDummyInput()
         .appendField('📃 ' + (Blockly.Msg.BLOCKS_EPAPER_PRINT || 'E-paper に表示'));
     this.appendValueInput('TEXT')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_EPAPER_TEXT || '文字列');
     this.appendValueInput('X')
         .setCheck('Number')

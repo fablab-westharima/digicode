@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-25T08:15:32.946Z",
+  "generatedAt": "2026-05-25T16:11:59.889Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -3608,7 +3608,11 @@
       "valueInputs": [
         {
           "name": "DATA",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -3783,7 +3787,11 @@
       "valueInputs": [
         {
           "name": "FILENAME",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -3806,7 +3814,11 @@
       "valueInputs": [
         {
           "name": "URL",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -4059,15 +4071,27 @@
       "valueInputs": [
         {
           "name": "X",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "Y",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "COLOR",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -5051,7 +5075,11 @@
       "valueInputs": [
         {
           "name": "TEXT",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "X",
@@ -5260,7 +5288,11 @@
       "valueInputs": [
         {
           "name": "TEXT",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "SPEED",
@@ -8764,7 +8796,11 @@
       "valueInputs": [
         {
           "name": "URL",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -8787,15 +8823,27 @@
       "valueInputs": [
         {
           "name": "URL",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "HEADER_NAME",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "HEADER_VALUE",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -8828,11 +8876,19 @@
       "valueInputs": [
         {
           "name": "URL",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "BODY",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -8855,11 +8911,19 @@
       "valueInputs": [
         {
           "name": "URL",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "JSON",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -8882,11 +8946,19 @@
       "valueInputs": [
         {
           "name": "URL",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "BODY",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -8909,7 +8981,11 @@
       "valueInputs": [
         {
           "name": "URL",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -8932,7 +9008,11 @@
       "valueInputs": [
         {
           "name": "TEXT",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -8955,13 +9035,18 @@
       "valueInputs": [
         {
           "name": "BASE_URL",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "PARAM1_NAME",
           "check": [
+            "Number",
             "String",
-            "Number"
+            "Boolean"
           ]
         },
         {
@@ -10341,7 +10426,11 @@
       "valueInputs": [
         {
           "name": "MAC",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -10780,7 +10869,11 @@
       "valueInputs": [
         {
           "name": "CREDENTIALS",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -10903,7 +10996,11 @@
       "valueInputs": [
         {
           "name": "CONNECTION_STRING",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -10991,15 +11088,27 @@
       "valueInputs": [
         {
           "name": "SCOPE_ID",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "DEVICE_ID",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "DEVICE_KEY",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -11141,15 +11250,27 @@
       "valueInputs": [
         {
           "name": "TOKEN",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "USER",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "MESSAGE",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -11171,11 +11292,19 @@
       "valueInputs": [
         {
           "name": "URL",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "DATA",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -11798,7 +11927,11 @@
       "valueInputs": [
         {
           "name": "VALUE",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -13268,7 +13401,11 @@
       "valueInputs": [
         {
           "name": "TAG_ID",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -14019,7 +14156,11 @@
       "valueInputs": [
         {
           "name": "FILENAME",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -14042,7 +14183,11 @@
       "valueInputs": [
         {
           "name": "FILENAME",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -14065,7 +14210,11 @@
       "valueInputs": [
         {
           "name": "FILENAME",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -14198,7 +14347,11 @@
       "valueInputs": [
         {
           "name": "FILENAME",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -14221,7 +14374,11 @@
       "valueInputs": [
         {
           "name": "FILENAME",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": [],
@@ -14244,7 +14401,11 @@
       "valueInputs": [
         {
           "name": "FILENAME",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []
@@ -14981,11 +15142,19 @@
       "valueInputs": [
         {
           "name": "ID",
-          "check": "Number"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         },
         {
           "name": "DATA",
-          "check": "String"
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
         }
       ],
       "statementInputs": []

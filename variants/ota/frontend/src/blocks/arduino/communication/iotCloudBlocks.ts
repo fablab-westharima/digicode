@@ -214,7 +214,7 @@ Blockly.Blocks['iot_cloud_connect'] = {
         .appendField(Blockly.Msg.BLOCKS_IOT_CLOUD_PROVIDER || 'プロバイダ')
         .appendField(new Blockly.FieldDropdown(PROVIDER_OPTIONS), 'PROVIDER');
     this.appendValueInput('CREDENTIALS')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_IOT_CLOUD_CREDENTIALS || '認証情報 (JSON)');
     this.setOutput(true, 'Boolean');
     this.setColour(IOT_CLOUD_COLOR);

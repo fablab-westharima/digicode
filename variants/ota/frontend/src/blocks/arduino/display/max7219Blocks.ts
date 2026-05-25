@@ -303,7 +303,7 @@ Blockly.Blocks['max7219_scroll_text'] = {
     this.appendDummyInput()
         .appendField('🔲 ' + (Blockly.Msg.BLOCKS_MAX7219_SCROLL_TEXT || 'MAX7219 文字スクロール'));
     this.appendValueInput('TEXT')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_MAX7219_TEXT || '文字列');
     this.appendValueInput('SPEED')
         .setCheck('Number')

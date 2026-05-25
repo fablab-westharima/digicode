@@ -148,7 +148,7 @@ Blockly.Blocks['espnow_register_peer'] = {
     this.appendDummyInput()
         .appendField('📡 ' + (Blockly.Msg.BLOCKS_ESPNOW_REGISTER_PEER || 'ESP-NOW ピア登録'));
     this.appendValueInput('MAC')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_ESPNOW_MAC || 'MAC アドレス');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -168,7 +168,7 @@ Blockly.Blocks['espnow_send'] = {
     this.appendDummyInput()
         .appendField('📡 ' + (Blockly.Msg.BLOCKS_ESPNOW_SEND || 'ESP-NOW 送信'));
     this.appendValueInput('MAC')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_ESPNOW_DEST_MAC || '宛先 MAC');
     this.appendValueInput('DATA')
         .setCheck(['Number', 'String', 'Boolean'])

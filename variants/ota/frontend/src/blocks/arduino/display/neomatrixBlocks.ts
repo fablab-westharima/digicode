@@ -95,7 +95,7 @@ Blockly.Blocks['neomatrix_set_pixel'] = {
         .setCheck('Number')
         .appendField('Y');
     this.appendValueInput('COLOR')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_NEOMATRIX_COLOR || '色');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);

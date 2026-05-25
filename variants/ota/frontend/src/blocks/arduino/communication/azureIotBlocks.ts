@@ -425,7 +425,7 @@ Blockly.Blocks['azure_iot_hub_connect'] = {
     this.appendDummyInput()
         .appendField('☁️ ' + (Blockly.Msg.BLOCKS_AZURE_IOT_HUB_CONNECT || 'Azure IoT Hub に接続'));
     this.appendValueInput('CONNECTION_STRING')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_AZURE_IOT_CONNECTION_STRING || '接続文字列');
     this.setOutput(true, 'Boolean');
     this.setColour(AZURE_IOT_COLOR);
@@ -540,13 +540,13 @@ Blockly.Blocks['azure_iot_central_connect'] = {
     this.appendDummyInput()
         .appendField('☁️ ' + (Blockly.Msg.BLOCKS_AZURE_IOT_CENTRAL_CONNECT || 'Azure IoT Central に接続'));
     this.appendValueInput('SCOPE_ID')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_AZURE_IOT_SCOPE_ID || 'Scope ID');
     this.appendValueInput('DEVICE_ID')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_AZURE_IOT_DEVICE_ID || 'Device ID');
     this.appendValueInput('DEVICE_KEY')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_AZURE_IOT_DEVICE_KEY || 'Device Key');
     this.setOutput(true, 'Boolean');
     this.setColour(AZURE_IOT_COLOR);
@@ -573,7 +573,7 @@ Blockly.Blocks['azure_iot_central_publish'] = {
     this.appendDummyInput()
         .appendField('☁️ ' + (Blockly.Msg.BLOCKS_AZURE_IOT_CENTRAL_PUBLISH || 'Azure IoT Central に送信'));
     this.appendValueInput('KEY')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_AZURE_IOT_KEY || 'キー');
     this.appendValueInput('VALUE')
         .setCheck(['Number', 'String', 'Boolean'])
@@ -643,7 +643,7 @@ Blockly.Blocks['azure_iot_update_device_twin'] = {
     this.appendDummyInput()
         .appendField('☁️ ' + (Blockly.Msg.BLOCKS_AZURE_IOT_UPDATE_DEVICE_TWIN || 'Device Twin を更新'));
     this.appendValueInput('KEY')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_AZURE_IOT_KEY || 'キー');
     this.appendValueInput('VALUE')
         .setCheck(['Number', 'String', 'Boolean'])

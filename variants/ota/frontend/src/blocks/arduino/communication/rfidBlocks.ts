@@ -152,7 +152,7 @@ Blockly.Blocks['rfid_write_data'] = {
         .appendField(Blockly.Msg.BLOCKS_RFID_BLOCK || 'block')
         .appendField(new Blockly.FieldNumber(1, 0, 62), 'BLOCK');
     this.appendValueInput('DATA')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_RFID_DATA || 'data (max 16 chars)');
     this.setOutput(true, 'Boolean');
     this.setColour(RFID_COLOR);

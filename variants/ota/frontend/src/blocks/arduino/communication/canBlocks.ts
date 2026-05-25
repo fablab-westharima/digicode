@@ -79,7 +79,7 @@ Blockly.Blocks['can_send'] = {
         .setCheck('Number')
         .appendField(Blockly.Msg.BLOCKS_CAN_ID || 'ID (hex)');
     this.appendValueInput('DATA')
-        .setCheck('String')
+        .setCheck(['Number', 'String', 'Boolean'])
         .appendField(Blockly.Msg.BLOCKS_CAN_DATA || 'data (max 8 bytes)');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
