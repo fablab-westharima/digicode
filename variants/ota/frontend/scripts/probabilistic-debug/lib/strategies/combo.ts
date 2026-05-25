@@ -63,29 +63,71 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
   // Phase B-2 (Session 146): 旧 humanoid_/transform_/wheel_ 置換 = biped_/morpher_/rover_
   // D8 (Session 139 settled): blocking + async 両 form。combo INIT_DEPENDENCIES では blocking 系のみ enum (init dependency 検証目的)、async は同 init 由来で別途 cover
   {
+    // Phase X-3 (Session 153): expanded to cover catalog-visible async + idle
+    // queries (rule 16 §D2 + 61.md §1, with deviation D1). 9 → 13 ops.
+    // 61.md plan listed 18 consumers (incl. jump/dance/swing/bend/moonwalk
+    // async), but those 5 async types are source-only (factory-declared, not
+    // toolboxed = not catalog-visible) — INIT_DEPENDENCIES.operations must be
+    // catalog-cross-referenced (combo.test.ts), so they are excluded.
     init: 'biped_init',
     label: 'biped',
     operations: [
-      'biped_home_blocking', 'biped_walk_blocking', 'biped_turn_blocking', 'biped_jump_blocking',
-      'biped_moonwalk_blocking', 'biped_dance_blocking', 'biped_swing_blocking', 'biped_bend_blocking',
+      'biped_home_blocking',
+      'biped_walk_blocking', 'biped_walk_async',
+      'biped_turn_blocking', 'biped_turn_async',
+      'biped_jump_blocking',
+      'biped_dance_blocking',
+      'biped_swing_blocking',
+      'biped_bend_blocking',
+      'biped_moonwalk_blocking',
       'biped_gesture',
+      'biped_is_idle', 'biped_wait_until_idle',
     ],
   },
   {
+    // Phase X-3 (Session 153): expanded to cover catalog-visible async + idle
+    // queries (rule 16 §D2 + 61.md §1, with deviation D1). 10 → 15 ops.
+    // 61.md plan listed 19 consumers (incl. turn/roll_rotate/pushup/dance
+    // async), but those 4 async types are source-only (factory-declared, not
+    // toolboxed = not catalog-visible). See biped entry above for rationale.
     init: 'morpher_init',
     label: 'morpher',
     operations: [
-      'morpher_set_mode', 'morpher_shift_blocking', 'morpher_home_blocking', 'morpher_walk_blocking',
-      'morpher_turn_blocking', 'morpher_stop', 'morpher_roll_blocking', 'morpher_roll_rotate_blocking',
-      'morpher_pushup_blocking', 'morpher_dance_blocking',
+      'morpher_set_mode',
+      'morpher_shift_blocking', 'morpher_shift_async',
+      'morpher_home_blocking',
+      'morpher_walk_blocking', 'morpher_walk_async',
+      'morpher_turn_blocking',
+      'morpher_stop',
+      'morpher_roll_blocking', 'morpher_roll_async',
+      'morpher_roll_rotate_blocking',
+      'morpher_pushup_blocking',
+      'morpher_dance_blocking',
+      'morpher_is_idle', 'morpher_wait_until_idle',
     ],
   },
   {
+    // Phase X-3 (Session 153): added rover_is_moving consumer (rule 16 §D2 +
+    // 61.md §1). 7 → 8 ops. Label stays 'rover' (combo.test.ts cluster-top
+    // arrayContaining gate).
     init: 'rover_init_servo',
     label: 'rover',
     operations: [
       'rover_forward', 'rover_backward', 'rover_turn_left', 'rover_turn_right',
-      'rover_spin_left', 'rover_spin_right', 'rover_stop',
+      'rover_spin_left', 'rover_spin_right', 'rover_stop', 'rover_is_moving',
+    ],
+  },
+  {
+    // Phase X-3 (Session 153): new entry — DC motor mode (H-bridge, 4 GPIO via
+    // DcMotorChannel*×2 per Q-D=A). Same consumer set as rover (servo mode);
+    // combo strategy emits one case per init mode (61.md §1). The Type C
+    // contract for rover unifies both inits via initBlocks.some() so Check 9
+    // accepts either init as satisfying rover consumers.
+    init: 'rover_init_dc_motor',
+    label: 'rover-dc-motor',
+    operations: [
+      'rover_forward', 'rover_backward', 'rover_turn_left', 'rover_turn_right',
+      'rover_spin_left', 'rover_spin_right', 'rover_stop', 'rover_is_moving',
     ],
   },
   {
@@ -457,12 +499,49 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     operations: ['dht_temperature', 'dht_humidity'],
   },
   {
-    // stepper_init が `AccelStepper stepperMove(...)` を declares
-    // (cluster #23 = stepperMove undeclared 2 件)。
+    // Phase X-3 (Session 153): expanded to cover full stepper consumer set
+    // (rule 16 §D2 + 61.md §1). 3 → 11 ops. set_microstep / set_direction are
+    // no-op in 4wire mode (lib has no method; user wires MS1-3 / picks sign of
+    // setTarget), but they're listed here so combo cases that emit them get an
+    // auto-prepended init — Check 9 still enforces the init requirement.
+    // stepper_init_4wire ctor signature: 4-arg coil order (no mode enum, Q-G=ζ
+    // FULL4WIRE branch).
     init: 'stepper_init_4wire',
-    label: 'stepper',
-    // Phase B-2: stepper_move → stepper_step_blocking、stepper_rotate → stepper_rotate_blocking
-    operations: ['stepper_step_blocking', 'stepper_rotate_blocking', 'stepper_stop'],
+    label: 'stepper-4wire',
+    operations: [
+      'stepper_set_microstep', 'stepper_set_direction', 'stepper_set_speed',
+      'stepper_step_blocking', 'stepper_step_async',
+      'stepper_rotate_blocking', 'stepper_rotate_async',
+      'stepper_stop',
+      'stepper_is_at_target', 'stepper_get_position', 'stepper_wait_until_target',
+    ],
+  },
+  {
+    // Phase X-3 (Session 153): new entry — DRIVER mode (A4988 / DRV8825 STEP +
+    // DIR + optional EN, Q-G=ζ 3-arg ctor). Same 11 ops as 4wire; AI selects
+    // which init by the user's hardware (Phase X-4 aiSystemPrompts hint).
+    init: 'stepper_init_driver',
+    label: 'stepper-driver',
+    operations: [
+      'stepper_set_microstep', 'stepper_set_direction', 'stepper_set_speed',
+      'stepper_step_blocking', 'stepper_step_async',
+      'stepper_rotate_blocking', 'stepper_rotate_async',
+      'stepper_stop',
+      'stepper_is_at_target', 'stepper_get_position', 'stepper_wait_until_target',
+    ],
+  },
+  {
+    // Phase X-3 (Session 153): new entry — HW peripheral mode (FastAccelStepper
+    // via RMT/MCPWM, ESP32 only, 200kHz target). Same 11 ops as 4wire/driver.
+    init: 'stepper_init_hw',
+    label: 'stepper-hw',
+    operations: [
+      'stepper_set_microstep', 'stepper_set_direction', 'stepper_set_speed',
+      'stepper_step_blocking', 'stepper_step_async',
+      'stepper_rotate_blocking', 'stepper_rotate_async',
+      'stepper_stop',
+      'stepper_is_at_target', 'stepper_get_position', 'stepper_wait_until_target',
+    ],
   },
   {
     // mpu6050_init が `Adafruit_MPU6050 mpu;` を declares

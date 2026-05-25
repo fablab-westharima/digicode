@@ -1092,6 +1092,111 @@ describe('semanticValidator — Check 9: missing_required_init (BUG-086 Type C)'
     const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init');
     expect(issues.length).toBe(0);
   });
+
+  // Phase X-3 (Session 153): robotics Type C contracts (biped / morpher /
+  // rover-servo / rover-dc-motor / stepper). 5 protocols × positive + negative
+  // = 10 cases. Stepper unified 3 init modes — any one satisfies.
+
+  it('flags biped_walk_blocking without biped_init', () => {
+    const xml = wrap(
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="biped_walk_blocking"></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init') as Extract<ValidationIssue, { kind: 'missing_required_init' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].contractId).toBe('biped');
+  });
+
+  it('passes biped_walk_blocking WITH biped_init', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP"><block type="biped_init"></block></statement></block>' +
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="biped_walk_blocking"></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init' && i.contractId === 'biped');
+    expect(issues.length).toBe(0);
+  });
+
+  it('flags morpher_shift_blocking without morpher_init', () => {
+    const xml = wrap(
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="morpher_shift_blocking"></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init') as Extract<ValidationIssue, { kind: 'missing_required_init' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].contractId).toBe('morpher');
+  });
+
+  it('passes morpher_shift_blocking WITH morpher_init', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP"><block type="morpher_init"></block></statement></block>' +
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="morpher_shift_blocking"></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init' && i.contractId === 'morpher');
+    expect(issues.length).toBe(0);
+  });
+
+  it('flags rover_forward without any rover init (unified rover contract)', () => {
+    const xml = wrap(
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="rover_forward"></block>' +
+      '</statement></block>',
+    );
+    // Single unified rover contract: initBlocks = [rover_init_servo,
+    // rover_init_dc_motor]. Either satisfies.
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init') as Extract<ValidationIssue, { kind: 'missing_required_init' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].contractId).toBe('rover');
+  });
+
+  it('passes rover_forward WITH rover_init_servo (servo mode satisfies unified rover contract)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP"><block type="rover_init_servo"></block></statement></block>' +
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="rover_forward"></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init' && i.contractId === 'rover');
+    expect(issues.length).toBe(0);
+  });
+
+  it('passes rover_forward WITH rover_init_dc_motor (DC motor mode satisfies unified rover contract)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP"><block type="rover_init_dc_motor"></block></statement></block>' +
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="rover_forward"></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init' && i.contractId === 'rover');
+    expect(issues.length).toBe(0);
+  });
+
+  it('flags stepper_step_blocking without any stepper init', () => {
+    const xml = wrap(
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="stepper_step_blocking"></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init') as Extract<ValidationIssue, { kind: 'missing_required_init' }>[];
+    expect(issues.length).toBe(1);
+    expect(issues[0].contractId).toBe('stepper');
+  });
+
+  it('passes stepper_step_blocking WITH any of 3 stepper init modes (driver tested)', () => {
+    const xml = wrap(
+      '<block type="arduino_setup"><statement name="SETUP"><block type="stepper_init_driver"></block></statement></block>' +
+      '<block type="arduino_loop"><statement name="LOOP">' +
+        '<block type="stepper_step_blocking"></block>' +
+      '</statement></block>',
+    );
+    const issues = validateXml(xml, CATALOG).issues.filter((i) => i.kind === 'missing_required_init' && i.contractId === 'stepper');
+    expect(issues.length).toBe(0);
+  });
 });
 
 // ---------------------------------------------------------------------------

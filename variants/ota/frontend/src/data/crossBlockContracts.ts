@@ -331,6 +331,88 @@ export const TYPE_C_INIT_CONTRACTS: readonly TypeCInitContract[] = [
     consumerBlocks: ['iot_cloud_publish', 'iot_cloud_on_message', 'iot_cloud_disconnect'],
     protocolLabel: 'IoT Cloud',
   },
+  // Phase X-3 (Session 153) — robotics Type C contracts. Each robot lib
+  // (DigiBiped / DigiMorpher / DigiRover) requires its init block emitted in
+  // arduino_setup before any consumer block is used. Without init, the lib
+  // global instance is unattached and `.walk()` / `.shift()` / etc. silently
+  // fail (motion bypass, gear protection NOT engaged). 61.md §1 Phase X-3
+  // verbatim with 2 deviations (recorded in commit msg + 改定log §153):
+  //   (D1) consumerBlocks restricted to toolbox-exposed types only — 5 biped
+  //        async + 4 morpher async are source-only (factory-declared but not
+  //        toolboxed), unreachable by AI/sample generation. Including them
+  //        would fail catalog cross-reference + add no real protection.
+  //   (D2) rover-servo + rover-dc-motor merged into single 'rover' contract
+  //        with initBlocks.some() — matches the stepper unified pattern and
+  //        61.md §1 line 317 Note verbatim ("「いずれか 1 件」 で satisfy").
+  //        Two separate contracts would double-flag every rover sample.
+  {
+    id: 'biped',
+    initBlocks: ['biped_init'],
+    consumerBlocks: [
+      'biped_home_blocking',
+      'biped_walk_blocking', 'biped_walk_async',
+      'biped_turn_blocking', 'biped_turn_async',
+      'biped_jump_blocking',
+      'biped_dance_blocking',
+      'biped_swing_blocking',
+      'biped_bend_blocking',
+      'biped_moonwalk_blocking',
+      'biped_gesture',
+      'biped_is_idle', 'biped_wait_until_idle',
+    ],
+    protocolLabel: 'DigiBiped (Humanoid Robot)',
+  },
+  {
+    id: 'morpher',
+    initBlocks: ['morpher_init'],
+    consumerBlocks: [
+      'morpher_set_mode',
+      'morpher_shift_blocking', 'morpher_shift_async',
+      'morpher_home_blocking',
+      'morpher_walk_blocking', 'morpher_walk_async',
+      'morpher_turn_blocking',
+      'morpher_stop',
+      'morpher_roll_blocking', 'morpher_roll_async',
+      'morpher_roll_rotate_blocking',
+      'morpher_pushup_blocking',
+      'morpher_dance_blocking',
+      'morpher_is_idle', 'morpher_wait_until_idle',
+    ],
+    protocolLabel: 'DigiMorpher (Transform Robot)',
+  },
+  // DigiRover 2 mode (servo continuous rotation / DC motor H-bridge): same
+  // consumer set, mode-specific init. Unified into single contract per 61.md
+  // §1 line 317 Note OR semantic — initBlocks.some() means either init
+  // satisfies. AI prompt (Phase X-4 aiSystemPrompts) tells the model which
+  // init matches the user's hardware.
+  {
+    id: 'rover',
+    initBlocks: ['rover_init_servo', 'rover_init_dc_motor'],
+    consumerBlocks: [
+      'rover_forward', 'rover_backward',
+      'rover_turn_left', 'rover_turn_right',
+      'rover_spin_left', 'rover_spin_right',
+      'rover_stop', 'rover_is_moving',
+    ],
+    protocolLabel: 'DigiRover (Servo / DC motor)',
+  },
+  // Stepper unified 3 modes (FULL4WIRE / DRIVER / HW peripheral): any one of
+  // the 3 init blocks satisfies all consumers. set_microstep / set_direction
+  // are no-op in 4wire/hw modes (HW MS1-3 wiring / sign of next setTarget),
+  // tooltip surfaces this — but Check 9 still requires _some_ init present so
+  // the lib instance is attached.
+  {
+    id: 'stepper',
+    initBlocks: ['stepper_init_4wire', 'stepper_init_driver', 'stepper_init_hw'],
+    consumerBlocks: [
+      'stepper_set_microstep', 'stepper_set_direction', 'stepper_set_speed',
+      'stepper_step_blocking', 'stepper_step_async',
+      'stepper_rotate_blocking', 'stepper_rotate_async',
+      'stepper_stop',
+      'stepper_is_at_target', 'stepper_get_position', 'stepper_wait_until_target',
+    ],
+    protocolLabel: 'Stepper (Unified, 3 modes)',
+  },
 ];
 
 // ---------------------------------------------------------------------------
