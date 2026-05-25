@@ -1044,6 +1044,7 @@
     "servoTrim": "Servo Trim Settings",
     "servoPulse": "Servo Pulse Settings",
     "servoSpeed": "Servo Speed Settings",
+    "servoReverse": "Servo Reverse Settings",
     "pinAssignment": "Pin Assignment",
     "passkeyManagement": "Passkey Management",
     "codePreview": "Generated Code",
@@ -3600,6 +3601,22 @@
     "perPinSettings": "Per-Pin Servo Speed Settings",
     "perPinDesc": "Override the speed per pin (remove to revert to the global setting)",
     "perPinEmpty": "No per-pin overrides (the global setting above applies to all pins)"
+  },
+  "servoReverse": {
+    "title": "Servo Reverse Settings",
+    "description": "Configure servo reverse direction (inversion). When the physical mounting is reversed, the user-facing angle is mirrored. Applied at next compile time.",
+    "currentPreset": "Current Preset",
+    "settings": "Servo Reverse",
+    "settingsDesc": "Set the common reverse for all servos. Turn ON when the physical mounting is inverted.",
+    "globalReverse": "Reverse Mounting",
+    "help": "OFF = Normal direction (existing behavior) / ON = mirror (180° servo: 180 - angle, continuous servo: velocity sign flip, DC motor: H-bridge pin swap effect)",
+    "perPinSettings": "Per-Pin Reverse Settings",
+    "perPinDesc": "Override reverse setting per pin (delete to revert to global setting)",
+    "perPinEmpty": "No per-pin overrides (the global setting above applies to all pins)",
+    "perPinReverse": "Reverse Mounting",
+    "on": "ON (reversed)",
+    "off": "OFF (normal)",
+    "resetPerPin": "Reset to default (global value)"
   },
   "docs": {
     "loadError": "Failed to load document.",

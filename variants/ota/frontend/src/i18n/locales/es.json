@@ -3376,6 +3376,22 @@
     "perPinDesc": "Sobrescribe la velocidad por pin (elimínalo para volver al ajuste global)",
     "perPinEmpty": "Sin ajustes por pin (el ajuste global anterior se aplica a todos los pines)"
   },
+  "servoReverse": {
+    "title": "Ajuste de inversión de servo",
+    "description": "Configura la inversión de dirección del servo. Cuando el montaje físico está invertido, el ángulo orientado al usuario se refleja. Aplicado en la próxima compilación.",
+    "currentPreset": "Preajuste actual",
+    "settings": "Inversión de servo",
+    "settingsDesc": "Establece la inversión común para todos los servos. Activar cuando el montaje físico esté invertido.",
+    "globalReverse": "Montaje invertido",
+    "help": "OFF = Dirección normal (comportamiento existente) / ON = espejo (servo 180°: 180 - ángulo, servo continuo: inversión de signo de velocidad, motor DC: intercambio de pines del puente H)",
+    "perPinSettings": "Configuración de inversión por pin",
+    "perPinDesc": "Sobrescribe la inversión por pin (elimina para volver a la configuración global)",
+    "perPinEmpty": "Sin anulaciones por pin (la configuración global anterior se aplica a todos los pines)",
+    "perPinReverse": "Montaje invertido",
+    "on": "ON (invertido)",
+    "off": "OFF (normal)",
+    "resetPerPin": "Restablecer al predeterminado (valor global)"
+  },
   "docs": {
     "loadError": "Error al cargar el documento.",
     "index": {
@@ -3649,6 +3665,7 @@
     "servoTrim": "Ajuste de Servo",
     "servoPulse": "Ajuste de pulso de servo",
     "servoSpeed": "Ajuste de velocidad de servo",
+    "servoReverse": "Ajuste de inversión de servo",
     "pinAssignment": "Asignación de pines",
     "passkeyManagement": "Administrar Passkeys",
     "codePreview": "Código generado",

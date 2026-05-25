@@ -30,6 +30,7 @@ import { PinSettingsDialog } from '@/components/pins/PinSettingsDialog';
 import { ServoTrimDialog } from '@/components/servo/ServoTrimDialog';
 import { ServoPulseDialog } from '@/components/servo/ServoPulseDialog';
 import { ServoSpeedDialog } from '@/components/servo/ServoSpeedDialog';
+import { ServoReverseDialog } from '@/components/servo/ServoReverseDialog';
 import { CompileServerSettingsDialog } from '@/components/settings/CompileServerSettingsDialog';
 import { OutdatedCompileServerDialog, type OutdatedSignal } from '@/components/settings/OutdatedCompileServerDialog';
 import { WifiDeviceSelectDialog, type Device } from '@/components/device/WifiDeviceSelectDialog';
@@ -166,6 +167,7 @@ export function EditorPage() {
   const [servoTrimDialogOpen, setServoTrimDialogOpen] = useState(false);
   const [servoPulseDialogOpen, setServoPulseDialogOpen] = useState(false);
   const [servoSpeedDialogOpen, setServoSpeedDialogOpen] = useState(false);
+  const [servoReverseDialogOpen, setServoReverseDialogOpen] = useState(false);
   const [compileServerSettingsDialogOpen, setCompileServerSettingsDialogOpen] = useState(false);
   const [binExportDialogOpen, setBinExportDialogOpen] = useState(false);
   const [binExportVersion, setBinExportVersion] = useState('1.0.0');
@@ -1334,6 +1336,7 @@ export function EditorPage() {
           onServoTrim={() => setServoTrimDialogOpen(true)}
           onServoPulse={() => setServoPulseDialogOpen(true)}
           onServoSpeed={() => setServoSpeedDialogOpen(true)}
+          onServoReverse={() => setServoReverseDialogOpen(true)}
           onPinAssignment={() => setPinSettingsDialogOpen(true)}
           onCompileServerSettings={() => setCompileServerSettingsDialogOpen(true)}
           onDocs={() => window.open('/docs', '_blank')}
@@ -1861,6 +1864,12 @@ export function EditorPage() {
       <ServoSpeedDialog
         open={servoSpeedDialogOpen}
         onOpenChange={setServoSpeedDialogOpen}
+      />
+
+      {/* サーボリバース設定ダイアログ (Session 156 設計変更、 reverse 軸を ServoTrimDialog から分離) */}
+      <ServoReverseDialog
+        open={servoReverseDialogOpen}
+        onOpenChange={setServoReverseDialogOpen}
       />
 
       {/* コンパイルサーバー設定ダイアログ */}

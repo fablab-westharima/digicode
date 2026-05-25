@@ -3376,6 +3376,22 @@
     "perPinDesc": "Substituir a velocidade por pino (remova para voltar ao ajuste global)",
     "perPinEmpty": "Sem ajustes por pino (o ajuste global acima aplica-se a todos os pinos)"
   },
+  "servoReverse": {
+    "title": "Ajuste de inversão de servo",
+    "description": "Configura a inversão de direção do servo. Quando a montagem física está invertida, o ângulo voltado para o utilizador é espelhado. Aplicado na próxima compilação.",
+    "currentPreset": "Predefinição atual",
+    "settings": "Inversão de servo",
+    "settingsDesc": "Define a inversão comum para todos os servos. Ative quando a montagem física estiver invertida.",
+    "globalReverse": "Montagem invertida",
+    "help": "OFF = Direção normal (comportamento existente) / ON = espelho (servo 180°: 180 - ângulo, servo contínuo: inversão de sinal de velocidade, motor DC: troca de pinos da ponte H)",
+    "perPinSettings": "Configurações de inversão por pino",
+    "perPinDesc": "Substitui a inversão por pino (elimine para reverter à configuração global)",
+    "perPinEmpty": "Sem substituições por pino (a configuração global acima aplica-se a todos os pinos)",
+    "perPinReverse": "Montagem invertida",
+    "on": "ON (invertido)",
+    "off": "OFF (normal)",
+    "resetPerPin": "Repor para predefinido (valor global)"
+  },
   "docs": {
     "loadError": "Falha ao carregar o documento.",
     "index": {
@@ -3649,6 +3665,7 @@
     "servoTrim": "Ajuste de Servo",
     "servoPulse": "Ajuste de pulso de servo",
     "servoSpeed": "Ajuste de velocidade do servo",
+    "servoReverse": "Ajuste de inversão de servo",
     "pinAssignment": "Atribuição de pinos",
     "passkeyManagement": "Gerenciar Passkeys",
     "codePreview": "Código gerado",

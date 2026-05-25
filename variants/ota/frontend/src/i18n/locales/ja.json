@@ -1044,6 +1044,7 @@
     "servoTrim": "サーボトリム設定",
     "servoPulse": "サーボパルス調整",
     "servoSpeed": "サーボスピード調整",
+    "servoReverse": "サーボリバース設定",
     "pinAssignment": "ピンアサイン設定",
     "passkeyManagement": "パスキー管理",
     "codePreview": "生成コード",
@@ -3606,6 +3607,22 @@
     "perPinSettings": "ピンごとの個別速度設定",
     "perPinDesc": "ピンごとに個別の速度を上書きできます (削除すれば一括設定に戻ります)",
     "perPinEmpty": "個別設定なし (上記の一括設定が全ピンに適用されます)"
+  },
+  "servoReverse": {
+    "title": "サーボリバース設定",
+    "description": "サーボの取付方向逆向き (reverse) を設定します。 物理取付が逆向きの場合に user-facing angle を mirror。 次回コンパイル時に device に焼き込まれます。",
+    "currentPreset": "現在のプリセット",
+    "settings": "サーボリバース設定",
+    "settingsDesc": "全サーボ共通のリバースを設定します。 物理取付が逆向きの場合に ON。",
+    "globalReverse": "取付方向逆向き (reverse)",
+    "help": "OFF = 通常方向 (= 既存挙動) / ON = mirror (180° servo: 180 - angle、 連続回転 servo: velocity 符号反転、 dc motor: H-bridge pin swap effect)",
+    "perPinSettings": "ピンごとの個別リバース設定",
+    "perPinDesc": "ピンごとに個別のリバースを上書きできます (削除すれば一括設定に戻ります)",
+    "perPinEmpty": "個別設定なし (上記の一括設定が全ピンに適用されます)",
+    "perPinReverse": "取付方向逆向き",
+    "on": "ON (逆向き)",
+    "off": "OFF (通常)",
+    "resetPerPin": "デフォルト (グローバル値) に戻す"
   },
   "docs": {
     "loadError": "ドキュメントの読み込みに失敗しました。",

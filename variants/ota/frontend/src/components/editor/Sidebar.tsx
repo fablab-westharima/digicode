@@ -32,7 +32,8 @@ import {
   Award,
   CreditCard,
   Bot,
-  Megaphone
+  Megaphone,
+  ArrowLeftRight,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAuthStore } from '@/stores/authStore';
@@ -49,6 +50,7 @@ interface SidebarProps {
   onServoTrim?: () => void;
   onServoPulse?: () => void;
   onServoSpeed?: () => void;
+  onServoReverse?: () => void;  // Session 156 設計変更: reverse 軸を ServoTrimDialog から分離
   onPinAssignment?: () => void;
   onCompileServerSettings?: () => void;
   onDocs?: () => void;
@@ -105,6 +107,7 @@ export function Sidebar({
   onServoTrim,
   onServoPulse,
   onServoSpeed,
+  onServoReverse,
   onPinAssignment,
   onCompileServerSettings,
   onDocs,
@@ -283,6 +286,16 @@ export function Sidebar({
       label: t('sidebar.servoSpeed', { defaultValue: 'サーボスピード調整' }),
       icon: <Gauge className="w-4 h-4" />,
       action: onServoSpeed || (() => {}),
+      category: 'tuning',
+      proGate: true,
+    },
+    // Session 156 設計変更: サーボリバース設定 (物理取付方向逆向き補正、 ServoTrimDialog から分離)
+    // canUseServoPulse alias re-use で同 Pro gate + prerelease 開放 (= servo-speed と同 logic)
+    {
+      id: 'servo-reverse',
+      label: t('sidebar.servoReverse', { defaultValue: 'サーボリバース設定' }),
+      icon: <ArrowLeftRight className="w-4 h-4" />,
+      action: onServoReverse || (() => {}),
       category: 'tuning',
       proGate: true,
     },

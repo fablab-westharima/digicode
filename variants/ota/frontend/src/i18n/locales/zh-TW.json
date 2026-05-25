@@ -3376,6 +3376,22 @@
     "perPinDesc": "依腳位覆寫速度 (刪除後恢復為全域設定)",
     "perPinEmpty": "無個別設定 (上方的全域設定套用至所有腳位)"
   },
+  "servoReverse": {
+    "title": "伺服反向設定",
+    "description": "設定伺服安裝方向反向 (reverse)。當實體安裝為反向時，使用者面向的角度會鏡像。下次編譯時套用。",
+    "currentPreset": "目前的預設",
+    "settings": "伺服反向設定",
+    "settingsDesc": "設定所有伺服共用的反向。實體安裝為反向時開啟。",
+    "globalReverse": "反向安裝",
+    "help": "關閉 = 一般方向（既有行為）/ 開啟 = 鏡像（180° 伺服：180 - 角度、連續旋轉伺服：速度符號反轉、直流馬達：H 橋接腳位置換）",
+    "perPinSettings": "各針腳個別反向設定",
+    "perPinDesc": "可逐針腳覆寫反向設定（刪除後回到統一設定）",
+    "perPinEmpty": "沒有針腳個別覆寫（上方統一設定套用至所有針腳）",
+    "perPinReverse": "反向安裝",
+    "on": "開啟（反向）",
+    "off": "關閉（一般）",
+    "resetPerPin": "重設為預設值（全域值）"
+  },
   "docs": {
     "loadError": "無法載入文件。",
     "index": {
@@ -3649,6 +3665,7 @@
     "servoTrim": "伺服馬達微調",
     "servoPulse": "伺服脈衝調整",
     "servoSpeed": "伺服速度調整",
+    "servoReverse": "伺服反向設定",
     "pinAssignment": "腳位指定設定",
     "passkeyManagement": "密鑰管理",
     "codePreview": "生成的程式碼",
