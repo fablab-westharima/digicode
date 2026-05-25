@@ -33,6 +33,7 @@ import { createTrimTransport } from '@/services/trim/TrimTransportFactory';
 import type { ITrimTransport, TrimTestAction } from '@/services/trim/ITrimTransport';
 import { useWifiStore } from '@/stores/wifiStore';
 import { useSerialStore } from '@/stores/serialStore';
+import { usePinPresetStore } from '@/stores/pinPresetStore';
 import { bluetoothService } from '@/services/bluetoothService';
 import { SlidersHorizontal, Play, RotateCcw, Save, Wifi, WifiOff, Home, Plus, Minus, Trash2 } from 'lucide-react';
 
@@ -166,6 +167,15 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
   const wifiHost = useWifiStore(state => state.host);
   const serialStatus = useSerialStore(state => state.status);
 
+  // UI-6 (III 中間 refactor、 Session 154): pinPresetStore.currentPreset 経由で
+  // 「現在のプリセット」 表示 (Speed/Pulse 同 form)。 ServoTrim 内 servo 配列は接続
+  // デバイス経由のリアルタイム送信用 = pinPresetStore とは independent (data model
+  // 不変)、 表示のみ統一。
+  const currentPreset = usePinPresetStore(state => state.getCurrentPreset());
+  const presetDisplayName = currentPreset.id === 'default'
+    ? t('pinPreset.defaultName', { defaultValue: 'デフォルト' })
+    : currentPreset.name;
+
   // Phase D-1: transport は接続方式自動判定 (WiFi → USB → BLE)。
   // wifiStatus / serialStatus 変化で再評価、 bluetoothService は plain class のため
   // isConnected snapshot を dep に含めることで render-time 再評価。
@@ -176,12 +186,9 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
   );
   const isConnected = transport !== null;
 
-  // プリセット表示名リスト（t() で現在の言語に解決）
-  const SERVO_PRESETS = useMemo(() => SERVO_PRESETS_DEF.map(p => ({
-    id: p.id,
-    name: t(`servo.trim.presets.${p.id}`),
-  })), [t]);
-
+  // UI-6 統一 (Session 154): preset selector 削除に伴い SERVO_PRESETS dropdown list 不要、
+  // selectedPreset state は servo 配列操作 (add/update/remove) で 'custom' marker として
+  // 維持 (handleSave で saveServoConfig 経由 localStorage 保存)。
   const [selectedPreset, setSelectedPreset] = useState<string>(() => loadServoConfig(t).preset);
   const [servos, setServos] = useState<ServoItem[]>(() => loadServoConfig(t).servos);
   const [trims, setTrims] = useState<number[]>([]);
@@ -202,14 +209,6 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
     const detail = transport.kind === 'http' && wifiHost ? `: ${wifiHost}` : '';
     return `${connected} (${kindLabel})${detail}`;
   }, [transport, wifiHost, t]);
-
-  // プリセット変更時の処理
-  const handlePresetChange = (presetId: string) => {
-    setSelectedPreset(presetId);
-    const newServos = buildServosFromPreset(presetId, t);
-    setServos(newServos);
-    setTrims(newServos.map(() => 0));
-  };
 
   const loadTrimsFromDevice = useCallback(async () => {
     if (!transport) return;
@@ -406,38 +405,51 @@ export function ServoTrimDialog({ open, onOpenChange }: ServoTrimDialogProps) {
             </div>
           )}
 
-          {/* プリセット選択 */}
+          {/* 現在のプリセット表示 (UI-6 統一、 Speed/Pulse 同 form。 pinPresetStore.currentPreset 経由) */}
+          <div className="text-xs text-[#8B949E] bg-[#0D1117] border border-[#2E333D] rounded-md px-3 py-2">
+            {t('servo.trim.currentPreset', { defaultValue: '現在のプリセット' })}:{' '}
+            <span className="text-[#E6EDF3] font-medium">{presetDisplayName}</span>
+          </div>
+
+          {/* 全体トリム設定 (UI-6 統一: 全 servo trim を 0 に一括 reset、 リアルタイム送信) */}
           <Card className="bg-[#0D1117] border-[#2E333D]">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-[#8B949E] whitespace-nowrap">
-                  {t('servo.trim.preset', { defaultValue: 'プリセット' })}:
-                </span>
-                <Select value={selectedPreset} onValueChange={handlePresetChange}>
-                  <SelectTrigger className="flex-1 bg-[#0D1117] border-[#2E333D] text-[#E6EDF3]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#161B22] border-[#2E333D]">
-                    {SERVO_PRESETS.map((preset) => (
-                      <SelectItem
-                        key={preset.id}
-                        value={preset.id}
-                        className="text-[#E6EDF3] focus:bg-[#2E333D] focus:text-[#E6EDF3]"
-                      >
-                        {preset.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-[#E6EDF3]">
+                <SlidersHorizontal className="w-5 h-5" />
+                {t('servo.trim.globalSettings', { defaultValue: '全体トリム設定' })}
+              </CardTitle>
+              <CardDescription className="text-[#8B949E]">
+                {t('servo.trim.globalSettingsDesc', { defaultValue: '全サーボのトリム値を一括操作します' })}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  const zeroTrims = servos.map(() => 0);
+                  setTrims(zeroTrims);
+                  if (transport) {
+                    try {
+                      await transport.setTrims(zeroTrims);
+                    } catch (err) {
+                      console.error('Failed to reset all trims:', err);
+                    }
+                  }
+                }}
+                disabled={!isConnected || trims.every(v => v === 0)}
+                className="border-[#2E333D] text-[#E6EDF3] hover:bg-[#2E333D]"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                {t('servo.trim.resetAll', { defaultValue: '全 servo を 0 にリセット' })}
+              </Button>
             </CardContent>
           </Card>
 
-          {/* サーボ数コントロール */}
+          {/* ピンごとの個別トリム設定 (UI-6 統一: 旧「サーボ設定」 を pin individual override paradigm に rename) */}
           <Card className="bg-[#0D1117] border-[#2E333D]">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-[#E6EDF3] flex items-center justify-between">
-                <span>{t('servo.trim.servoList', { defaultValue: 'サーボ設定' })} ({servos.length})</span>
+                <span>{t('servo.trim.perPinSettings', { defaultValue: 'ピンごとの個別トリム設定' })} ({servos.length})</span>
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
