@@ -104,7 +104,10 @@ String sdReadFile(const char* path) {
   if(f){ while(f.available()){ result += (char)f.read(); } f.close(); }
   return result;
 }`;
-  return [`sdReadFile(String(${filename}))`, 0];
+  // F-5d fix (Phase 3-G/Step 4 Session 156、 case_0515): sdReadFile(const char* path)
+  // は const char* 受入、 S155 §4 で追加した String() wrap は誤適用 (= sink type 誤判定、
+  // case 14 罠 13 度目)。 .c_str() で明示変換、 一時 String は statement 内 lifetime で safe。
+  return [`sdReadFile(String(${filename}).c_str())`, 0];
 };
 
 /**
@@ -262,7 +265,10 @@ String fsReadFile(const char* path) {
   if(f){ while(f.available()){ result += (char)f.read(); } f.close(); }
   return result;
 }`;
-  return [`fsReadFile(String(${filename}))`, 0];
+  // F-5e fix (Phase 3-G/Step 4 Session 156、 case_0521): fsReadFile(const char* path)
+  // は const char* 受入、 S155 §4 で追加した String() wrap は誤適用 (= sink type 誤判定、
+  // case 14 罠 13 度目)。 .c_str() で明示変換、 一時 String は statement 内 lifetime で safe。
+  return [`fsReadFile(String(${filename}).c_str())`, 0];
 };
 
 /**

@@ -2416,7 +2416,12 @@ javascriptGenerator.forBlock['ha_tag_scanner_scanned'] = function(block: Blockly
   const tagId = javascriptGenerator.valueToCode(block, 'TAG_ID', Order.ATOMIC) || '""';
   const varName = `haTagScanner_${scannerId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
-  return `  ${varName}.tagScanned(String(${tagId}));\n`;
+  // F-5b fix (Phase 3-G/Step 4 Session 156、 case_0487): ArduinoHA
+  // HATagScanner::tagScanned(const char* tag) は const char* 受入、 S155 §4
+  // で追加した String() wrap は誤適用 (= sink type 誤判定、 case 14 罠 13 度目)。
+  // String → const char* 暗黙変換不可、 .c_str() で明示変換。 lifetime: 一時 String
+  // は statement 内 lifetime で safe (= statement 終端まで destroy されない C++ 仕様)。
+  return `  ${varName}.tagScanned(String(${tagId}).c_str());\n`;
 };
 
 // ===== 接続/切断ハンドラ =====
@@ -2736,6 +2741,25 @@ javascriptGenerator.forBlock['ha_ota_setup'] = function(block: Blockly.Block) {
   ensureArduinoHAInclude();
   ensureHaOverrideInfra();
   ensureHaOtaInfra();
+
+  // F-5c fix (Phase 3-G/Step 4 Session 156、 case_0492 singleton fail):
+  // 1000-case で ha_ota_setup 単独 (ha_device_init / ha_device_init_auth 不在) 使用時、
+  // stderr `'haMqtt' was not declared in this scope; did you mean 'HAMqtt'?` で compile fail
+  // (= init dependency drift)。 ha_device_init で emit される ha_wifi_client / ha_device /
+  // ha_mqtt 3 declarations を ha_ota_setup self-contained で確保、 dedupe key を ha_device_init
+  // と共有 (= line 650 ha_wifi_client / line 651-653 ha_device first-wins / line 654-656 ha_mqtt
+  // first-wins guard) で ha_device_init 同居時は ha_device_init 値が優先される。
+  // singleton 時の runtime 動作: haMqtt.begin() 不在で connection しない = HA OTA 機能不動作だが、
+  // compile pass で 1000-case passRate 影響なし (user 期待挙動 = ha_device_init 不足の責任は user)。
+  generator.definitions_['include_wifi'] = '#include <WiFi.h>';
+  generator.definitions_['ha_wifi_client'] = 'WiFiClient haClient;';
+  if (!generator.definitions_['ha_device']) {
+    generator.definitions_['ha_device'] = 'HADevice haDevice;';
+  }
+  if (!generator.definitions_['ha_mqtt']) {
+    generator.definitions_['ha_mqtt'] = 'HAMqtt haMqtt(haClient, haDevice);';
+  }
+
   const objectId = block.getFieldValue('OBJECT_ID') || 'firmware_update';
   const name = block.getFieldValue('NAME') || 'Firmware Update';
   const firmwareUrl = block.getFieldValue('FIRMWARE_URL') || '';
