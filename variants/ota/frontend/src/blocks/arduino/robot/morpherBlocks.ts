@@ -35,7 +35,7 @@
 
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
-import { getTransformPins, getServoPulseWidth, getServoSpeed, getServoTrim } from '@/utils/pinHelper';
+import { getTransformPins, getServoPulseWidth, getServoSpeed, getServoTrim, getServoReverse } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -95,6 +95,7 @@ DigiMorpher morpher;`;
     const pulse = getServoPulseWidth(pinNum);
     const speed = getServoSpeed(pinNum);
     const trim = getServoTrim(pinNum);
+    const reverse = getServoReverse(pinNum);
     if (pulse.min !== 500 || pulse.max !== 2400) {
       setupLines.push(`  morpher.setChannelPulseRange(${i}, ${pulse.min}, ${pulse.max});`);
     }
@@ -103,6 +104,10 @@ DigiMorpher morpher;`;
     }
     if (trim !== 0) {
       setupLines.push(`  morpher.setChannelTrim(${i}, ${trim});`);
+    }
+    // Phase 3-D (Session 156、4 軸統合、R1 invariant): reverse===true 時のみ emit
+    if (reverse) {
+      setupLines.push(`  morpher.setChannelReverse(${i}, true);`);
     }
   }
 

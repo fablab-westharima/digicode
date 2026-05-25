@@ -16,7 +16,7 @@
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
 import { pythonGenerator } from 'blockly/python';
-import { getServoPins, getServoPulseWidth, getServoSpeed, getServoTrim } from '@/utils/pinHelper';
+import { getServoPins, getServoPulseWidth, getServoSpeed, getServoTrim, getServoReverse } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -137,9 +137,16 @@ javascriptGenerator.forBlock['servo_write'] = function(block: Blockly.Block) {
   // Phase B-3 (Session 146、E1 = 3 軸統合、case 23 incident A 解消): trim 軸追加
   // trim === 0 (default) → byte-identical 旧挙動 (R1 invariant 維持) / trim != 0 → constrain(angle + trim, 0, 180)
   const trim = getServoTrim(isNaN(pinNum) ? undefined : pinNum);
-  const angleExpr = trim !== 0
-    ? `constrain(String(${angle}).toInt() + (${trim}), 0, 180)`
+  // Phase 3-D (Session 156、4 軸統合 = pulse + speed + trim + reverse、case 22 founding use case):
+  // reverse === false (default) → byte-identical 旧挙動 (R1 invariant 維持) /
+  // reverse === true → (180 - angle) mirror、 ServoChannel180._writeHw と同 semantic (mirror first, trim after)。
+  const reverse = getServoReverse(isNaN(pinNum) ? undefined : pinNum);
+  const baseAngleExpr = reverse
+    ? `(180 - String(${angle}).toInt())`
     : `String(${angle}).toInt()`;
+  const angleExpr = trim !== 0
+    ? `constrain(${baseAngleExpr} + (${trim}), 0, 180)`
+    : baseAngleExpr;
   if (speed <= 0) {
     return `  servo${pin}.write(${angleExpr});\n`;
   }

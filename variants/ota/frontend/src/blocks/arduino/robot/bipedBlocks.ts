@@ -39,7 +39,7 @@
 
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
-import { getHumanoidPins, getPinFromPreset, getServoPulseWidth, getServoSpeed, getServoTrim } from '@/utils/pinHelper';
+import { getHumanoidPins, getPinFromPreset, getServoPulseWidth, getServoSpeed, getServoTrim, getServoReverse } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -109,6 +109,7 @@ IBuzzer& buzzer = getBuzzer();`;
     const pulse = getServoPulseWidth(pinNum);
     const speed = getServoSpeed(pinNum);
     const trim = getServoTrim(pinNum);
+    const reverse = getServoReverse(pinNum);
     // attachChannels の前に setChannel* を呼ぶことで attach() 内 _writeHw が trim 反映済 state で書込
     // ただし lib actual: setChannel* は channelAt(idx) 経由で _channels[i] にアクセス、 attachChannels
     // 前は _channels[i]=nullptr で no-op = setChannel* は attachChannels の後で emit する
@@ -120,6 +121,10 @@ IBuzzer& buzzer = getBuzzer();`;
     }
     if (trim !== 0) {
       setupLines.push(`  biped.setChannelTrim(${i}, ${trim});`);
+    }
+    // Phase 3-D (Session 156、4 軸統合、R1 invariant): reverse===true 時のみ emit
+    if (reverse) {
+      setupLines.push(`  biped.setChannelReverse(${i}, true);`);
     }
   }
 

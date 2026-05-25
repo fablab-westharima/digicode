@@ -27,7 +27,7 @@
 
 import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
-import { getWheelPins, getMotorPins, getServoPulseWidth, getServoSpeed, getServoTrim } from '@/utils/pinHelper';
+import { getWheelPins, getMotorPins, getServoPulseWidth, getServoSpeed, getServoTrim, getServoReverse } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -61,6 +61,7 @@ ContinuousServoChannel _roverChR(${pinR});
 DigiRover rover;`;
 
   // Phase B-3 (E1) 連続回転 servo (2 channel) 3 軸 per-channel emit (default 以外のみ、 R1 invariant)。
+  // Phase 3-D (Session 156): + reverse 軸 (4 軸統合)、 同 R1 invariant pattern。
   const pins = [pinL, pinR];
   const setupLines: string[] = [];
   for (let i = 0; i < 2; i++) {
@@ -69,6 +70,7 @@ DigiRover rover;`;
     const pulse = getServoPulseWidth(pinNum);
     const speed = getServoSpeed(pinNum);
     const trim = getServoTrim(pinNum);
+    const reverse = getServoReverse(pinNum);
     if (pulse.min !== 500 || pulse.max !== 2400) {
       setupLines.push(`  rover.setChannelPulseRange(${i}, ${pulse.min}, ${pulse.max});`);
     }
@@ -77,6 +79,9 @@ DigiRover rover;`;
     }
     if (trim !== 0) {
       setupLines.push(`  rover.setChannelTrim(${i}, ${trim});`);
+    }
+    if (reverse) {
+      setupLines.push(`  rover.setChannelReverse(${i}, true);`);
     }
   }
 

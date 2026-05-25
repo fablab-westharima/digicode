@@ -248,6 +248,105 @@ describe('Phase B-3: servo_write trim 軸追加 (E1)', () => {
   });
 });
 
+describe('Phase 3-D: 4 軸統合 reverse 軸追加 (Session 156、case 22 founding use case = Humanoid 物理取付方向補正)', () => {
+  beforeEach(resetStore);
+
+  it('biped_init: default reverse=false → setChannelReverse emit なし (R1 invariant)', () => {
+    const cpp = genFromBlock('biped_init', {
+      PIN_LL: 27, PIN_RL: 15, PIN_LF: 14, PIN_RF: 13, PIN_BUZZER: 25,
+    });
+    expect(cpp).not.toContain('biped.setChannelReverse');
+  });
+
+  it('biped_init: global reverse=true → 4 channel 全件 setChannelReverse(i, true) emit', () => {
+    setServoConfig({
+      servoType: '180', minPulse: 500, maxPulse: 2400,
+      speedDegPerSec: 0, trimDeg: 0, reverse: true,
+    });
+    const cpp = genFromBlock('biped_init', {
+      PIN_LL: 27, PIN_RL: 15, PIN_LF: 14, PIN_RF: 13, PIN_BUZZER: 25,
+    });
+    expect(cpp).toContain('biped.setChannelReverse(0, true);');
+    expect(cpp).toContain('biped.setChannelReverse(1, true);');
+    expect(cpp).toContain('biped.setChannelReverse(2, true);');
+    expect(cpp).toContain('biped.setChannelReverse(3, true);');
+  });
+
+  it('biped_init: perPin reverse override → 該当 channel のみ emit', () => {
+    setServoConfig({
+      servoType: '180', minPulse: 500, maxPulse: 2400,
+      speedDegPerSec: 0, trimDeg: 0, reverse: false,
+      perPinConfigs: [
+        { pin: 27, minPulse: 500, maxPulse: 2400, reverse: true },  // pin 27 = LL = channel 0
+        { pin: 13, minPulse: 500, maxPulse: 2400, reverse: true },  // pin 13 = RF = channel 3
+      ],
+    });
+    const cpp = genFromBlock('biped_init', {
+      PIN_LL: 27, PIN_RL: 15, PIN_LF: 14, PIN_RF: 13, PIN_BUZZER: 25,
+    });
+    expect(cpp).toContain('biped.setChannelReverse(0, true);');
+    expect(cpp).toContain('biped.setChannelReverse(3, true);');
+    expect(cpp).not.toContain('biped.setChannelReverse(1,');
+    expect(cpp).not.toContain('biped.setChannelReverse(2,');
+  });
+
+  it('morpher_init: global reverse=true → 4 channel 全件 emit', () => {
+    setServoConfig({
+      servoType: '180', minPulse: 500, maxPulse: 2400,
+      speedDegPerSec: 0, trimDeg: 0, reverse: true,
+    });
+    const cpp = genFromBlock('morpher_init', {
+      PIN_LL: 27, PIN_RL: 15, PIN_LF: 14, PIN_RF: 13,
+    });
+    expect(cpp).toContain('morpher.setChannelReverse(0, true);');
+    expect(cpp).toContain('morpher.setChannelReverse(3, true);');
+  });
+
+  it('rover_init_servo: global reverse=true → 2 channel 全件 emit', () => {
+    setServoConfig({
+      servoType: '360', minPulse: 500, maxPulse: 2400,
+      speedDegPerSec: 0, trimDeg: 0, reverse: true,
+    });
+    const cpp = genFromBlock('rover_init_servo', { PIN_L: 14, PIN_R: 13 });
+    expect(cpp).toContain('rover.setChannelReverse(0, true);');
+    expect(cpp).toContain('rover.setChannelReverse(1, true);');
+  });
+
+  it('servo_write: default reverse=false → byte-identical 旧挙動 (R1 invariant)', () => {
+    const cpp = genFromBlock('servo_write', { PIN: 13 });
+    expect(cpp).toContain('servo13.write(String(90).toInt());');
+    expect(cpp).not.toContain('180 -');
+  });
+
+  it('servo_write: reverse=true (global、trim=0) → (180 - angle) mirror', () => {
+    setServoConfig({
+      servoType: '180', minPulse: 500, maxPulse: 2400,
+      speedDegPerSec: 0, trimDeg: 0, reverse: true,
+    });
+    const cpp = genFromBlock('servo_write', { PIN: 13 });
+    expect(cpp).toContain('servo13.write((180 - String(90).toInt()));');
+  });
+
+  it('servo_write: reverse=true + trim=5 → constrain((180-angle) + trim, 0, 180) (mirror first, trim after)', () => {
+    setServoConfig({
+      servoType: '180', minPulse: 500, maxPulse: 2400,
+      speedDegPerSec: 0, trimDeg: 5, reverse: true,
+    });
+    const cpp = genFromBlock('servo_write', { PIN: 13 });
+    expect(cpp).toContain('constrain((180 - String(90).toInt()) + (5), 0, 180)');
+  });
+
+  it('servo_write: perPin reverse=true (pin 13) → 該当 pin のみ mirror', () => {
+    setServoConfig({
+      servoType: '180', minPulse: 500, maxPulse: 2400,
+      speedDegPerSec: 0, trimDeg: 0, reverse: false,
+      perPinConfigs: [{ pin: 13, minPulse: 500, maxPulse: 2400, reverse: true }],
+    });
+    const cpp = genFromBlock('servo_write', { PIN: 13 });
+    expect(cpp).toContain('servo13.write((180 - String(90).toInt()));');
+  });
+});
+
 describe('Phase B-3: pid_init getPidGains() fallback (case 23 incident F generator-side 解消)', () => {
   beforeEach(() => {
     usePIDTuningStore.getState().reset();  // default: kp=0.2, ki=0.0001, kd=5
