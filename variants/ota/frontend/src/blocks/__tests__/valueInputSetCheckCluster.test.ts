@@ -150,12 +150,17 @@ const TARGETS: ReadonlyArray<Target> = [
   // blocking + async 両 form (D8) で同 setCheck contract、_async は省略 (entry 倍化回避、catalog で同 contract)
   { type: 'biped_walk_blocking', input: 'STEPS', group: 'M', label: 'biped_walk_blocking(STEPS)' },
   { type: 'biped_turn_blocking', input: 'STEPS', group: 'M', label: 'biped_turn_blocking(STEPS)' },
-  { type: 'biped_jump_blocking', input: 'STEPS', group: 'M', label: 'biped_jump_blocking(STEPS)' },
+  // Phase X-2 commit 1 (Q-H=i): biped_jump_blocking + biped_bend_blocking lost STEPS valueInput
+  // (lib `jumpBlocking(speed)` 1-arg / `bendBlocking(direction, speed)` 2-arg no cycle count)
   { type: 'biped_dance_blocking', input: 'STEPS', group: 'M', label: 'biped_dance_blocking(STEPS)' },
   { type: 'biped_swing_blocking', input: 'STEPS', group: 'M', label: 'biped_swing_blocking(STEPS)' },
-  { type: 'biped_bend_blocking', input: 'STEPS', group: 'M', label: 'biped_bend_blocking(STEPS)' },
   { type: 'biped_moonwalk_blocking', input: 'STEPS', group: 'M', label: 'biped_moonwalk_blocking(STEPS)' },
-  { type: 'morpher_roll_rotate_blocking', input: 'POWER', group: 'M', label: 'morpher_roll_rotate_blocking(POWER)' },
+  // Phase X-2 commit 1 (Q-H=i): morpher_walk_blocking gained STEPS, morpher_roll_blocking gained CYCLES
+  // (lib `walkBlocking(steps, dir, speed)` / `rollBlocking(cycles, dir, speed)`)
+  { type: 'morpher_walk_blocking', input: 'STEPS', group: 'M', label: 'morpher_walk_blocking(STEPS)' },
+  { type: 'morpher_roll_blocking', input: 'CYCLES', group: 'M', label: 'morpher_roll_blocking(CYCLES)' },
+  // morpher_roll_rotate_blocking: POWER (旧 2-arg dir+power) → CYCLES (新 3-arg cycles+dir+speed)
+  { type: 'morpher_roll_rotate_blocking', input: 'CYCLES', group: 'M', label: 'morpher_roll_rotate_blocking(CYCLES)' },
   { type: 'morpher_turn_blocking', input: 'STEPS', group: 'M', label: 'morpher_turn_blocking(STEPS)' },
   { type: 'morpher_pushup_blocking', input: 'STEPS', group: 'M', label: 'morpher_pushup_blocking(STEPS)' },
   { type: 'morpher_dance_blocking', input: 'STEPS', group: 'M', label: 'morpher_dance_blocking(STEPS)' },

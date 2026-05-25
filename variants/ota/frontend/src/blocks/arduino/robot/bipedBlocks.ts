@@ -7,23 +7,34 @@
  */
 
 /*
- * DigiBiped (二足歩行ロボット) Blockly Blocks — Phase B-2 (Session 146、60.md §1 verbatim)
+ * DigiBiped (二足歩行ロボット) Blockly Blocks — Phase X-2 commit 1 (Session 152、
+ *   Q-D/Q-H=i 確定後の lib actual API match)
  *
  * Founding use case (case 22 anchor): 等身大 Humanoid のサーボ速度制御 + ギヤ保護 + IoT 共存。
  * 旧 humanoidBlocks.ts (DigiCodeHumanoid lib = OttoDIYLib derivation、case 23 incident E) を完全置換。
  *
- * 新 lib (DigiBiped、AGPL-3.0、Layer 5、DigiMotion 依存) の API consumer:
- *   - DigiBiped biped (global instance)
- *   - init(pinLL, pinRL, pinLF, pinRF, buzzerPin?)
- *   - homeBlocking() / walkBlocking(steps, dir, deg/s) / walkAsync(steps, dir, deg/s)
- *   - turnBlocking/Async / jumpBlocking/Async / danceBlocking/Async / swingBlocking/Async
- *   - bendBlocking/Async (with side) / moonwalkBlocking/Async
- *   - playGesture(GestureId) — DigiCode 独自 gesture set (D-new-1a、§1-7.2、OttoDIYLib 由来 0)
- *   - isIdle() (query) / waitUntilIdle() (barrier)
+ * 新 lib (DigiBiped、AGPL-3.0、Layer 5、DigiMotion 依存) の API consumer。 Phase X-2 commit 1 で
+ * generator emit を lib actual signature に揃え:
+ *   - biped_init: concrete ServoChannel180 × 4 instance + attachChannels + 0-arg init() + buzzer
+ *     attach (IBuzzer& getBuzzer() reference 経由、 anonymous namespace DigiBuzzer concrete 維持)
+ *   - walk/turn Async/Blocking: 3-arg + millis() for async (lib `(steps, direction, speed[, nowMs])`)
+ *   - jump: lib `jumpBlocking(speed)` 1-arg / `jumpAsync(speed, nowMs)` 2-arg = UI から STEPS field 廃止、
+ *     SPEED dropdown のみ (Q-H=i UI semantic 変更)
+ *   - dance/swing: lib `<Blocking>(cycles, speed)` 2-arg / `<Async>(cycles, speed, nowMs)` 3-arg
+ *     = UI から SPEED dropdown 追加 (CYCLES は既存 STEPS field を再利用、 label "times" 維持)
+ *   - bend: lib `bendBlocking(direction, speed)` 2-arg / `bendAsync(direction, speed, nowMs)` 3-arg
+ *     = UI を SIDE → DIRECTION (±1) に rename、 STEPS field 廃止、 SPEED dropdown 追加 (Q-H=i)
+ *   - moonwalk: lib `moonwalkBlocking(cycles, speed)` 2-arg / `moonwalkAsync(cycles, speed, nowMs)` 3-arg
+ *     = UI から DIRECTION dropdown 廃止 (lib に direction 不在)、 STEPS field を再利用 (label "cycles" 解釈)、
+ *     SPEED dropdown 追加 (Q-H=i)
+ *   - gesture: ✅ 既存 emit match (`playGesture(GestureId, millis())`)
+ *   - is_idle / wait_until_idle: ✅ 既存 emit match
  *
- * D8 (Session 139 settled): walk() 廃止、walkBlocking/walkAsync で意味明示。
- * 本 B-2 commit は block 定義 + 新 lib API 経由 generator emit (basic、speed dropdown → deg/sec)。
- * 3 軸統合 (pulse + speed + trim per-pin) は Phase B-3 で getServo{PulseWidth,Speed,Trim} 経由 emit。
+ * D8 (Session 139 settled): walk() 廃止、 walk{Blocking,Async} で意味明示。
+ * E1 (3 軸 per-channel emit、 Phase B-3): default 値以外のみ setChannelPulseRange/MaxRate/Trim emit、
+ * R1 invariant 維持 (default 時 byte-identical pre-Phase B-3、 ただし init() signature 変更で
+ * pre-X-2 と byte-identical ではない、 Q-H=i confirmed)。
+ * rule 16 §D1: 全 init / consumer block generator 先頭に emits: / requires: comment 追記。
  */
 
 import * as Blockly from 'blockly';
@@ -76,12 +87,20 @@ javascriptGenerator.forBlock['biped_init'] = function(block: Blockly.Block) {
   const pinLF = block.getFieldValue('PIN_LF');
   const pinRF = block.getFieldValue('PIN_RF');
   const pinBuzzer = block.getFieldValue('PIN_BUZZER');
+  // rule 16 §D1: emits/requires comment + DigiMotion.h umbrella 経由 (Phase X-1 expand) +
+  // DigiBiped.h Layer 5 lib include
+  generator.definitions_['include_digimotion'] = '#include <DigiMotion.h>';
   generator.definitions_['include_digibiped'] = '#include <DigiBiped.h>';
-  generator.definitions_['biped_instance'] = 'DigiBiped biped;';
-  // Phase B-3 (Session 146、E1 = pulse + speed + trim 3 軸統合): per-channel emit (default 値以外のみ、R1 invariant)。
-  // 各 channel (index 0=LL, 1=RL, 2=LF, 3=RF) について getServo{PulseWidth,Speed,Trim}(pin) を呼び、
-  // default 以外なら biped.setChannelPulseRange/MaxRate/Trim(i, ...) emit。
-  // case 23 incident A (silent ignore cluster) 完全解消 = robot block 経由でも pulse/speed/trim が HW に到達。
+  generator.definitions_['biped_channels'] = `/* emits: _bipedCh0..3 (ServoChannel180), biped (DigiBiped), buzzer (IBuzzer&) */
+ServoChannel180 _bipedCh0(${pinLL});
+ServoChannel180 _bipedCh1(${pinRL});
+ServoChannel180 _bipedCh2(${pinLF});
+ServoChannel180 _bipedCh3(${pinRF});
+DigiBiped biped;
+IBuzzer& buzzer = getBuzzer();`;
+
+  // setup() body: attachChannels + 0-arg init() + buzzer attach + biped.attachBuzzer
+  // Phase B-3 (E1) 3 軸 per-channel emit (default 以外のみ、 R1 invariant、 attach 前 emit が必要)
   const pins = [pinLL, pinRL, pinLF, pinRF];
   const setupLines: string[] = [];
   for (let i = 0; i < 4; i++) {
@@ -90,6 +109,9 @@ javascriptGenerator.forBlock['biped_init'] = function(block: Blockly.Block) {
     const pulse = getServoPulseWidth(pinNum);
     const speed = getServoSpeed(pinNum);
     const trim = getServoTrim(pinNum);
+    // attachChannels の前に setChannel* を呼ぶことで attach() 内 _writeHw が trim 反映済 state で書込
+    // ただし lib actual: setChannel* は channelAt(idx) 経由で _channels[i] にアクセス、 attachChannels
+    // 前は _channels[i]=nullptr で no-op = setChannel* は attachChannels の後で emit する
     if (pulse.min !== 500 || pulse.max !== 2400) {
       setupLines.push(`  biped.setChannelPulseRange(${i}, ${pulse.min}, ${pulse.max});`);
     }
@@ -100,10 +122,18 @@ javascriptGenerator.forBlock['biped_init'] = function(block: Blockly.Block) {
       setupLines.push(`  biped.setChannelTrim(${i}, ${trim});`);
     }
   }
-  // init は最後 (setChannelPulseRange は attach 前必要、setMaxRate/setTrim は attach 後でも可だが
-  // 設計上 init() 内で attach するため per-channel 設定を先行 = lib 側で reorder 吸収)。
-  setupLines.push(`  biped.init(${pinLL}, ${pinRL}, ${pinLF}, ${pinRF}, ${pinBuzzer});`);
-  return setupLines.join('\n') + '\n';
+
+  // 順序: attachChannels → setChannel* (3 軸) → init() → buzzer attach + biped.attachBuzzer
+  // setChannel* は attachChannels 後 (channelAt(idx) が non-null になってから)、 init() 前 (init 内で
+  // channel.attach() が走り、 attach 内 _writeHw が初期 HW state を書込 → trim 反映済)
+  const allLines = [
+    '  biped.attachChannels(&_bipedCh0, &_bipedCh1, &_bipedCh2, &_bipedCh3);',
+    ...setupLines,
+    '  biped.init();',
+    `  buzzer.attach(${pinBuzzer});`,
+    '  biped.attachBuzzer(&buzzer);',
+  ];
+  return allLines.join('\n') + '\n';
 };
 
 // ===== biped_home_blocking =====
@@ -118,7 +148,7 @@ Blockly.Blocks['biped_home_blocking'] = {
   }
 };
 javascriptGenerator.forBlock['biped_home_blocking'] = function() {
-  return `  biped.homeBlocking();\n`;
+  return `  /* requires: biped */ biped.homeBlocking();\n`;
 };
 
 // ===== biped_walk_blocking + biped_walk_async =====
@@ -160,13 +190,13 @@ javascriptGenerator.forBlock['biped_walk_blocking'] = function(block: Blockly.Bl
   const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
   const direction = block.getFieldValue('DIRECTION');
   const speedSlot = block.getFieldValue('SPEED');
-  return `  biped.walkBlocking(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)});\n`;
+  return `  /* requires: biped */ biped.walkBlocking(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)});\n`;
 };
 javascriptGenerator.forBlock['biped_walk_async'] = function(block: Blockly.Block) {
   const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
   const direction = block.getFieldValue('DIRECTION');
   const speedSlot = block.getFieldValue('SPEED');
-  return `  biped.walkAsync(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)});\n`;
+  return `  /* requires: biped */ biped.walkAsync(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)}, millis());\n`;
 };
 
 // ===== biped_turn_blocking + biped_turn_async =====
@@ -208,17 +238,54 @@ javascriptGenerator.forBlock['biped_turn_blocking'] = function(block: Blockly.Bl
   const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
   const direction = block.getFieldValue('DIRECTION');
   const speedSlot = block.getFieldValue('SPEED');
-  return `  biped.turnBlocking(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)});\n`;
+  return `  /* requires: biped */ biped.turnBlocking(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)});\n`;
 };
 javascriptGenerator.forBlock['biped_turn_async'] = function(block: Blockly.Block) {
   const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
   const direction = block.getFieldValue('DIRECTION');
   const speedSlot = block.getFieldValue('SPEED');
-  return `  biped.turnAsync(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)});\n`;
+  return `  /* requires: biped */ biped.turnAsync(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)}, millis());\n`;
 };
 
-// ===== Simple times-only blocks (jump/dance/swing/moonwalk) blocking + async =====
-function makeTimesBlock(blockType: string, emoji: string, labelKey: string, labelFallback: string, tooltipKey: string, tooltipFallback: string, defaultTimes: string) {
+// ===== biped_jump_{blocking,async} — lib 1-arg (speed) / 2-arg (speed, millis) =====
+// Q-H=i UI semantic 変更: 旧 STEPS valueInput を廃止、 SPEED dropdown のみ
+function makeJumpBlock(blockType: string, labelKey: string, labelFallback: string, tooltipKey: string, tooltipFallback: string) {
+  Blockly.Blocks[blockType] = {
+    init: function() {
+      this.appendDummyInput()
+          .appendField('⬆️ ' + (Blockly.Msg[labelKey] || labelFallback))
+          .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
+          .appendField(new Blockly.FieldDropdown([
+            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
+            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
+            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
+          ]), 'SPEED');
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(BIPED_COLOR);
+      this.setTooltip(Blockly.Msg[tooltipKey] || tooltipFallback);
+    }
+  };
+}
+makeJumpBlock('biped_jump_blocking',
+  'BLOCKS_BIPED_JUMP_BLOCKING_LABEL', 'Biped Jump (blocking)',
+  'BLOCKS_BIPED_JUMP_BLOCKING_TOOLTIP', 'Jump at selected speed (deg/sec), blocks until done');
+makeJumpBlock('biped_jump_async',
+  'BLOCKS_BIPED_JUMP_ASYNC_LABEL', 'Biped Jump (async)',
+  'BLOCKS_BIPED_JUMP_ASYNC_TOOLTIP', 'Start jumping at selected speed in background');
+
+javascriptGenerator.forBlock['biped_jump_blocking'] = function(block: Blockly.Block) {
+  const speedSlot = block.getFieldValue('SPEED');
+  return `  /* requires: biped */ biped.jumpBlocking(${speedToDegPerSec(speedSlot)});\n`;
+};
+javascriptGenerator.forBlock['biped_jump_async'] = function(block: Blockly.Block) {
+  const speedSlot = block.getFieldValue('SPEED');
+  return `  /* requires: biped */ biped.jumpAsync(${speedToDegPerSec(speedSlot)}, millis());\n`;
+};
+
+// ===== biped_dance_{blocking,async} / biped_swing_{blocking,async} — lib 2-arg (cycles, speed) =====
+// Q-H=i: 既存 STEPS valueInput は cycle count 解釈で再利用、 SPEED dropdown を追加
+function makeCycleSpeedBlock(blockType: string, emoji: string, labelKey: string, labelFallback: string, tooltipKey: string, tooltipFallback: string) {
   Blockly.Blocks[blockType] = {
     init: function() {
       this.appendDummyInput()
@@ -226,7 +293,13 @@ function makeTimesBlock(blockType: string, emoji: string, labelKey: string, labe
       this.appendValueInput('STEPS')
           .setCheck(['Number', 'String', 'Boolean']);
       this.appendDummyInput()
-          .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
+          .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times')
+          .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
+          .appendField(new Blockly.FieldDropdown([
+            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
+            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
+            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
+          ]), 'SPEED');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
@@ -234,68 +307,59 @@ function makeTimesBlock(blockType: string, emoji: string, labelKey: string, labe
       this.setTooltip(Blockly.Msg[tooltipKey] || tooltipFallback);
     }
   };
-  return defaultTimes;
 }
-
-makeTimesBlock('biped_jump_blocking', '⬆️',
-  'BLOCKS_BIPED_JUMP_BLOCKING_LABEL', 'Biped Jump (blocking)',
-  'BLOCKS_BIPED_JUMP_BLOCKING_TOOLTIP', 'Jump N times, blocks', '1');
-makeTimesBlock('biped_jump_async', '⬆️',
-  'BLOCKS_BIPED_JUMP_ASYNC_LABEL', 'Biped Jump (async)',
-  'BLOCKS_BIPED_JUMP_ASYNC_TOOLTIP', 'Start jumping in background', '1');
-makeTimesBlock('biped_dance_blocking', '💃',
+makeCycleSpeedBlock('biped_dance_blocking', '💃',
   'BLOCKS_BIPED_DANCE_BLOCKING_LABEL', 'Biped Dance (blocking)',
-  'BLOCKS_BIPED_DANCE_BLOCKING_TOOLTIP', 'Dance N cycles, blocks', '4');
-makeTimesBlock('biped_dance_async', '💃',
+  'BLOCKS_BIPED_DANCE_BLOCKING_TOOLTIP', 'Dance N cycles at selected speed, blocks');
+makeCycleSpeedBlock('biped_dance_async', '💃',
   'BLOCKS_BIPED_DANCE_ASYNC_LABEL', 'Biped Dance (async)',
-  'BLOCKS_BIPED_DANCE_ASYNC_TOOLTIP', 'Start dancing in background', '4');
-makeTimesBlock('biped_swing_blocking', '〜',
+  'BLOCKS_BIPED_DANCE_ASYNC_TOOLTIP', 'Start dancing in background');
+makeCycleSpeedBlock('biped_swing_blocking', '〜',
   'BLOCKS_BIPED_SWING_BLOCKING_LABEL', 'Biped Swing (blocking)',
-  'BLOCKS_BIPED_SWING_BLOCKING_TOOLTIP', 'Swing side-to-side N cycles, blocks', '2');
-makeTimesBlock('biped_swing_async', '〜',
+  'BLOCKS_BIPED_SWING_BLOCKING_TOOLTIP', 'Swing side-to-side N cycles, blocks');
+makeCycleSpeedBlock('biped_swing_async', '〜',
   'BLOCKS_BIPED_SWING_ASYNC_LABEL', 'Biped Swing (async)',
-  'BLOCKS_BIPED_SWING_ASYNC_TOOLTIP', 'Start swinging in background', '2');
+  'BLOCKS_BIPED_SWING_ASYNC_TOOLTIP', 'Start swinging in background');
 
-javascriptGenerator.forBlock['biped_jump_blocking'] = function(block: Blockly.Block) {
-  const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '1';
-  return `  biped.jumpBlocking(String(${steps}).toInt());\n`;
-};
-javascriptGenerator.forBlock['biped_jump_async'] = function(block: Blockly.Block) {
-  const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '1';
-  return `  biped.jumpAsync(String(${steps}).toInt());\n`;
-};
 javascriptGenerator.forBlock['biped_dance_blocking'] = function(block: Blockly.Block) {
-  const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '4';
-  return `  biped.danceBlocking(String(${steps}).toInt());\n`;
+  const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '4';
+  const speedSlot = block.getFieldValue('SPEED');
+  return `  /* requires: biped */ biped.danceBlocking(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)});\n`;
 };
 javascriptGenerator.forBlock['biped_dance_async'] = function(block: Blockly.Block) {
-  const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '4';
-  return `  biped.danceAsync(String(${steps}).toInt());\n`;
+  const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '4';
+  const speedSlot = block.getFieldValue('SPEED');
+  return `  /* requires: biped */ biped.danceAsync(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)}, millis());\n`;
 };
 javascriptGenerator.forBlock['biped_swing_blocking'] = function(block: Blockly.Block) {
-  const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
-  return `  biped.swingBlocking(String(${steps}).toInt());\n`;
+  const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
+  const speedSlot = block.getFieldValue('SPEED');
+  return `  /* requires: biped */ biped.swingBlocking(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)});\n`;
 };
 javascriptGenerator.forBlock['biped_swing_async'] = function(block: Blockly.Block) {
-  const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
-  return `  biped.swingAsync(String(${steps}).toInt());\n`;
+  const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
+  const speedSlot = block.getFieldValue('SPEED');
+  return `  /* requires: biped */ biped.swingAsync(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)}, millis());\n`;
 };
 
-// ===== biped_bend_{blocking,async} — left/right side =====
+// ===== biped_bend_{blocking,async} — lib 2-arg (direction, speed) =====
+// Q-H=i: 旧 SIDE dropdown ('left'/'right') を DIRECTION dropdown ('1'/'-1') に rename、
+// STEPS valueInput を廃止 (lib に cycle count 不在)、 SPEED dropdown を追加
 function makeBendBlock(blockType: string, labelKey: string, labelFallback: string, tooltipKey: string, tooltipFallback: string) {
   Blockly.Blocks[blockType] = {
     init: function() {
       this.appendDummyInput()
           .appendField('↔️ ' + (Blockly.Msg[labelKey] || labelFallback))
           .appendField(new Blockly.FieldDropdown([
-            [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', 'left'],
-            [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', 'right']
-          ]), 'SIDE');
-      this.appendValueInput('STEPS')
-          .setCheck(['Number', 'String', 'Boolean']);
-      this.appendDummyInput()
-          .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times');
-      this.setInputsInline(true);
+            [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', '1'],
+            [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', '-1']
+          ]), 'DIRECTION')
+          .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
+          .appendField(new Blockly.FieldDropdown([
+            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
+            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
+            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
+          ]), 'SPEED');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(BIPED_COLOR);
@@ -305,25 +369,25 @@ function makeBendBlock(blockType: string, labelKey: string, labelFallback: strin
 }
 makeBendBlock('biped_bend_blocking',
   'BLOCKS_BIPED_BEND_BLOCKING_LABEL', 'Biped Bend (blocking)',
-  'BLOCKS_BIPED_BEND_BLOCKING_TOOLTIP', 'Bend left or right N times, blocks');
+  'BLOCKS_BIPED_BEND_BLOCKING_TOOLTIP', 'Bend left or right at selected speed, blocks');
 makeBendBlock('biped_bend_async',
   'BLOCKS_BIPED_BEND_ASYNC_LABEL', 'Biped Bend (async)',
   'BLOCKS_BIPED_BEND_ASYNC_TOOLTIP', 'Start bending in background');
 
 javascriptGenerator.forBlock['biped_bend_blocking'] = function(block: Blockly.Block) {
-  const side = block.getFieldValue('SIDE');
-  const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '1';
-  const sideArg = side === 'left' ? '0' : '1'; // DigiBiped::BEND_LEFT=0 / RIGHT=1 内部 enum
-  return `  biped.bendBlocking(String(${steps}).toInt(), ${sideArg});\n`;
+  const direction = block.getFieldValue('DIRECTION');
+  const speedSlot = block.getFieldValue('SPEED');
+  return `  /* requires: biped */ biped.bendBlocking(${direction}, ${speedToDegPerSec(speedSlot)});\n`;
 };
 javascriptGenerator.forBlock['biped_bend_async'] = function(block: Blockly.Block) {
-  const side = block.getFieldValue('SIDE');
-  const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '1';
-  const sideArg = side === 'left' ? '0' : '1';
-  return `  biped.bendAsync(String(${steps}).toInt(), ${sideArg});\n`;
+  const direction = block.getFieldValue('DIRECTION');
+  const speedSlot = block.getFieldValue('SPEED');
+  return `  /* requires: biped */ biped.bendAsync(${direction}, ${speedToDegPerSec(speedSlot)}, millis());\n`;
 };
 
-// ===== biped_moonwalk_{blocking,async} — right/left direction =====
+// ===== biped_moonwalk_{blocking,async} — lib 2-arg (cycles, speed) =====
+// Q-H=i: 旧 DIRECTION dropdown を廃止 (lib に direction 不在)、 STEPS valueInput を cycle count 解釈で
+// 再利用、 SPEED dropdown を追加
 function makeMoonwalkBlock(blockType: string, labelKey: string, labelFallback: string, tooltipKey: string, tooltipFallback: string) {
   Blockly.Blocks[blockType] = {
     init: function() {
@@ -332,11 +396,13 @@ function makeMoonwalkBlock(blockType: string, labelKey: string, labelFallback: s
       this.appendValueInput('STEPS')
           .setCheck(['Number', 'String', 'Boolean']);
       this.appendDummyInput()
-          .appendField(Blockly.Msg.BLOCKS_COMMON_STEPS || 'steps')
+          .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times')
+          .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
           .appendField(new Blockly.FieldDropdown([
-            [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', '1'],
-            [Blockly.Msg.BLOCKS_COMMON_LEFT || 'left', '-1']
-          ]), 'DIRECTION');
+            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
+            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
+            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
+          ]), 'SPEED');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
@@ -347,20 +413,20 @@ function makeMoonwalkBlock(blockType: string, labelKey: string, labelFallback: s
 }
 makeMoonwalkBlock('biped_moonwalk_blocking',
   'BLOCKS_BIPED_MOONWALK_BLOCKING_LABEL', 'Biped Moonwalk (blocking)',
-  'BLOCKS_BIPED_MOONWALK_BLOCKING_TOOLTIP', 'Moonwalk N steps, blocks');
+  'BLOCKS_BIPED_MOONWALK_BLOCKING_TOOLTIP', 'Moonwalk N cycles at selected speed, blocks');
 makeMoonwalkBlock('biped_moonwalk_async',
   'BLOCKS_BIPED_MOONWALK_ASYNC_LABEL', 'Biped Moonwalk (async)',
   'BLOCKS_BIPED_MOONWALK_ASYNC_TOOLTIP', 'Start moonwalking in background');
 
 javascriptGenerator.forBlock['biped_moonwalk_blocking'] = function(block: Blockly.Block) {
-  const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
-  const direction = block.getFieldValue('DIRECTION');
-  return `  biped.moonwalkBlocking(String(${steps}).toInt(), ${direction});\n`;
+  const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
+  const speedSlot = block.getFieldValue('SPEED');
+  return `  /* requires: biped */ biped.moonwalkBlocking(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)});\n`;
 };
 javascriptGenerator.forBlock['biped_moonwalk_async'] = function(block: Blockly.Block) {
-  const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
-  const direction = block.getFieldValue('DIRECTION');
-  return `  biped.moonwalkAsync(String(${steps}).toInt(), ${direction});\n`;
+  const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
+  const speedSlot = block.getFieldValue('SPEED');
+  return `  /* requires: biped */ biped.moonwalkAsync(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)}, millis());\n`;
 };
 
 // ===== biped_gesture — DigiCode 独自 gesture set (D-new-1a、§1-7.2、OttoDIYLib 由来 0) =====
@@ -394,7 +460,7 @@ Blockly.Blocks['biped_gesture'] = {
 
 javascriptGenerator.forBlock['biped_gesture'] = function(block: Blockly.Block) {
   const gesture = block.getFieldValue('GESTURE');
-  return `  biped.playGesture(${gesture}, millis());\n`;
+  return `  /* requires: biped */ biped.playGesture(${gesture}, millis());\n`;
 };
 
 // ===== biped_is_idle (value block) =====
@@ -408,7 +474,7 @@ Blockly.Blocks['biped_is_idle'] = {
   }
 };
 javascriptGenerator.forBlock['biped_is_idle'] = function() {
-  return [`biped.isIdle()`, generator.ORDER_FUNCTION_CALL];
+  return [`/* requires: biped */ biped.isIdle()`, generator.ORDER_FUNCTION_CALL];
 };
 
 // ===== biped_wait_until_idle =====
@@ -423,7 +489,7 @@ Blockly.Blocks['biped_wait_until_idle'] = {
   }
 };
 javascriptGenerator.forBlock['biped_wait_until_idle'] = function() {
-  return `  biped.waitUntilIdle();\n`;
+  return `  /* requires: biped */ biped.waitUntilIdle();\n`;
 };
 
 export {}; // module marker

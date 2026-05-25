@@ -7,17 +7,22 @@
  */
 
 /*
- * DigiRover (車輪ロボット) Blockly Blocks — Phase B-2 (Session 146)
+ * DigiRover (車輪ロボット) Blockly Blocks — Phase X-2 commit 1 (Session 152、
+ *   Q-D=A 確定後の lib actual API match)
  *
  * 旧 wheelBlocks.ts (DigiCodeWheel = 連続回転 servo only) を完全置換、
  * 加えて旧 lib に存在したが Blockly 経路非露出だった「DC motor mode (4-pin H-bridge)」を
  * 新規 block (rover_init_dc_motor) で expose (T2 verbatim、case 19 dead-code-by-default 解消)。
  *
  * mode 別 init で意図明示:
- *   - rover_init_servo: 連続回転 servo × 2 (左右輪、PWM duty for velocity)
- *   - rover_init_dc_motor: DC motor × 2 + L298N 等 H-bridge (4-pin: 各輪 In1 + In2)
+ *   - rover_init_servo: 連続回転 servo × 2 (左右輪、PWM duty for velocity) = ContinuousServoChannel × 2
+ *   - rover_init_dc_motor: DC motor × 2 + L298N 等 H-bridge (4-pin: 各 motor の forward + reverse)
+ *     = DcMotorChannel × 2 instance (Phase X-1.5 Q-D=A refactor: lib signature `initDcMotorMode(
+ *       DcMotorChannel* left, DcMotorChannel* right)` 2-arg、 単方向 PWM slot から完全 H-bridge motor
+ *       per instance へ変更)
  *
  * D8 (実用上即時 velocity command なので blocking semantic 不要)、isMoving query 追加。
+ * rule 16 §D1: 全 init / consumer block generator 先頭に emits: / requires: comment 追記。
  */
 
 import * as Blockly from 'blockly';
@@ -48,10 +53,14 @@ Blockly.Blocks['rover_init_servo'] = {
 javascriptGenerator.forBlock['rover_init_servo'] = function(block: Blockly.Block) {
   const pinL = block.getFieldValue('PIN_L');
   const pinR = block.getFieldValue('PIN_R');
+  generator.definitions_['include_digimotion'] = '#include <DigiMotion.h>';
   generator.definitions_['include_digirover'] = '#include <DigiRover.h>';
-  generator.definitions_['rover_instance'] = 'DigiRover rover;';
-  // Phase B-3 (Session 146、E1): 連続回転 servo (2 channel) 3 軸 per-channel emit (default 以外のみ、R1)。
-  // continuous-rotation servo: pulse range は通常 default、speed (= acceleration %/sec)、trim (= 90° stop center からの shift)。
+  generator.definitions_['rover_channels'] = `/* emits: _roverChL, _roverChR (ContinuousServoChannel), rover (DigiRover) */
+ContinuousServoChannel _roverChL(${pinL});
+ContinuousServoChannel _roverChR(${pinR});
+DigiRover rover;`;
+
+  // Phase B-3 (E1) 連続回転 servo (2 channel) 3 軸 per-channel emit (default 以外のみ、 R1 invariant)。
   const pins = [pinL, pinR];
   const setupLines: string[] = [];
   for (let i = 0; i < 2; i++) {
@@ -70,11 +79,17 @@ javascriptGenerator.forBlock['rover_init_servo'] = function(block: Blockly.Block
       setupLines.push(`  rover.setChannelTrim(${i}, ${trim});`);
     }
   }
-  setupLines.push(`  rover.initServoMode(${pinL}, ${pinR});`);
-  return setupLines.join('\n') + '\n';
+
+  const allLines = [
+    '  rover.initServoMode(&_roverChL, &_roverChR);',
+    ...setupLines,
+  ];
+  return allLines.join('\n') + '\n';
 };
 
-// ===== rover_init_dc_motor (4-pin DC motor mode、case 19 dead-code 露出) =====
+// ===== rover_init_dc_motor (4-pin DC motor mode、 Q-D=A Phase X-1.5 refactor) =====
+// lib signature: `initDcMotorMode(DcMotorChannel* left, DcMotorChannel* right)` 2-arg、 各 DcMotorChannel
+// は forward + reverse pin の完全 H-bridge motor。
 Blockly.Blocks['rover_init_dc_motor'] = {
   init: function() {
     const m = getMotorPins();
@@ -92,7 +107,7 @@ Blockly.Blocks['rover_init_dc_motor'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(ROVER_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_ROVER_INIT_DC_TOOLTIP || 'Initialize rover with 2 DC motors via L298N-style H-bridge (4 GPIO pins)');
+    this.setTooltip(Blockly.Msg.BLOCKS_ROVER_INIT_DC_TOOLTIP || 'Initialize rover with 2 DC motors via H-bridge driver (each motor uses 2 GPIO pins for forward + reverse)');
   }
 };
 javascriptGenerator.forBlock['rover_init_dc_motor'] = function(block: Blockly.Block) {
@@ -100,9 +115,15 @@ javascriptGenerator.forBlock['rover_init_dc_motor'] = function(block: Blockly.Bl
   const pinLB = block.getFieldValue('PIN_LB');
   const pinRA = block.getFieldValue('PIN_RA');
   const pinRB = block.getFieldValue('PIN_RB');
+  generator.definitions_['include_digimotion'] = '#include <DigiMotion.h>';
   generator.definitions_['include_digirover'] = '#include <DigiRover.h>';
-  generator.definitions_['rover_instance'] = 'DigiRover rover;';
-  return `  rover.initDcMotorMode(${pinLA}, ${pinLB}, ${pinRA}, ${pinRB});\n`;
+  generator.definitions_['rover_channels'] = `/* emits: _roverMotorL, _roverMotorR (DcMotorChannel), rover (DigiRover) */
+DcMotorChannel _roverMotorL(${pinLA}, ${pinLB});
+DcMotorChannel _roverMotorR(${pinRA}, ${pinRB});
+DigiRover rover;`;
+  // Phase B-3 per-channel emit は servo mode のみ (DcMotorChannel.setTrim は deadband %、
+  // pinPresetStore の degree-based trim と semantic 不一致のため post-release polish 候補)。
+  return '  rover.initDcMotorMode(&_roverMotorL, &_roverMotorR);\n';
 };
 
 // ===== rover_forward / backward (speed dropdown、即時) =====
@@ -133,11 +154,11 @@ makeRoverDirBlock('rover_backward', '⬇️',
 
 javascriptGenerator.forBlock['rover_forward'] = function(block: Blockly.Block) {
   const speed = block.getFieldValue('SPEED');
-  return `  rover.forward(${speed});\n`;
+  return `  /* requires: rover */ rover.forward(${speed});\n`;
 };
 javascriptGenerator.forBlock['rover_backward'] = function(block: Blockly.Block) {
   const speed = block.getFieldValue('SPEED');
-  return `  rover.backward(${speed});\n`;
+  return `  /* requires: rover */ rover.backward(${speed});\n`;
 };
 
 // ===== rover_turn_{left,right} / rover_spin_{left,right} (即時、no params) =====
@@ -169,11 +190,11 @@ makeRoverSimpleBlock('rover_stop', '⏹',
   'BLOCKS_ROVER_STOP_LABEL', 'Rover Stop',
   'BLOCKS_ROVER_STOP_TOOLTIP', 'Stop both wheels');
 
-javascriptGenerator.forBlock['rover_turn_left'] = function() { return `  rover.turnLeft(50);\n`; };
-javascriptGenerator.forBlock['rover_turn_right'] = function() { return `  rover.turnRight(50);\n`; };
-javascriptGenerator.forBlock['rover_spin_left'] = function() { return `  rover.spinLeft(50);\n`; };
-javascriptGenerator.forBlock['rover_spin_right'] = function() { return `  rover.spinRight(50);\n`; };
-javascriptGenerator.forBlock['rover_stop'] = function() { return `  rover.stop();\n`; };
+javascriptGenerator.forBlock['rover_turn_left'] = function() { return `  /* requires: rover */ rover.turnLeft(50);\n`; };
+javascriptGenerator.forBlock['rover_turn_right'] = function() { return `  /* requires: rover */ rover.turnRight(50);\n`; };
+javascriptGenerator.forBlock['rover_spin_left'] = function() { return `  /* requires: rover */ rover.spinLeft(50);\n`; };
+javascriptGenerator.forBlock['rover_spin_right'] = function() { return `  /* requires: rover */ rover.spinRight(50);\n`; };
+javascriptGenerator.forBlock['rover_stop'] = function() { return `  /* requires: rover */ rover.stop();\n`; };
 
 // ===== rover_is_moving (value) =====
 Blockly.Blocks['rover_is_moving'] = {
@@ -186,7 +207,7 @@ Blockly.Blocks['rover_is_moving'] = {
   }
 };
 javascriptGenerator.forBlock['rover_is_moving'] = function() {
-  return [`rover.isMoving()`, generator.ORDER_FUNCTION_CALL];
+  return [`/* requires: rover */ rover.isMoving()`, generator.ORDER_FUNCTION_CALL];
 };
 
 export {};

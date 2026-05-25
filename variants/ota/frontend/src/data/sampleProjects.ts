@@ -368,13 +368,16 @@ export const sampleProjects: SampleProject[] = [
 <statement name="LOOP">
           <block type="morpher_shift_blocking">
             <field name="MODE">walk</field>
+            <field name="SPEED">normal</field>
             <next>
               <block type="morpher_walk_blocking">
-                <field name="DIRECTION">forward</field>
+                <value name="STEPS"><block type="math_number"><field name="NUM">3</field></block></value>
+                <field name="DIRECTION">1</field>
                 <field name="SPEED">normal</field>
                 <next>
                   <block type="morpher_walk_blocking">
-                    <field name="DIRECTION">forward</field>
+                    <value name="STEPS"><block type="math_number"><field name="NUM">3</field></block></value>
+                    <field name="DIRECTION">1</field>
                     <field name="SPEED">normal</field>
                     <next>
                       <block type="esp32_delay">
@@ -386,9 +389,11 @@ export const sampleProjects: SampleProject[] = [
                         <next>
                           <block type="morpher_shift_blocking">
                             <field name="MODE">roll</field>
+                            <field name="SPEED">normal</field>
                             <next>
                               <block type="morpher_roll_blocking">
-                                <field name="DIRECTION">forward</field>
+                                <value name="CYCLES"><block type="math_number"><field name="NUM">3</field></block></value>
+                                <field name="DIRECTION">1</field>
                                 <field name="SPEED">normal</field>
                                 <next>
                                   <block type="esp32_delay">
@@ -399,7 +404,6 @@ export const sampleProjects: SampleProject[] = [
                                     </value>
                                     <next>
                                       <block type="morpher_stop">
-                                        <field name="MODE">roll</field>
                                         <next>
                                           <block type="esp32_delay">
                                             <value name="TIME">
@@ -442,6 +446,7 @@ export const sampleProjects: SampleProject[] = [
             <field name="PIN_RL">15</field>
             <field name="PIN_LF">14</field>
             <field name="PIN_RF">13</field>
+            <field name="PIN_BUZZER">25</field>
           </block>
         </statement>
 </block>
@@ -458,16 +463,18 @@ export const sampleProjects: SampleProject[] = [
                 <next>
                   <block type="biped_dance_blocking">
                     <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
+                    <field name="SPEED">normal</field>
                     <next>
                       <block type="biped_swing_blocking">
                         <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
+                        <field name="SPEED">normal</field>
                         <next>
                           <block type="biped_moonwalk_blocking">
                             <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
-                            <field name="DIRECTION">1</field>
+                            <field name="SPEED">normal</field>
                             <next>
                               <block type="biped_jump_blocking">
-                                <value name="STEPS"><block type="math_number"><field name="NUM">2</field></block></value>
+                                <field name="SPEED">fast</field>
                                 <next>
                                   <block type="esp32_delay">
                                     <value name="TIME">
@@ -994,7 +1001,7 @@ export const sampleProjects: SampleProject[] = [
     description: 'Walk → Roll の形態変化で移動',
     category: 'robots',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="morpher_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="morpher_shift_blocking"><field name="MODE">walk</field><next><block type="morpher_walk_blocking"><field name="DIRECTION">forward</field><field name="SPEED">normal</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="morpher_shift_blocking"><field name="MODE">roll</field><next><block type="morpher_roll_blocking"><field name="DIRECTION">forward</field><field name="SPEED">fast</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="morpher_stop"><field name="MODE">roll</field></block></next></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="morpher_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="morpher_shift_blocking"><field name="MODE">walk</field><field name="SPEED">normal</field><next><block type="morpher_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">1</field><field name="SPEED">normal</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="morpher_shift_blocking"><field name="MODE">roll</field><field name="SPEED">normal</field><next><block type="morpher_roll_blocking"><value name="CYCLES"><block type="math_number"><field name="NUM">3</field></block></value><field name="DIRECTION">1</field><field name="SPEED">fast</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="morpher_stop"></block></next></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
   },
   {
     id: 'http-get-request',

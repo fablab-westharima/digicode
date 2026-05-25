@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-24T18:30:53.196Z",
+  "generatedAt": "2026-05-25T08:03:47.216Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -7152,17 +7152,18 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
-      "valueInputs": [
+      "fields": [
         {
-          "name": "STEPS",
-          "check": [
-            "Number",
-            "String",
-            "Boolean"
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
           ]
         }
       ],
+      "valueInputs": [],
       "statementInputs": []
     },
     {
@@ -7180,11 +7181,12 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "DIRECTION",
+          "name": "SPEED",
           "fieldType": "dropdown",
           "options": [
-            "1",
-            "-1"
+            "fast",
+            "normal",
+            "slow"
           ]
         }
       ],
@@ -7213,7 +7215,17 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
+          ]
+        }
+      ],
       "valueInputs": [
         {
           "name": "STEPS",
@@ -7239,7 +7251,17 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
+          ]
+        }
+      ],
       "valueInputs": [
         {
           "name": "STEPS",
@@ -7267,24 +7289,24 @@
       "boardRequires": null,
       "fields": [
         {
-          "name": "SIDE",
+          "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
-            "left",
-            "right"
+            "1",
+            "-1"
           ]
-        }
-      ],
-      "valueInputs": [
+        },
         {
-          "name": "STEPS",
-          "check": [
-            "Number",
-            "String",
-            "Boolean"
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
           ]
         }
       ],
+      "valueInputs": [],
       "statementInputs": []
     },
     {
@@ -7395,7 +7417,7 @@
     {
       "type": "rover_init_dc_motor",
       "category": "robot_wheel",
-      "tooltip": "Initialize rover with 2 DC motors via L298N-style H-bridge (4 GPIO pins)",
+      "tooltip": "Initialize rover with 2 DC motors via H-bridge driver (each motor uses 2 GPIO pins for forward + reverse)",
       "colour": "#4CAF50",
       "isStatement": true,
       "hasOutput": false,
@@ -7688,6 +7710,15 @@
             "walk",
             "roll"
           ]
+        },
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
+          ]
         }
       ],
       "valueInputs": [],
@@ -7713,6 +7744,15 @@
           "options": [
             "walk",
             "roll"
+          ]
+        },
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
           ]
         }
       ],
@@ -7754,8 +7794,8 @@
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
-            "forward",
-            "backward"
+            "1",
+            "-1"
           ]
         },
         {
@@ -7768,7 +7808,16 @@
           ]
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -7789,8 +7838,8 @@
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
-            "forward",
-            "backward"
+            "1",
+            "-1"
           ]
         },
         {
@@ -7803,7 +7852,16 @@
           ]
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "STEPS",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -7824,8 +7882,17 @@
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
-            "left",
-            "right"
+            "1",
+            "-1"
+          ]
+        },
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
           ]
         }
       ],
@@ -7844,7 +7911,7 @@
     {
       "type": "morpher_stop",
       "category": "robot_transform",
-      "tooltip": "Stop specified mode immediately",
+      "tooltip": "Stop current motion immediately",
       "colour": "#9C27B0",
       "isStatement": true,
       "hasOutput": false,
@@ -7854,16 +7921,7 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [
-        {
-          "name": "MODE",
-          "fieldType": "dropdown",
-          "options": [
-            "walk",
-            "roll"
-          ]
-        }
-      ],
+      "fields": [],
       "valueInputs": [],
       "statementInputs": []
     },
@@ -7885,8 +7943,8 @@
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
-            "forward",
-            "backward"
+            "1",
+            "-1"
           ]
         },
         {
@@ -7899,7 +7957,16 @@
           ]
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "CYCLES",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -7920,8 +7987,8 @@
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
-            "forward",
-            "backward"
+            "1",
+            "-1"
           ]
         },
         {
@@ -7934,7 +8001,16 @@
           ]
         }
       ],
-      "valueInputs": [],
+      "valueInputs": [
+        {
+          "name": "CYCLES",
+          "check": [
+            "Number",
+            "String",
+            "Boolean"
+          ]
+        }
+      ],
       "statementInputs": []
     },
     {
@@ -7955,14 +8031,23 @@
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
-            "left",
-            "right"
+            "1",
+            "-1"
+          ]
+        },
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
           ]
         }
       ],
       "valueInputs": [
         {
-          "name": "POWER",
+          "name": "CYCLES",
           "check": [
             "Number",
             "String",
@@ -7985,7 +8070,17 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
+          ]
+        }
+      ],
       "valueInputs": [
         {
           "name": "STEPS",
@@ -8011,7 +8106,17 @@
         "custom"
       ],
       "boardRequires": null,
-      "fields": [],
+      "fields": [
+        {
+          "name": "SPEED",
+          "fieldType": "dropdown",
+          "options": [
+            "fast",
+            "normal",
+            "slow"
+          ]
+        }
+      ],
       "valueInputs": [
         {
           "name": "STEPS",
