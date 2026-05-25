@@ -77,7 +77,7 @@ generator.forBlock['sd_write'] = function(block: Blockly.Block) {
   const filename = javascriptGenerator.valueToCode(block, 'FILENAME', 0) || '"/data.txt"';
   const content = javascriptGenerator.valueToCode(block, 'CONTENT', 0) || '""';
   generator.definitions_['include_sd'] = '#include <SD.h>\n#include <SPI.h>';
-  return `  { File f = SD.open(${filename}, ${mode}); if(f){ f.println(${content}); f.close(); } }\n`;
+  return `  { File f = SD.open(String(${filename}), ${mode}); if(f){ f.println(${content}); f.close(); } }\n`;
 };
 
 /**
@@ -104,7 +104,7 @@ String sdReadFile(const char* path) {
   if(f){ while(f.available()){ result += (char)f.read(); } f.close(); }
   return result;
 }`;
-  return [`sdReadFile(${filename})`, 0];
+  return [`sdReadFile(String(${filename}))`, 0];
 };
 
 /**
@@ -124,7 +124,7 @@ Blockly.Blocks['sd_exists'] = {
 generator.forBlock['sd_exists'] = function(block: Blockly.Block) {
   const filename = javascriptGenerator.valueToCode(block, 'FILENAME', 0) || '"/data.txt"';
   generator.definitions_['include_sd'] = '#include <SD.h>\n#include <SPI.h>';
-  return [`SD.exists(${filename})`, 0];
+  return [`SD.exists(String(${filename}))`, 0];
 };
 
 /**
@@ -145,7 +145,7 @@ Blockly.Blocks['sd_delete'] = {
 generator.forBlock['sd_delete'] = function(block: Blockly.Block) {
   const filename = javascriptGenerator.valueToCode(block, 'FILENAME', 0) || '"/data.txt"';
   generator.definitions_['include_sd'] = '#include <SD.h>\n#include <SPI.h>';
-  return `  SD.remove(${filename});\n`;
+  return `  SD.remove(String(${filename}));\n`;
 };
 
 /**
@@ -180,7 +180,7 @@ generator.forBlock['sd_csv_append'] = function(block: Blockly.Block) {
   const col2 = javascriptGenerator.valueToCode(block, 'COL2', 0) || '""';
   const col3 = javascriptGenerator.valueToCode(block, 'COL3', 0) || '""';
   generator.definitions_['include_sd'] = '#include <SD.h>\n#include <SPI.h>';
-  return `  { File f = SD.open(${filename}, FILE_APPEND); if(f){ f.print(${col1}); f.print(","); f.print(${col2}); f.print(","); f.println(${col3}); f.close(); } }\n`;
+  return `  { File f = SD.open(String(${filename}), FILE_APPEND); if(f){ f.print(${col1}); f.print(","); f.print(${col2}); f.print(","); f.println(${col3}); f.close(); } }\n`;
 };
 
 // ===== LittleFS (BP3-6) =====
@@ -234,7 +234,7 @@ generator.forBlock['fs_write'] = function(block: Blockly.Block) {
   const content = javascriptGenerator.valueToCode(block, 'CONTENT', 0) || '""';
   generator.definitions_['include_littlefs'] =
     '#if defined(ESP32)\n#include <LittleFS.h>\n#else\n#include <LittleFS.h>\n#endif';
-  return `  { File f = LittleFS.open(${filename}, "${mode}"); if(f){ f.println(${content}); f.close(); } }\n`;
+  return `  { File f = LittleFS.open(String(${filename}), "${mode}"); if(f){ f.println(${content}); f.close(); } }\n`;
 };
 
 /**
@@ -262,7 +262,7 @@ String fsReadFile(const char* path) {
   if(f){ while(f.available()){ result += (char)f.read(); } f.close(); }
   return result;
 }`;
-  return [`fsReadFile(${filename})`, 0];
+  return [`fsReadFile(String(${filename}))`, 0];
 };
 
 /**
@@ -283,7 +283,7 @@ generator.forBlock['fs_exists'] = function(block: Blockly.Block) {
   const filename = javascriptGenerator.valueToCode(block, 'FILENAME', 0) || '"/config.txt"';
   generator.definitions_['include_littlefs'] =
     '#if defined(ESP32)\n#include <LittleFS.h>\n#else\n#include <LittleFS.h>\n#endif';
-  return [`LittleFS.exists(${filename})`, 0];
+  return [`LittleFS.exists(String(${filename}))`, 0];
 };
 
 /**
@@ -305,7 +305,7 @@ generator.forBlock['fs_delete'] = function(block: Blockly.Block) {
   const filename = javascriptGenerator.valueToCode(block, 'FILENAME', 0) || '"/config.txt"';
   generator.definitions_['include_littlefs'] =
     '#if defined(ESP32)\n#include <LittleFS.h>\n#else\n#include <LittleFS.h>\n#endif';
-  return `  LittleFS.remove(${filename});\n`;
+  return `  LittleFS.remove(String(${filename}));\n`;
 };
 
 console.log('Storage FS (SD/LittleFS) blocks loaded');

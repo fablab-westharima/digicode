@@ -78,7 +78,7 @@ generator.forBlock['pushover_send'] = function(block: Blockly.Block) {
   const priority = block.getFieldValue('PRIORITY');
   generator.definitions_['include_pushover'] = '#include <WiFi.h>\n#include <WiFiClientSecure.h>\n#include <HTTPClient.h>';
   generator.definitions_['pushover_helper'] = PUSHOVER_HELPER;
-  return `pushoverSend(${token}, ${user}, ${message}, ${priority});\n`;
+  return `pushoverSend(String(${token}), String(${user}), String(${message}), ${priority});\n`;
 };
 
 console.log('Notification (Pushover) blocks loaded');

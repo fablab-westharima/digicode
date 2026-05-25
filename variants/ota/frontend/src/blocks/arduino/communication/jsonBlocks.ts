@@ -351,7 +351,7 @@ javascriptGenerator.forBlock['json_set_string'] = function(block: Blockly.Block)
   const key = block.getFieldValue('KEY');
   const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.ATOMIC) || '""';
 
-  return `  _jsonOutDoc["${key}"] = ${value};\n`;
+  return `  _jsonOutDoc["${key}"] = String(${value});\n`;
 };
 
 /**

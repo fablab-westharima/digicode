@@ -85,7 +85,7 @@ generator.forBlock['google_sheets_append'] = function(block: Blockly.Block) {
   // co-emitted in the same sketch; declaring both is the safe superset).
   generator.definitions_['google_sheets_append_helper'] = GOOGLE_SHEETS_APPEND_HELPER;
   generator.definitions_['google_sheets_format_row_helper'] = GOOGLE_SHEETS_FORMAT_ROW_HELPER;
-  return `googleSheetsAppend(${url}, ${data});\n`;
+  return `googleSheetsAppend(String(${url}), String(${data}));\n`;
 };
 
 Blockly.Blocks['google_sheets_format_row'] = {

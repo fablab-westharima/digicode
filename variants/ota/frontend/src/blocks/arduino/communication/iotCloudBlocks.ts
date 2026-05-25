@@ -226,7 +226,7 @@ generator.forBlock['iot_cloud_connect'] = function(block: Blockly.Block) {
   const provider = block.getFieldValue('PROVIDER');
   const cred = generator.valueToCode(block, 'CREDENTIALS', Order.ATOMIC) || '""';
   emitIotCloudCommonDefs();
-  return [`iotCloudConnect(String("${provider}"), ${cred})`, Order.FUNCTION_CALL];
+  return [`iotCloudConnect(String("${provider}"), String(${cred}))`, Order.FUNCTION_CALL];
 };
 
 /**

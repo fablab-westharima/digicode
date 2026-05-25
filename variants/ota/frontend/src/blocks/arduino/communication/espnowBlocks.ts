@@ -160,7 +160,7 @@ Blockly.Blocks['espnow_register_peer'] = {
 generator.forBlock['espnow_register_peer'] = function(block: Blockly.Block) {
   const mac = generator.valueToCode(block, 'MAC', Order.ATOMIC) || '""';
   emitEspnowDefs();
-  return `espnowRegisterPeer(${mac});\n`;
+  return `espnowRegisterPeer(String(${mac}));\n`;
 };
 
 Blockly.Blocks['espnow_send'] = {
@@ -184,7 +184,7 @@ generator.forBlock['espnow_send'] = function(block: Blockly.Block) {
   const mac = generator.valueToCode(block, 'MAC', Order.ATOMIC) || '""';
   const data = generator.valueToCode(block, 'DATA', Order.ATOMIC) || '""';
   emitEspnowDefs();
-  return `espnowSend(${mac}, String(${data}));\n`;
+  return `espnowSend(String(${mac}), String(${data}));\n`;
 };
 
 Blockly.Blocks['espnow_broadcast'] = {

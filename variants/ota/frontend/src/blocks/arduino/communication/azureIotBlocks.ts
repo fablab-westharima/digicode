@@ -439,7 +439,7 @@ generator.forBlock['azure_iot_hub_connect'] = function(block: Blockly.Block) {
   generator.definitions_['azure_iot_globals'] = AZURE_IOT_GLOBALS;
   generator.definitions_['azure_iot_globals_cb'] = AZURE_IOT_GLOBALS_CB;
   generator.definitions_['azure_iot_helpers'] = AZURE_IOT_HELPERS;
-  return [`azureIotHubInit(${cs})`, Order.FUNCTION_CALL];
+  return [`azureIotHubInit(String(${cs}))`, Order.FUNCTION_CALL];
 };
 
 /**
@@ -562,7 +562,7 @@ generator.forBlock['azure_iot_central_connect'] = function(block: Blockly.Block)
   generator.definitions_['azure_iot_globals'] = AZURE_IOT_GLOBALS;
   generator.definitions_['azure_iot_globals_cb'] = AZURE_IOT_GLOBALS_CB;
   generator.definitions_['azure_iot_helpers'] = AZURE_IOT_HELPERS;
-  return [`azureIotCentralInit(${scope}, ${dev}, ${key})`, Order.FUNCTION_CALL];
+  return [`azureIotCentralInit(String(${scope}), String(${dev}), String(${key}))`, Order.FUNCTION_CALL];
 };
 
 /**
@@ -592,7 +592,7 @@ generator.forBlock['azure_iot_central_publish'] = function(block: Blockly.Block)
   generator.definitions_['azure_iot_globals'] = AZURE_IOT_GLOBALS;
   generator.definitions_['azure_iot_globals_cb'] = AZURE_IOT_GLOBALS_CB;
   generator.definitions_['azure_iot_helpers'] = AZURE_IOT_HELPERS;
-  return `azureIotCentralPublish(${key}, String(${value}));\n`;
+  return `azureIotCentralPublish(String(${key}), String(${value}));\n`;
 };
 
 /**
@@ -662,7 +662,7 @@ generator.forBlock['azure_iot_update_device_twin'] = function(block: Blockly.Blo
   generator.definitions_['azure_iot_globals'] = AZURE_IOT_GLOBALS;
   generator.definitions_['azure_iot_globals_cb'] = AZURE_IOT_GLOBALS_CB;
   generator.definitions_['azure_iot_helpers'] = AZURE_IOT_HELPERS;
-  return `azureIotUpdateDeviceTwin(${key}, String(${value}));\n`;
+  return `azureIotUpdateDeviceTwin(String(${key}), String(${value}));\n`;
 };
 
 // ============================================================================

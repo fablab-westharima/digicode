@@ -59,7 +59,7 @@ String httpGet(String url) {
   return result;
 }`;
 
-  return [`httpGet(${url})`, Order.FUNCTION_CALL];
+  return [`httpGet(String(${url}))`, Order.FUNCTION_CALL];
 };
 
 /**
@@ -109,7 +109,7 @@ String httpGetWithHeader(String url, String headerName, String headerValue) {
   return result;
 }`;
 
-  return [`httpGetWithHeader(${url}, ${headerName}, ${headerValue})`, Order.FUNCTION_CALL];
+  return [`httpGetWithHeader(String(${url}), String(${headerName}), String(${headerValue}))`, Order.FUNCTION_CALL];
 };
 
 // ===== HTTP POST =====
@@ -165,7 +165,7 @@ String httpPost(String url, String body, String contentType) {
   return result;
 }`;
 
-  return [`httpPost(${url}, ${body}, "${contentType}")`, Order.FUNCTION_CALL];
+  return [`httpPost(String(${url}), String(${body}), "${contentType}")`, Order.FUNCTION_CALL];
 };
 
 /**
@@ -211,7 +211,7 @@ String httpPost(String url, String body, String contentType) {
   return result;
 }`;
 
-  return [`httpPost(${url}, ${json}, "application/json")`, Order.FUNCTION_CALL];
+  return [`httpPost(String(${url}), String(${json}), "application/json")`, Order.FUNCTION_CALL];
 };
 
 // ===== HTTP PUT / DELETE =====
@@ -259,7 +259,7 @@ String httpPut(String url, String body) {
   return result;
 }`;
 
-  return [`httpPut(${url}, ${body})`, Order.FUNCTION_CALL];
+  return [`httpPut(String(${url}), String(${body}))`, Order.FUNCTION_CALL];
 };
 
 /**
@@ -293,7 +293,7 @@ int httpDelete(String url) {
   return httpCode;
 }`;
 
-  return [`httpDelete(${url})`, Order.FUNCTION_CALL];
+  return [`httpDelete(String(${url}))`, Order.FUNCTION_CALL];
 };
 
 // ===== HTTPステータス =====
@@ -361,7 +361,7 @@ String urlEncode(String str) {
   return encoded;
 }`;
 
-  return [`urlEncode(${text})`, Order.FUNCTION_CALL];
+  return [`urlEncode(String(${text}))`, Order.FUNCTION_CALL];
 };
 
 /**
@@ -420,7 +420,7 @@ String urlEncode(String str) {
   // first operand in `String(...)` forces the chain into Arduino String
   // concatenation, after which mixed `String + const char*` works.
   // emits: url_encode_func only / requires: nothing extra.
-  return [`(String(${baseUrl}) + "?" + ${param1Name} + "=" + urlEncode(String(${param1Value})))`, Order.ADDITION];
+  return [`(String(${baseUrl}) + "?" + String(${param1Name}) + "=" + urlEncode(String(${param1Value})))`, Order.ADDITION];
 };
 
 console.log('HTTP blocks loaded');

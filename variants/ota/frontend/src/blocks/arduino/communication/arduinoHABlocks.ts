@@ -2416,7 +2416,7 @@ javascriptGenerator.forBlock['ha_tag_scanner_scanned'] = function(block: Blockly
   const tagId = javascriptGenerator.valueToCode(block, 'TAG_ID', Order.ATOMIC) || '""';
   const varName = `haTagScanner_${scannerId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
-  return `  ${varName}.tagScanned(${tagId});\n`;
+  return `  ${varName}.tagScanned(String(${tagId}));\n`;
 };
 
 // ===== 接続/切断ハンドラ =====

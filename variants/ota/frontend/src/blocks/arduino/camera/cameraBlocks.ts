@@ -135,7 +135,7 @@ generator.forBlock['camera_save_sd'] = function(block: Blockly.Block) {
   generator.definitions_['include_sd'] = '#include <SD.h>\n#include <SPI.h>';
   return [`([&](){
   if (!camFb) return false;
-  /* requires: SD initialized */ File f = SD.open(${filename}, FILE_WRITE);
+  /* requires: SD initialized */ File f = SD.open(String(${filename}), FILE_WRITE);
   if (!f) return false;
   f.write(camFb->buf, camFb->len);
   f.close();
@@ -166,7 +166,7 @@ generator.forBlock['camera_send_http'] = function(block: Blockly.Block) {
   return [`([&](){
   if (!camFb) return false;
   HTTPClient http;
-  http.begin(${url});
+  http.begin(String(${url}));
   http.addHeader("Content-Type", "image/jpeg");
   int code = http.POST(camFb->buf, camFb->len);
   http.end();
