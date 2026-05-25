@@ -143,19 +143,19 @@ describe('Phase X-2 commit 2: host-compile probe (env DIGICODE_COMPILE_API_URL g
       expect(cpp).toBeTruthy();
       expect(cpp.length).toBeGreaterThan(0);
 
-      // compile-api 経由で submit
-      const response = await fetch(`${COMPILE_API_URL}/compile`, {
+      // compile-api 経由で submit (capi src/server.ts:83 = POST /api/compile)
+      const response = await fetch(`${COMPILE_API_URL}/api/compile`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           source: cpp,
           board: 'esp32:esp32:esp32',
         }),
-        // ML30 production 経由は ~30-60s 想定
-        signal: AbortSignal.timeout(120000),
+        // cold compile ~100-200s 想定 (capi server.ts コメント cited、 PIO cache miss)
+        signal: AbortSignal.timeout(240000),
       });
 
       expect(response.status, `${fixture.id}: HTTP status not 200, response body: ${await response.text().catch(() => 'unreadable')}`).toBe(200);
-    }, { timeout: 180000 });
+    }, { timeout: 300000 });
   }
 });

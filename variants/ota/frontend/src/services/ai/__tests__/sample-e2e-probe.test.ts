@@ -66,17 +66,18 @@ describe('BUG-086 C6: sample-e2e-probe — every canonical sample loads + genera
     // Vitest 4 signature: options as 2nd arg, fn as 3rd arg.
     it.skipIf(!COMPILE_API_URL)(
       'compiles via compile-api (host-compile probe)',
-      { timeout: 180000 },
+      { timeout: 300000 },
       async () => {
         const cpp = xmlToCpp(sample.blocklyXml);
-        const response = await fetch(`${COMPILE_API_URL}/compile`, {
+        // capi src/server.ts:83 = POST /api/compile (cold compile ~100-200s)
+        const response = await fetch(`${COMPILE_API_URL}/api/compile`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             source: cpp.fullCode,
             board: 'esp32:esp32:esp32',
           }),
-          signal: AbortSignal.timeout(120000),
+          signal: AbortSignal.timeout(240000),
         });
         expect(
           response.status,
