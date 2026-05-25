@@ -220,9 +220,12 @@ describe('selectFewShot (動的 Few-shot 選択)', () => {
 
   it('mode-specific samples come first (positions 0-1) for robotics', () => {
     const result = selectFewShot('robotics', '');
-    // Session 104: robotics consolidates 3 old robot modes; the two
-    // mode-specific samples cover humanoid + wheel use cases.
-    expect(result[0]).toBe('humanoid-dance');
+    // Phase X-4 (Session 153): humanoid-large-servo-protect (etagged life-size
+    // humanoid + gear-protection demo) replaces humanoid-dance as the first
+    // mode-specific sample for robotics. case 22 founding use case anchor:
+    // AI must reach for the gear-protection pattern first, before generic
+    // dance/wheel-line-follow patterns.
+    expect(result[0]).toBe('humanoid-large-servo-protect');
     expect(result[1]).toBe('wheel-line-follow');
   });
 
@@ -233,11 +236,66 @@ describe('selectFewShot (動的 Few-shot 選択)', () => {
   });
 
   it('walk keyword still routes humanoid-walk via themed slot in robotics', () => {
-    // Session 104: humanoid-walk is no longer mode-specific for robotics (the
-    // two slots are humanoid-dance + wheel-line-follow), so the "歩く" keyword
-    // still picks humanoid-walk via the themed routing — fills position 4.
+    // Phase X-4 (Session 153): MODE_SPECIFIC_SAMPLES.robotics now
+    // [humanoid-large-servo-protect, wheel-line-follow], so humanoid-walk is
+    // not in mode-specific anymore. The "歩く" keyword still picks
+    // humanoid-walk via the themed routing — fills position 4.
     const result = selectFewShot('robotics', '歩く動作を作って');
     expect(result.length).toBe(5);
+    expect(result[4]).toBe('humanoid-walk');
+  });
+
+  // Phase X-4 (Session 153) — KEYWORD_TO_SAMPLE 3 specific-first entries
+  // (humanoid-large-servo-protect + biped-walk-while-mqtt-publishing +
+  // stepper-hw-precise) routing verification. Use all_blocks mode so the
+  // new samples are NOT in MODE_SPECIFIC, forcing themed routing to fill
+  // position 4 with the keyword-matched sample.
+
+  it('founding-use-case keyword routes to humanoid-large-servo-protect (Phase X-4)', () => {
+    const result = selectFewShot('all_blocks', '等身大ロボットでサーボの動きが速すぎてギヤが欠ける、ギヤ保護したい');
+    expect(result[4]).toBe('humanoid-large-servo-protect');
+  });
+
+  it('large-servo / MG996R keyword routes to humanoid-large-servo-protect (Phase X-4 EN variant)', () => {
+    const result = selectFewShot('all_blocks', 'life-size humanoid robot, large servo MG996R, gear protection');
+    expect(result[4]).toBe('humanoid-large-servo-protect');
+  });
+
+  it('biped + MQTT parallel keyword routes to biped-walk-while-mqtt-publishing (Phase X-4)', () => {
+    const result = selectFewShot('all_blocks', 'biped で歩きながらMQTT publishを並列動作させたい');
+    expect(result[4]).toBe('biped-walk-while-mqtt-publishing');
+  });
+
+  it('async motion keyword routes to biped-walk-while-mqtt-publishing (Phase X-4 EN variant)', () => {
+    const result = selectFewShot('all_blocks', 'biped robot async motion with MQTT publish in parallel');
+    expect(result[4]).toBe('biped-walk-while-mqtt-publishing');
+  });
+
+  it('stepper HW peripheral keyword routes to stepper-hw-precise (Phase X-4)', () => {
+    const result = selectFewShot('all_blocks', 'stepper HW peripheral で 200kHz 高速駆動したい');
+    expect(result[4]).toBe('stepper-hw-precise');
+  });
+
+  it('FastAccelStepper keyword routes to stepper-hw-precise (Phase X-4 EN variant)', () => {
+    const result = selectFewShot('all_blocks', 'FastAccelStepper RMT MCPWM 200kHz');
+    expect(result[4]).toBe('stepper-hw-precise');
+  });
+
+  // Phase X-4 FP guards: ensure the new specific-first regexes do not
+  // intercept prompts intended for existing samples.
+
+  it('FP guard: stepper without HW/高速 keyword still routes to stepper-position-control (Phase X-4)', () => {
+    const result = selectFewShot('all_blocks', '28BYJ-48 ステッパで position 制御');
+    expect(result[4]).toBe('stepper-position-control');
+  });
+
+  it('FP guard: MQTT broker prompt (no biped) still routes to mqtt-direct (Phase X-4)', () => {
+    const result = selectFewShot('all_blocks', 'MQTT broker にデータを publish したい');
+    expect(result[4]).toBe('mqtt-direct');
+  });
+
+  it('FP guard: generic walk prompt (no 等身大/MG996R) still routes to humanoid-walk (Phase X-4)', () => {
+    const result = selectFewShot('all_blocks', 'humanoid robot walk demo');
     expect(result[4]).toBe('humanoid-walk');
   });
 

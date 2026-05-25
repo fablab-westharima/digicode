@@ -7,10 +7,15 @@ const SHARED_BASIC = ['led-blink', 'serial-hello'] as const;
 
 // Session 104 で 10 mode に再構成。mode = block scope hint (D-5) として AI に伝達、
 // mode-specific sample は user が見ている category 帯の典型 sample で domain bias を付与する。
+// Phase X-4 (Session 153): robotics default を humanoid-large-servo-protect に
+// 変更 (61.md §1 + case 22 founding use case anchor)。 旧 humanoid-dance は
+// keyword routing (dance|ダンス) 経由 retrieve 可能、 default 1 件目を「等身大
+// Humanoid + ギヤ保護」 demo に変更 = AI が「等身大ロボット = ギヤ保護必要」 を
+// first reference として認識。
 const MODE_SPECIFIC_SAMPLES: Record<RobotMode, readonly [string, string]> = {
   input:         ['dht-sensor', 'ultrasonic-distance'],
   output:        ['neopixel-animation', 'lcd-display'],
-  robotics:      ['humanoid-dance', 'wheel-line-follow'],
+  robotics:      ['humanoid-large-servo-protect', 'wheel-line-follow'],
   network:       ['mqtt-direct', 'http-get-request'],
   homeassistant: ['ha-led-control', 'ha-multi-sensor'],
   storage_time:  ['nvs-counter', 'ntp-time-sync'],
@@ -21,8 +26,23 @@ const MODE_SPECIFIC_SAMPLES: Record<RobotMode, readonly [string, string]> = {
 };
 
 // 優先度順（上から match 試行、最初に hit したものを採用）
-// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 20 / Phase 3 (BUG-052): +1 → 21 / BUG-053+054: +2 → 23 / 47.md Phase 2 commit #7 (第73回 wifi-controller-mix): +1 → 24 / 52.md commit #21 (2026-05-04 第80回): +6 → 30 / 第88回 (2026-05-08 残カテゴリ FEW_SHOT 12 sample): +12 → 42 / 第98回 (2026-05-09 Task 3 HA 対応強化 5 sample 対応): +5 → 47 / BUG-085 (2026-05-17 第132回 AI 生成精度): +3 → 50 / BUG-086 (2026-05-18 第133回 2-channel canonical): +1 → 51 entries (wifi-led-servo-controller)
+// Phase 1: 12 sample / Phase 2 (2026-04-26): +8 sample 追加 → 20 / Phase 3 (BUG-052): +1 → 21 / BUG-053+054: +2 → 23 / 47.md Phase 2 commit #7 (第73回 wifi-controller-mix): +1 → 24 / 52.md commit #21 (2026-05-04 第80回): +6 → 30 / 第88回 (2026-05-08 残カテゴリ FEW_SHOT 12 sample): +12 → 42 / 第98回 (2026-05-09 Task 3 HA 対応強化 5 sample 対応): +5 → 47 / BUG-085 (2026-05-17 第132回 AI 生成精度): +3 → 50 / BUG-086 (2026-05-18 第133回 2-channel canonical): +1 → 51 entries (wifi-led-servo-controller) / Phase X-4 (Session 153): +3 → 54 entries (humanoid-large-servo-protect 等身大 + biped-walk-while-mqtt-publishing IoT 並列 + stepper-hw-precise 高速 stepper、 specific-first regex 配置 = 既存 generic regex より上)
 const KEYWORD_TO_SAMPLE: ReadonlyArray<readonly [RegExp, string]> = [
+  // Phase X-4 (Session 153): 等身大 Humanoid (founding use case demo、 case 22
+  // anchor)。 user verbatim「サーボの動きが速すぎてギヤが欠ける」 等の prompt に対し、
+  // biped_walk_async + ServoSpeedDialog 連携 + 大型サーボ (MG996R) パターンの canonical
+  // sample を first reference として AI に提示。 既存 humanoid-walk (歩く|walk regex)
+  // より上に配置 = 「等身大」 keyword は protect demo を強制 hit。
+  [/等身大|life.?size|large.?servo|ギヤ保護|gear.?protect|MG996R|大型サーボ|大型.*MG|サーボ.*速すぎ|servo.*too.?fast/i, 'humanoid-large-servo-protect'],
+  // Phase X-4 (Session 153): biped 歩行 + MQTT publish 並列動作 demo。 async API
+  // (biped_walk_async + wait_until_idle / is_idle) を訴求、 同期 (biped_walk_blocking)
+  // で IoT 通信が滞る問題への solution として AI に提示。 既存 humanoid-walk regex より
+  // 上 = biped + MQTT/publish combo は本 sample 経路。
+  [/biped.*(mqtt|publish|IoT|IoT|並列|parallel)|歩行.*(IoT|MQTT|publish|並列)|robot.*(MQTT|IoT).*(並列|parallel)|IoT.*共存|async.*motion/i, 'biped-walk-while-mqtt-publishing'],
+  // Phase X-4 (Session 153): Stepper HW peripheral (FastAccelStepper RMT/MCPWM、
+  // 200 kHz target) demo。 既存 stepper-position-control (28BYJ-48 polling、 ~1 kHz)
+  // より上 = 「高速」「HW」「RMT」「MCPWM」 keyword は HW mode 経路強制。
+  [/stepper.*(HW|hardware|高速|peripheral|RMT|MCPWM|200.?kHz)|高速.*stepper|FastAccelStepper/i, 'stepper-hw-precise'],
   // BUG-085 (第132回): user の verbatim prompt (WiFi-controlled + DHT22 + LED + Servo)
   // に specific match させる reference。wifi-controller-mix (MPU6050 ベース) より
   // 優先 = AI が「DHT22」を MPU6050 から類推する必要なく直接 follow できる。
