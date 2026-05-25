@@ -45,6 +45,15 @@ export type Bindings = {
   CLASS_API_SECRET: string;
   /** Optional: 2FA / OTP email transport. */
   RESEND_API_KEY?: string;
+  /**
+   * Optional: DockerHub Personal Access Token (`dckr_pat_…` form) for
+   * authenticated Hub API calls. Used by `/api/health/compile-server-latest`
+   * to bypass the anonymous rate limit (100/6h → 5000/6h authenticated, Session
+   * 154 hotfix for 429 rate-limit hit). Set via `wrangler secret put
+   * DOCKERHUB_PAT`. If absent, the endpoint falls back to anonymous access
+   * (fail-soft per Session 129 design).
+   */
+  DOCKERHUB_PAT?: string;
 
   // ── MoR payment integration (plan 58) ───────────────────────────
   // Provider-side IDs of the Lite/Pro/Enterprise plans. Stored as env

@@ -215,10 +215,17 @@ app.get('/api/health/compile-server-latest', async (c) => {
   const target =
     'https://hub.docker.com/v2/repositories/digicollc/digicode-compile-server/tags?page_size=10&ordering=last_updated';
   try {
+    // Session 154 hotfix (Workers proxy DockerHub 429 rate-limit fix): authenticated
+    // call uses 5000/6h rate limit window vs anonymous 100/6h. PAT は wrangler secret
+    // put DOCKERHUB_PAT で設定 (optional、 unset 時 anonymous fallback = fail-soft 維持)。
+    const headers: Record<string, string> = { Accept: 'application/json' };
+    if (c.env.DOCKERHUB_PAT) {
+      headers['Authorization'] = `Bearer ${c.env.DOCKERHUB_PAT}`;
+    }
     const res = await fetch(target, {
       method: 'GET',
       signal: AbortSignal.timeout(5000),
-      headers: { Accept: 'application/json' },
+      headers,
     });
     if (!res.ok) {
       return c.json(
