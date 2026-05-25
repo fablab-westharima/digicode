@@ -30,6 +30,11 @@ export interface PinServoConfig {
   // undefined = 親の global trimDeg に従う / 0 = no trim / 非零 = 中心位置を offset (Layer 2 _writeHw 内 `final = target + trim`)。
   // 範囲: -30..+30 (DigiMotion ServoChannel180::setTrim clamp 仕様、case 23 incident A/D 解消)。
   trimDeg?: number;
+  // ピンごとの reverse オーバーライド (boolean)。Phase 3-C Session 156、 4 軸 (pulse+speed+trim+reverse)。
+  // undefined = 親の global reverse に従う / false = 通常方向 / true = mirror around mid-point (servo)
+  // / velocity sign flip (continuous / dc motor)。 lib `IActuatorChannel::setReverse` で uniform 抽象。
+  // 用途: 物理取付方向逆向きの user-facing 補正 (case 22 founding use case)。compile-time only。
+  reverse?: boolean;
 }
 
 export interface ServoConfig {
@@ -44,6 +49,10 @@ export interface ServoConfig {
   // 全ピン共通の trim デフォルト (°)。E1 = pulse + speed + trim 3 軸統合 (Phase B-1、Session 146)。
   // 0 default = 既存 cpp 形状不変 (Layer 2 setTrim skip)、user が ServoTrimDialog で明示時のみ emit。
   trimDeg?: number;
+  // 全ピン共通の reverse デフォルト (Phase 3-C Session 156、4 軸統合 = pulse+speed+trim+reverse)。
+  // false default = 既存 cpp 形状不変 (Phase 3-D generator は reverse===false 時 emit skip = R1 invariant)、
+  // user が ServoTrimDialog で明示時のみ `setChannelReverse(i, true)` emit (Phase 3-D)。
+  reverse?: boolean;
 }
 
 /**
@@ -172,6 +181,8 @@ const DEFAULT_SERVO_CONFIG: ServoConfig = {
   speedDegPerSec: 0,
   // 0 = no trim = 既存 cpp 形状不変 (Phase B-3 generator は trimDeg !== 0 のみ emit、R1 invariant)。
   trimDeg: 0,
+  // false = 通常方向 = 既存 cpp 形状不変 (Phase 3-D generator は reverse === true のみ emit、R1 invariant)。
+  reverse: false,
 };
 
 const DEFAULT_PRESET: PinPreset = {
@@ -360,7 +371,7 @@ export const usePinPresetStore = create<PinPresetStore>()(
     }),
     {
       name: 'pin-preset-storage',
-      version: 10,
+      version: 11,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Migration handles various historic state structures
       migrate: (persistedState: any, version: number) => {
         let state = persistedState;
@@ -559,6 +570,30 @@ export const usePinPresetStore = create<PinPresetStore>()(
             pins: {
               ...preset.pins,
               humanoidBuzzer: preset.pins?.humanoidBuzzer ?? preset.pins?.buzzer ?? 25,
+            },
+          })) || [DEFAULT_PRESET];
+
+          state = {
+            ...state,
+            presets,
+          };
+        }
+
+        // バージョン11: reverse (boolean) を追加
+        //   (Phase 3-C、Session 156、4 軸統合 = pulse + speed + trim + reverse、
+        //    case 22 founding use case = Humanoid 物理取付方向補正 compile-time path)。
+        //
+        // reverse fallback: undefined → false (通常方向 = 既存 cpp 形状不変、Phase 3-D generator は
+        //   reverse === true 時のみ `setChannelReverse(i, true)` emit、R1 invariant 維持)。
+        // perPinConfigs 内 entry の reverse は undefined のままで OK
+        //   (getServoReverse 内で undefined → global fallback の意味維持、 trim と同 pattern)。
+        if (version < 11) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Historic state has varying shapes
+          const presets = state?.presets?.map((preset: any) => ({
+            ...preset,
+            servoConfig: {
+              ...preset.servoConfig,
+              reverse: preset.servoConfig?.reverse ?? false,
             },
           })) || [DEFAULT_PRESET];
 

@@ -167,6 +167,33 @@ export function getServoTrim(pin?: number): number {
 }
 
 /**
+ * サーボの reverse (boolean) を取得 (Phase 3-C、Session 156、4 軸統合 = pulse + speed + trim + reverse)
+ *
+ * 解決順序: perPin override (`config.perPinConfigs[].reverse`、明示時のみ field 存在)
+ *           → global default (`config.reverse`)
+ *           → false fallback (legacy state、v11 migrate 前)
+ *
+ * 戻り値:
+ *   false = 通常方向 = 既存 cpp 形状不変、Phase 3-D generator は emit skip (R1 invariant、default 時 emit ない)
+ *   true  = lib `IActuatorChannel::setReverse(true)` で mirror (servo) or velocity sign flip (continuous/dc motor)
+ *
+ * case 22 founding use case 達成 path: 等身大 Humanoid 物理取付方向逆向きの user-facing 補正。
+ * compile-time only (runtime transport なし)。 全 generator (servo_write + biped_init + morpher_init +
+ * rover_init_servo + rover_init_dc_motor) が同 helper 経由で reverse 取得、 partial reflection 構造禁止。
+ */
+export function getServoReverse(pin?: number): boolean {
+  const config = getServoConfig();
+  // ピン番号指定時、個別 reverse override を検索
+  if (pin !== undefined && config.perPinConfigs?.length) {
+    const perPin = config.perPinConfigs.find(c => c.pin === pin);
+    if (perPin && perPin.reverse !== undefined) {
+      return perPin.reverse;
+    }
+  }
+  return config.reverse ?? false;
+}
+
+/**
  * PID gain (kp, ki, kd) を取得 (Phase B-1、Session 146、case 23 incident F generator side 解消の核 helper)
  *
  * 解決順序: `usePIDTuningStore` の現在値を直接取得 (PIDTuningPanel slider 操作で更新される field)。

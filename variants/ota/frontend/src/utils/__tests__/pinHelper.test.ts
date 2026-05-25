@@ -13,7 +13,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { usePinPresetStore, type PinPreset, type ServoConfig } from '../../stores/pinPresetStore';
 import { usePIDTuningStore } from '../../stores/pidTuningStore';
-import { getServoSpeed, getServoConfig, getServoTrim, getPidGains } from '../pinHelper';
+import { getServoSpeed, getServoConfig, getServoTrim, getServoReverse, getPidGains } from '../pinHelper';
 
 const BASE_PRESET: PinPreset = usePinPresetStore.getState().presets[0];
 
@@ -266,6 +266,133 @@ describe('getServoTrim — per-pin override resolution', () => {
       ],
     });
     expect(getServoTrim(13)).toBe(0); // perPin 0 wins, NOT global 10
+  });
+});
+
+// ============================================================================
+// Phase 3-C (Session 156) — getServoReverse (4 軸統合 = pulse + speed + trim + reverse、
+//   case 22 founding use case = Humanoid 物理取付方向補正 compile-time path)
+// ============================================================================
+
+describe('getServoReverse — default behavior (legacy / unset)', () => {
+  beforeEach(() => {
+    usePinPresetStore.setState({
+      currentPresetId: 'default',
+      presets: [BASE_PRESET],
+      isPremiumEnabled: true,
+    });
+  });
+
+  it('returns false when no pin specified and default servoConfig (DEFAULT_SERVO_CONFIG.reverse===false)', () => {
+    expect(getServoReverse()).toBe(false);
+  });
+
+  it('returns false for any pin when default servoConfig (no perPin reverse overrides)', () => {
+    expect(getServoReverse(13)).toBe(false);
+    expect(getServoReverse(27)).toBe(false);
+  });
+
+  it('returns false when global reverse is undefined (legacy v10 state pre-v11 migrate, fallback ?? false)', () => {
+    // Simulate legacy v10 state where servoConfig had no reverse field
+    setServoConfig({
+      servoType: '180',
+      minPulse: 500,
+      maxPulse: 2400,
+      speedDegPerSec: 0,
+      trimDeg: 0,
+      // reverse: 未定義 = legacy v10 state、v11 migrate 前の挙動
+    });
+    expect(getServoReverse()).toBe(false);
+    expect(getServoReverse(13)).toBe(false);
+  });
+});
+
+describe('getServoReverse — global default override', () => {
+  it('returns global reverse=true when no pin specified', () => {
+    setServoConfig({
+      servoType: '180',
+      minPulse: 500,
+      maxPulse: 2400,
+      speedDegPerSec: 0,
+      trimDeg: 0,
+      reverse: true,
+    });
+    expect(getServoReverse()).toBe(true);
+  });
+
+  it('returns global reverse=true for any pin (no perPin override present)', () => {
+    setServoConfig({
+      servoType: '180',
+      minPulse: 500,
+      maxPulse: 2400,
+      speedDegPerSec: 0,
+      trimDeg: 0,
+      reverse: true,
+    });
+    expect(getServoReverse(13)).toBe(true);
+    expect(getServoReverse(27)).toBe(true);
+  });
+});
+
+describe('getServoReverse — per-pin override resolution', () => {
+  it('returns perPin reverse=true when matched (perPin overrides global=false)', () => {
+    setServoConfig({
+      servoType: '180',
+      minPulse: 500,
+      maxPulse: 2400,
+      speedDegPerSec: 0,
+      trimDeg: 0,
+      reverse: false, // global
+      perPinConfigs: [
+        { pin: 13, minPulse: 500, maxPulse: 2400, reverse: true }, // pin 13 = reversed
+      ],
+    });
+    expect(getServoReverse(13)).toBe(true);
+  });
+
+  it('returns perPin reverse=false when matched (perPin overrides global=true)', () => {
+    setServoConfig({
+      servoType: '180',
+      minPulse: 500,
+      maxPulse: 2400,
+      speedDegPerSec: 0,
+      trimDeg: 0,
+      reverse: true, // global
+      perPinConfigs: [
+        { pin: 13, minPulse: 500, maxPulse: 2400, reverse: false }, // pin 13 = explicit normal
+      ],
+    });
+    expect(getServoReverse(13)).toBe(false); // perPin false wins, NOT global true
+  });
+
+  it('falls back to global when perPin entry exists but reverse field is undefined', () => {
+    setServoConfig({
+      servoType: '180',
+      minPulse: 500,
+      maxPulse: 2400,
+      speedDegPerSec: 0,
+      trimDeg: 0,
+      reverse: true, // global
+      perPinConfigs: [
+        { pin: 13, minPulse: 500, maxPulse: 2400 }, // legacy perPin entry (no reverse field)
+      ],
+    });
+    expect(getServoReverse(13)).toBe(true); // global fallback
+  });
+
+  it('falls back to global when pin does not match any perPin entry', () => {
+    setServoConfig({
+      servoType: '180',
+      minPulse: 500,
+      maxPulse: 2400,
+      speedDegPerSec: 0,
+      trimDeg: 0,
+      reverse: false,
+      perPinConfigs: [
+        { pin: 13, minPulse: 500, maxPulse: 2400, reverse: true },
+      ],
+    });
+    expect(getServoReverse(27)).toBe(false); // pin 27 not in perPin list, falls to global
   });
 });
 
