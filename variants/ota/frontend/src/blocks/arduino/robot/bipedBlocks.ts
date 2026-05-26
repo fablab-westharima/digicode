@@ -128,15 +128,21 @@ IBuzzer& buzzer = getBuzzer();`;
     }
   }
 
-  // 順序: attachChannels → setChannel* (3 軸) → init() → buzzer attach + biped.attachBuzzer
-  // setChannel* は attachChannels 後 (channelAt(idx) が non-null になってから)、 init() 前 (init 内で
-  // channel.attach() が走り、 attach 内 _writeHw が初期 HW state を書込 → trim 反映済)
+  // Phase F-2 (Session 157): pump 経路 dead 解消 = case 22 founding use case ギヤ保護
+  // (= setChannelMaxRate rate-limited movement) 前提復活。 capi lib Phase F-1 で全 6 channel
+  // attach 内 registerPumpable(this) 追加済 = frontend で `getBackgroundPump().start();` emit
+  // 追加で digiMotionPump task 起動、 + loopPre `biped.tick(millis());` で async motion 完了 path 確立。
+  // 順序: attachChannels → setChannel* (4 軸) → init() (= 内部で channel.attach + register) →
+  //       buzzer attach + biped.attachBuzzer → getBackgroundPump().start() (= task 起動)
+  if (!generator.loopPre_) generator.loopPre_ = {};
+  generator.loopPre_['biped_tick'] = '  biped.tick(millis());';
   const allLines = [
     '  biped.attachChannels(&_bipedCh0, &_bipedCh1, &_bipedCh2, &_bipedCh3);',
     ...setupLines,
     '  biped.init();',
     `  buzzer.attach(${pinBuzzer});`,
     '  biped.attachBuzzer(&buzzer);',
+    '  getBackgroundPump().start();',
   ];
   return allLines.join('\n') + '\n';
 };

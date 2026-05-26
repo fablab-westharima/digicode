@@ -85,9 +85,13 @@ DigiRover rover;`;
     }
   }
 
+  // Phase F-2 (Session 157): pump 経路 dead 解消 = ContinuousServoChannel.pump 経路復活、
+  // velocity command (forward/backward/turnLeft/etc.) の HW write 発動 path 確立。
+  // DigiRover に tick() 不在のため loopPre 不要、 getBackgroundPump().start() のみで充分。
   const allLines = [
     '  rover.initServoMode(&_roverChL, &_roverChR);',
     ...setupLines,
+    '  getBackgroundPump().start();',
   ];
   return allLines.join('\n') + '\n';
 };
@@ -128,7 +132,12 @@ DcMotorChannel _roverMotorR(${pinRA}, ${pinRB});
 DigiRover rover;`;
   // Phase B-3 per-channel emit は servo mode のみ (DcMotorChannel.setTrim は deadband %、
   // pinPresetStore の degree-based trim と semantic 不一致のため post-release polish 候補)。
-  return '  rover.initDcMotorMode(&_roverMotorL, &_roverMotorR);\n';
+  // Phase F-2 (Session 157): pump 経路 dead 解消 = DcMotorChannel.pump 経路復活、 velocity command
+  // の HW write 発動 path 確立。 DigiRover に tick() 不在のため loopPre 不要。
+  return [
+    '  rover.initDcMotorMode(&_roverMotorL, &_roverMotorR);',
+    '  getBackgroundPump().start();',
+  ].join('\n') + '\n';
 };
 
 // ===== rover_forward / backward (speed dropdown、即時) =====

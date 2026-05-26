@@ -111,10 +111,15 @@ DigiMorpher morpher;`;
     }
   }
 
+  // Phase F-2 (Session 157): pump 経路 dead 解消 = case 22 founding use case 前提復活、
+  // capi Phase F-1 と pair、 loopPre tick + setup 末尾 start で async motion + rate-limited 動作。
+  if (!generator.loopPre_) generator.loopPre_ = {};
+  generator.loopPre_['morpher_tick'] = '  morpher.tick(millis());';
   const allLines = [
     '  morpher.attachChannels(&_morpherCh0, &_morpherCh1, &_morpherCh2, &_morpherCh3);',
     ...setupLines,
     '  morpher.init();',
+    '  getBackgroundPump().start();',
   ];
   return allLines.join('\n') + '\n';
 };
