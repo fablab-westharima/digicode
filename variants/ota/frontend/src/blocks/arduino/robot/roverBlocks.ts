@@ -88,7 +88,10 @@ DigiRover rover;`;
   // Phase F-2 (Session 157): pump 経路 dead 解消 = ContinuousServoChannel.pump 経路復活、
   // velocity command (forward/backward/turnLeft/etc.) の HW write 発動 path 確立。
   // DigiRover に tick() 不在のため loopPre 不要、 getBackgroundPump().start() のみで充分。
+  // Phase F-6a (Session 157、 サーボピクつき真因 2 解消): attach 前 GPIO LOW 抑制 = 2 servo pin。
   const allLines = [
+    `  pinMode(${pinL}, OUTPUT); digitalWrite(${pinL}, LOW);`,
+    `  pinMode(${pinR}, OUTPUT); digitalWrite(${pinR}, LOW);`,
     '  rover.initServoMode(&_roverChL, &_roverChR);',
     ...setupLines,
     '  getBackgroundPump().start();',
@@ -134,7 +137,14 @@ DigiRover rover;`;
   // pinPresetStore の degree-based trim と semantic 不一致のため post-release polish 候補)。
   // Phase F-2 (Session 157): pump 経路 dead 解消 = DcMotorChannel.pump 経路復活、 velocity command
   // の HW write 発動 path 確立。 DigiRover に tick() 不在のため loopPre 不要。
+  // Phase F-6a (Session 157、 サーボピクつき真因 2 解消 = motor brake glitch 緩和): attach 前
+  // GPIO LOW 抑制 = 4 motor pin (LA/LB/RA/RB)、 ledcAttach 前の floating 抑制で boot 時 H-bridge
+  // motor の意図しない初動防止 (= 主要 risk は 2 pin 同時 HIGH = motor short、 LOW 強制で安全側)。
   return [
+    `  pinMode(${pinLA}, OUTPUT); digitalWrite(${pinLA}, LOW);`,
+    `  pinMode(${pinLB}, OUTPUT); digitalWrite(${pinLB}, LOW);`,
+    `  pinMode(${pinRA}, OUTPUT); digitalWrite(${pinRA}, LOW);`,
+    `  pinMode(${pinRB}, OUTPUT); digitalWrite(${pinRB}, LOW);`,
     '  rover.initDcMotorMode(&_roverMotorL, &_roverMotorR);',
     '  getBackgroundPump().start();',
   ].join('\n') + '\n';

@@ -115,7 +115,12 @@ DigiMorpher morpher;`;
   // capi Phase F-1 と pair、 loopPre tick + setup 末尾 start で async motion + rate-limited 動作。
   if (!generator.loopPre_) generator.loopPre_ = {};
   generator.loopPre_['morpher_tick'] = '  morpher.tick(millis());';
+  // Phase F-6a (Session 157、 サーボピクつき真因 2 解消): biped と同 pattern、 attach 前 GPIO LOW 抑制。
   const allLines = [
+    `  pinMode(${pinLL}, OUTPUT); digitalWrite(${pinLL}, LOW);`,
+    `  pinMode(${pinRL}, OUTPUT); digitalWrite(${pinRL}, LOW);`,
+    `  pinMode(${pinLF}, OUTPUT); digitalWrite(${pinLF}, LOW);`,
+    `  pinMode(${pinRF}, OUTPUT); digitalWrite(${pinRF}, LOW);`,
     '  morpher.attachChannels(&_morpherCh0, &_morpherCh1, &_morpherCh2, &_morpherCh3);',
     ...setupLines,
     '  morpher.init();',

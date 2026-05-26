@@ -136,7 +136,17 @@ IBuzzer& buzzer = getBuzzer();`;
   //       buzzer attach + biped.attachBuzzer → getBackgroundPump().start() (= task 起動)
   if (!generator.loopPre_) generator.loopPre_ = {};
   generator.loopPre_['biped_tick'] = '  biped.tick(millis());';
+  // Phase F-6a (Session 157、 サーボピクつき真因 2 解消 = boot 時 GPIO floating 抑制):
+  // attach (= LEDC channel attach) 前に pinMode(OUTPUT) + digitalWrite(LOW) を emit。
+  // boot 直後の ENFORCE_PINS 許可 list 内 strapping pin (0/2/12/15) を含む全 servo pin の
+  // floating を LOW 確定で抑制、 続く LEDC channel attach (= biped.init() 内 channel.attach())
+  // で PWM 制御へ移行。 真因 1 (Phase F-5 attach 内 _writeHw 削除) と組合せで founding use case
+  // ピクつき構造的解消。 改定log §156 §19.A Part B + 深掘り 2 verbatim 対応。
   const allLines = [
+    `  pinMode(${pinLL}, OUTPUT); digitalWrite(${pinLL}, LOW);`,
+    `  pinMode(${pinRL}, OUTPUT); digitalWrite(${pinRL}, LOW);`,
+    `  pinMode(${pinLF}, OUTPUT); digitalWrite(${pinLF}, LOW);`,
+    `  pinMode(${pinRF}, OUTPUT); digitalWrite(${pinRF}, LOW);`,
     '  biped.attachChannels(&_bipedCh0, &_bipedCh1, &_bipedCh2, &_bipedCh3);',
     ...setupLines,
     '  biped.init();',
