@@ -269,8 +269,23 @@ svg.blocklySvg {
   background-color: transparent !important;
 }
 
-.blocklyFlyout .blocklyScrollbarHandle {
+/* Session 157 Option E: scrollbar handle hover-only visible 化 (= 縦線視認解消)
+   Chrome DOM 調査 verbatim 確認:
+   - scrollbar SVG は flyout 外 (= injectionDiv 直下) 配置、 class 名 = `.blocklyFlyoutScrollbar`
+   - `.blocklyFlyout:hover` selector はスコープ届かない (= scrollbar が flyout descendant でないため)
+   - 根本原因 = flyout close 時の scrollbar.setContainerVisible(false) → outerSvg.display='none' 経路 break
+   - 本 fix = cosmetic fallback (= hover-only visible で縦線視認解消)、 根本修正は別 task
+   - global `.blocklyFlyoutScrollbar` selector で flyout 外 scrollbar SVG に直接適用 */
+.blocklyFlyoutScrollbar .blocklyScrollbarHandle {
   fill: #4a5568 !important;
+  fill-opacity: 0 !important;
+  transition: fill-opacity 0.2s ease;
+}
+.blocklyFlyoutScrollbar:hover .blocklyScrollbarHandle {
+  fill-opacity: 0.6 !important;
+}
+.blocklyFlyoutScrollbar .blocklyScrollbarHandle:hover {
+  fill-opacity: 0.9 !important;
 }
 
 /* ワークスペース背景のグリッド */
