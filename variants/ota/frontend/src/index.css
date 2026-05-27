@@ -261,8 +261,12 @@ svg.blocklySvg {
 }
 
 /* フライアウトのスクロールバー（ダークモード） */
+/* Session 157: flyout 右端グレー縦線 fix = #2a2a2a 塗りつぶし → transparent
+   (= Blockly stock の `.blocklyScrollbarVertical { position: absolute }` 透明 default に
+   復帰、 scrollbar wrapper が flyout hide 後も visible 状態で残存する場合の灰色矩形視認を
+   構造的解消。 scrollbar handle のみ `.blocklyScrollbarHandle { fill: #4a5568 }` で可視維持) */
 .blocklyFlyout .blocklyScrollbarVertical {
-  background-color: #2a2a2a !important;
+  background-color: transparent !important;
 }
 
 .blocklyFlyout .blocklyScrollbarHandle {
