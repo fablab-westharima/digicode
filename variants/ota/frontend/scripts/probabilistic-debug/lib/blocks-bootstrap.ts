@@ -15,6 +15,14 @@
 
 import './jsdom-bootstrap';
 
+// Session 158 主軸 1 (= case_0447/0584 構造対策 Option A): scrubNakedValue
+// override で setCheck reject orphan (case 20 cluster = setCheck 過剰 strict
+// で workspace load 時 detach) を file scope safe な comment 化、 1000-case
+// 経由の `0;` / `{0,0,0};` file scope C++ syntax error を構造的予防。
+// BlocklyEditor.tsx (production browser path) と pair = 単一
+// javascriptGenerator instance への一元 override。
+import '../../../src/blocks/scrubNakedValueOverride';
+
 import '../../../src/blocks/arduino/core/esp32Blocks';
 import '../../../src/blocks/arduino/core/esp32TouchBlocks';
 // Phase B-2 (Session 146): 旧 humanoidBlocks/wheelBlocks/transformBlocks 完全置換 (case 23 incident E)

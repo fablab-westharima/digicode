@@ -63,6 +63,12 @@ const ALLOWED_NON_BOOTSTRAP_BLOCK_FILES = new Set<string>([]);
 // check does not flag them as missing block files.
 const BOOTSTRAP_HELPER_MODULES = new Set<string>([
   'common/builtinBlockOverrides',
+  // Session 158 主軸 1 = case_0447/0584 構造対策 Option A: scrubNakedValue
+  // override (= setCheck reject orphan を file scope safe な comment 化)、
+  // BlocklyEditor.tsx (production) + blocks-bootstrap.ts (headless) 両方 import
+  // で 単一 javascriptGenerator instance への一元 override、 *Blocks.ts 規約外
+  // = helper module 扱い。
+  'scrubNakedValueOverride',
 ]);
 
 // ---------------------------------------------------------------------------

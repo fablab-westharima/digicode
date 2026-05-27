@@ -108,6 +108,12 @@ import '../../blocks/arduino/sensor/sensorTofBlocks';
 import '../../blocks/arduino/sensor/sensorMagEncoderBlocks';
 import '../../blocks/arduino/display/lcdBlocks';
 import '../../blocks/common/builtinBlockOverrides';
+// Session 158 主軸 1 (= case_0447/0584 構造対策 Option A): scrubNakedValue
+// override で setCheck reject orphan を file scope safe な comment 化、
+// case 20 cluster (= setCheck 過剰 strict reject → top-level orphan →
+// scrubNakedValue file scope emit) を generator 層で構造的予防。
+// blocks-bootstrap.ts (headless orchestrator 経由 cpp 生成 path) と pair。
+import '../../blocks/scrubNakedValueOverride';
 import { generateToolbox } from './toolboxGenerator';
 
 // 日本語ロケールを設定
