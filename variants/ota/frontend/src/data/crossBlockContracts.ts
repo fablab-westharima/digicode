@@ -337,10 +337,14 @@ export const TYPE_C_INIT_CONTRACTS: readonly TypeCInitContract[] = [
   // global instance is unattached and `.walk()` / `.shift()` / etc. silently
   // fail (motion bypass, gear protection NOT engaged). 61.md §1 Phase X-3
   // verbatim with 2 deviations (recorded in commit msg + 改定log §153):
-  //   (D1) consumerBlocks restricted to toolbox-exposed types only — 5 biped
-  //        async + 4 morpher async are source-only (factory-declared but not
-  //        toolboxed), unreachable by AI/sample generation. Including them
-  //        would fail catalog cross-reference + add no real protection.
+  //   (D1) consumerBlocks restricted to toolbox-exposed types only. Session
+  //        159: async motion is no longer toolbox-exposed for ANY robot
+  //        (walk/turn/jump/dance/swing/bend/moonwalk for biped; shift/walk/
+  //        turn/roll/roll_rotate/pushup/dance for morpher; step/rotate for
+  //        stepper) — all async variants are now source-only (factory-
+  //        declared, retained for future re-enable, still covered by the
+  //        1000-case combo strategy via the catalog). Including source-only
+  //        types here would fail catalog cross-reference + add no protection.
   //   (D2) rover-servo + rover-dc-motor merged into single 'rover' contract
   //        with initBlocks.some() — matches the stepper unified pattern and
   //        61.md §1 line 317 Note verbatim ("「いずれか 1 件」 で satisfy").
@@ -350,8 +354,8 @@ export const TYPE_C_INIT_CONTRACTS: readonly TypeCInitContract[] = [
     initBlocks: ['biped_init'],
     consumerBlocks: [
       'biped_home_blocking',
-      'biped_walk_blocking', 'biped_walk_async',
-      'biped_turn_blocking', 'biped_turn_async',
+      'biped_walk_blocking',
+      'biped_turn_blocking',
       'biped_jump_blocking',
       'biped_dance_blocking',
       'biped_swing_blocking',
@@ -367,12 +371,12 @@ export const TYPE_C_INIT_CONTRACTS: readonly TypeCInitContract[] = [
     initBlocks: ['morpher_init'],
     consumerBlocks: [
       'morpher_set_mode',
-      'morpher_shift_blocking', 'morpher_shift_async',
+      'morpher_shift_blocking',
       'morpher_home_blocking',
-      'morpher_walk_blocking', 'morpher_walk_async',
+      'morpher_walk_blocking',
       'morpher_turn_blocking',
       'morpher_stop',
-      'morpher_roll_blocking', 'morpher_roll_async',
+      'morpher_roll_blocking',
       'morpher_roll_rotate_blocking',
       'morpher_pushup_blocking',
       'morpher_dance_blocking',
@@ -406,8 +410,8 @@ export const TYPE_C_INIT_CONTRACTS: readonly TypeCInitContract[] = [
     initBlocks: ['stepper_init_4wire', 'stepper_init_driver', 'stepper_init_hw'],
     consumerBlocks: [
       'stepper_set_microstep', 'stepper_set_direction', 'stepper_set_speed',
-      'stepper_step_blocking', 'stepper_step_async',
-      'stepper_rotate_blocking', 'stepper_rotate_async',
+      'stepper_step_blocking',
+      'stepper_rotate_blocking',
       'stepper_stop',
       'stepper_is_at_target', 'stepper_get_position', 'stepper_wait_until_target',
     ],

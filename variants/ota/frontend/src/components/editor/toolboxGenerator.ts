@@ -134,13 +134,7 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="biped_walk_blocking">
       <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
     </block>
-    <block type="biped_walk_async">
-      <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
-    </block>
     <block type="biped_turn_blocking">
-      <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
-    </block>
-    <block type="biped_turn_async">
       <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
     </block>
     <block type="biped_jump_blocking">
@@ -193,12 +187,10 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="morpher_init"></block>
     <block type="morpher_set_mode"></block>
     <block type="morpher_shift_blocking"></block>
-    <block type="morpher_shift_async"></block>
     <block type="morpher_home_blocking"></block>
     <sep></sep>
     <label text="${label('walk')}"></label>
     <block type="morpher_walk_blocking"></block>
-    <block type="morpher_walk_async"></block>
     <block type="morpher_turn_blocking">
       <value name="STEPS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
     </block>
@@ -206,7 +198,6 @@ const getToolboxCategories = (): Record<string, string> => ({
     <sep></sep>
     <label text="${label('roll')}"></label>
     <block type="morpher_roll_blocking"></block>
-    <block type="morpher_roll_async"></block>
     <block type="morpher_roll_rotate_blocking">
       <value name="POWER"><shadow type="math_number"><field name="NUM">50</field></shadow></value>
     </block>
@@ -1484,13 +1475,7 @@ const getToolboxCategories = (): Record<string, string> => ({
     <block type="stepper_step_blocking">
       <value name="STEPS"><shadow type="math_number"><field name="NUM">512</field></shadow></value>
     </block>
-    <block type="stepper_step_async">
-      <value name="STEPS"><shadow type="math_number"><field name="NUM">512</field></shadow></value>
-    </block>
     <block type="stepper_rotate_blocking">
-      <value name="ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value>
-    </block>
-    <block type="stepper_rotate_async">
       <value name="ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value>
     </block>
     <block type="stepper_stop"></block>

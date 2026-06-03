@@ -300,8 +300,8 @@ const overrides: Record<string, LocaleOverride> = {
         description: 'Walk a life-size Humanoid at slow speed (30 deg/sec) to protect the gears (founding use case demo for case 22; per-pin override via ServoSpeedDialog)',
       },
       'biped-walk-while-mqtt-publishing': {
-        title: 'Biped Walk + MQTT in parallel',
-        description: 'biped_walk_async walks in background while MQTT publishes temperature (D-new-4 (B) IoT coexistence demo; blocking version stalls the loop, async + wait_until_idle runs both)',
+        title: 'Biped Walk + MQTT temperature',
+        description: 'Walk with biped_walk_blocking, then publish temperature over MQTT (D-new-4 (B) robot + IoT integration demo; walk → publish run sequentially each loop)',
       },
       'stepper-hw-precise': {
         title: 'Stepper HW Precise Position Control',
@@ -584,8 +584,8 @@ const overrides: Record<string, LocaleOverride> = {
         description: 'Hacer caminar a un Humanoid tamaño real a velocidad lenta (30 deg/s) para proteger los engranajes (demo del caso fundacional caso 22; override por pin desde ServoSpeedDialog)',
       },
       'biped-walk-while-mqtt-publishing': {
-        title: 'Bípedo camina + MQTT en paralelo',
-        description: 'biped_walk_async camina en segundo plano mientras MQTT publica la temperatura (demo D-new-4 (B) de coexistencia con IoT; la versión bloqueante detiene el loop, async + wait_until_idle ejecuta ambos)',
+        title: 'Bípedo camina + MQTT temperatura',
+        description: 'Camina con biped_walk_blocking y luego publica la temperatura por MQTT (demo D-new-4 (B) de integración robot + IoT; caminar → publicar se ejecutan secuencialmente en cada loop)',
       },
       'stepper-hw-precise': {
         title: 'Stepper HW: control de posición preciso',
@@ -868,8 +868,8 @@ const overrides: Record<string, LocaleOverride> = {
         description: 'Andar um Humanoid em tamanho real a velocidade lenta (30 graus/s) para proteger as engrenagens (demo do caso fundador caso 22; override por pin via ServoSpeedDialog)',
       },
       'biped-walk-while-mqtt-publishing': {
-        title: 'Bípede a andar + MQTT em paralelo',
-        description: 'biped_walk_async anda em segundo plano enquanto MQTT publica a temperatura (demo D-new-4 (B) de coexistência IoT; a versão bloqueante pára o loop, async + wait_until_idle executa ambos)',
+        title: 'Bípede a andar + MQTT temperatura',
+        description: 'Anda com biped_walk_blocking e depois publica a temperatura por MQTT (demo D-new-4 (B) de integração robô + IoT; andar → publicar executam sequencialmente em cada loop)',
       },
       'stepper-hw-precise': {
         title: 'Stepper HW: controlo de posição preciso',
@@ -1152,8 +1152,8 @@ const overrides: Record<string, LocaleOverride> = {
         description: '以慢速 (30 度/秒) 行走等身大 Humanoid 以保護齒輪 (case 22 founding use case demo；ServoSpeedDialog 可 per-pin override)',
       },
       'biped-walk-while-mqtt-publishing': {
-        title: 'Biped 行走 + MQTT 並行',
-        description: 'biped_walk_async 在背景行走的同時 MQTT 發佈溫度 (D-new-4 (B) IoT 共存 demo；blocking 版會停止 loop，async + wait_until_idle 可並行)',
+        title: 'Biped 行走 + MQTT 溫度',
+        description: '使用 biped_walk_blocking 行走後，透過 MQTT 發佈溫度 (D-new-4 (B) 機器人 + IoT 整合 demo；每個 loop 依序執行 行走 → 發佈)',
       },
       'stepper-hw-precise': {
         title: 'Stepper HW 高精度位置控制',

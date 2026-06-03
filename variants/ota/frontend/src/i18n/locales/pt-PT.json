@@ -2380,10 +2380,10 @@
       "backward": "para trás",
       "left": "esquerda",
       "right": "direita",
-      "leftLeg": "pino da perna esquerda",
-      "rightLeg": "pino da perna direita",
-      "leftFoot": "pino do pé esquerdo",
-      "rightFoot": "pino do pé direito",
+      "leftLeg": "pino da coxa esquerda",
+      "rightLeg": "pino da coxa direita",
+      "leftFoot": "pino do tornozelo esquerdo",
+      "rightFoot": "pino do tornozelo direito",
       "pin": "pino"
     },
     "array": {

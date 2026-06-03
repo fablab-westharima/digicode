@@ -2606,10 +2606,10 @@
       "backward": "backward",
       "left": "left",
       "right": "right",
-      "leftLeg": "left leg pin",
-      "rightLeg": "right leg pin",
-      "leftFoot": "left foot pin",
-      "rightFoot": "right foot pin",
+      "leftLeg": "left thigh pin",
+      "rightLeg": "right thigh pin",
+      "leftFoot": "left ankle pin",
+      "rightFoot": "right ankle pin",
       "pin": "pin"
     },
     "array": {

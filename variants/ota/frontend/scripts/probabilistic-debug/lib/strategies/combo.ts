@@ -63,18 +63,18 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
   // Phase B-2 (Session 146): 旧 humanoid_/transform_/wheel_ 置換 = biped_/morpher_/rover_
   // D8 (Session 139 settled): blocking + async 両 form。combo INIT_DEPENDENCIES では blocking 系のみ enum (init dependency 検証目的)、async は同 init 由来で別途 cover
   {
-    // Phase X-3 (Session 153): expanded to cover catalog-visible async + idle
-    // queries (rule 16 §D2 + 61.md §1, with deviation D1). 9 → 13 ops.
-    // 61.md plan listed 18 consumers (incl. jump/dance/swing/bend/moonwalk
-    // async), but those 5 async types are source-only (factory-declared, not
-    // toolboxed = not catalog-visible) — INIT_DEPENDENCIES.operations must be
-    // catalog-cross-referenced (combo.test.ts), so they are excluded.
+    // Session 159: ALL async motion is now source-only (factory-declared, not
+    // toolboxed = not catalog-visible) for every robot. INIT_DEPENDENCIES.
+    // operations must be catalog-cross-referenced (combo.test.ts), so every
+    // *_async is excluded here. The async block defs / generators / i18n are
+    // retained in source for a future re-enable (just restore the toolbox
+    // entries + these operations).
     init: 'biped_init',
     label: 'biped',
     operations: [
       'biped_home_blocking',
-      'biped_walk_blocking', 'biped_walk_async',
-      'biped_turn_blocking', 'biped_turn_async',
+      'biped_walk_blocking',
+      'biped_turn_blocking',
       'biped_jump_blocking',
       'biped_dance_blocking',
       'biped_swing_blocking',
@@ -85,21 +85,18 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     ],
   },
   {
-    // Phase X-3 (Session 153): expanded to cover catalog-visible async + idle
-    // queries (rule 16 §D2 + 61.md §1, with deviation D1). 10 → 15 ops.
-    // 61.md plan listed 19 consumers (incl. turn/roll_rotate/pushup/dance
-    // async), but those 4 async types are source-only (factory-declared, not
-    // toolboxed = not catalog-visible). See biped entry above for rationale.
+    // Session 159: all *_async are source-only (not catalog-visible). See
+    // biped entry above for rationale.
     init: 'morpher_init',
     label: 'morpher',
     operations: [
       'morpher_set_mode',
-      'morpher_shift_blocking', 'morpher_shift_async',
+      'morpher_shift_blocking',
       'morpher_home_blocking',
-      'morpher_walk_blocking', 'morpher_walk_async',
+      'morpher_walk_blocking',
       'morpher_turn_blocking',
       'morpher_stop',
-      'morpher_roll_blocking', 'morpher_roll_async',
+      'morpher_roll_blocking',
       'morpher_roll_rotate_blocking',
       'morpher_pushup_blocking',
       'morpher_dance_blocking',
@@ -510,8 +507,8 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     label: 'stepper-4wire',
     operations: [
       'stepper_set_microstep', 'stepper_set_direction', 'stepper_set_speed',
-      'stepper_step_blocking', 'stepper_step_async',
-      'stepper_rotate_blocking', 'stepper_rotate_async',
+      'stepper_step_blocking',
+      'stepper_rotate_blocking',
       'stepper_stop',
       'stepper_is_at_target', 'stepper_get_position', 'stepper_wait_until_target',
     ],
@@ -524,8 +521,8 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     label: 'stepper-driver',
     operations: [
       'stepper_set_microstep', 'stepper_set_direction', 'stepper_set_speed',
-      'stepper_step_blocking', 'stepper_step_async',
-      'stepper_rotate_blocking', 'stepper_rotate_async',
+      'stepper_step_blocking',
+      'stepper_rotate_blocking',
       'stepper_stop',
       'stepper_is_at_target', 'stepper_get_position', 'stepper_wait_until_target',
     ],
@@ -537,8 +534,8 @@ export const INIT_DEPENDENCIES: readonly InitDependency[] = [
     label: 'stepper-hw',
     operations: [
       'stepper_set_microstep', 'stepper_set_direction', 'stepper_set_speed',
-      'stepper_step_blocking', 'stepper_step_async',
-      'stepper_rotate_blocking', 'stepper_rotate_async',
+      'stepper_step_blocking',
+      'stepper_rotate_blocking',
       'stepper_stop',
       'stepper_is_at_target', 'stepper_get_position', 'stepper_wait_until_target',
     ],

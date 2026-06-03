@@ -2380,10 +2380,10 @@
       "backward": "atrás",
       "left": "izquierda",
       "right": "derecha",
-      "leftLeg": "pin de la pierna izquierda",
-      "rightLeg": "pin de la pierna derecha",
-      "leftFoot": "pin del pie izquierdo",
-      "rightFoot": "pin del pie derecho",
+      "leftLeg": "pin del muslo izquierdo",
+      "rightLeg": "pin del muslo derecho",
+      "leftFoot": "pin del tobillo izquierdo",
+      "rightFoot": "pin del tobillo derecho",
       "pin": "pin"
     },
     "array": {

@@ -2380,10 +2380,10 @@
       "backward": "後退",
       "left": "左",
       "right": "右",
-      "leftLeg": "左腿腳位",
-      "rightLeg": "右腿腳位",
-      "leftFoot": "左腳腳位",
-      "rightFoot": "右腳腳位",
+      "leftLeg": "左大腿腳位",
+      "rightLeg": "右大腿腳位",
+      "leftFoot": "左腳踝腳位",
+      "rightFoot": "右腳踝腳位",
       "pin": "腳位"
     },
     "array": {

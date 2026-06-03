@@ -2612,10 +2612,10 @@
       "backward": "後退",
       "left": "左",
       "right": "右",
-      "leftLeg": "左脚ピン",
-      "rightLeg": "右脚ピン",
-      "leftFoot": "左足ピン",
-      "rightFoot": "右足ピン",
+      "leftLeg": "左ももピン",
+      "rightLeg": "右ももピン",
+      "leftFoot": "左足首ピン",
+      "rightFoot": "右足首ピン",
       "pin": "ピン"
     },
     "acs712": {
