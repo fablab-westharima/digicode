@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-06-03T16:37:56.664Z",
+  "generatedAt": "2026-06-04T18:00:24.862Z",
   "blocks": [
     {
       "type": "arduino_setup",
@@ -6956,20 +6956,18 @@
       "boardRequires": null,
       "fields": [
         {
+          "name": "SPEED",
+          "fieldType": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        {
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
             "1",
             "-1"
-          ]
-        },
-        {
-          "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "fast",
-            "normal",
-            "slow"
           ]
         }
       ],
@@ -7000,20 +6998,18 @@
       "boardRequires": null,
       "fields": [
         {
+          "name": "SPEED",
+          "fieldType": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        {
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
             "1",
             "-1"
-          ]
-        },
-        {
-          "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "fast",
-            "normal",
-            "slow"
           ]
         }
       ],
@@ -7045,12 +7041,10 @@
       "fields": [
         {
           "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "fast",
-            "normal",
-            "slow"
-          ]
+          "fieldType": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
         }
       ],
       "valueInputs": [],
@@ -7072,12 +7066,10 @@
       "fields": [
         {
           "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "fast",
-            "normal",
-            "slow"
-          ]
+          "fieldType": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
         }
       ],
       "valueInputs": [
@@ -7108,12 +7100,10 @@
       "fields": [
         {
           "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "fast",
-            "normal",
-            "slow"
-          ]
+          "fieldType": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
         }
       ],
       "valueInputs": [
@@ -7144,12 +7134,10 @@
       "fields": [
         {
           "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "fast",
-            "normal",
-            "slow"
-          ]
+          "fieldType": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
         }
       ],
       "valueInputs": [
@@ -7179,20 +7167,18 @@
       "boardRequires": null,
       "fields": [
         {
+          "name": "SPEED",
+          "fieldType": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        {
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
             "1",
             "-1"
-          ]
-        },
-        {
-          "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "fast",
-            "normal",
-            "slow"
           ]
         }
       ],
@@ -7594,20 +7580,18 @@
       "boardRequires": null,
       "fields": [
         {
+          "name": "SPEED",
+          "fieldType": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        {
           "name": "MODE",
           "fieldType": "dropdown",
           "options": [
             "walk",
             "roll"
-          ]
-        },
-        {
-          "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "fast",
-            "normal",
-            "slow"
           ]
         }
       ],
@@ -7646,20 +7630,18 @@
       "boardRequires": null,
       "fields": [
         {
+          "name": "SPEED",
+          "fieldType": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        {
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
             "1",
             "-1"
-          ]
-        },
-        {
-          "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "fast",
-            "normal",
-            "slow"
           ]
         }
       ],
@@ -7690,20 +7672,18 @@
       "boardRequires": null,
       "fields": [
         {
+          "name": "SPEED",
+          "fieldType": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        {
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
             "1",
             "-1"
-          ]
-        },
-        {
-          "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "fast",
-            "normal",
-            "slow"
           ]
         }
       ],
@@ -7751,20 +7731,18 @@
       "boardRequires": null,
       "fields": [
         {
+          "name": "SPEED",
+          "fieldType": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        {
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
             "1",
             "-1"
-          ]
-        },
-        {
-          "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "fast",
-            "normal",
-            "slow"
           ]
         }
       ],
@@ -7795,20 +7773,18 @@
       "boardRequires": null,
       "fields": [
         {
+          "name": "SPEED",
+          "fieldType": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        {
           "name": "DIRECTION",
           "fieldType": "dropdown",
           "options": [
             "1",
             "-1"
-          ]
-        },
-        {
-          "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "fast",
-            "normal",
-            "slow"
           ]
         }
       ],
@@ -7840,12 +7816,10 @@
       "fields": [
         {
           "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "fast",
-            "normal",
-            "slow"
-          ]
+          "fieldType": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
         }
       ],
       "valueInputs": [
@@ -7876,12 +7850,10 @@
       "fields": [
         {
           "name": "SPEED",
-          "fieldType": "dropdown",
-          "options": [
-            "fast",
-            "normal",
-            "slow"
-          ]
+          "fieldType": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
         }
       ],
       "valueInputs": [

@@ -376,3 +376,43 @@ describe('Phase B-3: pid_init getPidGains() fallback (case 23 incident F generat
     expect(cpp).toContain('float pid_wall_kd = 15;');
   });
 });
+
+// Session 160: motion block SPEED は dropdown(fast/normal/slow) → FieldNumber(0-100) 化。
+// generator は degPerSec = 30 + round(speed*0.9) で deg/sec 化し lib の speedDegPerSec arg に渡す。
+// lib は _periodMs = 4*maxAmp*1000/deg で周期を内部算出するため、 渡すのは period ではなく deg/sec。
+describe('Session 160: motion SPEED number(0-100) → deg/sec emit (30 + round(speed*0.9))', () => {
+  beforeEach(resetStore);
+
+  it('biped_walk SPEED=50 → walkBlocking 3rd arg = 75 deg/sec (default)', () => {
+    const cpp = genFromBlock('biped_walk_blocking', { DIRECTION: '1', SPEED: 50 });
+    expect(cpp).toContain('biped.walkBlocking(String(2).toInt(), 1, 75);');
+  });
+
+  it('biped_walk SPEED=100 → 120 deg/sec (max)', () => {
+    const cpp = genFromBlock('biped_walk_blocking', { DIRECTION: '1', SPEED: 100 });
+    expect(cpp).toContain('biped.walkBlocking(String(2).toInt(), 1, 120);');
+  });
+
+  it('biped_walk SPEED=0 → 30 deg/sec (min)', () => {
+    const cpp = genFromBlock('biped_walk_blocking', { DIRECTION: '1', SPEED: 0 });
+    expect(cpp).toContain('biped.walkBlocking(String(2).toInt(), 1, 30);');
+  });
+
+  it('morpher_walk SPEED=50 → 75 deg/sec (biped と同 mapping)', () => {
+    const cpp = genFromBlock('morpher_walk_blocking', { DIRECTION: '1', SPEED: 50 });
+    expect(cpp).toContain('morpher.walkBlocking(String(2).toInt(), 1, 75);');
+  });
+
+  it('biped_jump SPEED=100 → jumpBlocking(120) (lib 1-arg)', () => {
+    const cpp = genFromBlock('biped_jump_blocking', { SPEED: 100 });
+    expect(cpp).toContain('biped.jumpBlocking(120);');
+  });
+
+  it('SPEED は period(ms) でも enum 文字列でもない (回帰防止: lib API は deg/sec)', () => {
+    const cpp = genFromBlock('biped_walk_blocking', { DIRECTION: '1', SPEED: 50 });
+    // 旧 user 提案 period = 2000-(50/100)*1500 = 1250 を渡していないこと
+    expect(cpp).not.toContain('1250');
+    // dropdown enum 文字列 'normal' を渡していないこと
+    expect(cpp).not.toContain('normal');
+  });
+});

@@ -176,6 +176,9 @@ export function ServoSpeedDialog({ open, onOpenChange }: ServoSpeedDialogProps) 
                 <p className="text-xs text-[#8B949E] mb-2">
                   {t('servoSpeed.speedHelp', { defaultValue: '0 = 制限なし、推奨レンジ 30-720 °/秒' })}
                 </p>
+                <p className="text-xs text-[#D29922] bg-[#0D1117] border border-[#D29922]/40 rounded-md px-3 py-2">
+                  {t('servoSpeed.robotMotionWarning', { defaultValue: '⚠️ ロボットモーション (biped / morpher の歩行・回転など) では、各モーションブロックの速度がメインの制御です。ここでサーボ速度上限を設定すると、速いモーションが制限されて動きが小さくなる場合があります (0 = 制限なしのままを推奨)。' })}
+                </p>
               </div>
             </CardContent>
           </Card>

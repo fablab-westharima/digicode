@@ -46,15 +46,14 @@ const generator = javascriptGenerator as any;
 
 const BIPED_COLOR = '#FF6B35';  // Orange、旧 Humanoid と同 hue (UI 連続性、user 視覚負荷軽減)
 
-// 速度 dropdown → deg/sec mapping (Session 139 §1-3.4 verbatim、period ms 廃止)
-const SPEED_DEG_PER_SEC_MAP: Record<string, string> = {
-  fast: '120',
-  normal: '60',
-  slow: '30',
-};
-
-function speedToDegPerSec(speedSlot: string): string {
-  return SPEED_DEG_PER_SEC_MAP[speedSlot] ?? '60';
+// Session 160: SPEED は 0-100 の number input (FieldNumber)。 線形 map で deg/sec 化 (D1):
+//   degPerSec = 30 + round(speed * 0.9)  → 0→30 / 50→75 / 100→120 (旧 dropdown slow/—/fast の deg/sec 範囲を保持)
+// lib walkBlocking 等の 3rd arg は speedDegPerSec (deg/sec)。 lib が _periodMs = 4*maxAmp*1000/deg
+// で周期を内部算出するため、 ここで渡すのは period ではなく deg/sec (Session 160 verbatim 確認)。
+function speedToDegPerSec(speed: number): number {
+  const s = Number.isFinite(speed) ? speed : 50;
+  const clamped = s < 0 ? 0 : s > 100 ? 100 : s;
+  return 30 + Math.round(clamped * 0.9);
 }
 
 // ===== biped_init =====
@@ -187,11 +186,7 @@ function makeWalkBlock(blockType: string, labelKey: string, labelFallback: strin
             [Blockly.Msg.BLOCKS_COMMON_BACKWARD || 'backward', '-1']
           ]), 'DIRECTION')
           .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
-          .appendField(new Blockly.FieldDropdown([
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
-          ]), 'SPEED');
+          .appendField(new Blockly.FieldNumber(50, 0, 100), 'SPEED');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
@@ -210,14 +205,14 @@ makeWalkBlock('biped_walk_async',
 javascriptGenerator.forBlock['biped_walk_blocking'] = function(block: Blockly.Block) {
   const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
   const direction = block.getFieldValue('DIRECTION');
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: biped */ biped.walkBlocking(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)});\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: biped */ biped.walkBlocking(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speed)});\n`;
 };
 javascriptGenerator.forBlock['biped_walk_async'] = function(block: Blockly.Block) {
   const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
   const direction = block.getFieldValue('DIRECTION');
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: biped */ biped.walkAsync(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)}, millis());\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: biped */ biped.walkAsync(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speed)}, millis());\n`;
 };
 
 // ===== biped_turn_blocking + biped_turn_async =====
@@ -235,11 +230,7 @@ function makeTurnBlock(blockType: string, labelKey: string, labelFallback: strin
             [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', '-1']
           ]), 'DIRECTION')
           .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
-          .appendField(new Blockly.FieldDropdown([
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
-          ]), 'SPEED');
+          .appendField(new Blockly.FieldNumber(50, 0, 100), 'SPEED');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
@@ -258,14 +249,14 @@ makeTurnBlock('biped_turn_async',
 javascriptGenerator.forBlock['biped_turn_blocking'] = function(block: Blockly.Block) {
   const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
   const direction = block.getFieldValue('DIRECTION');
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: biped */ biped.turnBlocking(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)});\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: biped */ biped.turnBlocking(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speed)});\n`;
 };
 javascriptGenerator.forBlock['biped_turn_async'] = function(block: Blockly.Block) {
   const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
   const direction = block.getFieldValue('DIRECTION');
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: biped */ biped.turnAsync(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)}, millis());\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: biped */ biped.turnAsync(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speed)}, millis());\n`;
 };
 
 // ===== biped_jump_{blocking,async} — lib 1-arg (speed) / 2-arg (speed, millis) =====
@@ -276,11 +267,7 @@ function makeJumpBlock(blockType: string, labelKey: string, labelFallback: strin
       this.appendDummyInput()
           .appendField('⬆️ ' + (Blockly.Msg[labelKey] || labelFallback))
           .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
-          .appendField(new Blockly.FieldDropdown([
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
-          ]), 'SPEED');
+          .appendField(new Blockly.FieldNumber(50, 0, 100), 'SPEED');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(BIPED_COLOR);
@@ -296,12 +283,12 @@ makeJumpBlock('biped_jump_async',
   'BLOCKS_BIPED_JUMP_ASYNC_TOOLTIP', 'Start jumping at selected speed in background');
 
 javascriptGenerator.forBlock['biped_jump_blocking'] = function(block: Blockly.Block) {
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: biped */ biped.jumpBlocking(${speedToDegPerSec(speedSlot)});\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: biped */ biped.jumpBlocking(${speedToDegPerSec(speed)});\n`;
 };
 javascriptGenerator.forBlock['biped_jump_async'] = function(block: Blockly.Block) {
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: biped */ biped.jumpAsync(${speedToDegPerSec(speedSlot)}, millis());\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: biped */ biped.jumpAsync(${speedToDegPerSec(speed)}, millis());\n`;
 };
 
 // ===== biped_dance_{blocking,async} / biped_swing_{blocking,async} — lib 2-arg (cycles, speed) =====
@@ -316,11 +303,7 @@ function makeCycleSpeedBlock(blockType: string, emoji: string, labelKey: string,
       this.appendDummyInput()
           .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times')
           .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
-          .appendField(new Blockly.FieldDropdown([
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
-          ]), 'SPEED');
+          .appendField(new Blockly.FieldNumber(50, 0, 100), 'SPEED');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
@@ -344,23 +327,23 @@ makeCycleSpeedBlock('biped_swing_async', '〜',
 
 javascriptGenerator.forBlock['biped_dance_blocking'] = function(block: Blockly.Block) {
   const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '4';
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: biped */ biped.danceBlocking(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)});\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: biped */ biped.danceBlocking(String(${cycles}).toInt(), ${speedToDegPerSec(speed)});\n`;
 };
 javascriptGenerator.forBlock['biped_dance_async'] = function(block: Blockly.Block) {
   const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '4';
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: biped */ biped.danceAsync(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)}, millis());\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: biped */ biped.danceAsync(String(${cycles}).toInt(), ${speedToDegPerSec(speed)}, millis());\n`;
 };
 javascriptGenerator.forBlock['biped_swing_blocking'] = function(block: Blockly.Block) {
   const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: biped */ biped.swingBlocking(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)});\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: biped */ biped.swingBlocking(String(${cycles}).toInt(), ${speedToDegPerSec(speed)});\n`;
 };
 javascriptGenerator.forBlock['biped_swing_async'] = function(block: Blockly.Block) {
   const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: biped */ biped.swingAsync(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)}, millis());\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: biped */ biped.swingAsync(String(${cycles}).toInt(), ${speedToDegPerSec(speed)}, millis());\n`;
 };
 
 // ===== biped_bend_{blocking,async} — lib 2-arg (direction, speed) =====
@@ -376,11 +359,7 @@ function makeBendBlock(blockType: string, labelKey: string, labelFallback: strin
             [Blockly.Msg.BLOCKS_COMMON_RIGHT || 'right', '-1']
           ]), 'DIRECTION')
           .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
-          .appendField(new Blockly.FieldDropdown([
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
-          ]), 'SPEED');
+          .appendField(new Blockly.FieldNumber(50, 0, 100), 'SPEED');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(BIPED_COLOR);
@@ -397,13 +376,13 @@ makeBendBlock('biped_bend_async',
 
 javascriptGenerator.forBlock['biped_bend_blocking'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: biped */ biped.bendBlocking(${direction}, ${speedToDegPerSec(speedSlot)});\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: biped */ biped.bendBlocking(${direction}, ${speedToDegPerSec(speed)});\n`;
 };
 javascriptGenerator.forBlock['biped_bend_async'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: biped */ biped.bendAsync(${direction}, ${speedToDegPerSec(speedSlot)}, millis());\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: biped */ biped.bendAsync(${direction}, ${speedToDegPerSec(speed)}, millis());\n`;
 };
 
 // ===== biped_moonwalk_{blocking,async} — lib 2-arg (cycles, speed) =====
@@ -419,11 +398,7 @@ function makeMoonwalkBlock(blockType: string, labelKey: string, labelFallback: s
       this.appendDummyInput()
           .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times')
           .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
-          .appendField(new Blockly.FieldDropdown([
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
-          ]), 'SPEED');
+          .appendField(new Blockly.FieldNumber(50, 0, 100), 'SPEED');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
@@ -441,13 +416,13 @@ makeMoonwalkBlock('biped_moonwalk_async',
 
 javascriptGenerator.forBlock['biped_moonwalk_blocking'] = function(block: Blockly.Block) {
   const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: biped */ biped.moonwalkBlocking(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)});\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: biped */ biped.moonwalkBlocking(String(${cycles}).toInt(), ${speedToDegPerSec(speed)});\n`;
 };
 javascriptGenerator.forBlock['biped_moonwalk_async'] = function(block: Blockly.Block) {
   const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: biped */ biped.moonwalkAsync(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)}, millis());\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: biped */ biped.moonwalkAsync(String(${cycles}).toInt(), ${speedToDegPerSec(speed)}, millis());\n`;
 };
 
 // ===== biped_gesture — DigiCode 独自 gesture set (D-new-1a、§1-7.2、OttoDIYLib 由来 0) =====

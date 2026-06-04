@@ -3598,6 +3598,7 @@
     "speed": "Speed",
     "speedUnit": "°/sec",
     "speedHelp": "0 = unlimited. Recommended range: 30-720 °/sec.",
+    "robotMotionWarning": "⚠️ For robot motion (biped / morpher walk, turn, etc.), the speed set on each motion block is the primary control. Setting a servo speed cap here can limit fast motions and make movements smaller (leaving it at 0 = unlimited is recommended).",
     "perPinSettings": "Per-Pin Servo Speed Settings",
     "perPinDesc": "Override the speed per pin (remove to revert to the global setting)",
     "perPinEmpty": "No per-pin overrides (the global setting above applies to all pins)"

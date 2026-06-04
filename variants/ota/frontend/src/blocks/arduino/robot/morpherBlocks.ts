@@ -42,9 +42,13 @@ const generator = javascriptGenerator as any;
 
 const MORPHER_COLOR = '#9C27B0';
 
-// 速度 dropdown → deg/sec mapping (walk mode 用 = unitsPerSec 同 mapping、 biped と同 SPEED slot 名)
-function speedToDegPerSec(speedSlot: string): string {
-  return speedSlot === 'fast' ? '120' : speedSlot === 'slow' ? '30' : '60';
+// Session 160: SPEED は 0-100 の number input (FieldNumber)。 線形 map で deg/sec 化 (D1):
+//   degPerSec = 30 + round(speed * 0.9)  → 0→30 / 50→75 / 100→120 (biped と同 mapping)
+// lib walkBlocking 等の 3rd arg は speedDegPerSec (deg/sec)。 ここで渡すのは period ではなく deg/sec。
+function speedToDegPerSec(speed: number): number {
+  const s = Number.isFinite(speed) ? speed : 50;
+  const clamped = s < 0 ? 0 : s > 100 ? 100 : s;
+  return 30 + Math.round(clamped * 0.9);
 }
 
 // MorphMode 'walk' / 'roll' を lib enum 値に map
@@ -160,11 +164,7 @@ function makeShiftBlock(blockType: string, labelKey: string, labelFallback: stri
             [Blockly.Msg.BLOCKS_MORPHER_MODE_ROLL || 'Roll', 'roll']
           ]), 'MODE')
           .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
-          .appendField(new Blockly.FieldDropdown([
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
-          ]), 'SPEED');
+          .appendField(new Blockly.FieldNumber(50, 0, 100), 'SPEED');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MORPHER_COLOR);
@@ -181,13 +181,13 @@ makeShiftBlock('morpher_shift_async',
 
 javascriptGenerator.forBlock['morpher_shift_blocking'] = function(block: Blockly.Block) {
   const mode = block.getFieldValue('MODE');
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: morpher */ morpher.shiftBlocking(${modeToEnum(mode)}, ${speedToDegPerSec(speedSlot)});\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: morpher */ morpher.shiftBlocking(${modeToEnum(mode)}, ${speedToDegPerSec(speed)});\n`;
 };
 javascriptGenerator.forBlock['morpher_shift_async'] = function(block: Blockly.Block) {
   const mode = block.getFieldValue('MODE');
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: morpher */ morpher.shiftAsync(${modeToEnum(mode)}, ${speedToDegPerSec(speedSlot)}, millis());\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: morpher */ morpher.shiftAsync(${modeToEnum(mode)}, ${speedToDegPerSec(speed)}, millis());\n`;
 };
 
 // ===== morpher_home_blocking =====
@@ -221,11 +221,7 @@ function makeWalkBlock(blockType: string, labelKey: string, labelFallback: strin
             [Blockly.Msg.BLOCKS_COMMON_BACKWARD || 'backward', '-1']
           ]), 'DIRECTION')
           .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
-          .appendField(new Blockly.FieldDropdown([
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
-          ]), 'SPEED');
+          .appendField(new Blockly.FieldNumber(50, 0, 100), 'SPEED');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
@@ -244,14 +240,14 @@ makeWalkBlock('morpher_walk_async',
 javascriptGenerator.forBlock['morpher_walk_blocking'] = function(block: Blockly.Block) {
   const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
   const direction = block.getFieldValue('DIRECTION');
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: morpher */ morpher.walkBlocking(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)});\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: morpher */ morpher.walkBlocking(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speed)});\n`;
 };
 javascriptGenerator.forBlock['morpher_walk_async'] = function(block: Blockly.Block) {
   const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
   const direction = block.getFieldValue('DIRECTION');
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: morpher */ morpher.walkAsync(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)}, millis());\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: morpher */ morpher.walkAsync(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speed)}, millis());\n`;
 };
 
 // ===== morpher_turn_{blocking,async} — lib 3-arg/4-arg (steps, direction, speed[, nowMs]) =====
@@ -270,11 +266,7 @@ function makeTurnBlock(blockType: string, labelKey: string, labelFallback: strin
       this.appendDummyInput()
           .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times')
           .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
-          .appendField(new Blockly.FieldDropdown([
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
-          ]), 'SPEED');
+          .appendField(new Blockly.FieldNumber(50, 0, 100), 'SPEED');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
@@ -293,14 +285,14 @@ makeTurnBlock('morpher_turn_async',
 javascriptGenerator.forBlock['morpher_turn_blocking'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: morpher */ morpher.turnBlocking(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)});\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: morpher */ morpher.turnBlocking(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speed)});\n`;
 };
 javascriptGenerator.forBlock['morpher_turn_async'] = function(block: Blockly.Block) {
   const direction = block.getFieldValue('DIRECTION');
   const steps = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: morpher */ morpher.turnAsync(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)}, millis());\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: morpher */ morpher.turnAsync(String(${steps}).toInt(), ${direction}, ${speedToDegPerSec(speed)}, millis());\n`;
 };
 
 // ===== morpher_stop (lib 0-arg、 mode 引数廃止 Q-H=i) =====
@@ -334,11 +326,7 @@ function makeRollBlock(blockType: string, labelKey: string, labelFallback: strin
             [Blockly.Msg.BLOCKS_COMMON_BACKWARD || 'backward', '-1']
           ]), 'DIRECTION')
           .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
-          .appendField(new Blockly.FieldDropdown([
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
-          ]), 'SPEED');
+          .appendField(new Blockly.FieldNumber(50, 0, 100), 'SPEED');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
@@ -357,14 +345,14 @@ makeRollBlock('morpher_roll_async',
 javascriptGenerator.forBlock['morpher_roll_blocking'] = function(block: Blockly.Block) {
   const cycles = generator.valueToCode(block, 'CYCLES', generator.ORDER_ATOMIC) || '3';
   const direction = block.getFieldValue('DIRECTION');
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: morpher */ morpher.rollBlocking(String(${cycles}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)});\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: morpher */ morpher.rollBlocking(String(${cycles}).toInt(), ${direction}, ${speedToDegPerSec(speed)});\n`;
 };
 javascriptGenerator.forBlock['morpher_roll_async'] = function(block: Blockly.Block) {
   const cycles = generator.valueToCode(block, 'CYCLES', generator.ORDER_ATOMIC) || '3';
   const direction = block.getFieldValue('DIRECTION');
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: morpher */ morpher.rollAsync(String(${cycles}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)}, millis());\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: morpher */ morpher.rollAsync(String(${cycles}).toInt(), ${direction}, ${speedToDegPerSec(speed)}, millis());\n`;
 };
 
 // ===== morpher_roll_rotate_{blocking,async} — lib 3-arg/4-arg (cycles, direction, speed) =====
@@ -383,11 +371,7 @@ function makeRollRotateBlock(blockType: string, labelKey: string, labelFallback:
       this.appendDummyInput()
           .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times')
           .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
-          .appendField(new Blockly.FieldDropdown([
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
-          ]), 'SPEED');
+          .appendField(new Blockly.FieldNumber(50, 0, 100), 'SPEED');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
@@ -406,14 +390,14 @@ makeRollRotateBlock('morpher_roll_rotate_async',
 javascriptGenerator.forBlock['morpher_roll_rotate_blocking'] = function(block: Blockly.Block) {
   const cycles = generator.valueToCode(block, 'CYCLES', generator.ORDER_ATOMIC) || '3';
   const direction = block.getFieldValue('DIRECTION');
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: morpher */ morpher.rollRotateBlocking(String(${cycles}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)});\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: morpher */ morpher.rollRotateBlocking(String(${cycles}).toInt(), ${direction}, ${speedToDegPerSec(speed)});\n`;
 };
 javascriptGenerator.forBlock['morpher_roll_rotate_async'] = function(block: Blockly.Block) {
   const cycles = generator.valueToCode(block, 'CYCLES', generator.ORDER_ATOMIC) || '3';
   const direction = block.getFieldValue('DIRECTION');
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: morpher */ morpher.rollRotateAsync(String(${cycles}).toInt(), ${direction}, ${speedToDegPerSec(speedSlot)}, millis());\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: morpher */ morpher.rollRotateAsync(String(${cycles}).toInt(), ${direction}, ${speedToDegPerSec(speed)}, millis());\n`;
 };
 
 // ===== morpher_pushup_{blocking,async} — lib 2-arg/3-arg (cycles, speed[, nowMs]) =====
@@ -428,11 +412,7 @@ function makePushupOrDanceBlock(blockType: string, emoji: string, labelKey: stri
       this.appendDummyInput()
           .appendField(Blockly.Msg.BLOCKS_COMMON_TIMES || 'times')
           .appendField(Blockly.Msg.BLOCKS_COMMON_SPEED || 'speed')
-          .appendField(new Blockly.FieldDropdown([
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDFAST || 'fast', 'fast'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDNORMAL || 'normal', 'normal'],
-            [Blockly.Msg.BLOCKS_COMMON_SPEEDSLOW || 'slow', 'slow']
-          ]), 'SPEED');
+          .appendField(new Blockly.FieldNumber(50, 0, 100), 'SPEED');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
@@ -456,23 +436,23 @@ makePushupOrDanceBlock('morpher_dance_async', '💃',
 
 javascriptGenerator.forBlock['morpher_pushup_blocking'] = function(block: Blockly.Block) {
   const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: morpher */ morpher.pushupBlocking(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)});\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: morpher */ morpher.pushupBlocking(String(${cycles}).toInt(), ${speedToDegPerSec(speed)});\n`;
 };
 javascriptGenerator.forBlock['morpher_pushup_async'] = function(block: Blockly.Block) {
   const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '2';
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: morpher */ morpher.pushupAsync(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)}, millis());\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: morpher */ morpher.pushupAsync(String(${cycles}).toInt(), ${speedToDegPerSec(speed)}, millis());\n`;
 };
 javascriptGenerator.forBlock['morpher_dance_blocking'] = function(block: Blockly.Block) {
   const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '4';
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: morpher */ morpher.danceBlocking(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)});\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: morpher */ morpher.danceBlocking(String(${cycles}).toInt(), ${speedToDegPerSec(speed)});\n`;
 };
 javascriptGenerator.forBlock['morpher_dance_async'] = function(block: Blockly.Block) {
   const cycles = generator.valueToCode(block, 'STEPS', generator.ORDER_ATOMIC) || '4';
-  const speedSlot = block.getFieldValue('SPEED');
-  return `  /* requires: morpher */ morpher.danceAsync(String(${cycles}).toInt(), ${speedToDegPerSec(speedSlot)}, millis());\n`;
+  const speed = Number(block.getFieldValue('SPEED'));
+  return `  /* requires: morpher */ morpher.danceAsync(String(${cycles}).toInt(), ${speedToDegPerSec(speed)}, millis());\n`;
 };
 
 // ===== morpher_is_idle (value) =====

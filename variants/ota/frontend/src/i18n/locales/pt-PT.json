@@ -3372,6 +3372,7 @@
     "speed": "Velocidade",
     "speedUnit": "°/seg",
     "speedHelp": "0 = sem limite. Faixa recomendada: 30-720 °/seg.",
+    "robotMotionWarning": "⚠️ Para o movimento do robô (andar, virar, etc. de biped / morpher), a velocidade definida em cada bloco de movimento é o controlo principal. Definir aqui um limite de velocidade do servo pode limitar movimentos rápidos e torná-los menores (recomenda-se deixar em 0 = sem limite).",
     "perPinSettings": "Ajustes de velocidade por pino",
     "perPinDesc": "Substituir a velocidade por pino (remova para voltar ao ajuste global)",
     "perPinEmpty": "Sem ajustes por pino (o ajuste global acima aplica-se a todos os pinos)"

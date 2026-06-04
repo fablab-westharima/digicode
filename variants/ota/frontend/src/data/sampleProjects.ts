@@ -368,17 +368,17 @@ export const sampleProjects: SampleProject[] = [
 <statement name="LOOP">
           <block type="morpher_shift_blocking">
             <field name="MODE">walk</field>
-            <field name="SPEED">normal</field>
+            <field name="SPEED">50</field>
             <next>
               <block type="morpher_walk_blocking">
                 <value name="STEPS"><block type="math_number"><field name="NUM">3</field></block></value>
                 <field name="DIRECTION">1</field>
-                <field name="SPEED">normal</field>
+                <field name="SPEED">50</field>
                 <next>
                   <block type="morpher_walk_blocking">
                     <value name="STEPS"><block type="math_number"><field name="NUM">3</field></block></value>
                     <field name="DIRECTION">1</field>
-                    <field name="SPEED">normal</field>
+                    <field name="SPEED">50</field>
                     <next>
                       <block type="esp32_delay">
                         <value name="TIME">
@@ -389,12 +389,12 @@ export const sampleProjects: SampleProject[] = [
                         <next>
                           <block type="morpher_shift_blocking">
                             <field name="MODE">roll</field>
-                            <field name="SPEED">normal</field>
+                            <field name="SPEED">50</field>
                             <next>
                               <block type="morpher_roll_blocking">
                                 <value name="CYCLES"><block type="math_number"><field name="NUM">3</field></block></value>
                                 <field name="DIRECTION">1</field>
-                                <field name="SPEED">normal</field>
+                                <field name="SPEED">50</field>
                                 <next>
                                   <block type="esp32_delay">
                                     <value name="TIME">
@@ -463,18 +463,18 @@ export const sampleProjects: SampleProject[] = [
                 <next>
                   <block type="biped_dance_blocking">
                     <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
-                    <field name="SPEED">normal</field>
+                    <field name="SPEED">50</field>
                     <next>
                       <block type="biped_swing_blocking">
                         <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
-                        <field name="SPEED">normal</field>
+                        <field name="SPEED">50</field>
                         <next>
                           <block type="biped_moonwalk_blocking">
                             <value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value>
-                            <field name="SPEED">normal</field>
+                            <field name="SPEED">50</field>
                             <next>
                               <block type="biped_jump_blocking">
-                                <field name="SPEED">fast</field>
+                                <field name="SPEED">100</field>
                                 <next>
                                   <block type="esp32_delay">
                                     <value name="TIME">
@@ -985,7 +985,7 @@ export const sampleProjects: SampleProject[] = [
     description: 'Humanoidが前後に歩行する基本動作',
     category: 'robots',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="biped_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="biped_home_blocking"><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">500</field></block></value><next><block type="biped_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">1</field><field name="SPEED">normal</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value><next><block type="biped_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">-1</field><field name="SPEED">normal</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="biped_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="biped_home_blocking"><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">500</field></block></value><next><block type="biped_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">1</field><field name="SPEED">50</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value><next><block type="biped_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">-1</field><field name="SPEED">50</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
   },
   {
     id: 'wheel-line-follow',
@@ -1001,7 +1001,7 @@ export const sampleProjects: SampleProject[] = [
     description: 'Walk → Roll の形態変化で移動',
     category: 'robots',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="morpher_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="morpher_shift_blocking"><field name="MODE">walk</field><field name="SPEED">normal</field><next><block type="morpher_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">1</field><field name="SPEED">normal</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="morpher_shift_blocking"><field name="MODE">roll</field><field name="SPEED">normal</field><next><block type="morpher_roll_blocking"><value name="CYCLES"><block type="math_number"><field name="NUM">3</field></block></value><field name="DIRECTION">1</field><field name="SPEED">fast</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="morpher_stop"></block></next></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="morpher_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="morpher_shift_blocking"><field name="MODE">walk</field><field name="SPEED">50</field><next><block type="morpher_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">1</field><field name="SPEED">50</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="morpher_shift_blocking"><field name="MODE">roll</field><field name="SPEED">50</field><next><block type="morpher_roll_blocking"><value name="CYCLES"><block type="math_number"><field name="NUM">3</field></block></value><field name="DIRECTION">1</field><field name="SPEED">100</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="morpher_stop"></block></next></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
   },
   {
     id: 'http-get-request',
@@ -1384,7 +1384,7 @@ export const sampleProjects: SampleProject[] = [
     description: '等身大 Humanoid ロボットのサーボ速度を slow (= 30 deg/sec) に抑えてギヤを保護しながら歩行 (case 22 founding use case demo、ServoSpeedDialog で per-pin override も可)',
     category: 'robots',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="biped_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field><field name="PIN_BUZZER">25</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="biped_home_blocking"><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value><next><block type="biped_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">1</field><field name="SPEED">slow</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="biped_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">-1</field><field name="SPEED">slow</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="biped_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field><field name="PIN_BUZZER">25</field></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="biped_home_blocking"><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">1000</field></block></value><next><block type="biped_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">1</field><field name="SPEED">0</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value><next><block type="biped_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">-1</field><field name="SPEED">0</field><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">2000</field></block></value></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>`
   },
   {
     id: 'biped-walk-while-mqtt-publishing',
@@ -1392,7 +1392,7 @@ export const sampleProjects: SampleProject[] = [
     description: 'biped_walk_blocking で歩行し、続けて MQTT で温度を publish (D-new-4 (B) ロボット + IoT 統合 demo、歩行 → 送信を毎ループ順次実行)',
     category: 'robots',
     language: 'arduino',
-    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="mqtt_setup"><value name="PORT"><block type="math_number"><field name="NUM">1883</field></block></value><field name="SSID">your_ssid</field><field name="WIFI_PASS">your_password</field><field name="BROKER">192.168.1.100</field><field name="CLIENT_ID">biped_iot</field><next><block type="biped_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field><field name="PIN_BUZZER">25</field><next><block type="dht_init"><field name="PIN">4</field><field name="TYPE">DHT22</field><next><block type="mqtt_connect"><field name="USERNAME"></field><field name="PASSWORD"></field></block></next></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="biped_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">1</field><field name="SPEED">normal</field><next><block type="mqtt_loop"><next><block type="mqtt_publish"><field name="TOPIC">robot/biped/temperature</field><field name="RETAIN">FALSE</field><value name="MESSAGE"><block type="text_join"><value name="ADD0"><block type="text"><field name="TEXT">temp=</field></block></value><value name="ADD1"><block type="dht_temperature"></block></value></block></value><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">3000</field></block></value></block></next></block></next></block></next></block></statement></block></xml>`
+    blocklyXml: `<xml xmlns="https://developers.google.com/blockly/xml"><block type="arduino_setup" x="50" y="50"><statement name="SETUP"><block type="mqtt_setup"><value name="PORT"><block type="math_number"><field name="NUM">1883</field></block></value><field name="SSID">your_ssid</field><field name="WIFI_PASS">your_password</field><field name="BROKER">192.168.1.100</field><field name="CLIENT_ID">biped_iot</field><next><block type="biped_init"><field name="PIN_LL">27</field><field name="PIN_RL">15</field><field name="PIN_LF">14</field><field name="PIN_RF">13</field><field name="PIN_BUZZER">25</field><next><block type="dht_init"><field name="PIN">4</field><field name="TYPE">DHT22</field><next><block type="mqtt_connect"><field name="USERNAME"></field><field name="PASSWORD"></field></block></next></block></next></block></next></block></statement></block><block type="arduino_loop" x="50" y="250"><statement name="LOOP"><block type="biped_walk_blocking"><value name="STEPS"><block type="math_number"><field name="NUM">4</field></block></value><field name="DIRECTION">1</field><field name="SPEED">50</field><next><block type="mqtt_loop"><next><block type="mqtt_publish"><field name="TOPIC">robot/biped/temperature</field><field name="RETAIN">FALSE</field><value name="MESSAGE"><block type="text_join"><value name="ADD0"><block type="text"><field name="TEXT">temp=</field></block></value><value name="ADD1"><block type="dht_temperature"></block></value></block></value><next><block type="esp32_delay"><value name="TIME"><block type="math_number"><field name="NUM">3000</field></block></value></block></next></block></next></block></next></block></statement></block></xml>`
   },
   {
     id: 'stepper-hw-precise',
