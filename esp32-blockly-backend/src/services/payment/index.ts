@@ -92,6 +92,24 @@ export function decideProviderByCountry(countryCode: string | null): ProviderId 
   return 'polar';
 }
 
+/**
+ * Phase ① (Session 163) overseas-checkout kill-switch.
+ *
+ * Returns true when new Polar (non-JP) checkouts are suspended via the
+ * `POLAR_CHECKOUT_SUSPENDED='true'` env var. Single source of truth shared by
+ * the /status `polarAvailable` flag (drives the frontend "準備中" UI) and the
+ * /checkout guard (blocks new Polar checkout creation), so the two cannot
+ * drift apart. Kept next to decideProviderByCountry because the suspend
+ * decision and the routing decision belong together.
+ *
+ * Deliberately does NOT touch POLAR_ACCESS_TOKEN / POLAR_WEBHOOK_SECRET:
+ * existing Polar portal + webhook lifecycle stay functional while new
+ * checkouts are off.
+ */
+export function isPolarSuspended(env: Bindings): boolean {
+  return env.POLAR_CHECKOUT_SUSPENDED === 'true';
+}
+
 function instantiate(env: Bindings, id: ProviderId): PaymentProvider {
   switch (id) {
     case 'stripe':

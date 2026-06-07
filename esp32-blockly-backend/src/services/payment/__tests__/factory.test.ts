@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { decideProviderByCountry, getProviderForUser, resolveEffectiveCountry } from '../index';
+import { decideProviderByCountry, getProviderForUser, isPolarSuspended, resolveEffectiveCountry } from '../index';
 import type { Bindings } from '../../../types/env';
 
 describe('decideProviderByCountry — pure routing rule', () => {
@@ -89,9 +89,11 @@ function envWithFactoryFixtures(opts: {
   subscriptionRow: { status: string; provider: string | null; plan_type: string | null } | null;
   userCountryCode: string | null;
   polarAvailable?: boolean;
+  suspended?: boolean;
 }): Bindings {
   return {
     POLAR_ACCESS_TOKEN: opts.polarAvailable === false ? undefined : 'polar_oat_test',
+    POLAR_CHECKOUT_SUSPENDED: opts.suspended ? 'true' : undefined,
     POLAR_SERVER_MODE: 'sandbox',
     DB: {
       prepare: (sql: string) => ({
@@ -195,5 +197,101 @@ describe('getProviderForUser — composition of lock + country override', () => 
     });
     const provider = await getProviderForUser(env, 20, 'JP');
     expect(provider.id).toBe('polar');
+  });
+});
+
+/**
+ * Phase ① (Session 163) — overseas (Polar) checkout kill-switch.
+ *
+ * Convention note: like polarWebhookSecret.test.ts (which tests the
+ * `btoa()` primitive the route wraps the secret with, and leaves the HTTP
+ * path to the deploy-time curl), these tests assert the decision primitives
+ * the route branches on — `isPolarSuspended`, the real `getProviderForUser`
+ * resolution, and the `polarAvailable` expression mirrored from
+ * subscriptions.ts:192. The literal HTTP 503 / 200 wiring is exercised by
+ * the deploy-time integration curl.
+ */
+describe('isPolarSuspended — POLAR_CHECKOUT_SUSPENDED kill-switch', () => {
+  const env = (v: string | undefined) =>
+    ({ POLAR_CHECKOUT_SUSPENDED: v }) as unknown as Bindings;
+
+  it("is true only for the exact string 'true'", () => {
+    expect(isPolarSuspended(env('true'))).toBe(true);
+  });
+
+  it('is false when unset', () => {
+    expect(isPolarSuspended(env(undefined))).toBe(false);
+  });
+
+  it("is false for any non-'true' value (no truthy coercion)", () => {
+    for (const v of ['false', '1', 'TRUE', 'yes', '']) {
+      expect(isPolarSuspended(env(v))).toBe(false);
+    }
+  });
+});
+
+describe('Phase ① /checkout guard decision — provider.id === "polar" && isPolarSuspended', () => {
+  // The route returns errorJson('subscription.overseasSuspended', 503) when
+  // this predicate holds, else proceeds to createCheckout. Asserted via the
+  // REAL getProviderForUser resolution + REAL isPolarSuspended.
+  const guardBlocks = (provider: { id: string }, env: Bindings) =>
+    provider.id === 'polar' && isPolarSuspended(env);
+
+  it('non-JP (US) + suspended → blocked (→ 503)', async () => {
+    const env = envWithFactoryFixtures({
+      subscriptionRow: null,
+      userCountryCode: 'US',
+      suspended: true,
+    });
+    const provider = await getProviderForUser(env, 1, 'US');
+    expect(provider.id).toBe('polar');
+    expect(guardBlocks(provider, env)).toBe(true);
+  });
+
+  it('JP + suspended → NOT blocked (Stripe path unaffected)', async () => {
+    const env = envWithFactoryFixtures({
+      subscriptionRow: null,
+      userCountryCode: 'JP',
+      suspended: true,
+    });
+    const provider = await getProviderForUser(env, 1, 'JP');
+    expect(provider.id).toBe('stripe');
+    expect(guardBlocks(provider, env)).toBe(false);
+  });
+
+  it('non-JP (US) + not suspended → NOT blocked (overseas checkout proceeds)', async () => {
+    const env = envWithFactoryFixtures({
+      subscriptionRow: null,
+      userCountryCode: 'US',
+      suspended: false,
+    });
+    const provider = await getProviderForUser(env, 1, 'US');
+    expect(provider.id).toBe('polar');
+    expect(guardBlocks(provider, env)).toBe(false);
+  });
+});
+
+describe('Phase ① /status polarAvailable = !!POLAR_ACCESS_TOKEN && !isPolarSuspended', () => {
+  // Mirrors the expression at subscriptions.ts:192 (same convention as
+  // polarWebhookSecret.test.ts mirroring the route's btoa() wrap).
+  const polarAvailable = (env: Bindings) =>
+    !!env.POLAR_ACCESS_TOKEN && !isPolarSuspended(env);
+  const mk = (token: string | undefined, suspended: boolean) =>
+    ({
+      POLAR_ACCESS_TOKEN: token,
+      POLAR_CHECKOUT_SUSPENDED: suspended ? 'true' : undefined,
+    }) as unknown as Bindings;
+
+  it('token set + not suspended → true (overseas live)', () => {
+    expect(polarAvailable(mk('polar_oat_x', false))).toBe(true);
+  });
+
+  it('token set + suspended → false (drives the 準備中 UI)', () => {
+    expect(polarAvailable(mk('polar_oat_x', true))).toBe(false);
+  });
+
+  it('token unset → false regardless of suspend flag', () => {
+    expect(polarAvailable(mk(undefined, false))).toBe(false);
+    expect(polarAvailable(mk(undefined, true))).toBe(false);
   });
 });

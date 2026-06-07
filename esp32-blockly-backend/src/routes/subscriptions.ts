@@ -22,6 +22,7 @@ import { errorJson, type ErrorKey } from '../utils/errorJson';
 import {
   decideProviderByCountry,
   getProviderForUser,
+  isPolarSuspended,
   resolveEffectiveCountry,
 } from '../services/payment';
 import { findBlockingActiveSubscription } from '../services/payment/activeSubscription';
@@ -189,7 +190,7 @@ subscriptions.get('/status', async (c) => {
       // an unconfigured provider. The signal is presence of an
       // Organization Access Token; the Polar dashboard product UUIDs
       // can be set later without re-deploying.
-      polarAvailable: !!c.env.POLAR_ACCESS_TOKEN,
+      polarAvailable: !!c.env.POLAR_ACCESS_TOKEN && !isPolarSuspended(c.env),
     });
   } catch (error) {
     console.error('Get subscription status error:', error);
@@ -234,6 +235,18 @@ subscriptions.post('/checkout', async (c) => {
       }
       const country = c.get('country');
       const provider = await getProviderForUser(c.env, userId, country);
+
+      // Phase ① (Session 163): overseas (Polar) checkout kill-switch.
+      // Defense-in-depth backstop to the /status `polarAvailable=false` UI
+      // ("準備中"): refuse to CREATE a new Polar checkout while suspended, so a
+      // direct API call or a stale frontend bundle cannot start one. Keyed on
+      // the actually-resolved provider, so JP→Stripe (provider.id==='stripe')
+      // is never affected; existing portal / webhook / lifecycle are untouched
+      // (this only blocks new checkout creation).
+      if (provider.id === 'polar' && isPolarSuspended(c.env)) {
+        return errorJson(c, 'subscription.overseasSuspended', 503);
+      }
+
       const origin = c.req.header('Origin') || 'https://code.fablab-westharima.jp';
 
       const result = await provider.createCheckout({

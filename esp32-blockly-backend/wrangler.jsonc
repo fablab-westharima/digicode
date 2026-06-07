@@ -14,7 +14,13 @@
 	"vars": {
 		// Phase C: ML30 class API endpoint. Not a secret (URL only).
 		// For local dev, override via .dev.vars if hitting a local digicode-class-server.
-		"CLASS_API_URL": "https://class.digital-fab.jp"
+		"CLASS_API_URL": "https://class.digital-fab.jp",
+		// Phase ① (Session 163): overseas (Polar) checkout kill-switch.
+		// "true" suspends NEW non-JP Polar checkouts (frontend shows 準備中 +
+		// /checkout returns 503). POLAR_ACCESS_TOKEN / POLAR_WEBHOOK_SECRET stay
+		// set so existing portal + webhook lifecycle are unaffected; JP→Stripe is
+		// never affected. Flip/remove when LemonSqueezy replaces Polar.
+		"POLAR_CHECKOUT_SUSPENDED": "true"
 	},
 	"d1_databases": [
 		{

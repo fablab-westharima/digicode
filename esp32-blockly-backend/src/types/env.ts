@@ -94,6 +94,16 @@ export type Bindings = {
   SCHEDULED_DRY_RUN?: string;
   /** Polar API server — 'sandbox' (default) or 'production'. */
   POLAR_SERVER_MODE?: 'sandbox' | 'production';
+  /**
+   * Phase ① (Session 163) overseas-checkout kill-switch. Set to the string
+   * 'true' (in wrangler.jsonc vars) to suspend NEW Polar (non-JP) checkouts
+   * while keeping POLAR_ACCESS_TOKEN / POLAR_WEBHOOK_SECRET live, so existing
+   * portal + webhook lifecycle stay functional. Any other value / unset =
+   * overseas checkout enabled. Read via `isPolarSuspended()`. Workers env
+   * values are strings, so this is a string compared to 'true' (same
+   * convention as SCHEDULED_DRY_RUN), not a real boolean.
+   */
+  POLAR_CHECKOUT_SUSPENDED?: string;
 };
 
 /**
