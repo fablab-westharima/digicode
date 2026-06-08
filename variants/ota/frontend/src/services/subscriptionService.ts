@@ -26,7 +26,7 @@
 import { fetchWithAuth } from '@/lib/api';
 import i18n from '@/i18n';
 
-export type ProviderId = 'stripe' | 'polar';
+export type ProviderId = 'stripe' | 'polar' | 'lemonsqueezy';
 
 export interface PlanInfo {
   id: string;
@@ -70,6 +70,14 @@ export interface SubscriptionStatusResponse {
    * checkout against an unconfigured provider.
    */
   polarAvailable: boolean;
+  /**
+   * Whether overseas LemonSqueezy checkout is live in the current backend env
+   * (LEMONSQUEEZY_API_KEY set + LEMONSQUEEZY_ENABLED='true'). When false and
+   * `expectedProvider === 'lemonsqueezy'`, the frontend shows the "coming
+   * soon" (準備中) message instead of starting a checkout. Phase ②: Polar is
+   * kept dormant as backup, LemonSqueezy is the live overseas MoR provider.
+   */
+  lsAvailable: boolean;
 }
 
 /**
@@ -97,19 +105,20 @@ export function derivePlanState(
 }
 
 /**
- * Effective state for rendering when Polar is not yet wired up in this
- * environment. The §6a.3 mismatch path requires the user to cancel
- * their existing provider and resubscribe via the recommended one — but
- * if the recommended one is Polar and Polar is unavailable, walking the
- * user through cancellation leaves them stranded. The conservative
- * collapse is:
+ * Effective state for rendering when the expected OVERSEAS MoR provider is not
+ * yet live in this environment (Phase ②: LemonSqueezy is the live provider;
+ * Polar is kept dormant as backup). The §6a.3 mismatch path requires the user
+ * to cancel their existing provider and resubscribe via the recommended one —
+ * but if the recommended one is an overseas provider that is unavailable,
+ * walking the user through cancellation leaves them stranded. The conservative
+ * collapse, driven by `expectedProviderAvailable` (Stripe is always available;
+ * an overseas MoR provider may be pre-launch):
  *
- *   - state A with expected=polar + !polarAvailable → comingSoon (UI
- *     shows the "international payment coming soon" notice instead of
- *     subscribe buttons)
- *   - state C with expected=polar + !polarAvailable → behave as state B
- *     (let the user manage their existing Stripe sub via portal; do
- *     NOT push them to cancel into an unavailable destination)
+ *   - state A + !available → comingSoon (UI shows the "international payment
+ *     coming soon" / 準備中 notice instead of subscribe buttons)
+ *   - state C + !available → behave as state B (let the user manage their
+ *     existing sub via portal; do NOT push them to cancel into an unavailable
+ *     destination)
  *   - all other combinations → raw state unchanged
  */
 export type EffectivePlanState = PlanState | 'A_COMING_SOON';
@@ -117,12 +126,13 @@ export type EffectivePlanState = PlanState | 'A_COMING_SOON';
 export function deriveEffectivePlanState(
   rawState: PlanState,
   expectedProvider: ProviderId,
-  polarAvailable: boolean,
+  expectedProviderAvailable: boolean,
 ): EffectivePlanState {
-  if (expectedProvider !== 'polar' || polarAvailable) {
+  // Stripe (domestic) is always available; only an overseas MoR provider can
+  // be pre-launch and trigger the "coming soon" collapse.
+  if (expectedProvider === 'stripe' || expectedProviderAvailable) {
     return rawState;
   }
-  // expected=polar AND !polarAvailable
   switch (rawState) {
     case 'A':
       return 'A_COMING_SOON';

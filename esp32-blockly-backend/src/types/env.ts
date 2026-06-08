@@ -104,6 +104,31 @@ export type Bindings = {
    * convention as SCHEDULED_DRY_RUN), not a real boolean.
    */
   POLAR_CHECKOUT_SUSPENDED?: string;
+
+  // ── LemonSqueezy (plan 58 Phase ② — overseas MoR, replaces Polar) ─────
+  /** LemonSqueezy API key (Bearer). `wrangler secret put`. */
+  LEMONSQUEEZY_API_KEY?: string;
+  /** LemonSqueezy webhook signing secret (raw, HMAC-SHA256 key). `wrangler secret put`. */
+  LEMONSQUEEZY_WEBHOOK_SECRET?: string;
+  /** LemonSqueezy store id. `wrangler secret put`. */
+  LEMONSQUEEZY_STORE_ID?: string;
+  /** LemonSqueezy variant ids per plan. `wrangler secret put`. */
+  LEMONSQUEEZY_VARIANT_LITE?: string;
+  LEMONSQUEEZY_VARIANT_PRO?: string;
+  LEMONSQUEEZY_VARIANT_ENTERPRISE?: string;
+  /**
+   * LemonSqueezy test-mode flag (wrangler.jsonc var). 'true' stamps every
+   * created checkout with test_mode:true. String compared to 'true'.
+   */
+  LEMONSQUEEZY_TEST_MODE?: string;
+  /**
+   * LemonSqueezy go-live gate (wrangler.jsonc var). 'true' = overseas LS
+   * checkout is live (drives /status `lsAvailable` + lifts the /checkout
+   * suspend guard). Until set, the backend can be deployed with full LS
+   * support while non-JP users still see the "準備中" UI (deploy ≠ activation,
+   * same pattern as POLAR_CHECKOUT_SUSPENDED). String compared to 'true'.
+   */
+  LEMONSQUEEZY_ENABLED?: string;
 };
 
 /**

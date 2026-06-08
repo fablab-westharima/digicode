@@ -4353,7 +4353,8 @@
     },
     "providerLabel": {
       "stripe": "國內付款 (Stripe)",
-      "polar": "國際付款 (Merchant of Record)"
+      "polar": "國際付款 (Merchant of Record)",
+      "lemonsqueezy": "國際付款 (Merchant of Record)"
     },
     "gracePeriodNote": "您目前的方案在計費週期結束前仍可繼續使用。週期結束後即可訂閱新方案",
     "alreadyActive": {

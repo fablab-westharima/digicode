@@ -20,8 +20,8 @@
  *
  *   3. Otherwise fall back to CF-IPCountry. `decideProviderByCountry`
  *      routes JP / null / 'XX' / 'T1' to Stripe (safer fallback;
- *      misrouting a JP customer to Polar would create inappropriate
- *      MoR VAT exposure that's harder to unwind than the reverse).
+ *      misrouting a JP customer to the overseas MoR provider would create
+ *      inappropriate MoR VAT exposure that's harder to unwind than the reverse).
  *
  * The factory is async because steps 1 + 2 read from D1. Callers must
  * `await` it before invoking `createCheckout` / `createPortalSession`.
@@ -35,6 +35,7 @@
 import type { PaymentProvider, ProviderId } from './types';
 import { StripeProvider } from './stripeProvider';
 import { PolarProvider } from './polarProvider';
+import { LemonSqueezyProvider } from './lemonSqueezyProvider';
 import { findBlockingActiveSubscription } from './activeSubscription';
 import type { Bindings } from '../../types/env';
 
@@ -89,7 +90,8 @@ export function decideProviderByCountry(countryCode: string | null): ProviderId 
   const normalized = countryCode.toUpperCase();
   if (normalized === 'JP') return 'stripe';
   if (normalized === 'XX' || normalized === 'T1') return 'stripe';
-  return 'polar';
+  // Phase ② (Session 163): overseas (non-JP) MoR = LemonSqueezy (replaces Polar).
+  return 'lemonsqueezy';
 }
 
 /**
@@ -110,11 +112,28 @@ export function isPolarSuspended(env: Bindings): boolean {
   return env.POLAR_CHECKOUT_SUSPENDED === 'true';
 }
 
-function instantiate(env: Bindings, id: ProviderId): PaymentProvider {
+/**
+ * Phase ② (Session 163) LemonSqueezy go-live gate. Returns true when overseas
+ * LS checkout is live (LEMONSQUEEZY_ENABLED='true'). Single source shared by
+ * /status `lsAvailable` (準備中 UI) and the /checkout guard, so deploy and
+ * activation stay decoupled (mirror of isPolarSuspended).
+ */
+export function isLemonSqueezyEnabled(env: Bindings): boolean {
+  return env.LEMONSQUEEZY_ENABLED === 'true';
+}
+
+/**
+ * Instantiate a provider by id. Exported so the admin payment-test route
+ * shares this one switch instead of keeping its own stripe/polar branch
+ * (Session 163: removes the binary-else trap at the admin route).
+ */
+export function instantiate(env: Bindings, id: ProviderId): PaymentProvider {
   switch (id) {
     case 'stripe':
       return new StripeProvider(env);
     case 'polar':
       return new PolarProvider(env);
+    case 'lemonsqueezy':
+      return new LemonSqueezyProvider(env);
   }
 }

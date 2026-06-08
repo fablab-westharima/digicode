@@ -268,7 +268,15 @@ function UsersTab() {
                   <PlanBadge plan={u.plan} />
                 </td>
                 <td className="px-4 py-3 text-[#8B949E] text-xs">
-                  {u.planSource === 'admin_granted' ? t('admin.users.sources.admin') : u.planSource === 'stripe' ? 'Stripe' : '-'}
+                  {u.planSource === 'admin_granted'
+                    ? t('admin.users.sources.admin')
+                    : u.planSource === 'stripe'
+                      ? 'Stripe'
+                      : u.planSource === 'lemonsqueezy'
+                        ? 'LemonSqueezy'
+                        : u.planSource === 'polar'
+                          ? 'Polar'
+                          : '-'}
                 </td>
                 <td className={`px-4 py-3 text-xs ${isInactive(u.lastLoginAt) ? 'text-red-400' : 'text-[#8B949E]'}`}>
                   {formatDate(u.lastLoginAt)}
@@ -932,7 +940,7 @@ function PaymentTestTab() {
 
   const start = async (
     plan: 'lite' | 'pro' | 'enterprise',
-    provider: 'stripe' | 'polar',
+    provider: 'stripe' | 'polar' | 'lemonsqueezy',
   ) => {
     const key = `${plan}-${provider}`;
     setLoadingKey(key);
@@ -986,7 +994,7 @@ function PaymentTestTab() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="rounded-md border border-[#2E333D] bg-[#161B22] p-4">
           <h3 className="text-sm font-semibold mb-3 text-[#E6EDF3]">
             {t('admin.paymentTest.stripeColumn', { defaultValue: 'Stripe (国内決済)' })}
@@ -1016,7 +1024,7 @@ function PaymentTestTab() {
 
         <div className="rounded-md border border-[#2E333D] bg-[#161B22] p-4">
           <h3 className="text-sm font-semibold mb-3 text-[#E6EDF3]">
-            {t('admin.paymentTest.polarColumn', { defaultValue: '海外決済 (Merchant of Record)' })}
+            {t('admin.paymentTest.polarColumn', { defaultValue: '海外決済 Polar (予備・停止中)' })}
           </h3>
           <div className="space-y-2">
             {plans.map(({ id, label }) => {
@@ -1028,6 +1036,33 @@ function PaymentTestTab() {
                   className="w-full justify-start"
                   disabled={!!loadingKey}
                   onClick={() => start(id, 'polar')}
+                >
+                  {loadingKey === key
+                    ? t('admin.paymentTest.redirecting', { defaultValue: 'Redirecting to checkout...' })
+                    : t('admin.paymentTest.tryCheckout', {
+                        plan: label,
+                        defaultValue: `Try checkout for ${label}`,
+                      })}
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="rounded-md border border-[#2E333D] bg-[#161B22] p-4">
+          <h3 className="text-sm font-semibold mb-3 text-[#E6EDF3]">
+            {t('admin.paymentTest.lsColumn', { defaultValue: '海外決済 LemonSqueezy (MoR)' })}
+          </h3>
+          <div className="space-y-2">
+            {plans.map(({ id, label }) => {
+              const key = `${id}-lemonsqueezy`;
+              return (
+                <Button
+                  key={key}
+                  variant="outline"
+                  className="w-full justify-start"
+                  disabled={!!loadingKey}
+                  onClick={() => start(id, 'lemonsqueezy')}
                 >
                   {loadingKey === key
                     ? t('admin.paymentTest.redirecting', { defaultValue: 'Redirecting to checkout...' })

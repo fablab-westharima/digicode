@@ -4353,7 +4353,8 @@
     },
     "providerLabel": {
       "stripe": "Domestic payment (Stripe)",
-      "polar": "International payment (Merchant of Record)"
+      "polar": "International payment (Merchant of Record)",
+      "lemonsqueezy": "International payment (Merchant of Record)"
     },
     "gracePeriodNote": "Your current plan remains available until the end of your billing period. You can subscribe to a new plan after the current period ends",
     "alreadyActive": {

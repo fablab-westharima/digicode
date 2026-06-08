@@ -74,6 +74,16 @@ export default function PlanPage() {
   const status = statusResponse?.subscription ?? null;
   const expectedProvider: ProviderId = statusResponse?.expectedProvider ?? 'stripe';
   const polarAvailable: boolean = statusResponse?.polarAvailable ?? false;
+  const lsAvailable: boolean = statusResponse?.lsAvailable ?? false;
+  // Phase ②: availability of the *expected* provider drives the "準備中"
+  // collapse. Stripe (domestic) is always available; overseas = LemonSqueezy
+  // (live provider) or Polar (dormant backup).
+  const expectedProviderAvailable: boolean =
+    expectedProvider === 'stripe'
+      ? true
+      : expectedProvider === 'lemonsqueezy'
+        ? lsAvailable
+        : polarAvailable;
 
   const currentPlan = user?.plan || status?.planType || 'free';
   // Phase 5 R-5: removed `isAdmin` derivation because admins now flow
@@ -91,8 +101,8 @@ export default function PlanPage() {
       status?.provider ?? null,
       expectedProvider,
     );
-    return deriveEffectivePlanState(raw, expectedProvider, polarAvailable);
-  }, [status?.hasActiveSubscription, status?.provider, expectedProvider, polarAvailable]);
+    return deriveEffectivePlanState(raw, expectedProvider, expectedProviderAvailable);
+  }, [status?.hasActiveSubscription, status?.provider, expectedProvider, expectedProviderAvailable]);
 
   const isComingSoon = planState === 'A_COMING_SOON';
   const isCanceling = status?.status === 'canceling';

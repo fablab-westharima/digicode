@@ -16,6 +16,9 @@ import type { Bindings } from '../types/env';
 import { errorJson } from '../utils/errorJson';
 import { normalizePolarEvent } from '../services/payment/polarEventNormalizer';
 import { applyPolarEvent } from '../services/payment/applyEvent';
+import { normalizeLemonSqueezyEvent } from '../services/payment/lemonSqueezyEventNormalizer';
+import { applyLemonSqueezyEvent } from '../services/payment/applyLsEvent';
+import { constantTimeEqual } from '../utils/crypto';
 
 // Stripe API version を明示固定する。SDK v22 のデフォルトと一致。
 // 2026-04-23 に Stripe アカウント + webhook endpoint を 2018-02-28 → dahlia へ migration。
@@ -489,6 +492,114 @@ webhooks.get('/polar/health', (c) => {
     status: 'ok',
     webhookSecretConfigured: !!c.env.POLAR_WEBHOOK_SECRET,
     serverMode: c.env.POLAR_SERVER_MODE ?? 'sandbox',
+  });
+});
+
+// ============================================================
+// LemonSqueezy webhook handler (plan 58 Phase ②)
+// ============================================================
+//
+// LemonSqueezy signs the raw request body with HMAC-SHA256 (hex digest)
+// keyed by the webhook secret, delivered in the `X-Signature` header. There
+// is NO Standard-Webhooks envelope and NO unique delivery id header, so the
+// standardwebhooks library used for Polar does not apply: verification uses
+// Web Crypto (crypto.subtle HMAC) + the shared constant-time compare, and
+// idempotency keys off SHA-256(rawBody) (LS resends the identical payload on
+// retry).
+//
+// Event semantics + state mapping live in
+// `services/payment/lemonSqueezyEventNormalizer.ts`; D1 writes live in
+// `services/payment/applyLsEvent.ts`. This handler is the thin transport:
+// verify → idempotency → normalize → apply.
+
+function bytesToHex(buf: ArrayBuffer): string {
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+webhooks.post('/lemonsqueezy', async (c) => {
+  // 1. Raw body BEFORE JSON parse — LS signs the bytes it sent.
+  const body = await c.req.text();
+  const signature = c.req.header('X-Signature');
+
+  if (!signature) {
+    console.error('[webhook ls] missing X-Signature header');
+    return errorJson(c, 'webhook.signatureInvalid', 400);
+  }
+  if (!c.env.LEMONSQUEEZY_WEBHOOK_SECRET) {
+    // Misconfig surfaced in logs, returned with the same opaque code so an
+    // attacker cannot distinguish it from a forged signature (rule 16).
+    console.error('[webhook ls] LEMONSQUEEZY_WEBHOOK_SECRET is not set');
+    return errorJson(c, 'webhook.signatureInvalid', 400);
+  }
+
+  // 2. Verify HMAC-SHA256(rawBody, secret) hex == X-Signature (constant-time).
+  const enc = new TextEncoder();
+  let valid = false;
+  try {
+    const key = await crypto.subtle.importKey(
+      'raw',
+      enc.encode(c.env.LEMONSQUEEZY_WEBHOOK_SECRET),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign'],
+    );
+    const mac = await crypto.subtle.sign('HMAC', key, enc.encode(body));
+    valid = constantTimeEqual(bytesToHex(mac), signature.trim().toLowerCase());
+  } catch (err) {
+    console.error('[webhook ls] signature computation failed:', err instanceof Error ? err.message : err);
+    return errorJson(c, 'webhook.signatureInvalid', 400);
+  }
+  if (!valid) {
+    console.error('[webhook ls] signature verification failed');
+    return errorJson(c, 'webhook.signatureInvalid', 400);
+  }
+
+  // 3. Parse only after the signature is verified.
+  let payload: { meta?: unknown; data?: unknown };
+  try {
+    payload = JSON.parse(body) as { meta?: unknown; data?: unknown };
+  } catch {
+    console.error('[webhook ls] body is not valid JSON');
+    return errorJson(c, 'webhook.signatureInvalid', 400);
+  }
+
+  const meta = payload.meta as { event_name?: string } | undefined;
+  const eventName = typeof meta?.event_name === 'string' ? meta.event_name : '<unknown>';
+  console.log(`[webhook ls] ${eventName}`);
+
+  // 4. Idempotency — no native delivery id, so dedupe on SHA-256(rawBody).
+  const digest = await crypto.subtle.digest('SHA-256', enc.encode(body));
+  const eventId = `ls_${bytesToHex(digest)}`;
+  const insertResult = await c.env.DB
+    .prepare('INSERT OR IGNORE INTO processed_webhooks (event_id, event_type) VALUES (?, ?)')
+    .bind(eventId, eventName)
+    .run();
+  if (insertResult.meta.changes === 0) {
+    console.log(`[webhook ls] duplicate event ignored: ${eventName}`);
+    return c.json({ received: true, duplicate: true });
+  }
+
+  // 5. Normalize + apply. Unmapped events fall to null → 200 without writing.
+  const normalized = normalizeLemonSqueezyEvent(payload.meta, payload.data);
+  if (!normalized) {
+    console.log(`[webhook ls] unhandled event type: ${eventName}`);
+    return c.json({ received: true });
+  }
+
+  const result = await applyLemonSqueezyEvent(c.env, normalized);
+  if (result.outcome === 'skipped') {
+    console.warn(`[webhook ls] skipped: ${result.reason}`);
+  }
+  return c.json({ received: true });
+});
+
+// ---------- GET /lemonsqueezy/health ----------
+webhooks.get('/lemonsqueezy/health', (c) => {
+  return c.json({
+    status: 'ok',
+    webhookSecretConfigured: !!c.env.LEMONSQUEEZY_WEBHOOK_SECRET,
+    enabled: c.env.LEMONSQUEEZY_ENABLED === 'true',
+    testMode: c.env.LEMONSQUEEZY_TEST_MODE === 'true',
   });
 });
 

@@ -9,11 +9,9 @@ import { errorJson, type ErrorKey } from '../utils/errorJson';
 import { auditCrossDbIntegrity } from '../utils/auditCrossDb';
 import { deleteClassCascade } from './classes';
 import { deleteUserCascade } from '../utils/userCascade';
-import { StripeProvider } from '../services/payment/stripeProvider';
-import { PolarProvider } from '../services/payment/polarProvider';
+import { instantiate } from '../services/payment';
 import {
   PaymentProviderError,
-  type PaymentProvider,
   type PlanId,
   type ProviderId,
 } from '../services/payment/types';
@@ -351,7 +349,7 @@ admin.get('/audit-cross-db', authMiddleware, adminMiddleware, async (c) => {
 // The route INTENTIONALLY uses the same Stripe/Polar provider classes
 // as production so any error in the test path mirrors production.
 
-const VALID_PROVIDER_IDS = new Set<ProviderId>(['stripe', 'polar']);
+const VALID_PROVIDER_IDS = new Set<ProviderId>(['stripe', 'polar', 'lemonsqueezy']);
 const VALID_PLAN_IDS = new Set<PlanId>(['lite', 'pro', 'enterprise']);
 
 function adminTestErrorKey(code: string): ErrorKey {
@@ -384,12 +382,10 @@ admin.post('/payment-test/checkout', authMiddleware, adminMiddleware, async (c) 
     const planId = body.planId as PlanId;
     const providerId = body.provider as ProviderId;
 
-    let provider: PaymentProvider;
-    if (providerId === 'stripe') {
-      provider = new StripeProvider(c.env);
-    } else {
-      provider = new PolarProvider(c.env);
-    }
+    // Session 163: shared factory `instantiate` (3-way) replaces the old
+    // binary stripe/else-Polar branch — admin test can exercise any provider
+    // incl. LemonSqueezy without its own enum.
+    const provider = instantiate(c.env, providerId);
 
     const origin = c.req.header('Origin') || 'https://code.fablab-westharima.jp';
     const result = await provider.createCheckout({

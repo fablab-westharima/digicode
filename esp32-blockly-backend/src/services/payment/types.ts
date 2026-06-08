@@ -27,7 +27,7 @@
  *     values converge to this enum.
  */
 
-export type ProviderId = 'stripe' | 'polar';
+export type ProviderId = 'stripe' | 'polar' | 'lemonsqueezy';
 
 export type PlanId = 'free' | 'lite' | 'pro' | 'enterprise';
 
@@ -113,5 +113,25 @@ export interface NormalizedPolarEvent {
   productId: string | null;
   state: SubscriptionStateInternal;
   /** Cancellation period end (when state === 'canceled'). ISO 8601 string. */
+  periodEndAt: string | null;
+}
+
+/**
+ * Normalized event for the LemonSqueezy webhook path. Mirrors
+ * NormalizedPolarEvent but carries `variantId` (LemonSqueezy attaches price
+ * to a variant, not a product). LemonSqueezy events have no Standard-Webhooks
+ * envelope; the handler dedupes via SHA-256(rawBody) instead.
+ */
+export interface NormalizedLemonSqueezyEvent {
+  /** LemonSqueezy event name, e.g. `'subscription_created'`. Kept for logging. */
+  rawType: string;
+  externalSubscriptionId: string | null;
+  externalCustomerId: string | null;
+  /** DigiCode user_id recovered from meta.custom_data.user_id (LS returns it as a string). */
+  digicodeUserId: number | null;
+  /** LemonSqueezy variant id — used to derive planId via env lookup. */
+  variantId: string | null;
+  state: SubscriptionStateInternal;
+  /** Cancellation / period end (when state === 'canceled'). ISO 8601 string. */
   periodEndAt: string | null;
 }

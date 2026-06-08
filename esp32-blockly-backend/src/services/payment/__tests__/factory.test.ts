@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { decideProviderByCountry, getProviderForUser, isPolarSuspended, resolveEffectiveCountry } from '../index';
+import { decideProviderByCountry, getProviderForUser, isPolarSuspended, isLemonSqueezyEnabled, resolveEffectiveCountry } from '../index';
 import type { Bindings } from '../../../types/env';
 
 describe('decideProviderByCountry — pure routing rule', () => {
@@ -8,9 +8,9 @@ describe('decideProviderByCountry — pure routing rule', () => {
     expect(decideProviderByCountry('jp')).toBe('stripe');
   });
 
-  it('any non-JP ISO → polar', () => {
+  it('any non-JP ISO → lemonsqueezy (Phase ②: replaced Polar)', () => {
     for (const c of ['US', 'DE', 'GB', 'FR', 'AU', 'BR', 'TW', 'CA', 'KR']) {
-      expect(decideProviderByCountry(c)).toBe('polar');
+      expect(decideProviderByCountry(c)).toBe('lemonsqueezy');
     }
   });
 
@@ -74,7 +74,7 @@ describe('resolveEffectiveCountry — users.country_code overrides header', () =
     const env = envWithUserCountry('us');
     const country = await resolveEffectiveCountry(env, 42, 'JP');
     expect(country).toBe('us');
-    expect(decideProviderByCountry(country)).toBe('polar');
+    expect(decideProviderByCountry(country)).toBe('lemonsqueezy');
   });
 });
 
@@ -90,11 +90,20 @@ function envWithFactoryFixtures(opts: {
   userCountryCode: string | null;
   polarAvailable?: boolean;
   suspended?: boolean;
+  enabled?: boolean;
 }): Bindings {
   return {
     POLAR_ACCESS_TOKEN: opts.polarAvailable === false ? undefined : 'polar_oat_test',
     POLAR_CHECKOUT_SUSPENDED: opts.suspended ? 'true' : undefined,
     POLAR_SERVER_MODE: 'sandbox',
+    // Phase ②: non-JP now routes to LemonSqueezy, so the factory instantiates
+    // LemonSqueezyProvider (ctor requires an API key + store + variants).
+    LEMONSQUEEZY_API_KEY: 'ls_test_key',
+    LEMONSQUEEZY_STORE_ID: 'store_1',
+    LEMONSQUEEZY_VARIANT_LITE: 'var_lite',
+    LEMONSQUEEZY_VARIANT_PRO: 'var_pro',
+    LEMONSQUEEZY_VARIANT_ENTERPRISE: 'var_ent',
+    LEMONSQUEEZY_ENABLED: opts.enabled ? 'true' : undefined,
     DB: {
       prepare: (sql: string) => ({
         bind: () => ({
@@ -141,13 +150,13 @@ describe('getProviderForUser — composition of lock + country override', () => 
   // Below tests target the integration: an existing-but-fully-canceled
   // subscription must NOT pin the user to the old provider; country
   // resolution drives routing for the next checkout.
-  it('canceled existing subscription does NOT lock provider — country drives (US → polar)', async () => {
+  it('canceled existing subscription does NOT lock provider — country drives (US → lemonsqueezy)', async () => {
     const env = envWithFactoryFixtures({
       subscriptionRow: { status: 'canceled', provider: 'stripe', plan_type: 'lite' },
       userCountryCode: 'US',
     });
     const provider = await getProviderForUser(env, 20, 'JP');
-    expect(provider.id).toBe('polar');
+    expect(provider.id).toBe('lemonsqueezy');
   });
 
   it('canceled existing subscription does NOT lock — country drives (JP → stripe)', async () => {
@@ -187,7 +196,7 @@ describe('getProviderForUser — composition of lock + country override', () => 
     expect(provider.id).toBe('stripe');
   });
 
-  it('no existing subscription + persisted US country_code → polar (header JP ignored)', async () => {
+  it('no existing subscription + persisted US country_code → lemonsqueezy (header JP ignored)', async () => {
     // This is the exact forza_vissel_kobe scenario: the manual override
     // 'US' in users.country_code must outrank the CF-IPCountry='JP' from
     // a JP-resident's request.
@@ -196,7 +205,7 @@ describe('getProviderForUser — composition of lock + country override', () => 
       userCountryCode: 'US',
     });
     const provider = await getProviderForUser(env, 20, 'JP');
-    expect(provider.id).toBe('polar');
+    expect(provider.id).toBe('lemonsqueezy');
   });
 });
 
@@ -230,43 +239,47 @@ describe('isPolarSuspended — POLAR_CHECKOUT_SUSPENDED kill-switch', () => {
   });
 });
 
-describe('Phase ① /checkout guard decision — provider.id === "polar" && isPolarSuspended', () => {
-  // The route returns errorJson('subscription.overseasSuspended', 503) when
-  // this predicate holds, else proceeds to createCheckout. Asserted via the
-  // REAL getProviderForUser resolution + REAL isPolarSuspended.
+describe('Phase ② /checkout guard decision — provider.id === "lemonsqueezy" && !isLemonSqueezyEnabled', () => {
+  // Until LEMONSQUEEZY_ENABLED='true', a non-JP user resolves to lemonsqueezy
+  // but the route returns errorJson('subscription.overseasSuspended', 503).
+  // Asserted via the REAL getProviderForUser resolution + REAL
+  // isLemonSqueezyEnabled. The HTTP 503/200 wiring is exercised by deploy-time
+  // curl (convention: polarWebhookSecret.test.ts). The dormant Polar guard
+  // (provider.id==='polar') is unreachable via country routing now, so the
+  // live overseas guard is the LemonSqueezy one.
   const guardBlocks = (provider: { id: string }, env: Bindings) =>
-    provider.id === 'polar' && isPolarSuspended(env);
+    provider.id === 'lemonsqueezy' && !isLemonSqueezyEnabled(env);
 
-  it('non-JP (US) + suspended → blocked (→ 503)', async () => {
+  it('non-JP (US) + not enabled → blocked (→ 503, 準備中)', async () => {
     const env = envWithFactoryFixtures({
       subscriptionRow: null,
       userCountryCode: 'US',
-      suspended: true,
+      enabled: false,
     });
     const provider = await getProviderForUser(env, 1, 'US');
-    expect(provider.id).toBe('polar');
+    expect(provider.id).toBe('lemonsqueezy');
     expect(guardBlocks(provider, env)).toBe(true);
   });
 
-  it('JP + suspended → NOT blocked (Stripe path unaffected)', async () => {
+  it('JP + not enabled → NOT blocked (Stripe path unaffected)', async () => {
     const env = envWithFactoryFixtures({
       subscriptionRow: null,
       userCountryCode: 'JP',
-      suspended: true,
+      enabled: false,
     });
     const provider = await getProviderForUser(env, 1, 'JP');
     expect(provider.id).toBe('stripe');
     expect(guardBlocks(provider, env)).toBe(false);
   });
 
-  it('non-JP (US) + not suspended → NOT blocked (overseas checkout proceeds)', async () => {
+  it('non-JP (US) + enabled → NOT blocked (overseas LS checkout proceeds)', async () => {
     const env = envWithFactoryFixtures({
       subscriptionRow: null,
       userCountryCode: 'US',
-      suspended: false,
+      enabled: true,
     });
     const provider = await getProviderForUser(env, 1, 'US');
-    expect(provider.id).toBe('polar');
+    expect(provider.id).toBe('lemonsqueezy');
     expect(guardBlocks(provider, env)).toBe(false);
   });
 });
@@ -293,5 +306,44 @@ describe('Phase ① /status polarAvailable = !!POLAR_ACCESS_TOKEN && !isPolarSus
   it('token unset → false regardless of suspend flag', () => {
     expect(polarAvailable(mk(undefined, false))).toBe(false);
     expect(polarAvailable(mk(undefined, true))).toBe(false);
+  });
+});
+
+describe('isLemonSqueezyEnabled — LEMONSQUEEZY_ENABLED go-live gate', () => {
+  const env = (v: string | undefined) =>
+    ({ LEMONSQUEEZY_ENABLED: v }) as unknown as Bindings;
+
+  it("is true only for the exact string 'true'", () => {
+    expect(isLemonSqueezyEnabled(env('true'))).toBe(true);
+  });
+
+  it('is false when unset / non-true (no truthy coercion)', () => {
+    for (const v of [undefined, 'false', '1', 'TRUE', '']) {
+      expect(isLemonSqueezyEnabled(env(v))).toBe(false);
+    }
+  });
+});
+
+describe('Phase ② /status lsAvailable = !!LEMONSQUEEZY_API_KEY && isLemonSqueezyEnabled', () => {
+  // Mirrors subscriptions.ts (same convention as the polarAvailable mirror).
+  const lsAvailable = (env: Bindings) =>
+    !!env.LEMONSQUEEZY_API_KEY && isLemonSqueezyEnabled(env);
+  const mk = (key: string | undefined, enabled: boolean) =>
+    ({
+      LEMONSQUEEZY_API_KEY: key,
+      LEMONSQUEEZY_ENABLED: enabled ? 'true' : undefined,
+    }) as unknown as Bindings;
+
+  it('key set + enabled → true (overseas LS live)', () => {
+    expect(lsAvailable(mk('ls_key', true))).toBe(true);
+  });
+
+  it('key set + not enabled → false (drives the 準備中 UI)', () => {
+    expect(lsAvailable(mk('ls_key', false))).toBe(false);
+  });
+
+  it('key unset → false regardless of enabled', () => {
+    expect(lsAvailable(mk(undefined, true))).toBe(false);
+    expect(lsAvailable(mk(undefined, false))).toBe(false);
   });
 });

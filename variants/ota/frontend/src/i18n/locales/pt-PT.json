@@ -4353,7 +4353,8 @@
     },
     "providerLabel": {
       "stripe": "Pagamento nacional (Stripe)",
-      "polar": "Pagamento internacional (Merchant of Record)"
+      "polar": "Pagamento internacional (Merchant of Record)",
+      "lemonsqueezy": "Pagamento internacional (Merchant of Record)"
     },
     "gracePeriodNote": "O seu plano atual mantém-se disponível até ao fim do período de faturação. Pode subscrever um novo plano após o fim do período atual",
     "alreadyActive": {

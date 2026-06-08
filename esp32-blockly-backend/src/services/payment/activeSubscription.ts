@@ -49,7 +49,7 @@ export async function findBlockingActiveSubscription(
   // recognises. A NULL provider would be a 0027-pre row that never got
   // backfilled, but the migration set NOT NULL DEFAULT 'stripe', so
   // this branch is here for type-narrow safety, not real-world drift.
-  if (row.provider !== 'stripe' && row.provider !== 'polar') return null;
+  if (row.provider !== 'stripe' && row.provider !== 'polar' && row.provider !== 'lemonsqueezy') return null;
 
   return {
     provider: row.provider,

@@ -23,6 +23,7 @@ import {
   decideProviderByCountry,
   getProviderForUser,
   isPolarSuspended,
+  isLemonSqueezyEnabled,
   resolveEffectiveCountry,
 } from '../services/payment';
 import { findBlockingActiveSubscription } from '../services/payment/activeSubscription';
@@ -163,7 +164,9 @@ subscriptions.get('/status', async (c) => {
     const planDef = PLANS[plan as keyof typeof PLANS] || PLANS.free;
     const subStatus = subscription?.status ?? 'free';
     const subProvider =
-      subscription?.provider === 'stripe' || subscription?.provider === 'polar'
+      subscription?.provider === 'stripe' ||
+      subscription?.provider === 'polar' ||
+      subscription?.provider === 'lemonsqueezy'
         ? subscription.provider
         : null;
 
@@ -191,6 +194,9 @@ subscriptions.get('/status', async (c) => {
       // Organization Access Token; the Polar dashboard product UUIDs
       // can be set later without re-deploying.
       polarAvailable: !!c.env.POLAR_ACCESS_TOKEN && !isPolarSuspended(c.env),
+      // Phase ② (Session 163): is overseas LemonSqueezy checkout live?
+      // Frontend shows "準備中" for non-JP when this is false (deploy ≠ activation).
+      lsAvailable: !!c.env.LEMONSQUEEZY_API_KEY && isLemonSqueezyEnabled(c.env),
     });
   } catch (error) {
     console.error('Get subscription status error:', error);
@@ -246,6 +252,13 @@ subscriptions.post('/checkout', async (c) => {
       if (provider.id === 'polar' && isPolarSuspended(c.env)) {
         return errorJson(c, 'subscription.overseasSuspended', 503);
       }
+      // Phase ② (Session 163): overseas LemonSqueezy go-live gate. Until
+      // LEMONSQUEEZY_ENABLED='true', a non-JP user routes to lemonsqueezy but
+      // new checkout is held at "準備中" (deploy ≠ activation). Reuses the same
+      // 503 / overseasSuspended response as the Polar suspend.
+      if (provider.id === 'lemonsqueezy' && !isLemonSqueezyEnabled(c.env)) {
+        return errorJson(c, 'subscription.overseasSuspended', 503);
+      }
 
       const origin = c.req.header('Origin') || 'https://code.fablab-westharima.jp';
 
@@ -285,12 +298,13 @@ subscriptions.post('/portal', async (c) => {
     const { userId } = c.get('user');
 
     const sub = await c.env.DB.prepare(
-      `SELECT provider, stripe_customer_id, polar_customer_id
+      `SELECT provider, stripe_customer_id, polar_customer_id, lemonsqueezy_customer_id
        FROM subscriptions WHERE user_id = ?`,
     ).bind(userId).first<{
       provider: string | null;
       stripe_customer_id: string | null;
       polar_customer_id: string | null;
+      lemonsqueezy_customer_id: string | null;
     }>();
 
     if (!sub) {
@@ -301,7 +315,11 @@ subscriptions.post('/portal', async (c) => {
     const provider = await getProviderForUser(c.env, userId, country);
 
     const customerId =
-      provider.id === 'stripe' ? sub.stripe_customer_id : sub.polar_customer_id;
+      provider.id === 'stripe'
+        ? sub.stripe_customer_id
+        : provider.id === 'lemonsqueezy'
+          ? sub.lemonsqueezy_customer_id
+          : sub.polar_customer_id;
 
     if (!customerId) {
       // Provider does not have a customer record yet — likely the user

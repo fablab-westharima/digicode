@@ -73,6 +73,26 @@ describe('deriveEffectivePlanState — polar availability fallback', () => {
   });
 });
 
+describe('deriveEffectivePlanState — lemonsqueezy (Phase ②: live overseas MoR)', () => {
+  it('returns the raw state unchanged when LemonSqueezy is available (live)', () => {
+    expect(deriveEffectivePlanState('A', 'lemonsqueezy', true)).toBe('A');
+    expect(deriveEffectivePlanState('B', 'lemonsqueezy', true)).toBe('B');
+    expect(deriveEffectivePlanState('C', 'lemonsqueezy', true)).toBe('C');
+  });
+
+  it('maps A → A_COMING_SOON when LemonSqueezy expected but not yet live (準備中)', () => {
+    expect(deriveEffectivePlanState('A', 'lemonsqueezy', false)).toBe('A_COMING_SOON');
+  });
+
+  it('maps C → B when LemonSqueezy expected but not yet live (do not strand the user)', () => {
+    expect(deriveEffectivePlanState('C', 'lemonsqueezy', false)).toBe('B');
+  });
+
+  it('leaves B unchanged when LemonSqueezy expected but not yet live', () => {
+    expect(deriveEffectivePlanState('B', 'lemonsqueezy', false)).toBe('B');
+  });
+});
+
 describe('AlreadyActiveError', () => {
   it('preserves provider + plan as instance fields', () => {
     const err = new AlreadyActiveError('Already active', 'stripe', 'pro');

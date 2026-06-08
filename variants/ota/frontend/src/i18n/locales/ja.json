@@ -4359,7 +4359,8 @@
     },
     "providerLabel": {
       "stripe": "国内決済 (Stripe)",
-      "polar": "海外決済 (Merchant of Record)"
+      "polar": "海外決済 (Merchant of Record)",
+      "lemonsqueezy": "海外決済 (Merchant of Record)"
     },
     "gracePeriodNote": "現在のプランは契約期間の終了まで引き続きご利用いただけます。期間終了後に新しいプランをお申し込みいただけます",
     "alreadyActive": {
