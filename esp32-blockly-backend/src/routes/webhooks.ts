@@ -16,6 +16,7 @@ import type { Bindings } from '../types/env';
 import { errorJson } from '../utils/errorJson';
 import { normalizePolarEvent } from '../services/payment/polarEventNormalizer';
 import { applyPolarEvent } from '../services/payment/applyEvent';
+import { isPolarSuspended } from '../services/payment/index';
 import { normalizeLemonSqueezyEvent } from '../services/payment/lemonSqueezyEventNormalizer';
 import { applyLemonSqueezyEvent } from '../services/payment/applyLsEvent';
 import { constantTimeEqual } from '../utils/crypto';
@@ -354,6 +355,20 @@ webhooks.get('/stripe/health', (c) => {
 // layer: verify → idempotency → normalize → apply.
 
 webhooks.post('/polar', async (c) => {
+  // 0. Session 165 T2 — Polar dormant 化に伴う webhook 経路の構造遮断。
+  //    背景: POLAR_WEBHOOK_SECRET は Polar dashboard ログイン不能 (S164 R3) のため
+  //    自社側で rotate / 無効化できない = 漏洩時に署名検証ベースの防御が立て直せない。
+  //    対策: checkout guard (subscriptions.ts の isPolarSuspended) と同型の flag 駆動で、
+  //    署名検証より前に 503 で遮断。rotate 不能な secret に依存せず経路自体を塞ぐ。
+  //    本番 Polar 契約者 0 ・新規 checkout も 503 ゆえ既存 lifecycle への実害なし。
+  //    Polar 復権時は POLAR_CHECKOUT_SUSPENDED を外すだけで webhook も復帰。
+  //    注: 連続非2xx で Polar が webhook endpoint を auto-disable する可能性は、本 file
+  //    既存コメント (§4 idempotency) 由来の記述で、Polar 公式仕様としては本 session 未検証
+  //    (推察)。仮に auto-disable されても「経路無効化」の望ましい方向ゆえ guard 設計は不変。
+  if (isPolarSuspended(c.env)) {
+    return errorJson(c, 'subscription.overseasSuspended', 503);
+  }
+
   // 1. Read the raw body BEFORE the JSON parse — Standard Webhooks
   //    signs the bytes Polar sent, not the post-JSON-roundtrip shape.
   const body = await c.req.text();
@@ -492,6 +507,9 @@ webhooks.get('/polar/health', (c) => {
     status: 'ok',
     webhookSecretConfigured: !!c.env.POLAR_WEBHOOK_SECRET,
     serverMode: c.env.POLAR_SERVER_MODE ?? 'sandbox',
+    // Session 165 T2: webhook 経路が suspend guard で遮断されているか (POST /polar が 503)。
+    // 監視が dormant 実態を反映できるよう health に明示。
+    suspended: isPolarSuspended(c.env),
   });
 });
 
