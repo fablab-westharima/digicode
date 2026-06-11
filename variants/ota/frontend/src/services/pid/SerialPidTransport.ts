@@ -14,7 +14,11 @@ interface SerialLike {
 export class SerialPidTransport implements IPidTransport {
   readonly kind = 'serial' as const;
 
-  constructor(private readonly serial: SerialLike = serialService) {}
+  private readonly serial: SerialLike;
+
+  constructor(serial: SerialLike = serialService) {
+    this.serial = serial;
+  }
 
   async setPid(name: string, kp: number, ki: number, kd: number): Promise<void> {
     const ok = await this.serial.writeLine(`SET_PID:${name},${kp},${ki},${kd}`);

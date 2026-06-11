@@ -9,7 +9,11 @@ import type { IPidTransport } from './IPidTransport';
 export class HttpPidTransport implements IPidTransport {
   readonly kind = 'http' as const;
 
-  constructor(private readonly deviceUrl: string) {}
+  private readonly deviceUrl: string;
+
+  constructor(deviceUrl: string) {
+    this.deviceUrl = deviceUrl;
+  }
 
   async setPid(name: string, kp: number, ki: number, kd: number): Promise<void> {
     const response = await fetch(`${this.deviceUrl}/pid`, {

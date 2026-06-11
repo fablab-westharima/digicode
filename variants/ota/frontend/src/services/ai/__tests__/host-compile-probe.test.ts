@@ -156,6 +156,6 @@ describe('Phase X-2 commit 2: host-compile probe (env DIGICODE_COMPILE_API_URL g
       });
 
       expect(response.status, `${fixture.id}: HTTP status not 200, response body: ${await response.text().catch(() => 'unreadable')}`).toBe(200);
-    }, { timeout: 300000 });
+    }, 300000); // vitest it() 3rd arg = timeout(ms) は number overload (object {timeout} は overload 不一致)
   }
 });

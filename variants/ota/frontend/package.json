@@ -11,7 +11,7 @@
     "build:unified-controller-bundle": "npx tsx scripts/build-unified-controller-bundle.ts",
     "prebuild": "npm run build:wifi-controller-bundle && npm run build:unified-controller-bundle && npm run generate:ai-catalog && npx tsx scripts/audit-ai-catalog.ts && npx tsx scripts/audit-data-consistency.ts && npx tsx scripts/audit-ble-controller.ts && npx tsx scripts/audit-i18n-block-coverage.ts && npx tsx scripts/audit-sample-structural.ts",
     "build": "vite build",
-    "typecheck": "tsc -b",
+    "typecheck": "tsc -b --force",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",

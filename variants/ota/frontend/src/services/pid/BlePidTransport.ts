@@ -15,7 +15,11 @@ interface BleLike {
 export class BlePidTransport implements IPidTransport {
   readonly kind = 'ble' as const;
 
-  constructor(private readonly ble: BleLike = bluetoothService) {}
+  private readonly ble: BleLike;
+
+  constructor(ble: BleLike = bluetoothService) {
+    this.ble = ble;
+  }
 
   async setPid(name: string, kp: number, ki: number, kd: number): Promise<void> {
     const ok = await this.ble.writeLine(`SET_PID:${name},${kp},${ki},${kd}`);

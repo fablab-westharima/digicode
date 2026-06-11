@@ -54,7 +54,8 @@ function genFromBlock(blockType: string, fields: Record<string, string | number>
     for (const [key, value] of Object.entries(fields)) {
       block.setFieldValue(String(value), key);
     }
-    block.initSvg && block.initSvg();
+    // headless Blockly.Workspace では initSvg 不要 (rendering 専用、workspaceToCode は
+    // headless block から直接 emit。 Block 型に initSvg は無く erasableSyntaxOnly 下で型エラー)
     return javascriptGenerator.workspaceToCode(ws);
   } finally {
     ws.dispose();
