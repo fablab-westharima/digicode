@@ -3348,8 +3348,8 @@
         "description": "Button, PIR, Tilt Switch, Limit Switch, etc."
       },
       "sensor_analog": {
-        "name": "Analog Sensors",
-        "description": "Potentiometer, Photoresistor, LM35, Joystick, etc."
+        "name": "Sensores analógicos",
+        "description": "Potenciómetro, fotorresistencia, LM35, joystick, etc. Se recomienda ADC1 (GPIO 32-39) — los pines ADC2 (GPIO 0/2/4/12-15/25-27) no pueden leer en analógico con el WiFi activo"
       }
     },
     "subtitle": "Administrar configuración de asignación de pines",

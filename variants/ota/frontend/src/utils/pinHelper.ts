@@ -73,6 +73,43 @@ export function getSensorPins() {
 }
 
 /**
+ * デジタルセンサー（個別）のピン番号を取得 (BUG-089 (a') 配線、Session 166)
+ */
+export function getDigitalSensorPins() {
+  return {
+    buttonSensor: getPinFromPreset('buttonSensor'),
+    pirSensor: getPinFromPreset('pirSensor'),
+    tiltSensor: getPinFromPreset('tiltSensor'),
+    vibrationSensor: getPinFromPreset('vibrationSensor'),
+    hallSensor: getPinFromPreset('hallSensor'),
+    photoInterrupter: getPinFromPreset('photoInterrupter'),
+    irObstacleSensor: getPinFromPreset('irObstacleSensor'),
+    flameSensorDigital: getPinFromPreset('flameSensorDigital'),
+    gasSensorDigital: getPinFromPreset('gasSensorDigital'),
+    limitSwitch: getPinFromPreset('limitSwitch'),
+  };
+}
+
+/**
+ * アナログセンサー（個別）のピン番号を取得 (BUG-089 (a') 配線、Session 166)
+ */
+export function getAnalogSensorPins() {
+  return {
+    potentiometer: getPinFromPreset('potentiometer'),
+    ldrSensor: getPinFromPreset('ldrSensor'),
+    thermistorSensor: getPinFromPreset('thermistorSensor'),
+    lm35Sensor: getPinFromPreset('lm35Sensor'),
+    gasSensorAnalog: getPinFromPreset('gasSensorAnalog'),
+    soilMoistureSensor: getPinFromPreset('soilMoistureSensor'),
+    waterLevelSensor: getPinFromPreset('waterLevelSensor'),
+    flameSensorAnalog: getPinFromPreset('flameSensorAnalog'),
+    irReflectiveSensor: getPinFromPreset('irReflectiveSensor'),
+    joystickX: getPinFromPreset('joystickX'),
+    joystickY: getPinFromPreset('joystickY'),
+  };
+}
+
+/**
  * 汎用Servoのピン番号を取得
  */
 export function getServoPins() {

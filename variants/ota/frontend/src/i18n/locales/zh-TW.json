@@ -3348,8 +3348,8 @@
         "description": "Button, PIR, Tilt Switch, Limit Switch, etc."
       },
       "sensor_analog": {
-        "name": "Analog Sensors",
-        "description": "Potentiometer, Photoresistor, LM35, Joystick, etc."
+        "name": "類比感測器",
+        "description": "電位器、光敏電阻、LM35、搖桿等。建議使用 ADC1 (GPIO 32-39) — WiFi 啟用時 ADC2 腳位 (GPIO 0/2/4/12-15/25-27) 無法類比讀取"
       }
     },
     "subtitle": "管理引腳分配設定",

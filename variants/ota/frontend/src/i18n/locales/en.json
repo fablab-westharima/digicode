@@ -3576,7 +3576,7 @@
       },
       "sensor_analog": {
         "name": "Analog Sensors",
-        "description": "Potentiometer, Photoresistor, LM35, Joystick, etc."
+        "description": "Potentiometer, Photoresistor, LM35, Joystick, etc. ADC1 (GPIO 32-39) recommended — ADC2 pins (GPIO 0/2/4/12-15/25-27) cannot do analog reads while WiFi is active"
       }
     },
     "subtitle": "Manage pin assignment settings",

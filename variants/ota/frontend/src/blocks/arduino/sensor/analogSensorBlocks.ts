@@ -14,6 +14,7 @@
 import * as Blockly from 'blockly';
 import { javascriptGenerator, Order } from 'blockly/javascript';
 import { withAdc2WifiWarning } from '../../sharedBlockTooltips';
+import { getAnalogSensorPins, getPinFromPreset } from '@/utils/pinHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -25,9 +26,10 @@ const SENSOR_COLOR = '#10b981';  // Green - アナログセンサー
 // ========================================
 Blockly.Blocks['potentiometer'] = {
   init: function(this: Blockly.Block) {
+    const pins = getAnalogSensorPins();
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_POTENTIOMETER_LABEL || 'Potentiometer Pin')
-      .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN')
+      .appendField(new Blockly.FieldNumber(pins.potentiometer, 0, 39), 'PIN')
       .appendField(new Blockly.FieldDropdown([
         [Blockly.Msg.BLOCKS_SENSOR_POTENTIOMETER_RAW || 'Raw (0-4095)', 'raw'],
         [Blockly.Msg.BLOCKS_SENSOR_POTENTIOMETER_PERCENT || 'Percent (0-100)', 'percent'],
@@ -61,9 +63,10 @@ javascriptGenerator.forBlock['potentiometer'] = function(block: Blockly.Block) {
 // ========================================
 Blockly.Blocks['ldr_sensor'] = {
   init: function(this: Blockly.Block) {
+    const pins = getAnalogSensorPins();
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_LDR_LABEL || 'Light Sensor (LDR) Pin')
-      .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN')
+      .appendField(new Blockly.FieldNumber(pins.ldrSensor, 0, 39), 'PIN')
       .appendField(new Blockly.FieldDropdown([
         [Blockly.Msg.BLOCKS_SENSOR_LDR_RAW || 'Raw (0-4095)', 'raw'],
         [Blockly.Msg.BLOCKS_SENSOR_LDR_PERCENT || 'Percent (0-100)', 'percent']
@@ -94,9 +97,10 @@ javascriptGenerator.forBlock['ldr_sensor'] = function(block: Blockly.Block) {
 // ========================================
 Blockly.Blocks['thermistor_sensor'] = {
   init: function(this: Blockly.Block) {
+    const pins = getAnalogSensorPins();
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_THERMISTOR_LABEL || 'Thermistor Pin')
-      .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN')
+      .appendField(new Blockly.FieldNumber(pins.thermistorSensor, 0, 39), 'PIN')
       .appendField(Blockly.Msg.BLOCKS_SENSOR_THERMISTOR_UNIT || 'Temp (°C)');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
@@ -126,9 +130,10 @@ javascriptGenerator.forBlock['thermistor_sensor'] = function(block: Blockly.Bloc
 // ========================================
 Blockly.Blocks['lm35_sensor'] = {
   init: function(this: Blockly.Block) {
+    const pins = getAnalogSensorPins();
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_LM35_LABEL || 'LM35 Pin')
-      .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN')
+      .appendField(new Blockly.FieldNumber(pins.lm35Sensor, 0, 39), 'PIN')
       .appendField(Blockly.Msg.BLOCKS_SENSOR_LM35_UNIT || 'Temp (°C)');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
@@ -151,9 +156,10 @@ javascriptGenerator.forBlock['lm35_sensor'] = function(block: Blockly.Block) {
 // ========================================
 Blockly.Blocks['gas_sensor_analog'] = {
   init: function(this: Blockly.Block) {
+    const pins = getAnalogSensorPins();
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_GAS_LABEL || 'Gas Sensor(A) Pin')
-      .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN')
+      .appendField(new Blockly.FieldNumber(pins.gasSensorAnalog, 0, 39), 'PIN')
       .appendField(new Blockly.FieldDropdown([
         [Blockly.Msg.BLOCKS_SENSOR_GAS_RAW || 'Raw (0-4095)', 'raw'],
         [Blockly.Msg.BLOCKS_SENSOR_GAS_PERCENT || 'Percent (0-100)', 'percent']
@@ -187,9 +193,10 @@ javascriptGenerator.forBlock['gas_sensor_analog'] = function(block: Blockly.Bloc
 // ========================================
 Blockly.Blocks['soil_moisture_sensor'] = {
   init: function(this: Blockly.Block) {
+    const pins = getAnalogSensorPins();
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_SOILMOISTURE_LABEL || 'Soil Moisture Sensor Pin')
-      .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN')
+      .appendField(new Blockly.FieldNumber(pins.soilMoistureSensor, 0, 39), 'PIN')
       .appendField(new Blockly.FieldDropdown([
         [Blockly.Msg.BLOCKS_SENSOR_SOILMOISTURE_RAW || 'Raw (0-4095)', 'raw'],
         [Blockly.Msg.BLOCKS_SENSOR_SOILMOISTURE_PERCENT || 'Percent (0-100)', 'percent']
@@ -221,9 +228,10 @@ javascriptGenerator.forBlock['soil_moisture_sensor'] = function(block: Blockly.B
 // ========================================
 Blockly.Blocks['water_level_sensor'] = {
   init: function(this: Blockly.Block) {
+    const pins = getAnalogSensorPins();
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_WATERLEVEL_LABEL || 'Water Level Sensor Pin')
-      .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN')
+      .appendField(new Blockly.FieldNumber(pins.waterLevelSensor, 0, 39), 'PIN')
       .appendField(new Blockly.FieldDropdown([
         [Blockly.Msg.BLOCKS_SENSOR_WATERLEVEL_RAW || 'Raw (0-4095)', 'raw'],
         [Blockly.Msg.BLOCKS_SENSOR_WATERLEVEL_PERCENT || 'Percent (0-100)', 'percent']
@@ -254,9 +262,10 @@ javascriptGenerator.forBlock['water_level_sensor'] = function(block: Blockly.Blo
 // ========================================
 Blockly.Blocks['flame_sensor_analog'] = {
   init: function(this: Blockly.Block) {
+    const pins = getAnalogSensorPins();
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_FLAME_LABEL || 'Flame Sensor(A) Pin')
-      .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN')
+      .appendField(new Blockly.FieldNumber(pins.flameSensorAnalog, 0, 39), 'PIN')
       .appendField(new Blockly.FieldDropdown([
         [Blockly.Msg.BLOCKS_SENSOR_FLAME_RAW || 'Raw (0-4095)', 'raw'],
         [Blockly.Msg.BLOCKS_SENSOR_FLAME_PERCENT || 'Percent (0-100)', 'percent']
@@ -288,9 +297,10 @@ javascriptGenerator.forBlock['flame_sensor_analog'] = function(block: Blockly.Bl
 // ========================================
 Blockly.Blocks['ir_reflective_sensor'] = {
   init: function(this: Blockly.Block) {
+    const pins = getAnalogSensorPins();
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_IRREFLECTIVE_LABEL || 'IR Reflective Sensor Pin')
-      .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN')
+      .appendField(new Blockly.FieldNumber(pins.irReflectiveSensor, 0, 39), 'PIN')
       .appendField(new Blockly.FieldDropdown([
         [Blockly.Msg.BLOCKS_SENSOR_IRREFLECTIVE_RAW || 'Raw (0-4095)', 'raw'],
         [Blockly.Msg.BLOCKS_SENSOR_IRREFLECTIVE_PERCENT || 'Percent (0-100)', 'percent']
@@ -321,14 +331,16 @@ javascriptGenerator.forBlock['ir_reflective_sensor'] = function(block: Blockly.B
 // ========================================
 Blockly.Blocks['joystick_sensor'] = {
   init: function(this: Blockly.Block) {
+    const pins = getAnalogSensorPins();
+    const axisField = new Blockly.FieldDropdown([
+      [Blockly.Msg.BLOCKS_SENSOR_JOYSTICK_XAXIS || 'X-Axis', 'X'],
+      [Blockly.Msg.BLOCKS_SENSOR_JOYSTICK_YAXIS || 'Y-Axis', 'Y']
+    ]);
     this.appendDummyInput()
       .appendField(Blockly.Msg.BLOCKS_SENSOR_JOYSTICK_LABEL || 'Joystick')
-      .appendField(new Blockly.FieldDropdown([
-        [Blockly.Msg.BLOCKS_SENSOR_JOYSTICK_XAXIS || 'X-Axis', 'X'],
-        [Blockly.Msg.BLOCKS_SENSOR_JOYSTICK_YAXIS || 'Y-Axis', 'Y']
-      ]) as unknown as Blockly.Field, 'AXIS')
+      .appendField(axisField as unknown as Blockly.Field, 'AXIS')
       .appendField(Blockly.Msg.BLOCKS_SENSOR_JOYSTICK_PIN || 'Pin')
-      .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN')
+      .appendField(new Blockly.FieldNumber(pins.joystickX, 0, 39), 'PIN')
       .appendField(new Blockly.FieldDropdown([
         [Blockly.Msg.BLOCKS_SENSOR_JOYSTICK_RAW || 'Raw (0-4095)', 'raw'],
         [Blockly.Msg.BLOCKS_SENSOR_JOYSTICK_PERCENT || 'Percent (-100 to 100)', 'percent']
@@ -336,6 +348,22 @@ Blockly.Blocks['joystick_sensor'] = {
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
     this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_SENSOR_JOYSTICK_TOOLTIP || 'Read joystick position'));
+    // BUG-089 (ii): AXIS 切替時、PIN が切替前 axis の preset 値のまま (= 未上書き) なら
+    // 新 axis の preset 値に追従させる。手入力済み (preset と不一致) なら触らない。
+    // XML 読込時も発火するが、field 適用順 = append 順 (AXIS が PIN より先) のため
+    // 後続の PIN 保存値適用で上書きされ保存値は保持される (pinPresetSensorWiring.test.ts ④)。
+    // 受容済み制約: 手入力値が切替前 preset と偶然同値の場合、未編集と区別できず再 default される
+    // (dirty state 非追跡ゆえ原理的に不可避、実害なし)。
+    axisField.setValidator((newAxis: string) => {
+      const oldAxis = axisField.getValue();
+      if (newAxis === oldAxis) return newAxis;
+      const pinField = this.getField('PIN');
+      const oldDefault = getPinFromPreset(oldAxis === 'Y' ? 'joystickY' : 'joystickX');
+      if (pinField && Number(pinField.getValue()) === oldDefault) {
+        pinField.setValue(getPinFromPreset(newAxis === 'Y' ? 'joystickY' : 'joystickX'));
+      }
+      return newAxis;
+    });
   }
 };
 
