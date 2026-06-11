@@ -79,6 +79,19 @@ export interface CompileResult {
     remoteSha: string | undefined;
     reason: 'sha-mismatch' | 'legacy-image';
   };
+  /**
+   * Session 165 T7: どの compile endpoint が応答したかと、その endpoint の
+   * /health gitSha。failover 発生の事後追跡用（version gate ではない、表示のみ）。
+   * endpoint ラベル自体が failover の確定情報（'railway-direct' なら CF LB を
+   * 経由せず Railway 直に落ちた = CF LB infra 障害）。
+   * gitSha は「使用した endpoint と同一 URL」の /health を別途 fetch した近似値:
+   * CF LB (cf-lb) 経由の場合、SSE compile を処理した origin と /health 応答の
+   * origin は LB ルーティングにより異なり得る（厳密値ではない、下記 fetchEndpointGitSha 参照）。
+   */
+  serverInfo?: {
+    endpoint: 'cf-lb' | 'railway-direct' | 'local';
+    gitSha?: string;
+  };
 }
 
 export type { CompileServerMode };
@@ -101,6 +114,28 @@ function base64ToUint8Array(base64: string): Uint8Array {
     bytes[i] = binary.charCodeAt(i);
   }
   return bytes;
+}
+
+/**
+ * Session 165 T7: compile に使った endpoint と同一 base URL の /health を fetch し
+ * gitSha を返す（表示専用、失敗時 undefined）。version gate は作らない。
+ *
+ * 🔴 近似である点に注意: CF LB (api-compile.digital-fab.jp) 経由の場合、SSE compile を
+ * 処理した origin (ML30 / Railway) と、この /health 応答を返す origin は CF LB の
+ * ルーティングにより異なり得る。よって cf-lb endpoint の gitSha は「直近にこの URL の
+ * /health を返した origin の版」であり、compile を実行した origin の版と厳密一致は保証
+ * されない。厳密化 (capi の SSE complete event に gitSha 同梱) は capi 変更 = ML30
+ * cutover を伴うため本 session では非対応 → plans/active/62_compile-gitsha-in-sse.md に TODO。
+ */
+async function fetchEndpointGitSha(baseUrl: string): Promise<string | undefined> {
+  try {
+    const res = await fetch(`${baseUrl}/health`, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) return undefined;
+    const body = (await res.json()) as { gitSha?: unknown };
+    return typeof body.gitSha === 'string' && body.gitSha !== 'unknown' ? body.gitSha : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 /**
@@ -546,6 +581,10 @@ export const compileService = {
             version: result.version,
             template: result.template,
           });
+          result.serverInfo = {
+            endpoint: 'cf-lb',
+            gitSha: await fetchEndpointGitSha(COMPILE_SERVERS.primary),
+          };
           incrementUsage();
           return result;
         }
@@ -569,6 +608,10 @@ export const compileService = {
             version: result.version,
             template: result.template,
           });
+          result.serverInfo = {
+            endpoint: 'railway-direct',
+            gitSha: await fetchEndpointGitSha(COMPILE_SERVERS.fallback),
+          };
           incrementUsage();
         }
         return result;
@@ -630,6 +673,10 @@ export const compileService = {
           version: result.version,
           template: result.template,
         });
+        result.serverInfo = {
+          endpoint: 'local',
+          gitSha: await fetchEndpointGitSha(serverUrl),
+        };
       }
       return result;
     } catch (error) {

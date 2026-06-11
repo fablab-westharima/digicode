@@ -433,7 +433,14 @@
       "server": {
         "sending": "正在向伺服器發送編譯請求...",
         "sendingUsb": "正在向伺服器發送編譯請求（connectionType=usb）...",
-        "sendingBle": "正在向伺服器發送編譯請求（connectionType=ble）..."
+        "sendingBle": "正在向伺服器發送編譯請求（connectionType=ble）...",
+        "buildServer": "建置伺服器: {{endpoint}} (gitSha: {{gitSha}})",
+        "gitShaUnknown": "未知",
+        "endpoint": {
+          "cf-lb": "雲端 (CF LB → ML30/Railway)",
+          "railway-direct": "Railway 直連 (繞過 CF LB)",
+          "local": "本機"
+        }
       },
       "result": {
         "compileSuccess": "✓ 編譯成功！",

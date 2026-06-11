@@ -433,7 +433,14 @@
       "server": {
         "sending": "Enviando solicitud de compilación al servidor...",
         "sendingUsb": "Enviando solicitud de compilación al servidor (connectionType=usb)...",
-        "sendingBle": "Enviando solicitud de compilación al servidor (connectionType=ble)..."
+        "sendingBle": "Enviando solicitud de compilación al servidor (connectionType=ble)...",
+        "buildServer": "Servidor de compilación: {{endpoint}} (gitSha: {{gitSha}})",
+        "gitShaUnknown": "desconocido",
+        "endpoint": {
+          "cf-lb": "Nube (CF LB → ML30/Railway)",
+          "railway-direct": "Railway directo (CF LB omitido)",
+          "local": "Local"
+        }
       },
       "result": {
         "compileSuccess": "✓ ¡Compilación exitosa!",

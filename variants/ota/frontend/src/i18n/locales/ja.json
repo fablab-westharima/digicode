@@ -433,7 +433,14 @@
       "server": {
         "sending": "サーバーにコンパイルリクエスト送信中...",
         "sendingUsb": "サーバーにコンパイルリクエスト送信中（connectionType=usb）...",
-        "sendingBle": "サーバーにコンパイルリクエスト送信中（connectionType=ble）..."
+        "sendingBle": "サーバーにコンパイルリクエスト送信中（connectionType=ble）...",
+        "buildServer": "ビルドサーバー: {{endpoint}} (gitSha: {{gitSha}})",
+        "gitShaUnknown": "不明",
+        "endpoint": {
+          "cf-lb": "クラウド (CF LB → ML30/Railway)",
+          "railway-direct": "Railway 直 (CF LB バイパス)",
+          "local": "ローカル"
+        }
       },
       "result": {
         "compileSuccess": "✓ コンパイル成功！",

@@ -670,6 +670,21 @@ export function EditorPage() {
         if (result.fullPackage) {
           addLog(t('editor.compileLog.result.fullPackageInfo'));
         }
+        // Session 165 T7: 応答した compile endpoint と gitSha を 1 行表示 (failover 事後追跡、表示のみ)。
+        // endpoint ラベルが failover の確定情報 (railway-direct = CF LB を経由せず Railway 直 = CF LB 障害)。
+        // gitSha は同一 URL の /health を別 fetch した近似値 (CF LB は SSE origin と /health origin が異なり得る)。
+        if (result.serverInfo) {
+          const endpointLabel = t(`editor.compileLog.server.endpoint.${result.serverInfo.endpoint}`, {
+            defaultValue: result.serverInfo.endpoint,
+          });
+          const shaLabel = result.serverInfo.gitSha
+            ?? t('editor.compileLog.server.gitShaUnknown', { defaultValue: '不明' });
+          addLog(t('editor.compileLog.server.buildServer', {
+            endpoint: endpointLabel,
+            gitSha: shaLabel,
+            defaultValue: 'ビルドサーバー: {{endpoint}} (gitSha: {{gitSha}})',
+          }));
+        }
 
         // fullPackageの場合もfirmware.binだけを保存（OTA用）
         compiledBinaryRef.current = firmwareBinary;

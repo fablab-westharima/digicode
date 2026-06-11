@@ -433,7 +433,14 @@
       "server": {
         "sending": "Sending compile request to server...",
         "sendingUsb": "Sending compile request to server (connectionType=usb)...",
-        "sendingBle": "Sending compile request to server (connectionType=ble)..."
+        "sendingBle": "Sending compile request to server (connectionType=ble)...",
+        "buildServer": "Build server: {{endpoint}} (gitSha: {{gitSha}})",
+        "gitShaUnknown": "unknown",
+        "endpoint": {
+          "cf-lb": "Cloud (CF LB → ML30/Railway)",
+          "railway-direct": "Railway direct (CF LB bypassed)",
+          "local": "Local"
+        }
       },
       "result": {
         "compileSuccess": "✓ Compile succeeded!",
