@@ -2384,7 +2384,8 @@
       "rightLeg": "pino da coxa direita",
       "leftFoot": "pino do tornozelo esquerdo",
       "rightFoot": "pino do tornozelo direito",
-      "pin": "pino"
+      "pin": "pino",
+      "adc2WifiWarning": "⚠️ Os pinos ADC2 (GPIO 0/2/4/12-15/25-27) não fazem leitura analógica com o WiFi ativo. Use ADC1 (GPIO 32-39)."
     },
     "array": {
       "1d": "1D",
@@ -3865,7 +3866,8 @@
     "windowsOnly": "Apenas Windows",
     "bonjourDesc": "O serviço mDNS necessário para o DigiCode Finder detectar dispositivos. Não é necessário no macOS/Linux (pré-instalado).",
     "restartRequired": "⚠ É necessário reiniciar o PC após a instalação.",
-    "downloadApple": "Baixar (oficial da Apple)"
+    "downloadApple": "Baixar (oficial da Apple)",
+    "adc2Note": "⚠️ Os pinos ADC2 (GPIO 0/2/4/12-15/25-27) não fazem leitura analógica com o WiFi ativo (o WiFi ocupa o ADC2). Use ADC1 (GPIO 32-39) para sensores analógicos."
   },
   "outdatedCompileServer": {
     "title": "É necessário atualizar o compile-server",

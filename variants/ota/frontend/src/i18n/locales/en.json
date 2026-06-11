@@ -1243,7 +1243,8 @@
     "windowsOnly": "Windows only",
     "bonjourDesc": "The mDNS service required for DigiCode Finder to discover devices. Not needed on macOS/Linux (pre-installed).",
     "restartRequired": "⚠ A PC restart is required after installation.",
-    "downloadApple": "Download (Apple official)"
+    "downloadApple": "Download (Apple official)",
+    "adc2Note": "⚠️ ADC2 pins (GPIO 0/2/4/12-15/25-27) cannot read analog while WiFi is active (WiFi occupies ADC2). Use ADC1 (GPIO 32-39) for analog sensors."
   },
   "outdatedCompileServer": {
     "title": "Compile server update required",
@@ -2610,7 +2611,8 @@
       "rightLeg": "right thigh pin",
       "leftFoot": "left ankle pin",
       "rightFoot": "right ankle pin",
-      "pin": "pin"
+      "pin": "pin",
+      "adc2WifiWarning": "⚠️ ADC2 pins (GPIO 0/2/4/12-15/25-27) cannot do analog reads while WiFi is active. Use ADC1 (GPIO 32-39)."
     },
     "array": {
       "1d": "1D",

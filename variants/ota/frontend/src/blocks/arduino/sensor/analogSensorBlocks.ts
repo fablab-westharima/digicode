@@ -13,6 +13,7 @@
  */
 import * as Blockly from 'blockly';
 import { javascriptGenerator, Order } from 'blockly/javascript';
+import { withAdc2WifiWarning } from '../../sharedBlockTooltips';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -34,7 +35,7 @@ Blockly.Blocks['potentiometer'] = {
       ]) as unknown as Blockly.Field, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_POTENTIOMETER_TOOLTIP || 'Read potentiometer value');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_SENSOR_POTENTIOMETER_TOOLTIP || 'Read potentiometer value'));
   }
 };
 
@@ -69,7 +70,7 @@ Blockly.Blocks['ldr_sensor'] = {
       ]) as unknown as Blockly.Field, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_LDR_TOOLTIP || 'Measure light intensity');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_SENSOR_LDR_TOOLTIP || 'Measure light intensity'));
   }
 };
 
@@ -99,7 +100,7 @@ Blockly.Blocks['thermistor_sensor'] = {
       .appendField(Blockly.Msg.BLOCKS_SENSOR_THERMISTOR_UNIT || 'Temp (°C)');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_THERMISTOR_TOOLTIP || 'Measure temperature with NTC thermistor');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_SENSOR_THERMISTOR_TOOLTIP || 'Measure temperature with NTC thermistor'));
   }
 };
 
@@ -131,7 +132,7 @@ Blockly.Blocks['lm35_sensor'] = {
       .appendField(Blockly.Msg.BLOCKS_SENSOR_LM35_UNIT || 'Temp (°C)');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_LM35_TOOLTIP || 'Measure temperature with LM35 sensor');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_SENSOR_LM35_TOOLTIP || 'Measure temperature with LM35 sensor'));
   }
 };
 
@@ -159,7 +160,7 @@ Blockly.Blocks['gas_sensor_analog'] = {
       ]) as unknown as Blockly.Field, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_GAS_TOOLTIP || 'Read gas sensor value');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_SENSOR_GAS_TOOLTIP || 'Read gas sensor value'));
   }
 };
 
@@ -195,7 +196,7 @@ Blockly.Blocks['soil_moisture_sensor'] = {
       ]) as unknown as Blockly.Field, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_SOILMOISTURE_TOOLTIP || 'Measure soil moisture');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_SENSOR_SOILMOISTURE_TOOLTIP || 'Measure soil moisture'));
   }
 };
 
@@ -229,7 +230,7 @@ Blockly.Blocks['water_level_sensor'] = {
       ]) as unknown as Blockly.Field, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_WATERLEVEL_TOOLTIP || 'Measure water level');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_SENSOR_WATERLEVEL_TOOLTIP || 'Measure water level'));
   }
 };
 
@@ -262,7 +263,7 @@ Blockly.Blocks['flame_sensor_analog'] = {
       ]) as unknown as Blockly.Field, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_FLAME_TOOLTIP || 'Measure flame intensity');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_SENSOR_FLAME_TOOLTIP || 'Measure flame intensity'));
   }
 };
 
@@ -296,7 +297,7 @@ Blockly.Blocks['ir_reflective_sensor'] = {
       ]) as unknown as Blockly.Field, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_IRREFLECTIVE_TOOLTIP || 'Measure IR reflection');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_SENSOR_IRREFLECTIVE_TOOLTIP || 'Measure IR reflection'));
   }
 };
 
@@ -334,7 +335,7 @@ Blockly.Blocks['joystick_sensor'] = {
       ]) as unknown as Blockly.Field, 'MODE');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_JOYSTICK_TOOLTIP || 'Read joystick position');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_SENSOR_JOYSTICK_TOOLTIP || 'Read joystick position'));
   }
 };
 
@@ -364,7 +365,7 @@ Blockly.Blocks['analog_read'] = {
       .appendField(new Blockly.FieldNumber(34, 0, 39), 'PIN');
     this.setOutput(true, 'Number');
     this.setColour(SENSOR_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_SENSOR_ANALOGREAD_TOOLTIP || 'Read analog pin value (0-4095)');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_SENSOR_ANALOGREAD_TOOLTIP || 'Read analog pin value (0-4095)'));
   }
 };
 
@@ -393,7 +394,7 @@ Blockly.Blocks['battery_voltage'] = {
         .appendField(new Blockly.FieldNumber(2.0, 1.0, 10.0, 0.1), 'RATIO');
     this.setOutput(true, 'Number');
     this.setColour(BATTERY_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_BATTERY_VOLTAGETOOLTIP || 'Read battery voltage via ADC with a resistor divider. Set divider ratio (e.g. 2.0 for equal resistors). Returns voltage in V.');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_BATTERY_VOLTAGETOOLTIP || 'Read battery voltage via ADC with a resistor divider. Set divider ratio (e.g. 2.0 for equal resistors). Returns voltage in V.'));
   }
 };
 
@@ -420,7 +421,7 @@ Blockly.Blocks['battery_percentage'] = {
         .appendField(new Blockly.FieldNumber(4.2, 0, 20, 0.1), 'MAX_V');
     this.setOutput(true, 'Number');
     this.setColour(BATTERY_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_BATTERY_PERCENTAGETOOLTIP || 'Convert battery voltage to percentage (0-100%). Set min/max voltage for your battery type (Li-ion: 3.0-4.2V).');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_BATTERY_PERCENTAGETOOLTIP || 'Convert battery voltage to percentage (0-100%). Set min/max voltage for your battery type (Li-ion: 3.0-4.2V).'));
   }
 };
 

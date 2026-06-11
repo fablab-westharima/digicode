@@ -8,6 +8,7 @@
 
 import * as Blockly from 'blockly';
 import { javascriptGenerator, Order } from 'blockly/javascript';
+import { withAdc2WifiWarning } from '../../sharedBlockTooltips';
 
 // ===== 基本ブロック（5個）- 無料 =====
 
@@ -130,7 +131,7 @@ Blockly.Blocks['esp32_analog_read'] = {
         .appendField(Blockly.Msg.BLOCKS_ESP32_ANALOGREAD_INPUT || 'analog read');
     this.setOutput(true, 'Number');
     this.setColour('#4CAF50');
-    this.setTooltip(Blockly.Msg.BLOCKS_ESP32_ANALOGREAD_TOOLTIP || 'Read analog pin (0-4095)');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_ESP32_ANALOGREAD_TOOLTIP || 'Read analog pin (0-4095)'));
   }
 };
 

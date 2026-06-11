@@ -106,6 +106,16 @@ export function WifiPrerequisitesDialog({ open, onOpenChange }: WifiPrerequisite
               </div>
             </div>
           </div>
+
+          {/* Session 165 T4-1: ADC2 × WiFi アナログ読取制約の注記 (WiFi OTA doc surface) */}
+          <div className="p-3 rounded-lg border border-yellow-700/50 bg-yellow-900/10">
+            <p className="text-xs text-yellow-300/90">
+              {t('wifiPrerequisites.adc2Note', {
+                defaultValue:
+                  '⚠️ WiFi 有効時は ADC2 ピン (GPIO 0/2/4/12-15/25-27) でアナログ読取できません (WiFi が ADC2 を占有)。アナログセンサーは ADC1 (GPIO 32-39) を使用してください。',
+              })}
+            </p>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

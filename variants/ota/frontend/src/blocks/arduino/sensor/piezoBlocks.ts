@@ -21,6 +21,7 @@
  */
 import * as Blockly from 'blockly';
 import { javascriptGenerator, Order } from 'blockly/javascript';
+import { withAdc2WifiWarning } from '../../sharedBlockTooltips';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generator = javascriptGenerator as any;
@@ -34,7 +35,7 @@ Blockly.Blocks['piezo_read_vibration'] = {
         .appendField('🪗 ' + (Blockly.Msg.BLOCKS_PIEZO_READ_VIBRATION || '圧電素子 振動 (raw) ピン'));
     this.setOutput(true, 'Number');
     this.setColour(PIEZO_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_PIEZO_READ_VIBRATION_TOOLTIP || '圧電素子 (PZT) の振動を ADC で読み取ります (0-4095、ESP32 12-bit)。値が大きいほど強い振動。');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_PIEZO_READ_VIBRATION_TOOLTIP || '圧電素子 (PZT) の振動を ADC で読み取ります (0-4095、ESP32 12-bit)。値が大きいほど強い振動。'));
   }
 };
 
@@ -56,7 +57,7 @@ Blockly.Blocks['piezo_threshold_detect'] = {
     this.setInputsInline(true);
     this.setOutput(true, 'Boolean');
     this.setColour(PIEZO_COLOR);
-    this.setTooltip(Blockly.Msg.BLOCKS_PIEZO_THRESHOLD_TOOLTIP || '圧電素子の振動値が指定しきい値を超えたら true を返します (typical threshold = 1000、調整推奨)。');
+    this.setTooltip(withAdc2WifiWarning(Blockly.Msg.BLOCKS_PIEZO_THRESHOLD_TOOLTIP || '圧電素子の振動値が指定しきい値を超えたら true を返します (typical threshold = 1000、調整推奨)。'));
   }
 };
 

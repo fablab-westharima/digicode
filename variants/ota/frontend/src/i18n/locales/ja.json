@@ -1243,7 +1243,8 @@
     "windowsOnly": "Windowsのみ",
     "bonjourDesc": "DigiCode Finderがデバイスを検出するために必要なmDNSサービス。macOS/Linuxでは標準搭載のため不要です。",
     "restartRequired": "⚠ インストール後、PCの再起動が必要です。",
-    "downloadApple": "ダウンロード（Apple公式）"
+    "downloadApple": "ダウンロード（Apple公式）",
+    "adc2Note": "⚠️ WiFi 有効時は ADC2 ピン (GPIO 0/2/4/12-15/25-27) でアナログ読取できません (WiFi が ADC2 を占有)。アナログセンサーは ADC1 (GPIO 32-39) を使用してください。"
   },
   "outdatedCompileServer": {
     "title": "コンパイルサーバーの更新が必要です",
@@ -2616,7 +2617,8 @@
       "rightLeg": "右ももピン",
       "leftFoot": "左足首ピン",
       "rightFoot": "右足首ピン",
-      "pin": "ピン"
+      "pin": "ピン",
+      "adc2WifiWarning": "⚠️ WiFi 有効時は ADC2 ピン (GPIO 0/2/4/12-15/25-27) でアナログ読取できません。ADC1 (GPIO 32-39) を推奨。"
     },
     "acs712": {
       "init": "ACS712 を初期化",

@@ -2384,7 +2384,8 @@
       "rightLeg": "右大腿腳位",
       "leftFoot": "左腳踝腳位",
       "rightFoot": "右腳踝腳位",
-      "pin": "腳位"
+      "pin": "腳位",
+      "adc2WifiWarning": "⚠️ WiFi 啟用時，ADC2 腳位 (GPIO 0/2/4/12-15/25-27) 無法類比讀取。建議使用 ADC1 (GPIO 32-39)。"
     },
     "array": {
       "1d": "1D",
@@ -3865,7 +3866,8 @@
     "windowsOnly": "僅 Windows",
     "bonjourDesc": "DigiCode Finder 偵測裝置所需的 mDNS 服務。macOS/Linux 為系統內建，無需安裝。",
     "restartRequired": "⚠ 安裝後需重新啟動電腦。",
-    "downloadApple": "下載（Apple 官方）"
+    "downloadApple": "下載（Apple 官方）",
+    "adc2Note": "⚠️ WiFi 啟用時，ADC2 腳位 (GPIO 0/2/4/12-15/25-27) 無法類比讀取（WiFi 佔用 ADC2）。類比感測器請使用 ADC1 (GPIO 32-39)。"
   },
   "outdatedCompileServer": {
     "title": "編譯伺服器需要更新",
