@@ -11,8 +11,8 @@
 # 目的: 未コミット変更がある状態でのデプロイを防ぐ
 #       （フロントエンドと同じ理由）
 #
-# 詳細: prompt/maintenance/05-03_教訓・注意事項(機能実装関連).md ルール30
-#       prompt/maintenance/12_2026-04-10_未コミット変更の整理記録.md
+# 詳細: prompt/maintenance/local/legacy/05-03_教訓-機能実装.md ルール30
+#       prompt/maintenance/local/legacy/(旧12_未コミット変更の整理記録 — Session 100 再編で archive 側へ)
 #
 # 使い方: ./scripts/deploy-backend.sh
 #

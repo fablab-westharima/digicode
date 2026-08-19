@@ -21,8 +21,8 @@
  *   サマリは stdout、詳細は /tmp/i18n_audit_report.json
  *
  * 関連ドキュメント:
- *   prompt/maintenance/17_2026-04-19_i18n徹底対応計画.md 方針 9
- *   prompt/maintenance/05-03_教訓・注意事項(機能実装関連).md ルール33
+ *   prompt/archive/2026-04-大型計画完了_Wave0.5-MVP-OTTO/17_2026-04-19_i18n徹底対応計画.md 方針 9
+ *   prompt/maintenance/local/legacy/05-03_教訓-機能実装.md ルール33
  */
 
 const fs = require('fs');

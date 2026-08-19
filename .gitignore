@@ -54,3 +54,13 @@ arduino-compile-server/
 prompt/
 CLAUDE.md
 docs/dev/deployment.md
+
+# Harness (2026-08-19 crossdeploy): 実体は prompt/harness/(private repo digicode-maintenance)。
+# ここの symlink / 生成物は public に出さない — Session 100 の internal-docs 非公開方針と同系
+scripts/selftest.sh
+scripts/read-load.sh
+scripts/context-brief.sh
+scripts/handover-diff.sh
+scripts/usage-report.sh
+scripts/baseline.sh
+AGENTS.md

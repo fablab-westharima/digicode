@@ -1,0 +1,12 @@
+# .gitleaksignore — user 確認済み false positive の fingerprint 台帳
+# 形式: commit:file:rule:line(履歴 scan 用)/ file:rule:line(protect --staged 用)
+# 追加条件: rule digicode/14 — false positive 判定は Claude 単独でしない(user 確認必須)
+
+# docs/dev/api-reference.md — API 仕様書の応答例(example.com・サンプル JWT・例示パスワード)。
+# 2026-08-19 crossdeploy Phase 1 で文脈確認済み(trufflehog verified 0 と整合)
+91e14acdfa46e81f5c8ab82c7875d1a295e52a00:docs/dev/api-reference.md:generic-api-key:77
+91e14acdfa46e81f5c8ab82c7875d1a295e52a00:docs/dev/api-reference.md:generic-api-key:109
+91e14acdfa46e81f5c8ab82c7875d1a295e52a00:docs/dev/api-reference.md:curl-auth-header:433
+docs/dev/api-reference.md:curl-auth-header:433
+docs/dev/api-reference.md:generic-api-key:77
+docs/dev/api-reference.md:generic-api-key:109
